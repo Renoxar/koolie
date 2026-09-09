@@ -63,9 +63,12 @@ CORE_SKILL_PREFIX = "fw-"
 SEED_PATHS = [
     ".devin/config.json",
     ".devin/rules/20-project-overlay.md",
-    ".devin/rules/30-role-software-development.md",
     "project-overlay",
 ]
+# Laufzeitfassungen von Packs (30-role-*, 40-tech-*) stehen absichtlich NICHT hier:
+# Ein Pack wird im Overlay aktiviert (framework/role-packs/README.md Punkt 4), nicht durch
+# die Installation. Wer ein Pack aktiviert hat, bekommt seine Bestandteile ueber
+# activated_pack_relpaths() aktualisiert.
 
 # Wird von install.py nie angefasst, auch nicht geloescht: projekteigene Erweiterungen.
 PROJECT_OWNED_HINT = [

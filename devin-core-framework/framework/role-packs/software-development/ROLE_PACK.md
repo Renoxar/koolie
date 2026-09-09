@@ -8,7 +8,7 @@
 | Status | entwurf (Referenzpack der Erstfassung) |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Softwareentwicklerinnen und Softwareentwickler |
-| Laufzeitfassung | `.devin/rules/30-role-software-development.md` |
+| Laufzeitfassung | `runtime/30-role-software-development.md`, zur Aktivierung nach `.devin/rules/` |
 
 ## 1. Zweck und Abgrenzung
 
@@ -60,6 +60,19 @@ Nicht Gegenstand dieses Packs: Architektur- und Technologieentscheidungen, Schni
 - Ist die Fehlerbehandlung konsistent mit dem Modul?
 - Wurde die Reihenfolge Reproduktion → Ursache → Korrektur eingehalten (bei Bugfixes)?
 - Sind Refaktorisierung und Funktionsänderung getrennt?
+
+## 5b. Aktivierung im Projekt
+
+Dieses Pack ist nach einer Erstinstallation **nicht** aktiv. Es wird wie jedes Pack im Projekt aktiviert (`devin-core-framework/framework/role-packs/README.md` Punkt 4):
+
+1. Rolle im Overlay Abschnitt 1 („Rollen im Team") aufführen.
+2. Laufzeitfassung kopieren:
+   `runtime/30-role-software-development.md` → `.devin/rules/30-role-software-development.md`
+3. Validieren: `python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay`
+
+Eigene Skills sind nicht mitzukopieren – das Pack nutzt die Framework-Skills, die ohnehin in der Laufzeitschicht liegen (Abschnitt 6).
+
+Bis Release 0.3.1 kam die Laufzeitfassung dieses Packs als Saatdatei mit und war damit nach jeder Erstinstallation aktiv. Das widersprach der eigenen Aktivierungsregel und ist mit 0.4.0 vereinheitlicht.
 
 ## 6. Rollenspezifische Skills
 

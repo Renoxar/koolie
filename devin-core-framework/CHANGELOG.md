@@ -2,6 +2,35 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `devin-core-framework/governance/RELEASE_PROCESS.md`.
 
+## [0.4.0] – 2026-09-09
+
+### Geändert
+- **Kein Pack ist nach einer Erstinstallation mehr aktiv — auch nicht das Referenzpack `software-development`.** Dessen Laufzeitfassung lag bisher als Saatdatei in `root-template/.devin/rules/30-role-software-development.md` und kam damit bei jeder Installation mit. Das widersprach der eigenen Regel in `framework/role-packs/README.md` Punkt 4, wonach ein Pack im Overlay aktiviert wird. Die Datei liegt jetzt in der Pack-Quellablage unter `framework/role-packs/software-development/runtime/`, wie beim Pack `requirements-engineering`.
+
+  Damit ist der Mechanismus für alle Packs einheitlich:
+
+  | Schritt | Wer |
+  |---|---|
+  | Pack liegt im Kern (`<pack>/runtime/`, `<pack>/skills/`) | Framework |
+  | Rolle im Overlay Abschnitt 1 aufführen, Bestandteile nach `.devin/` kopieren | Projekt |
+  | Kopierte Bestandteile auf dem Stand des Releases halten | `install.py --update` |
+
+  `install.py` legt kein Pack mehr an: Eine Erstinstallation umfasst jetzt 80 statt 81 Dateien.
+
+- `framework/role-packs/README.md`: Aktivierung mit Befehlsbeispiel beschrieben; der Sonderweg des Referenzpacks entfällt.
+- `framework/role-packs/software-development/ROLE_PACK.md`: neuer Abschnitt 5b „Aktivierung im Projekt".
+- `docs/ADOPTION_GUIDE.md` (jetzt 0.4.0): „Packs aktivieren" ist ein eigener Schritt 5 der Neuaufnahme; Abschnitt 3 nennt die Pack-Bestandteile ausdrücklich im Aktualisierungsumfang. Bei den projektspezifischen Bestandteilen steht nun die **Entscheidung**, welche Packs aktiv sind — nicht mehr die kopierten Dateien selbst, denn deren Inhalt ist Framework-Gut.
+
+### Migrationshinweise
+Ein Projekt, das das Referenzpack bereits nutzt, ist **nicht betroffen**: Die vorhandene `.devin/rules/30-role-software-development.md` wird ab 0.3.1 als Bestandteil eines aktivierten Packs erkannt und von `install.py --update` auf dem Stand gehalten. Zwei Dinge sind nachzuziehen:
+
+1. Falls die Rolle Softwareentwicklung im Overlay Abschnitt 1 nicht ausdrücklich aufgeführt ist, dort ergänzen — die Aktivierung war bisher implizit.
+2. Bei einer **Neuinstallation** in einem weiteren Repository muss das Pack künftig ausdrücklich aktiviert werden; sonst fehlt `30-role-software-development.md`. Der Validator verlangt die Datei nicht, das Pack wäre also stillschweigend inaktiv.
+
+### Geprüft
+- Frische Installation in einem leeren Verzeichnis: 80 Dateien angelegt, `.devin/rules/` enthält nur die Core-Regeln und die beiden `*-TEMPLATE`-Vorlagen, `.devin/skills/` nur die zwölf `fw-*`-Skills — kein `role-*`- oder `tech-*`-Skill, keine Pack-Laufzeitfassung.
+- `validate-framework.py`: 0 Fehler, 0 Warnungen.
+
 ## [0.3.1] – 2026-09-09
 
 ### Behoben
@@ -13,8 +42,8 @@ Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Ove
 
   Gefunden durch die Frage, warum die `fw-*`-Skills in der Laufzeitschicht liegen und ein Pack-Skill in der Pack-Quellablage. Wirksamkeit nachgewiesen: manipulierte Kopie → `--check` Exit 1 mit Nennung der Pack-Quelle → `--update` stellt her → Exit 0. Der Überwachungsumfang im Erprobungsprojekt wuchs dadurch von 60 auf 65 Dateien.
 
-### Offener Punkt
-- Das Referenzpack `software-development` bringt seine Laufzeitfassung als Saatdatei in `root-template/.devin/rules/30-role-software-development.md` mit und wird damit bei jeder Erstinstallation aktiv. Das widerspricht `framework/role-packs/README.md` Punkt 4, wonach ein Pack im Overlay aktiviert werden muss. `requirements-engineering` folgt dem dokumentierten Weg über `<pack>/runtime/`. Die Vereinheitlichung würde bestehende Projekte betreffen, die das Pack ohne ausdrückliche Aktivierung nutzen, und ist deshalb einem eigenen Release vorbehalten.
+### Offener Punkt (mit 0.4.0 erledigt)
+- Das Referenzpack `software-development` brachte seine Laufzeitfassung als Saatdatei in `root-template/.devin/rules/30-role-software-development.md` mit und wird damit bei jeder Erstinstallation aktiv. Das widerspricht `framework/role-packs/README.md` Punkt 4, wonach ein Pack im Overlay aktiviert werden muss. `requirements-engineering` folgt dem dokumentierten Weg über `<pack>/runtime/`. Die Vereinheitlichung würde bestehende Projekte betreffen, die das Pack ohne ausdrückliche Aktivierung nutzen, und ist deshalb einem eigenen Release vorbehalten.
 
 ## [0.3.0] – 2026-09-09
 

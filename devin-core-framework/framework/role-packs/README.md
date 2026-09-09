@@ -26,4 +26,13 @@ Neue Packs entstehen aus `_template/ROLE_PACK.md`.
 
 ## Quellablage der Laufzeitfassung
 
-Ein Pack, das eine Laufzeitfassung mitbringt, legt sie unter `<pack>/runtime/30-role-<pack>.md` ab. Zur Aktivierung wird sie nach `.devin/rules/` kopiert – zusammen mit den Skills aus `<pack>/skills/` nach `.devin/skills/`. `devin-core-framework/install.py` nimmt diesen Schritt bewusst nicht vorweg: Die Aktivierung eines Packs ist eine Projektentscheidung (Overlay Abschnitt 1), kein Installationsschritt.
+Jedes Pack legt seine Laufzeitfassung unter `<pack>/runtime/30-role-<pack>.md` ab und seine Skills – falls vorhanden – unter `<pack>/skills/`. Zur Aktivierung werden beide in die Laufzeitschicht kopiert:
+
+```bash
+cp devin-core-framework/framework/role-packs/<pack>/runtime/30-role-<pack>.md .devin/rules/
+cp -r devin-core-framework/framework/role-packs/<pack>/skills/* .devin/skills/    # falls vorhanden
+```
+
+`devin-core-framework/install.py` nimmt diesen Schritt bewusst nicht vorweg: **Die Aktivierung eines Packs ist eine Projektentscheidung** (Punkt 4), kein Installationsschritt. Kein Pack ist nach einer Erstinstallation aktiv – auch nicht das Referenzpack `software-development`.
+
+Einmal aktiviert, gehören die kopierten Bestandteile aber zum Aktualisierungsumfang: `install.py --update` bringt sie auf den Stand des Releases, `--check` meldet lokale Abweichungen. Die Unterscheidung ist also: *ob* ein Pack aktiv ist, entscheidet das Projekt – *was* darin steht, ist Framework-Inhalt.
