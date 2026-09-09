@@ -5,5 +5,20 @@ AGENTS.local.md
 .devin/plans/
 # Legacy-Verzeichnisse werden nicht gepflegt
 .windsurf/
-# Build-Artefakte der Dokumentation (Quellen unter build/doc werden versioniert)
-build/out/
+# Build-Artefakte der Dokumentation (Quellen unter devin-core-framework/build/doc werden versioniert)
+devin-core-framework/build/out/
+
+# ---------------------------------------------------------------------------
+# Im Framework-Repository sind die Wurzelbestandteile Erzeugnisse:
+# Quelle der Wahrheit ist devin-core-framework/root-template/, angelegt werden sie
+# mit "python devin-core-framework/install.py". So kann es keine zwei
+# auseinanderlaufenden Fassungen derselben Core-Datei geben.
+#
+# ACHTUNG: In einem PROJEKT gilt das Gegenteil - dort werden AGENTS.md, .devin/ und
+# project-overlay/ versioniert. Diese vier Zeilen sind deshalb beim Übernehmen des
+# Frameworks in ein Projekt NICHT mitzunehmen.
+# ---------------------------------------------------------------------------
+/AGENTS.md
+/AGENTS.local.md.example
+/.devin/
+/project-overlay/
