@@ -70,8 +70,9 @@ SEED_PATHS = [
 # Wird von install.py nie angefasst, auch nicht geloescht: projekteigene Erweiterungen.
 PROJECT_OWNED_HINT = [
     ".devin/rules/2N-overlay-<name>.md   (Overlay-Regelerweiterungen)",
-    ".devin/rules/40-tech-<name>.md      (aktivierte Technology Packs)",
+    ".devin/rules/40-tech-<name>.md      (Packs ohne Quelle im Kern)",
     ".devin/skills/prj-*/                (projektspezifische Skills)",
+    "project-overlay/tech-packs/**       (projekteigene Packs)",
     "project-overlay/**                  (das gesamte Overlay)",
 ]
 
@@ -119,6 +120,54 @@ def core_relpaths() -> list[str]:
     return out
 
 
+def activated_pack_relpaths(root: str) -> list[str]:
+    """Bestandteile von Packs, die dieses Projekt aktiviert hat.
+
+    Ein Pack wird aktiviert, indem seine Skills nach .devin/skills/ und seine Laufzeitfassung
+    nach .devin/rules/ kopiert werden. Ob ein Pack aktiv ist, entscheidet das Projekt
+    (Overlay Abschnitt 1) - was in einem aktivierten Pack-Skill steht, ist dagegen
+    Framework-Inhalt und gehoert damit zum Core-Aktualisierungsumfang. Ohne diese Funktion
+    behielte ein Projekt seine Kopie aus dem Release der Aktivierung, stillschweigend und
+    ohne Hinweis.
+
+    Nur was in einer Pack-Quellablage dieses Kerns eine Entsprechung hat, wird erfasst.
+    Projekteigene Packs (etwa unter project-overlay/tech-packs/) bleiben unberuehrt.
+    """
+    out: list[str] = []
+    for kind in ("role-packs", "tech-packs"):
+        base = os.path.join(HERE, "framework", kind)
+        if not os.path.isdir(base):
+            continue
+        for pack in sorted(os.listdir(base)):
+            src_skills = os.path.join(base, pack, "skills")
+            if os.path.isdir(src_skills):
+                for skill in sorted(os.listdir(src_skills)):
+                    if not os.path.isdir(os.path.join(src_skills, skill)):
+                        continue
+                    # Nur wenn im Ziel aktiviert
+                    if not os.path.isdir(os.path.join(root, ".devin", "skills", skill)):
+                        continue
+                    for dirpath, dirnames, filenames in os.walk(os.path.join(src_skills, skill)):
+                        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+                        for fn in sorted(filenames):
+                            src = os.path.join(dirpath, fn)
+                            innen = os.path.relpath(src, os.path.join(src_skills, skill))
+                            out.append((os.path.relpath(src, HERE).replace(os.sep, "/"),
+                                        f".devin/skills/{skill}/{innen}".replace(os.sep, "/")))
+            src_runtime = os.path.join(base, pack, "runtime")
+            if os.path.isdir(src_runtime):
+                for fn in sorted(os.listdir(src_runtime)):
+                    if not fn.endswith(".md"):
+                        continue
+                    # Nur wenn im Ziel aktiviert
+                    if not os.path.exists(os.path.join(root, ".devin", "rules", fn)):
+                        continue
+                    src = os.path.join(src_runtime, fn)
+                    out.append((os.path.relpath(src, HERE).replace(os.sep, "/"),
+                                f".devin/rules/{fn}"))
+    return out
+
+
 def seed_relpaths() -> list[str]:
     out: list[str] = []
     for rel in SEED_PATHS:
@@ -153,6 +202,22 @@ def run(root: str, mode: str, dry: bool) -> Report:
         elif mode in ("install", "update"):
             copy_file(src, dst, dry)
             rep.updated.append(rel)
+
+    # Aktivierte Pack-Bestandteile: Quelle liegt im Pack, Ziel in der Laufzeitschicht.
+    # Werden nie neu angelegt - die Aktivierung bleibt Projektentscheidung -, aber
+    # aktualisiert, sobald sie vorhanden sind.
+    for src_rel, dst_rel in activated_pack_relpaths(root):
+        src = os.path.join(HERE, src_rel)
+        dst = os.path.join(root, dst_rel)
+        if not os.path.exists(dst):
+            continue
+        if filecmp.cmp(src, dst, shallow=False):
+            rep.unchanged.append(dst_rel)
+        elif mode == "check":
+            rep.drifted.append(f"{dst_rel}  (Pack-Quelle: {src_rel})")
+        else:
+            copy_file(src, dst, dry)
+            rep.updated.append(f"{dst_rel}  (aus dem Pack aktualisiert)")
 
     for rel in seed_relpaths():
         src = os.path.join(TEMPLATE, rel)

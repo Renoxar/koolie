@@ -2,6 +2,20 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `devin-core-framework/governance/RELEASE_PROCESS.md`.
 
+## [0.3.1] – 2026-09-09
+
+### Behoben
+- **`install.py` aktualisiert jetzt auch aktivierte Pack-Bestandteile.** Bisher blieben ein nach `.devin/skills/` kopierter Pack-Skill und eine nach `.devin/rules/` kopierte Pack-Laufzeitfassung bei einem Release-Wechsel unberührt: `--update` fasste sie nicht an und `--check` meldete „Core ist auf dem Stand des Releases", obwohl die Kopie abwich. Ein Projekt behielt damit stillschweigend die Fassung aus dem Release, in dem es das Pack aktiviert hatte — eine Verbesserung am Pack-Skill hätte es nie erreicht.
+
+  Die zugrunde liegende Unterscheidung ist jetzt sauber gezogen: **Ob** ein Pack aktiv ist, entscheidet das Projekt (Overlay Abschnitt 1) — `install.py` aktiviert nach wie vor nichts von selbst. **Was** in einem aktivierten Pack-Skill steht, ist Framework-Inhalt und gehört damit zum Aktualisierungsumfang.
+
+  Erfasst wird nur, was in einer Pack-Quellablage dieses Kerns eine Entsprechung hat. Projekteigene Packs — etwa unter `project-overlay/tech-packs/` — bleiben unberührt; das ergibt sich automatisch aus dem Abgleich gegen die Quellablage und braucht keine Sonderregel.
+
+  Gefunden durch die Frage, warum die `fw-*`-Skills in der Laufzeitschicht liegen und ein Pack-Skill in der Pack-Quellablage. Wirksamkeit nachgewiesen: manipulierte Kopie → `--check` Exit 1 mit Nennung der Pack-Quelle → `--update` stellt her → Exit 0. Der Überwachungsumfang im Erprobungsprojekt wuchs dadurch von 60 auf 65 Dateien.
+
+### Offener Punkt
+- Das Referenzpack `software-development` bringt seine Laufzeitfassung als Saatdatei in `root-template/.devin/rules/30-role-software-development.md` mit und wird damit bei jeder Erstinstallation aktiv. Das widerspricht `framework/role-packs/README.md` Punkt 4, wonach ein Pack im Overlay aktiviert werden muss. `requirements-engineering` folgt dem dokumentierten Weg über `<pack>/runtime/`. Die Vereinheitlichung würde bestehende Projekte betreffen, die das Pack ohne ausdrückliche Aktivierung nutzen, und ist deshalb einem eigenen Release vorbehalten.
+
 ## [0.3.0] – 2026-09-09
 
 ### Hinzugefügt
