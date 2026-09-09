@@ -1,0 +1,33 @@
+---
+description: Technology Pack <TECH_PACK_NAME> (Ebene 5). Wird automatisch geladen, wenn Devin Dateien liest oder ändert, die auf die unten stehenden Muster passen.
+trigger: glob
+globs: "<TBD: Dateimuster, zum Beispiel **/*.java oder src/**/*.ts>"
+---
+
+<!-- AUSFÜLLHINWEIS: Kopiere diese Datei nach 40-tech-<tech-pack-name>.md (ohne .template),
+     ersetze alle Platzhalter und entferne diesen Hinweis. Quelle und Detailfassung:
+     framework/tech-packs/<tech-pack-name>/TECH_PACK.md. Ein Technology Pack enthält
+     ausschließlich technologische Konventionen – keine Governance-Regeln, keine Projektwerte. -->
+
+# Technology Pack <TECH_PACK_NAME> (Laufzeitfassung)
+
+## Sprach- und Framework-Konventionen
+
+- Sprachversion / Framework-Version: `<TBD>` (nur Funktionen dieser Version verwenden; Fundstelle in der Build-Konfiguration nennen)
+- Formatierung und Stil: `<TBD: Verweis auf Formatter-/Linter-Konfiguration im Repository>`
+- Bevorzugte Idiome: `<TBD>`
+- Zu vermeidende Muster: `<TBD>`
+
+## Build und Test
+
+- Build-System: `<TBD>` · Testframework: `<TEST_FRAMEWORK>`
+- Testkonventionen (Ablage, Benennung, Fixtures): `<TBD>`
+- Umgang mit Abhängigkeiten (Manifestdatei, Lockfile, Quelle): `<TBD>` – Änderungen nur durch den Menschen.
+
+## Typische Fehlerquellen bei KI-generiertem Code in dieser Technologie
+
+`<TBD: zum Beispiel veraltete APIs, nicht existierende Methoden bestimmter Bibliotheksversionen, falsche Null-Behandlung>`
+
+## Sicherheitsrelevante Muster dieser Technologie
+
+`<TBD: zum Beispiel Injection-Vektoren, Deserialisierung, Ressourcenfreigabe>`

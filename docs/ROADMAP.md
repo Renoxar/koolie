@@ -1,0 +1,218 @@
+# Implementierungs-Roadmap
+
+| Attribut | Wert |
+|---|---|
+| ID | `FW-DOC-ROADMAP` |
+| Version | `0.1.0` |
+| Status | `entwurf` |
+| Owner (Rolle) | `<FRAMEWORK_OWNER>` |
+
+> Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
+
+## Abhängigkeitsübersicht
+
+```mermaid
+flowchart LR
+    AP1["AP1 Initialisierung<br/>und Scope"] --> AP2["AP2 Validierung der<br/>Devin-Funktionalitäten"]
+    AP1 --> AP3["AP3 Framework Core"]
+    AP2 --> AP4["AP4 Technische<br/>Referenzimplementierung"]
+    AP3 --> AP4
+    AP3 --> AP5["AP5 Erste Skills"]
+    AP4 --> AP5
+    AP3 --> AP6["AP6 Datenschutz- und<br/>Security-Review"]
+    AP4 --> AP6
+    AP5 --> AP7["AP7 Testkatalog<br/>ausführen"]
+    AP6 --> AP7
+    AP7 --> AP8["AP8 Onboarding"]
+    AP8 --> AP9["AP9 Pilot"]
+    AP9 --> AP10["AP10 Auswertung"]
+    AP10 --> AP11["AP11 Stabilisierung"]
+    AP11 --> AP12["AP12 Version 1.0"]
+    AP12 --> AP13["AP13 Übernahme in<br/>weitere Projekte"]
+```
+
+Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel; AP4 benötigt AP2 und AP3; AP5 benötigt AP3 und AP4; AP6 benötigt AP3 und AP4 (Review der realen Konfiguration); AP7 benötigt AP5 und AP6; AP8 benötigt AP7; AP9 benötigt AP8; AP10 folgt AP9; AP11 folgt AP10; AP12 folgt AP11; AP13 folgt AP12.
+
+## Arbeitspakete
+
+### AP1 – Initialisierung und Scope (Priorität P1)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Getragener Auftrag: Geltungsbereich, Rollenbesetzung, organisatorische Voraussetzungen geklärt |
+| Aktivitäten | Klärungstabelle und Decision Log durchgehen (K-01…K-20); Rollen zuordnen (Framework Owner, Overlay Owner, Kontakte); Planstufe und Team-Einstellungen erheben; Datenschutz- und Vertragsprüfung beauftragen; Feedback- und Ablagekanäle festlegen |
+| Eingaben | dieses Framework 0.1.0; Organisationsrichtlinien; Vertragsunterlagen |
+| Ergebnisse | besetzte Rollen (außerhalb des Repos); beauftragte Prüfungen; gepflegtes Decision Log; Scope-Notiz |
+| Abhängigkeiten | keine |
+| Verantwortliche Rolle | Projektleitung mit `<FRAMEWORK_OWNER>` |
+| Abnahmekriterien | alle „offen"-Punkte der Klärungstabelle haben Owner und Weg; K-05/K-06 beauftragt |
+| Risiken | Prüfungen verzögern alles Nachfolgende → früh starten, Rest parallelisieren |
+| Offene Entscheidungen | `<TBD: Planstufe>`, `<TBD: Vertragsprüfung>`, `<TBD: Nutzungsumfang Cloud/CLI>` |
+
+### AP2 – Validierung der Devin-Funktionalitäten (P1)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Alle `[DOK]`/`[EMPF]`-Mechanismen und alle `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`-Marker in einer realen Installation bestätigt oder korrigiert |
+| Aktivitäten | Testinstallation (Zielversion notieren); prüfen: AGENTS.md-Laden, `.devin/rules`-Trigger, Zeichenlimits, Skill-Discovery (`.devin/skills/` und `.agents/skills/`), `/skill`-Aufruf, `config.json`-Schema und Muster-Semantik, Session-Grant-Stufen, Hook-Schema (stdin-Felder, Blockierung) und danach `FW_HOOK_FAIL_CLOSED=1` als Standard setzen, Subagent-Profile, Plan-Modus-Dateien, MCP-Konfigurationsdateien, Sandbox-Verhalten je Betriebssystem, Enterprise-Einstellungen; Belegstatus-Tabelle und betroffene Dateien aktualisieren |
+| Eingaben | Referenzimplementierung 0.1.0; offizielle Dokumentation; Quellenliste des Hauptdokuments |
+| Ergebnisse | Validierungsprotokoll je Mechanismus (FW-AK-02-Format); aktualisierte Marker; CRs für Abweichungen |
+| Abhängigkeiten | AP1 (Zugang, Planstufe) |
+| Verantwortliche Rolle | DevOps Engineer oder Entwickler mit `<FRAMEWORK_OWNER>` |
+| Abnahmekriterien | kein unbestätigter `[DOK]`-Eintrag mehr; VERIFY-Liste leer oder in CRs überführt |
+| Risiken | Produktstand ändert sich während der Einführung → Changelog-Beobachtung ab sofort (RELEASE_PROCESS 6) |
+| Offene Entscheidungen | `<TBD: verbindliche Zielversion von Devin Desktop>` |
+
+### AP3 – Framework Core (P1)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Core-Module fachlich abgenommen (Status je Modul von `entwurf` auf `pilot`) |
+| Aktivitäten | Review aller `framework/core/`-Module und der Prioritätshierarchie durch die benannten Rollen; Einarbeitung von Organisationsvorgaben (Ebene B, Klassifizierungs-Mapping); Beschluss offener Strukturentscheidungen (D-01…D-10 bestätigen) |
+| Eingaben | Erstfassung 0.1.0; Organisationsrichtlinien; Ergebnis K-06 |
+| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log |
+| Abhängigkeiten | AP1 |
+| Verantwortliche Rolle | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`, `<ARCHITECT_ROLE>` |
+| Abnahmekriterien | jedes Modul reviewt (Nachweis); keine offenen Widerspruchsbefunde; Hierarchie bestätigt |
+| Risiken | Übersteuerung durch Einzelmeinungen → Änderungsanträge statt Ad-hoc-Edits |
+| Offene Entscheidungen | Bestätigung der 8-stufigen Hierarchie (K-08) |
+
+### AP4 – Technische Referenzimplementierung (P1)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Laufzeitschicht in einer realen Umgebung lauffähig und mit dem Overlay des Erstprojekts befüllt |
+| Aktivitäten | Overlay ausfüllen (alle Abschnitte, `20-project-overlay.md`); `config.json` mit realen Pfaden und Befehlen; Hooks nach AP2-Schema härten (fail-closed); erstes Technology Pack für `<TECH_STACK>` erstellen; Übungsrepository erzeugen |
+| Eingaben | AP2-Protokoll; AP3-Core; Projektangaben |
+| Ergebnisse | aktivierbares Overlay (Status noch inaktiv); Technology Pack v0.1; Übungsrepository |
+| Abhängigkeiten | AP2, AP3 |
+| Verantwortliche Rolle | Overlay Owner (`<APPROVAL_ROLE>`) mit DevOps Engineer |
+| Abnahmekriterien | `validate-framework.py --strict-overlay` fehlerfrei bis auf den Status; Hook-Selbsttests grün |
+| Risiken | Zu großzügige Pfad-/Befehlsfreigaben aus Bequemlichkeit → Security-Review in AP6 prüft gezielt |
+| Offene Entscheidungen | `<TBD: Schwellenwert CHANGE_SIZE_THRESHOLD>`, `<TBD: kritische Komponenten>` |
+
+### AP5 – Erste Skills (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Referenz-Skills auf dem Übungsrepository erprobt; Status `pilot` |
+| Aktivitäten | Skill-Testfälle (`SK-*-P/N`) ausführen; Formulierungen nachschärfen; Skill-Versionen und CHANGELOGs pflegen; gegebenenfalls erste `prj-*`-Skills nach Standard |
+| Eingaben | AP4-Umgebung; Skill-Erstfassungen |
+| Ergebnisse | Testprotokolle; Skills im Status `pilot`; CR-Liste für Auffälligkeiten |
+| Abhängigkeiten | AP3, AP4 |
+| Verantwortliche Rolle | Modul-Owner Skills (bis Benennung: `<FRAMEWORK_OWNER>`) mit zwei Entwicklern |
+| Abnahmekriterien | alle P0- und N0-Tests je Skill bestanden oder mit CR adressiert |
+| Risiken | Skills zu lang für stabiles Verhalten → kürzen, Beispiele in EXAMPLES.md belassen |
+| Offene Entscheidungen | Benennung der Modul-Owner |
+
+### AP6 – Datenschutz- und Security-Review (P1)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Formale Freigabe des Frameworks und der Erstprojekt-Konfiguration durch Datenschutz und Informationssicherheit |
+| Aktivitäten | Review von FW-CORE-02/03, Kontextklassen-Mapping, `config.json`, Hooks, MCP-Haltung, Vorfallprozess; Abgleich mit K-06-Ergebnis; Auflagen dokumentieren |
+| Eingaben | AP3-Module; AP4-Konfiguration; Vertragsprüfung |
+| Ergebnisse | Freigabevermerk mit Auflagen; CRs; Einträge in `org-policies/` |
+| Abhängigkeiten | AP3, AP4 |
+| Verantwortliche Rolle | `<SECURITY_CONTACT>` und `<DATA_PROTECTION_CONTACT>` |
+| Abnahmekriterien | schriftliche Freigabe liegt vor; Auflagen als CRs oder Overlay-Einträge umgesetzt beziehungsweise terminiert |
+| Risiken | Freigabe unter Vorbehalt wird als Vollfreigabe gelesen → Auflagen in Overlay Abschnitt 1 sichtbar führen |
+| Offene Entscheidungen | `<TBD: Auflagen>` |
+
+### AP7 – Testkatalog (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Vollständiger Testkatalog-Lauf bestanden; Framework-Qualität nachgewiesen |
+| Aktivitäten | Alle Klassen (KO, PO, NE, DS, PI, SC, FI, ZA, RE, VN, AK) ausführen; Protokoll ablegen; Fehlschläge als CRs; Wiederholungslauf |
+| Eingaben | AP5-Skills; AP6-Auflagen; AP4-Umgebung |
+| Ergebnisse | Testprotokoll; bereinigte Befunde; belastbarer Stand für das Onboarding |
+| Abhängigkeiten | AP5, AP6 |
+| Verantwortliche Rolle | Tester/QA mit `<FRAMEWORK_OWNER>` |
+| Abnahmekriterien | alle Basistests bestanden; keine offenen Fehlschläge ohne CR |
+| Risiken | Sitzungs-Tests nicht reproduzierbar dokumentiert → Testblätter mit Version/Modell/Datum führen |
+| Offene Entscheidungen | `<TBD: Ablage der Testprotokolle>` |
+
+### AP8 – Onboarding (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Erste Nutzergruppe befähigt und freigegeben; Onboarding-Material praxisbewährt |
+| Aktivitäten | Mentorinnen und Mentoren briefen; Übungsrepository mit Ködern scharf schalten; Durchläufe nach GUIDE/CL-09; Material-Feedback einarbeiten |
+| Eingaben | AP7-Stand; Onboarding-Paket |
+| Ergebnisse | freigegebene Erstnutzer; Onboarding-Protokolle; Material-CRs |
+| Abhängigkeiten | AP7 |
+| Verantwortliche Rolle | Mentorinnen und Mentoren mit `<FRAMEWORK_OWNER>` |
+| Abnahmekriterien | alle Pilotteilnehmer mit dokumentierter Freigabe (COMPLETION_CRITERIA) |
+| Risiken | Onboarding als Formalie behandelt → Köderübungen sind bestehenspflichtig |
+| Offene Entscheidungen | keine |
+
+### AP9 – Pilot (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Realbetrieb in der Pilotgruppe gemäß `pilot/PILOT_CONCEPT.md` mit laufender Messung |
+| Aktivitäten | Referenzbasis erheben; Etikettierung im `<ISSUE_TRACKER>`; Betrieb mit Review-Punkten; Feedback- und Vorfallbehandlung; Zwischenanpassungen als CRs |
+| Eingaben | AP8-Nutzer; Metrikdefinitionen |
+| Ergebnisse | Metrikdaten; Review-Protokolle; CR-Liste |
+| Abhängigkeiten | AP8 |
+| Verantwortliche Rolle | Projektleitung (Pilot) mit Overlay Owner |
+| Abnahmekriterien | Pilot über `<PILOT_DURATION>` ohne Abbruchkriterium beendet oder Abbruch sauber dokumentiert |
+| Risiken | Metrik-Übersteuerung des Verhaltens → Kommunikation „bewertet Prozesse, nie Personen" konsequent halten |
+| Offene Entscheidungen | `<PILOT_DURATION>`, `<TBD: Zielwerte>` |
+
+### AP10 – Auswertung (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Belastbare Entscheidung: Fortführung, Anpassung oder Beendigung |
+| Aktivitäten | Abschlussbericht (Bündelbetrachtung, Kosten/Nutzen, Vorfälle, Akzeptanz); Lessons Learned; Entscheidungsvorlage |
+| Eingaben | AP9-Daten und -Protokolle |
+| Ergebnisse | Abschlussbericht; dokumentierte Entscheidung im Decision Log |
+| Abhängigkeiten | AP9 |
+| Verantwortliche Rolle | Projektleitung mit `<FRAMEWORK_OWNER>` und beteiligten Rollen |
+| Abnahmekriterien | Entscheidung mit Begründung; abgeleitete CR-Liste priorisiert |
+| Risiken | Bestätigungsfehler (nur positive Signale berichten) → Bericht enthält verpflichtend die Gegenargumente |
+| Offene Entscheidungen | Ergebnis selbst |
+
+### AP11 – Stabilisierung (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Pilot-Erkenntnisse eingearbeitet; Framework konsistent und dokumentationsfest |
+| Aktivitäten | Priorisierte CRs umsetzen; Skills auf `aktiv` heben, wo bewährt; Regression (FW-RE); Dokumente und Onboarding aktualisieren |
+| Eingaben | AP10-CR-Liste |
+| Ergebnisse | bereinigter Stand; Testprotokoll; Release-Kandidat |
+| Abhängigkeiten | AP10 |
+| Verantwortliche Rolle | `<FRAMEWORK_OWNER>` mit Modul-Ownern |
+| Abnahmekriterien | CR-Liste abgearbeitet oder begründet verschoben; Testkatalog grün |
+| Risiken | Scope-Kriechen durch Wunschliste → nur pilotbegründete CRs für 1.0 |
+| Offene Entscheidungen | Verschiebeliste |
+
+### AP12 – Version 1.0 (P2)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Release 1.0.0 als verbindlicher, übertragbarer Stand |
+| Aktivitäten | `checklists/11-framework-release.md` vollständig; Archiv; Kommunikations- und Migrationspaket; Bestandsliste initialisieren |
+| Eingaben | AP11-Kandidat |
+| Ergebnisse | Release 1.0.0 mit Nachweisen |
+| Abhängigkeiten | AP11 |
+| Verantwortliche Rolle | `<FRAMEWORK_OWNER>` |
+| Abnahmekriterien | Release-Checkliste ohne offene MUSS-Punkte; Freigabe dokumentiert |
+| Risiken | Release ohne AK-Prüfung veraltet sofort → FW-AK-01/02 sind Teil der Checkliste |
+| Offene Entscheidungen | keine |
+
+### AP13 – Übernahme in weitere Projekte (P3)
+
+| Feld | Inhalt |
+|---|---|
+| Ziel | Wiederholbare Übernahme mit sinkendem Aufwand je Projekt |
+| Aktivitäten | Übernahmen nach `ADOPTION_GUIDE.md` + CL-10; je Projekt Overlay, Packs, Übungsrepository, Onboarding; Erfahrungen in Guide und Checkliste zurückführen; Bestandsliste pflegen |
+| Eingaben | Release 1.0.0; Projektkontexte |
+| Ergebnisse | aktivierte Projekte; gepflegte Bestandsliste; verbesserter Guide |
+| Abhängigkeiten | AP12 |
+| Verantwortliche Rolle | jeweilige Overlay Owner mit `<FRAMEWORK_OWNER>` |
+| Abnahmekriterien | je Projekt: CL-10 vollständig, Basistests bestanden, Onboarding vor Nutzung |
+| Risiken | Kopien driften vom Release ab → nur Release-Archive, Abgleich in CL-10 |
+| Offene Entscheidungen | `<TBD: Reihenfolge der Projekte>` |

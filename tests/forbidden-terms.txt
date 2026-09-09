@@ -1,0 +1,8 @@
+# Sperrbegriffe für die Inhaltsprüfung (tests/scripts/validate-framework.py)
+# Ein Begriff je Zeile; Zeilen mit # sind Kommentare. Groß-/Kleinschreibung wird ignoriert.
+# Zweck: Projekte tragen hier ihre realen Projekt-, Kunden-, Behörden-, Produkt- und
+# Systemnamen ein, damit ein versehentliches Einsickern in generische Framework-Bestandteile
+# (Core, Packs, Skills, Prompts, Checklisten) automatisch erkannt wird.
+# Die Datei selbst darf nicht in das Framework-Release übernommen werden, wenn sie reale Namen
+# enthält; sie bleibt projektlokal (Projekt entscheidet über Versionierung).
+# Im Framework-Release ist die Liste leer.

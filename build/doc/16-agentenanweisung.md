@@ -1,0 +1,9 @@
+# 16 Zentrale Agentenanweisung
+
+Die zentrale Agentenanweisung ist die produktionsnahe Vorlage der Datei `AGENTS.md` im Workspace-Wurzelverzeichnis. Sie wird von Devin Local als always-on-Regel geladen `[DOK]`, bleibt bewusst unter der konservativ angesetzten 12.000-Zeichen-Grenze (aktuell rund 8.700 Zeichen) und regelt alle im Auftrag geforderten Punkte: Rolle des Agenten (1), Priorität und Hierarchie der Anweisungen (2), zulässigen Arbeitsbereich (3), Umgang mit fehlendem Kontext und Rückfragen statt Annahmen (4), Analyse vor Änderung (5), zulässige Dateioperationen (6), Befehlsausführung (7), Umgang mit Tests (8) und Fehlern (9), Änderungsumfang und Nachvollziehbarkeit (10), Datenschutz, Secrets und personenbezogene Daten (11), Sicherheit einschließlich Prompt-Injection-Abwehr (12), Abhängigkeiten und Architekturentscheidungen (13), Dokumentationspflicht sowie Commit- und Merge-Request-Unterstützung (14), menschliche Prüfung und Freigabe (15), Abbruch- und Eskalationsbedingungen (16) und die Skill-/Modusbindung (17). Projektwerte erscheinen ausschließlich als Platzhalter; die Datei wird nur über den Framework-Änderungsprozess geändert und ist für Devin selbst schreibgesperrt (Berechtigungen und Hook).
+
+{{EMBED:AGENTS.md}}
+
+Ergänzend gehört zur Vorlage die persönliche, nicht versionierte Ergänzungsdatei – zulässig nur zum Einschränken und für Arbeitsvorlieben, nie zum Erweitern von Freigaben:
+
+{{EMBED:AGENTS.local.md.example}}

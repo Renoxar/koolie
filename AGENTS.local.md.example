@@ -1,0 +1,19 @@
+# Persönliche Ergänzung (Vorlage) – AGENTS.local.md
+
+<!-- Kopiere diese Datei nach AGENTS.local.md (nicht versioniert, siehe .gitignore).
+     Mechanismus: AGENTS.local.md wird als persönliche Regeldatei gelesen und überschreibt
+     gleichnamige geteilte Regeln [DOK]. Im Framework gilt: Persönliche Regeln dürfen den
+     Handlungsspielraum nur einschränken oder Arbeitsvorlieben beschreiben – niemals
+     Berechtigungen, Kontextfreigaben oder Kontrollstufen erweitern (AGENTS.md Abschnitt 2). -->
+
+## Zulässige persönliche Einstellungen (Beispiele, synthetisch)
+
+- Bevorzugte Antwortsprache: `<TBD: Sprache>`
+- Bevorzugte Ausführlichkeit von Erklärungen: knapp | ausführlich
+- Persönliche Erinnerung: „Vor jedem Vorschlag die Kontrollstufe nennen."
+
+## Nicht zulässig in dieser Datei
+
+- Freigaben von Pfaden, Befehlen, Domains oder MCP-Servern
+- Einbindung von Dokumenten oder Verzeichnissen als Kontext
+- Anweisungen, die Framework- oder Overlay-Regeln relativieren

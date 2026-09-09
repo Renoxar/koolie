@@ -1,0 +1,9 @@
+# Persönliche, nicht zu teilende Devin-Konfiguration (Framework-Konvention)
+AGENTS.local.md
+.devin/config.local.json
+.devin/mcp_config.local.json
+.devin/plans/
+# Legacy-Verzeichnisse werden nicht gepflegt
+.windsurf/
+# Build-Artefakte der Dokumentation (Quellen unter build/doc werden versioniert)
+build/out/
