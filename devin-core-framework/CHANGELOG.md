@@ -2,6 +2,37 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `devin-core-framework/governance/RELEASE_PROCESS.md`.
 
+## [0.3.0] – 2026-09-09
+
+### Hinzugefügt
+- **Role Pack `requirements-engineering` (RP-RE)** – Ebene 6, Status `entwurf`. Konkretisiert das Arbeitsmodell für die Formulierung von Anforderungen und schließt damit das erste der sechs bislang nur vorgesehenen Packs.
+  - `ROLE_PACK.md` mit Abgrenzung, EARS-Syntax, Nachvollziehbarkeit, Werkzeug- und Sprachneutralität sowie Aktivierungsanleitung.
+  - **Skill `role-re-ticket` (`RP-RE-SK-001`)** – M1, rein lesend (`deny` auf `edit` und `exec`). Erzeugt aus einer Absicht eine umsetzungsreife Aufgabenbeschreibung: Beschreibung, EARS-Anforderungen, Arbeitspakete, Abnahmekriterien, Änderungsmitteilung. Recherchiert dafür die Codebasis anhand von vier festgelegten Fragen, jede Antwort mit Fundstelle.
+  - Laufzeitfassung `runtime/30-role-requirements-engineering.md` (`trigger: model_decision`), zur Aktivierung nach `.devin/rules/` zu kopieren.
+  - Vollständiger Satz nach Skill-Standard: `SKILL.md`, `EXAMPLES.md` (ein Positiv- und sieben Negativbeispiele), `TESTS.md` (5 Positiv-, 10 Negativtests), `CHANGELOG.md`.
+
+### Zentrale Regel des neuen Packs
+- **Der Ist-Zustand ist keine Anforderung.** Sobald bei der Anforderungsformulierung Code mitgelesen wird, entsteht die Gefahr, dass aus einem Befund („der Code antwortet mit 409") eine Anforderung wird („das System soll mit 409 antworten"). Damit wäre die Implementierung ihre eigene Spezifikation und jede Prüfung zirkulär. Das Pack trennt deshalb verbindlich drei Kategorien: **Anforderung** (nur vom Menschen, `shall`), **Befund** (aus dem Code, mit Fundstelle, nie `shall`) und **Randbedingung** (aus Schema, Vertrag, Migration oder Test, mit Fundstelle, nie `shall`). Ein Befund kann eine Anforderung auslösen — aber erst, nachdem ein Mensch entschieden hat; der Skill legt diese Entscheidung offen, statt sie zu treffen.
+
+### Geändert
+- `framework/role-packs/README.md`: `requirements-engineering` von „vorgesehen" auf „entwurf"; neuer Abschnitt zur Quellablage der Laufzeitfassung (`<pack>/runtime/`) mit der Klarstellung, dass `install.py` die Aktivierung eines Packs bewusst nicht vorwegnimmt — sie ist eine Projektentscheidung nach Overlay Abschnitt 1.
+- `OWNERS.md`: Pack und Skill eingetragen.
+
+### Abgrenzung zu bestehenden Skills
+- `role-re-ticket` bewertet **kein** Risiko und schlägt **keine** Kontrollstufe vor. Das leistet `fw-change-analyze` mit der ausgearbeiteten Faktorenliste R1–R13. Der neue Skill recherchiert nur so weit, wie es zum Formulieren nötig ist, und empfiehlt `fw-change-analyze` als Folgeschritt. Zwei Skills mit derselben Codeanalyse in unterschiedlicher Tiefe liefern über die Zeit widersprüchliche Ergebnisse.
+- Der Skill schreibt nichts in ein Ticketsystem; die Übertragung des Entwurfs bleibt beim Menschen (V11). Damit ist kein MCP-Server mit Schreibrechten auf ein Ticketsystem erforderlich.
+
+### Behoben
+- **`validate-framework.py` prüft jetzt auch die Skill-Quellablagen der Packs** (`framework/role-packs/<pack>/skills/` und `framework/tech-packs/<pack>/skills/`). Bisher wurde ausschließlich `.devin/skills/` geprüft — ein Pack-Skill fiel damit erst auf, nachdem ein Projekt ihn aktiviert hatte, also nach der Auslieferung. Ein Release konnte einen Skill enthalten, der den Skill-Standard verletzt. Gleiche Skillnamen in Quellablage und aktivierter Schicht werden als Kopie erkannt und nicht als ID-Konflikt gemeldet. Gefunden beim Anlegen des Packs `requirements-engineering`.
+
+### Migrationshinweise
+- Keine. Das Pack ist optional und wird erst durch Aktivierung im Overlay wirksam (Abschnitt 1 sowie Kopieren von Laufzeitfassung und Skill). Bestehende Overlays sind nicht betroffen.
+- Projekte, die das Pack aktivieren, setzen `<ISSUE_TRACKER>` in Overlay Abschnitt 13 und prüfen die Sprachregeln in Abschnitt 9. Ein Glossar als Manifest-Typ `glossary` verbessert die Begriffstreue erheblich.
+
+### Bekannte Einschränkungen
+- Die 15 Testfälle des Skills haben durchgehend den Ergebnisstatus `offen`: Sie sind für eine Testsitzung auf dem Übungsrepository spezifiziert, aber noch nicht ausgeführt.
+- Die Ableitung der Auszeichnungssyntax aus `<ISSUE_TRACKER>` deckt JIRA-Wiki, Markdown und eine neutrale Form ab. Andere Werkzeuge erfordern eine ausdrückliche Formatangabe beim Aufruf.
+
 ## [0.2.0] – 2026-09-09
 
 ### Geändert (strukturell, ohne inhaltliche Regeländerung)

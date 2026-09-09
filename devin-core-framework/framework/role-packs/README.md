@@ -16,10 +16,14 @@ Role Packs sind optionale, rollenbezogene Module. Sie konkretisieren die Arbeits
 |---|---|---|---|
 | `software-development` | entwurf (Referenz) | `.devin/rules/30-role-software-development.md` | `<FRAMEWORK_OWNER>` |
 | `software-architecture` | vorgesehen | – | `<TBD>` |
-| `requirements-engineering` | vorgesehen | – | `<TBD>` |
+| `requirements-engineering` | entwurf | `.devin/rules/30-role-requirements-engineering.md` | `<FRAMEWORK_OWNER>` |
 | `testing-qa` | vorgesehen | – | `<TBD>` |
 | `devops` | vorgesehen | – | `<TBD>` |
 | `documentation` | vorgesehen | – | `<TBD>` |
 | `code-review` | vorgesehen | – | `<TBD>` |
 
 Neue Packs entstehen aus `_template/ROLE_PACK.md`.
+
+## Quellablage der Laufzeitfassung
+
+Ein Pack, das eine Laufzeitfassung mitbringt, legt sie unter `<pack>/runtime/30-role-<pack>.md` ab. Zur Aktivierung wird sie nach `.devin/rules/` kopiert – zusammen mit den Skills aus `<pack>/skills/` nach `.devin/skills/`. `devin-core-framework/install.py` nimmt diesen Schritt bewusst nicht vorweg: Die Aktivierung eines Packs ist eine Projektentscheidung (Overlay Abschnitt 1), kein Installationsschritt.
