@@ -10,7 +10,8 @@ Prüft (statisch, ohne Devin):
   2. .devin/config.json: gültiges JSON, Kernregeln vorhanden, keine Kernverbote in allow
   3. .devin/hooks.v1.json und mcp-Vorlage: gültiges JSON
   4. .devin/rules/*.md: Frontmatter (description, trigger, globs), Zeichenlimits
-  5. .devin/skills/*/: Pflichtdateien, Frontmatter, Metadatenblock, Pflichtabschnitte,
+  5. Skills (.devin/skills/ und die Quellablagen der Packs): Pflichtdateien, Frontmatter,
+     Metadatenblock, Pflichtabschnitte,
      Trigger-Regel (schreibende Skills nur user-getriggert), Beispiele und Testfälle
   6. Verbotene Inhalte (ohne erzeugte Lockdateien): Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen,
      URLs außerhalb der Quellen-Allowlist, projektspezifische Sperrbegriffe (project-overlay/forbidden-terms.txt)
@@ -217,16 +218,40 @@ def check_rules(root: str) -> None:
             err(f"AGENTS.md: {n} Zeichen (> 12.000)")
 
 
+def skill_dirs(root: str) -> list[tuple[str, str]]:
+    """Alle Skill-Ablagen: die aktivierte Laufzeitschicht und die Quellablagen der Packs.
+
+    Pack-Skills liegen unter framework/{role,tech}-packs/<pack>/skills/ und werden erst zur
+    Aktivierung nach .devin/skills/ kopiert. Ohne diese Ablagen wuerde ein fehlerhafter
+    Pack-Skill erst im uebernehmenden Projekt auffallen - also nach der Auslieferung.
+    """
+    out: list[tuple[str, str]] = []
+    runtime = os.path.join(root, ".devin", "skills")
+    if os.path.isdir(runtime):
+        out.append((runtime, ".devin/skills"))
+    for kind in ("role-packs", "tech-packs"):
+        base = os.path.join(root, "devin-core-framework", "framework", kind)
+        if not os.path.isdir(base):
+            continue
+        for pack in sorted(os.listdir(base)):
+            src = os.path.join(base, pack, "skills")
+            if os.path.isdir(src):
+                out.append((src, f"devin-core-framework/framework/{kind}/{pack}/skills"))
+    return out
+
+
 def check_skills(root: str) -> None:
-    skills_dir = os.path.join(root, ".devin", "skills")
-    if not os.path.isdir(skills_dir):
-        return
     ids: dict[str, str] = {}
+    for skills_dir, prefix in skill_dirs(root):
+        check_skills_in(skills_dir, prefix, ids)
+
+
+def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str]) -> None:
     for name in sorted(os.listdir(skills_dir)):
         sdir = os.path.join(skills_dir, name)
         if not os.path.isdir(sdir):
             continue
-        rel = f".devin/skills/{name}"
+        rel = f"{prefix}/{name}"
         if not re.fullmatch(r"[a-z0-9-]+", name):
             err(f"{rel}: Verzeichnisname muss aus Kleinbuchstaben, Ziffern, Bindestrichen bestehen")
         if not re.match(r"^(fw|prj|role-[a-z0-9]+|tech-[a-z0-9]+)-", name):
@@ -268,8 +293,11 @@ def check_skills(root: str) -> None:
             err(f"{rel}/SKILL.md: Status '{m.group(1).strip()}' unbekannt")
         m = re.search(r"^\|\s*ID\s*\|\s*`?([A-Z0-9-]+)`?\s*\|", body, re.M)
         if m:
-            if m.group(1) in ids:
-                err(f"{rel}/SKILL.md: ID {m.group(1)} doppelt (auch in {ids[m.group(1)]})")
+            vorher = ids.get(m.group(1))
+            # Gleicher Skillname in Quellablage und aktivierter Schicht ist eine Kopie,
+            # kein Konflikt. Nur unterschiedliche Skills mit gleicher ID sind ein Fehler.
+            if vorher is not None and vorher != name:
+                err(f"{rel}/SKILL.md: ID {m.group(1)} doppelt (auch in {vorher})")
             ids[m.group(1)] = name
         else:
             err(f"{rel}/SKILL.md: ID nicht lesbar")

@@ -16,10 +16,23 @@ Role Packs sind optionale, rollenbezogene Module. Sie konkretisieren die Arbeits
 |---|---|---|---|
 | `software-development` | entwurf (Referenz) | `.devin/rules/30-role-software-development.md` | `<FRAMEWORK_OWNER>` |
 | `software-architecture` | vorgesehen | – | `<TBD>` |
-| `requirements-engineering` | vorgesehen | – | `<TBD>` |
+| `requirements-engineering` | entwurf | `.devin/rules/30-role-requirements-engineering.md` | `<FRAMEWORK_OWNER>` |
 | `testing-qa` | vorgesehen | – | `<TBD>` |
 | `devops` | vorgesehen | – | `<TBD>` |
 | `documentation` | vorgesehen | – | `<TBD>` |
 | `code-review` | vorgesehen | – | `<TBD>` |
 
 Neue Packs entstehen aus `_template/ROLE_PACK.md`.
+
+## Quellablage der Laufzeitfassung
+
+Jedes Pack legt seine Laufzeitfassung unter `<pack>/runtime/30-role-<pack>.md` ab und seine Skills – falls vorhanden – unter `<pack>/skills/`. Zur Aktivierung werden beide in die Laufzeitschicht kopiert:
+
+```bash
+cp devin-core-framework/framework/role-packs/<pack>/runtime/30-role-<pack>.md .devin/rules/
+cp -r devin-core-framework/framework/role-packs/<pack>/skills/* .devin/skills/    # falls vorhanden
+```
+
+`devin-core-framework/install.py` nimmt diesen Schritt bewusst nicht vorweg: **Die Aktivierung eines Packs ist eine Projektentscheidung** (Punkt 4), kein Installationsschritt. Kein Pack ist nach einer Erstinstallation aktiv – auch nicht das Referenzpack `software-development`.
+
+Einmal aktiviert, gehören die kopierten Bestandteile aber zum Aktualisierungsumfang: `install.py --update` bringt sie auf den Stand des Releases, `--check` meldet lokale Abweichungen. Die Unterscheidung ist also: *ob* ein Pack aktiv ist, entscheidet das Projekt – *was* darin steht, ist Framework-Inhalt.

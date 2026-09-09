@@ -2,6 +2,80 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `devin-core-framework/governance/RELEASE_PROCESS.md`.
 
+## [0.4.0] – 2026-09-09
+
+### Geändert
+- **Kein Pack ist nach einer Erstinstallation mehr aktiv — auch nicht das Referenzpack `software-development`.** Dessen Laufzeitfassung lag bisher als Saatdatei in `root-template/.devin/rules/30-role-software-development.md` und kam damit bei jeder Installation mit. Das widersprach der eigenen Regel in `framework/role-packs/README.md` Punkt 4, wonach ein Pack im Overlay aktiviert wird. Die Datei liegt jetzt in der Pack-Quellablage unter `framework/role-packs/software-development/runtime/`, wie beim Pack `requirements-engineering`.
+
+  Damit ist der Mechanismus für alle Packs einheitlich:
+
+  | Schritt | Wer |
+  |---|---|
+  | Pack liegt im Kern (`<pack>/runtime/`, `<pack>/skills/`) | Framework |
+  | Rolle im Overlay Abschnitt 1 aufführen, Bestandteile nach `.devin/` kopieren | Projekt |
+  | Kopierte Bestandteile auf dem Stand des Releases halten | `install.py --update` |
+
+  `install.py` legt kein Pack mehr an: Eine Erstinstallation umfasst jetzt 80 statt 81 Dateien.
+
+- `framework/role-packs/README.md`: Aktivierung mit Befehlsbeispiel beschrieben; der Sonderweg des Referenzpacks entfällt.
+- `framework/role-packs/software-development/ROLE_PACK.md`: neuer Abschnitt 5b „Aktivierung im Projekt".
+- `docs/ADOPTION_GUIDE.md` (jetzt 0.4.0): „Packs aktivieren" ist ein eigener Schritt 5 der Neuaufnahme; Abschnitt 3 nennt die Pack-Bestandteile ausdrücklich im Aktualisierungsumfang. Bei den projektspezifischen Bestandteilen steht nun die **Entscheidung**, welche Packs aktiv sind — nicht mehr die kopierten Dateien selbst, denn deren Inhalt ist Framework-Gut.
+
+### Migrationshinweise
+Ein Projekt, das das Referenzpack bereits nutzt, ist **nicht betroffen**: Die vorhandene `.devin/rules/30-role-software-development.md` wird ab 0.3.1 als Bestandteil eines aktivierten Packs erkannt und von `install.py --update` auf dem Stand gehalten. Zwei Dinge sind nachzuziehen:
+
+1. Falls die Rolle Softwareentwicklung im Overlay Abschnitt 1 nicht ausdrücklich aufgeführt ist, dort ergänzen — die Aktivierung war bisher implizit.
+2. Bei einer **Neuinstallation** in einem weiteren Repository muss das Pack künftig ausdrücklich aktiviert werden; sonst fehlt `30-role-software-development.md`. Der Validator verlangt die Datei nicht, das Pack wäre also stillschweigend inaktiv.
+
+### Geprüft
+- Frische Installation in einem leeren Verzeichnis: 80 Dateien angelegt, `.devin/rules/` enthält nur die Core-Regeln und die beiden `*-TEMPLATE`-Vorlagen, `.devin/skills/` nur die zwölf `fw-*`-Skills — kein `role-*`- oder `tech-*`-Skill, keine Pack-Laufzeitfassung.
+- `validate-framework.py`: 0 Fehler, 0 Warnungen.
+
+## [0.3.1] – 2026-09-09
+
+### Behoben
+- **`install.py` aktualisiert jetzt auch aktivierte Pack-Bestandteile.** Bisher blieben ein nach `.devin/skills/` kopierter Pack-Skill und eine nach `.devin/rules/` kopierte Pack-Laufzeitfassung bei einem Release-Wechsel unberührt: `--update` fasste sie nicht an und `--check` meldete „Core ist auf dem Stand des Releases", obwohl die Kopie abwich. Ein Projekt behielt damit stillschweigend die Fassung aus dem Release, in dem es das Pack aktiviert hatte — eine Verbesserung am Pack-Skill hätte es nie erreicht.
+
+  Die zugrunde liegende Unterscheidung ist jetzt sauber gezogen: **Ob** ein Pack aktiv ist, entscheidet das Projekt (Overlay Abschnitt 1) — `install.py` aktiviert nach wie vor nichts von selbst. **Was** in einem aktivierten Pack-Skill steht, ist Framework-Inhalt und gehört damit zum Aktualisierungsumfang.
+
+  Erfasst wird nur, was in einer Pack-Quellablage dieses Kerns eine Entsprechung hat. Projekteigene Packs — etwa unter `project-overlay/tech-packs/` — bleiben unberührt; das ergibt sich automatisch aus dem Abgleich gegen die Quellablage und braucht keine Sonderregel.
+
+  Gefunden durch die Frage, warum die `fw-*`-Skills in der Laufzeitschicht liegen und ein Pack-Skill in der Pack-Quellablage. Wirksamkeit nachgewiesen: manipulierte Kopie → `--check` Exit 1 mit Nennung der Pack-Quelle → `--update` stellt her → Exit 0. Der Überwachungsumfang im Erprobungsprojekt wuchs dadurch von 60 auf 65 Dateien.
+
+### Offener Punkt (mit 0.4.0 erledigt)
+- Das Referenzpack `software-development` brachte seine Laufzeitfassung als Saatdatei in `root-template/.devin/rules/30-role-software-development.md` mit und wird damit bei jeder Erstinstallation aktiv. Das widerspricht `framework/role-packs/README.md` Punkt 4, wonach ein Pack im Overlay aktiviert werden muss. `requirements-engineering` folgt dem dokumentierten Weg über `<pack>/runtime/`. Die Vereinheitlichung würde bestehende Projekte betreffen, die das Pack ohne ausdrückliche Aktivierung nutzen, und ist deshalb einem eigenen Release vorbehalten.
+
+## [0.3.0] – 2026-09-09
+
+### Hinzugefügt
+- **Role Pack `requirements-engineering` (RP-RE)** – Ebene 6, Status `entwurf`. Konkretisiert das Arbeitsmodell für die Formulierung von Anforderungen und schließt damit das erste der sechs bislang nur vorgesehenen Packs.
+  - `ROLE_PACK.md` mit Abgrenzung, EARS-Syntax, Nachvollziehbarkeit, Werkzeug- und Sprachneutralität sowie Aktivierungsanleitung.
+  - **Skill `role-re-ticket` (`RP-RE-SK-001`)** – M1, rein lesend (`deny` auf `edit` und `exec`). Erzeugt aus einer Absicht eine umsetzungsreife Aufgabenbeschreibung: Beschreibung, EARS-Anforderungen, Arbeitspakete, Abnahmekriterien, Änderungsmitteilung. Recherchiert dafür die Codebasis anhand von vier festgelegten Fragen, jede Antwort mit Fundstelle.
+  - Laufzeitfassung `runtime/30-role-requirements-engineering.md` (`trigger: model_decision`), zur Aktivierung nach `.devin/rules/` zu kopieren.
+  - Vollständiger Satz nach Skill-Standard: `SKILL.md`, `EXAMPLES.md` (ein Positiv- und sieben Negativbeispiele), `TESTS.md` (5 Positiv-, 10 Negativtests), `CHANGELOG.md`.
+
+### Zentrale Regel des neuen Packs
+- **Der Ist-Zustand ist keine Anforderung.** Sobald bei der Anforderungsformulierung Code mitgelesen wird, entsteht die Gefahr, dass aus einem Befund („der Code antwortet mit 409") eine Anforderung wird („das System soll mit 409 antworten"). Damit wäre die Implementierung ihre eigene Spezifikation und jede Prüfung zirkulär. Das Pack trennt deshalb verbindlich drei Kategorien: **Anforderung** (nur vom Menschen, `shall`), **Befund** (aus dem Code, mit Fundstelle, nie `shall`) und **Randbedingung** (aus Schema, Vertrag, Migration oder Test, mit Fundstelle, nie `shall`). Ein Befund kann eine Anforderung auslösen — aber erst, nachdem ein Mensch entschieden hat; der Skill legt diese Entscheidung offen, statt sie zu treffen.
+
+### Geändert
+- `framework/role-packs/README.md`: `requirements-engineering` von „vorgesehen" auf „entwurf"; neuer Abschnitt zur Quellablage der Laufzeitfassung (`<pack>/runtime/`) mit der Klarstellung, dass `install.py` die Aktivierung eines Packs bewusst nicht vorwegnimmt — sie ist eine Projektentscheidung nach Overlay Abschnitt 1.
+- `OWNERS.md`: Pack und Skill eingetragen.
+
+### Abgrenzung zu bestehenden Skills
+- `role-re-ticket` bewertet **kein** Risiko und schlägt **keine** Kontrollstufe vor. Das leistet `fw-change-analyze` mit der ausgearbeiteten Faktorenliste R1–R13. Der neue Skill recherchiert nur so weit, wie es zum Formulieren nötig ist, und empfiehlt `fw-change-analyze` als Folgeschritt. Zwei Skills mit derselben Codeanalyse in unterschiedlicher Tiefe liefern über die Zeit widersprüchliche Ergebnisse.
+- Der Skill schreibt nichts in ein Ticketsystem; die Übertragung des Entwurfs bleibt beim Menschen (V11). Damit ist kein MCP-Server mit Schreibrechten auf ein Ticketsystem erforderlich.
+
+### Behoben
+- **`validate-framework.py` prüft jetzt auch die Skill-Quellablagen der Packs** (`framework/role-packs/<pack>/skills/` und `framework/tech-packs/<pack>/skills/`). Bisher wurde ausschließlich `.devin/skills/` geprüft — ein Pack-Skill fiel damit erst auf, nachdem ein Projekt ihn aktiviert hatte, also nach der Auslieferung. Ein Release konnte einen Skill enthalten, der den Skill-Standard verletzt. Gleiche Skillnamen in Quellablage und aktivierter Schicht werden als Kopie erkannt und nicht als ID-Konflikt gemeldet. Gefunden beim Anlegen des Packs `requirements-engineering`.
+
+### Migrationshinweise
+- Keine. Das Pack ist optional und wird erst durch Aktivierung im Overlay wirksam (Abschnitt 1 sowie Kopieren von Laufzeitfassung und Skill). Bestehende Overlays sind nicht betroffen.
+- Projekte, die das Pack aktivieren, setzen `<ISSUE_TRACKER>` in Overlay Abschnitt 13 und prüfen die Sprachregeln in Abschnitt 9. Ein Glossar als Manifest-Typ `glossary` verbessert die Begriffstreue erheblich.
+
+### Bekannte Einschränkungen
+- Die 15 Testfälle des Skills haben durchgehend den Ergebnisstatus `offen`: Sie sind für eine Testsitzung auf dem Übungsrepository spezifiziert, aber noch nicht ausgeführt.
+- Die Ableitung der Auszeichnungssyntax aus `<ISSUE_TRACKER>` deckt JIRA-Wiki, Markdown und eine neutrale Form ab. Andere Werkzeuge erfordern eine ausdrückliche Formatangabe beim Aufruf.
+
 ## [0.2.0] – 2026-09-09
 
 ### Geändert (strukturell, ohne inhaltliche Regeländerung)

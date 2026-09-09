@@ -9,6 +9,7 @@
 | Datenschutzmodell (FW-CORE-02) | `devin-core-framework/framework/core/02-privacy.md`, `.devin/rules/10-*` | `<FRAMEWORK_OWNER>` mit `<DATA_PROTECTION_CONTACT>` | – |
 | Sicherheitsmodell (FW-CORE-03), Berechtigungen, Hooks | `devin-core-framework/framework/core/03-security.md`, `.devin/config.json`, `.devin/hooks.v1.json`, `devin-core-framework/tests/scripts/hook-*` | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>` | – |
 | Role Pack Softwareentwicklung | `devin-core-framework/framework/role-packs/software-development/`, `.devin/rules/30-role-software-development.md` | `<FRAMEWORK_OWNER>` (bis Benennung Modul-Owner: `<TBD>`) | – |
+| Role Pack Requirements Engineering (RP-RE), Skill `role-re-ticket` | `devin-core-framework/framework/role-packs/requirements-engineering/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |
 | Technology Packs | `devin-core-framework/framework/tech-packs/` | je Pack `<TBD: Modul-Owner>` | – |
 | Framework-Skills FW-SK-001…012 | `.devin/skills/fw-*` | `<FRAMEWORK_OWNER>` (bis Benennung Modul-Owner je Gruppe) | – |
 | Prompt-Bibliothek | `devin-core-framework/prompts/` | `<FRAMEWORK_OWNER>` | – |

@@ -31,8 +31,9 @@ Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet
 │   ├── rules/00-, 10-, 15-*.md          # Core-Kurzfassungen ....... aus dem Kern
 │   ├── rules/20-project-overlay.md      # Overlay-Laufzeitfassung ... Projekt
 │   ├── rules/2N-overlay-*.md            # Overlay-Regelerweiterungen  Projekt
-│   ├── rules/30-, 40-*.md               # aktivierte Packs .......... Projekt
-│   └── skills/fw-*  |  skills/prj-*     # Kern-Skills | Projekt-Skills
+│   ├── rules/30-, 40-*.md               # aktivierte Packs .......... Kern-Inhalt,
+│   │                                    #   Aktivierung ............. Projekt
+│   └── skills/fw-* role-* tech-* prj-*  # Kern | aktivierte Packs | Projekt
 │
 ├── devin-core-framework/                # ◀ DER KERN: ein Ordner, unveränderlich
 │   ├── install.py                       #   legt die Wurzeldateien an, aktualisiert sie
@@ -83,7 +84,8 @@ python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay
 | | wird bei `--update` überschrieben | bleibt unberührt |
 |---|---|---|
 | Kern | `AGENTS.md`, `.devin/rules/00-`, `10-`, `15-`, `.devin/skills/fw-*`, `.devin/agents/`, `hooks.v1.json`, die `*-TEMPLATE`-Vorlagen | – |
-| Projekt | – | `.devin/config.json`, `.devin/rules/20-`, `2N-`, `30-`, `40-`, `.devin/skills/prj-*`, `project-overlay/**` |
+| Aktivierte Packs | ihre kopierten Bestandteile (`.devin/rules/30-`, `40-` und `.devin/skills/role-*`, `tech-*`), sofern das Pack im Kern liegt | – |
+| Projekt | – | `.devin/config.json`, `.devin/rules/20-`, `2N-`, `.devin/skills/prj-*`, `project-overlay/**`, projekteigene Packs |
 
 Weitere Aufrufe:
 

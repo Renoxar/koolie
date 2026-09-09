@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.2.0` |
+| Version | `0.4.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `devin-core-framework/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -33,7 +33,7 @@ Deshalb bringt der Kern diese Bestandteile in `devin-core-framework/root-templat
 | `project-overlay/` einschließlich `forbidden-terms.txt` | 4 |
 | `.devin/rules/20-project-overlay.md` (plus optionale `2N-overlay-*`) | 4 |
 | die ausgefüllten Werte in `.devin/config.json` | 3/4 |
-| aktivierte Pack-Laufzeitfassungen (`.devin/rules/30-*`, `40-*`) | 5/6 |
+| die **Entscheidung**, welche Packs aktiviert sind (Overlay Abschnitt 1) | 5/6 |
 | `prj-*`-Skills unter `.devin/skills/` | 4 |
 
 Alles andere ist Core. Ein Projektwechsel tauscht nur die Overlay-Bestandteile; der Core
@@ -70,13 +70,25 @@ bleibt unberührt (P10, Baum 6).
 4. **Overlay ausfüllen:** `project-overlay/OVERLAY.md` vollständig; Laufzeitfassung
    `.devin/rules/20-project-overlay.md` synchron halten; Werte in `.devin/config.json`
    eintragen, ohne die Kernregeln im Block `_core_rules_integrity` zu entfernen; Manifest und
-   Dokumente einpflegen; Packs aktivieren.
+   Dokumente einpflegen.
 
-5. **Projektlokale Härtung:** `project-overlay/forbidden-terms.txt` mit den realen Projekt-,
+5. **Packs aktivieren.** Kein Pack ist nach der Installation aktiv — auch nicht das
+   Referenzpack `software-development`. Je benötigtem Pack: Rolle im Overlay Abschnitt 1
+   aufführen, dann Laufzeitfassung und – falls vorhanden – Skills kopieren:
+
+   ```bash
+   P=devin-core-framework/framework/role-packs/software-development
+   cp $P/runtime/30-role-software-development.md .devin/rules/
+   ```
+
+   Einmal aktiviert, hält `install.py --update` diese Bestandteile auf dem Stand des
+   Releases; `--check` meldet lokale Abweichungen.
+
+6. **Projektlokale Härtung:** `project-overlay/forbidden-terms.txt` mit den realen Projekt-,
    Kunden-, Behörden-, Produkt- und Systemnamen füllen (bleibt projektlokal); gegebenenfalls
    zusätzliche `deny`-Pfade in `.devin/config.json`.
 
-6. **Validieren und testen:**
+7. **Validieren und testen:**
 
    ```bash
    python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay
@@ -89,13 +101,13 @@ bleibt unberührt (P10, Baum 6).
    ausführen und das Übungsrepository für das Onboarding erzeugen
    (`devin-core-framework/onboarding/exercises/README.md`).
 
-7. **Organisation im Projekt:** Rollen zuordnen (außerhalb des Repos), Eskalationskanäle,
+8. **Organisation im Projekt:** Rollen zuordnen (außerhalb des Repos), Eskalationskanäle,
    Ablageorte für Berichte und Pläne, Feedbackkanal.
 
-8. **Aktivieren:** Checkliste 10 abschließen, Overlay-Status `aktiv`, Meldung an den Framework
+9. **Overlay aktivieren:** Checkliste 10 abschließen, Overlay-Status `aktiv`, Meldung an den Framework
    Owner (Bestandsliste).
 
-9. **Menschen befähigen:** Onboarding vor produktiver Nutzung; Pilotparameter setzen, wenn das
+10. **Menschen befähigen:** Onboarding vor produktiver Nutzung; Pilotparameter setzen, wenn das
    Projekt als Pilot läuft.
 
 ## 3. Aktualisierung auf ein neues Framework-Release
@@ -112,9 +124,12 @@ bleibt unberührt (P10, Baum 6).
 
    `--update` überschreibt die Core-Dateien im Wurzelverzeichnis (`AGENTS.md`,
    `.devin/rules/00-`, `10-`, `15-`, die `*-TEMPLATE`-Vorlagen, `.devin/skills/fw-*`,
-   `.devin/agents/`, `hooks.v1.json`) und lässt die Projektbestandteile unberührt.
-   `.devin/config.json` wird bewusst nicht angefasst, weil sie Projektwerte enthält — prüfe
-   nach dem Wechsel, ob die Kernregeln noch vollständig sind.
+   `.devin/agents/`, `hooks.v1.json`) **und die Bestandteile aktivierter Packs**, deren
+   Quelle im Kern liegt (`.devin/rules/30-`, `40-` sowie `.devin/skills/role-*`, `tech-*`).
+   Unberührt bleiben die Projektbestandteile: `.devin/config.json`, das Overlay,
+   `prj-*`-Skills und projekteigene Packs. `.devin/config.json` wird bewusst nicht
+   angefasst, weil sie Projektwerte enthält — prüfe nach dem Wechsel, ob die Kernregeln
+   noch vollständig sind.
 
 3. Overlay-Bestandteile gegen die Migrationshinweise prüfen (neue Pflichtfelder, geänderte
    Platzhalter, deprecatete Skills).
