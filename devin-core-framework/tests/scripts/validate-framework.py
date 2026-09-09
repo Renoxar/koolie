@@ -12,7 +12,7 @@ Prüft (statisch, ohne Devin):
   4. .devin/rules/*.md: Frontmatter (description, trigger, globs), Zeichenlimits
   5. .devin/skills/*/: Pflichtdateien, Frontmatter, Metadatenblock, Pflichtabschnitte,
      Trigger-Regel (schreibende Skills nur user-getriggert), Beispiele und Testfälle
-  6. Verbotene Inhalte: Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen,
+  6. Verbotene Inhalte (ohne erzeugte Lockdateien): Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen,
      URLs außerhalb der Quellen-Allowlist, projektspezifische Sperrbegriffe (project-overlay/forbidden-terms.txt)
   7. Platzhalter: nur registrierte Platzhalter (devin-core-framework/docs/PLACEHOLDER_REGISTRY.md)
   8. Overlay-Manifest: YAML-Schema und Aufzählungswerte
@@ -45,6 +45,11 @@ WARNINGS: list[str] = []
 
 TEXT_EXT = {".md", ".json", ".yaml", ".yml", ".txt", ".py", ".template", ".example"}
 SKIP_DIRS = {".git", "build", "node_modules", "__pycache__", "target", "dist", ".venv"}
+# Lockdateien sind erzeugte Abhaengigkeitsmetadaten. Sie enthalten naturgemaess fremde
+# E-Mail-Adressen und Registry-Adressen und werden weder vom Framework noch vom Projekt
+# redaktionell gepflegt - eine Inhaltspruefung dagegen erzeugt nur Rauschen.
+SKIP_FILES = {"package-lock.json", "yarn.lock", "pnpm-lock.yaml", "npm-shrinkwrap.json",
+              "composer.lock", "Cargo.lock", "poetry.lock", "go.sum", "Gemfile.lock"}
 
 REQUIRED_PATHS = [
     "AGENTS.md", "README.md", "devin-core-framework/CHANGELOG.md", "devin-core-framework/VERSION", "devin-core-framework/OWNERS.md",
@@ -310,6 +315,8 @@ def check_content(root: str) -> None:
     for path in iter_text_files(root):
         rel = os.path.relpath(path, root)
         if rel.startswith("devin-core-framework/tests/scripts/") or rel == "project-overlay/forbidden-terms.txt":
+            continue
+        if os.path.basename(path) in SKIP_FILES:
             continue
         text = read(path)
         for label, pat in SECRET_PATTERNS:

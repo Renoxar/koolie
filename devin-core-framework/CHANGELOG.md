@@ -32,6 +32,9 @@ Die Ebenenhierarchie, alle Regeln, Kontextklassen, Kontrollstufen, Betriebsmodi,
 
 Der Aufwand liegt bei Schritt 4 und ist proportional zur Zahl eigener Framework-Verweise; alles Übrige sind zwei Befehle.
 
+### Behoben
+- `validate-framework.py` überspringt erzeugte Lockdateien (`package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Cargo.lock`, `poetry.lock`, `go.sum` und weitere). Sie enthalten naturgemäß fremde E-Mail-Adressen und Registry-Adressen und werden weder vom Framework noch vom Projekt redaktionell gepflegt; die Inhaltsprüfung dagegen erzeugte einen Fehler und mehrere hundert Warnungen, sobald in einem Projekt `npm install` gelaufen war. Gefunden bei der Erprobung am Testprojekt Bibliotheksverwaltung.
+
 ### Bekannte Einschränkungen
 - Unverändert gegenüber 0.1.0: Kein Mechanismus wurde bislang in einer Zielinstallation von Devin Desktop ausgeführt (Validierung in Roadmap-AP2); die verify-Punkte bleiben offen.
 - Im Framework-Repository sind `AGENTS.md`, `.devin/` und `project-overlay/` Erzeugnisse und nicht versioniert. Nach dem Klonen ist `python devin-core-framework/install.py` erforderlich, bevor der Validator läuft. In einem Projekt gilt das nicht — dort sind diese Pfade versionierter Projektbestand.
