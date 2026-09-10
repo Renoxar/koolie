@@ -2,6 +2,37 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.9.0] – 2026-09-10
+
+### Behoben
+- **Das Hauptdokument ließ sich aus dem Repository nicht bauen (`CR-2026-011`, Decision Record D-21).** 28 der 91 Einbettungen zeigten nicht auf den Kern, sondern auf die installierte Laufzeitschicht dieses Repositorys – Pfade, die in der `.gitignore` stehen. Der Bau gelang nur, weil zufällig eine `devin-desktop`-Installation im Arbeitsverzeichnis lag; in einem frischen Auscheckstand brach `assemble.py` mit „eingebettete Datei fehlt“ ab.
+
+  Ein Dokument, das nur auf einem einzelnen Arbeitsplatz entsteht, ist kein Lieferbestandteil. Zugleich zeigte es die Darstellung *eines* Clients, ohne das zu sagen.
+
+### Geändert
+- **`assemble.py` legt beim Bau eine Referenzinstallation an.** Ein Einbettungspfad mit Laufzeit-Platzhalter (`<RUNTIME_DIR>`, `<SKILLS_DIR>`, `<PERMISSIONS_FILE>`, …) meint die Laufzeitschicht und wird aus einer frisch erzeugten Installation in einem temporären Verzeichnis gelesen; jeder andere Pfad meint das Repository. Die Regel ist am Pfad ablesbar und braucht keine zweite Angabe.
+
+  Jede so gelesene Datei trägt die Angabe, aus welchem Client Pack sie stammt – das gehört an die Datei, weil sie bei einem anderen Pack anders aussieht. Neu: `--client`, um das Dokument für jedes Pack zu bauen. Zeigen zwei Platzhalter auf dieselbe Datei (bei einem Client ohne eigene Hook-Datei etwa `<HOOKS_FILE>` und `<PERMISSIONS_FILE>`), bekommt die zweite Stelle einen Verweis statt eines zweiten Abdrucks.
+
+- **Neues Kapitel 7a „Client Packs: die Abbildungsschicht".** Der inhaltliche Kern der Releases 0.5.0 bis 0.8.0 kam im Dokument nicht vor. Das Kapitel bettet die Regeln der Schicht und die Fähigkeitsmatrix des zweiten Packs ein, statt sie abzuschreiben. Die Nummerierung bleibt stabil – `07a` sortiert zwischen `07` und `08`, kein bestehender Verweis bricht.
+
+- **Kapitel 15 und 31 verlieren ihre handgepflegten Tabellen.** Kapitel 15 führte von Hand eine Mechanismentabelle mit Belegstatus – genau das, was seit 0.5.0 Pfadabbildung und Fähigkeitsmatrix eines Client Packs leisten; es bettet sie jetzt ein. Kapitel 31 trug ein Inventar auf dem Stand von 0.2.0, das beschrieb, was das Dateisystem ohnehin weiß; an seine Stelle treten eine knappe Größenordnungstabelle und – neu als Anhang 31.2 – das eingebettete **Laufzeitglossar**.
+
+- **Sechs Kapitel neu geschrieben** (Titelblatt, Executive Summary, Geltungsbereich, Glossar, Architektur, Abschluss) und **Begriffe im Langlauf nachgezogen**: 28 Ersetzungen in 19 weiteren Kapiteln. Das Dokument verwendet `devin-desktop` als durchgehendes Beispiel und benennt es als solches.
+
+### Nachweise
+- **Bau aus einem frischen Auscheckstand ohne jede Installation: gelingt**, für beide Client Packs geprüft. Vorher: Abbruch.
+- **Einclient-Nennungen in der Prosa von 173 auf 50 gesunken**, betroffene Kapitel von 25 auf 14. Die verbleibenden benennen einen realen Client, wo einer gemeint ist: Quellenliste der Produktdokumentation (19), clientspezifische Annahme A-05 und Herstellernennungen (7), Glossareinträge, die den Client *definieren* (6), sowie das durchgehende Beispiel.
+- Validator, `FW-KO-04` und `install.py --check`: 0 Fehler. Installationsumfang unverändert: 80 / 79 Dateien.
+
+### Migrationshinweise für Overlays
+Keine. Kein installiertes Artefakt ändert sich; betroffen sind ausschließlich Dokumentation und Assemblierungswerkzeug.
+
+### Bekannte Einschränkungen
+- Die Word-Fassung (`build-docx.py`) wurde seit dem Umbau nicht erzeugt – `pandoc` und `mmdc` stehen in dieser Umgebung nicht zur Verfügung. Sie folgt dem Markdown und braucht keine eigene Anpassung, ist aber vor der nächsten Auslieferung einmal zu bauen.
+- Kapitel 32 bleibt seiner Anlage nach eine Selbstprüfung der Erstfassung. Sie ist fortgeschrieben; ob sie als Abschlussteil erhalten bleibt oder in einen Release-Bericht überführt wird, ist eigene Arbeit.
+- Die Einstufungen der Fähigkeitsmatrizen bleiben unbelegt (Roadmap AP2, weiterhin der einzige P1).
+
 ## [0.8.0] – 2026-09-10
 
 ### Geändert

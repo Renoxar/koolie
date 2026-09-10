@@ -21,56 +21,42 @@ Nachfolgend die normativen Skill-Dateien (SKILL.md) aller zwölf Skills. Die Beg
 
 ## 20.1 FW-SK-001 `fw-repo-analyze`
 
-{{EMBED:.devin/skills/fw-repo-analyze/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-repo-analyze/SKILL.md}}
 ## 20.2 FW-SK-002 `fw-code-explain`
 
-{{EMBED:.devin/skills/fw-code-explain/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-code-explain/SKILL.md}}
 ## 20.3 FW-SK-003 `fw-change-analyze`
 
-{{EMBED:.devin/skills/fw-change-analyze/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-change-analyze/SKILL.md}}
 ## 20.4 FW-SK-004 `fw-plan`
 
-{{EMBED:.devin/skills/fw-plan/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-plan/SKILL.md}}
 ## 20.5 FW-SK-005 `fw-change-small`
 
-{{EMBED:.devin/skills/fw-change-small/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-change-small/SKILL.md}}
 ## 20.6 FW-SK-006 `fw-tests`
 
-{{EMBED:.devin/skills/fw-tests/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-tests/SKILL.md}}
 ## 20.7 FW-SK-007 `fw-refactor`
 
-{{EMBED:.devin/skills/fw-refactor/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-refactor/SKILL.md}}
 ## 20.8 FW-SK-008 `fw-error-analyze`
 
-{{EMBED:.devin/skills/fw-error-analyze/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-error-analyze/SKILL.md}}
 ## 20.9 FW-SK-009 `fw-bugfix-prepare`
 
-{{EMBED:.devin/skills/fw-bugfix-prepare/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-bugfix-prepare/SKILL.md}}
 ## 20.10 FW-SK-010 `fw-review-support`
 
-{{EMBED:.devin/skills/fw-review-support/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-review-support/SKILL.md}}
 ## 20.11 FW-SK-011 `fw-docs-update`
 
-{{EMBED:.devin/skills/fw-docs-update/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-docs-update/SKILL.md}}
 ## 20.12 FW-SK-012 `fw-mr-description`
 
-{{EMBED:.devin/skills/fw-mr-description/SKILL.md}}
-
+{{EMBED:<SKILLS_DIR>/fw-mr-description/SKILL.md}}
 ## 20.13 Begleitdateien am Beispiel FW-SK-001 (vollständiger Satz)
 
-{{EMBED:.devin/skills/fw-repo-analyze/EXAMPLES.md}}
-
-{{EMBED:.devin/skills/fw-repo-analyze/TESTS.md}}
-
-{{EMBED:.devin/skills/fw-repo-analyze/CHANGELOG.md}}
+{{EMBED:<SKILLS_DIR>/fw-repo-analyze/EXAMPLES.md}}
+{{EMBED:<SKILLS_DIR>/fw-repo-analyze/TESTS.md}}
+{{EMBED:<SKILLS_DIR>/fw-repo-analyze/CHANGELOG.md}}

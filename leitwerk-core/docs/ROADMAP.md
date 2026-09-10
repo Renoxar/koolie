@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.8.0 (2026-09-10)
+## Stand nach Release 0.9.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.8.0 gebracht haben
+### Was 0.5.0 bis 0.9.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -26,6 +26,12 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Berechtigungen und Hooks | letzte Doppelpflege beseitigt, als **Semantikabbildung** statt Formtransformation; drei Zusicherungen werden erzwungen statt zugesagt | D-18, `CR-2026-008`, `clientmap.py` |
 | Name | Das Framework heißt **Leitwerk**, das Kernverzeichnis `leitwerk-core/`; der Name folgt damit dem Inhalt | D-19, `CR-2026-009` |
 | Client Pack minimal | Vier Dateien statt achtzig; `seed_paths` leer, die gesamte Saat kommt aus dem Kern | D-20, `CR-2026-010` |
+| Hauptdokument | Baut aus einem frischen Auscheckstand; Laufzeitdateien aus einer Referenzinstallation mit Herkunftsangabe; Abbildungsschicht eingearbeitet | D-21, `CR-2026-011` |
+
+Mit 0.9.0 ist das Hauptdokument wieder ein Lieferbestandteil: Es baut aus einem frischen
+Auscheckstand, weist bei jeder Laufzeitdatei aus, aus welchem Client Pack sie stammt, und
+kennt die Abbildungsschicht. Vorher gelang der Bau nur, wenn zufällig eine Installation im
+Arbeitsverzeichnis lag.
 
 Mit 0.8.0 enthält ein Client Pack nur noch, was zwei Clients tatsächlich unterscheidet: die
 Pfadabbildung, die Semantikabbildung, die Fähigkeitsmatrix und zwei erklärende READMEs. Jede
@@ -35,7 +41,7 @@ Mit 0.7.0 ist der letzte P3-Punkt der Liste erledigt: Der Name folgt dem Inhalt.
 Umbenennung war seit 0.5.0 vorgesehen und wurde bewusst zurückgestellt, bis `FW-KO-04` sie
 absichern konnte – die Prüfung meldete gegen beide Installationen null Fehler.
 
-Ein Client Pack enthält jetzt fünf Dateien statt achtzig. Mit 0.6.0 ist das Verschärfungsprinzip
+Mit 0.6.0 ist das Verschärfungsprinzip
 an der Stelle, an der die Kernzusagen B1 bis B6 hängen, eine geprüfte Eigenschaft: Eine Regel,
 die ein Client nicht abbilden kann, lässt die Installation scheitern, statt stillschweigend zu
 entfallen – und der Validator gleicht die installierte Berechtigungsdatei gegen die Kernquelle
@@ -62,7 +68,7 @@ schreibgeschützt – gerade die Skripte, die die Schutzzusagen durchsetzen. Die
 **P2 – Testkatalog ausführen.** 34 von 35 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
 Die Ablage steht (`tests/protocols/`), das Format ist am ersten Protokoll ablesbar.
 
-**P2 – Übungsrepository auf 0.8.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
+**P2 – Übungsrepository auf 0.9.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
 simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Damit wäre zugleich Kriterium 5 von
 D-11 (Übernahme in ein zweites Projekt) belegt.
 
@@ -70,11 +76,9 @@ D-11 (Übernahme in ein zweites Projekt) belegt.
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
 steht. D-02 ist bereits fortgeschrieben.
 
-**P2 – Hauptdokument auf den Stand des Repositorys bringen.** Der Fließtext der Kapitel 1
-bis 32 unter `build/doc/` steht auf 0.1.0 und ist aus der Sicht eines einzelnen KI-Clients
-geschrieben; Client Packs, Abbildungsschicht und Fähigkeitsmatrix fehlen dort vollständig.
-Das Titelblatt weist diesen Stand seit 0.7.0 ausdrücklich aus – das macht die Lücke sichtbar,
-schließt sie aber nicht.
+**P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
+Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
+fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
 
 **P3 – Modulstatus heben.** Alle Module stehen auf `entwurf`; Kriterium 3 von D-11.
 
