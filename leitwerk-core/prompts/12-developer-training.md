@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-012` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -12,7 +12,7 @@
 
 ## 1. Zweck
 
-Die Vorlage macht Devin zum geduldigen Erklärwerkzeug im Onboarding: Ein technisches Lernziel wird anhand des realen Projektcodes in aufeinander aufbauenden Schritten erarbeitet – mit Fundstellen, Verständnisfragen zur Selbstkontrolle und klar getrennten „beobachtet/geschlossen"-Aussagen. Sie ersetzt weder die Mentorin oder den Mentor noch das Onboarding-Programm (`leitwerk-core/onboarding/GUIDE.md`); sie bereitet Gespräche vor und vertieft Module. Devin bewertet dabei niemals Personen oder Lernfortschritte (V7) – die Verständnisfragen dienen ausschließlich der Selbstkontrolle der oder des Lernenden.
+Die Vorlage macht der KI-Client zum geduldigen Erklärwerkzeug im Onboarding: Ein technisches Lernziel wird anhand des realen Projektcodes in aufeinander aufbauenden Schritten erarbeitet – mit Fundstellen, Verständnisfragen zur Selbstkontrolle und klar getrennten „beobachtet/geschlossen"-Aussagen. Sie ersetzt weder die Mentorin oder den Mentor noch das Onboarding-Programm (`leitwerk-core/onboarding/GUIDE.md`); sie bereitet Gespräche vor und vertieft Module. Der KI-Client bewertet dabei niemals Personen oder Lernfortschritte (V7) – die Verständnisfragen dienen ausschließlich der Selbstkontrolle der oder des Lernenden.
 
 (Erläuterung) Der Unterschied zu FW-PR-001: Dort entsteht ein Überblicksbericht; hier eine dialogische Erklärstrecke zu einem Lernziel („Wie funktioniert die Anfrageverarbeitung von Eingang bis Persistenz?").
 
@@ -34,7 +34,7 @@ Die Vorlage macht Devin zum geduldigen Erklärwerkzeug im Onboarding: Ein techni
 |---|---|---|---|
 | `{lernziel}` | MUSS | K1 | Ein konkretes Lernziel, zum Beispiel „Ablauf einer Anfrage von <Einstiegspunkt> bis zur Persistenz verstehen" |
 | `{vorwissen}` | SOLL | K1 | Selbsteinschätzung der oder des Lernenden (Technologie ja, Projekt nein und so weiter) – bestimmt Tiefe und Tempo |
-| `{startpunkt}` | SOLL | K1 | Datei oder Symbol als Einstieg; ohne Angabe schlägt Devin einen belegten Einstieg vor |
+| `{startpunkt}` | SOLL | K1 | Datei oder Symbol als Einstieg; ohne Angabe schlägt der KI-Client einen belegten Einstieg vor |
 | `{schrittzahl}` | KANN | K1 | Gewünschte Anzahl Etappen (Standard: 3 bis 5) |
 | `{kontrollstufe}` | MUSS | K1 | in der Regel niedrig (Preflight, rein lesend) |
 | `{faktor}` | MUSS | K1 | Auslösender Risikofaktor R1–R13 |
@@ -84,7 +84,7 @@ Regeln:
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
 | „Erkläre mir das ganze System" | Oberflächliche Tour ohne Lerneffekt | Ein Lernziel je Strecke; Etappen bestätigen lassen |
-| Devin nach „Warum wurde das so entschieden?" fragen | Plausible, erfundene Begründungen | Historie/Absichten zur Mentorenliste; nur Belegtes erklären lassen |
+| Der KI-Client nach „Warum wurde das so entschieden?" fragen | Plausible, erfundene Begründungen | Historie/Absichten zur Mentorenliste; nur Belegtes erklären lassen |
 | Verständnisfragen als Prüfung des Teams verwenden | Personenbewertung (V7); Vertrauensschaden | Selbstkontrolle der lernenden Person; keine Weitergabe von „Ergebnissen" |
 | Lernstrecke mit echten Tickets oder Falldaten anreichern | K2/K3-Risiko im Lernkontext | Synthetische Übungen aus `leitwerk-core/onboarding/exercises/` |
-| Devin als Ersatz für das Mentorengespräch einsetzen | Fehlende Projektkultur und implizites Wissen | Strecke als Vorbereitung; Fragenliste ins Gespräch mitnehmen |
+| Der KI-Client als Ersatz für das Mentorengespräch einsetzen | Fehlende Projektkultur und implizites Wissen | Strecke als Vorbereitung; Fragenliste ins Gespräch mitnehmen |

@@ -20,7 +20,7 @@ triggers:
 <!-- ==========================================================================================
      SKILL-TEMPLATE (Framework Core 08 – Skill-Standard) – AUSFÜLLHINWEISE
      - Dieser Kommentarblock und alle <...>-Platzhalter werden beim Ausfüllen ersetzt oder entfernt.
-     - Frontmatter: nur in der Devin-Dokumentation belegte Felder (name, description, argument-hint,
+     - Frontmatter: nur in der Clientdokumentation belegte Felder (name, description, argument-hint,
        allowed-tools, permissions, triggers; optional model, subagent, agent) [DOK]. Der Verzeichnisname
        ist der Aufrufname /<skill-name> [DOK]. Exakte Syntax von permissions im Skill:
        <VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>.
@@ -37,7 +37,7 @@ triggers:
 |---|---|
 | ID | `<FW-SK-NNN / PRJ-SK-NNN / RP-<PACK>-SK-NNN / TP-<PACK>-SK-NNN>` |
 | Name | `<skill-name>` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER / Modul-Owner / APPROVAL_ROLE>` |
 | Betriebsmodus | `<M1 Read-only Analysis / M2 Guided Planning / M3 Controlled Modification / M4 Test and Validation / M5 Documentation Support>` |
@@ -50,7 +50,7 @@ triggers:
 
 - **Zweck:** `<Ein Absatz: Welches Problem löst der Skill, welches Ergebnis liefert er.>`
 - **Zielgruppe:** `<Rollen, z. B. Entwicklerinnen und Entwickler, Reviewer>`
-- **Trigger:** `<Situationen, in denen der Skill verwendet wird. Aufruf: /<skill-name> <argumente>. Bei triggers: [user, model] zusätzlich: Devin darf den Skill selbst vorschlagen, wenn ...>`
+- **Trigger:** `<Situationen, in denen der Skill verwendet wird. Aufruf: /<skill-name> <argumente>. Bei triggers: [user, model] zusätzlich: Der KI-Client darf den Skill selbst vorschlagen, wenn ...>`
 - **Nicht verwenden, wenn:** `<Abgrenzung zu anderen Skills>`
 
 ## 2. Vorbedingungen, Eingaben und Kontext

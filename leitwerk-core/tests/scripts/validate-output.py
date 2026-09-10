@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate-output.py – Prüft eine Devin-Ausgabe gegen das Ausgabeformat eines Skills.
+validate-output.py – Prüft eine Ausgabe des KI-Clients gegen das Ausgabeformat eines Skills.
 
 Aufruf:
     python3 leitwerk-core/tests/scripts/validate-output.py --skill fw-repo-analyze [--file ausgabe.md]
@@ -10,7 +10,7 @@ Prüft:
   1. Pflichtabschnitte: alle '##'/'###'-Überschriften aus dem Markdown-Gerüst in Abschnitt 5
      ("## 5. Ausgabeformat") der SKILL.md des Skills kommen in der Ausgabe vor
      (Vergleich ohne Platzhalterteile in spitzen/geschweiften Klammern).
-  2. Ergebnisbericht: der Abschnitt "Devin-Ergebnisbericht" ist enthalten, sofern die SKILL.md
+  2. Ergebnisbericht: der Abschnitt "Ergebnisbericht" ist enthalten, sofern die SKILL.md
      ihn im letzten Arbeitsschritt fordert.
   3. Verbotene Inhalte: Secret-Muster, E-Mail-Adressen (außer example.*), IP-Adressen,
      interne Hostnamen – gleiche Muster wie validate-framework.py.
@@ -74,8 +74,8 @@ def main() -> int:
         if not any(req in got or got in req for got in norm_output_headings if got):
             findings.append(f"Pflichtabschnitt fehlt: '{req}'")
 
-    if "Ergebnisbericht" in skill_md and "Devin-Ergebnisbericht" not in output:
-        findings.append("Abschnitt 'Devin-Ergebnisbericht' fehlt")
+    if "Ergebnisbericht" in skill_md and "Ergebnisbericht" not in output:
+        findings.append("Abschnitt 'Ergebnisbericht' fehlt")
 
     for label, pat in SECRET_PATTERNS:
         if pat.search(output):

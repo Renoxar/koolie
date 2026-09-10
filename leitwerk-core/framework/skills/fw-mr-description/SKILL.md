@@ -29,7 +29,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
@@ -42,7 +42,7 @@ triggers:
 
 - **Zweck:** Erstellt den Textentwurf einer Merge-Request-Beschreibung aus dem lokalen Änderungssatz (`git status`, `git diff`, `git log`, `git show` – nur lesend) und den Ergebnisberichten der Umsetzungssitzungen: Zusammenfassung, Motivation und Ticket-Bezug (Kennung als Platzhalter), Änderungen je Bereich mit Dateibezug, Testnachweis (ausgeführte Befehle und unveränderte Ergebnisse aus den Ergebnisberichten), Risiken und Restrisiken, Hinweise für Reviewerinnen und Reviewer, Checklistenbezug sowie den KI-Nutzungsvermerk nach `leitwerk-core/templates/MR_AI_DISCLOSURE.md` (Kurzform bei Stufe niedrig, Langform ab Stufe mittel). Ist `<MR_TEMPLATE_PATH>` gesetzt, werden Struktur und Pflichtabschnitte der Projektvorlage übernommen. Der Text ist Sitzungsausgabe; Merge Request, Push und Merge führt der Mensch aus (V2).
 - **Zielgruppe:** Bearbeiterinnen und Bearbeiter (Schritt 14 des Standardarbeitsablaufs); Reviewerinnen und Reviewer, die den Nutzungsvermerk vor Beginn des Reviews erhalten (`leitwerk-core/framework/core/07-review-rules.md` Abschnitt 1).
-- **Trigger:** Der Änderungssatz ist lokal fertiggestellt, das Selbstreview nach `leitwerk-core/checklists/04-review-ai-code.md` ist durchgeführt und der Merge Request soll angelegt werden. Aufruf: `/fw-mr-description <diff-basis-oder-dateiliste> [ergebnisbericht-oder-ticketreferenz]`. Kein Aufruf auf Vorschlag von Devin, da der Skill Befehle ausführt.
+- **Trigger:** Der Änderungssatz ist lokal fertiggestellt, das Selbstreview nach `leitwerk-core/checklists/04-review-ai-code.md` ist durchgeführt und der Merge Request soll angelegt werden. Aufruf: `/fw-mr-description <diff-basis-oder-dateiliste> [ergebnisbericht-oder-ticketreferenz]`. Kein Aufruf auf Vorschlag vom KI-Client, da der Skill Befehle ausführt.
 - **Nicht verwenden, wenn:** der Änderungssatz geprüft werden soll (`fw-review-support`); Dokumentation im Repository aktualisiert werden soll (`fw-docs-update`); eine Freigabe-, Merge- oder Abnahmeentscheidung erwartet wird (V1, V2 – nicht delegierbar); Commit-Nachrichten für noch nicht committete Schritte gesucht werden (Vorschlag des jeweiligen Umsetzungs-Skills).
 
 ## 2. Vorbedingungen, Eingaben und Kontext

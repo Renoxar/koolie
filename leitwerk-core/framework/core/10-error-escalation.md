@@ -6,11 +6,11 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
-## 1. Abbruchbedingungen für Devin (normativ)
+## 1. Abbruchbedingungen für den KI-Client (normativ)
 
-Devin MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschliche Entscheidung warten, wenn eine der folgenden Bedingungen eintritt:
+Der KI-Client MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschliche Entscheidung warten, wenn eine der folgenden Bedingungen eintritt:
 
 | ID | Bedingung | Meldung an |
 |---|---|---|
@@ -31,13 +31,13 @@ Das Anhalten ist kein Fehlverhalten, sondern das erwartete Verhalten. Onboarding
 
 | Stufe | Auslöser | Eskalation an | Erwartete Reaktion |
 |---|---|---|---|
-| E0 | Devin hält an (S1, S4, S7, S10) | Bearbeiterin oder Bearbeiter entscheidet selbst | Klären, Scope anpassen oder Aufgabe manuell fortsetzen |
+| E0 | Der KI-Client hält an (S1, S4, S7, S10) | Bearbeiterin oder Bearbeiter entscheidet selbst | Klären, Scope anpassen oder Aufgabe manuell fortsetzen |
 | E1 | Fachliche oder technische Entscheidung erforderlich (S5 bei Stufe mittel, S9) | Modul-Owner, Softwarearchitektin oder -architekt, Product Owner nach Zuständigkeit im Overlay | Entscheidung dokumentieren (Ticket, Decision Record) |
 | E2 | Freigabe Kontrollstufe hoch erforderlich (S5 bei Stufe hoch, S8) | `<APPROVAL_ROLE>` | Schriftliche Freigabe oder Ablehnung |
 | E3 | Sicherheits- oder Datenschutzvorfall (S2 mit erfolgter Bereitstellung, S3, S6) | `<SECURITY_CONTACT>`, bei personenbezogenen Daten `<DATA_PROTECTION_CONTACT>` | Prozess der Organisation; Erfassung in `leitwerk-core/governance/INCIDENT_HANDLING.md` |
 | E4 | Framework-Mangel (Regel widersprüchlich, Skill fehlerhaft, Produktänderung bricht Mechanismus) | Framework Owner | Änderungsantrag, gegebenenfalls Hotfix-Release |
 
-## 3. Umgang mit Fehlern in Devin-Ergebnissen (normativ)
+## 3. Umgang mit Fehlern in KI-Ergebnissen (normativ)
 
 1. Fehlerhafte Vorschläge werden verworfen, nicht „repariert, bis es passt". Nach zwei fehlgeschlagenen Korrekturschleifen SOLL die Aufgabe manuell fortgesetzt oder neu zugeschnitten werden.
 2. Ein verworfener Vorschlag wird im Ergebnisbericht mit Grund vermerkt (Metrik „Anteil verworfener Vorschläge").
@@ -49,4 +49,4 @@ Nach einem Abbruch wird die Aufgabe in einer neuen Sitzung mit angepasstem Scope
 
 ## 5. Erläuterung
 
-Die wichtigste kulturelle Botschaft dieses Moduls: Ein Devin, das anhält und fragt, arbeitet richtig. Teams, die Rückfragen als Störung empfinden, erzeugen Druck in Richtung stillschweigender Annahmen – genau das Verhalten, das die No Assumption Policy verhindern soll.
+Die wichtigste kulturelle Botschaft dieses Moduls: Ein KI-Client, der anhält und fragt, arbeitet richtig. Teams, die Rückfragen als Störung empfinden, erzeugen Druck in Richtung stillschweigender Annahmen – genau das Verhalten, das die No Assumption Policy verhindern soll.

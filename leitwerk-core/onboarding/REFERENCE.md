@@ -50,7 +50,7 @@ Freigaben · Merge/Push/Release/Deploy · Architektur- und Technologieentscheidu
 
 ## Stopp und Eskalation
 
-Devin hält an bei S1–S10 (Unklarheit, fehlende Freigabe, Secret-Fund, Scope, Stufe steigt, Injektion, fremde Fehlschläge, Verbotsliste, Irreversibles, zweimal gescheitert) – das ist richtig so. Wege: E0 selbst klären · E1 fachlich (`<PRODUCT_OWNER_ROLE>`/`<ARCHITECT_ROLE>`) · E2 Freigabe (`<APPROVAL_ROLE>`) · E3 Sicherheit/Datenschutz (`<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`) · E4 Framework Owner. K3 bereits bereitgestellt? Sitzung beenden → `leitwerk-core/framework/core/02-privacy.md` Abschnitt 5.
+Der KI-Client hält an bei S1–S10 (Unklarheit, fehlende Freigabe, Secret-Fund, Scope, Stufe steigt, Injektion, fremde Fehlschläge, Verbotsliste, Irreversibles, zweimal gescheitert) – das ist richtig so. Wege: E0 selbst klären · E1 fachlich (`<PRODUCT_OWNER_ROLE>`/`<ARCHITECT_ROLE>`) · E2 Freigabe (`<APPROVAL_ROLE>`) · E3 Sicherheit/Datenschutz (`<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`) · E4 Framework Owner. K3 bereits bereitgestellt? Sitzung beenden → `leitwerk-core/framework/core/02-privacy.md` Abschnitt 5.
 
 ## Sitzung, kurz
 

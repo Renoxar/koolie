@@ -6,13 +6,13 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
 ## 1. Grundsätze (normativ)
 
 1. Ein Review prüft das Ergebnis, nicht die Entstehung: Für den Reviewer gelten dieselben Maßstäbe wie bei manuell erstelltem Code, ergänzt um die Prüfpunkte aus Abschnitt 2.
 2. Die Bearbeiterin oder der Bearbeiter ist die erste Reviewerin beziehungsweise der erste Reviewer (Selbstreview anhand `leitwerk-core/checklists/04-review-ai-code.md`) und DARF NICHT die einzige Prüfinstanz sein (Vier-Augen-Prinzip, sofern im Projekt vorgesehen; ab Kontrollstufe mittel verpflichtend).
-3. Devin KANN das Review unterstützen (Skill `fw-review-support`), aber ein Devin-Befund ersetzt keine menschliche Prüfung und eine Devin-„Freigabe" existiert nicht (V1).
+3. Der KI-Client KANN das Review unterstützen (Skill `fw-review-support`), aber ein KI-Befund ersetzt keine menschliche Prüfung und eine KI-„Freigabe" existiert nicht (V1).
 4. Reviewerinnen und Reviewer erhalten den KI-Nutzungsvermerk (Kontrollstufe, Modus, Skills, Kontext) vor Beginn des Reviews.
 
 ## 2. Zusätzliche Prüfpunkte für KI-generierte Änderungen (normativ)
@@ -43,7 +43,7 @@
 ## 4. Umgang mit Befunden (normativ)
 
 1. Befunde werden wie bei jedem Review im Merge Request dokumentiert.
-2. Systematische Befunde (dieselbe Auffälligkeit in mehreren Devin-Änderungen) werden als Feedback an den Framework Owner gemeldet (`leitwerk-core/governance/FEEDBACK_PROCESS.md`), da sie auf eine Regel- oder Skill-Lücke hindeuten.
+2. Systematische Befunde (dieselbe Auffälligkeit in mehreren der KI-Client-Änderungen) werden als Feedback an den Framework Owner gemeldet (`leitwerk-core/governance/FEEDBACK_PROCESS.md`), da sie auf eine Regel- oder Skill-Lücke hindeuten.
 3. Sicherheitsrelevante Befunde folgen dem Prozess der Organisation und werden zusätzlich in `leitwerk-core/governance/INCIDENT_HANDLING.md` erfasst, wenn sie auf ein Framework-Versagen zurückgehen.
 
 ## 5. Erläuterung

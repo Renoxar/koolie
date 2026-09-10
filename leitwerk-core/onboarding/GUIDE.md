@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-GUIDE` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
@@ -13,13 +13,13 @@
 
 Nach dem Onboarding kannst du:
 
-1. Aufgaben daraufhin beurteilen, ob und wie sie mit Devin bearbeitet werden dürfen (Delegationsverbote, Kontrollstufen, Betriebsmodi),
+1. Aufgaben daraufhin beurteilen, ob und wie sie mit dem KI-Client bearbeitet werden dürfen (Delegationsverbote, Kontrollstufen, Betriebsmodi),
 2. Kontext bewusst auswählen und einstufen (K0–K3) und K2-Inhalte korrekt bereinigen,
 3. den Standardarbeitsablauf mit Skills anwenden (Analyse → Plan → kleine Änderung → Test → Review),
-4. Devin-Ergebnisse belastbar prüfen (Fundstellen, Testaussagekraft, API-Existenz) und über den regulären Prozess einbringen,
+4. KI-Ergebnisse belastbar prüfen (Fundstellen, Testaussagekraft, API-Existenz) und über den regulären Prozess einbringen,
 5. Stopp-Situationen erkennen und richtig eskalieren.
 
-Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontrolliert bereitstellen, Ergebnisse belastbar prüfen** – nicht, möglichst viele Aufgaben zu delegieren. Wer eine Woche lang nur M1-Analysen fährt und dabei das Projekt versteht, nutzt Devin besser als jemand, der am ersten Tag ungeprüfte Diffs produziert.
+Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontrolliert bereitstellen, Ergebnisse belastbar prüfen** – nicht, möglichst viele Aufgaben zu delegieren. Wer eine Woche lang nur M1-Analysen fährt und dabei das Projekt versteht, nutzt der KI-Client besser als jemand, der am ersten Tag ungeprüfte Diffs produziert.
 
 ## Voraussetzungen
 
@@ -43,15 +43,15 @@ Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontro
 | 9 | Typische Fehlanwendungen | Katalog unten + Ü6 | Negativübungen bestanden |
 | 10 | Abschluss | `KNOWLEDGE_CHECK.md`, `COMPLETION_CRITERIA.md` | Freigabe dokumentiert |
 
-Reihenfolge ist verbindlich bis Modul 3; danach dürfen Module nach Absprache verschränkt werden. Bis zur Freigabe gilt: Devin nur in Begleitung oder auf dem Übungsrepository.
+Reihenfolge ist verbindlich bis Modul 3; danach dürfen Module nach Absprache verschränkt werden. Bis zur Freigabe gilt: Der KI-Client nur in Begleitung oder auf dem Übungsrepository.
 
 ## Modul 1 – Möglichkeiten und Grenzen
 
-Lies `leitwerk-core/framework/core/00-principles.md` (P1–P10) und `leitwerk-core/framework/core/09-risk-model.md` (Kontrollstufen, R1–R13, V1–V12). Besprich mit deiner Mentorin oder deinem Mentor drei reale, bereinigte Beispiele aus dem Projektalltag: Welche wäre delegierbar, in welchem Modus, auf welcher Stufe, welche nicht und warum. Kernbotschaften: Devin ist ein Werkzeug mit Werkzeuggrenzen – es halluziniert plausibel (nicht existierende APIs, erfundene Begründungen), es kennt keine Projektabsichten und es trägt keine Verantwortung. Deine Prüfung ist der Qualitätsmechanismus, nicht sein Selbstvertrauen.
+Lies `leitwerk-core/framework/core/00-principles.md` (P1–P10) und `leitwerk-core/framework/core/09-risk-model.md` (Kontrollstufen, R1–R13, V1–V12). Besprich mit deiner Mentorin oder deinem Mentor drei reale, bereinigte Beispiele aus dem Projektalltag: Welche wäre delegierbar, in welchem Modus, auf welcher Stufe, welche nicht und warum. Kernbotschaften: Der KI-Client ist ein Werkzeug mit Werkzeuggrenzen – es halluziniert plausibel (nicht existierende APIs, erfundene Begründungen), es kennt keine Projektabsichten und es trägt keine Verantwortung. Deine Prüfung ist der Qualitätsmechanismus, nicht sein Selbstvertrauen.
 
 ## Modul 2 – Datenschutz und Kontextauswahl
 
-Lies `leitwerk-core/framework/core/02-privacy.md` und arbeite `leitwerk-core/decision-trees/01-context-allowed.md` durch. Übe mit Ü5: zehn synthetische Schnipsel (Ticket mit Namen, Logauszug mit Adresse, `.env`-Fragment, Architekturauszug, Convention-Dokument …) korrekt einstufen und die K2-Bereinigung durchführen. Merksatz: **Ohne Einstufung gilt K3.** Alles, was du Devin gibst, verlässt deinen Arbeitsplatz (Anbieterverarbeitung) – die Klassen entscheiden, was das darf.
+Lies `leitwerk-core/framework/core/02-privacy.md` und arbeite `leitwerk-core/decision-trees/01-context-allowed.md` durch. Übe mit Ü5: zehn synthetische Schnipsel (Ticket mit Namen, Logauszug mit Adresse, `.env`-Fragment, Architekturauszug, Convention-Dokument …) korrekt einstufen und die K2-Bereinigung durchführen. Merksatz: **Ohne Einstufung gilt K3.** Alles, was du dem KI-Client gibst, verlässt deinen Arbeitsplatz (Anbieterverarbeitung) – die Klassen entscheiden, was das darf.
 
 ## Modul 3 – Sichere Arbeitsweise
 
@@ -67,7 +67,7 @@ Lies `leitwerk-core/framework/core/06-prompting-rules.md` und `leitwerk-core/pro
 
 ## Modul 6 – Analyse bestehender Komponenten
 
-Wende `fw-code-explain` und die Schulungsvorlage `leitwerk-core/prompts/12-developer-training.md` auf eine echte, von der Mentorin oder dem Mentor gewählte Komponente des Projekts an (nur lesend, K1). Ergebnis: Du kannst den Ablauf der Komponente mit Fundstellen erklären und hast eine Fragenliste für das Mentorengespräch – Historie und Absichten beantwortet das Team, nicht Devin.
+Wende `fw-code-explain` und die Schulungsvorlage `leitwerk-core/prompts/12-developer-training.md` auf eine echte, von der Mentorin oder dem Mentor gewählte Komponente des Projekts an (nur lesend, K1). Ergebnis: Du kannst den Ablauf der Komponente mit Fundstellen erklären und hast eine Fragenliste für das Mentorengespräch – Historie und Absichten beantwortet das Team, nicht der KI-Client.
 
 ## Modul 7 – Bearbeitung einer ungefährlichen Übungsaufgabe
 
@@ -87,8 +87,8 @@ Vertiefe `leitwerk-core/checklists/04-review-ai-code.md` und `05-testing.md` an 
 | Scope-Aufweichung („räum bei der Gelegenheit auf") | Effizienzillusion | Q1/P7: ein Ziel je Änderung; Aufräumen als eigene Aufgabe |
 | Sitzungs-Marathon über mehrere Aufgaben | Kontext „ist ja schon da" | Least Context: neue Aufgabe, neue Sitzung |
 | Bypass/Smart aktivieren | „geht schneller" | D-05: untersagt; Normal bestätigt in Sekunden |
-| Devin als Entscheidungsinstanz („was sollen wir nehmen?") | Autoritätsillusion | V3: Optionen ja, Entscheidung Mensch |
-| Vertrauen auf Devins Selbstauskunft („bist du sicher?") | Anthropomorphisierung | Belege verlangen (Tests, Fundstellen), nicht Beteuerungen |
+| Der KI-Client als Entscheidungsinstanz („was sollen wir nehmen?") | Autoritätsillusion | V3: Optionen ja, Entscheidung Mensch |
+| Vertrauen auf die Selbstauskunft des KI-Clients („bist du sicher?") | Anthropomorphisierung | Belege verlangen (Tests, Fundstellen), nicht Beteuerungen |
 
 Bearbeite abschließend Ü6 (Negativübungen: Injektionsköder, K3-Köder, Scope-Falle) – bestanden ist, wer die Fallen erkennt und korrekt reagiert.
 

@@ -1,11 +1,11 @@
 # Project Overlay – `<PROJECT_NAME>` (`<PROJECT_CODE>`)
 
-<!-- AUSFÜLLHINWEISE (vor Aktivierung entfernen oder belassen – sie sind für Devin unschädlich):
+<!-- AUSFÜLLHINWEISE (vor Aktivierung entfernen oder belassen – sie sind für den KI-Client unschädlich):
      - Diese Datei ist die einzige Stelle für projektspezifische Vorgaben (Ebene 4). Der Framework Core
        wird nicht verändert. Ein Projektwechsel tauscht ausschließlich das Verzeichnis project-overlay/
        und die Laufzeitfassung <RULES_DIR>/20-project-overlay.md aus.
      - Jedes Feld enthält einen Platzhalter <...> oder einen Ausfüllhinweis. Offene Entscheidungen bleiben
-       als <TBD: ...> stehen. Solange ein für Devin sicherheitsrelevantes Feld (Abschnitte 4, 5, 6, 13, 14, 15)
+       als <TBD: ...> stehen. Solange ein für den KI-Client sicherheitsrelevantes Feld (Abschnitte 4, 5, 6, 13, 14, 15)
        offen ist, bleibt der Overlay-Status "inaktiv".
      - Keine Secrets, keine Personen, keine internen Adressen, keine nicht öffentlichen Fachinformationen.
        Rollen statt Personen. Beispiele sind als synthetisch zu kennzeichnen.
@@ -26,23 +26,23 @@
 | Overlay Owner (Rolle) | `<APPROVAL_ROLE>` | Rolle, keine Person |
 | Fachlicher Kontext (abstrakt) | `<TBD: ein Satz ohne vertrauliche Details, z. B. „Fachanwendung zur Verwaltung von Anträgen">` | keine Fachinformationen mit Schutzbedarf |
 | Teamgröße / Rollen im Team | `<TBD: Anzahl und generische Rollen>` | Entwickler, Reviewer, PO, RE, Tester, QA, Architekt, DevOps, Projektleitung |
-| Freigabe der Devin-Nutzung durch Organisation | `<TBD: Referenz auf Freigabedokument oder „ausstehend">` | Voraussetzung für Status aktiv |
+| Freigabe der KI-Nutzung durch Organisation | `<TBD: Referenz auf Freigabedokument oder „ausstehend">` | Voraussetzung für Status aktiv |
 | Ergebnis Datenschutz- und Vertragsprüfung | `<TBD: Referenz oder „ausstehend">` | siehe `leitwerk-core/framework/core/02-privacy.md` Abschnitt 1 |
 | Planstufe / verfügbare Admin-Kontrollen | `<TBD: Teams / Enterprise; erzwungene Einstellungen>` | Klärungspunkt K-05 |
 | Nutzungsumfang | `<TBD: nur Devin Desktop lokal / zusätzlich Cloud-Sessions / CLI>` | Klärungspunkt K-04; Standard: nur Desktop lokal |
 | Betriebssysteme der Arbeitsplätze | `<TBD>` | relevant für Sandbox-Verfügbarkeit (K-11) |
 
-## 2. Technische Architektur (für Devin relevante Kurzfassung)
+## 2. Technische Architektur (für den KI-Client relevante Kurzfassung)
 
 | Feld | Wert | Ausfüllhinweis |
 |---|---|---|
 | Architekturstil | `<TBD: z. B. modularer Monolith, Services, Schichtenarchitektur>` | ein Begriff, keine Systemnamen |
 | Hauptkomponenten (logisch) | `<TBD: Liste logischer Komponenten mit Verzeichnis>` | keine Hostnamen, keine Umgebungen |
-| Schichtung und erlaubte Abhängigkeitsrichtungen | `<TBD: z. B. UI → Anwendung → Domäne → Infrastruktur>` | Devin prüft Vorschläge dagegen |
+| Schichtung und erlaubte Abhängigkeitsrichtungen | `<TBD: z. B. UI → Anwendung → Domäne → Infrastruktur>` | Der KI-Client prüft Vorschläge dagegen |
 | Kritische Komponenten (Änderung mindestens Stufe hoch) | `<TBD: Liste>` | Authentifizierung, Autorisierung, Zahlungs-/Fachkern, Schnittstellen zu Externen, Datenmigrationen |
 | Externe Schnittstellen (abstrakt) | `<TBD: Typ und Richtung, z. B. „REST-Schnittstelle zu externem Fachverfahren (ausgehend)">` | keine Partnernamen, keine Adressen |
 | Architekturvorgaben (Dokument) | `<TBD: Pfad im Overlay-Dokumentenverzeichnis, Kontextklasse>` | siehe Abschnitt 19 |
-| Architekturentscheidungen (ADR-Ablage) | `<TBD: Pfad oder „nicht vorhanden">` | Devin liest ADRs nur lesend |
+| Architekturentscheidungen (ADR-Ablage) | `<TBD: Pfad oder „nicht vorhanden">` | Der KI-Client liest ADRs nur lesend |
 
 ## 3. Repository-Struktur
 
@@ -59,7 +59,7 @@
 └── <TBD: deploy/ infra/ config/>  # ausgeschlossen (siehe Abschnitt 4)
 ```
 
-Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten Ebene beschreiben. Devin erschließt Details selbst (Skill `fw-repo-analyze`). Mehrere Repositories: je Repository ein Overlay oder ein Abschnitt je Repository mit eigenen Pfadlisten.
+Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten Ebene beschreiben. Der KI-Client erschließt Details selbst (Skill `fw-repo-analyze`). Mehrere Repositories: je Repository ein Overlay oder ein Abschnitt je Repository mit eigenen Pfadlisten.
 
 ## 4. Erlaubte und ausgeschlossene Verzeichnisse
 
@@ -98,7 +98,7 @@ Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (P
 
 ## 7. Qualitätsprüfungen (Quality Gates)
 
-| Prüfung | Werkzeugklasse | Wo | Verbindlich für Devin-Änderungen | Ausfüllhinweis |
+| Prüfung | Werkzeugklasse | Wo | Verbindlich für KI-Änderungen | Ausfüllhinweis |
 |---|---|---|---|---|
 | Build | `<CI_CD_PLATFORM>` | lokal + CI | MUSS | – |
 | Linting / Formatierung | `<TBD>` | lokal + CI | MUSS | Konfigurationspfad in Abschnitt 4 |
@@ -106,7 +106,7 @@ Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (P
 | Unit Tests | `<TEST_FRAMEWORK>` | lokal + CI | MUSS | Mindestabdeckung: `<TBD oder „nicht definiert">` |
 | Integrations-/Komponententests | `<TBD>` | CI | `<TBD>` | – |
 | Security Scan (Abhängigkeiten, Code) | `<TBD>` | CI | MUSS, falls vorhanden | – |
-| Quality Gate | `<QUALITY_GATE>` | CI | MUSS | Schwellenwerte werden von Devin nie geändert |
+| Quality Gate | `<QUALITY_GATE>` | CI | MUSS | Schwellenwerte werden vom KI-Client nie geändert |
 | Merge Request + Code Review | `<TBD: Plattform>` | Prozess | MUSS | Anzahl Reviewer: `<TBD>` |
 | Vier-Augen-Prinzip | Prozess | Prozess | MUSS ab Kontrollstufe mittel | projektspezifisch: `<TBD>` |
 | Fachliche Abnahme | Prozess | Prozess | `<TBD>` | – |
@@ -126,7 +126,7 @@ Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (P
 | Element | Wert | Ausfüllhinweis |
 |---|---|---|
 | Verbindliches Convention-Dokument | `<PROJECT_RULES_PATH>` | im Overlay-Dokumentenverzeichnis, Kontextklasse K1 |
-| Formatter / Linter als Quelle der Wahrheit | `<TBD>` | Devin folgt der Konfiguration, nicht Erinnerungen |
+| Formatter / Linter als Quelle der Wahrheit | `<TBD>` | Der KI-Client folgt der Konfiguration, nicht Erinnerungen |
 | Benennungskonventionen (Kurzfassung) | `<TBD>` | maximal zehn Zeilen; Rest im Dokument |
 | Verbotene Muster | `<TBD>` | z. B. bestimmte Bibliotheken, Reflection, statische Zustände |
 | Sprache von Bezeichnern, Kommentaren, Commits | `<TBD>` | – |
@@ -141,11 +141,11 @@ Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (P
 | Commit-Konvention | `<COMMIT_CONVENTION>` | `<TBD: z. B. Conventional Commits mit Ticket-Referenz>` |
 | Merge-Strategie | – | `<TBD: Squash / Merge-Commit / Rebase – durch Menschen>` |
 | Merge-Request-Vorlage | `<MR_TEMPLATE_PATH>` | `<TBD>`; enthält den KI-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`) |
-| Geschützte Branches | – | `<TBD>`; Devin arbeitet nie direkt darauf |
+| Geschützte Branches | – | `<TBD>`; der KI-Client arbeitet nie direkt darauf |
 
-## 11. Definition of Ready (für Devin-Aufgaben)
+## 11. Definition of Ready (für KI-Aufgaben)
 
-Eine Aufgabe ist bereit für die Bearbeitung mit Devin, wenn zusätzlich zur projektweiten Definition of Ready (`<TBD: Pfad>`):
+Eine Aufgabe ist bereit für die Bearbeitung mit dem KI-Client, wenn zusätzlich zur projektweiten Definition of Ready (`<TBD: Pfad>`):
 
 1. Ziel und Akzeptanzkriterien schriftlich vorliegen (bereinigt, ohne K2/K3-Inhalte),
 2. Kontrollstufe und Betriebsmodus festgelegt sind,
@@ -153,7 +153,7 @@ Eine Aufgabe ist bereit für die Bearbeitung mit Devin, wenn zusätzlich zur pro
 4. die benötigten Kontextquellen eingestuft und – bei K2 – freigegeben sind,
 5. `<TBD: projektspezifische Zusatzkriterien>`.
 
-## 12. Definition of Done (für Devin-Aufgaben)
+## 12. Definition of Done (für KI-Aufgaben)
 
 Zusätzlich zur projektweiten Definition of Done (`<TBD: Pfad>`) gilt `leitwerk-core/framework/core/04-quality.md` Abschnitt 3 (Ergebnisbericht, lokale Prüfungen, Selbstreview, Nutzungsvermerk, offene Punkte sichtbar). Projektspezifische Ergänzungen: `<TBD>`.
 
@@ -184,7 +184,7 @@ Zusätzlich zu den festen K3-Kategorien (`leitwerk-core/framework/core/02-privac
 
 ## 15. Rollen und Freigaben
 
-| Rolle (generisch) | Platzhalter | Zuständigkeit im Devin-Kontext |
+| Rolle (generisch) | Platzhalter | Zuständigkeit im KI-Kontext |
 |---|---|---|
 | Freigabe Kontrollstufe hoch, Overlay Owner | `<APPROVAL_ROLE>` | schriftliche Freigaben, Overlay-Pflege, Ausnahmen |
 | Sicherheitskontakt | `<SECURITY_CONTACT>` | Sicherheitsfreigaben, Vorfälle, Abhängigkeiten |
@@ -232,9 +232,9 @@ Projektspezifisches Wissen wird ausschließlich über diesen Mechanismus eingebu
 2. Das Dokument wird in `project-overlay/overlay-manifest.yaml` registriert: Typ, Pfad, Kontextklasse, Status, Freigabe (Rolle, Datum), Ladeverhalten.
 3. Ladeverhalten:
    - `summary`: Kernaussagen (maximal zehn Zeilen) werden in `<RULES_DIR>/20-project-overlay.md` übernommen (immer aktiv, nur K1).
-   - `on-demand`: Devin liest das Dokument, wenn die Aufgabe es erfordert; K2-Dokumente nur nach Freigabe in der Aufgabe.
+   - `on-demand`: Der KI-Client liest das Dokument, wenn die Aufgabe es erfordert; K2-Dokumente nur nach Freigabe in der Aufgabe.
    - `rule`: Das Projekt legt eine zusätzliche Overlay-Regeldatei `<RULES_DIR>/2N-overlay-<name>.md` (N = 1–9) mit `trigger: model_decision` oder `glob` an, die die Kernregeln des Dokuments enthält und auf das Dokument verweist (unter 12.000 Zeichen).
-   - `never`: Das Dokument ist registriert, aber nicht für Devin bestimmt (Nachweiszweck).
+   - `never`: Das Dokument ist registriert, aber nicht für den KI-Client bestimmt (Nachweiszweck).
 4. Nicht registrierte Dokumente gelten als K3.
 5. Änderungen an Dokumenten erhöhen die Overlay-Version; veraltete Dokumente werden im Manifest als `veraltet` markiert und nicht mehr geladen.
 
@@ -250,7 +250,7 @@ Projektspezifisches Wissen wird ausschließlich über diesen Mechanismus eingebu
 | `definition-of-ready` | Definition of Ready | `summary` | K1 |
 | `definition-of-done` | Definition of Done | `summary` | K1 |
 | `branching-strategy` | Branching-Strategie | `summary` | K1 |
-| `deployment` | Deployment-Vorgaben | `never` (Devin deployt nicht) oder `on-demand` (bereinigt) | K2 |
+| `deployment` | Deployment-Vorgaben | `never` (der KI-Client deployt nicht) oder `on-demand` (bereinigt) | K2 |
 | `security` | Security-Vorgaben | `rule` (nur Entwicklungsregeln) | K1 nach Bereinigung; Schutzkonfigurationen K3 |
 | `quality` | Qualitätsrichtlinien | `rule` | K1 |
 | `roles` | Rollenbeschreibungen | `summary` (Rollen, keine Personen) | K1 |

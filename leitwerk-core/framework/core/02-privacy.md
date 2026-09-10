@@ -6,17 +6,17 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
 ## 1. Ausgangslage (normativ)
 
-1. Jeder Inhalt, der Devin als Kontext bereitgestellt wird (geöffnete Dateien, per Erwähnung eingebundene Dateien, Suchergebnisse, Befehlsausgaben, eingefügter Text, Inhalte aus MCP-Werkzeugen, Inhalte in Spaces), verlässt den Arbeitsplatz und wird über die Infrastruktur des Anbieters und dessen Modellanbieter verarbeitet (Annahme A-04; Anbieterdokumentation: Opt-out aus Modelltraining auf kostenpflichtigen Plänen, danach Zero Data Retention bei den Modellanbietern; Enterprise-Kunden: kein Training ohne schriftliche Zustimmung `[DOK]`).
+1. Jeder Inhalt, der dem KI-Client als Kontext bereitgestellt wird (geöffnete Dateien, per Erwähnung eingebundene Dateien, Suchergebnisse, Befehlsausgaben, eingefügter Text, Inhalte aus MCP-Werkzeugen, Inhalte in Spaces), verlässt den Arbeitsplatz und wird über die Infrastruktur des Anbieters und dessen Modellanbieter verarbeitet (Annahme A-04; Anbieterdokumentation: Opt-out aus Modelltraining auf kostenpflichtigen Plänen, danach Zero Data Retention bei den Modellanbietern; Enterprise-Kunden: kein Training ohne schriftliche Zustimmung `[DOK]`).
 2. Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`.
 3. Bis zum Vorliegen dieser Prüfung gilt die restriktivste Auslegung: Nur Kontextklasse K0 und K1 (Abschnitt 2) dürfen bereitgestellt werden, und nur, wenn die Organisation die Nutzung des Werkzeugs grundsätzlich freigegeben hat.
 
 ## 2. Kontextklassen (normativ)
 
-| Klasse | Bezeichnung | Definition | Bereitstellung an Devin |
+| Klasse | Bezeichnung | Definition | Bereitstellung an den KI-Client |
 |---|---|---|---|
 | **K0** | Frei | Öffentliche oder framework-eigene Inhalte ohne Projektbezug (Framework-Dateien, öffentliche Dokumentation, Open-Source-Code mit bekannter Lizenz) | zulässig |
 | **K1** | Projektintern, freigegeben | Inhalte des Projekt-Repositorys und Dokumente, die im Overlay-Manifest ausdrücklich für den KI-Kontext freigegeben sind und keine K2/K3-Bestandteile enthalten | zulässig, aufgabenbezogen (Least Context) |
@@ -47,8 +47,8 @@
 2. **Aktualität:** Veraltete Dokumente SOLLEN nicht bereitgestellt werden; ist ein Dokument im Manifest als veraltet markiert, DARF es NICHT verwendet werden.
 3. **Bereinigung vor Bereitstellung:** K2-Inhalte werden vor der Bereitstellung bereinigt: Personen durch Rollen, Organisationen durch Platzhalter, Adressen und Kennungen durch `<PLACEHOLDER>`, Fallbeschreibungen durch abstrahierte Sachverhalte ersetzt. Die bereinigte Fassung wird nicht in das Repository übernommen (Ebene E).
 4. **Tickets:** Aus `<ISSUE_TRACKER>` werden nur Titel, technische Beschreibung und Akzeptanzkriterien übernommen – nach Prüfung auf personenbezogene Daten und vertrauliche Inhalte. Kommentarverläufe, Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden.
-5. **Befehlsausgaben und Logs:** Vor der Weitergabe an Devin werden Befehlsausgaben und Logauszüge auf personenbezogene Daten, Secrets und Hostnamen geprüft. Das Werkzeug selbst wird angewiesen, vermutete Secrets oder personenbezogene Daten in Ausgaben nicht zu wiederholen (Wurzel-Anweisungsdatei).
-6. **Testdaten:** Devin arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
+5. **Befehlsausgaben und Logs:** Vor der Weitergabe an den KI-Client werden Befehlsausgaben und Logauszüge auf personenbezogene Daten, Secrets und Hostnamen geprüft. Das Werkzeug selbst wird angewiesen, vermutete Secrets oder personenbezogene Daten in Ausgaben nicht zu wiederholen (Wurzel-Anweisungsdatei).
+6. **Testdaten:** der KI-Client arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
 7. **Externe Quellen:** Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). Freigaben erfolgen domainbezogen über das Overlay und die Berechtigungskonfiguration (`Fetch(domain:...)` `[DOK]`).
 8. **MCP-Werkzeuge:** Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Standardmäßig fordert Devin Local vor jedem MCP-Aufruf eine Bestätigung an `[DOK]`; diese Einstellung DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist.
 9. **Spaces und geteilter Kontext:** Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
@@ -66,7 +66,7 @@
 
 ## 5. Verhalten bei unbeabsichtigter Bereitstellung (normativ)
 
-Wird festgestellt, dass K3-Inhalte an Devin gelangt sind (zum Beispiel eine Datei mit Zugangsdaten wurde eingebunden):
+Wird festgestellt, dass K3-Inhalte an den KI-Client gelangt sind (zum Beispiel eine Datei mit Zugangsdaten wurde eingebunden):
 
 1. Sitzung sofort beenden; keine weiteren Eingaben.
 2. Betroffene Secrets als kompromittiert behandeln und über den Prozess der Organisation rotieren lassen (`<SECURITY_CONTACT>`).

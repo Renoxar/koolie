@@ -6,11 +6,11 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
 ## 1. Aufbau einer Aufgabenanweisung (normativ)
 
-Jede Anweisung an Devin, die über eine einfache Rückfrage hinausgeht, SOLL die folgenden Elemente enthalten. Skills und Prompt-Vorlagen (`leitwerk-core/prompts/`) setzen diese Struktur um:
+Jede Anweisung an den KI-Client, die über eine einfache Rückfrage hinausgeht, SOLL die folgenden Elemente enthalten. Skills und Prompt-Vorlagen (`leitwerk-core/prompts/`) setzen diese Struktur um:
 
 | Element | Inhalt | Pflicht |
 |---|---|---|
@@ -28,7 +28,7 @@ Jede Anweisung an Devin, die über eine einfache Rückfrage hinausgeht, SOLL die
 1. **Ein Ziel je Anweisung.** Mehrere Ziele werden in mehrere Schritte oder Sitzungen zerlegt.
 2. **Referenzen statt Kopien.** Dateien werden per Pfad oder Erwähnung referenziert, nicht als Text eingefügt, sofern das Werkzeug dies erlaubt; eingefügter Text MUSS vorher auf Kontextklasse geprüft werden.
 3. **Keine impliziten Berechtigungen.** Formulierungen wie „mach einfach", „räum auf", „alles, was nötig ist" DÜRFEN NICHT verwendet werden; sie erweitern den Scope unkontrolliert.
-4. **Keine Rollenspiele mit Regelwirkung.** Anweisungen, die Devin auffordern, Regeln zu ignorieren, sich als anderes System auszugeben oder Sicherheitsprüfungen zu überspringen, sind unzulässig – auch zu Testzwecken außerhalb des Testkatalogs.
+4. **Keine Rollenspiele mit Regelwirkung.** Anweisungen, die den KI-Client auffordern, Regeln zu ignorieren, sich als anderes System auszugeben oder Sicherheitsprüfungen zu überspringen, sind unzulässig – auch zu Testzwecken außerhalb des Testkatalogs.
 5. **Ergebnis vor Stil.** Prompts fordern belegte Ergebnisse (Fundstellen, Testausgaben), nicht Selbstbewertungen („Bist du sicher?").
 6. **Sprache.** Anweisungen werden in der im Overlay festgelegten Arbeitssprache verfasst (`<TBD: Arbeitssprache>`); Bezeichner, Befehle und Pfade bleiben unverändert.
 7. **Skills bevorzugen.** Liegt für eine Aufgabe ein Skill vor, wird er verwendet (`/skill-name` `[DOK]`); freie Prompts sind für Aufgaben ohne passenden Skill vorgesehen.

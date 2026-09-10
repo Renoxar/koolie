@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-009` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -86,4 +86,4 @@ Regeln:
 | Produktions-Monitoring-Auszüge unbereinigt einfügen | K3-Abfluss (Hostnamen, Kennungen) | Beobachtung bereinigt zusammenfassen (`leitwerk-core/checklists/02-privacy-context.md`) |
 | Hypothesen als Fakten in Tickets übernehmen | Scheinwissen; falsche Priorisierung | Erst messen; Vermutungskennzeichnung erhalten |
 | Mikro-Optimierungen in kaltem Code priorisieren | Aufwand ohne Wirkung | Lastannahme und Aufrufhäufigkeit als Pflichtkontext behandeln |
-| Messung und Umsetzung in derselben Devin-Sitzung | Modusbruch; unklare Verantwortlichkeit | Messung durch Menschen; Umsetzung als eigene M3-Aufgabe mit Vorher/Nachher-Messung |
+| Messung und Umsetzung in derselben KI-Sitzung | Modusbruch; unklare Verantwortlichkeit | Messung durch Menschen; Umsetzung als eigene M3-Aufgabe mit Vorher/Nachher-Messung |

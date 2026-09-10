@@ -51,7 +51,7 @@ Einzige Ausnahme ist `<CORE_DIR>`: Der Name des Kernverzeichnisses ist keine Eig
 | `<DATA_PROTECTION_CONTACT>` | Rolle für Datenschutzfreigaben | Overlay 15 / Organisation | „Datenschutzkoordination" | ja |
 | `<PRODUCT_OWNER_ROLE>` | Rolle für fachliche Klärungen | Overlay 15 | „Product Owner" | ja |
 | `<ARCHITECT_ROLE>` | Rolle für Architekturentscheidungen | Overlay 15 | „Softwarearchitektur" | ja |
-| `<ALLOWED_PATHS>` | Für Devin erlaubte Pfade (Glob) | Overlay 4 | „src/**, test/**, docs/**" | ja |
+| `<ALLOWED_PATHS>` | Für den KI-Client erlaubte Pfade (Glob) | Overlay 4 | „src/**, test/**, docs/**" | ja |
 | `<EXCLUDED_PATHS>` | Ausgeschlossene Pfade (weder lesen noch ändern) | Overlay 4 | „deploy/**, infra/**, config/prod/**" | ja |
 | `<READ_ONLY_PATHS>` | Nur lesbare Pfade | Overlay 4 | „api-contracts/**, db/migrations/**" | ja (oder „keine") |
 | `<TEST_PATHS>` | Pfade, in denen M4 schreiben darf | Overlay 4 | „test/**" | ja |
@@ -75,5 +75,5 @@ Einzige Ausnahme ist `<CORE_DIR>`: Der Name des Kernverzeichnisses ist keine Eig
 | `<FORM_NAME>`, `<PLACEHOLDER>`, `<PACK>` | Generische Platzhalter in Erläuterungen und Beispielen | – | – | – |
 | `<JAHR>`, `<JJJJ>`, `<NNN>` | Schema-Platzhalter für Jahres- und Laufnummern in IDs (`CR-<JAHR>-<NNN>`, `INC-<PROJECT_CODE>-<JJJJ>-<NNN>`) | Vorlagen in `leitwerk-core/governance/` | „CR-2026-001" | – |
 | `<TBD: …>` | Offene projekt- oder organisationsspezifische Entscheidung | überall | – | Overlay-Abschnitte 4, 5, 6, 13, 14, 15: ja |
-| `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` | Technische Aussage, die gegen die aktuelle Devin-Dokumentation geprüft werden muss | Framework | – | vor Version 1.0.0 |
+| `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` | Technische Aussage, die gegen die aktuelle Clientdokumentation geprüft werden muss | Framework | – | vor Version 1.0.0 |
 | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` | Clientneutrale Form des vorstehenden Markers; zu prüfen gegen die Dokumentation desjenigen KI-Clients, für den das jeweilige Client Pack gilt. Ersetzt die devin-spezifische Form ab Release 0.5.0 | Framework, Client Packs | – | vor Version 1.0.0, je Client Pack |

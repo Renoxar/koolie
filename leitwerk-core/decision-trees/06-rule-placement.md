@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-06` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | bei jeder neuen oder geänderten Regel; durch Autorinnen und Autoren von Regeln, geprüft vom Framework Owner beziehungsweise Overlay Owner |
@@ -50,5 +50,5 @@ flowchart TD
 
 ## Hinweise
 
-- **Beispiel (synthetisch):** „Tests laufen mit `<TEST_COMMAND>`" → Logik („Devin führt nur freigegebene Testbefehle aus") ist Core; der Befehl selbst ist Overlay. „Bei Testframework `<TEST_FRAMEWORK>` keine Feld-Injektion in Testklassen" → Technology Pack. „Ein Reviewer ändert den geprüften Code nicht selbst" → Role Pack Code Review.
+- **Beispiel (synthetisch):** „Tests laufen mit `<TEST_COMMAND>`" → Logik („Der KI-Client führt nur freigegebene Testbefehle aus") ist Core; der Befehl selbst ist Overlay. „Bei Testframework `<TEST_FRAMEWORK>` keine Feld-Injektion in Testklassen" → Technology Pack. „Ein Reviewer ändert den geprüften Code nicht selbst" → Role Pack Code Review.
 - Jede Regelaufnahme zieht die Pflege der Laufzeitfassung in der Regelablage und einen Validatorlauf nach sich; Release über den Framework- beziehungsweise Overlay-Prozess.

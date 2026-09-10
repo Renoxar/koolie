@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-001` |
 | Name | `fw-repo-analyze` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -32,7 +32,7 @@ triggers:
 
 - **Zweck:** Liefert einen belegten Überblick über ein Repository oder Modul: Verzeichnisaufbau, Einstiegspunkte, Schichtung, zentrale Abhängigkeiten (aus Manifestdateien), Build- und Testmechanik (aus Konfigurationsdateien), Konventionen (aus vorhandenen Regeln) und Auffälligkeiten – ohne etwas zu verändern.
 - **Zielgruppe:** Entwicklerinnen und Entwickler (insbesondere im Onboarding), Reviewer, Architektinnen und Architekten.
-- **Trigger:** Neue Codebasis oder neues Modul kennenlernen; Vorbereitung von `fw-change-analyze` oder `fw-plan`. Aufruf: `/fw-repo-analyze <pfad-oder-modul> [fragestellung]`. Devin darf den Skill vorschlagen, wenn eine Aufgabe Kenntnis eines noch nicht analysierten Bereichs erfordert.
+- **Trigger:** Neue Codebasis oder neues Modul kennenlernen; Vorbereitung von `fw-change-analyze` oder `fw-plan`. Aufruf: `/fw-repo-analyze <pfad-oder-modul> [fragestellung]`. Der KI-Client darf den Skill vorschlagen, wenn eine Aufgabe Kenntnis eines noch nicht analysierten Bereichs erfordert.
 - **Nicht verwenden, wenn:** eine einzelne Funktion erklärt werden soll (`fw-code-explain`) oder eine konkrete Änderung bewertet werden soll (`fw-change-analyze`).
 
 ## 2. Vorbedingungen, Eingaben und Kontext

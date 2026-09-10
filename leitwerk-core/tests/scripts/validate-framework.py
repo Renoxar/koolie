@@ -5,7 +5,7 @@ validate-framework.py – Strukturelle Validierung des Frameworks und eines Proj
 Aufruf (im Wurzelverzeichnis des Repositorys):
     python3 leitwerk-core/tests/scripts/validate-framework.py [--strict-overlay] [--mermaid] [--root PFAD]
 
-Prüft (statisch, ohne Devin):
+Prüft (statisch, ohne laufenden KI-Client):
   1. Pflichtdateien und -verzeichnisse
   2. Berechtigungsdatei: gültiges JSON, Kernregeln vollständig (Abgleich gegen die
      Kernquelle framework/runtime/permissions.json), keine Kernverbote in allow
@@ -30,13 +30,16 @@ Prüft (statisch, ohne Devin):
  13. Versionskette (FW-VN-01): Overlay-Version an allen drei Ablageorten gleich, Steckbrief-
      angabe zur kompatiblen Framework-Version passend zu <CORE_DIR>/VERSION, Versionsfelder
      in der Form MAJOR.MINOR.PATCH
+ 14. Akteursbezeichnung (D-02, D-28): Der Kern nennt keinen Client als Handelnden. Die
+     Namen stammen aus den Pack-Kennungen; der Produktname mit Zusatz bleibt zulaessig,
+     historische Dokumente sind ausgenommen
 
 Ohne PyYAML laufen die Prüfungen 4, 5 und 8 eingeschränkt; das Skript sagt es dann als
 Warnung. Für einen Release- oder Übernahmenachweis ist PyYAML erforderlich.
 
 Exit-Code 0 = keine Fehler (Warnungen möglich), 1 = Fehler.
 Status des Skripts: entwurf. Es prüft Struktur, nicht Semantik; die semantische Prüfung
-(Widerspruchsfreiheit, Verhalten von Devin) erfolgt über leitwerk-core/tests/TEST_CATALOG.md.
+(Widerspruchsfreiheit, Verhalten des KI-Clients) erfolgt über leitwerk-core/tests/TEST_CATALOG.md.
 """
 from __future__ import annotations
 
@@ -1021,6 +1024,76 @@ def check_strict_overlay(root: str) -> None:
         err(".devin/config.json: enthält noch Platzhalter (strict-overlay)")
 
 
+# Pruefung 14: Der werkzeugneutrale Kern nennt keinen Client als Akteur.
+# Historische Dokumente bleiben ausgenommen - sie beschreiben einen vergangenen
+# Zustand (docs/RUNTIME_GLOSSARY.md, Abschnitt "Regel").
+ACTOR_HISTORY = (
+    "leitwerk-core/CHANGELOG.md",
+    "leitwerk-core/governance/change-requests/",
+    "leitwerk-core/governance/DECISION_LOG.md",
+    "leitwerk-core/tests/protocols/",
+)
+# Jeder Aenderungsverlauf ist ein historisches Dokument, nicht nur der des Frameworks.
+ACTOR_HISTORY_BASENAMES = ("CHANGELOG.md",)
+
+
+def _client_actor_names(root: str) -> list[tuple[str, str]]:
+    """Kapitalisierter Produktname je Client Pack, abgeleitet aus dessen Kennung.
+
+    Aus der Kennung, nicht aus einer gepflegten Liste: Ein neues Client Pack bringt
+    seinen Namen damit selbst mit und wird ohne Aenderung an dieser Pruefung erfasst.
+    """
+    namen = set()
+    cdir = os.path.join(root, "leitwerk-core", "clients")
+    if not os.path.isdir(cdir):
+        return []
+    for name in sorted(os.listdir(cdir)):
+        mf = os.path.join(cdir, name, "manifest.json")
+        if not os.path.isfile(mf):
+            continue
+        try:
+            kennung = json.loads(read(mf)).get("client", name)
+        except Exception:
+            kennung = name
+        teile = [w.capitalize() for w in kennung.split("-")]
+        namen.add((teile[0], "-".join(teile)))
+    return sorted(namen)
+
+
+def check_actor_naming(root: str) -> None:
+    """Pruefung 14 (D-02): Kein Client wird im Kern als Handelnder benannt.
+
+    Der Kern beschreibt, was ein KI-Client tun MUSS - nicht, was ein bestimmtes
+    Produkt tut. Erlaubt bleibt der Produktname mit Zusatz ("Devin Desktop",
+    "Claude Code"): Er benennt ein Produkt, nicht den Handelnden. Muss ein Kerntext
+    den Namen selbst tragen, steht dort <CLIENT_NAME>.
+    """
+    namen = _client_actor_names(root)
+    if not namen:
+        return
+    # Der Produktname ist erlaubt, die Akteursbezeichnung nicht: "Devin Desktop"
+    # und "Devin-Desktop" benennen ein Produkt, der blosse Name den Handelnden.
+    erlaubt = re.compile("|".join(
+        [re.escape(v) for _, v in namen] + [re.escape(v.replace("-", " ")) for _, v in namen]
+        + [r"%s [A-Z]\w+" % re.escape(k) for k, _ in namen]))
+    muster = re.compile(r"\b(%s)\b" % "|".join(k for k, _ in namen))
+    for path in iter_text_files(root):
+        if not path.endswith((".md", ".py", ".template")):
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith("leitwerk-core/") or rel.startswith("leitwerk-core/clients/"):
+            continue
+        if rel.startswith(ACTOR_HISTORY) or os.path.basename(rel) in ACTOR_HISTORY_BASENAMES:
+            continue
+        for i, zeile in enumerate(read(path).splitlines(), 1):
+            m = muster.search(erlaubt.sub("", zeile))
+            if not m:
+                continue
+            err(f"{rel}:{i}: '{m.group(1)}' benennt einen Client als Akteur; der Kern ist "
+                f"werkzeugneutral (D-02). Gemeint ist der Begriff 'der KI-Client'; muss der "
+                f"Text den Produktnamen tragen, steht dort <CLIENT_NAME>")
+
+
 def check_mermaid(root: str) -> None:
     mmdc = shutil.which("mmdc")
     if not mmdc:
@@ -1068,6 +1141,7 @@ def main() -> int:
     check_links(root)
     check_manifest(root)
     check_versions(root, man)
+    check_actor_naming(root)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:

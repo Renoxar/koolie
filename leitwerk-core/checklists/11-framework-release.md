@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-11` |
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jedem Framework-Release (auch Patch-Releases) |
@@ -35,9 +35,9 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 - [ ] **MUSS** Manuelle Stichprobe auf projekt-, kunden- oder personenspezifische Inhalte in geänderten Dateien (zusätzlich zur automatischen Prüfung).
 - [ ] **MUSS** Beispiele sind synthetisch gekennzeichnet; Platzhalterregister aktuell.
 
-### Produktstand Devin
+### Produktstand der KI-Client
 
-- [ ] **MUSS** Aktualitätsprüfung gegen die offizielle Devin-Dokumentation durchgeführt (Changelog des Produkts gesichtet; betroffene `[DOK]`-Aussagen und `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`-Marker aktualisiert; Quellenliste im Hauptdokument nachgezogen).
+- [ ] **MUSS** Aktualitätsprüfung gegen die offizielle Clientdokumentation durchgeführt (Changelog des Produkts gesichtet; betroffene `[DOK]`-Aussagen und `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`-Marker aktualisiert; Quellenliste im Hauptdokument nachgezogen).
 - [ ] **MUSS** Produktänderungen mit Regelwirkung (neue Berechtigungen, geänderte Pfade, entfallene Mechanismen) sind als Änderungsanträge behandelt (`leitwerk-core/governance/RELEASE_PROCESS.md`, Abschnitt Produktbeobachtung).
 
 ### Tests

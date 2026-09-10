@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `RP-RE-SK-001` |
 | Name | `role-re-ticket` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -32,7 +32,7 @@ triggers:
 
 - **Zweck:** Macht aus einer Absicht, einem Gesprächsergebnis oder einer bereinigten Fehlermeldung eine umsetzungsreife Aufgabenbeschreibung: Beschreibung, Anforderungen in EARS-Syntax, Arbeitspakete, Abnahmekriterien, Änderungsmitteilung. Vorher wird die Codebasis **eng** recherchiert: Existiert das Verhalten schon? Welche Begriffe verwendet der Code? Welche Randbedingungen ergeben sich aus Datenmodell und Schnittstellenvertrag? Ergebnis ist ein Textentwurf — kein Eintrag im Ticketsystem.
 - **Zielgruppe:** Requirements Engineering, `<PRODUCT_OWNER_ROLE>`, fachlich zuarbeitende Entwicklung.
-- **Trigger:** Eine Absicht ist formuliert, aber noch nicht umsetzungsreif; eine bestehende Aufgabenbeschreibung ist unklar, widersprüchlich oder unprüfbar; eine bereinigte Fehlermeldung soll in eine Aufgabe überführt werden. Aufruf: `/role-re-ticket "<Absicht>" [typ] [format]`. Bei `triggers: [user, model]` darf Devin den Skill vorschlagen, wenn eine Aufgabe ohne prüfbare Abnahmekriterien zur Umsetzung gegeben wird.
+- **Trigger:** Eine Absicht ist formuliert, aber noch nicht umsetzungsreif; eine bestehende Aufgabenbeschreibung ist unklar, widersprüchlich oder unprüfbar; eine bereinigte Fehlermeldung soll in eine Aufgabe überführt werden. Aufruf: `/role-re-ticket "<Absicht>" [typ] [format]`. Bei `triggers: [user, model]` darf der KI-Client den Skill vorschlagen, wenn eine Aufgabe ohne prüfbare Abnahmekriterien zur Umsetzung gegeben wird.
 - **Nicht verwenden, wenn:** die Risiken und der Umfang einer Änderung bewertet werden sollen (`fw-change-analyze`), ein Änderungsplan gebraucht wird (`fw-plan`), eine Codebasis erst kennengelernt werden soll (`fw-repo-analyze`), die Ursache eines Fehlers gesucht wird (`fw-error-analyze`) oder eine Merge-Request-Beschreibung entstehen soll (`fw-mr-description`).
 
 ## 2. Vorbedingungen, Eingaben und Kontext

@@ -1,9 +1,9 @@
-# Entscheidungsbaum 2 – Darf Devin diese Aufgabe bearbeiten?
+# Entscheidungsbaum 2 – Darf der KI-Client diese Aufgabe bearbeiten?
 
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-02` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight, vor der ersten Anweisung; durch die Bearbeiterin oder den Bearbeiter |
@@ -11,7 +11,7 @@
 
 ## Textbeschreibung (normativ)
 
-1. **Grundvoraussetzungen:** Ist die Devin-Nutzung durch die Organisation freigegeben und das Project Overlay `aktiv`? → Nein: keine produktive Nutzung; zulässig sind nur Onboarding-Übungen auf dem synthetischen Übungsrepository.
+1. **Grundvoraussetzungen:** Ist die KI-Nutzung durch die Organisation freigegeben und das Project Overlay `aktiv`? → Nein: keine produktive Nutzung; zulässig sind nur Onboarding-Übungen auf dem synthetischen Übungsrepository.
 2. **Delegationsverbot:** Fällt die Aufgabe unter V1–V12 (Freigaben, Merges/Releases/Deployments, Architektur- und Technologieentscheidungen, Secrets, personenbezogene Echtdaten oder Produktionsdaten, Produktionssysteme, Personenbewertung, rechtliche Bewertung, Sicherheitsvorfall-Entscheidungen, Framework-/Overlay-/Berechtigungsänderungen, Außenkommunikation, Löschungen außerhalb des Arbeitsbereichs)? → **Nicht delegieren.** Prüfen, ob eine zulässige vorbereitende Unterstützung existiert (Spalte „Zulässige Unterstützung" der Verbotsliste); nur diese darf beauftragt werden.
 3. **Kontext beschaffbar:** Ist der für die Aufgabe nötige Kontext vollständig über K0/K1 oder freigegebenes K2 abbildbar (Baum 1)? → Nein: Aufgabe nicht oder nur für die belastbaren Teile delegieren.
 4. **Einstufung:** Kontrollstufe über R1–R13 nach dem Maximumprinzip bestimmen; auslösenden Faktor notieren. Im Zweifel höhere Stufe.
@@ -43,5 +43,5 @@ flowchart TD
 
 ## Hinweise
 
-- „Nicht delegieren" heißt nicht „nicht erledigen": Die Aufgabe wird von Menschen bearbeitet; Devin darf nur die in der Verbotsliste ausdrücklich genannte Vorbereitung liefern.
+- „Nicht delegieren" heißt nicht „nicht erledigen": Die Aufgabe wird von Menschen bearbeitet; der KI-Client darf nur die in der Verbotsliste ausdrücklich genannte Vorbereitung liefern.
 - Die Stufe wird während der Bearbeitung neu bewertet, wenn sich der Zuschnitt ändert (S5, Baum 5).

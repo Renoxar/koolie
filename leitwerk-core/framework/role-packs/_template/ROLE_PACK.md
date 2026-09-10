@@ -9,14 +9,14 @@
 |---|---|
 | Modul-ID | `RP-<ROLE_PACK_CODE>` |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 | Status | entwurf |
 | Owner | `<TBD: Rolle>` |
 | Zielrolle | `<TBD: z. B. Requirements Engineer>` |
 
 ## 1. Zweck und Abgrenzung
 
-`<TBD: Welche Aufgaben dieser Rolle unterstützt Devin, welche ausdrücklich nicht (Verweis auf Delegationsverbotsliste)>`
+`<TBD: Welche Aufgaben dieser Rolle unterstützt der KI-Client, welche ausdrücklich nicht (Verweis auf Delegationsverbotsliste)>`
 
 ## 2. Typische Aufgaben mit Betriebsmodus und Kontrollstufe
 

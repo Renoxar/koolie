@@ -4,13 +4,13 @@ Operative Prüf- und Arbeitslisten des Frameworks. Checklisten sind normative Ku
 
 | ID | Datei | Wann | Wer |
 |---|---|---|---|
-| FW-CL-01 | `01-preflight.md` | vor jeder Devin-Aufgabe | Bearbeiterin oder Bearbeiter |
+| FW-CL-01 | `01-preflight.md` | vor jeder KI-Aufgabe | Bearbeiterin oder Bearbeiter |
 | FW-CL-02 | `02-privacy-context.md` | im Preflight und vor jeder Kontextbereitstellung | Bearbeiterin oder Bearbeiter; Freigaben `<APPROVAL_ROLE>` / `<DATA_PROTECTION_CONTACT>` |
 | FW-CL-03 | `03-before-code-change.md` | vor dem ersten Schreib- oder Ausführungsschritt (M3/M4/M5) | Bearbeiterin oder Bearbeiter |
 | FW-CL-04 | `04-review-ai-code.md` | Selbstreview vor Commit; unabhängiges Review im Merge Request | Bearbeiter und Reviewer |
 | FW-CL-05 | `05-testing.md` | nach Testerstellung; vor Merge Requests mit Logikänderung | Bearbeiter; Reviewer (RV4) |
 | FW-CL-06 | `06-security.md` | bei R3/R10/R11-Bezug; ergänzend bei Stufe hoch | Bearbeiter; `<SECURITY_CONTACT>` |
-| FW-CL-07 | `07-new-dependency.md` | vor Einführung neuer Abhängigkeiten oder Major-Updates | Mensch (nie Devin); Freigaben `<APPROVAL_ROLE>` / `<SECURITY_CONTACT>` |
+| FW-CL-07 | `07-new-dependency.md` | vor Einführung neuer Abhängigkeiten oder Major-Updates | Mensch (nie der KI-Client); Freigaben `<APPROVAL_ROLE>` / `<SECURITY_CONTACT>` |
 | FW-CL-08 | `08-merge-request.md` | vor Erstellen und vor Mergen eines Merge Requests | Bearbeiter; Reviewer und freigebende Rollen |
 | FW-CL-09 | `09-onboarding.md` | während des Onboardings bis zur Freigabe | Mentorin oder Mentor mit der oder dem Neuen |
 | FW-CL-10 | `10-project-adoption.md` | Übernahme in ein neues Projekt, vor Overlay-Aktivierung | Overlay Owner mit Framework Owner |

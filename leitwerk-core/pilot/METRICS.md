@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PILOT-METRICS` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | Projektleitung des Pilotprojekts mit `<FRAMEWORK_OWNER>` |
 
@@ -23,9 +23,9 @@
 | Metrik | Definition (Vorschlag) | Quelle | Hinweis zur Deutung |
 |---|---|---|---|
 | Bearbeitungszeit je Aufgabe | Zeit von „in Arbeit" bis „Review bereit", je Etikett | `<ISSUE_TRACKER>` | nur im Etikettvergleich aussagekräftig |
-| Nachbearbeitungsaufwand | Selbsteinschätzung je Devin-Aufgabe in Kategorien (keiner/gering/erheblich/verworfen) | Nutzungsvermerk | subjektiv, aber trendfähig |
+| Nachbearbeitungsaufwand | Selbsteinschätzung je KI-Aufgabe in Kategorien (keiner/gering/erheblich/verworfen) | Nutzungsvermerk | subjektiv, aber trendfähig |
 | Review-Aufwand | Anzahl Review-Iterationen je MR; Zeit bis Merge ab Review-Start | MR-System | steigender Review-Aufwand kann Produktivitätsgewinne aufzehren |
-| Anzahl notwendiger Rückfragen | Rückfragen je Devin-Aufgabe (aus Ergebnisberichten) | Nutzungsvermerk | hohe Werte zeigen unklare Aufgaben, nicht schlechtes Werkzeug |
+| Anzahl notwendiger Rückfragen | Rückfragen je KI-Aufgabe (aus Ergebnisberichten) | Nutzungsvermerk | hohe Werte zeigen unklare Aufgaben, nicht schlechtes Werkzeug |
 
 ### Qualität
 
@@ -35,14 +35,14 @@
 | Wiedereröffnungen | wieder geöffnete Tickets/MRs je Etikett | `<ISSUE_TRACKER>` | – |
 | Testabdeckung geänderter Bereiche | Abdeckung der im Zeitraum geänderten Module laut `<QUALITY_GATE>` | CI | Abdeckung ist notwendig, nicht hinreichend |
 | Build- und Pipelinefehler | fehlgeschlagene Läufe je MR bis zum Merge | `<CI_CD_PLATFORM>` | – |
-| Verständlichkeit erzeugter Änderungen | Reviewer-Einschätzung je Devin-MR (Kategorien gut/mittel/schwer nachvollziehbar) | Review | erhebt der Reviewer, bewertet die Änderung, nicht die Person |
+| Verständlichkeit erzeugter Änderungen | Reviewer-Einschätzung je KI-MR (Kategorien gut/mittel/schwer nachvollziehbar) | Review | erhebt der Reviewer, bewertet die Änderung, nicht die Person |
 
 ### Nutzung und Steuerung
 
 | Metrik | Definition (Vorschlag) | Quelle | Hinweis zur Deutung |
 |---|---|---|---|
-| Anteil verworfener KI-Vorschläge | verworfen laut Nutzungsvermerk / alle Devin-Aufgaben | Nutzungsvermerk | gesunder Wert ist nicht 0: Verwerfen ist Qualitätsverhalten |
-| Verteilung Kontrollstufen und Modi | Devin-Aufgaben je Stufe/Modus | Nutzungsvermerk | nur hohe Stufen ohne M1/M2-Anteil deutet auf Preflight-Lücken |
+| Anteil verworfener KI-Vorschläge | verworfen laut Nutzungsvermerk / alle KI-Aufgaben | Nutzungsvermerk | gesunder Wert ist nicht 0: Verwerfen ist Qualitätsverhalten |
+| Verteilung Kontrollstufen und Modi | KI-Aufgaben je Stufe/Modus | Nutzungsvermerk | nur hohe Stufen ohne M1/M2-Anteil deutet auf Preflight-Lücken |
 | Eskalationen je Stufe (E0–E4) | Anzahl und Gründe | Ergebnisberichte, Register | E0 ist Alltag; E3/E4-Häufung ist Framework-Signal |
 | Checklisten-/Vermerk-Vollständigkeit | Stichprobe: MRs mit vollständigem Nutzungsvermerk | MR-System | Prozesstreue-Indikator |
 
@@ -51,7 +51,7 @@
 | Metrik | Definition (Vorschlag) | Quelle | Hinweis zur Deutung |
 |---|---|---|---|
 | Akzeptanz durch Entwicklerinnen und Entwickler | kurze, freiwillige Befragung je Review-Punkt (Skala + Freitext): Nützlichkeit, Vertrauen in Ergebnisse, Regelpraktikabilität | Befragung | anonym auswertbar; Freitexte sind die wertvollste Quelle |
-| Wahrgenommene Entlastung | Befragungsitem: „Devin entlastet mich bei …/belastet mich bei …" | Befragung | Entlastung bei Analyse und Doku ist häufig der frühste echte Effekt |
+| Wahrgenommene Entlastung | Befragungsitem: „Der KI-Client entlastet mich bei …/belastet mich bei …" | Befragung | Entlastung bei Analyse und Doku ist häufig der frühste echte Effekt |
 | Onboarding-Wirkung | Selbsteinschätzung neuer Teammitglieder zur Einarbeitungsunterstützung | Befragung | Kernziel des Frameworks |
 
 ## 3. Auswertung (normativ)

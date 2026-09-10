@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-01` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight und vor jeder zusätzlichen Kontextbereitstellung; durch die Bearbeiterin oder den Bearbeiter |
@@ -40,5 +40,5 @@ flowchart TD
 
 ## Hinweise
 
-- Die Klassifizierung nimmt der Mensch vor, nicht Devin; Devin meldet lediglich Funde (S2/S3).
+- Die Klassifizierung nimmt der Mensch vor, nicht der KI-Client; der KI-Client meldet lediglich Funde (S2/S3).
 - Wiederkehrende K2-Freigaben derselben Kategorie gehören als Kategoriefreigabe in das Overlay-Manifest, nicht in Einzelabsprachen.

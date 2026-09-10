@@ -6,17 +6,17 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
 > **Abgrenzung:** Diese Klassifizierung dient der operativen Steuerung des KI-Einsatzes. Sie ist keine rechtliche Klassifizierung und ersetzt keine Bewertung nach Datenschutz-, IT-Sicherheits- oder KI-regulatorischen Vorgaben der Organisation.
 
 ## 1. Grundregeln (normativ)
 
-1. Jede Aufgabe, die an Devin gegeben wird, MUSS vor Beginn einer Kontrollstufe zugeordnet werden (Preflight-Check, `leitwerk-core/checklists/01-preflight.md`).
+1. Jede Aufgabe, die an den KI-Client gegeben wird, MUSS vor Beginn einer Kontrollstufe zugeordnet werden (Preflight-Check, `leitwerk-core/checklists/01-preflight.md`).
 2. Es gilt das **Maximumprinzip**: Die Kontrollstufe einer Aufgabe ist die höchste Stufe, die einer der Risikofaktoren aus Abschnitt 2 auslöst. Es wird nicht gemittelt.
-3. Erfüllt eine Aufgabe ein Kriterium der **Delegationsverbotsliste** (Abschnitt 4), DARF sie NICHT an Devin delegiert werden – unabhängig von der Kontrollstufe.
+3. Erfüllt eine Aufgabe ein Kriterium der **Delegationsverbotsliste** (Abschnitt 4), DARF sie NICHT an den KI-Client delegiert werden – unabhängig von der Kontrollstufe.
 4. Keine Kontrollstufe ersetzt die menschliche Prüfung vollständig. Auch auf Stufe niedrig MUSS ein Mensch das Ergebnis vor Übernahme prüfen.
-5. Steigt das Risiko während der Bearbeitung (zum Beispiel weil sich herausstellt, dass Authentifizierungscode betroffen ist), MUSS Devin die Bearbeitung anhalten, die neue Einstufung melden und auf eine menschliche Entscheidung warten.
+5. Steigt das Risiko während der Bearbeitung (zum Beispiel weil sich herausstellt, dass Authentifizierungscode betroffen ist), MUSS der KI-Client die Bearbeitung anhalten, die neue Einstufung melden und auf eine menschliche Entscheidung warten.
 6. Im Zweifel zwischen zwei Stufen MUSS die höhere gewählt werden.
 7. Das Project Overlay KANN Kriterien verschärfen und projektspezifische Komponenten einer Stufe fest zuordnen (zum Beispiel „alle Änderungen im Modul `<CRITICAL_MODULE>` sind mindestens Stufe hoch"). Es DARF Kriterien NICHT lockern.
 
@@ -35,7 +35,7 @@
 | R9 | Einführung externer Abhängigkeiten | keine | Aktualisierung einer bestehenden Abhängigkeit (Patch/Minor) | neue Abhängigkeit oder Major-Update (Checkliste `leitwerk-core/checklists/07-new-dependency.md`) |
 | R10 | Änderung von Authentifizierung oder Autorisierung | keine | keine (jede Berührung ist mindestens hoch) | jede Änderung |
 | R11 | Änderung von Datenmodellen oder Schnittstellen | keine | interne, abwärtskompatible Erweiterung | Schema-Änderung, Vertragsbruch einer Schnittstelle, Migration |
-| R12 | Automatisierungsgrad der Devin-Nutzung | einzelne, überwachte Sitzung im Modus Normal | mehrere Schritte in einer Sitzung mit sitzungsweiten Freigaben | Hintergrund-Subagenten, Parallelsitzungen oder erweiterte Permission-Modi |
+| R12 | Automatisierungsgrad der KI-Nutzung | einzelne, überwachte Sitzung im Modus Normal | mehrere Schritte in einer Sitzung mit sitzungsweiten Freigaben | Hintergrund-Subagenten, Parallelsitzungen oder erweiterte Permission-Modi |
 | R13 | Mögliche Fehlerfolgen | lokal begrenzt, sofort erkennbar | Funktionsstörung in Test oder Produktion, erkennbar durch Monitoring | Datenverlust, Sicherheitsvorfall, Verstoß gegen rechtliche Vorgaben, Reputationsschaden |
 
 `<CHANGE_SIZE_THRESHOLD>` und die Liste kritischer Komponenten werden im Project Overlay festgelegt (`<TBD: Schwellenwert für Änderungsumfang>`).
@@ -52,9 +52,9 @@
 
 ## 4. Delegationsverbotsliste (normativ)
 
-Folgende Aufgaben und Entscheidungen DÜRFEN NICHT an Devin delegiert werden. Devin KANN – soweit im Overlay nicht ausgeschlossen – vorbereitende Analysen liefern, trifft aber keine der Entscheidungen und führt keine der Handlungen aus:
+Folgende Aufgaben und Entscheidungen DÜRFEN NICHT an den KI-Client delegiert werden. Der KI-Client KANN – soweit im Overlay nicht ausgeschlossen – vorbereitende Analysen liefern, trifft aber keine der Entscheidungen und führt keine der Handlungen aus:
 
-| Nr. | Nicht delegierbar | Zulässige Unterstützung durch Devin |
+| Nr. | Nicht delegierbar | Zulässige Unterstützung durch den KI-Client |
 |---|---|---|
 | V1 | Freigabe, Genehmigung oder Abnahme von Änderungen, Merge Requests, Releases | Review-Unterstützung mit Befunden (Skill `fw-review-support`) |
 | V2 | Merge in geschützte Branches, Tagging von Releases, Deployment in Produktion | Erstellung von Merge-Request-Beschreibungen |

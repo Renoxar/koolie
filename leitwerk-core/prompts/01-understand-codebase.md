@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-001` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -33,7 +33,7 @@ Die Vorlage liefert einer Entwicklerin oder einem Entwickler – insbesondere im
 
 | Parameter | Pflicht | Kontextklasse | Beschreibung |
 |---|---|---|---|
-| `{zielpfad}` | MUSS | K1 | Verzeichnis oder Modul innerhalb `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`; bei Mehrdeutigkeit stellt Devin eine Rückfrage |
+| `{zielpfad}` | MUSS | K1 | Verzeichnis oder Modul innerhalb `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`; bei Mehrdeutigkeit stellt der KI-Client eine Rückfrage |
 | `{fragenkatalog}` | SOLL | K1 | Nummerierte Fragen zu Aufbau, Einstiegspunkten, Abläufen, Tests oder Konventionen; ohne Personen und ohne fachliche Fallbeschreibungen. Beispiel (synthetisch): „Wo werden eingehende Bestellungen validiert?" |
 | `{schwerpunkt}` | KANN | K1 | Fokus der Analyse, zum Beispiel Einstiegspunkte, Schichtung oder Testlandschaft; fehlt er, gilt der Gesamtüberblick |
 | `{kontrollstufe}` | MUSS | K1 | niedrig, mittel oder hoch aus dem Preflight (`leitwerk-core/checklists/01-preflight.md`) |
@@ -93,7 +93,7 @@ Regeln:
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
 | Gesamtes Repository ohne Zielpfad und ohne Fragen analysieren lassen | Unbelegter, oberflächlicher Bericht; Verstoß gegen Least Context (P2) | Modul oder Verzeichnis benennen; Fragenkatalog mit konkreten Fragen |
-| Fragen zur Historie oder zu Entscheidungsgründen stellen („Warum wurde das so gebaut?") | Devin erfindet plausible Begründungen ohne Beleg | Fragen auf Belegbares beschränken; Entscheidungsgründe im Team oder im Decision Log klären |
+| Fragen zur Historie oder zu Entscheidungsgründen stellen („Warum wurde das so gebaut?") | Der KI-Client erfindet plausible Begründungen ohne Beleg | Fragen auf Belegbares beschränken; Entscheidungsgründe im Team oder im Decision Log klären |
 | Bericht als Architekturbewertung oder Aufgabenliste weiterverwenden | Beobachtungen werden zu Entscheidungen (V3); ungeprüfte Tickets | Auffälligkeiten mit `<ARCHITECT_ROLE>` besprechen; Änderungen über FW-PR-002 bewerten |
 | Konfigurationsdateien mit Umgebungswerten „zum Verständnis" einbinden | K3-Risiko (interne Adressen, Zugangsdaten) | Nur Struktur beschreiben lassen; Werte nie bereitstellen |
 | Vorlage für eine einzelne Funktion oder ein Lernziel nutzen | Zu breiter Kontext, unpassende Tiefe | `fw-code-explain` oder FW-PR-012 (Schulung) |

@@ -3,18 +3,18 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.17.0 (2026-09-10)
+## Stand nach Release 0.18.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.17.0 gebracht haben
+### Was 0.5.0 bis 0.18.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,6 +35,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Kern ohne Akteursnamen | Der Kern nannte einen Client als Handelnden – 248 Nennungen in 78 Dateien, das Dreifache der ausgewiesenen Zahl; Prüfung 14 setzt es jetzt durch | `CR-2026-020`, D-28, `tests/protocols/2026-09-10-CR-2026-020-akteursbezeichnung.md` |
 | Strukturentscheidungen aktuell | Acht der zehn Records von 2026-09-01 beschrieben einen Stand von vor sechzehn Releases; vier nannten Client-Pfade in den Entscheidungen, die den werkzeugneutralen Kern anordnen | `CR-2026-019`, `governance/DECISION_LOG.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
@@ -42,6 +43,31 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.18.0 nennt der Kern keinen Client mehr als Handelnden. D-02 ordnet einen
+werkzeugneutralen Kern an; D-15 und D-19 haben ihn eingelöst, soweit es **Pfade** betraf – 63
+Client-Bindungen und 994 Pfadnennungen. Die **Akteursbezeichnung** lag außerhalb dieses Umfangs.
+Der Kern schrieb deshalb nicht vor, was ein KI-Client tun MUSS, sondern was ein namentlich
+genannter Client tut: in
+normativen Sätzen, in Rollenspalten, in der Delegationsverbotsliste, in den Abbruchbedingungen.
+
+**Die Zählung, die den Punkt offen hielt, war selbst zu klein.** Diese Roadmap führte ihn seit
+0.13.0 mit „76 Nennungen in elf Modulen“ – gezählt allein in `framework/core/`. Die
+Kerndefinition des Glossars ist weiter; danach waren es **248 Nennungen in 78 Dateien**, dazu
+die Quellen des Hauptdokuments und vier Skripte. Der größte Einzelposten war
+`templates/project-overlay/OVERLAY.md` mit 19 Nennungen – die Vorlage, die **jedes aufnehmende
+Projekt** ausfüllt und den Produktnamen damit in jede Übernahme weiterreichte.
+
+Seit D-28 steht im Kern der Begriff „der KI-Client“; der Produktname bleibt, wo ein Produkt
+gemeint ist. **Prüfung 14 setzt es durch** und leitet die Namen aus den Pack-Kennungen ab, nicht
+aus einer gepflegten Liste – ein künftiges Client Pack bringt seinen Namen selbst mit. Drei
+Sonden belegen sie, vier Grenzproben ziehen die Linie zum Produktnamen.
+
+Zwei Dinge sind dabei angefallen, die ohne die Prüfung nicht sichtbar geworden wären: ein
+**Folgefehler im Code** – `validate-output.py` suchte einen Abschnittstitel, den es nicht mehr
+gibt – und der Umstand, dass **Prüfung 14 zuerst wirkungslos war**: Im ersten Einbau fehlten die
+Wortgrenzen im Suchmuster, sie meldete null Treffer bei 27 vorhandenen und lief grün.
+Aufgefallen ist es allein durch den Wirksamkeitsnachweis nach D-23.
 
 Mit 0.17.0 sagen die Strukturentscheidungen, was gilt. D-01 bis D-10 datieren sämtlich auf den
 2026-09-01; zwischen ihnen und heute liegen sechzehn Releases und die Records D-11 bis D-27.
@@ -225,7 +251,7 @@ steht und eine Regel mit `paths` erst nach dem Lesen einer passenden Datei.
 Die Prüfmethode `review` verlangt eine zweite Rolle; drei Auflösungen mit Ermessensspielraum (E1
 bis E3) liegen `<FRAMEWORK_OWNER>` zur Einzelentscheidung vor.
 
-**Offen bei `devin-desktop`:** alle zwölf Prüfmarker. Sie brauchen eine Installation von Devin
+**Offen bei `devin-desktop`:** alle zwölf Prüfmarker. Sie brauchen eine Installation vom KI-Client
 Desktop; nichts aus dem `claude-code`-Protokoll überträgt sich darauf.
 
 **Offen übergreifend:** die verbindliche Zielversion je Client. Das Protokoll hält fest, gegen
@@ -301,12 +327,21 @@ erkennbaren Einwand, drei mit einem benannten:
 Bei allen dreien ist sowohl eine Bestätigung als auch eine ausdrückliche Zurückstellung mit
 Bedingung vertretbar; entschieden ist keine von beiden.
 
-**P3 – „Devin" als Akteursbezeichnung aus den Langform-Modulen lösen.** Noch 76 Nennungen in
-elf Modulen (vor 0.13.0: 83 – die Umbenennung des Nutzungsvermerks hat sieben davon gelöst).
-Sie wirken nicht auf das Verhalten, weil die Langform nicht in die Sitzung geladen wird – die
-Laufzeitschicht ist seit 0.12.0 frei davon –, widersprechen aber der Zusage eines
-werkzeugneutralen Kerns. D-15 hatte Pfade ersetzt, nicht die Akteursbezeichnung. Ein Teil der
-Nennungen meint den Client korrekt („Devin Desktop") und bleibt.
+**Erledigt – die Akteursbezeichnung ist aus dem Kern gelöst (0.18.0).** Nicht 76 Nennungen in
+elf Modulen, wie hier bis 0.17.0 stand, sondern **248 in 78 Dateien**: Die Zahl war allein aus
+`framework/core/` erhoben, während die Kerndefinition des Glossars zehn Verzeichnisse umfasst.
+Gelöst mit `CR-2026-020` und D-28, durchgesetzt von Prüfung 14. Ausgewiesen und offen geblieben:
+der Dateiname `decision-trees/02-may-devin-do-task.md`, der Marker
+`<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` an fünf Kernstellen und die clientspezifischen
+Inhalte der Zeile „Umsetzung beim KI-Client" in `05-working-model.md`.
+
+**P2 – Prüfung 13 prüft die Versionsfelder der Kernartefakte nicht.** Neu aus der
+Regressionsprobe R1 zu `CR-2026-020`. Ihr Kopfkommentar sagt „Versionsfelder in der Form
+`MAJOR.MINOR.PATCH`" zu; tatsächlich deckt sie die Overlay-Version, `VERSION` und die
+Steckbriefangabe ab. Ein Checklisten-Versionsfeld `0.1` oder `abc` läuft mit 0 Fehlern durch.
+Derselbe Befundtyp wie `FW-KO-01`: eine Prüfung, die mehr zusagt, als sie leistet. Aufgefallen,
+während 62 Versionsfelder von Hand gehoben wurden – ohne dass irgendetwas geprüft hätte, ob das
+Ergebnis gültig ist.
 
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
@@ -344,7 +379,7 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
 
 ```mermaid
 flowchart LR
-    AP1["AP1 Initialisierung<br/>und Scope"] --> AP2["AP2 Validierung der<br/>Devin-Funktionalitäten"]
+    AP1["AP1 Initialisierung<br/>und Scope"] --> AP2["AP2 Validierung der<br/>Clientfunktionalitäten"]
     AP1 --> AP3["AP3 Framework Core"]
     AP2 --> AP4["AP4 Technische<br/>Referenzimplementierung"]
     AP3 --> AP4
@@ -382,7 +417,7 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Risiken | Prüfungen verzögern alles Nachfolgende → früh starten, Rest parallelisieren |
 | Offene Entscheidungen | `<TBD: Planstufe>`, `<TBD: Vertragsprüfung>`, `<TBD: Nutzungsumfang Cloud/CLI>` |
 
-### AP2 – Validierung der Devin-Funktionalitäten (P1)
+### AP2 – Validierung der Clientfunktionalitäten (P1)
 
 > Dieses Arbeitspaket ist bewusst clientspezifisch: Es validiert die Mechanismen **eines** KI-Clients. Für jedes weitere Client Pack ist es mit der Fähigkeitsmatrix des jeweiligen Packs zu wiederholen (`leitwerk-core/clients/README.md`).
 

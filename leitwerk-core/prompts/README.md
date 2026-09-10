@@ -5,7 +5,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ (Abschnitte 2, 3, 5, 6, 7), Erläuterung (Abschnitte 1, 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 | Grundlage | `leitwerk-core/framework/core/06-prompting-rules.md`, `leitwerk-core/framework/core/05-working-model.md`, `leitwerk-core/framework/core/09-risk-model.md`, `leitwerk-core/framework/core/02-privacy.md` |
 
 ## 1. Zweck (Erläuterung)
@@ -34,7 +34,7 @@ Jede Datei `leitwerk-core/prompts/NN-<name>.md` folgt derselben Struktur: Metada
 | 7. Prüfschritte | Checkbox-Liste für den Menschen mit Verweis auf die passende Checkliste |
 | 8. Typische Fehlanwendungen | Tabelle: Fehlanwendung, Folge, Stattdessen |
 
-Parameter in geschweiften Klammern werden vor dem Einsatz vollständig ersetzt; unbefüllte Parameter DÜRFEN NICHT an Devin gesendet werden (Entfernen oder „nicht angegeben" eintragen). Platzhalter in spitzen Klammern bezeichnen Werte des Project Overlays (`leitwerk-core/docs/PLACEHOLDER_REGISTRY.md`) und werden durch die im Overlay festgelegten Werte ersetzt; offene Overlay-Entscheidungen (`<TBD: …>`) blockieren den Einsatz der betroffenen Vorlage.
+Parameter in geschweiften Klammern werden vor dem Einsatz vollständig ersetzt; unbefüllte Parameter DÜRFEN NICHT an den KI-Client gesendet werden (Entfernen oder „nicht angegeben" eintragen). Platzhalter in spitzen Klammern bezeichnen Werte des Project Overlays (`leitwerk-core/docs/PLACEHOLDER_REGISTRY.md`) und werden durch die im Overlay festgelegten Werte ersetzt; offene Overlay-Entscheidungen (`<TBD: …>`) blockieren den Einsatz der betroffenen Vorlage.
 
 ## 4. Übersicht der Prompt-Vorlagen (Erläuterung)
 
@@ -75,7 +75,7 @@ Vollständig in `leitwerk-core/framework/core/06-prompting-rules.md`; die Kurzfo
 1. Preflight durchführen (`leitwerk-core/checklists/01-preflight.md`): Delegierbarkeit (V1–V12), Kontrollstufe mit Faktor nach dem Maximumprinzip, Betriebsmodus, Scope.
 2. Passende Vorlage wählen (Abschnitt 4); prüfen, ob stattdessen der Skill direkt aufzurufen ist (Abschnitt 2).
 3. Parameter befüllen; jeden Wert auf Kontextklasse prüfen; K2-Inhalte nur nach dokumentierter Freigabe und Bereinigung, K3 nie.
-4. Codeblock aus Abschnitt 5 in eine neue Devin-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (Permission-Modus Normal `[DOK]`).
+4. Codeblock aus Abschnitt 5 in eine neue KI-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (Permission-Modus Normal `[DOK]`).
 5. Ergebnis anhand Abschnitt 7 der Vorlage und der genannten Checklisten prüfen; Ergebnisbericht ablegen (ab Stufe mittel: `<TBD: Ablageort für Ergebnisberichte>`).
 6. Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess; im KI-Nutzungsvermerk KANN die verwendete Prompt-ID neben den Skills genannt werden.
 

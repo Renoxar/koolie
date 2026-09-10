@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-CRIT` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | Abschlussgespräch des Onboardings; Grundlage der Freigabe zur selbstständigen Nutzung |
@@ -29,7 +29,7 @@ Die Kriterien beschreiben beobachtbares Verhalten in den Übungen – keine Pers
 
 - Wendet Skills statt freier Prompts an, wo vorhanden; formuliert Prompts mit den Pflichtelementen.
 - Nutzt die Checklisten ohne Aufforderung (CL-02 bis CL-05) und dokumentiert Nachweise am vorgesehenen Ort.
-- Grenzt Team-Fragen (Historie, Absichten) von Devin-Fragen (Belegbares) sauber ab.
+- Grenzt Team-Fragen (Historie, Absichten) von KI-Fragen (Belegbares) sauber ab.
 - Gibt Feedback zu Framework-Lücken über den Feedbackprozess statt über Umgehungen.
 
 ## Freigabe
