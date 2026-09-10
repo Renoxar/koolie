@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
 ## 0. Konventionen dieses Frameworks
 
@@ -39,19 +39,19 @@ Variable Inhalte werden ausschließlich über Platzhalter in spitzen Klammern au
 
 ### P1 Human Accountability
 
-Devin ist ein unterstützendes Werkzeug und keine Entscheidungs- oder Freigabeinstanz. Die Verantwortung für fachliche und technische Entscheidungen, Quellcode, Architektur, Sicherheit, Tests, Dokumentation, Merge Requests, Releases und Freigaben verbleibt bei den zuständigen Menschen. Ein Mensch MUSS jede Übernahme eines KI-Ergebnisses in ein verbindliches Artefakt verantworten und nachvollziehen können.
+Der KI-Client ist ein unterstützendes Werkzeug und keine Entscheidungs- oder Freigabeinstanz. Die Verantwortung für fachliche und technische Entscheidungen, Quellcode, Architektur, Sicherheit, Tests, Dokumentation, Merge Requests, Releases und Freigaben verbleibt bei den zuständigen Menschen. Ein Mensch MUSS jede Übernahme eines KI-Ergebnisses in ein verbindliches Artefakt verantworten und nachvollziehen können.
 
 ### P2 Least Context
 
-Devin erhält nur den Kontext, der für die aktuelle Aufgabe erforderlich, zulässig, aktuell und fachlich relevant ist. Kontext MUSS aufgabenbezogen ausgewählt werden; ein größerer Kontext ist nicht automatisch besser. Das Kontext- und Datenschutzmodell (`02-privacy.md`) definiert, welche Inhalte überhaupt bereitgestellt werden dürfen.
+Der KI-Client erhält nur den Kontext, der für die aktuelle Aufgabe erforderlich, zulässig, aktuell und fachlich relevant ist. Kontext MUSS aufgabenbezogen ausgewählt werden; ein größerer Kontext ist nicht automatisch besser. Das Kontext- und Datenschutzmodell (`02-privacy.md`) definiert, welche Inhalte überhaupt bereitgestellt werden dürfen.
 
 ### P3 No Assumption Policy
 
-Fehlende Informationen DÜRFEN NICHT stillschweigend ergänzt werden. Beeinflusst eine Unklarheit das Ergebnis, MUSS Devin die Unklarheit benennen, ihre Auswirkung erklären, eine konkrete Rückfrage stellen und den betroffenen Punkt als offen kennzeichnen. Unkritische Strukturentscheidungen KANN Devin vorschlagen, MUSS sie aber ausdrücklich als Vorschlag markieren.
+Fehlende Informationen DÜRFEN NICHT stillschweigend ergänzt werden. Beeinflusst eine Unklarheit das Ergebnis, MUSS der KI-Client die Unklarheit benennen, ihre Auswirkung erklären, eine konkrete Rückfrage stellen und den betroffenen Punkt als offen kennzeichnen. Unkritische Strukturentscheidungen KANN der KI-Client vorschlagen, MUSS sie aber ausdrücklich als Vorschlag markieren.
 
 ### P4 Evidence before Modification
 
-Vor Änderungen an bestehenden Artefakten MUSS Devin den relevanten Ist-Zustand analysieren. Aussagen über vorhandenen Code, Konfigurationen, Abhängigkeiten oder Tests MÜSSEN auf tatsächlich gefundenen Repository-Inhalten beruhen und mit Pfad- oder Fundstellenangaben belegt sein.
+Vor Änderungen an bestehenden Artefakten MUSS der KI-Client den relevanten Ist-Zustand analysieren. Aussagen über vorhandenen Code, Konfigurationen, Abhängigkeiten oder Tests MÜSSEN auf tatsächlich gefundenen Repository-Inhalten beruhen und mit Pfad- oder Fundstellenangaben belegt sein.
 
 ### P5 Review before Adoption
 
@@ -63,7 +63,7 @@ KI-generierter Code durchläuft mindestens dieselben Prüfungen wie manuell erst
 
 ### P7 Reversibility
 
-Von Devin vorgeschlagene Änderungen MÜSSEN nachvollziehbar, überprüfbar und reversibel sein. Änderungen SOLLEN klein, thematisch getrennt und einzeln rücknehmbar sein. Große, unübersichtliche oder sachlich vermischte Änderungen DÜRFEN NICHT erzeugt werden.
+Vom KI-Client vorgeschlagene Änderungen MÜSSEN nachvollziehbar, überprüfbar und reversibel sein. Änderungen SOLLEN klein, thematisch getrennt und einzeln rücknehmbar sein. Große, unübersichtliche oder sachlich vermischte Änderungen DÜRFEN NICHT erzeugt werden.
 
 ### P8 Tool Independence
 
@@ -89,4 +89,4 @@ Inhalte einer Ebene DÜRFEN NICHT in eine andere Ebene geschrieben werden. Ein P
 
 ## 2. Ableitungen für die tägliche Arbeit (Erläuterung)
 
-Souveräne KI-Nutzung wird nicht daran gemessen, möglichst viele Aufgaben zu delegieren, sondern Aufgaben angemessen abzugrenzen, Kontext kontrolliert bereitzustellen und Ergebnisse belastbar zu prüfen. Wer eine Aufgabe nicht selbst prüfen könnte, SOLL sie nicht an Devin delegieren, sondern zunächst die eigene Prüffähigkeit herstellen (etwa durch Analyse- und Erklärungs-Skills).
+Souveräne KI-Nutzung wird nicht daran gemessen, möglichst viele Aufgaben zu delegieren, sondern Aufgaben angemessen abzugrenzen, Kontext kontrolliert bereitzustellen und Ergebnisse belastbar zu prüfen. Wer eine Aufgabe nicht selbst prüfen könnte, SOLL sie nicht an den KI-Client delegieren, sondern zunächst die eigene Prüffähigkeit herstellen (etwa durch Analyse- und Erklärungs-Skills).

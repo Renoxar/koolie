@@ -16,7 +16,7 @@ Dieses Verzeichnis ist **kein** Bestandteil des Framework Core. Es ist der defin
 
 1. Organisationsweite Vorgaben haben Vorrang vor dem Framework Core (`leitwerk-core/governance/PRIORITY_HIERARCHY.md`). Enthält eine Vorgabe eine strengere Regel, gilt sie unmittelbar; das Framework wird im nächsten Release angepasst, wenn die strengere Regel dauerhaft ist.
 2. Enthält eine Vorgabe eine **weniger** strenge Regel als der Core, bleibt der Core maßgeblich, bis der Framework Owner die Lockerung nach dokumentierter Prüfung in den Core übernimmt (P9 Secure by Default).
-3. Dokumente hier tragen Kontextklasse K1 oder werden nur als Verweisblatt geführt. Sie werden für Devin nur geladen, wenn das Projekt sie im Overlay-Manifest registriert (Typ `ai-governance` oder `other`).
+3. Dokumente hier tragen Kontextklasse K1 oder werden nur als Verweisblatt geführt. Sie werden für den KI-Client nur geladen, wenn das Projekt sie im Overlay-Manifest registriert (Typ `ai-governance` oder `other`).
 4. Abgleich: Das Klassifizierungsschema der Organisation wird auf die Kontextklassen K0–K3 abgebildet (`leitwerk-core/framework/core/02-privacy.md`); die Abbildung wird hier dokumentiert: `<TBD: Abbildungstabelle Organisationsklassifizierung → K0–K3>`.
 
 ## Ablage

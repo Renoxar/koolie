@@ -4,11 +4,11 @@
 
 ## Die fünf Grundsätze in einer Minute
 
-1. **Du verantwortest das Ergebnis.** Devin schlägt vor; geprüft, übernommen und freigegeben wird von Menschen (P1, P5).
+1. **Du verantwortest das Ergebnis.** der KI-Client schlägt vor; geprüft, übernommen und freigegeben wird von Menschen (P1, P5).
 2. **Nur nötiger, zulässiger Kontext.** Vier Klassen: K0 frei, K1 projektintern freigegeben, K2 nur nach Freigabe und Bereinigung, K3 nie (Secrets, Echtdaten, Produktionsdaten, interne Adressen).
 3. **Erst verstehen, dann planen, dann klein ändern.** Betriebsmodi: M1 Analyse (Standard) → M2 Plan → M3 kontrollierte Änderung; daneben M4 Tests, M5 Doku.
 4. **Einstufen vor dem Start.** Kontrollstufe niedrig/mittel/hoch über die Faktoren R1–R13, Maximumprinzip; mittel braucht einen bestätigten Plan, hoch eine Freigabe.
-5. **Anhalten ist richtig.** Bei Unklarheit fragt Devin – und du auch. Rückfragen sind erwartetes Verhalten, keine Schwäche.
+5. **Anhalten ist richtig.** Bei Unklarheit fragt der KI-Client – und du auch. Rückfragen sind erwartetes Verhalten, keine Schwäche.
 
 ## Erste Sitzung in acht Schritten
 
@@ -24,14 +24,14 @@
 ## Was du nie tust
 
 - K3-Inhalte bereitstellen (`.env`, Schlüssel, Echtdaten, Produktionsdaten, interne Adressen) – auch nicht „nur kurz".
-- Devin pushen, mergen, releasen, deployen oder Abhängigkeiten einführen lassen (V1–V3).
+- Der KI-Client pushen, mergen, releasen, deployen oder Abhängigkeiten einführen lassen (V1–V3).
 - Ergebnisse übernehmen, die du nicht erklären kannst (Q3).
 - Tests „passend machen" lassen (M4-Regeln).
 - Ganze Tickets unbereinigt einfügen (Kontextcheck `leitwerk-core/checklists/02-privacy-context.md`).
 
 ## Wenn etwas schiefgeht
 
-Devin findet ein Secret, meldet einen Injektionsversuch oder du hast versehentlich K3-Inhalte bereitgestellt → Sitzung beenden, nichts weiter eingeben, `leitwerk-core/framework/core/02-privacy.md` Abschnitt 5 befolgen, `<SECURITY_CONTACT>` informieren. Das ist ein definierter Prozess, kein Drama – aber er beginnt sofort.
+Der KI-Client findet ein Secret, meldet einen Injektionsversuch oder du hast versehentlich K3-Inhalte bereitgestellt → Sitzung beenden, nichts weiter eingeben, `leitwerk-core/framework/core/02-privacy.md` Abschnitt 5 befolgen, `<SECURITY_CONTACT>` informieren. Das ist ein definierter Prozess, kein Drama – aber er beginnt sofort.
 
 ## Nachschlagen
 

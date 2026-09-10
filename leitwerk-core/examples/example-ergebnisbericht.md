@@ -1,9 +1,9 @@
-# Beispiel (synthetisch): Devin-Ergebnisbericht
+# Beispiel (synthetisch): Ergebnisbericht
 
 > Synthetisches Beispiel eines Ergebnisberichts nach `leitwerk-core/framework/core/05-working-model.md` Abschnitt 3.6 – kleine Änderung (M3, Stufe niedrig) im erfundenen Projekt „Bestellverwaltung". Alle Pfade, Klassen und Ausgaben sind erfunden.
 
 ```markdown
-## Devin-Ergebnisbericht
+## Ergebnisbericht
 
 - Aufgabe: BSV-Ticket (Platzhalter): Fehlermeldung bei ungültiger Menge nennt den gültigen Bereich nicht
 - Betriebsmodus: M3 Controlled Modification  |  Kontrollstufe: niedrig (auslösender Faktor: R1 – eine Datei, eine Verantwortlichkeit)

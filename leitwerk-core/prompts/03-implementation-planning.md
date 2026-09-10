@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-003` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -36,7 +36,7 @@ Die Vorlage erarbeitet vor jeder Modifikation einen umsetzbaren, prüfbaren Änd
 | `{faktor}` | MUSS | K1 | Auslösender Risikofaktor R1–R13 |
 | `{analyse_referenz}` | SOLL | K1 | Referenz auf die Impact-Analyse in der Sitzung; fehlt sie, MUSS die verkürzte Analyse ausdrücklich angewiesen und im Plan als Annahme vermerkt werden |
 | `{scope_pfade}` | MUSS | K1 | Pfade innerhalb `<ALLOWED_PATHS>`, in denen die Umsetzung stattfinden darf; ausdrücklich nicht zu berührende Pfade |
-| `{umsetzungsmodus}` | SOLL | K1 | Vorgesehener Modus der Umsetzung (M3, M4 oder M5); fehlt er, schlägt Devin ihn je Schritt vor |
+| `{umsetzungsmodus}` | SOLL | K1 | Vorgesehener Modus der Umsetzung (M3, M4 oder M5); fehlt er, schlägt der KI-Client ihn je Schritt vor |
 | `{vorgaben}` | KANN | K1 | Bereits getroffene Entscheidungen oder ausgeschlossene Optionen (zum Beispiel Architekturvorgabe aus dem Overlay, Fundstelle) |
 
 ## 5. Prompt-Vorlage
@@ -95,8 +95,8 @@ Regeln:
 
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
-| Planung ohne festgelegte Kontrollstufe anfordern | Optionspflicht und Freigabeerfordernis unbestimmt; Devin müsste die Stufe setzen (P1) | Stufe im Preflight festlegen (`leitwerk-core/checklists/01-preflight.md`), dann planen |
+| Planung ohne festgelegte Kontrollstufe anfordern | Optionspflicht und Freigabeerfordernis unbestimmt; der KI-Client müsste die Stufe setzen (P1) | Stufe im Preflight festlegen (`leitwerk-core/checklists/01-preflight.md`), dann planen |
 | „Plane und setze gleich um" in einer Nachricht | Freigabepunkt (Schritt 9) entfällt; Modusvermischung M2/M3 | Plan bestätigen, Umsetzung in neuer Sitzung mit FW-PR-004 |
-| Plan mit Devin-Empfehlung als „entschieden" weitergeben | Architektur- oder Technologieentscheidung durch das Werkzeug (V3) | Option selbst wählen, Entscheidung mit `<ARCHITECT_ROLE>` abstimmen und dokumentieren |
+| Plan mit KI-Empfehlung als „entschieden" weitergeben | Architektur- oder Technologieentscheidung durch das Werkzeug (V3) | Option selbst wählen, Entscheidung mit `<ARCHITECT_ROLE>` abstimmen und dokumentieren |
 | Plan-Datei aus `~/.devin/plans/` in das Repository committen | Ebene E gelangt in Ebene C; Nachvollziehbarkeit ohne Freigabe | Plan in Ticket oder Merge Request übernehmen (`<TBD: Ablage von Plänen im Projekt>`) |
 | Plan nach Bestätigung stillschweigend anpassen lassen | Umsetzung weicht vom bestätigten Plan ab; Eskalationskriterium Stufe mittel | Jede Planänderung erneut bestätigen (`leitwerk-core/framework/core/05-working-model.md`, M2) |

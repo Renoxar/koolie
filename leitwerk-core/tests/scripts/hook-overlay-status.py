@@ -7,7 +7,8 @@ laut Dokumentation [DOK], Details <VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>.
 
 Liest project-overlay/OVERLAY.md und .devin/rules/20-project-overlay.md, ermittelt den
 Overlay-Status (aktiv | inaktiv | unbekannt) und meldet ihn als Zusatzkontext. Bei Status
-inaktiv oder unbekannt soll Devin laut AGENTS.md Abschnitt 3 nur lesend arbeiten.
+inaktiv oder unbekannt soll der KI-Client laut Wurzel-Anweisungsdatei Abschnitt 3 nur
+lesend arbeiten.
 Das Skript blockiert nie; es informiert.
 """
 import json

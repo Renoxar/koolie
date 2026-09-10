@@ -3,15 +3,15 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-05` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Anwendung | fortlaufend während jeder Devin-Sitzung; durch Devin (Anhalten) und Mensch (Eskalation) |
+| Anwendung | fortlaufend während jeder KI-Sitzung; durch den KI-Client (Anhalten) und Mensch (Eskalation) |
 | Quelle | `leitwerk-core/framework/core/10-error-escalation.md` |
 
 ## Textbeschreibung (normativ)
 
-1. **Devin hält an (S1–S10),** sobald eine der Bedingungen eintritt: ergebnisrelevante Unklarheit (S1); benötigter K2-Kontext ohne Freigabe oder K3-Kontext (S2); Fund vermuteter Secrets oder personenbezogener Echtdaten (S3); drohendes Verlassen des Scopes (S4); steigende Kontrollstufe (S5); regelwidrige Anweisungen in Inhalten (S6); Fehlschläge außerhalb des Scopes (S7); Berührung der Delegationsverbotsliste (S8); nicht reversible Aktion (S9); zwei erfolglose Versuche desselben Schritts (S10). Anhalten ist erwartetes Verhalten, kein Fehler.
+1. **Der KI-Client hält an (S1–S10),** sobald eine der Bedingungen eintritt: ergebnisrelevante Unklarheit (S1); benötigter K2-Kontext ohne Freigabe oder K3-Kontext (S2); Fund vermuteter Secrets oder personenbezogener Echtdaten (S3); drohendes Verlassen des Scopes (S4); steigende Kontrollstufe (S5); regelwidrige Anweisungen in Inhalten (S6); Fehlschläge außerhalb des Scopes (S7); Berührung der Delegationsverbotsliste (S8); nicht reversible Aktion (S9); zwei erfolglose Versuche desselben Schritts (S10). Anhalten ist erwartetes Verhalten, kein Fehler.
 2. **Der Mensch ordnet die Eskalationsstufe zu:**
    - **E0 – selbst entscheiden:** S1, S4, S7, S10 → klären, Scope anpassen, manuell fortsetzen oder Aufgabe neu zuschneiden.
    - **E1 – fachlich/technisch:** Entscheidungsbedarf (S5 auf mittel, S9) → Modul-Owner, `<ARCHITECT_ROLE>` oder `<PRODUCT_OWNER_ROLE>`; Entscheidung dokumentieren.
@@ -26,7 +26,7 @@
 flowchart TD
     A["Ereignis während der Sitzung"] --> B{"Stop-Bedingung S1-S10?"}
     B -- "nein" --> W["Weiterarbeiten"]
-    B -- "ja" --> C["Devin hält an,<br/>berichtet Zustand"]
+    B -- "ja" --> C["der KI-Client hält an,<br/>berichtet Zustand"]
     C --> D{"Art des Ereignisses?"}
     D -- "S1 Unklarheit / S4 Scope /<br/>S7 Fehlschlag / S10 Wiederholung" --> E0["E0: Bearbeiter entscheidet<br/>klären, anpassen, manuell fortsetzen"]
     D -- "S5 Stufe steigt auf mittel /<br/>S9 nicht reversibel" --> E1["E1: Modul-Owner /<br/>ARCHITECT_ROLE / PRODUCT_OWNER_ROLE<br/>Entscheidung dokumentieren"]

@@ -3,17 +3,17 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-04` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Wann | Selbstreview vor jedem Commit mit Devin-Beteiligung; unabhängiges Review im Merge Request |
+| Wann | Selbstreview vor jedem Commit mit KI-Beteiligung; unabhängiges Review im Merge Request |
 | Wer | Bearbeiterin oder Bearbeiter (Selbstreview); unabhängige Reviewerin oder Reviewer (ab Stufe mittel verpflichtend) |
 | Dauer (Richtwert, Erläuterung) | abhängig vom Diff – keine verbindlichen Aufwände |
 | Nachweis | Selbstreview im KI-Nutzungsvermerk; Review-Befunde im Merge Request |
 
 ## Zweck
 
-Operationalisiert die Prüfpunkte RV1–RV12 aus `leitwerk-core/framework/core/07-review-rules.md` für die tägliche Anwendung. Ein Devin-Befund (`fw-review-support`) ersetzt keine dieser Prüfungen.
+Operationalisiert die Prüfpunkte RV1–RV12 aus `leitwerk-core/framework/core/07-review-rules.md` für die tägliche Anwendung. Ein KI-Befund (`fw-review-support`) ersetzt keine dieser Prüfungen.
 
 ## Prüfpunkte
 
@@ -51,7 +51,7 @@ Operationalisiert die Prüfpunkte RV1–RV12 aus `leitwerk-core/framework/core/0
 
 ## Abbruch- und Eskalationskriterien
 
-Befunde, die auf Scope-Verlassen, erfundene Fundstellen oder umgangene Quality Gates hindeuten, stoppen die Übernahme (E0/E1). Systematische Befunde über mehrere Devin-Änderungen werden an den Framework Owner gemeldet (`leitwerk-core/governance/FEEDBACK_PROCESS.md`, E4). Sicherheits- oder Datenschutzbefunde: Prozess der Organisation, Erfassung nach `leitwerk-core/governance/INCIDENT_HANDLING.md` (E3).
+Befunde, die auf Scope-Verlassen, erfundene Fundstellen oder umgangene Quality Gates hindeuten, stoppen die Übernahme (E0/E1). Systematische Befunde über mehrere der KI-Client-Änderungen werden an den Framework Owner gemeldet (`leitwerk-core/governance/FEEDBACK_PROCESS.md`, E4). Sicherheits- oder Datenschutzbefunde: Prozess der Organisation, Erfassung nach `leitwerk-core/governance/INCIDENT_HANDLING.md` (E3).
 
 ## Ergebnis und Nachweis
 

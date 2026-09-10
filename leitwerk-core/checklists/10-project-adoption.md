@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-10` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | bei Übernahme des Frameworks in ein neues Projekt, vor dem Setzen des Overlay-Status auf `aktiv` |
@@ -19,7 +19,7 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 
 ### Voraussetzungen der Organisation
 
-- [ ] **MUSS** Freigabe der Devin-Nutzung durch die Organisation liegt vor (Referenz im Overlay Abschnitt 1).
+- [ ] **MUSS** Freigabe der KI-Nutzung durch die Organisation liegt vor (Referenz im Overlay Abschnitt 1).
 - [ ] **MUSS** Ergebnis der Datenschutz- und Vertragsprüfung liegt vor und ist im Overlay referenziert (K-06; ohne Ergebnis bleibt die restriktivste Auslegung nach `leitwerk-core/framework/core/02-privacy.md` Abschnitt 1.3).
 - [ ] **MUSS** Planstufe und administrativ erzwungene Team-Einstellungen sind dokumentiert (`leitwerk-core/framework/org-policies/`, K-05); Training-Opt-out beziehungsweise vertragliche Regelung nachgewiesen (`<TBD: Nachweis der Einstellung>`).
 - [ ] **SOLL** Abbildung des Klassifizierungsschemas der Organisation auf K0–K3 liegt vor (`leitwerk-core/framework/org-policies/MAPPING_CLASSIFICATION.md`).

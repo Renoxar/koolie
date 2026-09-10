@@ -1,26 +1,26 @@
-# Checkliste FW-CL-01 – Preflight-Check vor jeder Devin-Aufgabe
+# Checkliste FW-CL-01 – Preflight-Check vor jeder KI-Aufgabe
 
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-01` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Wann | vor jeder Devin-Sitzung, nach Zuschnitt der Aufgabe |
+| Wann | vor jeder KI-Sitzung, nach Zuschnitt der Aufgabe |
 | Wer | Bearbeiterin oder Bearbeiter |
 | Dauer (Richtwert, Erläuterung) | wenige Minuten – keine verbindlichen Aufwände |
 | Nachweis | Kontrollstufe, Faktor und Modus in der Aufgabenanweisung; ab Stufe mittel im Ergebnisbericht |
 
 ## Zweck
 
-Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig eingestuft, sauber abgegrenzt und der Kontext zulässig ist. Ohne abgeschlossenen Preflight-Check beginnt keine Devin-Aufgabe (`leitwerk-core/framework/core/05-working-model.md`, Schritt 1–4).
+Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig eingestuft, sauber abgegrenzt und der Kontext zulässig ist. Ohne abgeschlossenen Preflight-Check beginnt keine KI-Aufgabe (`leitwerk-core/framework/core/05-working-model.md`, Schritt 1–4).
 
 ## Prüfpunkte
 
 ### Aufgabe und Delegierbarkeit
 
 - [ ] **MUSS** Ziel und Akzeptanzkriterien der Aufgabe liegen schriftlich vor (ein Ziel je Aufgabe).
-- [ ] **MUSS** Die Aufgabe steht nicht auf der Delegationsverbotsliste V1–V12 (`leitwerk-core/framework/core/09-risk-model.md` Abschnitt 4); andernfalls Abbruch (nur menschliche Bearbeitung, Devin höchstens vorbereitende Analyse, sofern zulässig).
+- [ ] **MUSS** Die Aufgabe steht nicht auf der Delegationsverbotsliste V1–V12 (`leitwerk-core/framework/core/09-risk-model.md` Abschnitt 4); andernfalls Abbruch (nur menschliche Bearbeitung, der KI-Client höchstens vorbereitende Analyse, sofern zulässig).
 - [ ] **MUSS** Der Entscheidungsbaum `leitwerk-core/decision-trees/02-may-devin-do-task.md` wurde bei Unsicherheit durchlaufen.
 - [ ] **SOLL** Die Aufgabe ist klein genug für eine Sitzung; sonst zerlegen (Analyse → Plan → Umsetzung).
 

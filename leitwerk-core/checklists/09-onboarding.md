@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-09` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | während des Onboardings einer neuen Entwicklerin oder eines neuen Entwicklers; Abschluss vor der Freigabe zur selbstständigen Nutzung |
@@ -13,7 +13,7 @@
 
 ## Zweck
 
-Führt durch das Onboarding-Programm (`leitwerk-core/onboarding/GUIDE.md`) bis zur dokumentierten Freigabe für die selbstständige Devin-Nutzung. Maßstab ist souveräne Nutzung: Aufgaben angemessen abgrenzen, Kontext kontrolliert bereitstellen, Ergebnisse belastbar prüfen – nicht möglichst viel delegieren.
+Führt durch das Onboarding-Programm (`leitwerk-core/onboarding/GUIDE.md`) bis zur dokumentierten Freigabe für die selbstständige KI-Nutzung. Maßstab ist souveräne Nutzung: Aufgaben angemessen abgrenzen, Kontext kontrolliert bereitstellen, Ergebnisse belastbar prüfen – nicht möglichst viel delegieren.
 
 ## Prüfpunkte
 
@@ -38,7 +38,7 @@ Führt durch das Onboarding-Programm (`leitwerk-core/onboarding/GUIDE.md`) bis z
 
 - [ ] **MUSS** Wissenstest (`leitwerk-core/onboarding/KNOWLEDGE_CHECK.md`) im Selbsttest bestanden (Kriterien in `leitwerk-core/onboarding/COMPLETION_CRITERIA.md`); der Test dient der Selbstkontrolle, nicht der Personalbeurteilung.
 - [ ] **MUSS** Erfolgskriterien aus `leitwerk-core/onboarding/COMPLETION_CRITERIA.md` gemeinsam durchgegangen; offene Punkte mit Folgeplan notiert.
-- [ ] **MUSS** Freigabe zur selbstständigen Nutzung durch Mentorin oder Mentor dokumentiert (Datum, Rolle); bis dahin arbeitet die oder der Neue nur begleitet mit Devin.
+- [ ] **MUSS** Freigabe zur selbstständigen Nutzung durch Mentorin oder Mentor dokumentiert (Datum, Rolle); bis dahin arbeitet die oder der Neue nur begleitet mit dem KI-Client.
 - [ ] **SOLL** Nachschlagewerk (`leitwerk-core/onboarding/REFERENCE.md`) und Feedbackweg (`leitwerk-core/governance/FEEDBACK_PROCESS.md`) bekannt.
 
 ## Abbruch- und Eskalationskriterien

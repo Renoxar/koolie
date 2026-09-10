@@ -3,17 +3,17 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-08` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Wann | vor dem Erstellen und vor dem Mergen eines Merge Requests mit Devin-Beteiligung |
+| Wann | vor dem Erstellen und vor dem Mergen eines Merge Requests mit KI-Beteiligung |
 | Wer | Bearbeiterin oder Bearbeiter (Erstellen); Reviewerinnen, Reviewer und freigebende Rollen (Mergen) |
 | Dauer (Richtwert, Erläuterung) | wenige Minuten zusätzlich zum Review – keine verbindlichen Aufwände |
 | Nachweis | Merge Request selbst (Beschreibung, Vermerk, Befunde, Freigaben) |
 
 ## Zweck
 
-Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess, mit vollständiger Nachvollziehbarkeit der Devin-Beteiligung.
+Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess, mit vollständiger Nachvollziehbarkeit der KI-Beteiligung.
 
 ## Prüfpunkte
 
@@ -34,7 +34,7 @@ Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über 
 
 - [ ] **MUSS** Alle Quality Gates der Pipeline sind erfolgreich (`<QUALITY_GATE>`, P6); keine deaktivierten Prüfungen.
 - [ ] **MUSS** Review-Tiefe entspricht der Kontrollstufe: niedrig – vollständiges Lesen des Diffs; mittel – unabhängiges Review aller RV-Punkte und Planabgleich; hoch – zusätzlich Architektur-/Security-Review und Prüfung des Sitzungsprotokolls (`leitwerk-core/framework/core/07-review-rules.md` Abschnitt 3).
-- [ ] **MUSS** Erforderliche Freigaben liegen vor (Stufe hoch: `<APPROVAL_ROLE>`, bei R3/R10 `<SECURITY_CONTACT>`); Devin hat keine Freigabe erteilt (V1).
+- [ ] **MUSS** Erforderliche Freigaben liegen vor (Stufe hoch: `<APPROVAL_ROLE>`, bei R3/R10 `<SECURITY_CONTACT>`); der KI-Client hat keine Freigabe erteilt (V1).
 - [ ] **MUSS** Alle Review-Befunde sind aufgelöst oder mit Begründung zurückgestellt.
 - [ ] **SOLL** Metrikdaten für den Pilot erfasst (Kontrollstufe, Modus, Review-Iterationen, verworfene Vorschläge – `leitwerk-core/pilot/METRICS.md`).
 

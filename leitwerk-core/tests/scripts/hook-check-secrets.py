@@ -16,7 +16,7 @@ Verhalten:
 - Nicht parsebare Eingabe -> standardmäßig Exit-Code 0 mit Warnung auf stderr (fail-open),
   weil das Eingabeschema noch nicht in einer Zielinstallation validiert wurde.
   Mit Umgebungsvariable FW_HOOK_FAIL_CLOSED=1 wird stattdessen blockiert (fail-closed).
-  Nach erfolgreicher Validierung im Arbeitspaket "Validierung der Devin-Funktionalitäten"
+  Nach erfolgreicher Validierung im Arbeitspaket "Validierung der Clientfunktionalitäten"
   SOLL fail-closed zum Standard gemacht werden (Secure by Default).
 
 Das Skript gibt gefundene Secrets niemals aus; es nennt nur die Musterkategorie.
@@ -101,7 +101,7 @@ def main() -> None:
     try:
         payload = json.loads(raw) if raw.strip() else {}
     except json.JSONDecodeError:
-        msg = "[fw-hook] Eingabe nicht als JSON lesbar; Schema gegen aktuelle Devin-Dokumentation pruefen."
+        msg = "[fw-hook] Eingabe nicht als JSON lesbar; Schema gegen aktuelle Clientdokumentation pruefen."
         if os.environ.get("FW_HOOK_FAIL_CLOSED") == "1":
             block(msg)
         print(msg, file=sys.stderr)

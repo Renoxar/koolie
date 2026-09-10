@@ -1,6 +1,6 @@
 # 9 Betriebsmodi
 
-Jede Devin-Aufgabe läuft in genau einem von fünf Betriebsmodi; der Modus wird im Preflight festgelegt (Entscheidungsbaum 3) und begrenzt Schreibrechte, Befehlsausführung und erwartete Ausgabe. Ohne ausdrückliche Angabe gilt der nur lesende Modus M1; ein Moduswechsel innerhalb einer Sitzung erfordert eine ausdrückliche menschliche Anweisung und wird im Ergebnisbericht vermerkt.
+Jede KI-Aufgabe läuft in genau einem von fünf Betriebsmodi; der Modus wird im Preflight festgelegt (Entscheidungsbaum 3) und begrenzt Schreibrechte, Befehlsausführung und erwartete Ausgabe. Ohne ausdrückliche Angabe gilt der nur lesende Modus M1; ein Moduswechsel innerhalb einer Sitzung erfordert eine ausdrückliche menschliche Anweisung und wird im Ergebnisbericht vermerkt.
 
 | Modus | Zweck in einem Satz | Schreiben | Befehle | Typische Skills |
 |---|---|---|---|---|

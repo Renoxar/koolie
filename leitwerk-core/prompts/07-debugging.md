@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-007` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -36,7 +36,7 @@ Die Vorlage strukturiert die Ursachenanalyse eines Fehlers auf Basis eines **ber
 |---|---|---|---|
 | `{fehlerbericht}` | MUSS | K2 (bereinigt, Freigabe dokumentiert) | Beobachtetes Verhalten, erwartetes Verhalten, bereinigter Stacktrace oder Logauszug, betroffene Version oder Branch |
 | `{verdachtsbereich}` | SOLL | K1 | Modul oder Pfad, in dem die Ursache vermutet wird; fehlt er, beginnt die Analyse beim obersten Element des Stacktraces innerhalb `<ALLOWED_PATHS>` |
-| `{reproduktionsstand}` | SOLL | K1 | Bekannte Schritte oder „nicht reproduzierbar"; ohne Angabe formuliert Devin eine Reproduktionshypothese |
+| `{reproduktionsstand}` | SOLL | K1 | Bekannte Schritte oder „nicht reproduzierbar"; ohne Angabe formuliert der KI-Client eine Reproduktionshypothese |
 | `{kontrollstufe}` | MUSS | K1 | niedrig, mittel oder hoch aus dem Preflight (`leitwerk-core/checklists/01-preflight.md`) |
 | `{faktor}` | MUSS | K1 | Auslösender Risikofaktor R1–R13 |
 
@@ -93,5 +93,5 @@ Regeln:
 | Rohes Produktionslog einfügen („hier, finde den Fehler") | K3-Abfluss (Echtdaten, Hostnamen); Verstoß gegen `02-privacy.md` | Bereinigen nach `leitwerk-core/checklists/02-privacy-context.md`, dann diese Vorlage |
 | „Analysiere und behebe gleich mit" | Modusbruch M1→M3 ohne Plan und Freigabe; unprüfbare Änderung | Analyse abschließen, Ursache bestätigen, dann `fw-bugfix-prepare` und `fw-change-small` |
 | Ursache aus der ersten plausiblen Fundstelle übernehmen | Symptomfix; Fehler kehrt zurück | Konfidenz und Ausschlussliste verlangen; Reproduktion vor Fix |
-| Devin raten lassen, „was der Kunde gemacht hat" | Erfundene Abläufe ohne Beleg | Reproduktionsstand als Parameter liefern oder Hypothese ausdrücklich als Vermutung führen |
+| Der KI-Client raten lassen, „was der Kunde gemacht hat" | Erfundene Abläufe ohne Beleg | Reproduktionsstand als Parameter liefern oder Hypothese ausdrücklich als Vermutung führen |
 | Mehrere unabhängige Fehler in einer Sitzung | Vermischte Analyse, unklare Fundstellen | Ein Fehler je Sitzung (Q1) |

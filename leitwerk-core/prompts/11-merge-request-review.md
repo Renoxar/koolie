@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-011` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -78,8 +78,8 @@ Regeln:
 
 ## 7. Prüfschritte
 
-- [ ] Reviewerin oder Reviewer liest den Diff vollständig selbst (Stufe niedrig) beziehungsweise prüft alle RV-Punkte eigenständig (ab mittel) – die Devin-Befunde sind Zulieferung, nicht Ersatz (`leitwerk-core/framework/core/07-review-rules.md`).
-- [ ] Stichprobe: mindestens zwei Devin-Befunde und zwei „ohne Befund"-Punkte selbst verifiziert.
+- [ ] Reviewerin oder Reviewer liest den Diff vollständig selbst (Stufe niedrig) beziehungsweise prüft alle RV-Punkte eigenständig (ab mittel) – die KI-Befunde sind Zulieferung, nicht Ersatz (`leitwerk-core/framework/core/07-review-rules.md`).
+- [ ] Stichprobe: mindestens zwei KI-Befunde und zwei „ohne Befund"-Punkte selbst verifiziert.
 - [ ] Ab Stufe mittel: Tests selbst ausgeführt; Planabgleich bestätigt.
 - [ ] Befunde in das Review-Werkzeug durch den Menschen übertragen (eigene Worte, eigene Bewertung).
 - [ ] Systematische Befunde an den Framework Owner gemeldet (`leitwerk-core/governance/FEEDBACK_PROCESS.md`).
@@ -88,7 +88,7 @@ Regeln:
 
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
-| Devin-Befundliste unbesehen als Review-Kommentare posten | Verantwortungsdiffusion; V1-Grauzone | Befunde selbst prüfen und in eigener Bewertung übertragen |
+| KI-Befundliste unbesehen als Review-Kommentare posten | Verantwortungsdiffusion; V1-Grauzone | Befunde selbst prüfen und in eigener Bewertung übertragen |
 | „Gib eine Merge-Empfehlung ab" | Freigabesurrogat (V1) | Empfehlungltext streichen; Entscheidung beim Menschen |
 | Review nur bei „großen" MRs unterstützen lassen | Gerade kleine Diffs enthalten RV2/RV5-Fehler | Nach Kontrollstufe, nicht nach Bauchgefühl einsetzen |
 | Urheber- oder Leistungsvergleiche erfragen | Personenbewertung (V7) | Ergebnisbezogene Prüfung; Personenfragen unterlassen |

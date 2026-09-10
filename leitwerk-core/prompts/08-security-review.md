@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-008` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -75,7 +75,7 @@ Regeln:
 
 ## 7. Prüfschritte
 
-- [ ] Befunde durch `<SECURITY_CONTACT>` bewertet; Schwere und Behandlung entschieden (nicht durch Devin, nicht durch die Bearbeiterin oder den Bearbeiter allein).
+- [ ] Befunde durch `<SECURITY_CONTACT>` bewertet; Schwere und Behandlung entschieden (nicht durch den KI-Client, nicht durch die Bearbeiterin oder den Bearbeiter allein).
 - [ ] Fundstellen der Befunde hoher Schwere geöffnet und den Mechanismus nachvollzogen.
 - [ ] Ergebnis gegen die Security Scans der CI gespiegelt; Abweichungen erklärt (P6 bleibt maßgeblich).
 - [ ] Behebungen als eigene Aufgaben mit Preflight geplant (`fw-bugfix-prepare` / `fw-plan`); keine Sofortkorrektur in derselben Sitzung.

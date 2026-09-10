@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-05` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | nach Testerstellung oder -änderung (M4) und vor jedem Merge Request mit Logikänderung |
@@ -13,7 +13,7 @@
 
 ## Zweck
 
-Sichert, dass Tests aus Devin-Sitzungen aussagekräftig sind und geänderte Logik tatsächlich absichern (Q2, M4-Regeln, RV4).
+Sichert, dass Tests aus KI-Sitzungen aussagekräftig sind und geänderte Logik tatsächlich absichern (Q2, M4-Regeln, RV4).
 
 ## Prüfpunkte
 

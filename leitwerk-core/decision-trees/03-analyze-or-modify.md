@@ -1,9 +1,9 @@
-# Entscheidungsbaum 3 – Muss Devin nur analysieren oder darf Devin ändern?
+# Entscheidungsbaum 3 – Muss der KI-Client nur analysieren oder darf der KI-Client ändern?
 
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-03` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight nach Baum 2; wählt den Betriebsmodus M1–M5 |

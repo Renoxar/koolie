@@ -6,11 +6,11 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 
 ## 1. Begriff (normativ)
 
-Ein **Skill** ist eine versionierte, testbare, wiederverwendbare Arbeitsanweisung für Devin, die eine abgegrenzte Aufgabe nach einem festen Verfahren mit festem Ausgabeformat bearbeitet. Skills sind die bevorzugte Form, wiederkehrende Aufgaben zu standardisieren. Ein Skill entscheidet nichts, was ein Mensch entscheiden muss (Delegationsverbotsliste).
+Ein **Skill** ist eine versionierte, testbare, wiederverwendbare Arbeitsanweisung für den KI-Client, die eine abgegrenzte Aufgabe nach einem festen Verfahren mit festem Ausgabeformat bearbeitet. Skills sind die bevorzugte Form, wiederkehrende Aufgaben zu standardisieren. Ein Skill entscheidet nichts, was ein Mensch entscheiden muss (Delegationsverbotsliste).
 
 ## 2. Ablage und Dateien (normativ)
 
@@ -29,7 +29,7 @@ Ein **Skill** ist eine versionierte, testbare, wiederverwendbare Arbeitsanweisun
 
 ## 3. Frontmatter (normativ)
 
-Das Frontmatter enthält ausschließlich in der Devin-Dokumentation belegte Felder `[DOK]`:
+Das Frontmatter enthält ausschließlich in der Clientdokumentation belegte Felder `[DOK]`:
 
 | Feld | Pflicht | Regel |
 |---|---|---|

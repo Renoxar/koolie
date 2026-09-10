@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | RP-RE |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 | Status | entwurf |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
@@ -145,7 +145,7 @@ Aufgabenbeschreibungen und Ticketinhalte sind in der Regel **K2** (`leitwerk-cor
 5. Ein Glossar als Manifest-Typ `glossary` registrieren, falls vorhanden — der Skill nutzt es für verbindliche Fachbegriffe.
 6. Validieren: `python leitwerk-core/tests/scripts/validate-framework.py --strict-overlay`
 
-Nicht aktivierte Packs liegen nur im Verzeichnis und werden von Devin nicht als Regel geladen.
+Nicht aktivierte Packs liegen nur im Verzeichnis und werden vom KI-Client nicht als Regel geladen.
 
 ## 10. Änderungsverlauf
 

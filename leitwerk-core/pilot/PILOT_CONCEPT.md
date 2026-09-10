@@ -3,14 +3,14 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PILOT` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | Projektleitung des Pilotprojekts mit `<FRAMEWORK_OWNER>` |
 | Metriken | `METRICS.md` |
 
 ## 1. Ziel und Grundsätze (normativ)
 
-1. Der Pilot prüft unter realen Bedingungen, ob das Framework sicheren, effizienten und akzeptierten Devin-Einsatz ermöglicht – und liefert die Entscheidungsgrundlage für Fortführung, Anpassung oder Beendigung. Er ist ein Experiment mit Abbruchrecht, kein Rollout mit Umweg.
+1. Der Pilot prüft unter realen Bedingungen, ob das Framework sicheren, effizienten und akzeptierten KI-Einsatz ermöglicht – und liefert die Entscheidungsgrundlage für Fortführung, Anpassung oder Beendigung. Er ist ein Experiment mit Abbruchrecht, kein Rollout mit Umweg.
 2. Produktivität, Ergebnisqualität, Sicherheit und Nutzerakzeptanz werden **gemeinsam** betrachtet; einzelne Metriken erlauben keine belastbare Aussage über den Gesamtnutzen (Wechselwirkungen: schnellere Bearbeitung bei steigendem Review-Aufwand ist kein Gewinn).
 3. Befragungen sind freiwillig; Auswertung erfolgt aggregiert und nicht personenbeziehbar; Metriken dienen der Framework- und Prozessbewertung, niemals der Leistungsbewertung von Personen (V7). Diese Zusage steht in der Pilot-Kommunikation an das Team.
 
@@ -18,7 +18,7 @@
 
 | Element | Festlegung | Parameter |
 |---|---|---|
-| Referenzbasis | Vor dem Start werden die Vergleichswerte der Metriken aus dem Bestandsprozess erhoben (gleiche Definitionen, Zeitraum `<TBD: Referenzzeitraum>`); wo keine Historie existiert, wird die Basis in den ersten Pilotwochen ohne Devin-Anteil miterhoben | `<TBD>` |
+| Referenzbasis | Vor dem Start werden die Vergleichswerte der Metriken aus dem Bestandsprozess erhoben (gleiche Definitionen, Zeitraum `<TBD: Referenzzeitraum>`); wo keine Historie existiert, wird die Basis in den ersten Pilotwochen ohne KI-Anteil miterhoben | `<TBD>` |
 | Pilotgruppe | `<TBD: Anzahl>` Entwicklerinnen und Entwickler nach abgeschlossenem Onboarding; freiwillige Teilnahme; Mischung aus Erfahrungsstufen SOLL | `<TBD>` |
 | Pilotzeitraum | `<PILOT_DURATION>` (konfigurierbar; lang genug für mindestens zwei Review-Punkte) | `<PILOT_DURATION>` |
 | Ausgewählte Anwendungsfälle | Start mit den Skills FW-SK-001…004, 006, 008, 012 (Analyse, Plan, Tests, Fehleranalyse, MR-Texte) und `fw-change-small` auf Kontrollstufe niedrig/mittel; Stufe hoch bleibt im Pilot außen vor, sofern der Overlay Owner nichts anderes freigibt | `<TBD: Fallliste>` |

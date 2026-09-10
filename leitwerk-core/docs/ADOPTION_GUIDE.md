@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.2` |
+| Version | `0.4.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `leitwerk-core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -53,7 +53,7 @@ bleibt unberührt (P10, Baum 6).
 
 2. **Kern kopieren:** Das Verzeichnis `leitwerk-core/` in das Wurzelverzeichnis des
    Projekt-Repositorys kopieren. Bei Monorepos in das Wurzelverzeichnis des Workspace, den
-   Devin öffnet (A-01).
+   der KI-Client öffnet (A-01).
 
    ```bash
    cp -r leitwerk-core/ /pfad/zum/projekt/
@@ -171,7 +171,7 @@ bleibt unberührt (P10, Baum 6).
 
 ## 4. Mehrere Repositories, ein Projekt
 
-Je Repository, das Devin öffnet, liegt eine vollständige Framework-Integration (Root-Regeln
+Je Repository, das der KI-Client öffnet, liegt eine vollständige Framework-Integration (Root-Regeln
 wirken je Workspace). Das Overlay KANN geteilt gepflegt und je Repository ausgerollt werden;
 seit der Bündelung ist das Ausrollen ein Kopiervorgang plus Skriptaufruf und damit
 skriptbar:

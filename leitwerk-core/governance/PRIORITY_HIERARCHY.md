@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-PRIO` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Laufzeitfassung | Wurzel-Anweisungsdatei, Abschnitt 2 |
@@ -40,7 +40,7 @@ Der Arbeitsauftrag enthält zwei Fassungen der Hierarchie: eine 7-stufige (Phase
 **Befund 2 – Reihenfolge Technology vor Role Packs:** Konsistent, mit dieser Begründung: Technology Packs beschreiben Umgebungstatsachen und technische Korrektheit (was in einer Sprache oder einem Framework funktioniert und sicher ist); Role Packs beschreiben generische Arbeitsweisen einer Tätigkeit. Wo beide dasselbe Detail regeln, muss die Umgebungstatsache gewinnen, sonst entstünde technisch falscher Code aus „prozessual richtigen" Regeln. Beispiel (synthetisch): Empfiehlt ein Role Pack ein Testmuster, das `<TEST_FRAMEWORK>` in der eingesetzten Version nicht unterstützt, gilt die Technology-Pack-Regel. Echte Konflikte bleiben durch Regel 2.3 selten; sie betreffen nur Handwerkskonventionen.
 
 **Befund 3 – Scheinkonflikt „Core über Overlay" vs. „Overlay definiert die Projektwerte":** Aufgelöst durch das Verschärfungsprinzip (Regel 2.1): Das Overlay füllt vom Core vorgesehene Parameter (`<ALLOWED_PATHS>`, `<TEST_COMMAND>` …) – das ist Konkretisierung, kein Vorrangfall. Vorrang des Core wirkt nur, wenn ein Overlay versucht, Core-Regeln zu lockern (zum Beispiel Bypass zu erlauben); solche Overlays sind ungültig und fallen in der Validierung beziehungsweise im Release-Prozess auf.
-**Befund 4 – Nutzeranweisung auf der niedrigsten Stufe:** Ohne Regel 2.2 wäre das absurd (ein Mensch könnte Devin nicht stoppen). Mit der Unterscheidung Einschränken (immer möglich) gegen Erweitern (nie über höhere Ebenen hinaus) ist die Stufe 8 konsistent und entspricht Human Accountability: Der Mensch steuert die Aufgabe, kann aber Governance nicht per Prompt aufheben.
+**Befund 4 – Nutzeranweisung auf der niedrigsten Stufe:** Ohne Regel 2.2 wäre das absurd (ein Mensch könnte der KI-Client nicht stoppen). Mit der Unterscheidung Einschränken (immer möglich) gegen Erweitern (nie über höhere Ebenen hinaus) ist die Stufe 8 konsistent und entspricht Human Accountability: Der Mensch steuert die Aufgabe, kann aber Governance nicht per Prompt aufheben.
 
 **Befund 5 – Skills (7) unter den Packs (5, 6):** Konsistent, weil Skills Verfahren sind, die Pack- und Overlay-Vorgaben anwenden. Ein Skill, der einer Pack-Konvention widerspricht, ist ein Fehler des Skills (E4-Feedback), kein Vorrangfall. Die Laufzeit-Anordnung ist zugleich technisch plausibel, da Regeln (Ebenen 3–6) als Systemkontext wirken und Skills als aufgabenbezogene Anweisungen `[DOK]`-Mechanismen unterschiedlicher Art sind – die normative Rangfolge stellt dieselbe Ordnung ausdrücklich her, unabhängig vom technischen Ladeweg `[KONZ]`.
 
@@ -48,4 +48,4 @@ Der Arbeitsauftrag enthält zwei Fassungen der Hierarchie: eine 7-stufige (Phase
 
 ## 4. Anwendung in der Praxis (Erläuterung)
 
-Konflikte äußern sich selten als offener Widerspruch, sondern als Unsicherheit („Overlay sagt X, der Skill formuliert Y"). Vorgehen: (1) Ist es ein echter Widerspruch oder eine Konkretisierung? (2) Bei echtem Widerspruch gilt die höhere Ebene sofort; (3) der Fall geht als Feedback an den Owner der niedrigeren Ebene (Skill-/Pack-/Overlay-Korrektur); (4) Devin meldet erkannte Widersprüche im Ergebnisbericht, statt still zu wählen.
+Konflikte äußern sich selten als offener Widerspruch, sondern als Unsicherheit („Overlay sagt X, der Skill formuliert Y"). Vorgehen: (1) Ist es ein echter Widerspruch oder eine Konkretisierung? (2) Bei echtem Widerspruch gilt die höhere Ebene sofort; (3) der Fall geht als Feedback an den Owner der niedrigeren Ebene (Skill-/Pack-/Overlay-Korrektur); (4) der KI-Client meldet erkannte Widersprüche im Ergebnisbericht, statt still zu wählen.

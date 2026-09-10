@@ -34,7 +34,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-010` |
 | Name | `fw-review-support` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis (mit freigegebenen lesenden Git-Befehlen) |
@@ -47,7 +47,7 @@ triggers:
 
 - **Zweck:** Prüft einen lokalen Änderungssatz gegen die Prüfpunkte RV1–RV12 aus `leitwerk-core/framework/core/07-review-rules.md` und liefert Befunde nach Schwere mit Fundstellen: Scope-Abgleich gegen Plan oder Ticket, Fundstellen-Treue des Ergebnisberichts, Existenz verwendeter Schnittstellen (Suche im Arbeitsbereich), Aussagekraft der Tests, Sicherheits- und Datenschutzauffälligkeiten, Änderungen an Abhängigkeiten und Quality Gates. Das Ergebnis bereitet das menschliche Review vor – es ist kein Review-Ergebnis und keine Freigabe (V1).
 - **Zielgruppe:** Bearbeiterinnen und Bearbeiter (Selbstreview vor dem Merge Request), Reviewerinnen und Reviewer; bei Kontrollstufe hoch zusätzlich die im Overlay benannten Rollen für Architektur- und Security-Review.
-- **Trigger:** Schritt 13 des Standardarbeitsablaufs (`leitwerk-core/framework/core/05-working-model.md`); vor dem Selbstreview nach `leitwerk-core/checklists/04-review-ai-code.md`; Vorbereitung eines unabhängigen Reviews ab Kontrollstufe mittel. Aufruf: `/fw-review-support <dateiliste-oder-diff-basis> [plan-oder-ticketreferenz]`. Kein Aufruf auf Vorschlag von Devin, da der Skill Befehle ausführt.
+- **Trigger:** Schritt 13 des Standardarbeitsablaufs (`leitwerk-core/framework/core/05-working-model.md`); vor dem Selbstreview nach `leitwerk-core/checklists/04-review-ai-code.md`; Vorbereitung eines unabhängigen Reviews ab Kontrollstufe mittel. Aufruf: `/fw-review-support <dateiliste-oder-diff-basis> [plan-oder-ticketreferenz]`. Kein Aufruf auf Vorschlag vom KI-Client, da der Skill Befehle ausführt.
 - **Nicht verwenden, wenn:** eine Freigabe-, Abnahme- oder Merge-Entscheidung erwartet wird (V1, V2 – nicht delegierbar); Code nur verstanden werden soll (`fw-code-explain`); die Änderung noch nicht existiert (`fw-change-analyze`); der Merge-Request-Text erstellt werden soll (`fw-mr-description`).
 
 ## 2. Vorbedingungen, Eingaben und Kontext

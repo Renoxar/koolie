@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-02` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
 | Wann | im Preflight-Check und erneut vor jeder zusätzlichen Kontextbereitstellung in der Sitzung |
@@ -13,7 +13,7 @@
 
 ## Zweck
 
-Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) an Devin gelangen (`leitwerk-core/framework/core/02-privacy.md`, `leitwerk-core/decision-trees/01-context-allowed.md`).
+Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) an den KI-Client gelangen (`leitwerk-core/framework/core/02-privacy.md`, `leitwerk-core/decision-trees/01-context-allowed.md`).
 
 ## Prüfpunkte
 
@@ -43,7 +43,7 @@ Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) 
 
 ## Abbruch- und Eskalationskriterien
 
-Sind K3-Inhalte bereits an Devin gelangt: sofort nach `leitwerk-core/framework/core/02-privacy.md` Abschnitt 5 verfahren (Sitzung beenden, Secrets rotieren lassen, Meldung an `<SECURITY_CONTACT>` und bei Personenbezug `<DATA_PROTECTION_CONTACT>`, Erfassung nach `leitwerk-core/governance/INCIDENT_HANDLING.md`) – Eskalationsstufe E3 (`leitwerk-core/framework/core/10-error-escalation.md`). Fehlende K2-Freigabe: Quelle nicht verwenden, gegebenenfalls Freigabe anfordern (E1).
+Sind K3-Inhalte bereits an den KI-Client gelangt: sofort nach `leitwerk-core/framework/core/02-privacy.md` Abschnitt 5 verfahren (Sitzung beenden, Secrets rotieren lassen, Meldung an `<SECURITY_CONTACT>` und bei Personenbezug `<DATA_PROTECTION_CONTACT>`, Erfassung nach `leitwerk-core/governance/INCIDENT_HANDLING.md`) – Eskalationsstufe E3 (`leitwerk-core/framework/core/10-error-escalation.md`). Fehlende K2-Freigabe: Quelle nicht verwenden, gegebenenfalls Freigabe anfordern (E1).
 
 ## Ergebnis und Nachweis
 

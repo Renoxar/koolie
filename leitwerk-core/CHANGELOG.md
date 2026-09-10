@@ -2,6 +2,42 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.18.0] - 2026-09-10
+
+### Behoben
+- **Der werkzeugneutrale Kern nannte einen Client als Handelnden (`CR-2026-020`, D-28).** D-02 ordnet einen werkzeugneutralen Kern an; D-15 und D-19 haben ihn eingeloest, soweit es **Pfade** betraf – 63 Client-Bindungen und 994 Pfadnennungen. Die **Akteursbezeichnung** lag ausserhalb dieses Umfangs. Der Kern schrieb deshalb nicht vor, was ein KI-Client tun MUSS, sondern was *Devin* tut: in normativen Saetzen, in Rollenspalten, in der Delegationsverbotsliste, in den Abbruchbedingungen. Seit 0.6.0 gibt es ein zweites Client Pack – fuer dessen Nutzer benannten diese Regeln ein Produkt, das sie nicht einsetzen.
+
+  **Der Umfang war das Dreifache des ausgewiesenen.** Die Roadmap fuehrte den Punkt seit 0.13.0 mit „76 Nennungen in elf Modulen“, gezaehlt allein in `framework/core/`. `docs/RUNTIME_GLOSSARY.md` definiert den Kern weiter – `framework/`, `governance/`, `checklists/`, `prompts/`, `decision-trees/`, `onboarding/`, `docs/`, `templates/`, `examples/`, `tests/`. Danach waren es **248 Akteursnennungen in 78 Dateien**, dazu die Quellen des Hauptdokuments und vier Skripte. Der groesste Einzelposten: `templates/project-overlay/OVERLAY.md` mit 19 Nennungen – die Vorlage, die **jedes aufnehmende Projekt** ausfuellt.
+
+  Derselbe Befundtyp wie `CR-2026-018` und `CR-2026-019`: eine Zusage, die nie vollstaendig gegen ihren eigenen Gegenstand gehalten wurde. Diesmal war die Zaehlung, die den Rest offen hielt, selbst zu klein.
+
+- **Ein Folgefehler im Code.** `tests/scripts/validate-output.py` suchte den Abschnittstitel `Devin-Ergebnisbericht`, der mit diesem Release `Ergebnisbericht` heisst. Ohne Pruefung 14 haette das Skript ab sofort einen Abschnitt verlangt, den kein Skill mehr erzeugt.
+
+### Geaendert
+- **Der Kern nennt den Handelnden beim Begriff: „der KI-Client“.** Er steht bereits in `docs/RUNTIME_GLOSSARY.md` und war an sieben Stellen in Gebrauch. Komposita folgen dem im Kern vorhandenen Praefix `KI-`; die Kurzform verwendete `KI-Ergebnis` und `KI-Nutzung` schon.
+- **Der Produktname bleibt, wo ein Produkt gemeint ist** – „Devin Desktop“, „Devin Local“, „Devin-Desktop-Installation“, die Pack-Kennungen, die Laufzeitpfade und die Quellen-Domains. Muss ein Kerntext den Namen selbst tragen, steht dort `<CLIENT_NAME>`.
+- **Historische Dokumente bleiben unveraendert** – `CHANGELOG.md` (auch die der Skills), `governance/change-requests/`, `governance/DECISION_LOG.md`, `tests/protocols/`.
+- **AP2 heisst „Validierung der Clientfunktionalitaeten“.** Der Titel war seit 0.14.0 falsch: Das Arbeitspaket ist fuer `claude-code` gefahren worden.
+- **62 Versionsfelder um eine PATCH-Stelle gehoben**, sechs Skills zusaetzlich mit Eintrag im eigenen Aenderungsverlauf. `08-skill-conventions.md` Abschnitt 7 fuehrt „Korrekturen und Formulierungen“ als PATCH; den Eintrag hat der Validator eingefordert.
+
+### Hinzugefuegt
+- **Pruefung 14: Kein Client wird im Kern als Akteur benannt.** Ohne sie waere die Neutralitaet eine Zusage, die beim naechsten von Hand geschriebenen Absatz verfaellt – dasselbe Muster, das D-25 fuer Versionsfelder beschreibt. Die Pruefung leitet die Namen aus den **Pack-Kennungen** ab, nicht aus einer gepflegten Liste: Ein kuenftiges Client Pack bringt seinen Namen selbst mit.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs.
+- **Drei Sonden und vier Grenzproben nach D-23** (`tests/protocols/2026-09-10-CR-2026-020-akteursbezeichnung.md`). Alle drei Sonden gemeldet, alle vier Grenzproben still. Zwei Regressionsproben: eine bestaetigt Pruefung 5, die andere hat einen Nebenbefund aufgedeckt.
+- **Die Pruefung war zuerst wirkungslos.** Im ersten Einbau fehlten die Wortgrenzen im Suchmuster – sie meldete null Treffer bei 27 vorhandenen und war gruen. Aufgefallen ist es allein durch den Wirksamkeitsnachweis; ohne D-23 waere eine gruene, wirkungslose Pruefung ausgeliefert worden. Derselbe Befundtyp wie `FW-KO-01` und `AP2-CC-09`.
+
+### Migrationshinweise fuer Overlays
+Keine technische Migration. Ein bestehendes Overlay, das aus `templates/project-overlay/OVERLAY.md` erzeugt wurde, traegt den Produktnamen weiter in projekteigenem Text; das Framework schreibt Ebene 4 nichts vor. Wer die Vorlage neu zieht, bekommt die neutrale Fassung.
+
+### Bekannte Einschraenkungen
+- **`<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` ist an fuenf Kernstellen weiter in Gebrauch**, obwohl `docs/PLACEHOLDER_REGISTRY.md` die clientneutrale Form bereits fuehrt. Ausgewiesen, nicht geschlossen: Eine Markerumbenennung beruehrt Pruefung 7 und beide Client Packs.
+- **Pruefung 13 prueft die Versionsfelder der Kernartefakte nicht.** Ihr Kopfkommentar sagt „jedes Versionsfeld gegen `MAJOR.MINOR.PATCH`“ zu; tatsaechlich deckt sie die Overlay-Version, `VERSION` und die Steckbriefangabe ab. Ein Checklisten-Versionsfeld `0.1` oder `abc` laeuft glatt durch – belegt durch Regressionsprobe R1. Derselbe Befundtyp wie `FW-KO-01`. Ausgewiesen, nicht geschlossen.
+- **`decision-trees/02-may-devin-do-task.md` traegt die Akteursbezeichnung im Dateinamen.** Nicht umbenannt: Der Name ist an vier Stellen verlinkt, eine Umbenennung beruehrt `FW-KO-04` und die Assemblierung. Eigener Vorgang mit eigenem Nachweis.
+- **Die clientspezifischen Inhalte der Zeile „Umsetzung beim KI-Client“** in `05-working-model.md` bleiben client-gebunden (`~/.devin/plans/`, `subagent_explore`). Dieser Antrag benennt sie, loest sie nicht.
+- **Die Testpflicht je Artefakt ist erneuert.** 62 Versionsaenderungen loesen `08-skill-conventions.md` 7 aus; die Testfaelle sind saemtlich `sitzung` und haengen an AP2. Der Preis ist derselbe, den Entscheidung E2 aus `FW-VN-01` ausdruecklich akzeptiert hat.
+
 ## [0.17.0] - 2026-09-10
 
 ### Behoben

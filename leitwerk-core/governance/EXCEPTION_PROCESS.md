@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-EXC` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -27,5 +27,5 @@
 
 1. Eine Ausnahme ohne Befristung oder ohne kompensierende Maßnahme ist ungültig.
 2. Häufen sich gleichartige Ausnahmen, ist das ein Regelmangel: Der Owner MUSS einen Änderungsantrag anstoßen, statt weiter zu genehmigen (Lessons Learned).
-3. Devin wird über aktive Ausnahmen ausschließlich über die versionierten Regeldateien informiert (Overlay-Abschnitt 18 beziehungsweise angepasste Laufzeitregel) – nie über mündliche „gilt heute nicht"-Anweisungen.
+3. Der KI-Client wird über aktive Ausnahmen ausschließlich über die versionierten Regeldateien informiert (Overlay-Abschnitt 18 beziehungsweise angepasste Laufzeitregel) – nie über mündliche „gilt heute nicht"-Anweisungen.
 4. Auditierbarkeit: Register, Genehmigung und Ablauf jeder Ausnahme sind jederzeit nachweisbar.

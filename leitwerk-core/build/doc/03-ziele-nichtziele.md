@@ -24,5 +24,5 @@
 | N4 | Bewertung oder Überwachung von Personen anhand von Nutzungs- oder Pilotdaten | Ausdrücklich ausgeschlossen (V7, Metrik-Grundsätze) |
 | N5 | Produktdokumentation oder Schulung für einen KI-Client als Produkt | Das Framework referenziert die offizielle Dokumentation; es dupliziert sie nicht |
 | N6 | Vollständige technologie- oder branchenspezifische Regelwerke in der Erstfassung | Technology Packs entstehen projektbezogen; die Struktur dafür ist Teil des Frameworks |
-| N7 | Abdeckung anderer Einsatzformen (Devin Cloud, CLI, Fremdagenten) im Kern der Erstfassung | Als Erweiterung vorgesehen, standardmäßig deaktiviert (D-10, K-04) |
+| N7 | Abdeckung anderer Einsatzformen (der KI-Client Cloud, CLI, Fremdagenten) im Kern der Erstfassung | Als Erweiterung vorgesehen, standardmäßig deaktiviert (D-10, K-04) |
 | N8 | Garantie fehlerfreier KI-Ergebnisse | Unerreichbar; das Framework macht Fehler früh sichtbar und begrenzt ihre Wirkung |

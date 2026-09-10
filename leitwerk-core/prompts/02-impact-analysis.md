@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-002` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -12,7 +12,7 @@
 
 ## 1. Zweck
 
-Die Vorlage klärt vor jeder Planung oder Umsetzung, was eine gewünschte Änderung im Repository tatsächlich berührt: betroffene Komponenten und deren Verwender, Schnittstellen und Datenmodell, bestehende Tests und Testlücken, Risiken je Faktor R1–R13 mit einem nicht bindenden Vorschlag der Kontrollstufe, offene fachliche Fragen und die Empfehlung des nächsten Schritts. Ergebnis ist ein Analysebericht – kein Plan, kein Code, keine Entscheidung. Liegt der Skill `fw-change-analyze` vor, SOLL er verwendet werden (`/fw-change-analyze`); die Vorlage dient als strukturierte Anweisung mit zusätzlichen Parametern oder als Ersatz, wenn der Skill in der Laufzeitschicht nicht verfügbar ist. Die Kontrollstufe legt der Mensch im Preflight fest (`leitwerk-core/checklists/01-preflight.md`); der Vorschlag von Devin bindet nicht.
+Die Vorlage klärt vor jeder Planung oder Umsetzung, was eine gewünschte Änderung im Repository tatsächlich berührt: betroffene Komponenten und deren Verwender, Schnittstellen und Datenmodell, bestehende Tests und Testlücken, Risiken je Faktor R1–R13 mit einem nicht bindenden Vorschlag der Kontrollstufe, offene fachliche Fragen und die Empfehlung des nächsten Schritts. Ergebnis ist ein Analysebericht – kein Plan, kein Code, keine Entscheidung. Liegt der Skill `fw-change-analyze` vor, SOLL er verwendet werden (`/fw-change-analyze`); die Vorlage dient als strukturierte Anweisung mit zusätzlichen Parametern oder als Ersatz, wenn der Skill in der Laufzeitschicht nicht verfügbar ist. Die Kontrollstufe legt der Mensch im Preflight fest (`leitwerk-core/checklists/01-preflight.md`); der Vorschlag vom KI-Client bindet nicht.
 
 ## 2. Einzusetzender Kontext
 
@@ -33,7 +33,7 @@ Die Vorlage klärt vor jeder Planung oder Umsetzung, was eine gewünschte Änder
 |---|---|---|---|
 | `{aufgabenbeschreibung}` | MUSS | K2 (bereinigt) | Ziel, Akzeptanzkriterien und erkennbare Nicht-Ziele der Änderung; ohne Personen, Kunden, Adressen, Kennungen |
 | `{referenz}` | KANN | K1 | Kennung aus `<ISSUE_TRACKER>` (nur die Kennung, kein Inhalt) |
-| `{vermuteter_bereich}` | KANN | K1 | Pfade oder Modulnamen; fehlt die Angabe, ermittelt Devin Kandidaten per Suche und kennzeichnet sie als Vorschlag |
+| `{vermuteter_bereich}` | KANN | K1 | Pfade oder Modulnamen; fehlt die Angabe, ermittelt der KI-Client Kandidaten per Suche und kennzeichnet sie als Vorschlag |
 | `{kontrollstufe}` | SOLL | K1 | Vorläufige Schätzung aus dem Preflight; wird bestätigt oder mit Begründung als abweichend gemeldet |
 | `{faktor}` | SOLL | K1 | Auslösender Risikofaktor der vorläufigen Schätzung (R1–R13) |
 | `{kontextquellen}` | KANN | K1 | Zusätzlich freigegebene Dokumente laut Overlay-Manifest, per Pfad referenziert (zum Beispiel Schnittstellenverträge) |
@@ -98,7 +98,7 @@ Regeln:
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
 | Unbereinigten Ticket-Export einfügen | K2/K3-Risiko (Personen, Kunden, Anhänge); kein klares Ziel | Titel, technische Beschreibung und Akzeptanzkriterien bereinigt übernehmen (`leitwerk-core/framework/core/02-privacy.md` Abschnitt 3.4) |
-| Stufenvorschlag von Devin als Festlegung übernehmen | Verantwortungsverlagerung; Verstoß gegen P1 und Grundregel 1 in `leitwerk-core/framework/core/09-risk-model.md` | Stufe selbst festlegen; Vorschlag nur als Prüfhilfe nutzen |
+| Stufenvorschlag vom KI-Client als Festlegung übernehmen | Verantwortungsverlagerung; Verstoß gegen P1 und Grundregel 1 in `leitwerk-core/framework/core/09-risk-model.md` | Stufe selbst festlegen; Vorschlag nur als Prüfhilfe nutzen |
 | „Analysiere und setz es dann gleich um" | Modusvermischung; Umsetzung ohne Plan und Freigabepunkt | Analyse abschließen; Planung mit FW-PR-003, Umsetzung in neuer Sitzung |
 | Mehrere Änderungen in einer Analyse bündeln | Unklare Risikoeinstufung; Verstoß gegen Q1 | Eine Änderung je Analyse; Aufteilung anfordern |
 | Tests „zur Ermittlung der Abdeckung" ausführen lassen | Verlässt M1; Ergebnisse ohne Freigabe der Befehle | Testlücken lesend erfassen; Ausführung über FW-PR-005 |

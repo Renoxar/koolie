@@ -2,7 +2,7 @@
 
 <!-- Verwendung: für jede Änderung an Framework Core, Packs, Skills, Checklisten, Prompts,
      Entscheidungsbäumen, Templates oder an der Berechtigungskonfiguration (.devin/config.json).
-     Einreichen beim zuständigen Owner laut leitwerk-core/governance/RACI.md. Auch Devin-Vorschläge zu solchen
+     Einreichen beim zuständigen Owner laut leitwerk-core/governance/RACI.md. Auch KI-Vorschläge zu solchen
      Änderungen laufen ausschließlich über diese Vorlage (V10). -->
 
 ## Änderungsantrag `CR-<JAHR>-<NNN>`

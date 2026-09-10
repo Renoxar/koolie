@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-002` |
 | Name | `fw-code-explain` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -32,7 +32,7 @@ triggers:
 
 - **Zweck:** Liefert eine belegte Erklärung einer bestehenden Code-Einheit (Funktion, Methode, Klasse, Modul oder Ablauf über mehrere Einheiten) auf wählbarer Tiefe: Zweck, Ablauf Schritt für Schritt, Ein- und Ausgaben, Abhängigkeiten, Fehlerpfade, vorhandene Tests, Randbedingungen und Unklarheiten. Jede Aussage ist entweder als „beobachtet (Fundstelle)" oder als „geschlossen (Vermutung)" gekennzeichnet. Der Skill verändert nichts und bewertet nichts.
 - **Zielgruppe:** Entwicklerinnen und Entwickler – ausdrücklich auch neue Teammitglieder im Onboarding, die Code vor der ersten eigenen Änderung verstehen wollen –, Reviewerinnen und Reviewer (Prüfpunkt RV10 Verständlichkeit), Testerinnen und Tester zur Testfallableitung.
-- **Trigger:** Eine konkrete Code-Einheit soll verstanden werden: vor einer Änderung, im Review, bei der Einarbeitung, zur Vorbereitung von Tests. Aufruf: `/fw-code-explain <symbol-oder-pfad> [überblick|detail]`. Devin darf den Skill vorschlagen, wenn eine Aufgabe das Verständnis einer noch nicht erklärten Code-Einheit voraussetzt oder eine Person angibt, einen Code-Abschnitt nicht zu verstehen (wer ein Ergebnis nicht prüfen kann, stellt zuerst die eigene Prüffähigkeit her, `leitwerk-core/framework/core/00-principles.md` Abschnitt 2).
+- **Trigger:** Eine konkrete Code-Einheit soll verstanden werden: vor einer Änderung, im Review, bei der Einarbeitung, zur Vorbereitung von Tests. Aufruf: `/fw-code-explain <symbol-oder-pfad> [überblick|detail]`. Der KI-Client darf den Skill vorschlagen, wenn eine Aufgabe das Verständnis einer noch nicht erklärten Code-Einheit voraussetzt oder eine Person angibt, einen Code-Abschnitt nicht zu verstehen (wer ein Ergebnis nicht prüfen kann, stellt zuerst die eigene Prüffähigkeit her, `leitwerk-core/framework/core/00-principles.md` Abschnitt 2).
 - **Nicht verwenden, wenn:** ein Repository oder Modul im Überblick erfasst werden soll (`fw-repo-analyze`), eine konkrete Änderung bewertet werden soll (`fw-change-analyze`) oder ein Fehler anhand eines Fehlerberichts analysiert werden soll (`fw-error-analyze`).
 
 ## 2. Vorbedingungen, Eingaben und Kontext

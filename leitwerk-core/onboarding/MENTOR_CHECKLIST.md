@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-MENTOR` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Verhältnis zu FW-CL-09 | `leitwerk-core/checklists/09-onboarding.md` führt durch das Programm; diese Liste ergänzt die Mentorenperspektive je Modul |
@@ -29,7 +29,7 @@
 - Übernahme von Ergebnissen ohne geöffnete Fundstelle, auch nach Ansprache.
 - Umgehungsversuche: Bypass/Smart aktivieren, globale Freigaben erteilen, Köder-Anweisungen befolgen.
 - Einstufungsfehler bei K3-Kategorien in Ü5 oder Ü6.
-- „Devin hat gesagt"-Argumentationen in fachlichen Fragen.
+- „Der KI-Client hat gesagt"-Argumentationen in fachlichen Fragen.
 
 Zurückstellen heißt: betroffene Module wiederholen, weiter begleitet arbeiten, neuer Termin – ohne Vorwurf, das Framework ist neu für alle.
 

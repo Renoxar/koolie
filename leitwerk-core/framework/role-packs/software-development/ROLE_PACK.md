@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | RP-DEV |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 | Status | entwurf (Referenzpack der Erstfassung) |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Softwareentwicklerinnen und Softwareentwickler |
@@ -40,7 +40,7 @@ Nicht Gegenstand dieses Packs: Architektur- und Technologieentscheidungen, Schni
 5. Fehlerbehandlung und Logging folgen den bestehenden Mustern des Moduls; stille Catch-Blöcke, Fehlermeldungen mit Interna und Logging sensibler Daten sind unzulässig.
 6. Performance-Änderungen erfordern eine Messung vorher/nachher; Methode und Ergebnis werden berichtet.
 7. Generierter Code wird vor Übernahme vollständig gelesen; die Bearbeiterin oder der Bearbeiter MUSS jede Zeile erklären können (Q3).
-8. Bei Unsicherheit über fachliche Anforderungen wird `<PRODUCT_OWNER_ROLE>` gefragt, nicht Devin.
+8. Bei Unsicherheit über fachliche Anforderungen wird `<PRODUCT_OWNER_ROLE>` gefragt, nicht der KI-Client.
 
 ## 4. Rollenspezifische Kontextquellen
 
@@ -82,9 +82,9 @@ Das Pack nutzt die Framework-Skills `FW-SK-001` bis `FW-SK-012`. Eigene Skills s
 
 | Fehlanwendung | Folge | Gegenmaßnahme |
 |---|---|---|
-| Ganze Feature-Tickets „an Devin geben" | Scope-Verlust, unprüfbare Änderungssätze | Zerlegung in Analyse, Plan, kleine Änderungen |
+| Ganze Feature-Tickets „an den KI-Client geben" | Scope-Verlust, unprüfbare Änderungssätze | Zerlegung in Analyse, Plan, kleine Änderungen |
 | Vorschläge übernehmen, ohne sie zu verstehen | Fehler in Randbedingungen bleiben unentdeckt | Q3, Skill `fw-code-explain` auf den eigenen Diff anwenden |
-| Tests von Devin „passend machen" lassen | Fehlverhalten wird zementiert | M4-Regeln, Review-Punkt RV4 |
+| Tests vom KI-Client „passend machen" lassen | Fehlverhalten wird zementiert | M4-Regeln, Review-Punkt RV4 |
 | Stacktrace unbereinigt einfügen | K2/K3-Abfluss | Checkliste `02-privacy-context.md` |
 | Refaktorisierung und Fix in einem Schritt | Nicht reversibel, schwer zu reviewen | P7, getrennte Schritte |
 

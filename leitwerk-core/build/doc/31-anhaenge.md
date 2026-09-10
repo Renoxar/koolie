@@ -32,7 +32,7 @@ Der Kern nennt die Bestandteile der Laufzeitschicht mit Begriffen, nicht mit Pfa
 
 Die Quellen belegen die als `[DOK]` gekennzeichneten Aussagen; der Framework Owner hält diese Liste im Rahmen der Produktbeobachtung aktuell (FW-AK-01).
 
-Sie ist **je Client Pack** geführt. Das ist keine Gliederungsfrage: Eine Aussage über einen Client hängt an dessen Dokumentation und an keiner anderen, und beide Listen haben verschiedene Recherchestände. Bis Release 0.15.0 enthielt dieser Anhang ausschließlich Devin-Quellen – auch dann noch, als das Pack `claude-code` bereits ein Dutzend `[DOK]`-Aussagen gegen `code.claude.com` trug. Die Liste behauptete damit, die `[DOK]`-Aussagen zu belegen, und tat es für einen der beiden Clients nicht.
+Sie ist **je Client Pack** geführt. Das ist keine Gliederungsfrage: Eine Aussage über einen Client hängt an dessen Dokumentation und an keiner anderen, und beide Listen haben verschiedene Recherchestände. Bis Release 0.15.0 enthielt dieser Anhang ausschließlich der KI-Client-Quellen – auch dann noch, als das Pack `claude-code` bereits ein Dutzend `[DOK]`-Aussagen gegen `code.claude.com` trug. Die Liste behauptete damit, die `[DOK]`-Aussagen zu belegen, und tat es für einen der beiden Clients nicht.
 
 Die Kennungen tragen seit Release 0.16.0 das Präfix des Client Packs (`QD-` für `devin-desktop`, `QC-` für `claude-code`). Vorher hießen sie `Q1` bis `Q17` – dieselben Kürzel, mit denen das Framework an rund zwanzig Stellen seine **Qualitätsregeln** bezeichnet (`Q8` etwa die Größenschwelle einer Änderung). Zwei Bedeutungen desselben Kürzels in einem Dokument sind eine Verwechslung, die keinen Nutzen hat.
 
@@ -101,4 +101,4 @@ Die folgende Liste ergänzt sie um Punkte, die keiner einzelnen Zusage der Matri
 
 ## 31.6 Beispielartefakte (synthetisch)
 
-Im Repository unter `leitwerk-core/examples/`: ausgefüllte Overlay-Laufzeitfassung, vollständiger Devin-Ergebnisbericht und Merge-Request-Beschreibung mit Nutzungsvermerk – alle ausdrücklich synthetisch und mit erfundenen Bezeichnern (siehe `leitwerk-core/examples/README.md`).
+Im Repository unter `leitwerk-core/examples/`: ausgefüllte Overlay-Laufzeitfassung, vollständiger Ergebnisbericht und Merge-Request-Beschreibung mit Nutzungsvermerk – alle ausdrücklich synthetisch und mit erfundenen Bezeichnern (siehe `leitwerk-core/examples/README.md`).

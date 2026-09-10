@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-006` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -31,7 +31,7 @@ Die Vorlage refaktorisiert einen benannten Bereich verhaltensneutral – zum Bei
 
 | Parameter | Pflicht | Kontextklasse | Beschreibung |
 |---|---|---|---|
-| `{bereich}` | MUSS | K1 | Datei, Klasse oder Modul in `<ALLOWED_PATHS>`; bei mehreren Treffern stellt Devin eine Rückfrage |
+| `{bereich}` | MUSS | K1 | Datei, Klasse oder Modul in `<ALLOWED_PATHS>`; bei mehreren Treffern stellt der KI-Client eine Rückfrage |
 | `{refactoring_ziel}` | MUSS | K1 | Was strukturell anders sein soll. Beispiel (synthetisch): „doppelte Pflichtfeldprüfung in `OrderValidator` in eine Hilfsmethode zusammenführen" |
 | `{unveraendert}` | SOLL | K1 | Ausdrückliche Invarianten: fachliches Verhalten, öffentliche Signaturen, Ausnahmen, Konfigurationsschlüssel, Verwender außerhalb des Bereichs |
 | `{kontrollstufe}` | MUSS | K1 | niedrig, mittel oder hoch – durch den Menschen festgelegt |

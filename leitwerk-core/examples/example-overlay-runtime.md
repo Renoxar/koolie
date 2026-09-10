@@ -38,7 +38,7 @@
 - Fachliche Klärung: Product Owner · Architektur: Softwarearchitektur
 
 ## Projektspezifische Verschärfungen
-- Keine Änderungen an Datenbankmigrationen (`src/db/migrations/**`) durch Devin – auch nicht auf Stufe hoch.
+- Keine Änderungen an Datenbankmigrationen (`src/db/migrations/**`) durch den KI-Client – auch nicht auf Stufe hoch.
 
 ## Aktive projektspezifische Skills
 - keine (Stand 0.1.0)

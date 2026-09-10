@@ -3,15 +3,15 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-04` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Anwendung | nach Abschluss einer Devin-Sitzung, vor Übernahme des Ergebnisses |
+| Anwendung | nach Abschluss einer KI-Sitzung, vor Übernahme des Ergebnisses |
 | Quelle | `leitwerk-core/framework/core/07-review-rules.md`, `09-risk-model.md`, `leitwerk-core/checklists/04-review-ai-code.md` |
 
 ## Textbeschreibung (normativ)
 
-1. **Immer:** Kein Devin-Ergebnis wird ohne menschliche Prüfung übernommen (P5); keine Einstufung ersetzt sie vollständig.
+1. **Immer:** Kein KI-Ergebnis wird ohne menschliche Prüfung übernommen (P5); keine Einstufung ersetzt sie vollständig.
 2. **Reine Analyseergebnisse (M1/M2):** Die Empfängerin oder der Empfänger prüft Fundstellen-Stichproben (mindestens drei) und behandelt unbelegte Aussagen als unbestätigt. Pläne werden bestätigt (mittel) beziehungsweise durch `<APPROVAL_ROLE>` freigegeben (hoch), bevor umgesetzt wird.
 3. **Änderungen (M3/M4/M5) nach Kontrollstufe:**
    - **niedrig:** Selbstreview anhand `leitwerk-core/checklists/04-review-ai-code.md` (vollständiges Lesen des Diffs; mindestens RV1, RV2, RV5, RV9, RV10) plus reguläres Projekt-Review und alle Quality Gates.
@@ -24,7 +24,7 @@
 
 ```mermaid
 flowchart TD
-    A["Devin-Ergebnis liegt vor"] --> B{"Ergebnistyp?"}
+    A["KI-Ergebnis liegt vor"] --> B{"Ergebnistyp?"}
     B -- "Analyse (M1)" --> C["Fundstellen-Stichprobe (min. 3)<br/>Unbelegtes gilt als unbestätigt"]
     B -- "Plan (M2)" --> D{"Stufe?"}
     D -- "mittel" --> D1["Schriftliche Bestätigung<br/>durch Bearbeiter/Reviewer"]

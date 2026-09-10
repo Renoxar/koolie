@@ -4,7 +4,7 @@ Elf Checklisten operationalisieren die Kernmodule für konkrete Momente im Arbei
 
 {{EMBED-RAW:leitwerk-core/checklists/README.md:1}}
 
-## 22.1 FW-CL-01 Preflight-Check vor jeder Devin-Aufgabe
+## 22.1 FW-CL-01 Preflight-Check vor jeder KI-Aufgabe
 
 {{EMBED-RAW:leitwerk-core/checklists/01-preflight.md:2}}
 
