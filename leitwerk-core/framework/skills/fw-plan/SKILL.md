@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-004` |
 | Name | `fw-plan` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -92,7 +92,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Änderungsplan – fw-plan v0.1.0
+## Änderungsplan – fw-plan v0.1.1
 
 ### Aufgabe und Scope
 - Aufgabe: <Kurzfassung> · Referenz: <Kennung oder „keine">
@@ -103,7 +103,7 @@ triggers:
 ### Plan (Struktur exakt nach leitwerk-core/templates/PLAN_TEMPLATE.md)
 ## Änderungsplan: <Kurztitel> (<Ticket-Referenz oder Platzhalter>)
 | Attribut | Wert |
-| Erstellt mit | fw-plan v0.1.0 |
+| Erstellt mit | fw-plan v0.1.1 |
 | Betriebsmodus der Umsetzung | <M3 / M4 / M5> |
 | Kontrollstufe | <Stufe> (auslösender Faktor <R#>) |
 | Bestätigungsstatus | entwurf |

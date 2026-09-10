@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-005` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
@@ -90,7 +90,7 @@ Regeln:
 - [ ] Alle geänderten Dateien liegen in `<TEST_PATHS>`; bestehende Tests, Assertions, Schwellenwerte und Konfiguration unverändert (RV1, RV9).
 - [ ] `<TEST_COMMAND>` selbst ausgeführt und Protokoll bestätigt; ab Stufe mittel durch die Reviewerin oder den Reviewer (`leitwerk-core/checklists/05-testing.md`).
 - [ ] Gemeldete vermutete Produktivcode-Fehler als eigene Aufgabe aufgenommen (`fw-error-analyze`), nicht in derselben Sitzung behoben.
-- [ ] `leitwerk-core/checklists/04-review-ai-code.md` abgearbeitet; Übernahme über den bestehenden Review- und Freigabeprozess mit Devin-Nutzungsvermerk.
+- [ ] `leitwerk-core/checklists/04-review-ai-code.md` abgearbeitet; Übernahme über den bestehenden Review- und Freigabeprozess mit KI-Nutzungsvermerk.
 
 ## 8. Typische Fehlanwendungen
 

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-08` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor dem Erstellen und vor dem Mergen eines Merge Requests mit Devin-Beteiligung |
@@ -21,7 +21,7 @@ Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über 
 
 - [ ] **MUSS** Der Merge Request verfolgt genau ein Ziel (Q1); vermischte Änderungen sind aufgeteilt.
 - [ ] **MUSS** Beschreibung liegt vor (Skill `fw-mr-description` oder manuell) und folgt `<MR_TEMPLATE_PATH>`; Ticket-Bezug hergestellt.
-- [ ] **MUSS** Devin-Nutzungsvermerk enthalten (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`): Kurzform bei Stufe niedrig, Langform ab Stufe mittel (mit Plan-Referenz, Kontextliste, Befehlen, Abweichungen, Restrisiken).
+- [ ] **MUSS** KI-Nutzungsvermerk enthalten (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`): Kurzform bei Stufe niedrig, Langform ab Stufe mittel (mit Plan-Referenz, Kontextliste, Befehlen, Abweichungen, Restrisiken).
 - [ ] **MUSS** Selbstreview nach `leitwerk-core/checklists/04-review-ai-code.md` durchgeführt und im Vermerk bestätigt.
 - [ ] **MUSS** Lokale Prüfungen grün (`<LINT_COMMAND>`, `<TEST_COMMAND>`); Tests für geänderte Logik vorhanden (Q2, `leitwerk-core/checklists/05-testing.md`).
 - [ ] **MUSS** Keine K3-Inhalte und keine Personennamen in Beschreibung, Commits, Kommentaren oder Anhängen; Rollen statt Personen.

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-11` |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jedem Framework-Release (auch Patch-Releases) |
@@ -24,6 +24,7 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 - [ ] **MUSS** Alle für das Release vorgesehenen Änderungsanträge sind abgeschlossen oder ausdrücklich verschoben (`leitwerk-core/governance/DECISION_LOG.md` aktualisiert).
 - [ ] **MUSS** Konsistenz Core ↔ Laufzeitfassung geprüft: `leitwerk-core/framework/core/*` gegen die Wurzel-Anweisungsdatei und die Regelablage `00-*, 10-*, 15-*` **jedes Client Packs** (Stichproben je geändertem Modul; keine widersprüchlichen Anweisungen).
 - [ ] **MUSS** Skills konsistent zum Skill-Standard (`leitwerk-core/framework/core/08-skill-conventions.md`); Versionen, Status und CHANGELOG je geändertem Skill gepflegt; Deprecations mit Nachfolger dokumentiert.
+- [ ] **MUSS** Version je geänderter Checkliste und je geändertem Prompt gepflegt (Metadatentabelle, Semantic Versioning wie in `leitwerk-core/governance/RELEASE_PROCESS.md` Abschnitt 1). Bis 0.12.0 galt diese Pflicht nur für Skills; deshalb standen elf Checklisten und zwölf Prompts über zwölf Releases unverändert auf `0.1.0`, obwohl sie sich geändert hatten (`FW-VN-01`).
 - [ ] **MUSS** Prioritätshierarchie unverändert oder Änderung begründet und in `leitwerk-core/governance/PRIORITY_HIERARCHY.md` nachgezogen.
 - [ ] **SOLL** Templates, Checklisten und Entscheidungsbäume gegen geänderte Module abgeglichen (Querverweise, Begriffe).
 

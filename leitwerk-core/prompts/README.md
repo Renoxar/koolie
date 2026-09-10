@@ -5,7 +5,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ (Abschnitte 2, 3, 5, 6, 7), Erläuterung (Abschnitte 1, 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.0 |
+| Version | 0.1.1 |
 | Grundlage | `leitwerk-core/framework/core/06-prompting-rules.md`, `leitwerk-core/framework/core/05-working-model.md`, `leitwerk-core/framework/core/09-risk-model.md`, `leitwerk-core/framework/core/02-privacy.md` |
 
 ## 1. Zweck (Erläuterung)
@@ -53,7 +53,7 @@ Parameter in geschweiften Klammern werden vor dem Einsatz vollständig ersetzt; 
 | `FW-PR-011` | `11-merge-request-review.md` | Review eines Merge Requests | M1 | `fw-review-support` |
 | `FW-PR-012` | `12-developer-training.md` | Technische Schulung eines neuen Entwicklers | M1 | `fw-code-explain` |
 
-Typische Abfolge einer Änderung: FW-PR-001 (Verstehen) → FW-PR-002 (Impact-Analyse, Vorschlag der Kontrollstufe) → Preflight durch den Menschen → FW-PR-003 (Plan, Bestätigung) → FW-PR-004, FW-PR-005 oder FW-PR-006 (Umsetzung in neuer Sitzung) → FW-PR-011 (Review-Unterstützung) → Merge Request mit Devin-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`).
+Typische Abfolge einer Änderung: FW-PR-001 (Verstehen) → FW-PR-002 (Impact-Analyse, Vorschlag der Kontrollstufe) → Preflight durch den Menschen → FW-PR-003 (Plan, Bestätigung) → FW-PR-004, FW-PR-005 oder FW-PR-006 (Umsetzung in neuer Sitzung) → FW-PR-011 (Review-Unterstützung) → Merge Request mit KI-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`).
 
 ## 5. Prompting-Regeln in Kurzform
 
@@ -77,7 +77,7 @@ Vollständig in `leitwerk-core/framework/core/06-prompting-rules.md`; die Kurzfo
 3. Parameter befüllen; jeden Wert auf Kontextklasse prüfen; K2-Inhalte nur nach dokumentierter Freigabe und Bereinigung, K3 nie.
 4. Codeblock aus Abschnitt 5 in eine neue Devin-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (Permission-Modus Normal `[DOK]`).
 5. Ergebnis anhand Abschnitt 7 der Vorlage und der genannten Checklisten prüfen; Ergebnisbericht ablegen (ab Stufe mittel: `<TBD: Ablageort für Ergebnisberichte>`).
-6. Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess; im Devin-Nutzungsvermerk KANN die verwendete Prompt-ID neben den Skills genannt werden.
+6. Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess; im KI-Nutzungsvermerk KANN die verwendete Prompt-ID neben den Skills genannt werden.
 
 ## 7. Versionierung und Pflege
 

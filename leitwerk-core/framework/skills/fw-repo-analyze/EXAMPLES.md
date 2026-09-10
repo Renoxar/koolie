@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul- und Klassennamen sind erfunde
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Repository-Analyse – fw-repo-analyze v0.1.0
+## Repository-Analyse – fw-repo-analyze v0.1.1
 
 ### Aufgabe und Scope
 - Zielpfad: src/ordering · Fragestellung: Wie werden eingehende Bestellungen validiert?

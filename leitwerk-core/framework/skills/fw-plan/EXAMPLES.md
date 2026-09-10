@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Methodennamen s
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Änderungsplan – fw-plan v0.1.0
+## Änderungsplan – fw-plan v0.1.1
 
 ### Aufgabe und Scope
 - Aufgabe: Fehlerkennung je Feld in der Bestellprüfung · Referenz: keine (Übungsaufgabe)

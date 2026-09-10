@@ -37,4 +37,4 @@ Die detaillierte RACI-Zuordnung liegt in `leitwerk-core/governance/RACI.md`.
 
 ## 4. Auditierbarkeit (normativ)
 
-Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welches Overlay (Version), welche Skills (Version) und welche Berechtigungskonfiguration galten. Dies wird erreicht durch Versionierung im Repository, `leitwerk-core/VERSION`-Datei, Overlay-Steckbrief mit Version und den Devin-Nutzungsvermerk je Merge Request.
+Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welches Overlay (Version), welche Skills (Version) und welche Berechtigungskonfiguration galten. Dies wird erreicht durch Versionierung im Repository, `leitwerk-core/VERSION`-Datei, Overlay-Steckbrief mit Version und den KI-Nutzungsvermerk je Merge Request.

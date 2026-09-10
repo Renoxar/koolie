@@ -140,7 +140,7 @@ Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (P
 | Branch-Namensschema | `<BRANCH_PREFIX>` | `<TBD: z. B. feature/<PROJECT_CODE>-<ticket>-kurzbeschreibung>` |
 | Commit-Konvention | `<COMMIT_CONVENTION>` | `<TBD: z. B. Conventional Commits mit Ticket-Referenz>` |
 | Merge-Strategie | – | `<TBD: Squash / Merge-Commit / Rebase – durch Menschen>` |
-| Merge-Request-Vorlage | `<MR_TEMPLATE_PATH>` | `<TBD>`; enthält den Devin-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`) |
+| Merge-Request-Vorlage | `<MR_TEMPLATE_PATH>` | `<TBD>`; enthält den KI-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`) |
 | Geschützte Branches | – | `<TBD>`; Devin arbeitet nie direkt darauf |
 
 ## 11. Definition of Ready (für Devin-Aufgaben)

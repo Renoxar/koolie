@@ -24,7 +24,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-005` |
 | Name | `fw-change-small` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -105,7 +105,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Änderungsumsetzung – fw-change-small v0.1.0
+## Änderungsumsetzung – fw-change-small v0.1.1
 
 ### Aufgabe und Scope
 - Aufgabe: <Kurzfassung in eigenen Worten> · Referenz: <Ticket-Kennung, Plan oder „keine"> · Akzeptanzkriterien: <Liste> · Nicht-Ziele: <Liste oder „nicht benannt">
@@ -133,7 +133,7 @@ triggers:
 - <...>
 
 ### Nächster Schritt für den Menschen
-- Diff vollständig lesen; `leitwerk-core/checklists/04-review-ai-code.md` (niedrig: RV1, RV2, RV5, RV9, RV10; ab mittel RV1–RV12 mit Planabgleich); <TEST_COMMAND> selbst ausführen; Commit erstellen; Merge Request mit Devin-Nutzungsvermerk (fw-mr-description)
+- Diff vollständig lesen; `leitwerk-core/checklists/04-review-ai-code.md` (niedrig: RV1, RV2, RV5, RV9, RV10; ab mittel RV1–RV12 mit Planabgleich); <TEST_COMMAND> selbst ausführen; Commit erstellen; Merge Request mit KI-Nutzungsvermerk (fw-mr-description)
 ```
 
 ## 6. Qualitätskriterien sowie Prüf- und Freigabeschritt
@@ -151,7 +151,7 @@ triggers:
 
 1. Diff vollständig lesen – jede Zeile muss erklärbar sein (Q3); Schrittprotokoll und Änderungsübersicht mit dem Diff abgleichen (RV1 Scope-Treue, RV2 Fundstellen); Verwender stichprobenartig öffnen.
 2. `<TEST_COMMAND>` selbst ausführen; ab Stufe mittel Ausführung durch die Reviewerin oder den Reviewer und Abgleich mit dem bestätigten Plan; bei Stufe hoch zusätzlich Architektur- und Security-Review durch die im Overlay benannten Rollen.
-3. `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten (bei Testanteilen zusätzlich `leitwerk-core/checklists/05-testing.md`); Annahmen und offene Fragen in den Merge Request übernehmen; Commit nach `<COMMIT_CONVENTION>` erstellen; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit Devin-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`, Skill `fw-mr-description`).
+3. `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten (bei Testanteilen zusätzlich `leitwerk-core/checklists/05-testing.md`); Annahmen und offene Fragen in den Merge Request übernehmen; Commit nach `<COMMIT_CONVENTION>` erstellen; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit KI-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`, Skill `fw-mr-description`).
 
 ## 7. Fehlerbehandlung und Abbruch
 

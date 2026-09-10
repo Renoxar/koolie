@@ -27,7 +27,7 @@ Jede Devin-Aufgabe folgt den vierzehn Schritten. Schritte DÜRFEN NICHT überspr
 | 11 | Tests und Qualitätsprüfungen ausführen | Devin, Bewertung Mensch | Nur im Overlay freigegebene Befehle (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`); Ergebnisse unverändert berichten | `leitwerk-core/checklists/05-testing.md` |
 | 12 | Ergebnis, Abweichungen und Restrisiken dokumentieren | Devin | Ergebnisbericht nach Standardformat (Abschnitt 3.6) | – |
 | 13 | Menschliche Prüfung ermöglichen | Devin, dann Mensch | Diff, Fundstellen, Testprotokoll, offene Punkte bereitstellen; Review anhand `leitwerk-core/checklists/04-review-ai-code.md` | Skill `fw-review-support` |
-| 14 | Übernahme über den bestehenden Review- und Freigabeprozess | Mensch | Merge Request mit Devin-Nutzungsvermerk; reguläre Quality Gates und Review (P5, P6) | `leitwerk-core/checklists/08-merge-request.md`, Skill `fw-mr-description` |
+| 14 | Übernahme über den bestehenden Review- und Freigabeprozess | Mensch | Merge Request mit KI-Nutzungsvermerk; reguläre Quality Gates und Review (P5, P6) | `leitwerk-core/checklists/08-merge-request.md`, Skill `fw-mr-description` |
 
 ## 2. Betriebsmodi (normativ)
 

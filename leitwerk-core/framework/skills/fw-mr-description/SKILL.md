@@ -1,6 +1,6 @@
 ---
 name: fw-mr-description
-description: Erstellt aus dem lokalen Änderungssatz (nur lesende Git-Befehle) und den Ergebnisberichten den Textentwurf einer Merge-Request-Beschreibung mit Zusammenfassung, Ticket-Bezug, Änderungen je Bereich, Testnachweis, Risiken, Hinweisen für das Review, Checklistenbezug und Devin-Nutzungsvermerk nach leitwerk-core/templates/MR_AI_DISCLOSURE.md. Verwenden, bevor der Mensch den Merge Request anlegt; der Skill erstellt keinen Merge Request und pusht nicht.
+description: Erstellt aus dem lokalen Änderungssatz (nur lesende Git-Befehle) und den Ergebnisberichten den Textentwurf einer Merge-Request-Beschreibung mit Zusammenfassung, Ticket-Bezug, Änderungen je Bereich, Testnachweis, Risiken, Hinweisen für das Review, Checklistenbezug und KI-Nutzungsvermerk nach leitwerk-core/templates/MR_AI_DISCLOSURE.md. Verwenden, bevor der Mensch den Merge Request anlegt; der Skill erstellt keinen Merge Request und pusht nicht.
 argument-hint: "[diff-basis-oder-dateiliste] [ergebnisbericht-oder-ticketreferenz]"
 allowed-tools:
   - read
@@ -29,7 +29,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
@@ -40,7 +40,7 @@ triggers:
 
 ## 1. Zweck, Zielgruppe und Trigger
 
-- **Zweck:** Erstellt den Textentwurf einer Merge-Request-Beschreibung aus dem lokalen Änderungssatz (`git status`, `git diff`, `git log`, `git show` – nur lesend) und den Ergebnisberichten der Umsetzungssitzungen: Zusammenfassung, Motivation und Ticket-Bezug (Kennung als Platzhalter), Änderungen je Bereich mit Dateibezug, Testnachweis (ausgeführte Befehle und unveränderte Ergebnisse aus den Ergebnisberichten), Risiken und Restrisiken, Hinweise für Reviewerinnen und Reviewer, Checklistenbezug sowie den Devin-Nutzungsvermerk nach `leitwerk-core/templates/MR_AI_DISCLOSURE.md` (Kurzform bei Stufe niedrig, Langform ab Stufe mittel). Ist `<MR_TEMPLATE_PATH>` gesetzt, werden Struktur und Pflichtabschnitte der Projektvorlage übernommen. Der Text ist Sitzungsausgabe; Merge Request, Push und Merge führt der Mensch aus (V2).
+- **Zweck:** Erstellt den Textentwurf einer Merge-Request-Beschreibung aus dem lokalen Änderungssatz (`git status`, `git diff`, `git log`, `git show` – nur lesend) und den Ergebnisberichten der Umsetzungssitzungen: Zusammenfassung, Motivation und Ticket-Bezug (Kennung als Platzhalter), Änderungen je Bereich mit Dateibezug, Testnachweis (ausgeführte Befehle und unveränderte Ergebnisse aus den Ergebnisberichten), Risiken und Restrisiken, Hinweise für Reviewerinnen und Reviewer, Checklistenbezug sowie den KI-Nutzungsvermerk nach `leitwerk-core/templates/MR_AI_DISCLOSURE.md` (Kurzform bei Stufe niedrig, Langform ab Stufe mittel). Ist `<MR_TEMPLATE_PATH>` gesetzt, werden Struktur und Pflichtabschnitte der Projektvorlage übernommen. Der Text ist Sitzungsausgabe; Merge Request, Push und Merge führt der Mensch aus (V2).
 - **Zielgruppe:** Bearbeiterinnen und Bearbeiter (Schritt 14 des Standardarbeitsablaufs); Reviewerinnen und Reviewer, die den Nutzungsvermerk vor Beginn des Reviews erhalten (`leitwerk-core/framework/core/07-review-rules.md` Abschnitt 1).
 - **Trigger:** Der Änderungssatz ist lokal fertiggestellt, das Selbstreview nach `leitwerk-core/checklists/04-review-ai-code.md` ist durchgeführt und der Merge Request soll angelegt werden. Aufruf: `/fw-mr-description <diff-basis-oder-dateiliste> [ergebnisbericht-oder-ticketreferenz]`. Kein Aufruf auf Vorschlag von Devin, da der Skill Befehle ausführt.
 - **Nicht verwenden, wenn:** der Änderungssatz geprüft werden soll (`fw-review-support`); Dokumentation im Repository aktualisiert werden soll (`fw-docs-update`); eine Freigabe-, Merge- oder Abnahmeentscheidung erwartet wird (V1, V2 – nicht delegierbar); Commit-Nachrichten für noch nicht committete Schritte gesucht werden (Vorschlag des jeweiligen Umsetzungs-Skills).
@@ -56,7 +56,7 @@ triggers:
 
 | Stufe | Zulässige Betriebsmodi | Notwendige Freigaben | Dokumentationsumfang |
 |---|---|---|---|
-| niedrig | „alle fünf Modi (`05-working-model.md`)" | „reguläres Review gemäß Projektprozess" | „Devin-Nutzungsvermerk im Merge Request (Kurzform, `leitwerk-core/templates/MR_AI_DISCLOSURE.md`)" |
+| niedrig | „alle fünf Modi (`05-working-model.md`)" | „reguläres Review gemäß Projektprozess" | „KI-Nutzungsvermerk im Merge Request (Kurzform, `leitwerk-core/templates/MR_AI_DISCLOSURE.md`)" |
 | mittel | „Read-only Analysis, Guided Planning, Test and Validation, Documentation Support uneingeschränkt; Controlled Modification nur auf Basis eines von einem Menschen bestätigten Plans" | „Review plus Bestätigung durch Modul-Owner oder `<APPROVAL_ROLE>`" | „zusätzlich: Plan, Fundstellenliste, Ergebnisbericht mit Abweichungen und Restrisiken" |
 | hoch | „Read-only Analysis und Guided Planning; Controlled Modification nur nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` und mit begleitender Person (Pairing); Test and Validation nur ohne Änderung an Produktivcode; Documentation Support zulässig" | „schriftliche Freigabe `<APPROVAL_ROLE>`; bei Sicherheitsrelevanz zusätzlich `<SECURITY_CONTACT>`" | „zusätzlich: vollständiges Sitzungsprotokoll (Prompts, Freigaben, ausgeführte Befehle), Entscheidungsvermerk der Freigabe" |
 
@@ -85,7 +85,7 @@ triggers:
 4. Abgleich mit den Ergebnisberichten: geänderte Dateien gegen die dort genannten Änderungen prüfen; Dateien im Diff ohne Bericht und Berichtseinträge ohne Diff als Abweichung ausweisen; mehrere Ziele im Änderungssatz (Q1) melden und Aufteilung vorschlagen.
 5. Testnachweis ausschließlich aus den Ergebnisberichten zusammenstellen (Befehl → unverändertes Ergebnis → Quelle); der Skill führt keine Tests aus. Ohne Bericht: `<TBD: Testnachweis durch die Bearbeiterin oder den Bearbeiter>`; nie „Tests bestanden" ohne Quelle. Nicht automatisiert geprüfte Anteile als manuelle Prüfschritte benennen.
 6. Risiken, Restrisiken und Hinweise für das Review aus Plan (Abschnitt 7), Ergebnisberichten (Restrisiken, Annahmen, offene Fragen) und Diff ableiten: wo zuerst hinzusehen ist (geänderte Randbedingungen, Fehlerbehandlung, neue Code-Pfade), was nicht automatisiert geprüft ist, welche Annahmen offen sind (RV12), welche Checklisten gelten (`leitwerk-core/checklists/04-review-ai-code.md`, `leitwerk-core/checklists/08-merge-request.md`; bei Sicherheitsbezug `leitwerk-core/checklists/06-security.md`; bei geänderten Abhängigkeiten `leitwerk-core/checklists/07-new-dependency.md`). Behauptete Eigenschaften nur mit Beleg (Q7).
-7. Devin-Nutzungsvermerk exakt nach `leitwerk-core/templates/MR_AI_DISCLOSURE.md` erstellen: Kurzform bei niedrig, Langform bei mittel und hoch; Felder aus den Ergebnisberichten befüllen (Kontrollstufe mit Faktor, Modus, Skills mit Version, Kontext mit Kontextklasse und K2-Freigabe, Plan-Referenz und Abweichungen, ausgeführte Befehle mit Ergebnis, Ergebnisbericht-Referenz, Freigabe Stufe hoch als Rolle, Datum und Referenz, Restrisiken, verworfene Vorschläge); Framework-Version aus `leitwerk-core/VERSION`, Overlay-Version aus dem Overlay; nicht belegbare Felder als `<TBD: …>`; kein Feld weglassen.
+7. KI-Nutzungsvermerk exakt nach `leitwerk-core/templates/MR_AI_DISCLOSURE.md` erstellen: Kurzform bei niedrig, Langform bei mittel und hoch; Felder aus den Ergebnisberichten befüllen (Kontrollstufe mit Faktor, Modus, Skills mit Version, Kontext mit Kontextklasse und K2-Freigabe, Plan-Referenz und Abweichungen, ausgeführte Befehle mit Ergebnis, Ergebnisbericht-Referenz, Freigabe Stufe hoch als Rolle, Datum und Referenz, Restrisiken, verworfene Vorschläge); Framework-Version aus `leitwerk-core/VERSION`, Overlay-Version aus dem Overlay; nicht belegbare Felder als `<TBD: …>`; kein Feld weglassen.
 8. Motivation und Ticket-Bezug formulieren: Ziel der Änderung aus Plan oder Aufgabenbeschreibung; Ticket nur als Kennung aus `<ISSUE_TRACKER>` oder `<TBD: Ticket-Referenz>`; Titelvorschlag nach `<COMMIT_CONVENTION>`; keine Personen, Kunden, Behörden, Adressen oder Umgebungen; Sprache gemäß Overlay.
 9. Abgleich Beschreibung ↔ Diff: jede Aussage des Entwurfs einer Diff-Datei oder einem Bericht zuordnen; nicht belegbare Aussagen streichen oder als `<TBD: …>` kennzeichnen. Ergebnis im Ausgabeformat erzeugen (Entwurf zur Übernahme, Abgleich, ausgeführte Git-Befehle); Ergebnisbericht gemäß `leitwerk-core/framework/core/05-working-model.md` Abschnitt 3.6 anhängen.
 
@@ -107,7 +107,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Merge-Request-Beschreibung – fw-mr-description v0.1.0
+## Merge-Request-Beschreibung – fw-mr-description v0.1.1
 
 ### Aufgabe und Scope
 - Änderungssatz: <Branch gegenüber <DEFAULT_BRANCH> | Commit-Bereich | Arbeitskopie> · Dateien: <Anzahl> · Nicht gelesen (ausgeschlossen): <Liste | keine>
@@ -124,7 +124,7 @@ triggers:
 #### Hinweise für Reviewerinnen und Reviewer
 - Zuerst prüfen: <Stellen mit Fundstelle> · Offene Annahmen und Fragen: <Liste> · Abweichungen vom Plan: <keine | Liste>
 - Checklisten: leitwerk-core/checklists/04-review-ai-code.md (Selbstreview: <durchgeführt laut Bericht | <TBD>>), leitwerk-core/checklists/08-merge-request.md, <weitere je Befund>
-#### KI-Unterstützung (Devin Desktop)
+#### KI-Unterstützung
 <Kurzform oder Langform exakt nach leitwerk-core/templates/MR_AI_DISCLOSURE.md; nicht belegbare Felder als <TBD: …>>
 
 ### Abgleich Beschreibung ↔ Diff und Ergebnisbericht; ausgeführte Git-Befehle

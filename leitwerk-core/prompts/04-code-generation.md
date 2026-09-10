@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-004` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -87,7 +87,7 @@ Regeln:
 - [ ] Keine Änderungen an Abhängigkeiten, Lockfiles, Tests, Schwellenwerten oder Quality-Gate-Konfiguration (RV6, RV9).
 - [ ] Sicherheit und Datenschutz im neuen Code-Pfad geprüft: Eingabevalidierung, Autorisierung, Logging, Fehlermeldungen (RV7, RV8; `leitwerk-core/checklists/06-security.md`).
 - [ ] `<TEST_COMMAND>` und `<LINT_COMMAND>` selbst ausgeführt; ab Stufe mittel zusätzlich durch die Reviewerin oder den Reviewer (`leitwerk-core/checklists/05-testing.md`).
-- [ ] `leitwerk-core/checklists/04-review-ai-code.md` abgearbeitet; Merge Request mit Devin-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`, `leitwerk-core/checklists/08-merge-request.md`).
+- [ ] `leitwerk-core/checklists/04-review-ai-code.md` abgearbeitet; Merge Request mit KI-Nutzungsvermerk (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`, `leitwerk-core/checklists/08-merge-request.md`).
 
 ## 8. Typische Fehlanwendungen
 

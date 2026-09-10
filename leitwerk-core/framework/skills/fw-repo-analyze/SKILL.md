@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-001` |
 | Name | `fw-repo-analyze` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -83,7 +83,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Repository-Analyse – fw-repo-analyze v0.1.0
+## Repository-Analyse – fw-repo-analyze v0.1.1
 
 ### Aufgabe und Scope
 - Zielpfad: <pfad> · Fragestellung: <text oder „keine">

@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.12.0 (2026-09-10)
+## Stand nach Release 0.13.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.12.0 gebracht haben
+### Was 0.5.0 bis 0.13.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -31,12 +31,29 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Übernahme belegt | Übungsrepository von 0.4.0 auf 0.10.0 gehoben – sechs Releases in einem Schritt, ein Handgriff von Hand; Kriterium 5 von D-11 technisch belegt | `FW-RE-02`, `tests/protocols/2026-09-10-FW-RE-02.md` |
 | Prüfungen, die prüfen | Vier Blindstellen des Validators behoben; ein Testfall gilt erst mit Wirksamkeitsnachweis als bestanden | D-23, `CR-2026-013`, `tests/protocols/2026-09-10-FW-KO-01.md` |
 | Kurzform trägt | Sieben Abweichungen zwischen geladener Kurzform und kanonischer Langform behoben; Laufzeitschicht ohne Client-Bindung | D-24, `CR-2026-014`, `tests/protocols/2026-09-10-FW-KO-02.md` |
+| Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.13.0 sagt die Nachweiskette wieder etwas aus. `FW-VN-01` ergab neun Befunde; der
+tragende war keine fehlende Angabe, sondern eine, die sich nie bewegt: **Alle 13 Skills standen
+unverändert auf `0.1.0`, obwohl alle 13 `SKILL.md` geändert worden waren** – 126 Zeilen in 0.5.0
+und 0.7.0. Wirksam wurde das im Nutzungsvermerk des Merge Requests: Die Kurzform für
+Kontrollstufe niedrig nannte weder Framework- noch Overlay-Version, ihre einzige Versionsangabe
+waren die Skills. Bei Kontrollstufe niedrig enthielt ein Merge Request damit keine
+Versionsangabe, die sich je geändert hatte – formal vollständig, inhaltlich leer.
+
+Fünf Sonden blieben sämtlich unbemerkt, drei Gegenproben wurden gemeldet: Der Validator prüfte
+die **Anwesenheit** von Versionsfeldern und niemals ihren **Inhalt**. Prüfung 13 vergleicht
+jetzt die drei Ablageorte der Overlay-Version miteinander, die Steckbriefangabe gegen
+`leitwerk-core/VERSION` und jedes Versionsfeld gegen `MAJOR.MINOR.PATCH`. Seit D-25 nennen nur
+noch die Artefakte eine kompatible Framework-Version, die vom Kern abweichen können – Overlay
+und Client Pack; für alles, was byte-gleich im Release liegt, ist `VERSION` im selben
+Verzeichnis die Angabe.
 
 Mit 0.12.0 sagt die geladene Kurzform dasselbe wie die kanonische Langform. Der Abgleich
 `FW-KO-02` ergab sieben Abweichungen; die schwerste war keine widersprüchliche Regel, sondern
@@ -100,33 +117,44 @@ sind bestanden und protokolliert, `FW-VN-01` ist durchgeführt und fehlgeschlage
 `FW-KO-02` ist durchgeführt, seine sieben Befunde sind behoben und die Gegenzeichnung durch
 `<FRAMEWORK_OWNER>` liegt vor – damit `bestanden`.
 
-`FW-VN-01` (Versionskette) ist durchgeführt und **`fehlgeschlagen`**: neun Befunde, fünf davon
-durch Sonden belegt (`tests/protocols/2026-09-10-FW-VN-01.md`). Die Kette aus Abschnitt 8 des
-Release-Prozesses ist nirgends gebrochen, hält aber ausschließlich durch Sorgfalt – der
-Validator prüft, ob Versionsfelder da sind, nie ob sie stimmen. Schwerster Befund: Bei
-Kontrollstufe niedrig trägt der Merge Request als einzige Versionsangabe die Skill-Version, und
-die steht seit 0.1.0 unverändert auf `0.1.0`, obwohl alle zwölf Skills geändert wurden. Behebung
-und Gegenzeichnung stehen aus; zwei Ermessensentscheidungen (E1, E2) liegen dem
-`<FRAMEWORK_OWNER>` vor.
+`FW-VN-01` (Versionskette) ist durchgeführt und steht auf **`fehlgeschlagen`**: neun Befunde,
+fünf davon durch Sonden belegt (`tests/protocols/2026-09-10-FW-VN-01.md`). **Die Befunde sind
+mit `CR-2026-015` behoben**, der Wiederholungslauf meldet alle fünf Sonden
+(`tests/protocols/2026-09-10-FW-VN-01-wiederholung.md`), und die beiden
+Ermessensentscheidungen E1 und E2 sind getroffen. **Offen ist allein die Gegenzeichnung durch
+die zweite Rolle** – die Prüfmethode `review` verlangt sie, und ein grüner Lauf ersetzt sie
+nicht. Mit ihr wechselt der Status auf `bestanden`; dann stehen sieben Testfälle auf
+`bestanden` und keiner mehr auf `fehlgeschlagen`.
+
+**Folgearbeit aus der Versionsanhebung (P2).** `08-skill-conventions.md` Abschnitt 7 verlangt
+bei jeder Versionsänderung die erneute Ausführung der Testfälle in `TESTS.md` je Skill. Durch
+die Anhebung auf `0.1.1` betrifft das alle 13 Skills. Die Testfälle sind sämtlich `sitzung` und
+hängen damit an AP2; die Pflicht bleibt bis dahin offen. Das war der ausdrücklich vorgelegte
+Preis der Entscheidung E2: Eine offene Testpflicht ist in AP2 sichtbar, eine nichtssagende
+Versionsangabe nicht.
 
 Ohne reale Installation bleibt `FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle
 Herstellerdokumentation – braucht Zugang zu dieser Dokumentation). Alles Übrige sind
 Sitzungstests und hängt an AP2.
 
-**Erledigt – Übungsrepository nachgezogen.** Es steht auf 0.12.0 (Commit `a4ff67d`,
-„Framework auf 0.12.0: Regeltexte vollstaendig, Vorlagensatz nachgezogen"); Overlay-Version,
-Manifest und Laufzeitfassung tragen `0.12.0`, der Steckbrief `0.12.x`. Beim Ausführen von
-`FW-VN-01` als Referenzinstallation geprüft.
+**P2 – Übungsrepository auf 0.13.0 nachziehen.** Ein `install.py --update`. Der bisherige
+Punkt („auf 0.11.0 nachziehen") war erledigt: Das Repository stand beim Ausführen von
+`FW-VN-01` bereits auf 0.12.0 (Commit `a4ff67d`), Overlay-Version, Manifest und
+Laufzeitfassung übereinstimmend auf `0.12.0`, der Steckbrief auf `0.12.x`. Beim Nachziehen auf
+0.13.0 ist die Steckbriefzeile auf `0.13.x` zu setzen – die neue Prüfung 13 fordert das ein,
+statt es nur zu empfehlen.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
 steht. D-02 ist bereits fortgeschrieben. D-04 ist der nächste Kandidat: Er beschreibt die
 Berechtigungsdatei noch client-gebunden und ohne die Kernregelintegrität.
 
-**P3 – „Devin" als Akteursbezeichnung aus den Langform-Modulen lösen.** 74 Nennungen in elf
-Modulen. Sie wirken nicht auf das Verhalten, weil die Langform nicht in die Sitzung geladen
-wird – die Laufzeitschicht ist seit 0.12.0 frei davon –, widersprechen aber der Zusage eines
-werkzeugneutralen Kerns. D-15 hatte Pfade ersetzt, nicht die Akteursbezeichnung.
+**P3 – „Devin" als Akteursbezeichnung aus den Langform-Modulen lösen.** Noch 76 Nennungen in
+elf Modulen (vor 0.13.0: 83 – die Umbenennung des Nutzungsvermerks hat sieben davon gelöst).
+Sie wirken nicht auf das Verhalten, weil die Langform nicht in die Sitzung geladen wird – die
+Laufzeitschicht ist seit 0.12.0 frei davon –, widersprechen aber der Zusage eines
+werkzeugneutralen Kerns. D-15 hatte Pfade ersetzt, nicht die Akteursbezeichnung. Ein Teil der
+Nennungen meint den Client korrekt („Devin Desktop") und bleibt.
 
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`

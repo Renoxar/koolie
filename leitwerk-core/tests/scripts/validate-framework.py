@@ -27,6 +27,9 @@ Prüft (statisch, ohne Devin):
      einschließlich der Quellen unter <CORE_DIR>/build/doc, aus denen sie entsteht
  12. Querverweise (FW-KO-04): Markdown-Links und in Backticks genannte Framework-Pfade
      zeigen auf existierende Dateien oder Verzeichnisse
+ 13. Versionskette (FW-VN-01): Overlay-Version an allen drei Ablageorten gleich, Steckbrief-
+     angabe zur kompatiblen Framework-Version passend zu <CORE_DIR>/VERSION, Versionsfelder
+     in der Form MAJOR.MINOR.PATCH
 
 Ohne PyYAML laufen die Prüfungen 4, 5 und 8 eingeschränkt; das Skript sagt es dann als
 Warnung. Für einen Release- oder Übernahmenachweis ist PyYAML erforderlich.
@@ -499,6 +502,19 @@ def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str]) -> None:
         m = re.search(r"^\|\s*Status\s*\|\s*`?([^`|]+?)`?\s*\|", body, re.M)
         if m and m.group(1).strip() not in SKILL_STATUS:
             err(f"{rel}/SKILL.md: Status '{m.group(1).strip()}' unbekannt")
+        # Bis 0.12.0 genuegte irgendein Wert - 'banane' blieb unbemerkt, und die Version
+        # konnte dem Aenderungsverlauf widersprechen (FW-VN-01, Sonden S4 und S5).
+        m = re.search(r"^\|\s*Version\s*\|\s*`?([^`|]+?)`?\s*\|", body, re.M)
+        cl_path = os.path.join(sdir, "CHANGELOG.md")
+        if m:
+            fassung = m.group(1).strip()
+            if not SEMVER_RE.match(fassung):
+                err(f"{rel}/SKILL.md: Version '{fassung}' ist kein Semantic Versioning "
+                    f"(MAJOR.MINOR.PATCH)")
+            elif os.path.exists(cl_path) and not re.search(
+                    rf"^\|\s*{re.escape(fassung)}\s*\|", read(cl_path), re.M):
+                err(f"{rel}: Version {fassung} hat keinen Eintrag in CHANGELOG.md "
+                    f"(08-skill-conventions.md Abschnitt 7)")
         m = re.search(r"^\|\s*ID\s*\|\s*`?([A-Z0-9-]+)`?\s*\|", body, re.M)
         if m:
             vorher = ids.get(m.group(1))
@@ -780,6 +796,90 @@ def check_manifest(root: str) -> None:
             err(f"overlay-manifest.yaml {did}: summary-Laden nur für K1 zulässig")
 
 
+SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
+
+
+def _overlay_version_angaben(root: str, man: dict) -> list[tuple[str, str]]:
+    """Alle Stellen, an denen ein Overlay seine Version *erklaert*, als (Datei, Wert).
+
+    Die Version steht dreimal: im Steckbrief, im Manifest und in der Laufzeitfassung.
+    Bis 0.12.0 pruefte der Validator nur, ob der Manifestschluessel vorhanden ist - die
+    drei Werte konnten beliebig auseinanderlaufen (FW-VN-01, Sonden S2 und S3). Das ist
+    dieselbe Luecke, die D-23 fuer den Overlay-*Status* geschlossen hat.
+    """
+    angaben: list[tuple[str, str]] = []
+    quellen = [
+        os.path.join(root, "project-overlay", "OVERLAY.md"),
+        os.path.join(root, *man["pack_runtime_dir"].split("/"), "20-project-overlay.md"),
+    ]
+    for path in quellen:
+        if not os.path.exists(path):
+            continue
+        text = read(path)
+        # Schraegstriche wie in den uebrigen Meldungen: Unter Windows liefert relpath
+        # Backslashes, und eine gemischte Schreibweise war in D-23 bereits ein echter Fehler.
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        for m in re.finditer(r"^\|\s*Overlay-Version\s*\|\s*`?([^`|]+)", text, re.M):
+            angaben.append((rel, m.group(1).strip()))
+        for m in re.finditer(r"^-?\s*Overlay-Version:\s*`?([^`\n·]+)", text, re.M):
+            angaben.append((rel, m.group(1).strip()))
+    mpath = os.path.join(root, "project-overlay", "overlay-manifest.yaml")
+    if os.path.exists(mpath) and yaml is not None:
+        try:
+            data = yaml.safe_load(read(mpath)) or {}
+        except yaml.YAMLError:  # type: ignore[attr-defined]
+            data = {}
+        if "overlay_version" in data:
+            angaben.append(("project-overlay/overlay-manifest.yaml",
+                            str(data["overlay_version"]).strip()))
+    return angaben
+
+
+def check_versions(root: str, man: dict) -> None:
+    """Pruefung 13 - die Nachweiskette aus governance/RELEASE_PROCESS.md Abschnitt 8.
+
+    Geprueft wird nicht, ob Versionsfelder *da* sind - das taten die Pruefungen 5 und 8
+    schon -, sondern ob sie *stimmen*. Genau diese Unterscheidung hat FW-VN-01 als Luecke
+    ausgewiesen: Eine Versionsangabe, die keiner anderen widersprechen kann, unterscheidet
+    keine zwei Zeitpunkte.
+    """
+    # Overlay-Version: alle Ablageorte muessen denselben Wert nennen. Noch nicht
+    # ausgefuellte Vorlagen (<TBD: ...>) bleiben aussen vor - sie erklaeren nichts.
+    angaben = [(rel, wert) for rel, wert in _overlay_version_angaben(root, man)
+               if not TBD_RE.search(wert)]
+    werte = {wert for _, wert in angaben}
+    if len(werte) > 1:
+        stellen = "; ".join(f"{rel}: {wert}" for rel, wert in angaben)
+        err(f"Overlay-Version widersprüchlich angegeben ({stellen}). Steckbrief, Manifest "
+            f"und Laufzeitfassung müssen denselben Wert nennen (RELEASE_PROCESS 8)")
+    for rel, wert in angaben:
+        if not SEMVER_RE.match(wert):
+            err(f"{rel}: Overlay-Version '{wert}' ist kein Semantic Versioning "
+                f"(MAJOR.MINOR.PATCH)")
+
+    # Kompatible Framework-Version des Steckbriefs gegen die ausgelieferte Version.
+    vpath = os.path.join(root, KERN, "VERSION")
+    opath = os.path.join(root, "project-overlay", "OVERLAY.md")
+    if not (os.path.exists(vpath) and os.path.exists(opath)):
+        return
+    version = read(vpath).strip()
+    if not SEMVER_RE.match(version):
+        err(f"{KERN}/VERSION: '{version}' ist kein Semantic Versioning (MAJOR.MINOR.PATCH)")
+        return
+    m = re.search(r"^\|\s*Kompatible Framework-Version\s*\|\s*`?([^`|]+)", read(opath), re.M)
+    if not m:
+        return
+    angabe = m.group(1).strip()
+    if TBD_RE.search(angabe):
+        return
+    major, minor, _ = version.split(".")
+    if angabe not in (version, f"{major}.{minor}.x"):
+        err(f"project-overlay/OVERLAY.md: Kompatible Framework-Version '{angabe}' passt nicht "
+            f"zu {KERN}/VERSION ({version}). Erwartet '{major}.{minor}.x' oder '{version}' – "
+            f"nach einer Aktualisierung ist der Steckbrief nachzuziehen "
+            f"(docs/ADOPTION_GUIDE.md, Abschnitt Aktualisierung)")
+
+
 def _overlay_status_angaben(text: str) -> list[str]:
     """Alle Stellen, an denen eine Overlay-Datei ihren Status *erklaert*.
 
@@ -869,6 +969,7 @@ def main() -> int:
     check_content(root)
     check_links(root)
     check_manifest(root)
+    check_versions(root, man)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:

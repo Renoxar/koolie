@@ -7,7 +7,7 @@
 
 - Aufgabe: BSV-Ticket (Platzhalter): Fehlermeldung bei ungültiger Menge nennt den gültigen Bereich nicht
 - Betriebsmodus: M3 Controlled Modification  |  Kontrollstufe: niedrig (auslösender Faktor: R1 – eine Datei, eine Verantwortlichkeit)
-- Verwendete Skills: fw-change-small v0.1.0 (Analyse zuvor: fw-change-analyze v0.1.0)
+- Verwendete Skills: fw-change-small v0.1.1 (Analyse zuvor: fw-change-analyze v0.1.1)
 - Verwendeter Kontext: src/ordering/domain/OrderValidator.ext (K1); test/ordering/OrderValidatorTest.ext (K1); bsv-guidelines.md (K1, Overlay-Manifest)
 
 ### Befunde und Änderungen

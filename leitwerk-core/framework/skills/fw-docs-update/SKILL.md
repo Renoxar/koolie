@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-011` |
 | Name | `fw-docs-update` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
@@ -98,7 +98,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Dokumentationsaktualisierung – fw-docs-update v0.1.0
+## Dokumentationsaktualisierung – fw-docs-update v0.1.1
 
 ### Aufgabe und Scope
 - Dokument(e): <Pfade in <DOC_PATHS>> · Code-Bereich / Änderungsreferenz: <Pfade | Ergebnisbericht | Plan | aus Dokumentverweisen abgeleitet (Vorschlag)>
@@ -122,7 +122,7 @@ triggers:
 - <...>
 
 ### Nächster Schritt für den Menschen
-- Diff vollständig lesen; fachliche Prüfung durch eine Person mit Domänenwissen; Prüfung auf vertrauliche Inhalte vor Ablage in <DOCUMENTATION_PLATFORM>; offene Klärungen an die genannten Rollen; Übernahme über Review mit Devin-Nutzungsvermerk
+- Diff vollständig lesen; fachliche Prüfung durch eine Person mit Domänenwissen; Prüfung auf vertrauliche Inhalte vor Ablage in <DOCUMENTATION_PLATFORM>; offene Klärungen an die genannten Rollen; Übernahme über Review mit KI-Nutzungsvermerk
 ```
 
 ## 6. Qualitätskriterien sowie Prüf- und Freigabeschritt
@@ -140,7 +140,7 @@ triggers:
 
 1. Diff vollständig lesen; jede Änderung an der Code-Fundstelle stichprobenartig bestätigen (RV2, RV11).
 2. Fachliche Prüfung durch eine Person mit Domänenwissen; offene fachliche Klärungen als Aufgaben an die genannten Rollen; Prüfung auf vertrauliche Inhalte (Personen, Adressen, Umgebungen, Konfigurationswerte) vor Ablage in `<DOCUMENTATION_PLATFORM>` (`leitwerk-core/checklists/02-privacy-context.md`).
-3. `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit Devin-Nutzungsvermerk; Ablage in `<DOCUMENTATION_PLATFORM>` durch den Menschen.
+3. `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit KI-Nutzungsvermerk; Ablage in `<DOCUMENTATION_PLATFORM>` durch den Menschen.
 
 ## 7. Fehlerbehandlung und Abbruch
 

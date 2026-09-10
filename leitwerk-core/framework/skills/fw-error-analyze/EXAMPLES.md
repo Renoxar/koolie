@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen-, Methoden- und Test
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Fehleranalyse – fw-error-analyze v0.1.0
+## Fehleranalyse – fw-error-analyze v0.1.1
 
 ### Aufgabe und Scope
 - Fehler: Bereichsüberschreitung beim Formatieren der Positionsliste einer Bestellung ohne Positionen · Referenz: keine · Beobachtet / Erwartet: Abbruch mit Ausnahme / Bestätigung ohne Positionsliste

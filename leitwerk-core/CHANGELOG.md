@@ -2,6 +2,49 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.13.0] – 2026-09-10
+
+### Behoben
+- **Eine Versionsangabe, die sich nie ändert, unterscheidet keine zwei Zeitpunkte (`CR-2026-015`, Decision Record D-25).** Gefunden beim Ausführen von `FW-VN-01`. Alle 13 Skills standen unverändert auf `0.1.0`, obwohl alle 13 `SKILL.md` geändert worden waren – 126 Zeilen in den Releases 0.5.0 und 0.7.0. Kein Skill-Änderungsverlauf hatte dafür einen Eintrag. `08-skill-conventions.md` stuft solche Änderungen als PATCH ein, und die Release-Checkliste verlangt die Pflege je geändertem Skill als **MUSS**.
+
+  Wirksam wurde das im Nutzungsvermerk des Merge Requests. Die Kurzform für Kontrollstufe niedrig – den Regelfall – nannte weder Framework- noch Overlay-Version; ihre einzige Versionsangabe waren die Skills. **Bei Kontrollstufe niedrig enthielt ein Merge Request damit keine einzige Versionsangabe, die sich je geändert hat.** Das synthetische Beispiel des Frameworks zeigte es unfreiwillig: `fw-change-analyze v0.1.0, fw-change-small v0.1.0` – beide Werte waren von 0.1.0 bis 0.12.0 identisch.
+
+  Angehoben sind jetzt 13 Skills (`0.1.1`, mit Eintrag je Änderungsverlauf), 10 Checklisten und 13 Prompts (`0.1.1`) sowie `11-framework-release.md` (`0.2.0`, wegen der neuen Pflicht). Die Kurzform des Vermerks nennt Framework- und Overlay-Version.
+
+- **Der Validator prüfte, ob Versionsfelder da sind, nie ob sie stimmen.** Fünf Sonden mit bekanntem Defekt blieben sämtlich unbemerkt: Steckbriefangabe gegen `VERSION`, Manifestwert gegen Steckbrief, Laufzeitfassung gegen Steckbrief, Skill-Version gegen den eigenen Änderungsverlauf, und `banane` als Versionswert. Drei Gegenproben wurden jede gemeldet. Dieselbe Blindstellenform, die D-23 an vier anderen Prüfungen gefunden hat – hier auf das Merkmal angewandt, um das es in `FW-VN-01` geht.
+
+  **Neue Prüfung 13 (Versionskette).** Sie vergleicht die drei Ablageorte der Overlay-Version – Steckbrief, Manifest, Laufzeitfassung – miteinander, die Steckbriefangabe zur kompatiblen Framework-Version gegen `leitwerk-core/VERSION`, und jedes Versionsfeld gegen die Form `MAJOR.MINOR.PATCH`. Für den Overlay-*Status* hatte D-23 dieselbe Lücke bereits geschlossen; für die Version blieb sie offen.
+
+- **Das Kettenglied hieß anders als sein Artefakt.** `RELEASE_PROCESS.md` Abschnitt 8 nennt den „KI-Nutzungsvermerk"; die Vorlage, auf die überall verwiesen wird, hieß „Devin-Nutzungsvermerk". Im Kern standen 39 Nennungen der alten Form in 29 Dateien. Das war die unerledigte Hälfte von Befund B1 aus `FW-KO-02` – dort wurde nur die Laufzeitschicht umgestellt – und `CR-2026-005` hatte dieselbe Umbenennung bereits für 0.5.0 als Nebeneffekt verzeichnet. **Nennungen im Kern: 39 → 0.**
+
+- **Eine Kernvorlage nannte einen Client.** Beide Textblöcke der Vermerkvorlage trugen die Überschrift `### KI-Unterstützung (Devin Desktop)`, ihr Ausfüllhinweis sprach von einem einzelnen Produkt. Die Vorlage wird in **jedes** Client Pack installiert; ein Projekt mit dem Pack `claude-code` hätte den Produktnamen eines Werkzeugs in seinen Merge Request geschrieben, das bei ihm nicht im Einsatz ist. Derselbe Befundtyp wie B2 aus `FW-KO-02`.
+
+### Geändert
+- **Eine kompatible Framework-Version nennen nur noch die Artefakte, die vom Kern abweichen können** (`RELEASE_PROCESS.md` Abschnitt 1.2). Das sind das Overlay – es gehört dem Projekt – und das Client Pack, das einen fremden Client abbildet. Skills, Checklisten und Prompts werden byte-gleich im Release ausgeliefert; ihre kompatible Framework-Version ist `leitwerk-core/VERSION` im selben Verzeichnis.
+
+  Die Zusage stand seit 0.1.0 für fünf Artefaktklassen im Regeltext und war von genau einer erfüllt: dem Overlay. Sie einzulösen hätte in 35 Dateien einen Wert erzeugt, der bei jedem Release nachzuziehen wäre – genau die Doppelpflege, die D-16, D-17 und D-20 beseitigt haben.
+
+- **Die Release-Checkliste verlangt die Versionspflege auch für Checklisten und Prompts.** Bisher galt die Pflicht nur für Skills; deshalb standen elf Checklisten und dreizehn Prompts über zwölf Releases unverändert auf `0.1.0`, obwohl sie sich geändert hatten.
+
+### Nachweise
+- **`FW-VN-01` durchgeführt**, neun Befunde, fünf davon durch Sonden belegt. Protokoll mit vollständiger Befundtabelle, Sondenlauf und den beiden Ermessensentscheidungen: `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01.md`. Wiederholungslauf nach der Behebung: `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` – alle fünf Sonden gemeldet.
+- **`FW-VN-01` steht weiterhin auf `fehlgeschlagen`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**. Die beiden Auflösungen mit Ermessensspielraum sind entschieden (E1: Abschnitt 1.2 einschränken; E2: Skill-Versionen anheben), die Abnahme des Reviews steht aus. Der Status wechselt erst mit der Gegenzeichnung.
+- Validator, `FW-KO-04` und `install.py --check`: 0 Fehler, 0 Warnungen (PyYAML 6.0.3 installiert).
+
+### Migrationshinweise für Overlays
+Prüfung 13 kann in einem bestehenden Projekt Fehler melden, deren Ursache älter ist als dieses Release – das ist ihr Zweck:
+
+1. **„Kompatible Framework-Version passt nicht zu VERSION":** Steckbriefzeile in `project-overlay/OVERLAY.md` auf `0.13.x` setzen (`docs/ADOPTION_GUIDE.md`, Abschnitt Aktualisierung).
+2. **„Overlay-Version widersprüchlich angegeben":** Die Meldung nennt alle drei Werte mit Fundstelle – Steckbrief, `overlay-manifest.yaml` und die Laufzeitfassung `20-project-overlay.md` – und den abweichenden. Es ist der Wert nachzuziehen, nicht die Prüfung.
+
+`templates/MR_AI_DISCLOSURE.md` ist **Saat**: Ein bestehendes Projekt behält seine Fassung. Die beiden neuen Zeilen der Kurzform und die clientneutrale Überschrift sind von Hand nachzuziehen; ein Unterlassen bricht nichts, lässt aber die Lücke bestehen, die `FW-VN-01` gefunden hat.
+
+### Bekannte Einschränkungen
+- **Die Testfälle der 13 Skills sind wegen der Versionsanhebung erneut auszuführen** (`08-skill-conventions.md` Abschnitt 7). Sie sind sämtlich `sitzung` und hängen an AP2; bis dahin bleibt die Pflicht offen. Das war der Preis der Entscheidung E2 und ist so vorgelegt worden: Eine offene Testpflicht ist in AP2 sichtbar, eine nichtssagende Versionsangabe nicht.
+- Geprüft wurde die Kette im Framework und in der Referenzinstallation, nicht an realen Merge Requests. Ob der Vermerk in der Praxis ausgefüllt wird, prüft `FW-VN-01` nicht und kann es nicht.
+- 74 Nennungen von „Devin" als Akteur in den elf Langform-Modulen bleiben offen (Roadmap, P3). Dieses Release hat nur die Bezeichnung des Nutzungsvermerks gelöst, nicht die Akteursbezeichnung.
+- Die Einstufungen der Fähigkeitsmatrizen bleiben unbelegt (Roadmap AP2, weiterhin der einzige P1).
+
 ## [0.12.0] – 2026-09-10
 
 ### Behoben

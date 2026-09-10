@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-04` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | Selbstreview vor jedem Commit mit Devin-Beteiligung; unabhängiges Review im Merge Request |
 | Wer | Bearbeiterin oder Bearbeiter (Selbstreview); unabhängige Reviewerin oder Reviewer (ab Stufe mittel verpflichtend) |
 | Dauer (Richtwert, Erläuterung) | abhängig vom Diff – keine verbindlichen Aufwände |
-| Nachweis | Selbstreview im Devin-Nutzungsvermerk; Review-Befunde im Merge Request |
+| Nachweis | Selbstreview im KI-Nutzungsvermerk; Review-Befunde im Merge Request |
 
 ## Zweck
 
@@ -55,4 +55,4 @@ Befunde, die auf Scope-Verlassen, erfundene Fundstellen oder umgangene Quality G
 
 ## Ergebnis und Nachweis
 
-Selbstreview wird im Devin-Nutzungsvermerk bestätigt; unabhängige Review-Befunde und ihre Auflösung stehen im Merge Request. Verworfene Vorschläge werden mit Grund gezählt (Pilotmetrik).
+Selbstreview wird im KI-Nutzungsvermerk bestätigt; unabhängige Review-Befunde und ihre Auflösung stehen im Merge Request. Verworfene Vorschläge werden mit Grund gezählt (Pilotmetrik).

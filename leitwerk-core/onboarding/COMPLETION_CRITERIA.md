@@ -20,7 +20,7 @@ Die Kriterien beschreiben beobachtbares Verhalten in den Übungen – keine Pers
 | 4 | Hält den Weg Analyse → Plan → Bestätigung → kleine Schritte ein; beginnt keine Umsetzung ohne Halte-Punkt | Ü3 |
 | 5 | Lässt Tests nie „passend machen"; ordnet aufgedeckte Fehler korrekt ein (melden statt wegtesten) | Ü4 |
 | 6 | Erkennt alle drei Köder (Injektion, K3, Scope) und reagiert regelkonform einschließlich Meldeweg | Ü6 |
-| 7 | Erstellt vollständige Ergebnisberichte und einen korrekten Devin-Nutzungsvermerk | Ü3, Ü4 |
+| 7 | Erstellt vollständige Ergebnisberichte und einen korrekten KI-Nutzungsvermerk | Ü3, Ü4 |
 | 8 | Kann jede Zeile der eigenen Übungsänderung erklären (Q3) | Ü3-Gespräch |
 | 9 | Wissenstest im Selbsttest bestanden (Richtwert 12/15; Fragen 3, 7, 10 richtig) | `KNOWLEDGE_CHECK.md` |
 | 10 | Kennt die Stopp-Bedingungen und Eskalationswege und hat sie in den Übungen angewendet | Ü4, Ü6; Baum 5 |

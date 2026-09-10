@@ -18,7 +18,7 @@
    - **mittel:** zusätzlich unabhängiges Review aller Punkte RV1–RV12 durch eine zweite Person, Abgleich mit dem bestätigten Plan, eigenständige Testausführung durch die Reviewerin oder den Reviewer.
    - **hoch:** zusätzlich Architektur-Review (`<ARCHITECT_ROLE>`) und – bei R3/R4/R10 – Security-/Datenschutzprüfung (`<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`); Prüfung des Sitzungsprotokolls; Freigaben dokumentiert.
 4. **Sonderauslöser unabhängig von der Stufe:** Berührung von Abhängigkeiten → `leitwerk-core/checklists/07-new-dependency.md`; Sicherheitsmuster im Diff → `leitwerk-core/checklists/06-security.md`; neue Verarbeitung personenbezogener Daten → `<DATA_PROTECTION_CONTACT>`; gemeldete Injektionsversuche → `<SECURITY_CONTACT>`.
-5. **Abschluss:** Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess (`leitwerk-core/checklists/08-merge-request.md`); Devin-Nutzungsvermerk ist Pflicht.
+5. **Abschluss:** Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess (`leitwerk-core/checklists/08-merge-request.md`); KI-Nutzungsvermerk ist Pflicht.
 
 ## Diagramm
 
@@ -37,7 +37,7 @@ flowchart TD
     G --> I
     H --> I
     I -- "ja" --> J["Zusatzprüfung:<br/>CL-06 / CL-07 /<br/>DATA_PROTECTION_CONTACT /<br/>SECURITY_CONTACT"] --> K
-    I -- "nein" --> K["Übernahme nur über<br/>Merge-Request-Prozess (CL-08)<br/>mit Devin-Nutzungsvermerk"]
+    I -- "nein" --> K["Übernahme nur über<br/>Merge-Request-Prozess (CL-08)<br/>mit KI-Nutzungsvermerk"]
     C --> K
     D1 --> K
     D2 --> K
