@@ -28,7 +28,7 @@ Diese Datei legt die Begriffe fest, mit denen der Kern die Bestandteile der Lauf
 | **Wurzel-Anweisungsdatei** | Die Datei im Wurzelverzeichnis, die der Client zu Beginn jeder Sitzung lädt | `AGENTS.md` | `CLAUDE.md` |
 | **Laufzeitschicht** | Das Verzeichnis mit allem, was der Client aus dem Repository liest | `.devin/` | `.claude/` |
 | **Berechtigungsdatei** | Versionierte Konfiguration der Rechte (verweigern / rückfragen / erlauben) | `.devin/config.json` | `.claude/settings.json` |
-| **Regelablage** | Verzeichnis der Regeltexte (Core-Kurzfassungen, Overlay, Packs) | `.devin/rules/` | `.claude/framework/` |
+| **Regelablage** | Verzeichnis der Regeltexte (Core-Kurzfassungen, Overlay, Packs) | `.devin/rules/` | `.claude/rules/` |
 | **Skill-Ablage** | Verzeichnis der Skills, je Skill ein Unterverzeichnis mit `SKILL.md` | `.devin/skills/` | `.claude/skills/` |
 | **Agentenprofile** | Verzeichnis der Subagentenprofile | `.devin/agents/` | `.claude/agents/` |
 | **Hook-Konfiguration** | Ort der Lebenszyklus-Hooks | `.devin/hooks.v1.json` | in der Berechtigungsdatei |
@@ -45,7 +45,7 @@ Ein Begriff benennt die **Rolle** eines Artefakts, nicht seine Eigenschaften. Ob
 
 Zwei Beispiele, in denen der Begriff gleich und die Wirkung verschieden ist:
 
-- Die **Regelablage** enthält bei beiden Packs dieselben Regeltexte. Bei `devin-desktop` laden sie nach Ladetriggern bedingt, bei `claude-code` über Importe stets. Der Kern beschreibt deshalb, *was* eine Regel bewirkt, nicht *wann* sie geladen wird.
+- Die **Regelablage** enthält bei beiden Packs dieselben Regeltexte, und beide Clients laden sie von sich aus. Verschieden ist die **Bedingungssprache**: `devin-desktop` kennt die Ladetrigger der Kernquelle, `claude-code` kennt nur die Bindung an Dateimuster (`paths`) und lädt alles Übrige unbedingt. Der Kern beschreibt deshalb, *was* eine Regel bewirkt, nicht *wann* sie geladen wird; die Abbildung der Ladetrigger steht im Manifest des Packs unter `rule_triggers`.
 - Die **Hook-Konfiguration** ist bei `devin-desktop` eine eigene Datei, bei `claude-code` ein Abschnitt der Berechtigungsdatei. Ein Kerntext, der „die Hook-Datei" nennt, wäre schon wieder clientgebunden.
 
 ## Nummernschema der Regelablage

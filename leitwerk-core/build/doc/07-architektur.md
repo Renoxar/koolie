@@ -39,7 +39,7 @@ Allgemeingültige Regeln in zehn Modulen: FW-CORE-00 Leitprinzipien und Konventi
 
 ## 7.3 Ebene 6 – Role Packs (optional, rollenbezogen)
 
-Module je Tätigkeit (Softwareentwicklung als Referenzpack; Softwarearchitektur, Requirements Engineering, Testing und QA, DevOps, Dokumentation, Code Review vorgesehen). Ein Role Pack konkretisiert Arbeitsweise, typische Aufgaben mit Modus- und Stufenzuordnung, rollenspezifische Kontextquellen, Prüfpunkte und gegebenenfalls Skills (`role-<pack>-…`). Es enthält keine Governance-Regeln und keine Projektwerte; Aktivierung erfolgt je Projekt über das Overlay; die Laufzeitfassung `30-*` lädt bei Relevanz, sofern der Client Ladetrigger kennt.
+Module je Tätigkeit (Softwareentwicklung als Referenzpack; Softwarearchitektur, Requirements Engineering, Testing und QA, DevOps, Dokumentation, Code Review vorgesehen). Ein Role Pack konkretisiert Arbeitsweise, typische Aufgaben mit Modus- und Stufenzuordnung, rollenspezifische Kontextquellen, Prüfpunkte und gegebenenfalls Skills (`role-<pack>-…`). Es enthält keine Governance-Regeln und keine Projektwerte; Aktivierung erfolgt je Projekt über das Overlay; die Laufzeitfassung `30-*` lädt bei Relevanz; kennt ein Client keine modellentschiedene Ladebedingung, lädt sie dort unbedingt.
 
 ## 7.4 Ebene 5 – Technology Packs (optional, technologiebezogen)
 

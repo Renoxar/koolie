@@ -6,7 +6,7 @@ Role Packs sind optionale, rollenbezogene Module. Sie konkretisieren die Arbeits
 
 1. Ein Role Pack enthält **keine** Governance-, Datenschutz- oder Sicherheitsregeln und **keine** Projektwerte. Solche Inhalte gehören in den Core (Ebene 3) beziehungsweise das Overlay (Ebene 4). Bei Zweifeln: `leitwerk-core/decision-trees/06-rule-placement.md`.
 2. Ein Role Pack darf Core- und Overlay-Regeln nur konkretisieren oder verschärfen, nie lockern.
-3. Aufbau je Pack: `ROLE_PACK.md` (Langform), optional `skills/` (Quellablage rollenspezifischer Skills, Präfix `role-<pack>-`, werden zur Aktivierung in die Skill-Ablage kopiert) und eine Laufzeitfassung `30-role-<pack>.md` in der Regelablage. Bei Clients mit Ladetriggern lädt sie bei Relevanz; bei Clients ohne Ladetrigger wird sie in der Wurzel-Anweisungsdatei eingebunden (`leitwerk-core/docs/RUNTIME_GLOSSARY.md`).
+3. Aufbau je Pack: `ROLE_PACK.md` (Langform), optional `skills/` (Quellablage rollenspezifischer Skills, Präfix `role-<pack>-`, werden zur Aktivierung in die Skill-Ablage kopiert) und eine Laufzeitfassung `30-role-<pack>.md` in der Regelablage. Sie trägt den Ladetrigger `model_decision` und lädt bei Relevanz; kennt ein Client keine modellentschiedene Ladebedingung, lädt sie dort unbedingt – eine Verschärfung, die sein Client Pack ausweist (`leitwerk-core/docs/RUNTIME_GLOSSARY.md`).
 4. Ein Pack wird im Overlay aktiviert (Abschnitt 1 „Rollen im Team" und Laufzeitfassung vorhanden). Nicht aktivierte Packs liegen nur im Verzeichnis `leitwerk-core/framework/role-packs/` und werden von Devin nicht als Regel geladen.
 5. Jedes Pack hat einen Modul-Owner (`leitwerk-core/OWNERS.md`), eine Version und einen Änderungsverlauf.
 

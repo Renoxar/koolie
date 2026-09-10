@@ -376,13 +376,58 @@ def check_config(root: str, man: dict) -> None:
                 err(f"{rt}/{name} enthält Schlüsselwörter für Zugangsdaten – gehören in eine nicht versionierte Datei oder einen Tresor")
 
 
+KERNREGEL_PRAEFIXE = ("00-", "10-", "15-", "20-")
+
+
+def _check_rule_client_form(rel: str, fn: str, text: str, spec: dict) -> int:
+    """Regeldatei in der Bedingungssprache des Clients. Rueckgabe: Zeichen, die stets laden.
+
+    Geprueft wird die **installierte** Fassung, nicht die Quelle (D-26): Ein stehen
+    gebliebenes `trigger:` oder `globs:` bedeutet, dass die Datei nicht durch die Abbildung
+    des Client Packs gelaufen ist - der Client wertet diese Felder nicht aus, die
+    Ladebedingung waere damit verfallen.
+    """
+    feld = spec.get("condition_field")
+    erlaubt = set(spec.get("allowed_fields", []))
+    if not text.startswith("---"):
+        return len(text)
+    fm, _ = parse_frontmatter(text)
+    if not fm or "_error" in fm:
+        err(f"{rel}: Frontmatter vorhanden, aber nicht lesbar")
+        return 0
+    if "_raw" in fm:
+        return 0
+    for schluessel in sorted(set(fm) - erlaubt):
+        err(f"{rel}: Frontmatter-Feld '{schluessel}' – dieser Client wertet für Regeldateien "
+            f"nur {sorted(erlaubt)} aus (K-18). Ein stehen gebliebenes 'trigger' oder 'globs' "
+            f"heißt: Die Datei ist nicht durch die Abbildung des Client Packs gelaufen, ihre "
+            f"Ladebedingung ist verfallen")
+    if feld not in fm:
+        return len(text)
+    werte = fm[feld]
+    if spec.get("condition_format", "list") == "list" and (
+            not isinstance(werte, list) or not werte
+            or not all(isinstance(w, str) and w.strip() for w in werte)):
+        err(f"{rel}: '{feld}' muss eine nichtleere Liste von Dateimustern sein")
+    if fn.startswith(KERNREGEL_PRAEFIXE):
+        err(f"{rel}: Kernregel über '{feld}' an Dateimuster gebunden – sie gilt für jede "
+            f"Aufgabe; eine Ladebedingung wäre hier eine Lockerung")
+    return 0
+
+
 def check_rules(root: str, man: dict) -> None:
     """Regeltexte der Laufzeitschicht.
 
-    Zwei Bauarten, je nach Client: Mit Ladetriggern traegt jede Regeldatei ein
-    Frontmatter, das ihr Ladeverhalten festlegt. Ohne Ladetrigger wirkt eine Datei
-    erst, wenn die Wurzel-Anweisung sie einbindet - eine nicht eingebundene Datei
-    ist dort stillschweigend wirkungslos, und genau das wird hier geprueft.
+    Drei Bauarten, je nach Client:
+
+    * Der Client kennt die Ladetrigger der Kernquelle (`devin-desktop`): geprueft wird das
+      Quellfrontmatter - `description`, `trigger`, bei `glob` zusaetzlich `globs`.
+    * Der Client kennt eine **eigene** Bedingungssprache (`rule_triggers` im Manifest, bei
+      `claude-code` das Feld `paths`): geprueft wird die installierte Fassung gegen die
+      Felder, die er auswertet.
+    * Der Client laedt Regeldateien nicht von sich aus: Dort wirkt eine Datei erst, wenn die
+      Wurzel-Anweisung sie einbindet - eine nicht eingebundene Datei ist stillschweigend
+      wirkungslos, und genau das wird geprueft. Kein ausgeliefertes Pack ist so gebaut.
     """
     rules_rel = man["pack_runtime_dir"]
     rules_dir = os.path.join(root, *rules_rel.split("/"))
@@ -392,7 +437,9 @@ def check_rules(root: str, man: dict) -> None:
     wurzel_rel = man["root_instruction_file"]
     wurzel_pfad = os.path.join(root, *wurzel_rel.split("/"))
     wurzel_text = read(wurzel_pfad) if os.path.exists(wurzel_pfad) else ""
+    eigene_bedingung = man.get("rule_triggers")
     mit_triggern = man.get("has_rule_triggers", True)
+    ueber_import = not mit_triggern
     stets_geladen = len(wurzel_text)
 
     for fn in sorted(os.listdir(rules_dir)):
@@ -401,7 +448,7 @@ def check_rules(root: str, man: dict) -> None:
         text = read(os.path.join(rules_dir, fn))
         rel = f"{rules_rel}/{fn}"
 
-        if mit_triggern:
+        if not ueber_import:
             if len(text) > 12000:
                 err(f"{rel}: {len(text)} Zeichen (> 12.000)")
             if fn == "20-project-overlay.md" and len(text) > 6000:
@@ -409,7 +456,9 @@ def check_rules(root: str, man: dict) -> None:
         if fn == "README.md":
             continue
 
-        if mit_triggern:
+        if eigene_bedingung:
+            stets_geladen += _check_rule_client_form(rel, fn, text, eigene_bedingung)
+        elif mit_triggern:
             fm, _ = parse_frontmatter(text)
             if not fm or "_error" in fm:
                 err(f"{rel}: Frontmatter fehlt oder ungültig")
@@ -424,22 +473,22 @@ def check_rules(root: str, man: dict) -> None:
             if trig == "glob" and not fm.get("globs"):
                 err(f"{rel}: trigger glob ohne globs")
         else:
-            # Ohne Ladetrigger entscheidet der Import. Eine Kernregel (00-, 10-, 15-, 20-)
-            # muss eingebunden sein, sonst waere sie wirkungslos.
+            # Ohne eigene Ladebedingung entscheidet der Import. Eine Kernregel muss
+            # eingebunden sein, sonst waere sie wirkungslos.
             eingebunden = f"@{rel}" in wurzel_text
-            if fn.startswith(("00-", "10-", "15-", "20-")) and not eingebunden:
+            if fn.startswith(KERNREGEL_PRAEFIXE) and not eingebunden:
                 err(f"{rel}: nicht in {wurzel_rel} eingebunden (@{rel}) – die Regel wäre wirkungslos")
             if eingebunden:
                 stets_geladen += len(text)
             if text.startswith("---"):
-                warn(f"{rel}: YAML-Frontmatter, obwohl dieser Client keine Ladetrigger kennt "
+                warn(f"{rel}: YAML-Frontmatter, obwohl dieser Client keine Ladebedingung kennt "
                      f"(Frontmatter nur mit dokumentierten Feldern, K-18)")
 
-    if not mit_triggern and stets_geladen > 40000:
-        warn(f"{wurzel_rel} und die eingebundenen Regeltexte ergeben {stets_geladen} Zeichen, "
-             f"die in jeder Sitzung geladen werden (Least Context)")
+    if (eigene_bedingung or ueber_import) and stets_geladen > 40000:
+        warn(f"{wurzel_rel} und die unbedingt geladenen Regeltexte ergeben {stets_geladen} "
+             f"Zeichen, die in jeder Sitzung geladen werden (Least Context)")
 
-    if os.path.exists(wurzel_pfad) and mit_triggern and len(wurzel_text) > 12000:
+    if os.path.exists(wurzel_pfad) and not ueber_import and len(wurzel_text) > 12000:
         err(f"{wurzel_rel}: {len(wurzel_text)} Zeichen (> 12.000)")
 
 

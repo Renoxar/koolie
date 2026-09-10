@@ -5,8 +5,9 @@ trigger: model_decision
 
 <!-- AUSFÜLLHINWEIS: Kopiere diese Datei nach 2N-overlay-<name>.md (N = 1–9, ohne .template).
      Mechanismus: project-overlay/OVERLAY.md Abschnitt 19, Ladeverhalten "rule".
-     Für Coding Guidelines ist trigger: glob mit den Dateimustern der Sprache geeignet
-     (dann Feld globs: "<Muster>" ergänzen). Unter 12.000 Zeichen bleiben.
+     Für Coding Guidelines ist eine Bindung an die Dateimuster der Sprache geeignet; wie
+     sie bei diesem Client notiert wird, steht in der README der Regelablage.
+     Unter 12.000 Zeichen bleiben.
      Inhalt: nur Kernregeln des registrierten Dokuments (Manifest-ID nennen), keine Lockerung
      von Framework-Regeln, keine Personen, keine internen Adressen, keine Secrets. -->
 

@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.14.0 (2026-09-10)
+## Stand nach Release 0.15.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.14.0 gebracht haben
+### Was 0.5.0 bis 0.15.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -33,12 +33,37 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Kurzform trägt | Sieben Abweichungen zwischen geladener Kurzform und kanonischer Langform behoben; Laufzeitschicht ohne Client-Bindung | D-24, `CR-2026-014`, `tests/protocols/2026-09-10-FW-KO-02.md` |
 | Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben; der dritte Review-Testfall ist bestanden | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` |
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
+| Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.15.0 verliert auch eine **Ladebedingung** keine Zusage mehr. Das Pack `claude-code`
+führte R2 („Regeldateien mit Ladebedingungen") und R3 („Regeln an Dateimuster bindbar –
+Grundlage der Technology Packs") als `[NICHT ABBILDBAR]`, begründet mit „`@pfad`-Importe werden
+immer geladen". Richtig für Importe, falsch für den Client: `.claude/rules/*.md` mit
+`paths:`-Frontmatter bindet eine Regel an Glob-Muster, und **eine Regeldatei ohne `paths` lädt
+unbedingt – ohne Import**.
+
+An derselben Fehlannahme hing mehr als zwei Matrixzeilen. **Eine aktivierte Role-Pack-Regel
+wurde bei diesem Client nie geladen** (AP2-CC-10): `install.py` band nur die vier Core-Regeln
+ein, alles Übrige lag in der Regelablage und wirkte nicht – genau der stille Fehlerfall, den das
+Client Pack selbst beschrieben hatte, eingetreten am framework-eigenen Mechanismus. Dieselben
+Dateien liefen zudem nie durch die Formtransformation, ebenso wenig die Regelvorlagen.
+
+Seit D-27 wird jeder Ladetrigger der Kernquelle auf die Bedingungssprache des Zielclients
+abgebildet – `glob` auf `paths`, `always_on` und `model_decision` auf unbedingtes Laden – und ein
+Ladetrigger ohne Eintrag lässt die Installation scheitern, und zwar vollständig statt mitten im
+Schreiben. Umgekehrt gilt die Grenze der neuen Fähigkeit: **Eine Kernregel darf keine
+Ladebedingung tragen**, sonst wäre die Bindung an Dateimuster eine Lockerung. Sechs Sonden
+belegen die neuen Prüfungen, vier Gegenproben zeigen, dass keine bestehende verdrängt wurde.
+
+Nebenbefund mit eigener Nummer: **`claudeMdExcludes` kann Regeldateien nutzerlokal vom Laden
+ausnehmen** (AP2-CC-11) – eine Lockerung und damit eine Lücke in B9, die vor 0.15.0 größer war
+als danach und nur bisher niemandem aufgefallen ist. Sie ist ausgewiesen, nicht geschlossen.
 
 Mit 0.14.0 verliert eine Abbildung keine Zusage mehr. `AP2` fuer das Pack `claude-code` - der
 erste Durchlauf ueberhaupt, acht Releases nach seiner Einfuehrung - ergab neun Befunde, drei
@@ -131,8 +156,8 @@ Das Befundmuster ist bemerkenswert: **Sechs von neun Befunden lauten, das Pack h
 unterschätzt, was der Client leistet.** Kein einziger lautet, es habe eine Fähigkeit
 behauptet, die fehlt.
 
-**Drei Befunde sind mit 0.14.0 behoben** (`CR-2026-016`, D-26). Der dritte kam bei der Behebung
-dazu und erklaert die beiden anderen:
+**Sechs Befunde sind behoben** – drei mit 0.14.0 (`CR-2026-016`, D-26), drei mit 0.15.0
+(`CR-2026-017`, D-27). Je einer kam bei der Behebung dazu und erklaert die anderen:
 
 - **AP2-CC-01:** Die Semantikabbildung verwarf `triggers` ersatzlos. Die Zusage S4 verfiel damit
   bei der Installation, obwohl der Client mit `disable-model-invocation` ein Feld dafuer hat.
@@ -145,16 +170,31 @@ dazu und erklaert die beiden anderen:
   nicht sehen koennen, weil sie die kommagetrennte Werkzeugliste zeichenweise las. Beide Befehle
   laufen jetzt nacheinander mit 0 Fehlern.
 
-Vier Sonden nach D-23 belegen die neuen Pruefungen, alle gemeldet.
+- **AP2-CC-03:** R2 und R3 standen auf `[NICHT ABBILDBAR]`, obwohl der Client Regeldateien mit
+  Ladebedingungen kennt. Die Regelablage liegt jetzt in `.claude/rules/`, die Ladetrigger werden
+  abgebildet, ein Technology Pack laedt ueber `paths:`.
+- **AP2-CC-10:** Eine aktivierte Role-Pack-Regel wurde nie geladen und lief nie durch die
+  Formtransformation. Beides behoben; eine Regeldatei wirkt jetzt ohne Import.
+- **AP2-CC-11:** `claudeMdExcludes` kann Regeldateien nutzerlokal vom Laden ausnehmen – eine
+  Luecke in B9. **Ausgewiesen, nicht geschlossen**; ob verwaltete Einstellungen eine
+  Gegenmassnahme hergeben, haengt an den Enterprise-Markern.
 
-Zwei Einstufungen `[NICHT ABBILDBAR]` sind überholt: `.claude/rules/*.md` mit
-`paths:`-Frontmatter bildet R2 und R3 nativ ab – und damit die Grundlage der Technology Packs
-bei diesem Client.
+Zehn Sonden nach D-23 belegen die neuen Pruefungen (vier zu 0.14.0, sechs zu 0.15.0), alle
+gemeldet; die vier Gegenproben zu 0.15.0 zeigen, dass keine bestehende Pruefung verdraengt wurde.
+
+**Keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`** – 4 vor AP2, jetzt 0. Alle vier
+waren Unterschaetzungen des Clients.
 
 **Offen bei `claude-code`:** die Wirkungsnachweise. Sie brauchen eine Sitzung, die **in** der
-Testinstallation startet, weil Berechtigungen beim Sitzungsstart gelesen werden; aus einer
-Sitzung mit anderem Arbeitsverzeichnis sind sie nicht führbar. Der einfachste ist geschenkt:
-Die Startwarnungen aus AP2-CC-02 erscheinen ohne Zutun und benennen jede wirkungslose Regel.
+Testinstallation startet, weil Berechtigungen und Regeln beim Sitzungsstart gelesen werden; aus
+einer Sitzung mit anderem Arbeitsverzeichnis sind sie nicht führbar. Der einfachste ist
+geschenkt: Die Startwarnungen aus AP2-CC-02 erscheinen ohne Zutun und benennen jede wirkungslose
+Regel. Seit 0.15.0 gehört ein zweiter dazu – dass eine Regel ohne `paths` tatsächlich im Kontext
+steht und eine Regel mit `paths` erst nach dem Lesen einer passenden Datei.
+
+**Offen als Gegenzeichnung:** Nachtrag 2 des AP2-Protokolls ist **vorgelegt, nicht abgezeichnet**.
+Die Prüfmethode `review` verlangt eine zweite Rolle; drei Auflösungen mit Ermessensspielraum (E1
+bis E3) liegen `<FRAMEWORK_OWNER>` zur Einzelentscheidung vor.
 
 **Offen bei `devin-desktop`:** alle zwölf Prüfmarker. Sie brauchen eine Installation von Devin
 Desktop; nichts aus dem `claude-code`-Protokoll überträgt sich darauf.
@@ -244,6 +284,15 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
   Änderung an den Hooks des Kerns erreicht ein bestehendes Projekt dieses Packs nicht über
   `install.py --update`; sie ist beim Release-Wechsel von Hand nachzuziehen. Eine automatische
   Teilzusammenführung in eine Datei, die dem Projekt gehört, wäre die schlechtere Lösung.
+- Die Importmechanik der Wurzel-Anweisung (`root_instruction_imports`, Marke `RUNTIME_IMPORTS`)
+  ist seit 0.15.0 von **keinem** ausgelieferten Client Pack mehr benutzt: Beide laden ihre
+  Regelablage selbst. Sie bleibt manifestgesteuert für ein künftiges Pack erhalten und ist damit
+  unerprobter Kerncode. Die Gegenposition steht in `CR-2026-016` – dort wurde Vorhalten „für den
+  Fall" ausdrücklich verworfen; der Unterschied ist, dass eine wirkungslose Berechtigungsregel
+  eine Wirkung behauptet, während dieser Zweig gar nichts behauptet.
+- `claudeMdExcludes` kann bei `claude-code` Regeldateien nutzerlokal vom Laden ausnehmen und ist
+  damit eine Lockerung, die B9 ausschließt (AP2-CC-11). Technisch verhindert wird sie nicht; nur
+  eine über verwaltete Einstellungen ausgelieferte Anweisungsdatei ist geschützt.
 - Ein Shell-Befehl, der in den Kern schreibt, wird vom Schutz-Hook nicht erfasst; dort trägt
   allein die `deny`-Liste der Berechtigungsdatei. Das gilt für jedes Pfadverbot gleichermaßen
   und ist kein Sonderfall des Kernverzeichnisses.

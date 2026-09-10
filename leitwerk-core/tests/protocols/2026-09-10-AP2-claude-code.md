@@ -93,7 +93,7 @@ no path, such as a deny rule for `Write`; it matches that rule at the tool level
 
 ### AP2-CC-03 – R2 und R3 sind abbildbar; die Grundlage der Technology Packs existiert
 
-**Schwere: mittel.** Zwei Einstufungen `[NICHT ABBILDBAR]` sind überholt.
+**Schwere: mittel.** Zwei Einstufungen `[NICHT ABBILDBAR]` sind überholt. **Behoben mit `CR-2026-017` (Release 0.15.0) – siehe Nachtrag 2.**
 
 Die Matrix führt R2 („Regeldateien mit Ladebedingungen") und R3 („Regeln an Dateimuster bindbar
 – Grundlage der Technology Packs") als **kein Äquivalent**, weil `@pfad`-Importe immer geladen
@@ -206,6 +206,7 @@ Arbeitsverzeichnis sind sie nicht führbar:
 | `FW-DS-02` – Read-Sperre wirkt | Eine `.env`-Testdatei ist nicht lesbar; Hinweis statt Inhalt |
 | B4 an der Wirkung | `Edit(leitwerk-core/**)` blockiert; die `Write(...)`-Regel erzeugt eine Startwarnung |
 | B7 / S4-Ersatz | Jede Schreiboperation löst eine Rückfrage aus |
+| R2 / R3 an der Wirkung | Eine Regel ohne `paths` steht im Kontext; eine Regel mit `paths` erst nach dem Lesen einer passenden Datei |
 | `FW-ZA-06` – Schreibverbot auf den Kern in realer Installation | blockiert |
 | H2 – Hook blockiert mit Exit-Code 2 | Werkzeugausführung unterbleibt |
 
@@ -301,3 +302,142 @@ realen Sitzung entscheiden es endgültig.
   von Devin Desktop; nichts an diesem Protokoll überträgt sich darauf.
 - Fünf Dokumentationsseiten wurden ausgewertet. Marker, die Sandbox-Verhalten je Betriebssystem
   oder Enterprise-Einstellungen betreffen, sind darin nur gestreift.
+
+
+## Nachtrag 2: Behebung von AP2-CC-03 mit Release 0.15.0 (`CR-2026-017`, D-27)
+
+AP2-CC-03 ist behoben. Bei der Umsetzung kamen ein weiterer Befund und eine bisher unbenannte
+Grenze dazu.
+
+### Was der Befund tatsächlich umfasste
+
+Der Protokollpunkt oben nennt zwei Matrixzeilen. Die Prüfung der Mechanik hat gezeigt, dass an
+derselben Fehlannahme drei weitere Dinge hingen:
+
+1. **Die Importe waren nie nötig.** `docs/en/memory`: „Rules without a `paths` field are loaded
+   unconditionally." Der gesamte Mechanismus – Regeldatei plus Eintrag in der Wurzel-Anweisung,
+   samt der eigens dafür gebauten Validatorprüfung „nicht eingebunden, die Regel wäre
+   wirkungslos" – beruhte darauf, dass der Client Regeldateien nicht von sich aus lädt. Er tut
+   es.
+
+2. **AP2-CC-10 (neu) – eine aktivierte Role-Pack-Regel wurde nie geladen.** `install.py` bindet
+   nur die vier Core-Regeln ein. Ein Projekt, das ein Role Pack aktiviert, legte
+   `30-role-<name>.md` in die Regelablage, wo sie mangels Import wirkungslos blieb. Das ist genau
+   der stille Fehlerfall, den das Client Pack in Abschnitt 5 selbst beschrieben hatte –
+   eingetreten am framework-eigenen Mechanismus. Dieselbe Datei lief zudem nie durch
+   `render_rule`: Die Formtransformation griff ausschließlich für `framework/runtime/rules/`,
+   nicht für die Regelvorlagen unter `templates/rules/` und nicht für die Laufzeitfassungen der
+   Packs. **Schwere: hoch** – eine Regelebene des Frameworks (Ebene 6) war bei diesem Client
+   ohne Wirkung, ohne dass irgendetwas es gemeldet hätte.
+
+3. **Ein Technology Pack hatte hier kein Zuhause.** Die beiden im Pack genannten Ersatzwege –
+   verschachtelte `CLAUDE.md` oder Import – waren beide Notlösungen für ein Problem, das der
+   Client nicht hat.
+
+### AP2-CC-11 (neu) – `claudeMdExcludes` ist eine Lücke in B9
+
+**Schwere: mittel.** Betrifft eine Kernzusage der Fähigkeitsmatrix.
+
+`docs/en/memory`:
+
+> „The `claudeMdExcludes` setting lets you skip specific files by path or glob pattern. […]
+> Patterns are matched against absolute file paths using glob syntax. You can configure
+> `claudeMdExcludes` at any settings layer: user, project, local, or managed policy. Arrays
+> merge across layers."
+
+Das Beispiel des Herstellers schließt ausdrücklich ein Regelverzeichnis aus. Eine nutzerlokale
+`.claude/settings.local.json` kann damit Regeldateien vom Laden ausnehmen – eine **Lockerung**,
+während B9 zusagt, dass nutzerlokale Konfiguration nur verschärfen kann. Für Berechtigungen
+gilt B9 unverändert („If a tool is denied at any level, no other level can allow it"); für
+Regeltexte gilt sie nicht.
+
+Die Lücke ist **nicht neu und nicht Folge dieser Änderung**: Vor 0.15.0 hätte ein Muster auf die
+Wurzel-Anweisungsdatei sämtliche importierten Regeltexte auf einmal entfernt. Neu ist allein,
+dass sie benannt ist. Der KI-Client selbst kann die Datei nicht schreiben – `Edit(.claude/**)`
+steht in `deny` –, ein Mensch schon. Nur eine über verwaltete Einstellungen ausgelieferte
+`CLAUDE.md` ist gegen Ausschluss geschützt; ob sich daraus eine Gegenmaßnahme bauen lässt, ist
+eine Frage an die noch offenen Enterprise-Marker.
+
+### Was 0.15.0 ändert
+
+| Befund | Behebung | Wirkung |
+|---|---|---|
+| AP2-CC-03 | Regelablage in `.claude/rules/`; `rule_triggers` im Manifest bildet jeden Ladetrigger der Kernquelle ab | R2 und R3 auf `[TECHNISCH]`; `[NICHT ABBILDBAR]` 4 → 0. Ein Technology Pack liegt als `40-tech-<name>.md` mit `paths:` |
+| AP2-CC-10 | `ist_regelquelle` erfasst zusätzlich `templates/rules/` und die Pack-Laufzeitfassungen; eine Regeldatei wirkt ohne Import | Eine aktivierte Role-Pack-Regel lädt und ist in der Form des Clients gerendert |
+| AP2-CC-11 | keine – die Lücke ist ausgewiesen, nicht geschlossen | Client Pack Abschnitt 5 und die Laufzeit-README benennen sie |
+
+Die Abbildung der drei Ladetrigger:
+
+| Ladetrigger der Kernquelle | Fassung bei `claude-code` | Bewertung |
+|---|---|---|
+| `always_on` | kein `paths`-Feld | wörtliche Entsprechung |
+| `model_decision` | kein `paths`-Feld | Verschärfung – mehr Regeln aktiv, nicht weniger |
+| `glob` mit `globs` | `paths:` mit denselben Mustern | wörtliche Entsprechung |
+| `manual`, `agent` | keine Abbildung | Die Installation scheitert (D-27) |
+
+Drei neue Prüfungen des Validators für einen Client mit eigener Bedingungssprache: ein
+Frontmatter-Feld, das der Client nicht auswertet, ist ein Fehler (K-18); die Ladebedingung muss
+die Form haben, die der Client erwartet; und **eine Kernregel darf keine Ladebedingung tragen** –
+sie gilt für jede Aufgabe, sie an Dateimuster zu binden wäre eine Lockerung.
+
+Zusätzlich: `install.py` rendert alle Quellen, bevor es die erste Datei schreibt. Vorher brach
+eine nicht abbildbare Quelle die Installation mitten im Schreiben ab und hinterließ ein halb
+angelegtes Projekt.
+
+### Wirksamkeitsnachweis (D-23)
+
+Sechs Sonden in einer frischen `claude-code`-Installation (79 Dateien, `install.py --client
+claude-code`, danach `README.md` angelegt). Ausgangslauf: 0 Fehler. Jede Sonde wurde einzeln in
+eine unveränderte Kopie eingebracht.
+
+| Sonde | Eingebrachter Defekt | Ergebnis |
+|---|---|---|
+| S1 | Quellfrontmatter in `.claude/rules/15-development-rules.md` stehen gelassen (`trigger: model_decision`) | **gemeldet:** „Frontmatter-Feld 'trigger' – dieser Client wertet für Regeldateien nur ['paths'] aus (K-18). Ein stehen gebliebenes 'trigger' oder 'globs' heißt: Die Datei ist nicht durch die Abbildung des Client Packs gelaufen, ihre Ladebedingung ist verfallen" |
+| S2 | `paths: ["src/**"]` an der Kernregel `10-privacy-security.md` | **gemeldet:** „Kernregel über 'paths' an Dateimuster gebunden – sie gilt für jede Aufgabe; eine Ladebedingung wäre hier eine Lockerung" |
+| S3 | `40-tech-java.md` mit `paths: "**/*.java"` als Zeichenkette | **gemeldet:** „'paths' muss eine nichtleere Liste von Dateimustern sein" |
+| S4 | dasselbe mit `paths: []` | **gemeldet:** dieselbe Meldung |
+| S5 | Ladetrigger `manual` in der Kernquelle `15-development-rules.md` | **Installation scheitert:** „Ladetrigger 'manual' hat keinen Eintrag in rule_triggers.map - die Regel liesse sich nur durch Weglassen der Ladebedingung abbilden, und das waere ein Verlust der Zusage (D-27). Bekannt: always_on, glob, model_decision"; Exit-Code 1, **kein Verzeichnis angelegt** |
+| S6 | `trigger: glob` ohne `globs` in derselben Quelle | **Installation scheitert:** „Ladetrigger 'glob' bildet auf 'paths' ab, die Quelle nennt aber keine Dateimuster - die Ladebedingung waere leer" |
+
+Vier Gegenproben:
+
+| Gegenprobe | Erwartung | Ergebnis |
+|---|---|---|
+| G1 | Ein korrektes Technology Pack (`paths` als Liste, zwei Muster, eines mit Klammer-Expansion) bleibt fehlerfrei | 0 Fehler |
+| G2 | Eine Regeldatei ganz ohne Frontmatter bleibt fehlerfrei | 0 Fehler |
+| G3 | Die Prüfung aus `CR-2026-016` meldet weiterhin: `disable-model-invocation` aus `fw-change-small` entfernt | gemeldet |
+| G4 | Die zweite Prüfung aus `CR-2026-016` meldet weiterhin: `Write(leitwerk-core/**)` in `deny` eingefügt | gemeldet |
+
+G3 und G4 sind Regressionsproben: Keine der neuen Prüfungen hat eine bestehende verdrängt.
+
+### Was der Nachtrag nicht belegt
+
+**Dass eine Regel geladen wird, ist dokumentiert, nicht beobachtet.** Der Beleg dafür, dass eine
+Regel ohne `paths` tatsächlich im Kontext steht – und eine Regel mit `paths` erst nach dem Lesen
+einer passenden Datei –, braucht eine Sitzung *in* der Installation und steht unter „Offen".
+
+Ebenfalls nicht belegt: dass ein `paths`-Muster in der Praxis so trifft, wie die Dokumentation es
+beschreibt. Die dokumentierten Grenzen – ein ungültiger Klammerausdruck trifft nichts, das
+Expansionsbudget von 1.000 Mustern – sind übernommen, nicht nachgestellt.
+
+## Gegenzeichnung (Prüfmethode `review`)
+
+Rollen statt Personen (`framework/runtime/rules/20-project-overlay.md`). AP2 ist ein
+Arbeitspaket, kein Testfall des Katalogs; die Prüfmethode dieses Protokolls ist gleichwohl
+`review`, und D-23 verlangt dafür eine **zweite Rolle**. Ein grüner Lauf und ein
+Wirksamkeitsnachweis ersetzen sie nicht.
+
+**Zur Entscheidung vorgelegt** – drei Auflösungen mit Ermessensspielraum, jede einzeln:
+
+| Nr. | Frage | Vorgeschlagene Auflösung | Preis |
+|---|---|---|---|
+| E1 | Regelablage ganz nach `.claude/rules/` oder nur die Technology Packs? | Ganz. Zwei Regelablagen mit zwei Lademechanismen bei einem Client wären schwerer zu erklären als der einmalige Umzug, und nur der vollständige Weg beseitigt AP2-CC-10 | Ein bestehendes Projekt zieht von Hand nach (CHANGELOG, Migrationshinweise). Es gibt keines |
+| E2 | Die Zeile S4 im selben Release mit berichtigen, obwohl sie zu `CR-2026-016` gehört? | Ja. Ihre Abbildung ist seit 0.14.0 ausgeliefert; die Matrix stand falsch. Dasselbe gilt für die Restangaben zu AP2-CC-02 in vier Abschnitten des Packs | Der Antrag berichtigt Aussagen über eine fremde Änderung. Ohne die Berichtigung stünde die Matrix bis zum nächsten Anlass falsch |
+| E3 | Die Importmechanik entfernen, weil sie kein Pack mehr nutzt? | Nein, erhalten – manifestgesteuert, für ein künftiges Pack. Aber als von keinem Pack erprobt ausweisen | Unerprobter Code im Kern. Die Gegenposition ist `CR-2026-016`: „Eine wirkungslose Regel vorzuhalten ist das Gegenteil einer ausgewiesenen Durchsetzungstiefe" |
+
+| Rolle | Datum | Ergebnis |
+|---|---|---|
+| Ersteller des Reviews (KI-gestützt, Sitzung) | 2026-09-10 | AP2-CC-03 behoben; zwei weitere Befunde (AP2-CC-10, AP2-CC-11) aufgenommen; sechs Sonden gemeldet, vier Gegenproben wie erwartet |
+| Zweite Rolle: `<FRAMEWORK_OWNER>` | `<TBD: Datum>` | `<TBD: Abnahme; E1, E2 und E3 einzeln entscheiden>` |
+
+Solange die zweite Zeile offen ist, ist dieser Nachtrag **vorgelegt, nicht abgezeichnet**.

@@ -10,7 +10,7 @@
 | Devin Local | Standard-Agent in Devin Desktop; Nachfolger von Cascade `[DOK]`; Gegenstand dieses Frameworks |
 | Cascade | Vorgänger-Agent (Windsurf-Ära); dessen Workflows und Memories werden von Devin Local nicht unterstützt `[DOK]` und im Framework nicht verwendet |
 | Wurzel-Anweisungsdatei | zentrale Agentenanweisung im Wurzelverzeichnis; wird zu Beginn jeder Sitzung geladen `[DOK]`. Dateiname je Client Pack (Anhang 31.2) |
-| Regel (Rule) | Markdown-Datei in der Regelablage mit Ladebedingung – bei Clients mit Ladetriggern über Frontmatter `description`, `trigger` (`always_on`, `model_decision`, `glob`, `manual`, `agent`), `globs` `[DOK]` |
+| Regel (Rule) | Markdown-Datei in der Regelablage mit Ladebedingung. Quellform: Frontmatter `description`, `trigger` (`always_on`, `model_decision`, `glob`, `manual`, `agent`) und bei `glob` zusätzlich `globs`. Die Ladebedingung wird bei der Installation auf die Bedingungssprache des Clients abgebildet (D-27); welche das ist, steht im Client Pack `[DOK]` |
 | Skill | versionierte, testbare Arbeitsanweisung in der Skill-Ablage (`<name>/SKILL.md`); Aufruf `/name` `[DOK]`; Standard in Kap. 18 |
 | Subagent | eigenständiges Agentenprofil für abgegrenzte Teilaufgaben `[DOK]`; im Framework nur das lesende Profil `fw-reviewer` |
 | Hook | konfigurierter Eingriffspunkt im Agenten-Lebenszyklus (Hook-Konfiguration), kann Aktionen blockieren `[DOK]` |

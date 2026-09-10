@@ -6,32 +6,29 @@ Die Durchsetzungstiefe – welche Zusage dieser Client technisch erzwingt und we
 
 | Datei / Verzeichnis | Zweck | Belegstatus |
 |---|---|---|
-| `framework/*.md` | Regeltexte (Core, Overlay, Packs); werden über Importe in `CLAUDE.md` geladen | `[DOK]` Importmechanismus |
+| `rules/*.md` | Regeltexte (Core, Overlay, Packs); werden vom Client selbst geladen – ohne `paths`-Feld unbedingt, mit `paths`-Feld bei passenden Dateien | [DOK] (AP2, Clientversion 2.1.267) |
 | `skills/<name>/SKILL.md` | Skills, Aufruf über den Namen mit vorangestelltem Schrägstrich; Frontmatter `name`, `description`, `argument-hint`, `allowed-tools` | `[DOK]` |
-| `agents/<name>.md` | Subagentenprofile (hier: nur lesender Reviewer); Frontmatter `name`, `description`, `tools` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
-| `settings.json` | Berechtigungen `deny` / `ask` / `allow` **und** Hooks (projektweit, versioniert). Erzeugt aus `leitwerk-core/framework/runtime/permissions.json` und `hooks.json`; hier trägt das Projekt nur die Platzhalterwerte ein | `[DOK]` Mechanismus; Regelmenge `[EMPF]`; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| `agents/<name>.md` | Subagentenprofile (hier: nur lesender Reviewer); Frontmatter `name`, `description`, `tools` (ergänzend `disallowedTools`) | [DOK] (AP2, Clientversion 2.1.267) |
+| `settings.json` | Berechtigungen `deny` / `ask` / `allow` **und** Hooks (projektweit, versioniert). Erzeugt aus `leitwerk-core/framework/runtime/permissions.json` und `hooks.json`; hier trägt das Projekt nur die Platzhalterwerte ein | `[DOK]` Mechanismus; Regelmenge `[EMPF]`; Mustersemantik [DOK] (AP2, Clientversion 2.1.267) – gitignore-Syntax; **Pfadregeln wertet dieser Client nur für `Read` und `Edit` aus** |
 | `settings.local.json` (nicht versioniert) | persönliche Überschreibungen; im Framework nur zum Verschärfen zulässig | `[DOK]` |
 
-Im Wurzelverzeichnis liegen außerdem `CLAUDE.md` (Wurzel-Anweisung, lädt die Regeltexte per Import) und `.mcp.json.example` (Vorlage für MCP-Server; Standard: keine).
+Im Wurzelverzeichnis liegen außerdem `CLAUDE.md` (Wurzel-Anweisung) und `.mcp.json.example` (Vorlage für MCP-Server; Standard: keine). Die Wurzel-Anweisung bindet die Regeltexte **nicht** ein; sie liegen in `rules/` und werden von dort geladen.
 
-## Drei Unterschiede zur Fassung für Clients mit Ladetriggern
+## Zwei Unterschiede zur Fassung anderer Client Packs
 
-Die **Regeltexte sind inhaltlich identisch**. Abweichend ist nur, wie sie geladen werden.
+Die **Regeltexte sind inhaltlich identisch**. Abweichend ist nur, wie ihre Ladebedingung notiert wird.
 
-1. **Kein Ladetrigger-Mechanismus.** Clients mit Regeldateien laden Regeln bedingt: immer, bei Relevanz oder passend zu Dateimustern. Claude Code kennt das nicht. Deshalb werden alle vier Regeltexte über Importe in `CLAUDE.md` **immer** geladen. Das ist eine Verschärfung, keine Lockerung – es kostet Kontext (rund 22.000 Zeichen einschließlich `CLAUDE.md`), senkt aber kein Schutzniveau.
+1. **Eine Bedingung statt dreier Ladetrigger.** Die Kernquelle kennt `always_on`, `model_decision` und `glob`; dieser Client kennt für Regeldateien nur die Bindung an Dateimuster (`paths`). `always_on` und `model_decision` werden deshalb beide auf unbedingtes Laden abgebildet, `glob` auf `paths`. Für `model_decision` ist das eine Verschärfung, keine Lockerung – es kostet Kontext (rund 25.000 Zeichen einschließlich `CLAUDE.md`), senkt aber kein Schutzniveau. Einzelheiten: `rules/README.md`.
 
 2. **Hooks stehen in `settings.json`**, nicht in einer eigenen Datei.
 
-3. **Schreibschutz braucht zwei Regeln je Pfad.** Claude Code trennt die Werkzeuge zum Ändern und zum Anlegen von Dateien; eine Verweigerungsregel für nur eines von beiden liefe ins Leere.
+Bis Framework-Release 0.14.0 stand hier ein dritter Unterschied – „Schreibschutz braucht zwei Regeln je Pfad". Er galt nie: Dieser Client wertet Pfadregeln ausschließlich für `Read` und `Edit` aus (AP2-CC-02, D-26).
 
 ## Technology Packs
 
-Ein Technology Pack (Ebene 5) lädt bei Clients mit Ladetriggern über ein Dateimuster – etwa nur bei Java-Dateien. Dieser Mechanismus fehlt hier. Zwei Ersatzwege, in dieser Reihenfolge zu prüfen:
+Ein Technology Pack (Ebene 5) lädt über ein Dateimuster – etwa nur bei Java-Dateien. Dieser Client bildet das nativ ab: Die Laufzeitfassung des Packs liegt als `rules/40-tech-<name>.md` mit `paths:` und den Dateimustern der Technologie. Sie lädt, sobald der Client eine passende Datei liest.
 
-1. **Verschachtelte `CLAUDE.md`** im betreffenden Verzeichnis, wenn Technologie und Verzeichnis zusammenfallen (`backend/CLAUDE.md`, `frontend/CLAUDE.md`). Claude Code lädt sie beim Zugriff auf das Verzeichnis – das kommt einem Dateimuster am nächsten.
-2. **Import in `CLAUDE.md`**, wenn die Zuordnung nicht am Verzeichnis hängt. Dann ist das Pack immer geladen; bei mehreren Packs wächst der ständige Kontext entsprechend.
-
-Die Wahl ist im Overlay zu dokumentieren. Details: `CLIENT_PACK.md` Abschnitt 5.
+Zu beachten: Die Regel steht damit nicht schon zu Beginn der Aufgabe im Kontext, sondern erst nach der ersten Berührung einer passenden Datei. Ein Pack, dessen Regeln vorher gelten müssen, bleibt unbedingt geladen. Details: `rules/README.md` und `CLIENT_PACK.md` Abschnitt 5.
 
 ## Berechtigungsmodi und Framework-Vorgabe
 

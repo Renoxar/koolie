@@ -253,44 +253,131 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
     return "---\n" + fm + "---\n" + rumpf
 
 
+def _globs_lesen(fm: str) -> list[str]:
+    """Dateimuster der Quelle - als Liste oder als einzelne Zeichenkette notiert."""
+    m = re.search(r"^globs:[ \t]*\n((?:[ \t]+-[ \t]+.*\n)+)", fm, re.M)
+    if m:
+        return [z.strip().lstrip("-").strip().strip("\"'") for z in m.group(1).splitlines() if z.strip()]
+    m = re.search(r"^globs:[ \t]*(\S.*?)[ \t]*$", fm, re.M)
+    return [m.group(1).strip().strip("\"'")] if m else []
+
+
+def ist_regelquelle(src_rel: str) -> bool:
+    """Wahr fuer jede Quelle, die als Regeldatei in der Regelablage landet.
+
+    Drei Herkuenfte mit demselben Quellfrontmatter: die Core-Regeltexte, die beiden
+    Regelvorlagen und die Laufzeitfassungen aktivierter Role- und Technology Packs.
+    Alle drei muessen dieselbe Abbildung durchlaufen - eine Pack-Regel, deren
+    Ladebedingung beim Rendern verfaellt, waere derselbe Befund wie AP2-CC-03, nur
+    eine Ebene tiefer. Bis 0.14.0 lief nur die erste Herkunft durch render_rule.
+    """
+    if src_rel.startswith(("framework/runtime/rules/", "templates/rules/")):
+        return True
+    return bool(re.match(r"framework/(role|tech)-packs/[^/]+/runtime/[^/]+\.md$", src_rel))
+
+
+def _regel_kommentar(desc: str, hinweis: str, herkunft: str) -> str:
+    return ("<!-- Laufzeitregel. Inhaltlich identisch zur Fassung anderer Client Packs;\n"
+            "     abweichend ist nur die Ladebedingung.\n"
+            f"     Zweck: {desc}\n"
+            f"     Ladeverhalten: {hinweis}\n"
+            f"     Entsprechung in der Kernquelle: {herkunft}. -->\n\n")
+
+
 def render_rule(text: str, man: dict) -> str:
     """Bringt einen Regeltext in die Form, die dieser Client erwartet.
 
-    Quellformat ist das YAML-Frontmatter mit description und trigger - die reichere Form.
-    Ein Client ohne Ladetrigger kann damit nichts anfangen (K-18: Frontmatter nur mit
-    dokumentierten Feldern); fuer ihn wird daraus ein Kommentar, der Zweck und
-    Ladeverhalten festhaelt. Der Regeltext selbst bleibt in beiden Faellen identisch.
+    Quellformat ist das YAML-Frontmatter mit `description`, `trigger` und - bei
+    `trigger: glob` - `globs`; das ist die reichere Form. Drei Bauarten:
+
+    1. Der Client kennt dieselben Ladetrigger (`devin-desktop`): Quellform ist
+       Zielform, es ist nichts zu tun.
+    2. Der Client kennt eine **eigene** Bedingungssprache (`rule_triggers` im
+       Manifest, bei `claude-code` das Feld `paths` mit Glob-Mustern): Jeder
+       Ladetrigger der Quelle wird darauf abgebildet. Ein Trigger ohne Eintrag in
+       der Abbildung laesst die Installation scheitern - ersatzloses Verwerfen waere
+       ein Verlust der Zusage (D-26, D-27). Felder, die der Client fuer Regeldateien
+       nicht dokumentiert, entfallen im Frontmatter (K-18) und stehen im Kommentar.
+    3. Der Client kennt keine Ladebedingung (`rule_frontmatter: "comment"`): Aus dem
+       Frontmatter wird ein Kommentar, die Datei wirkt erst durch eine Einbindung.
+       Kein Pack nutzt diese Bauart derzeit.
+
+    Der Regeltext selbst bleibt in allen drei Faellen identisch.
     """
-    if man.get("rule_frontmatter", "yaml") == "yaml":
+    bauart = man.get("rule_frontmatter", "yaml")
+    trigger_map = man.get("rule_triggers")
+    if bauart == "yaml" and not trigger_map:
         return text
     if not text.startswith("---\n") or "\n---\n" not in text:
         return text
     kopf, rumpf = text.split("\n---\n", 1)
     fm = kopf[4:]
-    desc = re.search(r"^description:\s*(.+)$", fm, re.M)
-    trig = re.search(r"^trigger:\s*(\S+)\s*$", fm, re.M)
-    desc = desc.group(1).strip() if desc else ""
-    trig = trig.group(1).strip() if trig else "unbekannt"
-    # Ohne Ladetrigger wirkt eine Regel nur ueber die Einbindung - und dann ausnahmslos.
-    # Fuer eine Regel, die auch beim Trigger-Client always_on ist, aendert das nichts; fuer
-    # jede andere ist es eine Verschaerfung, die hier benannt wird.
-    hinweis = "Wird über den Import in der Wurzel-Anweisungsdatei immer geladen."
-    if trig != "always_on":
-        hinweis += (" Bei Clients mit Ladetriggern lädt diese Datei nur bei Relevanz;"
-                    " immer zu laden ist eine Verschärfung, keine Lockerung.")
-    kommentar = (f"<!-- Laufzeitregel. Inhaltlich identisch zur Fassung anderer Client Packs;\n"
-                 f"     abweichend ist nur der Lademechanismus.\n"
-                 f"     Zweck: {desc}\n"
-                 f"     Ladeverhalten: {hinweis}\n"
-                 f"     Entsprechung bei Clients mit Ladetriggern: trigger: {trig}. -->\n\n")
-    return kommentar + rumpf.lstrip("\n")
+    m = re.search(r"^description:\s*(.+)$", fm, re.M)
+    desc = m.group(1).strip() if m else ""
+    m = re.search(r"^trigger:\s*(\S+)\s*$", fm, re.M)
+    trig = m.group(1).strip() if m else ""
+
+    if bauart == "comment":
+        # Ohne Ladebedingung wirkt eine Regel nur ueber die Einbindung - und dann
+        # ausnahmslos. Fuer eine Regel, die auch in der Quelle always_on ist, aendert
+        # das nichts; fuer jede andere ist es eine Verschaerfung, die hier benannt wird.
+        hinweis = "Wird über den Import in der Wurzel-Anweisungsdatei immer geladen."
+        if trig != "always_on":
+            hinweis += (" Bei Clients mit Ladebedingungen lädt diese Datei nur bei Relevanz;"
+                        " immer zu laden ist eine Verschärfung, keine Lockerung.")
+        return _regel_kommentar(desc, hinweis, f"trigger: {trig or 'unbekannt'}") + rumpf.lstrip("\n")
+
+    # Bauart 2: eigene Bedingungssprache des Clients.
+    abbildung = trigger_map.get("map", {})
+    if trig not in abbildung:
+        raise clientmap.AbbildungsFehler(
+            f"{man.get('client', '?')}: Ladetrigger '{trig or '(fehlt)'}' hat keinen Eintrag in "
+            f"rule_triggers.map - die Regel liesse sich nur durch Weglassen der Ladebedingung "
+            f"abbilden, und das waere ein Verlust der Zusage (D-27). Bekannt: "
+            f"{', '.join(sorted(abbildung)) or '(keine)'}")
+    eintrag = abbildung[trig] or {}
+    feld = eintrag.get("condition")
+    herkunft = f"trigger: {trig}"
+    kopfzeilen = ""
+    if feld:
+        quellfeld = eintrag.get("from", "globs")
+        if quellfeld != "globs":
+            raise clientmap.AbbildungsFehler(
+                f"{man.get('client', '?')}/manifest.json: rule_triggers.map['{trig}'].from nennt "
+                f"'{quellfeld}'; die Kernquelle fuehrt Dateimuster nur unter 'globs'")
+        muster = _globs_lesen(fm)
+        if not muster:
+            raise clientmap.AbbildungsFehler(
+                f"{man.get('client', '?')}: Ladetrigger '{trig}' bildet auf '{feld}' ab, die Quelle "
+                f"nennt aber keine Dateimuster - die Ladebedingung waere leer")
+        for wert in muster:
+            if '"' in wert:
+                raise clientmap.AbbildungsFehler(
+                    f"{man.get('client', '?')}: Dateimuster '{wert}' enthaelt ein "
+                    f"Anfuehrungszeichen und laesst sich nicht als {feld}-Eintrag notieren")
+        kopfzeilen = "---\n" + f"{feld}:\n" + "".join(f'  - "{w}"\n' for w in muster) + "---\n\n"
+        hinweis = (f"Lädt, sobald der Client eine Datei liest, die auf eines der Muster in "
+                   f"`{feld}` passt.")
+        herkunft += f", globs: {', '.join(muster)}"
+    elif trig == "always_on":
+        hinweis = (f"Wird bei jedem Sitzungsstart geladen – eine Regeldatei ohne `"
+                   f"{trigger_map.get('condition_field', 'Bedingungsfeld')}`-Feld lädt unbedingt "
+                   f"und braucht keine Einbindung.")
+    else:
+        hinweis = (f"Wird bei jedem Sitzungsstart geladen. Dieser Client kennt für Regeldateien "
+                   f"nur die Bedingung über Dateimuster; gegenüber `{trig}` ist unbedingtes Laden "
+                   f"eine Verschärfung, keine Lockerung.")
+    return kopfzeilen + _regel_kommentar(desc, hinweis, herkunft) + rumpf.lstrip("\n")
 
 
 def render_root_instruction(text: str, man: dict) -> str:
     """Setzt an der Marke RUNTIME_IMPORTS die Einbindungen dieses Clients ein.
 
-    Ein Client ohne Ladetrigger laedt Regeldateien nicht von sich aus; sie wirken erst
-    durch eine Einbindung in der Wurzel-Anweisung. Welche das sind, steht im Manifest.
+    Ein Client, der Regeldateien nicht von sich aus laedt, braucht eine Einbindung in
+    der Wurzel-Anweisung; welche das sind, steht im Manifest. Beide ausgelieferten Packs
+    laden ihre Regelablage seit 0.15.0 selbst und lassen die Liste leer - dann faellt die
+    Marke ersatzlos weg. Die Mechanik bleibt fuer ein kuenftiges Pack erhalten und ist
+    damit von keinem Pack mehr erprobt (ROADMAP, "Bewusst offen gelassen").
     """
     marke = "<!-- RUNTIME_IMPORTS -->"
     if marke not in text:
@@ -343,7 +430,7 @@ def render_for_client(text: str, man: dict, src_rel: str) -> str:
         return clientmap.render_hooks(text, man)
     if os.path.basename(src_rel) == "SKILL.md":
         text = render_skill_frontmatter(text, man)
-    elif src_rel.startswith("framework/runtime/rules/"):
+    elif ist_regelquelle(src_rel):
         text = render_rule(text, man)
     elif src_rel == "framework/runtime/root-instruction.md":
         text = render_root_instruction(text, man)
@@ -441,8 +528,26 @@ def copy_file(src: str, dst: str, dry: bool) -> None:
     shutil.copy2(src, dst)
 
 
+def pruefe_abbildung(root: str, man: dict) -> None:
+    """Rendert jede abzubildende Quelle einmal, bevor die erste Datei geschrieben wird.
+
+    D-26 verlangt, dass die Installation scheitert, wenn eine Aussage der Quelle sich
+    nicht abbilden laesst. Ohne diesen Vorlauf scheiterte sie mitten im Schreiben und
+    hinterliess ein halb angelegtes Projekt - gescheitert ist das eine, halb gelungen
+    das andere. Der Vorlauf kostet einen zweiten Rendervorgang und keine Schreiboperation.
+    """
+    quellen = [s for s, _ in activated_pack_relpaths(root, man)]
+    quellen += [s for s, _ in framework_skill_files(man)]
+    for schluessel in ("shared_core", "shared_seed"):
+        quellen += [s for s, _ in shared_files(man, schluessel)]
+    for src_rel in quellen:
+        src = os.path.join(HERE, *src_rel.split("/"))
+        render_for_client(read_text(src), man, quell_kennung(src))
+
+
 def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
     rep = Report()
+    pruefe_abbildung(root, man)
 
     for rel in core_relpaths(template, man):
         src = os.path.join(template, rel)
@@ -605,7 +710,15 @@ def main() -> int:
     print(f"Modus:   {mode}{'  (dry-run, es wird nichts geschrieben)' if args.dry_run else ''}")
     print()
 
-    rep = run(root, template, man, mode, args.dry_run)
+    try:
+        rep = run(root, template, man, mode, args.dry_run)
+    except clientmap.AbbildungsFehler as exc:
+        # D-26/D-27: Eine Aussage der Quelle, die dieser Client nicht tragen kann, wird
+        # abgebildet oder die Installation scheitert. Sie stillschweigend wegzulassen
+        # waere ein Verlust der Zusage - deshalb hier ein Abbruch und keine Warnung.
+        print(f"FEHLER: Die Quellen lassen sich nicht verlustfrei auf das Client Pack "
+              f"{args.client} abbilden.\n  {exc}", file=sys.stderr)
+        return 1
 
     def block(title: str, items: list[str], limit: int = 12) -> None:
         if not items:

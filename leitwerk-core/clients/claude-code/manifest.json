@@ -1,22 +1,22 @@
 {
-  "_comment": "Maschinenlesbare Pfadabbildung dieses Client Packs. Die menschenlesbare Fassung mit Fähigkeitsmatrix steht in CLIENT_PACK.md. Besonderheit gegenüber devin-desktop: Der Client kennt keine Regeldateien mit Ladetriggern (has_rule_triggers=false); die Regeltexte liegen in .claude/framework/ und werden über Importe in CLAUDE.md geladen. Hooks stehen nicht in einer eigenen Datei, sondern in .claude/settings.json.",
+  "_comment": "Maschinenlesbare Pfadabbildung dieses Client Packs. Die menschenlesbare Fassung mit Fähigkeitsmatrix steht in CLIENT_PACK.md. Besonderheit gegenüber devin-desktop: Der Client kennt Ladebedingungen nur über Dateimuster (rule_triggers.condition_field = paths); die Ladetrigger der Kernquelle werden darauf abgebildet, always_on und model_decision auf unbedingtes Laden. Hooks stehen nicht in einer eigenen Datei, sondern in .claude/settings.json.",
   "client": "claude-code",
   "runtime_dir": ".claude",
   "root_instruction_file": "CLAUDE.md",
   "permissions_file": ".claude/settings.json",
   "skills_dir": ".claude/skills",
   "agents_dir": ".claude/agents",
-  "pack_runtime_dir": ".claude/framework",
-  "has_rule_triggers": false,
+  "pack_runtime_dir": ".claude/rules",
+  "has_rule_triggers": true,
   "core_skill_prefix": "fw-",
   "core_paths": [
     ".claude/README.md",
-    ".claude/framework/README.md"
+    ".claude/rules/README.md"
   ],
   "seed_paths": [],
   "project_owned_hint": [
-    ".claude/framework/2N-overlay-<name>.md   (Overlay-Regelerweiterungen)",
-    ".claude/framework/40-tech-<name>.md      (Packs ohne Quelle im Kern)",
+    ".claude/rules/2N-overlay-<name>.md       (Overlay-Regelerweiterungen)",
+    ".claude/rules/40-tech-<name>.md          (Packs ohne Quelle im Kern)",
     ".claude/settings.local.json              (persönliche Überschreibungen)",
     ".claude/skills/prj-*/                    (projektspezifische Skills)",
     "project-overlay/tech-packs/**            (projekteigene Packs)",
@@ -28,7 +28,7 @@
     "<ROOT_INSTRUCTION_LOCAL>": "CLAUDE.local.md",
     "<PERMISSIONS_FILE>": ".claude/settings.json",
     "<SKILLS_DIR>": ".claude/skills",
-    "<RULES_DIR>": ".claude/framework",
+    "<RULES_DIR>": ".claude/rules",
     "<AGENTS_DIR>": ".claude/agents",
     "<HOOKS_FILE>": ".claude/settings.json",
     "<MCP_FILE>": ".mcp.json",
@@ -55,8 +55,8 @@
       ]
     },
     "model_invocation_field": "disable-model-invocation",
-  "_model_invocation_note": "AP2-CC-01: Ein Skill, dessen Quelle triggers ohne model nennt, bekommt dieses Feld auf true. Ohne die Abbildung verfiel die Zusage S4 beim Rendern - der Validator erzwang triggers: [user] in der Quelle, die installierte Fassung trug nichts davon.",
-  "drop_fields": [
+    "_model_invocation_note": "AP2-CC-01: Ein Skill, dessen Quelle triggers ohne model nennt, bekommt dieses Feld auf true. Ohne die Abbildung verfiel die Zusage S4 beim Rendern - der Validator erzwang triggers: [user] in der Quelle, die installierte Fassung trug nichts davon.",
+    "drop_fields": [
       "permissions",
       "triggers"
     ]
@@ -113,13 +113,28 @@
       "dst": "project-overlay"
     }
   ],
-  "rule_frontmatter": "comment",
-  "root_instruction_imports": [
-    "@.claude/framework/00-framework-core.md",
-    "@.claude/framework/10-privacy-security.md",
-    "@.claude/framework/15-development-rules.md",
-    "@.claude/framework/20-project-overlay.md"
-  ],
+  "rule_frontmatter": "yaml",
+  "rule_triggers": {
+    "condition_field": "paths",
+    "condition_format": "list",
+    "allowed_fields": [
+      "paths"
+    ],
+    "map": {
+      "always_on": {
+        "condition": null
+      },
+      "model_decision": {
+        "condition": null
+      },
+      "glob": {
+        "condition": "paths",
+        "from": "globs"
+      }
+    }
+  },
+  "_rule_triggers_note": "AP2-CC-03: Der Client laedt jede .md-Datei der Regelablage von sich aus - ohne paths-Feld unbedingt, mit paths-Feld sobald er eine passende Datei liest. Damit sind R2 und R3 abgebildet und die @-Importe der Wurzel-Anweisung entfallen. Ein Ladetrigger der Quelle ohne Eintrag unter map laesst die Installation scheitern (D-27); ersatzloses Verwerfen waere ein Verlust der Zusage (D-26). description ist fuer Regeldateien dieses Clients nicht dokumentiert und entfaellt deshalb im Frontmatter (K-18); es steht im erzeugten Kommentar, den der Client vor dem Einspeisen entfernt.",
+  "root_instruction_imports": [],
   "agent_frontmatter": {
     "tools_field": "tools",
     "tools_format": "csv",
