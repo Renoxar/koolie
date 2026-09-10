@@ -2,6 +2,39 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.19.0] - 2026-09-10
+
+### Behoben
+- **Der Schutz-Hook lief unter Windows nicht (`CR-2026-021`, D-29, `AP2-CC-13`).** `clientmap.py` verdrahtete den Interpreter fest als `python3`. Auf einem Windows-System ohne installiertes `python3` ist dieser Name der **Microsoft-Store-Alias**: Er startet keinen Interpreter, gibt „Python wurde nicht gefunden" aus und endet mit **Exit-Code 49** – im Sitzungsverlauf einer laufenden Sitzung sichtbar als `SessionStart:startup exit=49 outcome=error`.
+
+  **Damit lief keiner der beiden Hooks.** Die Overlay-Statusmeldung erreichte die Sitzung nie – an ihr haengt die Zusage „bei nicht aktivem Overlay nur Modus M1". Und die Secret-Pruefung lief nicht, womit **Zusage H2 der Faehigkeitsmatrix („Pruefung kann blockieren") unter Windows nicht galt**. Der Hook selbst war die ganze Zeit fehlerfrei; mit dem funktionierenden Interpreter aufgerufen liefert er auf dieselbe Eingabe `{"decision": "block", "reason": "…Cloud-Zugangsschluessel…"}`.
+
+  Geprueft worden war bis dahin nur die **Anwesenheit** der Konfiguration – der Hook ist eingetragen, das Skript existiert, der Validator ist gruen –, nie ihre **Wirkung**. Genau daran ist der Store-Alias vorbeigekommen. Derselbe Befundtyp wie `FW-KO-01`, `AP2-CC-09` und `AP2-CC-02`. Der Befund lag in der gemeinsamen Semantikabbildung und betraf **beide Client Packs**.
+
+### Geaendert
+- **Der Interpreter wird ermittelt, nicht angenommen.** `clientmap.python_interpreter()` prueft `python3`, `python`, `py` an ihrer **Wirkung**: Der Kandidat muss eine Sonde ausgeben, nicht bloss im Pfad stehen. Der Store-Alias faellt damit durch, obwohl er auffindbar ist. Findet sich kein funktionierender Interpreter, **scheitert die Installation** statt eine Zusage zu erzeugen, die nicht traegt (D-26).
+- Geschrieben wird ein Interpreter**name**, kein Maschinenpfad; `install.py --check` rendert auf derselben Maschine denselben Wert und meldet deshalb keine Abweichung.
+
+### Hinzugefuegt
+- **Pruefung 15: Der Hook-Interpreter startet auf dieser Maschine wirklich Python.** Sie liest die Hook-Kommandos aus beiden Ablageformen – eigene Hook-Datei wie Berechtigungsdatei – und prueft den genannten Interpreter an derselben Sonde. **Als Fehler, nicht als Warnung:** Ein Schutz-Hook, der nicht laeuft, ist schlimmer als ein fehlender, weil die Matrix ihn als `[TECHNISCH]` ausweist. Damit ist auch der plattformuebergreifende Fall abgedeckt – ein unter Linux installiertes Repository, das unter Windows ausgecheckt wird, faellt jetzt auf.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs.
+- **Zwei Sonden, eine Grenzprobe, drei Regressionsproben und drei Sitzungsnachweise** (`tests/protocols/2026-09-10-CR-2026-021-hook-interpreter.md`).
+- **Der SessionStart-Hook laeuft:** `exit=49 outcome=error` vorher, **`exit=0 outcome=success`** nachher, und die Statusmeldung wird ausgeliefert.
+- **Die Statusmeldung wirkt:** In einer Umgebung ohne Regelablage und ohne Wurzel-Anweisungsdatei verweigerte die Sitzung eine Schreiboperation und begruendete es allein mit dem Hook.
+- **H2 ist belegt:** Mit zusaetzlich entferntem `SessionStart`-Hook – also ohne jede Anweisungsebene – blockierte der `PreToolUse`-Hook einen `Write`-Aufruf mit Secret-Muster technisch; die Datei entstand nicht. Im AP2-Protokoll stand H2 bis hierher als **widerlegt**.
+- **Pruefung 15 war im ersten Einbau wirkungslos** – sie las ein Manifestfeld `hooks_file`, das es nicht gibt; der Ort steht unter `runtime_placeholders["<HOOKS_FILE>"]`. Zusaetzlich war die erste Sondenrunde selbst wirkungslos, weil sie im JSON-Rohtext nach nicht escapten Anfuehrungszeichen suchte. Beides fiel nur auf, weil das erwartete Ergebnis vorher feststand. **Zwei wirkungslose Pruefungen in zwei aufeinanderfolgenden Releases**, beide allein durch den Wirksamkeitsnachweis gefunden.
+
+### Migrationshinweise fuer Overlays
+Bestehende Installationen ziehen die Hook-Konfiguration mit `install.py --update` nach. Ohne die Aktualisierung meldet Pruefung 15 einen Fehler, sofern der eingetragene Interpreter auf der Maschine nicht laeuft – das ist die Aussage, nicht der Fehler: Die Hooks setzen dort nichts durch.
+
+### Bekannte Einschraenkungen
+- **`AP2-CC-15` bleibt offen.** Die Lesesperre gilt fuer `Read`, nicht fuer Shell-Lesebefehle; die `deny`-Liste fuehrt 21 Bash-Regeln und keine fuers Lesen. Der Befund ist **entschaerft** – der Schutz-Hook, der solche Faelle abfinge, laeuft jetzt –, aber nicht geschlossen.
+- **`AP2-CC-14` bleibt offen.** Die `allow`-Regeln wirken erst nach dem Vertrauensdialog; der Weg zur Behebung liegt ausserhalb des Repositorys.
+- **Das fail-open-Verhalten des Schutz-Hooks ist unveraendert.** Ein Hook, der aus einem anderen Grund fehlschlaegt, blockiert weiterhin nichts; die Umstellung auf fail-closed bleibt ein eigener Punkt der Roadmap.
+- **Kein Nachweis auf anderen Betriebssystemen.** Belegt ist die Ermittlung auf einem System, auf dem `python3` ein Alias ist.
+
 ## [0.18.0] - 2026-09-10
 
 ### Behoben

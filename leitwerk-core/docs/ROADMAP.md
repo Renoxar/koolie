@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.18.0 (2026-09-10)
+## Stand nach Release 0.19.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.18.0 gebracht haben
+### Was 0.5.0 bis 0.19.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,6 +35,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Hooks laufen wirklich | Beide Hooks liefen unter Windows nicht – `python3` war dort ein Alias ohne Interpreter, H2 galt damit nicht. Der Interpreter wird jetzt an seiner Wirkung geprüft | `CR-2026-021`, D-29, `tests/protocols/2026-09-10-CR-2026-021-hook-interpreter.md` |
 | Kern ohne Akteursnamen | Der Kern nannte einen Client als Handelnden – 248 Nennungen in 78 Dateien, das Dreifache der ausgewiesenen Zahl; Prüfung 14 setzt es jetzt durch | `CR-2026-020`, D-28, `tests/protocols/2026-09-10-CR-2026-020-akteursbezeichnung.md` |
 | Strukturentscheidungen aktuell | Acht der zehn Records von 2026-09-01 beschrieben einen Stand von vor sechzehn Releases; vier nannten Client-Pfade in den Entscheidungen, die den werkzeugneutralen Kern anordnen | `CR-2026-019`, `governance/DECISION_LOG.md` |
 
@@ -43,6 +44,23 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.19.0 laufen die Hooks wirklich. `clientmap.py` verdrahtete den Interpreter fest als
+`python3`; auf einem Windows-System ohne installiertes `python3` ist dieser Name der
+Microsoft-Store-Alias, der keinen Interpreter startet und mit Exit-Code 49 endet. **Damit lief
+keiner der beiden Hooks**: Die Overlay-Statusmeldung erreichte die Sitzung nie, und die
+Secret-Prüfung lief nicht – **Zusage H2 der Fähigkeitsmatrix galt unter Windows nicht**.
+
+Der Hook selbst war die ganze Zeit fehlerfrei. Geprüft worden war nur die **Anwesenheit** der
+Konfiguration, nie ihre **Wirkung**; genau daran ist der Alias vorbeigekommen. Seit D-29 wird der
+Interpreter ermittelt statt angenommen – der Kandidat muss eine Sonde ausgeben –, und Prüfung 15
+meldet als **Fehler**, wenn der eingetragene Interpreter auf der Maschine nicht läuft.
+
+Die Behebung ist in Sitzungen belegt: `exit=49 outcome=error` vorher, `exit=0 outcome=success`
+nachher; die Statusmeldung wird ausgeliefert und wirkt nachweislich auf das Verhalten; und **H2
+ist technisch belegt** – mit entfernten Regeln, ohne Wurzel-Anweisungsdatei und ohne
+Statusmeldung blockierte der Schutz-Hook einen `Write`-Aufruf mit Secret-Muster. Im
+AP2-Protokoll stand H2 bis dahin als **widerlegt**.
 
 Mit 0.18.0 nennt der Kern keinen Client mehr als Handelnden. D-02 ordnet einen
 werkzeugneutralen Kern an; D-15 und D-19 haben ihn eingelöst, soweit es **Pfade** betraf – 63
@@ -248,13 +266,9 @@ Verhalten (WN-4), und die Lesesperre greift **technisch** – belegt in einer Um
 Regeltexte, in der nichts als Anweisung wirken kann (WN-5). Damit ist D-27 nicht mehr nur
 dokumentiert, sondern beobachtet.
 
-**P1 – AP2-CC-13: Beide Hooks laufen unter Windows nicht.** Schwere hoch, **betrifft beide
-Client Packs**. `clientmap.py` Zeile 230 verdrahtet `python3` fest; wo das der
-Microsoft-Store-Alias ist, endet der Hook mit Fehler statt mit `decision`. Folgen: Die
-Overlay-Statusmeldung erreicht die Sitzung nie – daran hängt die Zusage „bei nicht aktivem
-Overlay nur M1" –, und die Secret-Prüfung läuft nicht, womit **Zusage H2 der Fähigkeitsmatrix
-unter Windows nicht gilt**. Derselbe Hook mit `python` aufgerufen liefert korrekt
-`{"decision": "block"}`; der Fehler liegt allein im Interpreternamen.
+**Erledigt – AP2-CC-13: Die Hooks laufen (0.19.0).** `CR-2026-021`, D-29. Der Interpreter wird
+an seiner Wirkung geprüft statt angenommen; Prüfung 15 setzt es als Fehler durch. In Sitzungen
+belegt, einschließlich **H2**, das im AP2-Protokoll bis dahin als widerlegt stand.
 
 **P2 – AP2-CC-14: `allow`-Regeln wirken erst nach dem Vertrauensdialog.** Die sechs
 `allow`-Regeln der ausgelieferten Berechtigungsdatei werden ignoriert, solange der Workspace

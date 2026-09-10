@@ -215,17 +215,22 @@ Berechtigungen und Regeln beim Sitzungsstart gelesen werden. Sie sind mit
 | `FW-DS-02` – Read-Sperre wirkt | Eine `.env`-Testdatei ist nicht lesbar; Hinweis statt Inhalt | **belegt** (WN-5), technisch isoliert gegen die Anweisungsebene |
 | R2 / R3 an der Wirkung | Eine Regel ohne `paths` steht im Kontext; eine Regel mit `paths` erst nach dem Lesen einer passenden Datei | **belegt** (WN-2, WN-3) |
 | Startwarnungen aus AP2-CC-02 | keine Meldung über wirkungslose Regeln | **belegt** (WN-1) |
-| H2 – Hook blockiert mit Exit-Code 2 | Werkzeugausführung unterbleibt | **widerlegt unter Windows** – der Hook läuft nicht (AP2-CC-13) |
+| H2 – Hook blockiert | Werkzeugausführung unterbleibt | **belegt** (`CR-2026-021`, SN-3) – technisch, in einer Umgebung ohne jede Anweisungsebene. Bis 0.19.0 widerlegt, weil der Hook nicht lief |
 | B4 an der Wirkung | `Edit(leitwerk-core/**)` blockiert | offen |
 | B7 / S4-Ersatz | Jede Schreiboperation löst eine Rückfrage aus | offen |
 | AP2-CC-12 – `permissionMode` im Subagentenprofil | Ein Profil mit `permissionMode: bypassPermissions` startet bei gesetztem `disableBypassPermissionsMode` nicht oder ohne den Modus | offen |
 | `FW-ZA-06` – Schreibverbot auf den Kern in realer Installation | blockiert | offen |
 
-Drei Befunde kamen bei den Nachweisen dazu: **AP2-CC-13** (beide Hooks laufen unter Windows
-nicht, Schwere hoch), **AP2-CC-14** (`allow`-Regeln wirken erst nach dem Vertrauensdialog) und
-**AP2-CC-15** (die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle). CC-13 und CC-15
-greifen ineinander: Was die `deny`-Liste beim Lesen über die Shell nicht abdeckt, finge der
-Schutz-Hook ab – und der läuft dort nicht.
+Drei Befunde kamen bei den Nachweisen dazu:
+
+- **AP2-CC-13** – beide Hooks laufen unter Windows nicht, Schwere hoch. **Behoben mit
+  `CR-2026-021` (Release 0.19.0, D-29):** Der Interpreter wird an seiner Wirkung geprüft statt
+  angenommen, Prüfung 15 setzt es als Fehler durch. Damit ist auch **H2 belegt** statt widerlegt.
+- **AP2-CC-14** – die `allow`-Regeln wirken erst nach dem Vertrauensdialog. **Offen**; der Weg
+  zur Behebung liegt außerhalb des Repositorys. Eine Verschärfung, kein Bruch von B9.
+- **AP2-CC-15** – die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle. **Offen, aber
+  entschärft:** Was die `deny`-Liste beim Lesen über die Shell nicht abdeckt, finge der
+  Schutz-Hook ab – und der läuft seit 0.19.0.
 
 
 ## Bewertung
