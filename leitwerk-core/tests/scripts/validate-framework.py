@@ -36,6 +36,9 @@ Prüft (statisch, ohne laufenden KI-Client):
  15. Hook-Interpreter (AP2-CC-13, D-29): Der Interpreter der Hook-Aufrufe startet auf
      dieser Maschine wirklich Python. Geprueft wird die Wirkung, nicht die Anwesenheit
      des Namens - unter Windows ist 'python3' haeufig ein Alias ohne Interpreter
+ 16. Hook-Abdeckung (AP2-CC-16, D-30): Der Schutz-Hook erkennt jeden Werkzeugnamen,
+     den ein Client Pack in hook_tools abbildet. Geprueft durch Aufruf mit einer Sonde,
+     die er blockieren muss - ein Listenvergleich belegt Uebereinstimmung, nicht Wirkung
 
 Ohne PyYAML laufen die Prüfungen 4, 5 und 8 eingeschränkt; das Skript sagt es dann als
 Warnung. Für einen Release- oder Übernahmenachweis ist PyYAML erforderlich.
@@ -1212,6 +1215,69 @@ def check_hook_interpreter(root: str, man: dict) -> None:
                 f"Interpreter, der hier funktioniert")
 
 
+def check_hook_tool_coverage(root: str, man: dict) -> None:
+    """Pruefung 16 (AP2-CC-16): Der Schutz-Hook erkennt jeden abgebildeten Werkzeugnamen.
+
+    Das Manifest jedes Client Packs bildet die Verben der Kernquelle auf die
+    Werkzeugnamen seines Clients ab (hook_tools). Diese Abbildung galt bis 0.21.0 nur
+    fuer den Matcher der Hook-Konfiguration - der Hook selbst verglich gegen die
+    generischen Verbnamen. Folge: Bei einem Client, dessen Ausfuehrungswerkzeug nicht
+    'exec' heisst, lief die Pfadpruefung fuer Shell-Befehle ins Leere.
+
+    Geprueft wird die Wirkung, nicht die Uebereinstimmung zweier Listen: Der Hook wird
+    je Werkzeugname mit einer Sonde aufgerufen, die er blockieren MUSS. Eine Zusage,
+    die man nur durch Vergleich zweier Listen belegt, ist genau die Art Pruefung, an
+    der dieser Befund vorbeigekommen ist.
+    """
+    skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
+    if not os.path.isfile(skript):
+        return
+    interpreter = None
+    for kandidat in ("python3", "python", "py"):
+        try:
+            lauf = subprocess.run([kandidat, "-c", "import sys; sys.stdout.write('%s')" % HOOK_SONDE],
+                                  capture_output=True, text=True, timeout=15)
+            if lauf.returncode == 0 and HOOK_SONDE in (lauf.stdout or ""):
+                interpreter = kandidat
+                break
+        except (OSError, subprocess.SubprocessError):
+            continue
+    if interpreter is None:
+        return  # Pruefung 15 meldet diesen Fall bereits
+    # Alle Packs, nicht nur das installierte: Der Hook liegt einmal im Kern und wird
+    # von allen geteilt. Ein Werkzeugname, den ein anderes Pack abbildet, faellt sonst
+    # erst dort auf, wo es keine Installation zum Pruefen gibt - genau die Lage, in der
+    # AP2-CC-16 acht Releases lang unbemerkt blieb.
+    abbildungen = []
+    packs = os.path.join(root, KERN, "clients")
+    for name in sorted(os.listdir(packs)) if os.path.isdir(packs) else []:
+        mf = os.path.join(packs, name, "manifest.json")
+        if not os.path.isfile(mf):
+            continue
+        try:
+            daten = json.loads(read(mf)) or {}
+        except json.JSONDecodeError:
+            continue
+        abbildungen.append((daten.get("client", name), daten.get("hook_tools") or {}))
+    sonden = {"exec": {"command": "cat .env"}, "write": {"file_path": ".env", "content": "x"}}
+    for pack, abbildung in abbildungen:
+      for verb, eingabe in sonden.items():
+        for werkzeug in abbildung.get(verb) or []:
+            payload = json.dumps({"tool_name": werkzeug, "tool_input": eingabe})
+            try:
+                lauf = subprocess.run([interpreter, skript], input=payload,
+                                      capture_output=True, text=True, timeout=20)
+            except (OSError, subprocess.SubprocessError) as fehler:
+                err(f"Schutz-Hook nicht ausfuehrbar ({type(fehler).__name__})")
+                return
+            if lauf.returncode != 2:
+                err(f"{pack}/manifest.json: Der Schutz-Hook erkennt den "
+                    f"Werkzeugnamen '{werkzeug}' nicht, den dieses Pack fuer das Verb "
+                    f"'{verb}' abbildet - eine Sonde auf einen Secret-Pfad wurde nicht "
+                    f"blockiert (Exit {lauf.returncode} statt 2). Die Abbildung erreicht "
+                    f"den Matcher, aber nicht die Pruefung im Hook (AP2-CC-16)")
+
+
 def check_mermaid(root: str) -> None:
     mmdc = shutil.which("mmdc")
     if not mmdc:
@@ -1262,6 +1328,7 @@ def main() -> int:
     check_artefakt_versionen(root)
     check_actor_naming(root)
     check_hook_interpreter(root, man)
+    check_hook_tool_coverage(root, man)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:

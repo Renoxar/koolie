@@ -228,9 +228,14 @@ Drei Befunde kamen bei den Nachweisen dazu:
   angenommen, Prüfung 15 setzt es als Fehler durch. Damit ist auch **H2 belegt** statt widerlegt.
 - **AP2-CC-14** – die `allow`-Regeln wirken erst nach dem Vertrauensdialog. **Offen**; der Weg
   zur Behebung liegt außerhalb des Repositorys. Eine Verschärfung, kein Bruch von B9.
-- **AP2-CC-15** – die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle. **Offen, aber
-  entschärft:** Was die `deny`-Liste beim Lesen über die Shell nicht abdeckt, finge der
-  Schutz-Hook ab – und der läuft seit 0.19.0.
+- **AP2-CC-15** – die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle. **Behoben mit
+  `CR-2026-023` (Release 0.21.0, D-30):** Der Hook tokenisiert Shell-Befehle und misst sie an
+  den Secret-Pfaden. Die `deny`-Liste bleibt unverändert – der Schutz kommt vom Hook.
+- **AP2-CC-16** (neu, Schwere hoch) – die Semantikabbildung erreichte den **Matcher**, nicht
+  die Prüfung im Hook: Das Manifest bildet `exec` auf `Bash` ab, der Hook verglich gegen
+  `("exec",)`. Bei `claude-code` lief die Pfadprüfung für Shell-Befehle acht Releases lang ins
+  Leere, bei `devin-desktop` nicht – ein **clientspezifischer** Verlust. **Behoben mit
+  `CR-2026-023`;** Prüfung 16 setzt die Abdeckung durch Aufruf durch.
 
 
 ## Bewertung
