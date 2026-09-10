@@ -240,12 +240,33 @@ gemeldet; die vier Gegenproben zu 0.15.0 zeigen, dass keine bestehende Pruefung 
 **Keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`** – 4 vor AP2, jetzt 0. Alle vier
 waren Unterschaetzungen des Clients.
 
-**Offen bei `claude-code`:** die Wirkungsnachweise. Sie brauchen eine Sitzung, die **in** der
-Testinstallation startet, weil Berechtigungen und Regeln beim Sitzungsstart gelesen werden; aus
-einer Sitzung mit anderem Arbeitsverzeichnis sind sie nicht führbar. Der einfachste ist
-geschenkt: Die Startwarnungen aus AP2-CC-02 erscheinen ohne Zutun und benennen jede wirkungslose
-Regel. Seit 0.15.0 gehört ein zweiter dazu – dass eine Regel ohne `paths` tatsächlich im Kontext
-steht und eine Regel mit `paths` erst nach dem Lesen einer passenden Datei.
+**Erledigt bei `claude-code`: die Wirkungsnachweise** (`tests/protocols/2026-09-10-AP2-claude-code-wirkungsnachweise.md`).
+Fünf Nachweise in Sitzungen, die **in** der Testinstallation starten: keine Startwarnung über
+wirkungslose Regeln (WN-1), eine Regel ohne `paths` steht im Kontext (WN-2), eine Regel mit
+`paths` lädt erst nach dem Lesen einer passenden Datei (WN-3), die Regeln wirken auf das
+Verhalten (WN-4), und die Lesesperre greift **technisch** – belegt in einer Umgebung ohne
+Regeltexte, in der nichts als Anweisung wirken kann (WN-5). Damit ist D-27 nicht mehr nur
+dokumentiert, sondern beobachtet.
+
+**P1 – AP2-CC-13: Beide Hooks laufen unter Windows nicht.** Schwere hoch, **betrifft beide
+Client Packs**. `clientmap.py` Zeile 230 verdrahtet `python3` fest; wo das der
+Microsoft-Store-Alias ist, endet der Hook mit Fehler statt mit `decision`. Folgen: Die
+Overlay-Statusmeldung erreicht die Sitzung nie – daran hängt die Zusage „bei nicht aktivem
+Overlay nur M1" –, und die Secret-Prüfung läuft nicht, womit **Zusage H2 der Fähigkeitsmatrix
+unter Windows nicht gilt**. Derselbe Hook mit `python` aufgerufen liefert korrekt
+`{"decision": "block"}`; der Fehler liegt allein im Interpreternamen.
+
+**P2 – AP2-CC-14: `allow`-Regeln wirken erst nach dem Vertrauensdialog.** Die sechs
+`allow`-Regeln der ausgelieferten Berechtigungsdatei werden ignoriert, solange der Workspace
+nicht bestätigt ist. Eine Verschärfung, kein Bruch von B9 – aber die Berechtigungsdatei wirkt
+nach der Installation nicht so, wie sie geschrieben ist, und der Weg zur Behebung liegt
+außerhalb des Repositorys.
+
+**P2 – AP2-CC-15: Die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle.** Die
+`deny`-Liste führt 21 Bash-Regeln und keine für Lesebefehle; `cat .env` scheiterte im Test nur
+an der grundsätzlichen Nachfrage für Bash-Befehle. Ein Projekt, das eine breite Leseerlaubnis in
+`allow` aufnimmt, öffnet damit die Secret-Sperre, ohne eine `deny`-Regel zu verletzen –
+aufgefangen würde das vom Schutz-Hook, der nach AP2-CC-13 unter Windows nicht läuft.
 
 **Offen als Gegenzeichnung:** Nachtrag 2 des AP2-Protokolls ist **vorgelegt, nicht abgezeichnet**.
 Die Prüfmethode `review` verlangt eine zweite Rolle; drei Auflösungen mit Ermessensspielraum (E1
