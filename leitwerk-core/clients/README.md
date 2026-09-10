@@ -79,7 +79,7 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 | Pack | Code | Status | `[TECHNISCH]` | Kernzusagen | Fähigkeitsmatrix belegt |
 |---|---|---|---|---|---|
 | `devin-desktop` | `CP-DD` | entwurf | 21 von 26 | 6 von 6 | nein – Belege stehen aus (Roadmap AP2) |
-| `claude-code` | `CP-CC` | entwurf | 25 von 26 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2); die Wirkungsnachweise aus einer Sitzung stehen aus |
+| `claude-code` | `CP-CC` | entwurf | 25 von 26 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; die Wirkungsnachweise aus einer Sitzung stehen aus |
 
 ## 7. Änderungsverlauf
 

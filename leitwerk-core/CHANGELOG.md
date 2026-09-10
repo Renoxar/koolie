@@ -2,6 +2,32 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.16.0] - 2026-09-10
+
+### Behoben
+- **Die Quellenliste belegte die `[DOK]`-Aussagen nur eines Clients (`CR-2026-018`).** Anhang 31.4 des Hauptdokuments sagt über sich selbst, er belege die als `[DOK]` gekennzeichneten Aussagen. Er fuehrte 17 Quellen, **saemtlich von `docs.devin.ai`** – waehrend das Pack `claude-code` seit 0.14.0 ein Dutzend `[DOK]`-Aussagen gegen `code.claude.com` traegt. Fuer einen der beiden Clients loeste der Anhang seine eigene Zusage nicht ein, und `FW-AK-01`, dessen Pruefgegenstand genau diese Liste ist, haette den fehlenden Teil nicht pruefen koennen.
+
+  Die Liste ist jetzt je Client Pack gefuehrt, mit eigenem Recherchestand: `devin-desktop` 01.–02.09.2026 gegen Produktversion 3.8.20, `claude-code` 10.09.2026 gegen Clientversion 2.1.267. Fuenf Quellen sind dazugekommen (`QC-1` bis `QC-5`).
+
+- **Die Belegspalte nannte den Vorgang, nicht die Quelle.** Zwoelf Zeilen der Faehigkeitsmatrix trugen `[DOK] (AP2, Clientversion 2.1.267, tests/protocols/…)`. Wer eine einzelne Einstufung nachpruefen wollte, musste erst das Protokoll lesen, um zu erfahren, auf welcher der fuenf Seiten die Aussage steht. Jede Zeile nennt jetzt ihre Seite und ist damit einzeln nachpruefbar.
+
+- **Die Kennungen `Q1` bis `Q17` waren doppelt belegt.** Dieselben Kuerzel bezeichnen im Framework an rund zwanzig Stellen die **Qualitaetsregeln** – `Q8` ist dort die Groessenschwelle einer Aenderung, im Anhang `docs.devin.ai/desktop/cascade/workflows`. Die Quellenkennungen tragen jetzt das Praefix des Packs (`QD-`, `QC-`); referenziert werden sie ausserhalb des Anhangs nirgends.
+
+### Geaendert
+- **Drei Einstufungen sind genauer belegt.** H2: Ein mit Exit-Code 2 blockierender Hook greift **bevor** die Berechtigungsregeln ausgewertet werden und geht damit auch einer `allow`-Regel vor; umgekehrt hebt eine Hook-Entscheidung keine `deny`- oder `ask`-Regel auf. A1: `disallowedTools` wird zuerst angewandt, und ein Profil, dessen `tools`-Liste sich zu keinem Werkzeug aufloest, wird gar nicht erst gestartet – ein Tippfehler fuehrt zum Abbruch statt zu einem Subagenten ohne Beschraenkung. S4: Die Sperre haelt zusaetzlich die Beschreibung des Skills aus dem Kontext.
+- **Neuer Abschnitt 31.4.3** haelt fest, was die Quellenliste ueber sich selbst weiss: dass die beiden Recherchestaende neun Tage auseinanderliegen und nur der juengere gegen eine benannte Clientversion erhoben ist.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs. Keine Sonde: Die Aenderung fuegt keine Pruefung hinzu und aendert keine.
+
+### Migrationshinweise fuer Overlays
+Keine. Weder Installation noch Laufzeitschicht sind betroffen.
+
+### Bekannte Einschraenkungen
+- **`FW-AK-01` bleibt `offen`.** Fuer `claude-code` ist der Abgleich mit diesem Release gefuehrt; fuer `devin-desktop` steht er aus – dort ist seit dem Recherchestand 02.09.2026 kein Produkt-Changelog gesichtet worden.
+- **AP2-CC-12 (neu, offen):** Ein Subagentenprofil kennt ein eigenes Feld `permissionMode`, das den Wert `bypassPermissions` annimmt. Ob `permissions.disableBypassPermissionsMode` auch dort greift, sagt keine der fuenf abgerufenen Seiten. M2 gilt damit fuer die Hauptsitzung als belegt und fuer den Weg ueber ein Subagentenprofil als ungeklaert. Das Framework liefert genau ein Profil aus, und es setzt das Feld nicht.
+- Eine Quelle belegt, was zum Abrufdatum dokumentiert war. Beobachtete Durchsetzung ist damit weiterhin fuer keine Zeile belegt – die Wirkungsnachweise stehen aus.
+
 ## [0.15.0] - 2026-09-10
 
 ### Behoben

@@ -10,7 +10,7 @@
 | Prüfmethode | Dokumentenabgleich gegen die Herstellerdokumentation + Beobachtung an einer realen Installation |
 | Prüfgegenstand | Die zehn Prüfmarker der Fähigkeitsmatrix sowie die erzeugte Berechtigungsdatei |
 | Installation | Erstinstallation in einem leeren Verzeichnis, 79 Dateien, `install.py --client claude-code` |
-| Quellen | `code.claude.com/docs/en/` – `settings`, `permissions`, `skills`, `subagents`, `memory` (abgerufen 2026-09-10) |
+| Quellen | `code.claude.com/docs/en/` – `settings`, `permissions`, `skills`, `sub-agents`, `memory` (abgerufen 2026-09-10). Belegzuordnung je Seite: Hauptdokument Anhang 31.4.2 (`QC-1` bis `QC-5`), ergänzt mit Release 0.16.0 |
 
 ## Anlass
 
@@ -195,6 +195,15 @@ kein Indexierungsmechanismus, und die Beschreibung des Ladeverhaltens stützt di
 Beleg durch Abwesenheit bleibt aber schwächer als ein Beleg: Der Marker wird auf `[DOK]
 (Abwesenheit belegt, Stand 2.1.267)` gesetzt statt entfernt.
 
+**AP2-CC-12 – `permissionMode` im Subagentenprofil.** Die Zeile M2 stützt sich darauf, dass
+`permissions.disableBypassPermissionsMode` den Modus ohne Rückfragen sperrt. `docs/en/sub-agents`
+führt für ein Subagentenprofil ein **eigenes** Frontmatter-Feld `permissionMode`, das unter
+anderen Werten auch `bypassPermissions` annimmt. Ob die Sperre auch dort greift, sagt keine der
+fünf abgerufenen Seiten. Solange das offen ist, gilt M2 für die Hauptsitzung als belegt und für
+den Weg über ein Subagentenprofil als ungeklärt. Das Framework liefert genau ein Profil aus
+(`fw-reviewer`), und es setzt das Feld nicht; ein Projekt könnte es setzen. **Nachgetragen mit
+Release 0.16.0** beim Abgleich der Quellenliste (`FW-AK-01`, `CR-2026-018`).
+
 ## Offen – braucht eine Sitzung in der Testinstallation
 
 Die folgenden Nachweise verlangen eine Sitzung, die **in** der Installation startet, weil
@@ -207,6 +216,7 @@ Arbeitsverzeichnis sind sie nicht führbar:
 | B4 an der Wirkung | `Edit(leitwerk-core/**)` blockiert; die `Write(...)`-Regel erzeugt eine Startwarnung |
 | B7 / S4-Ersatz | Jede Schreiboperation löst eine Rückfrage aus |
 | R2 / R3 an der Wirkung | Eine Regel ohne `paths` steht im Kontext; eine Regel mit `paths` erst nach dem Lesen einer passenden Datei |
+| AP2-CC-12 – `permissionMode` im Subagentenprofil | Ein Profil mit `permissionMode: bypassPermissions` startet bei gesetztem `disableBypassPermissionsMode` nicht oder ohne den Modus |
 | `FW-ZA-06` – Schreibverbot auf den Kern in realer Installation | blockiert |
 | H2 – Hook blockiert mit Exit-Code 2 | Werkzeugausführung unterbleibt |
 

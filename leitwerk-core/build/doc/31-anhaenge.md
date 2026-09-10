@@ -30,31 +30,59 @@ Der Kern nennt die Bestandteile der Laufzeitschicht mit Begriffen, nicht mit Pfa
 
 ## 31.4 Quellen der Produktdokumentation und Belegzuordnung
 
-Recherchestand: 01.–02.09.2026. Die Quellen belegen die als `[DOK]` gekennzeichneten Aussagen; der Framework Owner hält diese Liste im Rahmen der Produktbeobachtung aktuell (FW-AK-01).
+Die Quellen belegen die als `[DOK]` gekennzeichneten Aussagen; der Framework Owner hält diese Liste im Rahmen der Produktbeobachtung aktuell (FW-AK-01).
+
+Sie ist **je Client Pack** geführt. Das ist keine Gliederungsfrage: Eine Aussage über einen Client hängt an dessen Dokumentation und an keiner anderen, und beide Listen haben verschiedene Recherchestände. Bis Release 0.15.0 enthielt dieser Anhang ausschließlich Devin-Quellen – auch dann noch, als das Pack `claude-code` bereits ein Dutzend `[DOK]`-Aussagen gegen `code.claude.com` trug. Die Liste behauptete damit, die `[DOK]`-Aussagen zu belegen, und tat es für einen der beiden Clients nicht.
+
+Die Kennungen tragen seit Release 0.16.0 das Präfix des Client Packs (`QD-` für `devin-desktop`, `QC-` für `claude-code`). Vorher hießen sie `Q1` bis `Q17` – dieselben Kürzel, mit denen das Framework an rund zwanzig Stellen seine **Qualitätsregeln** bezeichnet (`Q8` etwa die Größenschwelle einer Änderung). Zwei Bedeutungen desselben Kürzels in einem Dokument sind eine Verwechslung, die keinen Nutzen hat.
+
+Die **maßgebliche Zuordnung je einzelner Zusage** steht in der Fähigkeitsmatrix des jeweiligen Packs (Kap. 15.1 beziehungsweise Kap. 7a): Dort nennt die Belegspalte je Zeile die Seite, auf die sie sich stützt. Diese Liste sagt, welche Seite wofür herangezogen wurde und **wann sie abgerufen worden ist** – die Angabe, die eine Wiederholungsprüfung braucht.
+
+### 31.4.1 Client Pack `devin-desktop`
+
+Recherchestand: 01.–02.09.2026, gegen Devin Desktop 3.8.20 (QD-4). **Seither nicht erneut abgeglichen.** Keine Einstufung der Fähigkeitsmatrix dieses Packs ist gegen eine Installation belegt; 13 von 26 Zeilen tragen einen VERIFY-Marker (Roadmap AP2).
 
 | Nr. | Quelle | Belegt im Framework insbesondere |
 |---|---|---|
-| Q1 | devin.ai/blog/windsurf-is-now-devin-desktop | Rebranding zum 02.06.2026; Devin Local ersetzt Cascade; Übergangsfrist für Cascade; Agent Command Center, Spaces, ACP |
-| Q2 | docs.devin.ai/desktop/devin-desktop-faq | `.devin/` als Primär-, `.windsurf/` als Legacy-Pfad; `.windsurfrules`; Systempfade für organisationsweite Regeln; Legacy-MCP-Pfad; Plankontinuität |
-| Q3 | docs.devin.ai/desktop/devin-local | Modi Normal/Plan/Ask; Berechtigungsmodell deny/ask/allow mit Geltungsbereichen; MCP-Bestätigung als Standard; Subagenten (Preview) und Quick Review; keine Memories/Workflows in Devin Local; Migrationsassistent; Enterprise-Einstellungen (Sandbox-Erzwingung, Domain-Listen); Konfigurationspfade |
-| Q4 | docs.devin.ai/desktop/changelog | Version 3.8.20 vom 21.08.2026; Komposition der Berechtigungsebenen mit deny-Vorrang; `sandbox.excluded`; persistente Plan-Dateien; Subagenten-Dateiformen; Skill-Berechtigungen bei Auto-Genehmigungen |
-| Q5 | docs.devin.ai/desktop/cascade/agents-md | AGENTS.md im Root always-on; Unterverzeichnisse als automatische Glob-Regeln; Einspeisung in die Regel-Engine; Namensvarianten |
-| Q6 | docs.devin.ai/cli/extensibility/rules | Regeldateien und -orte (AGENTS.md, AGENTS.local.md, `.devin/rules/*.md`, global), Frontmatter `description`/`trigger`/`globs` mit Werten, Präzedenzen, Kompatibilitätspfade |
-| Q7 | docs.devin.ai/desktop/cascade/memories | Aktivierungsmodi der Regeln; Zeichenlimits 6.000/12.000 (Cascade-Kontext); Memories nur für Cascade |
-| Q8 | docs.devin.ai/desktop/cascade/workflows | Workflows nur für Cascade; Migration zu Skills; Limits |
-| Q9 | docs.devin.ai/product-guides/skills | SKILL.md-Format; Suchpfade einschließlich `.agents/skills/` (empfohlen) und `.devin/skills/`; `triggers`; `@skills:`-Erwähnung; Argument-Substitution; eine aktive Skill-Grenze |
-| Q10 | docs.devin.ai/cli/extensibility/skills/creating-skills | Projekt- und globale Skill-Pfade; Frontmatter-Felder inkl. `allowed-tools`, `permissions` (additiv), `argument-hint`, `model`, `subagent`, `agent`; Aufruf `/skill-name` |
-| Q11 | docs.devin.ai/cli/reference/permissions | Matcher `Read()`, `Write()`, `Exec()`, `Fetch()`, Tool- und MCP-Matcher; deny > ask > allow; Permission-Modi; Ebenen-Präzedenz; Sitzungs-Grant-Stufen |
-| Q12 | docs.devin.ai/cli/extensibility/configuration | `config.json`-Scopes und -Schlüssel; `mcp_config.json`/`.local`; `read_config_from`; Enterprise unüberschreibbar |
-| Q13 | docs.devin.ai/cli/extensibility/hooks/overview | `hooks.v1.json`; Ereignisse; Blockierung per Exit-Code 2/`decision: block`; `additionalContext`; `DEVIN_PROJECT_DIR` |
-| Q14 | docs.devin.ai/de/cli/subagents | Subagent-Dateiformen und Frontmatter; eingebaute Profile; Vordergrund-/Hintergrundrechte |
-| Q15 | docs.devin.ai/cli/sandbox | Sandbox-Ableitung aus Berechtigungen; Domainfilter und Modi; `sandbox.excluded`; Plattformgrenzen (kein Windows); Instabilität des Netzfilters |
-| Q16 | docs.devin.ai/cli/enterprise/team-settings | Team-Kontrollen: Modell-Allowlist, Websuche standardmäßig aus, MCP-Kontrollen und Registry-Erzwingung, unüberschreibbare Terminal-Permissions, Sandbox-Erzwingung, Attribution-Filter |
-| Q17 | docs.devin.ai/admin/security | Training-Opt-out auf kostenpflichtigen Plänen; Zero Data Retention nach Opt-out; Teams-Opt-out nur durch Admin; Enterprise nur mit schriftlicher Zustimmung; SOC 2 Type II; Verschlüsselung |
+| QD-1 | devin.ai/blog/windsurf-is-now-devin-desktop | Rebranding zum 02.06.2026; Devin Local ersetzt Cascade; Übergangsfrist für Cascade; Agent Command Center, Spaces, ACP |
+| QD-2 | docs.devin.ai/desktop/devin-desktop-faq | `.devin/` als Primär-, `.windsurf/` als Legacy-Pfad; `.windsurfrules`; Systempfade für organisationsweite Regeln; Legacy-MCP-Pfad; Plankontinuität |
+| QD-3 | docs.devin.ai/desktop/devin-local | Modi Normal/Plan/Ask; Berechtigungsmodell deny/ask/allow mit Geltungsbereichen; MCP-Bestätigung als Standard; Subagenten (Preview) und Quick Review; keine Memories/Workflows in Devin Local; Migrationsassistent; Enterprise-Einstellungen (Sandbox-Erzwingung, Domain-Listen); Konfigurationspfade |
+| QD-4 | docs.devin.ai/desktop/changelog | Version 3.8.20 vom 21.08.2026; Komposition der Berechtigungsebenen mit deny-Vorrang; `sandbox.excluded`; persistente Plan-Dateien; Subagenten-Dateiformen; Skill-Berechtigungen bei Auto-Genehmigungen |
+| QD-5 | docs.devin.ai/desktop/cascade/agents-md | AGENTS.md im Root always-on; Unterverzeichnisse als automatische Glob-Regeln; Einspeisung in die Regel-Engine; Namensvarianten |
+| QD-6 | docs.devin.ai/cli/extensibility/rules | Regeldateien und -orte (AGENTS.md, AGENTS.local.md, `.devin/rules/*.md`, global), Frontmatter `description`/`trigger`/`globs` mit Werten, Präzedenzen, Kompatibilitätspfade |
+| QD-7 | docs.devin.ai/desktop/cascade/memories | Aktivierungsmodi der Regeln; Zeichenlimits 6.000/12.000 (Cascade-Kontext); Memories nur für Cascade |
+| QD-8 | docs.devin.ai/desktop/cascade/workflows | Workflows nur für Cascade; Migration zu Skills; Limits |
+| QD-9 | docs.devin.ai/product-guides/skills | SKILL.md-Format; Suchpfade einschließlich `.agents/skills/` (empfohlen) und `.devin/skills/`; `triggers`; `@skills:`-Erwähnung; Argument-Substitution; eine aktive Skill-Grenze |
+| QD-10 | docs.devin.ai/cli/extensibility/skills/creating-skills | Projekt- und globale Skill-Pfade; Frontmatter-Felder inkl. `allowed-tools`, `permissions` (additiv), `argument-hint`, `model`, `subagent`, `agent`; Aufruf `/skill-name` |
+| QD-11 | docs.devin.ai/cli/reference/permissions | Matcher `Read()`, `Write()`, `Exec()`, `Fetch()`, Tool- und MCP-Matcher; deny > ask > allow; Permission-Modi; Ebenen-Präzedenz; Sitzungs-Grant-Stufen |
+| QD-12 | docs.devin.ai/cli/extensibility/configuration | `config.json`-Scopes und -Schlüssel; `mcp_config.json`/`.local`; `read_config_from`; Enterprise unüberschreibbar |
+| QD-13 | docs.devin.ai/cli/extensibility/hooks/overview | `hooks.v1.json`; Ereignisse; Blockierung per Exit-Code 2/`decision: block`; `additionalContext`; `DEVIN_PROJECT_DIR` |
+| QD-14 | docs.devin.ai/de/cli/subagents | Subagent-Dateiformen und Frontmatter; eingebaute Profile; Vordergrund-/Hintergrundrechte |
+| QD-15 | docs.devin.ai/cli/sandbox | Sandbox-Ableitung aus Berechtigungen; Domainfilter und Modi; `sandbox.excluded`; Plattformgrenzen (kein Windows); Instabilität des Netzfilters |
+| QD-16 | docs.devin.ai/cli/enterprise/team-settings | Team-Kontrollen: Modell-Allowlist, Websuche standardmäßig aus, MCP-Kontrollen und Registry-Erzwingung, unüberschreibbare Terminal-Permissions, Sandbox-Erzwingung, Attribution-Filter |
+| QD-17 | docs.devin.ai/admin/security | Training-Opt-out auf kostenpflichtigen Plänen; Zero Data Retention nach Opt-out; Teams-Opt-out nur durch Admin; Enterprise nur mit schriftlicher Zustimmung; SOC 2 Type II; Verschlüsselung |
+
+### 31.4.2 Client Pack `claude-code`
+
+Recherchestand: 10.09.2026, gegen Clientversion 2.1.267. Erhoben im Rahmen von AP2 (`leitwerk-core/tests/protocols/2026-09-10-AP2-claude-code.md`); die Seitenangaben sind gegenüber dem Protokoll um die genauen Pfade ergänzt.
+
+| Nr. | Quelle | Belegt im Framework insbesondere |
+|---|---|---|
+| QC-1 | code.claude.com/docs/en/memory | Regelablage `.claude/rules/*.md`, rekursiv gefunden; Frontmatter-Feld `paths` mit Glob-Mustern, mehreren Mustern und Klammer-Expansion samt Budget (1.000 expandierte Muster, 4 MiB); eine Regel **ohne** `paths` lädt unbedingt und ohne Import; Ladeordnung und `@pfad`-Importe der Wurzel-Anweisungsdatei; Grenze 4 MiB je Anweisungsdatei und Empfehlung 200 Zeilen; Entfernen von Block-Kommentaren vor dem Einspeisen (für `CLAUDE.md` dokumentiert); `claudeMdExcludes` |
+| QC-2 | code.claude.com/docs/en/permissions | Pfadregeln werden nur für `Read` und `Edit` ausgewertet, für andere Werkzeuge angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet; `deny` vor `ask` vor `allow` und die Unaufhebbarkeit einer Verweigerung über alle Ebenen; gitignore-Mustersemantik samt Normalisierung auf POSIX-Form unter Windows; Präfixsemantik der Befehlsregeln und ihre Grenze (`git -C . push` trifft nicht); `disableBypassPermissionsMode` und `disableAutoMode`; Vorrang eines mit Exit-Code 2 blockierenden Hooks **vor** den Berechtigungsregeln |
+| QC-3 | code.claude.com/docs/en/skills | `SKILL.md`-Frontmatter (`name`, `description`, `allowed-tools`, `disable-model-invocation`, `user-invocable`, `paths`, `model`); Wirkung von `disable-model-invocation: true` – das Modell kann den Skill nicht selbst laden, und seine Beschreibung kommt gar nicht erst in den Kontext; Suchpfade der Skill-Ablage; Aufruf über `/name` |
+| QC-4 | code.claude.com/docs/en/sub-agents | Subagentenprofile unter `.claude/agents/`; Frontmatter `tools` (Allowlist) und `disallowedTools` (Denylist) mit dokumentierter Verarbeitungsreihenfolge; die Beschränkung wirkt technisch; ein Profil, dessen `tools`-Liste sich zu keinem Werkzeug auflöst, wird gar nicht erst gestartet; weitere Felder, darunter `permissionMode` |
+| QC-5 | code.claude.com/docs/en/settings | Ablageorte und Rangfolge der Einstellungsdateien: verwaltet → Kommandozeile → `settings.local.json` → `settings.json` → Nutzer; `permissions`, `hooks`, `env` und `defaultMode` in derselben Datei; verwaltete Einstellungen sind bis auf wenige benannte Ausnahmen unüberschreibbar |
+
+### 31.4.3 Was die Liste über sich selbst sagt
+
+Die beiden Recherchestände liegen neun Tage auseinander, und nur der jüngere ist gegen eine benannte Clientversion erhoben. `FW-AK-01` bleibt deshalb `offen`: Der Testfall verlangt den Abgleich **beider** Listen mit der jeweils aktuellen Dokumentation und dem Produkt-Changelog. Für `claude-code` ist er mit Release 0.16.0 geführt, für `devin-desktop` steht er aus – dort ist seit dem Recherchestand kein Changelog gesichtet worden.
+
+Eine Quelle ohne Abrufdatum ist kein Beleg, sondern eine Behauptung mit Fußnote: Produktdokumentation ändert sich, und ohne Datum lässt sich nicht sagen, ob eine Aussage noch trägt. Dieselbe Überlegung hatte D-25 für Versionsangaben angestellt.
 
 ## 31.5 Konsolidierter Verifikationsbedarf
 
-Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg trägt dort den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: 13 von 26 Zeilen bei `devin-desktop`, 9 von 26 bei `claude-code`. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
+Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg trägt dort den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: 13 von 26 Zeilen bei `devin-desktop` tragen den Marker; bei `claude-code` trägt ihn nach AP2 **keine** Zeile mehr, dafür ist dort keine Einstufung als **beobachtete** Durchsetzung belegt – ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
 
 Die folgende Liste ergänzt sie um Punkte, die keiner einzelnen Zusage der Matrix zugeordnet sind, sondern das Zusammenspiel betreffen. Sie gilt für das Client Pack `devin-desktop`; Prüfweg ist Roadmap-AP2, Testklasse AK:
 
