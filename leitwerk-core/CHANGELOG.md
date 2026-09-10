@@ -2,6 +2,47 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.14.0] - 2026-09-10
+
+### Behoben
+- **Eine Kernzusage verfiel beim Rendern (`CR-2026-016`, Decision Record D-26).** Gefunden beim ersten Durchlauf von AP2 gegen das Client Pack `claude-code`. Die Skill-Quellen tragen `triggers: [user]`, und der Validator erzwingt das fuer jeden schreibenden Skill. Die Semantikabbildung verwarf das Feld **ersatzlos**, weil der Client es nicht kennt - in der installierten Fassung stand nichts mehr davon. **Das Modell konnte `fw-change-small` selbst waehlen, einen Skill mit `Edit`, `Write` und `Bash`.**
+
+  Das Feld existiert beim Client: `disable-model-invocation: true`. Die Faehigkeitsmatrix fuehrte S4 als `[NICHT ABBILDBAR]` mit genau der Frage, ob es so eines gibt. Seit D-26 gilt: Eine Abbildung darf eine Zusage nicht verlieren - sie bildet sie ab oder die Installation scheitert.
+
+- **18 Regeln der erzeugten Berechtigungsdatei waren wirkungslos.** Der Client wertet Pfadregeln nur fuer `Read` und `Edit` aus; eine Pfadregel fuer `Write`, `NotebookEdit`, `Glob` oder `MultiEdit` wird angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet. Die Abbildung erzeugte je Pfad zusaetzlich eine `Write(...)`-Regel und beschrieb das als Verschaerfung. **Vier** der wirkungslosen Regeln forderte `_core_rules_integrity` sogar ein.
+
+  Die Berechtigungsdatei schrumpft von 83 auf 65 Regeln. Der Schutz bleibt unveraendert: Er trug schon vorher allein die `Edit(...)`-Haelfte.
+
+- **Die vorgeschriebene Pruefung war nie gelaufen.** `CLIENT_PACK.md` Abschnitt 7 nennt zwei Befehle - installieren, dann validieren. Nacheinander ausgefuehrt meldete der Validator **zwoelf Fehler** `triggers fehlt`: Er verlangte das Feld unbedingt, waehrend die Abbildung es fuer diesen Client verwirft. Seit 0.5.0 widersprachen sich die beiden Befehle.
+
+  Dazu ein zweiter Defekt derselben Pruefung: `allowed-tools` steht in der installierten Fassung als kommagetrennte Zeichenkette. Die Pruefung lief ueber die **Zeichen** dieser Zeichenkette und meldete jeden installierten Skill als nicht schreibend. Auch ohne den ersten Befund haette der Validator die Verletzung von S4 nicht sehen koennen. Das erklaert, warum sie acht Releases lang unbemerkt blieb.
+
+### Geaendert
+- **Der Validator prueft die installierte Fassung an ihrer eigenen Form.** Er liest `allowed-tools` als Liste und als Zeichenkette, fuehrt die Werkzeugnamen des Clients ueber `tool_names` auf die Verben zurueck und prueft bei abgebildetem `triggers` das Zielfeld statt des Quellfelds.
+- **Neue Pruefung: eine Pfadregel fuer ein Werkzeug ohne Pfadauswertung ist ein Fehler.** Welche Werkzeuge Pfadregeln kennen, sagt das Manifest (`permission_path_tools`). Fehlt die Angabe, unterbleibt die Pruefung - fuer `devin-desktop` ist sie unbelegt und wird deshalb nicht behauptet.
+
+### Nachweise
+- **AP2 fuer `claude-code` begonnen**, alle zehn Pruefmarker abgearbeitet, acht Befunde: `tests/protocols/2026-09-10-AP2-claude-code.md`. Geprueft gegen Clientversion 2.1.267.
+- **Wirksamkeitsnachweis nach D-23, vier Sonden, alle gemeldet:** Sperre aus einem schreibenden Skill entfernt; Sperre auf `false`; `Write(leitwerk-core/**)` von Hand eingefuegt; `NotebookEdit(project-overlay/**)` eingefuegt. Ausgangs- und Schlusslauf je 0 Fehler.
+- **`install.py --client claude-code` gefolgt von `validate-framework.py`: 0 Fehler** - erstmals seit 0.5.0. Neun von zwoelf Skills tragen die Modellwahl-Sperre; die drei ohne sind die rein lesenden.
+- Framework-Repository (`devin-desktop`): Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert.
+
+### Migrationshinweise fuer Overlays
+Betrifft nur Projekte mit dem Client Pack **`claude-code`**; derzeit gibt es keine.
+
+Die Berechtigungsdatei `.claude/settings.json` ist **Saat** und wird von `install.py --update` nicht angefasst. Ein bestehendes Projekt zieht von Hand nach:
+
+1. Alle `Write(...)`-Pfadregeln entfernen, ebenso `Glob(...)` und `Grep(...)`. Die neue Pruefung meldet jede einzeln mit Fundstelle.
+2. Im Block `_core_rules_integrity.deny_must_contain` dieselben vier `Write(...)`-Eintraege streichen.
+
+Die Skills sind **Core** und werden von `--update` ueberschrieben; die Modellwahl-Sperre kommt damit ohne Handgriff.
+
+### Bekannte Einschraenkungen
+- **Die Wirkungsnachweise stehen aus.** Dieses Release belegt, dass die Sperre **gesetzt** wird, nicht dass sie **greift**. Der Beleg braucht eine Sitzung, die in der Installation startet; er steht im AP2-Protokoll unter „Offen".
+- R2 und R3 stehen weiter auf `[NICHT ABBILDBAR]`, obwohl `.claude/rules/` mit `paths:`-Frontmatter sie abbildet. Eigener Antrag, weil er die Technology Packs betrifft.
+- Das Client Pack `devin-desktop` ist unberuehrt; seine zwoelf Pruefmarker brauchen eine Installation von Devin Desktop.
+- Ob `Grep(pfad)` tatsaechlich nicht ausgewertet wird, stuetzt sich auf die Formulierung „checks file permissions against `Edit(path)` and `Read(path)` rules only"; in der Warnliste des Herstellers ist `Grep` nicht genannt. Die Startwarnungen einer realen Sitzung entscheiden das.
+
 ## [0.13.0] – 2026-09-10
 
 ### Behoben

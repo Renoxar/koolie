@@ -314,6 +314,25 @@ def check_config(root: str, man: dict) -> None:
     perms = cfg.get("permissions", {})
     deny = set(perms.get("deny", []))
     allow = set(perms.get("allow", []))
+
+    # Eine Pfadregel fuer ein Werkzeug, das der Client dafuer nicht auswertet, wird
+    # angenommen und nie konsultiert - sie taeuscht Schutz vor und erzeugt beim
+    # Sitzungsstart Laerm. Welche Werkzeuge Pfadregeln kennen, sagt das Manifest; ohne die
+    # Angabe unterbleibt die Pruefung, weil sie dann unbelegt waere (AP2-CC-02, D-26).
+    pfadwerkzeuge = man.get("permission_path_tools")
+    if pfadwerkzeuge:
+        befehlswerkzeuge = set(man.get("permission_tools", {}).get("exec", []))
+        for korb in ("deny", "ask", "allow"):
+            for regel in perms.get(korb, []):
+                if not isinstance(regel, str) or "(" not in regel:
+                    continue
+                werkzeug = regel.split("(", 1)[0]
+                if werkzeug in befehlswerkzeuge or werkzeug in pfadwerkzeuge:
+                    continue
+                err(f"{rel}: {korb}-Regel '{regel}' nennt ein Werkzeug, fuer das dieser "
+                    f"Client keine Pfadregeln auswertet. Zulaessig sind "
+                    f"{', '.join(sorted(pfadwerkzeuge))}; eine Regel ohne Pfad wirkt "
+                    f"weiterhin auf Werkzeugebene")
     must = cfg.get("_core_rules_integrity", {}).get("deny_must_contain", [])
     if not must:
         err(f"{rel}: Block _core_rules_integrity.deny_must_contain fehlt")
@@ -453,11 +472,16 @@ def skill_dirs(root: str, man: dict) -> list[tuple[str, str]]:
 
 def check_skills(root: str, man: dict) -> None:
     ids: dict[str, str] = {}
+    runtime = man["skills_dir"]
     for skills_dir, prefix in skill_dirs(root, man):
-        check_skills_in(skills_dir, prefix, ids)
+        # Die Modellwahl-Sperre wird nur in der *installierten* Fassung geprueft: In der
+        # Quelle steht die Aussage als `triggers`, erst die Abbildung uebersetzt sie.
+        check_skills_in(skills_dir, prefix, ids,
+                        man if prefix == runtime else None)
 
 
-def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str]) -> None:
+def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str],
+                    man: dict | None = None) -> None:
     for name in sorted(os.listdir(skills_dir)):
         sdir = os.path.join(skills_dir, name)
         if not os.path.isdir(sdir):
@@ -483,18 +507,43 @@ def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str]) -> None:
                 err(f"{rel}/SKILL.md: name '{fm.get('name')}' != Verzeichnisname")
             if not str(fm.get("description", "")).strip():
                 err(f"{rel}/SKILL.md: description fehlt")
+            fmt = (man or {}).get("skill_frontmatter", {})
+            # Die Quelle nennt allowed-tools als Liste von Verben, die installierte Fassung
+            # je nach Client als Liste oder als kommagetrennte Zeichenkette von Werkzeugnamen.
+            # Ohne diese Unterscheidung lief die Pruefung ueber die *Zeichen* der Zeichenkette
+            # und meldete jeden installierten Skill als nicht schreibend (AP2-CC-09).
             tools = fm.get("allowed-tools") or []
+            if isinstance(tools, str):
+                tools = [x for x in re.split(r"[,\s]+", tools) if x]
             if not tools:
                 err(f"{rel}/SKILL.md: allowed-tools fehlt (minimale Werkzeugmenge angeben)")
+            schreibverben = ("edit", "exec", "write")
+            namen = fmt.get("tool_names", {})
+            schreibnamen = {n for v in schreibverben for n in namen.get(v, [])}
+            writes = any(t in schreibverben or t in schreibnamen for t in tools)
+
+            sperre = fmt.get("model_invocation_field")
+            # Traegt dieser Ablageort `triggers` ueberhaupt? Ein Client, der das Feld nicht
+            # kennt, bekommt die Aussage abgebildet - dann ist ihr Fehlen kein Fehler,
+            # sondern die Abbildung ist zu pruefen (AP2-CC-01 und AP2-CC-09, D-26).
+            abgebildet = bool(sperre) and "triggers" in fmt.get("drop_fields", [])
             triggers = fm.get("triggers") or []
-            writes = any(t in ("edit", "exec", "write") for t in tools)
-            if writes and triggers != ["user"]:
-                err(f"{rel}/SKILL.md: schreibender/ausführender Skill muss triggers: [user] haben")
-            if not triggers:
-                err(f"{rel}/SKILL.md: triggers fehlt")
+            if abgebildet:
+                if writes and fm.get(sperre) is not True:
+                    err(f"{rel}/SKILL.md: schreibender/ausfuehrender Skill ohne "
+                        f"'{sperre}: true' - die Quelle verlangt triggers: [user], die "
+                        f"installierte Fassung muss das in der Form dieses Clients tragen")
+            else:
+                if writes and triggers != ["user"]:
+                    err(f"{rel}/SKILL.md: schreibender/ausfuehrender Skill muss "
+                        f"triggers: [user] haben")
+                if not triggers:
+                    err(f"{rel}/SKILL.md: triggers fehlt")
+
+            erlaubt = ("name", "description", "argument-hint", "allowed-tools", "permissions",
+                       "triggers", "model", "subagent", "agent")
             for key in fm:
-                if key not in ("name", "description", "argument-hint", "allowed-tools", "permissions",
-                               "triggers", "model", "subagent", "agent"):
+                if key not in erlaubt and key != sperre:
                     warn(f"{rel}/SKILL.md: Frontmatter-Feld '{key}' ist nicht dokumentiert")
         for key in SKILL_META_KEYS:
             if not re.search(rf"^\|\s*{re.escape(key)}\s*\|", body, re.M):

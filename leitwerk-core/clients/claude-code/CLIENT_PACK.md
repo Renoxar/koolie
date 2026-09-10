@@ -4,14 +4,22 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.0 |
+| Version | 0.5.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
-| Geprüfte Clientversion | `<TBD: verbindliche Zielversion; Roadmap AP2>` |
-| Datum der Prüfung | `<TBD: steht aus>` |
+| Geprüfte Clientversion | 2.1.267 (AP2-Dokumentenabgleich, `tests/protocols/2026-09-10-AP2-claude-code.md`). Die **verbindliche Zielversion** legt `<FRAMEWORK_OWNER>` fest und steht aus |
+| Datum der Prüfung | 2026-09-10 – Dokumentenabgleich und Prüfung der erzeugten Artefakte; die Wirkungsnachweise in einer Sitzung stehen aus |
 
-> **Keine Einstufung dieses Packs ist gegen eine reale Installation belegt.** Die Spalte „Einstufung" nennt die **vorgesehene** Durchsetzungstiefe, die Spalte „Beleg" ihren Nachweisstand: `[DOK]` = in der Herstellerdokumentation beschrieben, `[EMPF]` = Empfehlung des Frameworks, VERIFY-Marker = gegen die aktuelle Dokumentation beziehungsweise eine Installation zu prüfen. Solange die Zielversion nicht festgelegt und geprüft ist, gilt das Pack als **unbelegt**.
+> **Teilweise belegt (Stand 0.4.0).** Acht der zehn Pruefmarker sind gegen die
+> Herstellerdokumentation der Clientversion 2.1.267 und gegen eine reale Erstinstallation
+> abgeglichen (`tests/protocols/2026-09-10-AP2-claude-code.md`). **Zwei Einstufungen sind
+> nachweislich überholt und noch nicht korrigiert** – R2/R3 und S4; ihre Berichtigung ändert
+> die Semantikabbildung und läuft als eigener Änderungsantrag. Kein Wirkungsnachweis aus einer
+> laufenden Sitzung liegt vor: Ein Dokumentenabgleich belegt `[DOK]`, nicht beobachtete
+> Durchsetzung.
+>
+> **Zur Lesart der Spalten.** Die Spalte „Einstufung" nennt die **vorgesehene** Durchsetzungstiefe, die Spalte „Beleg" ihren Nachweisstand: `[DOK]` = in der Herstellerdokumentation beschrieben, `[EMPF]` = Empfehlung des Frameworks, VERIFY-Marker = gegen die aktuelle Dokumentation beziehungsweise eine Installation zu prüfen. Solange die Zielversion nicht festgelegt und geprüft ist, gilt das Pack als **unbelegt**.
 
 ## 1. Pfadabbildung
 
@@ -22,8 +30,8 @@ Maschinenlesbar in `manifest.json`; diese Tabelle ist die menschenlesbare Fassun
 | Wurzel-Anweisungsdatei | `CLAUDE.md` | `[DOK]` |
 | Regeldateien | `.claude/framework/*.md`, eingebunden über `@pfad`-Importe in `CLAUDE.md` | Importmechanismus `[DOK]`; Ablageort `[KONZ]` Framework-Konvention |
 | Skills | `.claude/skills/<name>/SKILL.md` | `[DOK]` |
-| Subagentenprofile | `.claude/agents/<name>.md` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` (Feldname `tools`) |
-| Berechtigungskonfiguration | `.claude/settings.json` (erzeugt aus `framework/runtime/permissions.json`) | `[DOK]` Mechanismus; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| Subagentenprofile | `.claude/agents/<name>.md`, Frontmatter-Feld `tools` | [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
+| Berechtigungskonfiguration | `.claude/settings.json` (erzeugt aus `framework/runtime/permissions.json`) | `[DOK]` Mechanismus; Mustersemantik [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) – gitignore-Syntax, Einzelheiten bei B3. **Pfadregeln werden nur für `Read` und `Edit` ausgewertet**, siehe Abschnitt 7 |
 | Hook-Konfiguration | `.claude/settings.json` (**keine eigene Datei**; erzeugt aus `framework/runtime/hooks.json` und in dieselbe Datei eingebettet) | `[DOK]` |
 | MCP-Konfiguration | `.mcp.json` (Vorlage: `.mcp.json.example`) | `[DOK]` |
 | Projektverzeichnis-Variable in Hooks | `CLAUDE_PROJECT_DIR` | `[DOK]` |
@@ -58,9 +66,9 @@ Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlasse
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
 | R1 | Wurzel-Anweisungsdatei wird ungefragt geladen | `CLAUDE.md` wird zu Beginn jeder Sitzung geladen | `[TECHNISCH]` | `[DOK]` |
-| R2 | Regeldateien mit Ladebedingungen | **Kein Äquivalent.** Regeltexte werden über `@pfad`-Importe eingebunden und sind damit immer geladen | `[NICHT ABBILDBAR]` | `[DOK]` (Import); Fehlen von Ladetriggern `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
-| R3 | Regeln an Dateimuster bindbar (Grundlage der Technology Packs) | **Kein Äquivalent.** Teilersatz: eine `CLAUDE.md` in einem Unterverzeichnis wird beim Zugriff darauf geladen | `[NICHT ABBILDBAR]` | `[DOK]` (verschachtelte Anweisungsdateien) |
-| R4 | Bekanntes Zeichenlimit, das das Framework einhalten kann | Kein Limit dokumentiert | `[NICHT ABBILDBAR]` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| R2 | Regeldateien mit Ladebedingungen | **Kein Äquivalent.** Regeltexte werden über `@pfad`-Importe eingebunden und sind damit immer geladen | `[NICHT ABBILDBAR]` – **überholt, siehe AP2-CC-03** | Der Client kennt `.claude/rules/*.md` mit `paths:`-Frontmatter: Regeln, die nur bei Arbeit an passenden Dateien laden. Berichtigung folgt als Änderungsantrag |
+| R3 | Regeln an Dateimuster bindbar (Grundlage der Technology Packs) | **Äquivalent vorhanden:** `paths:`-Frontmatter in `.claude/rules/` bindet eine Regel an Glob-Muster. Bisher genannter Teilersatz: eine `CLAUDE.md` im Unterverzeichnis | `[NICHT ABBILDBAR]` – **überholt, siehe AP2-CC-03** | `[DOK]`; Berichtigung folgt als Änderungsantrag |
+| R4 | Bekanntes Zeichenlimit, das das Framework einhalten kann | **4 MiB** je Anweisungsdatei; eine größere Datei wird übersprungen. Zusätzlich als Empfehlung 200 Zeilen | `[TECHNISCH]` | [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 
 ### S – Skills
 
@@ -69,7 +77,7 @@ Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlasse
 | S1 | Versionierte Skills im Repository | `.claude/skills/<name>/SKILL.md` mit Frontmatter | `[TECHNISCH]` | `[DOK]`; zusätzlich **beobachtet** (siehe Abschnitt 6) |
 | S2 | Gezielter Aufruf | Aufruf über den Skill-Namen mit vorangestelltem Schrägstrich | `[TECHNISCH]` | `[DOK]` |
 | S3 | Werkzeugbeschränkung je Skill | Frontmatter `allowed-tools` als kommagetrennte Liste | `[TECHNISCH]` | `[DOK]` |
-| S4 | Schreibende Skills nur benutzergetriggert | **Kein gesichertes Äquivalent.** Ein Skill mit `description` steht dem Modell zur Wahl. Ersatz: `ask` auf `Edit(**)` und `Write(**)` – jede Schreiboperation löst eine Rückfrage aus, unabhängig davon, wer den Skill gewählt hat | `[NICHT ABBILDBAR]` | Ob ein Frontmatter-Feld die Modellwahl unterbinden kann: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| S4 | Schreibende Skills nur benutzergetriggert | **Kein gesichertes Äquivalent.** Ein Skill mit `description` steht dem Modell zur Wahl. Ersatz: `ask` auf `Edit(**)` und `Write(**)` – jede Schreiboperation löst eine Rückfrage aus, unabhängig davon, wer den Skill gewählt hat | `[NICHT ABBILDBAR]` – **überholt, siehe AP2-CC-01** | Das Feld existiert: `disable-model-invocation: true` verhindert, dass das Modell den Skill selbst lädt. Die Semantikabbildung verwirft `triggers` derzeit ersatzlos (`drop_fields`); Berichtigung folgt als Änderungsantrag |
 
 ### B – Berechtigungen
 
@@ -77,13 +85,13 @@ Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlasse
 |---|---|---|---|---|---|
 | B1 | Berechtigungen versioniert im Repository | ja | `.claude/settings.json` | `[TECHNISCH]` | `[DOK]` |
 | B2 | Verweigern vor Rückfragen vor Erlauben | ja | `permissions.deny` / `.ask` / `.allow` | `[TECHNISCH]` | `[DOK]` |
-| B3 | Secret-Dateien per Pfadmuster lesegeschützt | ja | Verweigerungsregeln auf `./.env`, `**/*.pem`, `**/secrets/**` und weitere | `[TECHNISCH]` | Mechanismus `[DOK]`; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| B3 | Secret-Dateien per Pfadmuster lesegeschützt | ja | Verweigerungsregeln auf `./.env`, `**/*.pem`, `**/secrets/**` und weitere. Mustersemantik: gitignore-Syntax; ein bloßer Dateiname trifft in jeder Tiefe (`Read(.env)` ist gleichbedeutend mit `Read(**/.env)`); ein einsegmentiges Verzeichnismuster trifft in `deny` und `ask` in jeder Tiefe, in `allow` nur am verankerten Ort. Unter Windows werden Pfade vor dem Vergleich auf POSIX-Form normalisiert | `[TECHNISCH]` | [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 | B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | Je Pfad **zwei** Regeln, weil Ändern und Anlegen getrennte Werkzeuge sind; das Kernverzeichnis ist seit `CR-2026-012` als Ganzes erfasst (`Edit(leitwerk-core/**)` und `Write(leitwerk-core/**)`) | `[TECHNISCH]` | wie B3 |
 | B5 | CI-, Quality-Gate- und Lockdateien schreibgeschützt | ja | dito, je Pfad zwei Regeln | `[TECHNISCH]` | wie B3 |
 | B6 | Befehle per Muster verweigerbar | ja | Präfixmuster, z. B. `Bash(git push:*)`. Wirkt **breiter** als eine Verweigerung des vollständigen Befehls | `[TECHNISCH]` | wie B3 |
 | B7 | Schreiboperationen fragen zurück | – | `ask` auf `Edit(**)` und `Write(**)` | `[TECHNISCH]` | `[DOK]` |
 | B8 | Netzwerkzugriff standardmäßig unterbunden | – | Verweigerung der Abruf- und Suchwerkzeuge sowie von `curl` und `wget` | `[TECHNISCH]` | `[DOK]` |
-| B9 | Nutzerlokale Konfiguration kann nur verschärfen | – | `.claude/settings.local.json` – **Framework-Regel, keine Produkteigenschaft** | `[TEXTUELL]` | `[EMPF]`; ob eine Lockerung technisch verhindert wird: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| B9 | Nutzerlokale Konfiguration kann nur verschärfen | – | `.claude/settings.local.json` rangiert **über** der Projektdatei, kann eine dort gesetzte Verweigerung aber nicht aufheben: „If a tool is denied at any level, no other level can allow it." Ergänzend greifen `deny`- und `ask`-Regeln sofort, `allow`-Regeln erst nach dem Vertrauen in den Ordner | `[TECHNISCH]` für die Verweigerungen; `[TEXTUELL]` für den Rest | [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 
 ### H – Hooks
 
@@ -97,14 +105,14 @@ Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlasse
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| A1 | Rein lesendes Reviewprofil | `.claude/agents/fw-reviewer.md`, Frontmatter-Feld `tools` | `[TECHNISCH]` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| A1 | Rein lesendes Reviewprofil | `.claude/agents/fw-reviewer.md`, Frontmatter-Feld `tools` (ergänzend `disallowedTools`); die Beschränkung wirkt technisch | `[TECHNISCH]` | [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 
 ### M – Modi und Sitzungsfreigaben
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
 | M1 | Standardmodus fragt bei Schreiben und Befehlen zurück | `permissions.defaultMode` auf `default` | `[TECHNISCH]` | `[DOK]` |
-| M2 | Modus ohne Rückfragen ausschließbar | Der Modus `bypassPermissions` ist per D-05 untersagt. Ob eine **technische** Sperre über verwaltete Einstellungen möglich ist, ist nicht belegt | `[TEXTUELL]` | `[EMPF]`; Verfügbarkeit einer Sperre `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| M2 | Modus ohne Rückfragen ausschließbar | Per D-05 untersagt **und** technisch sperrbar: `permissions.disableBypassPermissionsMode` auf `"disable"`, in verwalteten Einstellungen nicht überschreibbar. Zusätzlich wirken `bypassPermissions` und `auto` seit Clientversion 2.1.257 nicht mehr aus Projekt- oder nutzerlokalen Einstellungen | `[TECHNISCH]` (Sperre in verwalteten Einstellungen setzt eine Enterprise-Verwaltung voraus) | [DOK] (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 | M3 | Freigabe auf die Sitzung begrenzbar | Rückfragen bieten eine einmalige und eine sitzungsweite Bestätigung an | `[TECHNISCH]` | `[DOK]` |
 
 ### X – Externe Anbindung
@@ -112,7 +120,7 @@ Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlasse
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
 | X1 | Keine externe Anbindung ohne Einzelfreigabe | Keine `.mcp.json` ausgeliefert, nur die `.example`-Vorlage; Rückfrageregel auf alle MCP-Werkzeuge | `[TECHNISCH]` | `[DOK]` |
-| X2 | Art und Ort der Codebasis-Indexierung bekannt | Kein Indexierungsmechanismus dokumentiert; Dateien werden bei Bedarf gelesen | `[TECHNISCH]` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| X2 | Art und Ort der Codebasis-Indexierung bekannt | Kein Indexierungsmechanismus dokumentiert; Dateien werden bei Bedarf gelesen | `[TECHNISCH]` | `[DOK]` – Abwesenheit belegt, Stand 2.1.267 (AP2) |
 
 ## 3. Zusammenfassung der Durchsetzungstiefe
 
@@ -170,6 +178,25 @@ python leitwerk-core/tests/scripts/validate-framework.py
 
 Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs (`leitwerk-core/tests/TEST_CATALOG.md`, Kennzeichnung „Basis") gegen diesen Client zu fahren und zu protokollieren.
 
+### Wirkungslose Regeln in der erzeugten Berechtigungsdatei (AP2-CC-02)
+
+**Bekannt und noch nicht behoben.** Der Client wertet Pfadregeln ausschliesslich fuer `Read`
+und `Edit` aus: eine Pfadregel fuer `Write`, `NotebookEdit`, `Glob` oder `MultiEdit` wird
+angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet.
+
+Die Semantikabbildung erzeugt je Pfad zusaetzlich eine `Write(...)`-Regel. In einer frischen
+Installation sind das **16 wirkungslose Regeln**, dazu ein `Glob(**)` in `allow` - jede mit
+einer Startwarnung. Vier davon stehen in `_core_rules_integrity.deny_must_contain` und werden
+vom Validator eingefordert.
+
+**Der Schutz haelt trotzdem:** Die `Edit(...)`-Haelfte greift, B4 und B5 bleiben `[TECHNISCH]`.
+Die in Abschnitt 1a beschriebene Verschaerfung - je Pfad zwei Regeln, weil Aendern und Anlegen
+getrennte Werkzeuge sind - ist fuer **Pfadregeln** jedoch keine. Fuer eine Regel **ohne** Pfad
+gilt sie weiterhin: Eine Verweigerung des blossen Werkzeugnamens `Write` wirkt ueberall.
+
+Die Berichtigung aendert die Semantikabbildung und damit D-18; sie laeuft als eigener
+Aenderungsantrag.
+
 ## 8. Änderungsverlauf
 
 | Version | Datum | Änderung | Autor (Rolle) |
@@ -177,3 +204,5 @@ Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs (`leitwe
 | 0.1.0 | 2026-09-10 | angelegt (`CR-2026-004`) | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-10 | Overlay-Laufzeitregel und die beiden Vorlagen in den Kern; Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |
+| 0.4.0 | 2026-09-10 | **Erste Validierung gegen eine reale Installation und die Herstellerdokumentation (AP2, Clientversion 2.1.267).** Alle zehn Pruefmarker abgearbeitet: sechs belegt, zwei als ueberholt gekennzeichnet (R2/R3, S4), einer als Abwesenheitsbeleg, einer um die dokumentierte Grenze der Praefixmuster ergaenzt. Abschnitt 7 nennt die 17 wirkungslosen Regeln der erzeugten Berechtigungsdatei. Protokoll: `tests/protocols/2026-09-10-AP2-claude-code.md` | `<FRAMEWORK_OWNER>` |
+| 0.5.0 | 2026-09-10 | **Drei Befunde aus AP2 behoben (`CR-2026-016`, D-26).** `triggers` wird nicht mehr ersatzlos verworfen, sondern auf `disable-model-invocation` abgebildet - die Zusage S4 gilt damit auch in der Installation. Pfadregeln werden nur noch fuer `Read` und `Edit` erzeugt: 18 wirkungslose Regeln entfallen, die Berechtigungsdatei schrumpft von 83 auf 65 Regeln. `install.py --client claude-code` gefolgt von `validate-framework.py` laeuft erstmals fehlerfrei | `<FRAMEWORK_OWNER>` |

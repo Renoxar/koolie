@@ -54,7 +54,9 @@
         "Bash"
       ]
     },
-    "drop_fields": [
+    "model_invocation_field": "disable-model-invocation",
+  "_model_invocation_note": "AP2-CC-01: Ein Skill, dessen Quelle triggers ohne model nennt, bekommt dieses Feld auf true. Ohne die Abbildung verfiel die Zusage S4 beim Rendern - der Validator erzwang triggers: [user] in der Quelle, die installierte Fassung trug nichts davon.",
+  "drop_fields": [
       "permissions",
       "triggers"
     ]
@@ -144,13 +146,9 @@
     "read": [
       "Read"
     ],
-    "search": [
-      "Grep",
-      "Glob"
-    ],
+    "search": [],
     "write": [
-      "Edit",
-      "Write"
+      "Edit"
     ],
     "exec": [
       "Bash"
@@ -168,13 +166,18 @@
     "WebSearch",
     "mcp__*"
   ],
+  "permission_path_tools": [
+    "Read",
+    "Edit"
+  ],
+  "_permission_path_tools_note": "AP2-CC-02: Nur fuer diese Werkzeuge wertet der Client eine Pfadregel aus. Eine Pfadregel fuer Write, NotebookEdit, Glob oder MultiEdit wird angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet. Der Validator prueft die erzeugte Datei dagegen.",
   "permission_path_prefix": "./",
   "permission_exec_match": "prefix",
   "permission_exec_suffix": ":*",
   "permissions_extra": {
     "defaultMode": "default"
   },
-  "permissions_note": "Zwei Abweichungen gegenueber Clients mit einem einzigen Schreibwerkzeug, beide Verschaerfungen: Schreibschutz erfordert je Pfad eine Edit- und eine Write-Regel, weil Aendern und Anlegen getrennte Werkzeuge sind; Befehlsverbote wirken praefixbasiert und damit breiter (Bash(git reset:*) sperrt jedes git reset, nicht nur --hard).",
+  "permissions_note": "Eine Abweichung gegenueber Clients mit einem einzigen Schreibwerkzeug: Befehlsverbote wirken praefixbasiert und damit breiter (Bash(git reset:*) sperrt jedes git reset, nicht nur --hard); ihre Grenze ist eine andere Schreibweise desselben Befehls, etwa git -C . push. Pfadregeln werden von diesem Client nur fuer Read und Edit ausgewertet: Eine Pfadregel fuer Write, NotebookEdit, Glob oder MultiEdit wird angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet. write bildet deshalb auf Edit ab und search auf Grep - bis 0.13.0 erzeugte die Abbildung je Pfad zusaetzlich eine Write-Regel und ein Glob(**), zusammen 17 wirkungslose Regeln je Installation (AP2-CC-02, D-26). Eine Verweigerung des blossen Werkzeugnamens ohne Pfad wirkt weiterhin ueberall.",
   "hook_tools": {
     "exec": [
       "Bash"

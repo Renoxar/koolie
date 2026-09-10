@@ -209,12 +209,26 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
     und triggers. Ein Client, der nur eine kommagetrennte Werkzeugliste kennt, bekommt
     sie umgeformt; Felder, die er nicht kennt, entfallen (K-18: Frontmatter nur mit
     dokumentierten Feldern).
+
+    `triggers` faellt dabei nicht ersatzlos: Nennt das Manifest ein
+    `model_invocation_field`, wird die Aussage "dieser Skill ist nicht modellgetriggert"
+    in das Feld dieses Clients uebersetzt. Ohne diese Abbildung verfiel die Zusage S4 beim
+    Rendern - der Validator erzwang `triggers: [user]` in der Quelle, und die installierte
+    Fassung trug nichts davon (AP2-CC-01, D-26).
     """
     fmt = man.get("skill_frontmatter", {})
     if not text.startswith("---\n") or "\n---\n" not in text:
         return text
     kopf, rumpf = text.split("\n---\n", 1)
     fm = kopf[4:].rstrip("\n") + "\n"
+
+    # Vor dem Verwerfen lesen: die Quelle nennt triggers als Liste.
+    feld = fmt.get("model_invocation_field")
+    nur_nutzer = False
+    if feld:
+        m = re.search(r"^triggers:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
+        ausloeser = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
+        nur_nutzer = bool(ausloeser) and "model" not in ausloeser
 
     if fmt.get("tools_format") == "csv":
         m = re.search(r"^allowed-tools:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
@@ -225,13 +239,16 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
             for y in abbildung.get(w, [w]):
                 if y not in ziel:
                     ziel.append(y)
-        for feld in ["allowed-tools"] + list(fmt.get("drop_fields", [])):
-            fm = re.sub(rf"^{feld}:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
+        for f in ["allowed-tools"] + list(fmt.get("drop_fields", [])):
+            fm = re.sub(rf"^{f}:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
         if ziel:
             fm = fm.rstrip("\n") + f"\nallowed-tools: {', '.join(ziel)}\n"
     else:
-        for feld in fmt.get("drop_fields", []):
-            fm = re.sub(rf"^{feld}:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
+        for f in fmt.get("drop_fields", []):
+            fm = re.sub(rf"^{f}:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
+
+    if nur_nutzer:
+        fm = fm.rstrip("\n") + f"\n{feld}: true\n"
 
     return "---\n" + fm + "---\n" + rumpf
 

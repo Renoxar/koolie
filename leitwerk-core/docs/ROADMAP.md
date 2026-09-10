@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.13.0 (2026-09-10)
+## Stand nach Release 0.14.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.13.0 gebracht haben
+### Was 0.5.0 bis 0.14.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -32,12 +32,35 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Prüfungen, die prüfen | Vier Blindstellen des Validators behoben; ein Testfall gilt erst mit Wirksamkeitsnachweis als bestanden | D-23, `CR-2026-013`, `tests/protocols/2026-09-10-FW-KO-01.md` |
 | Kurzform trägt | Sieben Abweichungen zwischen geladener Kurzform und kanonischer Langform behoben; Laufzeitschicht ohne Client-Bindung | D-24, `CR-2026-014`, `tests/protocols/2026-09-10-FW-KO-02.md` |
 | Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben; der dritte Review-Testfall ist bestanden | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` |
+| AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.14.0 verliert eine Abbildung keine Zusage mehr. `AP2` fuer das Pack `claude-code` - der
+erste Durchlauf ueberhaupt, acht Releases nach seiner Einfuehrung - ergab neun Befunde, drei
+davon schwer, und alle drei mit derselben Ursache: **Das Pack war nie gegen eine reale
+Installation gefahren worden**, obwohl der Client die ganze Zeit erreichbar war.
+
+Der schwerste: Die Semantikabbildung verwarf `triggers` ersatzlos, weil der Client das Feld nicht
+kennt. Damit verfiel die Zusage S4 - schreibende Skills nur benutzergetriggert - genau bei der
+Installation, waehrend der Validator sie in der Quelle weiter erzwang. **Das Modell konnte
+`fw-change-small` selbst waehlen, einen Skill mit `Edit`, `Write` und `Bash`.** Der Client hat ein
+Feld dafuer: `disable-model-invocation`.
+
+Der zweite: 18 Regeln der erzeugten Berechtigungsdatei werden vom Client angenommen, nie
+konsultiert und beim Sitzungsstart als Warnung gemeldet - vier davon forderte
+`_core_rules_integrity` sogar ein. Der dritte erklaert die ersten beiden: Die in Abschnitt 7 des
+Packs vorgeschriebene Pruefung - installieren, dann validieren - meldete zwoelf Fehler und war
+deshalb nie gelaufen; sie haette den ersten Befund ausserdem gar nicht sehen koennen, weil sie
+die kommagetrennte Werkzeugliste der installierten Fassung zeichenweise las.
+
+Seit D-26 gilt: Kann der Zielclient eine Aussage der Quelle nicht in derselben Form tragen, wird
+sie abgebildet oder die Installation scheitert. Umgekehrt wird eine Regel, die der Client nicht
+auswertet, gar nicht erst erzeugt.
 
 Mit 0.13.0 sagt die Nachweiskette wieder etwas aus. `FW-VN-01` ergab neun Befunde; der
 tragende war keine fehlende Angabe, sondern eine, die sich nie bewegt: **Alle 13 Skills standen
@@ -97,17 +120,51 @@ ab, nicht nur gegen sich selbst.
 
 ### Nächste Schritte, nach Priorität
 
-**P1 – AP2: Mechanismen validieren.** Der größte offene Block auf dem Weg zu 1.0.0 und seit
-0.6.0 der einzige verbleibende P1. Je Client Pack sind die VERIFY-Marker gegen eine reale
-Installation abzuarbeiten: 13 von 26 Zeilen bei `devin-desktop`, 9 von 26 bei `claude-code`.
-Danach den Schutz-Hook auf fail-closed umstellen – bei `claude-code` ist das Blockierverhalten
-bereits dokumentiert, dort also zuerst.
+**P1 – AP2: Mechanismen validieren. Begonnen.**
 
-Die Zusammenführung der Berechtigungen hat den Wert dieses Arbeitspakets erhöht: Beide Packs
-tragen jetzt nachweislich dieselbe Regelmenge. Ob ein Client sie durchsetzt, sagt das nicht –
-genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` prüft, ob das
-Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
-Zusage ist mit `FW-ZA-05` bereits belegt.
+**Client Pack `claude-code`: alle zehn Prüfmarker abgearbeitet** (Clientversion 2.1.267,
+`tests/protocols/2026-09-10-AP2-claude-code.md`). Neun Befunde, davon drei schwer. Der Client
+war die ganze Zeit erreichbar – das Framework wird in einer Claude-Code-Sitzung entwickelt;
+das Pack trug trotzdem seit acht Releases `Geprüfte Clientversion: <TBD>`.
+
+Das Befundmuster ist bemerkenswert: **Sechs von neun Befunden lauten, das Pack habe
+unterschätzt, was der Client leistet.** Kein einziger lautet, es habe eine Fähigkeit
+behauptet, die fehlt.
+
+**Drei Befunde sind mit 0.14.0 behoben** (`CR-2026-016`, D-26). Der dritte kam bei der Behebung
+dazu und erklaert die beiden anderen:
+
+- **AP2-CC-01:** Die Semantikabbildung verwarf `triggers` ersatzlos. Die Zusage S4 verfiel damit
+  bei der Installation, obwohl der Client mit `disable-model-invocation` ein Feld dafuer hat.
+  Jetzt abgebildet; 9 von 12 Skills tragen die Sperre.
+- **AP2-CC-02:** 18 wirkungslose Regeln je Installation, vier davon von `_core_rules_integrity`
+  eingefordert. Pfadregeln werden nur noch fuer `Read` und `Edit` erzeugt; die Berechtigungsdatei
+  schrumpft von 83 auf 65 Regeln.
+- **AP2-CC-09:** Die in Abschnitt 7 des Packs vorgeschriebene Pruefung - installieren, dann
+  validieren - meldete zwoelf Fehler und war deshalb nie gelaufen. Sie haette AP2-CC-01 ausserdem
+  nicht sehen koennen, weil sie die kommagetrennte Werkzeugliste zeichenweise las. Beide Befehle
+  laufen jetzt nacheinander mit 0 Fehlern.
+
+Vier Sonden nach D-23 belegen die neuen Pruefungen, alle gemeldet.
+
+Zwei Einstufungen `[NICHT ABBILDBAR]` sind überholt: `.claude/rules/*.md` mit
+`paths:`-Frontmatter bildet R2 und R3 nativ ab – und damit die Grundlage der Technology Packs
+bei diesem Client.
+
+**Offen bei `claude-code`:** die Wirkungsnachweise. Sie brauchen eine Sitzung, die **in** der
+Testinstallation startet, weil Berechtigungen beim Sitzungsstart gelesen werden; aus einer
+Sitzung mit anderem Arbeitsverzeichnis sind sie nicht führbar. Der einfachste ist geschenkt:
+Die Startwarnungen aus AP2-CC-02 erscheinen ohne Zutun und benennen jede wirkungslose Regel.
+
+**Offen bei `devin-desktop`:** alle zwölf Prüfmarker. Sie brauchen eine Installation von Devin
+Desktop; nichts aus dem `claude-code`-Protokoll überträgt sich darauf.
+
+**Offen übergreifend:** die verbindliche Zielversion je Client. Das Protokoll hält fest, gegen
+welche Version geprüft wurde (2.1.267); *freigegeben für* eine Version ist das Pack damit
+nicht – das ist eine Festlegung des `<FRAMEWORK_OWNER>`.
+
+Danach den Schutz-Hook auf fail-closed umstellen – bei `claude-code` ist das Blockierverhalten
+bereits belegt.
 
 **P2 – Testkatalog ausführen.** 30 von 37 Testfällen stehen auf `offen`, keiner auf
 `fehlgeschlagen`. Kriterium 2 von D-11. Die skriptbaren Testfälle sind abgearbeitet und alle
