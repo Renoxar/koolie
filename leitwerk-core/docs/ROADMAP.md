@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.21.0 (2026-09-10)
+## Stand nach Release 0.22.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.21.0 gebracht haben
+### Was 0.5.0 bis 0.22.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,6 +35,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Letzte Client-Bindungen | Ein Dateiname, ein Platzhalter und acht Markerstellen banden den Kern weiter an ein Produkt; Prüfung 14 erfasst jetzt auch Platzhalter | `CR-2026-024`, `tests/protocols/2026-09-10-CR-2026-024-clientbindungen.md` |
 | Shell-Lesesperre | Für Shell-Befehle bestand keine Lesesperre: Die Abbildung erreichte den Matcher, nicht die Prüfung im Hook – bei einem Pack, das keine Installation hat | `CR-2026-023`, D-30, `tests/protocols/2026-09-10-CR-2026-023-shell-lesesperre.md` |
 | Versionsfelder geprüft | Prüfung 13 sagte „jedes Versionsfeld“ zu und prüfte die Artefakte nie; gefunden, während 62 davon von Hand gehoben wurden | `CR-2026-022`, `tests/protocols/2026-09-10-CR-2026-022-artefaktversionen.md` |
 | Hooks laufen wirklich | Beide Hooks liefen unter Windows nicht – `python3` war dort ein Alias ohne Interpreter, H2 galt damit nicht. Der Interpreter wird jetzt an seiner Wirkung geprüft | `CR-2026-021`, D-29, `tests/protocols/2026-09-10-CR-2026-021-hook-interpreter.md` |
@@ -46,6 +47,22 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.22.0 sind die letzten Client-Bindungen des Kerns gelöst – und die Prüfung, die sie hätte
+finden müssen, sieht jetzt auch dorthin, wo sie standen.
+
+Drei Punkte, die 0.18.0 ausgewiesen hatte: der Dateiname `decision-trees/02-may-devin-do-task.md`
+(jetzt `02-may-ai-do-task.md`, fünf Verweise nachgezogen), der Marker
+`VERIFY AGAINST CURRENT <name> DOCUMENTATION` und die Registereinträge. **Es waren mehr Stellen
+als ausgewiesen:** Die Roadmap nannte fünf, tatsächlich waren es acht in Markdown-Dateien und
+zwei weitere in den Kernskripten – die hatte die manuelle Zählung übersehen, weil sie nur `*.md`
+durchsucht hatte. Gefunden hat sie die neue Prüfung.
+
+**Warum Prüfung 14 sie nicht fand:** Sie sucht den kapitalisierten Clientnamen; ein Platzhalter
+schreibt ihn groß. Die clientgebundene Markerform stand acht Releases im Kern,
+während die clientneutrale Form daneben im Register geführt wurde. Prüfung 14 erfasst jetzt
+zusätzlich Platzhalter, die einen Clientnamen tragen – das Register selbst ausgenommen, denn es
+nennt Platzhalter, es verwendet sie nicht.
 
 Mit 0.21.0 greift die Lesesperre auch für Shell-Befehle. Zwei Ursachen hoben sie zusammen auf.
 
@@ -405,10 +422,11 @@ Bedingung vertretbar; entschieden ist keine von beiden.
 **Erledigt – die Akteursbezeichnung ist aus dem Kern gelöst (0.18.0).** Nicht 76 Nennungen in
 elf Modulen, wie hier bis 0.17.0 stand, sondern **248 in 78 Dateien**: Die Zahl war allein aus
 `framework/core/` erhoben, während die Kerndefinition des Glossars zehn Verzeichnisse umfasst.
-Gelöst mit `CR-2026-020` und D-28, durchgesetzt von Prüfung 14. Ausgewiesen und offen geblieben:
-der Dateiname `decision-trees/02-may-devin-do-task.md`, der Marker
-`<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` an fünf Kernstellen und die clientspezifischen
-Inhalte der Zeile „Umsetzung beim KI-Client" in `05-working-model.md`.
+Gelöst mit `CR-2026-020` und D-28, durchgesetzt von Prüfung 14. Die drei damals ausgewiesenen
+Restpunkte sind mit 0.22.0 abgearbeitet, bis auf einen: Die clientspezifischen Inhalte der Zeile
+„Umsetzung beim KI-Client" in `05-working-model.md` (`~/.devin/plans/`, `subagent_explore`) bleiben
+client-gebunden – sie beschreiben, was ein bestimmter Client kann, und gehören damit in dessen
+Fähigkeitsmatrix. Das ist ein eigener Vorgang.
 
 **Erledigt – Prüfung 13 prüft die Versionsfelder der Kernartefakte (0.20.0).**
 `CR-2026-022`. Drei Sonden, zwei Grenzproben, zwei Regressionsproben. Offen bleibt die Frage,
@@ -495,7 +513,7 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 
 | Feld | Inhalt |
 |---|---|
-| Ziel | Alle `[DOK]`/`[EMPF]`-Mechanismen und alle `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`-Marker in einer realen Installation bestätigt oder korrigiert |
+| Ziel | Alle `[DOK]`/`[EMPF]`-Mechanismen und alle `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`-Marker in einer realen Installation bestätigt oder korrigiert |
 | Aktivitäten | Testinstallation (Zielversion notieren); prüfen: AGENTS.md-Laden, `.devin/rules`-Trigger, Zeichenlimits, Skill-Discovery (`.devin/skills/` und `.agents/skills/`), `/skill`-Aufruf, `config.json`-Schema und Muster-Semantik, Session-Grant-Stufen, Hook-Schema (stdin-Felder, Blockierung) und danach `FW_HOOK_FAIL_CLOSED=1` als Standard setzen, Subagent-Profile, Plan-Modus-Dateien, MCP-Konfigurationsdateien, Sandbox-Verhalten je Betriebssystem, Enterprise-Einstellungen; Belegstatus-Tabelle und betroffene Dateien aktualisieren |
 | Eingaben | Referenzimplementierung 0.1.0; offizielle Dokumentation; Quellenliste des Hauptdokuments |
 | Ergebnisse | Validierungsprotokoll je Mechanismus (FW-AK-02-Format); aktualisierte Marker; CRs für Abweichungen |

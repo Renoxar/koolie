@@ -10,7 +10,7 @@ Sechs Entscheidungsbäume beantworten die wiederkehrenden Weichenfragen des Allt
 
 ## 23.2 Baum 2 – Darf der KI-Client diese Aufgabe bearbeiten?
 
-{{EMBED-RAW:leitwerk-core/decision-trees/02-may-devin-do-task.md:2}}
+{{EMBED-RAW:leitwerk-core/decision-trees/02-may-ai-do-task.md:2}}
 
 ## 23.3 Baum 3 – Darf der Assistent nur analysieren oder auch ändern?
 

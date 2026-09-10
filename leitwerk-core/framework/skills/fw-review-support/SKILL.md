@@ -34,7 +34,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-010` |
 | Name | `fw-review-support` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis (mit freigegebenen lesenden Git-Befehlen) |
@@ -74,7 +74,7 @@ triggers:
 
 **Ausgeschlossene Informationen:** K3 gemäß `leitwerk-core/framework/core/02-privacy.md`; Inhalte aus `<EXCLUDED_PATHS>` (auch wenn sie im Diff enthalten sind); Autoren-, E-Mail- und Zeitstempelangaben aus der Git-Historie; Ticket-Kommentare, Anhänge und Kundenkommunikation; Kommentare anderer Reviewerinnen und Reviewer aus dem Review-Werkzeug.
 
-(Erläuterung) Die `permissions`-Regeln im Frontmatter verwenden die Muster-Syntax der Berechtigungskonfiguration (`<PERMISSIONS_FILE>`); ihre Wirkung auf Skill-Ebene ist zu prüfen: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`.
+(Erläuterung) Die `permissions`-Regeln im Frontmatter verwenden die Muster-Syntax der Berechtigungskonfiguration (`<PERMISSIONS_FILE>`); ihre Wirkung auf Skill-Ebene ist zu prüfen: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
 
 ## 3. Arbeitsschritte
 
@@ -88,7 +88,7 @@ triggers:
 8. Verhaltensäquivalenz und Testaussagekraft (RV3, RV4): geänderte Randbedingungen und Fehlerbehandlung bei Refaktorisierungen; neue oder geänderte Tests auf entfernte oder abgeschwächte Assertions, reine Mock-Verifikation und fehlende Fehlerfälle; geänderte Logik ohne begleitenden Test (Q2) als Befund.
 9. Sicherheit und Datenschutz (RV7, RV8): neue Code-Pfade auf Eingabevalidierung, Autorisierungsprüfung, Fehlermeldungen mit Interna, Logging sensibler Daten, hartcodierte Geheimnisse sowie neue Verarbeitung oder Ausgabe personenbezogener Daten prüfen. Berührt der Diff Authentifizierung, Autorisierung, Kryptografie oder Sitzungsverwaltung: Kontrollstufe hoch (R3, R10) melden und Einbindung von `<SECURITY_CONTACT>` empfehlen.
 10. Verständlichkeit, Dokumentation und offene Punkte (RV10–RV12): unbegründete Muster, Kommentare aus fremdem Kontext, Inkonsistenz zwischen Commit-Betreff, Dokumentation und Änderung, verbliebene TODO-Marker und nicht adressierte Annahmen aus dem Ergebnisbericht.
-11. Befunde ordnen. Schwere als Vorschlag: hoch = schließt eine Übernahme ohne Korrektur aus (Scope-Verletzung, K3-Fund, Sicherheits- oder Datenschutzlücke, geänderte Abhängigkeiten oder Quality Gates, nicht belegbare Schnittstelle, falsche Fundstelle); mittel = vor Übernahme zu klären (Testaussagekraft, Verhaltensabweichung, fehlende Tests); niedrig = Verständlichkeit, Dokumentation, Konsistenz. Für eine unabhängige Zweitprüfung einzelner Dateien KANN das nur lesende Subagent-Profil `fw-reviewer` (`<AGENTS_DIR>/fw-reviewer.md`) verwendet werden; dessen Befunde gelten ebenfalls als ungeprüft, die Nutzung wird im Ergebnisbericht vermerkt (Risikofaktor R12). Aufrufweg aus einem Skill heraus: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`.
+11. Befunde ordnen. Schwere als Vorschlag: hoch = schließt eine Übernahme ohne Korrektur aus (Scope-Verletzung, K3-Fund, Sicherheits- oder Datenschutzlücke, geänderte Abhängigkeiten oder Quality Gates, nicht belegbare Schnittstelle, falsche Fundstelle); mittel = vor Übernahme zu klären (Testaussagekraft, Verhaltensabweichung, fehlende Tests); niedrig = Verständlichkeit, Dokumentation, Konsistenz. Für eine unabhängige Zweitprüfung einzelner Dateien KANN das nur lesende Subagent-Profil `fw-reviewer` (`<AGENTS_DIR>/fw-reviewer.md`) verwendet werden; dessen Befunde gelten ebenfalls als ungeprüft, die Nutzung wird im Ergebnisbericht vermerkt (Risikofaktor R12). Aufrufweg aus einem Skill heraus: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
 12. Ergebnis im Ausgabeformat erzeugen; Ergebnisbericht gemäß `leitwerk-core/framework/core/05-working-model.md` Abschnitt 3.6 anhängen.
 
 ## 4. Grenzen und Rückfragenregeln

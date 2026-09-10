@@ -37,7 +37,7 @@
 | Merge Request | Änderungsvorschlag mit Review im Git-Prozess (plattformneutral; synonym Pull Request) |
 | MUSS / SOLL / KANN / DARF NICHT | Verbindlichkeitsstufen des Frameworks (Kap. 6) |
 | Belegstatus `[DOK]` / `[EMPF]` / `[KONZ]` | Kennzeichnung produktbezogener Aussagen: offiziell dokumentiert / begründete, noch nicht installationsgeprüfte Empfehlung / konzeptioneller Vorschlag |
-| `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` | Marker für Aussagen mit offenem Prüfbedarf gegen die aktuelle Produktdokumentation |
+| `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` | Marker für Aussagen mit offenem Prüfbedarf gegen die aktuelle Produktdokumentation |
 | `<TBD: …>` | offene projekt- oder organisationsspezifische Entscheidung |
 | Platzhalter | registrierte variable Bezeichner in spitzen Klammern (Anhang 31.2) |
 | RACI | Verantwortungsmodell: Responsible, Accountable, Consulted, Informed (Kap. 25) |

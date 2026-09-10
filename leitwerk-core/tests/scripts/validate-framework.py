@@ -1143,6 +1143,46 @@ def check_actor_naming(root: str) -> None:
                 f"Text den Produktnamen tragen, steht dort <CLIENT_NAME>")
 
 
+# Ein Platzhalter, der einen Clientnamen traegt, bindet den Kern genauso an ein Produkt
+# wie eine Akteursnennung - nur faellt er dort nicht auf, weil er in Grossbuchstaben
+# steht. Das Register selbst ist ausgenommen: Es nennt Platzhalter, es verwendet sie nicht.
+PLATZHALTER_RE = re.compile(r"<([A-Z][A-Z0-9_ ]{2,80})>")
+PLATZHALTER_AUSNAHMEN = (KERN + "/docs/PLACEHOLDER_REGISTRY.md",)
+
+
+def check_placeholder_naming(root: str) -> None:
+    """Teil von Pruefung 14: Kein Platzhalter des Kerns traegt einen Clientnamen.
+
+    Der Marker 'VERIFY AGAINST CURRENT <name> DOCUMENTATION' stand acht Releases im Kern,
+    obwohl die clientneutrale Form daneben im Register gefuehrt wurde. Die Akteurspruefung
+    fand ihn nicht: Sie sucht den kapitalisierten Namen, der Marker schreibt ihn gross.
+    """
+    namen = _client_actor_names(root)
+    if not namen:
+        return
+    gesucht = {k.upper() for k, _ in namen}
+    for path in iter_text_files(root):
+        if not path.endswith((".md", ".py", ".template")):
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith(KERN + "/") or rel.startswith(KERN + "/clients/"):
+            continue
+        if (rel.startswith(ACTOR_HISTORY) or rel in PLATZHALTER_AUSNAHMEN
+                or os.path.basename(rel) in ACTOR_HISTORY_BASENAMES):
+            continue
+        for i, zeile in enumerate(read(path).splitlines(), 1):
+            for m in PLATZHALTER_RE.finditer(zeile):
+                # An Leerzeichen UND Unterstrichen trennen: Ein Platzhalter wie
+                # 'NAME_PROJECT_DIR' bindet genauso an ein Produkt wie einer, der den
+                # Namen als eigenes Wort fuehrt.
+                treffer = gesucht & set(re.split(r"[ _]+", m.group(1)))
+                if treffer:
+                    err(f"{rel}:{i}: Der Platzhalter <{m.group(1)}> traegt den Clientnamen "
+                        f"'{sorted(treffer)[0]}'. Ein Platzhalter bindet den Kern damit an ein "
+                        f"Produkt (D-02); die clientneutrale Form gehoert in den Kern, die "
+                        f"clientgebundene in das Client Pack")
+
+
 # Pruefung 15: Der Interpreter der Hook-Aufrufe startet auf dieser Maschine wirklich
 # Python. Geprueft wird die Wirkung, nicht die Anwesenheit des Namens (AP2-CC-13).
 HOOK_SONDE = "LEITWERK-INTERPRETER-OK"
@@ -1327,6 +1367,7 @@ def main() -> int:
     check_versions(root, man)
     check_artefakt_versionen(root)
     check_actor_naming(root)
+    check_placeholder_naming(root)
     check_hook_interpreter(root, man)
     check_hook_tool_coverage(root, man)
     if args.strict_overlay:

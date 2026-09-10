@@ -3,7 +3,7 @@
 Framework-Hook: PreToolUse-Prüfung auf Secrets und geschützte Pfade.
 
 Status: entwurf (Belegstatus des Hook-Mechanismus: [DOK]; Eingabeschema des Hooks:
-<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>). Das Skript ist bewusst schema-agnostisch:
+<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>). Das Skript ist bewusst schema-agnostisch:
 Es durchsucht alle Zeichenketten der über stdin gelieferten JSON-Struktur.
 
 Verhalten:

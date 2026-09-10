@@ -2,6 +2,37 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.22.0] - 2026-09-10
+
+### Behoben
+- **Die letzten Client-Bindungen des Kerns (`CR-2026-024`).** `CR-2026-020` hatte drei Restpunkte ausdruecklich ausgewiesen; zwei davon sind jetzt abgearbeitet.
+
+  **Die Zaehlung war wieder zu niedrig.** Der Antrag fuehrte den Marker „an fuenf Kernstellen". Tatsaechlich waren es **acht** in Markdown-Dateien und **zwei weitere in den Kernskripten** – letztere hatte die manuelle Zaehlung uebersehen, weil sie nur `*.md` durchsucht hatte. Gefunden hat sie erst die neue Pruefung. Dasselbe Muster wie bei `CR-2026-020` selbst, wo die Roadmap 76 Nennungen fuehrte und es 248 waren: **Eine von Hand erhobene Zahl ueber den eigenen Zustand faellt zu klein aus**, weil man dort zaehlt, wo man den Fehler vermutet.
+
+  **Warum Pruefung 14 den Marker nicht fand:** Sie sucht den **kapitalisierten** Clientnamen; ein Platzhalter schreibt ihn **gross**.
+
+### Geaendert
+- **Der Entscheidungsbaum heisst `02-may-ai-do-task.md`.** Fuenf Verweise nachgezogen; historische Dokumente behalten den alten Namen.
+- **Zehn Markerstellen tragen die neutrale Form** `VERIFY AGAINST CURRENT CLIENT DOCUMENTATION`, die das Platzhalterregister bereits fuehrte. Im Client Pack `devin-desktop` bleibt die clientgebundene Form – dort ist sie richtig.
+- **Das Register sagt jetzt, welche Form wohin gehoert:** die clientgebundene als Altform „nur in einem Client Pack zulaessig", die neutrale als „die im Kern zu verwendende Form".
+- **Neun Artefakte um eine PATCH-Stelle gehoben**, zwei Skills mit Eintrag im eigenen Aenderungsverlauf – konsequent zu E3 aus `CR-2026-020`.
+
+### Hinzugefuegt
+- **Pruefung 14 erfasst zusaetzlich Platzhalter mit Clientnamen.** Getrennt wird an Leerzeichen **und Unterstrichen**; das Register ist ausgenommen, denn es nennt Platzhalter, es verwendet sie nicht. Die Grossform des Namens wird **nicht** pauschal verboten – `CLAUDE.md` ist ein Dateiname, `DEVIN_PROJECT_DIR` eine Umgebungsvariable des Clients, und beide stehen zu Recht in Abbildungstabellen.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs.
+- **Drei Sonden, fuenf Grenzproben, drei Regressionsproben** (`tests/protocols/2026-09-10-CR-2026-024-clientbindungen.md`).
+- **Sonde S2 war zunaechst still** – die erste Fassung trennte den Platzhalternamen nur an Leerzeichen, sodass ein Name mit Unterstrich ein einziges Token blieb. Ohne diese Sonde waere die Pruefung mit einer Luecke ausgeliefert worden, die die Haelfte der Faelle betrifft.
+- **Dreimal meldete eine neu gebaute Pruefung ihren eigenen Erklaertext** – den Absatz in der Roadmap, den Docstring, den Kommentar ueber der Trennregel. Jedes Mal zu Recht: Wer einen Namen im Kern verbietet, verbietet ihn auch in der eigenen Begruendung.
+
+### Migrationshinweise fuer Overlays
+Keine technische Migration. Ein Overlay, das auf `decision-trees/02-may-devin-do-task.md` verweist, zieht den Namen von Hand nach; das Framework schreibt Ebene 4 nichts vor.
+
+### Bekannte Einschraenkungen
+- **Der dritte Restpunkt aus `CR-2026-020` bleibt offen.** Die Zeile „Umsetzung beim KI-Client" in `05-working-model.md` nennt weiterhin `~/.devin/plans/` und `subagent_explore`. Das ist keine Bezeichnungsfrage: Der Kern beschreibt dort, **was ein bestimmter Client kann** – das gehoert in dessen Faehigkeitsmatrix und ist ein eigener Vorgang.
+- **Nur Platzhalter werden erfasst.** Eine Client-Bindung ausserhalb spitzer Klammern und ausserhalb der kapitalisierten Form bleibt unerkannt – die bewusste Grenze aus E2.
+
 ## [0.21.0] - 2026-09-10
 
 ### Behoben

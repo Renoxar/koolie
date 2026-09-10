@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 
 ## 0. Konventionen dieses Frameworks
 
@@ -29,7 +29,7 @@ Jede Aussage über Devin Desktop trägt einen Belegstatus:
 | `[DOK]` | Offiziell dokumentierter Mechanismus (Quelle im Anhang „Quellen und Verifikationsbedarf" des Hauptdokuments). |
 | `[EMPF]` | Technisch begründete Empfehlung, abgeleitet aus dokumentierten Mechanismen und auf Konsistenz geprüft, aber noch nicht in einer Zielinstallation ausgeführt. |
 | `[KONZ]` | Konzeptioneller Vorschlag des Frameworks ohne Produktbezug. |
-| `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` | Noch zu verifizieren; darf nicht als Tatsache behandelt werden. |
+| `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` | Noch zu verifizieren; darf nicht als Tatsache behandelt werden. |
 
 ### 0.3 Platzhalter (normativ)
 
