@@ -31,7 +31,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Übernahme belegt | Übungsrepository von 0.4.0 auf 0.10.0 gehoben – sechs Releases in einem Schritt, ein Handgriff von Hand; Kriterium 5 von D-11 technisch belegt | `FW-RE-02`, `tests/protocols/2026-09-10-FW-RE-02.md` |
 | Prüfungen, die prüfen | Vier Blindstellen des Validators behoben; ein Testfall gilt erst mit Wirksamkeitsnachweis als bestanden | D-23, `CR-2026-013`, `tests/protocols/2026-09-10-FW-KO-01.md` |
 | Kurzform trägt | Sieben Abweichungen zwischen geladener Kurzform und kanonischer Langform behoben; Laufzeitschicht ohne Client-Bindung | D-24, `CR-2026-014`, `tests/protocols/2026-09-10-FW-KO-02.md` |
-| Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01.md` |
+| Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben; der dritte Review-Testfall ist bestanden | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
@@ -109,22 +109,22 @@ genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` p
 Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
 Zusage ist mit `FW-ZA-05` bereits belegt.
 
-**P2 – Testkatalog ausführen.** 30 von 37 Testfällen stehen auf `offen`, einer auf
-`fehlgeschlagen`. Kriterium 2 von D-11. Die skriptbaren Testfälle sind abgearbeitet und zwei
-Review-Testfälle dazu: `FW-KO-01`, `FW-KO-02`, `FW-KO-04`, `FW-DS-03`, `FW-ZA-05` und `FW-RE-02`
-sind bestanden und protokolliert, `FW-VN-01` ist durchgeführt und fehlgeschlagen.
+**P2 – Testkatalog ausführen.** 30 von 37 Testfällen stehen auf `offen`, keiner auf
+`fehlgeschlagen`. Kriterium 2 von D-11. Die skriptbaren Testfälle sind abgearbeitet und alle
+drei bisher ausführbaren Review-Testfälle dazu: `FW-KO-01`, `FW-KO-02`, `FW-KO-04`, `FW-DS-03`,
+`FW-ZA-05`, `FW-RE-02` und `FW-VN-01` sind bestanden und protokolliert.
 
 `FW-KO-02` ist durchgeführt, seine sieben Befunde sind behoben und die Gegenzeichnung durch
 `<FRAMEWORK_OWNER>` liegt vor – damit `bestanden`.
 
-`FW-VN-01` (Versionskette) ist durchgeführt und steht auf **`fehlgeschlagen`**: neun Befunde,
-fünf davon durch Sonden belegt (`tests/protocols/2026-09-10-FW-VN-01.md`). **Die Befunde sind
-mit `CR-2026-015` behoben**, der Wiederholungslauf meldet alle fünf Sonden
-(`tests/protocols/2026-09-10-FW-VN-01-wiederholung.md`), und die beiden
-Ermessensentscheidungen E1 und E2 sind getroffen. **Offen ist allein die Gegenzeichnung durch
-die zweite Rolle** – die Prüfmethode `review` verlangt sie, und ein grüner Lauf ersetzt sie
-nicht. Mit ihr wechselt der Status auf `bestanden`; dann stehen sieben Testfälle auf
-`bestanden` und keiner mehr auf `fehlgeschlagen`.
+`FW-VN-01` (Versionskette) ist `bestanden`. Der Lauf ergab neun Befunde, fünf davon durch Sonden
+belegt (`tests/protocols/2026-09-10-FW-VN-01.md`); sie sind mit `CR-2026-015` behoben, der
+Wiederholungslauf meldet alle fünf Sonden
+(`tests/protocols/2026-09-10-FW-VN-01-wiederholung.md`), und die Gegenzeichnung liegt vor. Die
+beiden Ermessensentscheidungen wurden einzeln vorgelegt und entschieden: E1 – Abschnitt 1.2 des
+Release-Prozesses einschränken statt in 35 Artefakten einlösen; E2 – Skill-Versionen anheben und
+die daraus folgende Testpflicht bis AP2 offen tragen. Der Vorlauf behält seinen Ergebnisstatus
+`fehlgeschlagen`; er hält fest, was der Testfall vorgefunden hat.
 
 **Folgearbeit aus der Versionsanhebung (P2).** `08-skill-conventions.md` Abschnitt 7 verlangt
 bei jeder Versionsänderung die erneute Ausführung der Testfälle in `TESTS.md` je Skill. Durch
@@ -137,12 +137,24 @@ Ohne reale Installation bleibt `FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle
 Herstellerdokumentation – braucht Zugang zu dieser Dokumentation). Alles Übrige sind
 Sitzungstests und hängt an AP2.
 
-**P2 – Übungsrepository auf 0.13.0 nachziehen.** Ein `install.py --update`. Der bisherige
-Punkt („auf 0.11.0 nachziehen") war erledigt: Das Repository stand beim Ausführen von
-`FW-VN-01` bereits auf 0.12.0 (Commit `a4ff67d`), Overlay-Version, Manifest und
-Laufzeitfassung übereinstimmend auf `0.12.0`, der Steckbrief auf `0.12.x`. Beim Nachziehen auf
-0.13.0 ist die Steckbriefzeile auf `0.13.x` zu setzen – die neue Prüfung 13 fordert das ein,
-statt es nur zu empfehlen.
+**Erledigt – Übungsrepository auf 0.13.0.** `install.py --update` hat 39 Core-Dateien erneuert
+und die 20 Projektdateien unangetastet gelassen; die Berechtigungsdatei war nicht betroffen.
+**Prüfung 13 hat beim ersten Lauf gegen den neuen Kern genau einen Fehler gemeldet** – die
+Steckbriefangabe stand noch auf `0.12.x` – und damit im ersten Praxisfall geleistet, wofür sie
+gebaut wurde.
+
+Der Fund dieser Aktualisierung liegt aber außerhalb dessen, was der Validator sehen kann: Die
+Merge-Request-Vorlage des Projekts trug im Beispielblock die **festen** Werte
+`Framework-Version: 0.2.0 · Overlay-Version: 0.1.0` und war damit über elf Releases hinweg
+falsch – in genau der Datei, aus der die Nachweiskette in jeden Merge Request übernommen wird.
+Derselbe Befund wie `FW-VN-01` im Framework, projektseitig und außerhalb der Reichweite jeder
+Prüfung, weil die Vorlage dem Projekt gehört. `ADOPTION_GUIDE` Schritt 3 empfiehlt jetzt
+Platzhalter statt Werte; die Vorlage des Übungsrepositorys ist entsprechend umgestellt.
+
+**Zu erwägen (P3):** ob der Validator eine im Overlay registrierte Merge-Request-Vorlage
+(`<MR_TEMPLATE_PATH>`) auf feste Versionswerte prüfen soll. Dagegen spricht, dass die Vorlage
+Ebene 4 ist und das Framework ihr Format nicht vorschreibt; dafür spricht D-25 – ein von Hand
+gepflegter Wert ohne Prüfung veraltet.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so

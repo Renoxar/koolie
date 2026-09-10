@@ -28,7 +28,7 @@ Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Ove
 
 ### Nachweise
 - **`FW-VN-01` durchgeführt**, neun Befunde, fünf davon durch Sonden belegt. Protokoll mit vollständiger Befundtabelle, Sondenlauf und den beiden Ermessensentscheidungen: `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01.md`. Wiederholungslauf nach der Behebung: `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` – alle fünf Sonden gemeldet.
-- **`FW-VN-01` steht weiterhin auf `fehlgeschlagen`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**. Die beiden Auflösungen mit Ermessensspielraum sind entschieden (E1: Abschnitt 1.2 einschränken; E2: Skill-Versionen anheben), die Abnahme des Reviews steht aus. Der Status wechselt erst mit der Gegenzeichnung.
+- **`FW-VN-01` ist `bestanden`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle** – ein grüner Lauf ersetzt sie nicht. `<FRAMEWORK_OWNER>` hat die Befunde und ihre Behebung am selben Tag angesehen, akzeptiert und abgezeichnet; die beiden Auflösungen mit Ermessensspielraum wurden einzeln vorgelegt und entschieden (E1: Abschnitt 1.2 einschränken statt in 35 Artefakten einlösen; E2: Skill-Versionen anheben). Nachgetragen nach dem Merge des Releases. Der Vorlauf behält seinen Ergebnisstatus `fehlgeschlagen` – er hält fest, was der Testfall vorgefunden hat.
 - Validator, `FW-KO-04` und `install.py --check`: 0 Fehler, 0 Warnungen (PyYAML 6.0.3 installiert).
 
 ### Migrationshinweise für Overlays
@@ -37,7 +37,11 @@ Prüfung 13 kann in einem bestehenden Projekt Fehler melden, deren Ursache älte
 1. **„Kompatible Framework-Version passt nicht zu VERSION":** Steckbriefzeile in `project-overlay/OVERLAY.md` auf `0.13.x` setzen (`docs/ADOPTION_GUIDE.md`, Abschnitt Aktualisierung).
 2. **„Overlay-Version widersprüchlich angegeben":** Die Meldung nennt alle drei Werte mit Fundstelle – Steckbrief, `overlay-manifest.yaml` und die Laufzeitfassung `20-project-overlay.md` – und den abweichenden. Es ist der Wert nachzuziehen, nicht die Prüfung.
 
-`templates/MR_AI_DISCLOSURE.md` ist **Saat**: Ein bestehendes Projekt behält seine Fassung. Die beiden neuen Zeilen der Kurzform und die clientneutrale Überschrift sind von Hand nachzuziehen; ein Unterlassen bricht nichts, lässt aber die Lücke bestehen, die `FW-VN-01` gefunden hat.
+3. **Die Bezeichnung des Nutzungsvermerks in Projektdateien.** `templates/MR_AI_DISCLOSURE.md` liegt im Kernverzeichnis und wird mit ihm ersetzt – dort ist kein Handgriff nötig. Nachzuziehen sind die **Projektdateien**, die den Vermerk nennen oder zitieren: die Merge-Request-Vorlage unter `<MR_TEMPLATE_PATH>`, das Overlay selbst, projekteigene Dokumente wie die Definition of Done und das `README`. Im Übungsrepository waren es fünf Stellen in vier Dateien.
+
+> **Korrigierter Hinweis.** Die erste Fassung dieses Abschnitts bezeichnete `MR_AI_DISCLOSURE.md` als Saat und verlangte, die Vorlage von Hand nachzuziehen. Das ist falsch: Die Datei ist Kernbestandteil. Aufgefallen ist es beim Nachziehen des Übungsrepositorys auf 0.13.0.
+
+**Nebenbefund aus derselben Aktualisierung, für jedes übernehmende Projekt relevant:** Die Merge-Request-Vorlage des Übungsrepositorys trug im Beispielblock die **festen** Werte `Framework-Version: 0.2.0 · Overlay-Version: 0.1.0` und war damit über elf Releases hinweg falsch – in genau der Datei, aus der die Nachweiskette in jeden Merge Request übernommen wird. Eine Merge-Request-Vorlage sollte an dieser Stelle Platzhalter tragen, keine Werte. Das ist derselbe Befund, den `FW-VN-01` im Framework beschrieben hat, projektseitig: Ein Wert, der von Hand gepflegt wird und keine Prüfung hinter sich hat, veraltet.
 
 ### Bekannte Einschränkungen
 - **Die Testfälle der 13 Skills sind wegen der Versionsanhebung erneut auszuführen** (`08-skill-conventions.md` Abschnitt 7). Sie sind sämtlich `sitzung` und hängen an AP2; bis dahin bleibt die Pflicht offen. Das war der Preis der Entscheidung E2 und ist so vorgelegt worden: Eine offene Testpflicht ist in AP2 sichtbar, eine nichtssagende Versionsangabe nicht.

@@ -71,13 +71,16 @@ gemeldet. Die Kette hält damit nicht mehr nur durch Sorgfalt: Vier ihrer Angabe
 Validator gegeneinander prüfen, und die fünfte – der Nutzungsvermerk – nennt bei jeder
 Kontrollstufe eine Version, die sich bewegt.
 
-**Ergebnisstatus: weiterhin `fehlgeschlagen`, bis die Gegenzeichnung vorliegt.**
+**Ergebnisstatus: `bestanden`.**
 
-Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**. Die beiden
-Auflösungen mit Ermessensspielraum sind entschieden – E1: Abschnitt 1.2 wird eingeschränkt;
-E2: die Skill-Versionen werden angehoben –, die Abnahme des Reviews selbst steht aus. Eine
-Selbstbestätigung der erstellenden Rolle ist kein Review; der Status wechselt nicht dadurch,
-dass der Lauf grün ist.
+Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**; ein grüner
+Lauf ersetzt sie nicht. `<FRAMEWORK_OWNER>` hat die Befunde des Vorlaufs und ihre Behebung am
+2026-09-10 angesehen, die beiden Auflösungen mit Ermessensspielraum einzeln entschieden – E1:
+Abschnitt 1.2 wird eingeschränkt; E2: die Skill-Versionen werden angehoben – und das Ergebnis
+abgezeichnet (siehe Gegenzeichnung).
+
+Damit sind alle drei Bedingungen aus D-23 erfüllt: grüner Lauf, Wirksamkeitsnachweis, und bei
+Prüfmethode `review` zusätzlich die zweite Rolle.
 
 ## Bekannte Grenzen
 
@@ -97,5 +100,9 @@ Rollen statt Personen (`framework/runtime/rules/20-project-overlay.md`).
 
 | Rolle | Datum | Ergebnis |
 |---|---|---|
-| Ersteller des Reviews (KI-gestützt, Sitzung) | 2026-09-10 | neun Befunde behoben; fünf Sonden gemeldet; Ergebnisstatus bleibt `fehlgeschlagen` bis zur Gegenzeichnung |
-| Zweite Rolle: `<FRAMEWORK_OWNER>` | `<TBD: Datum>` | E1 entschieden: Abschnitt 1.2 auf Overlay und Client Pack einschränken. E2 entschieden: Skill-Versionen anheben. `<TBD: Review abgenommen / Einwände>` |
+| Ersteller des Reviews (KI-gestützt, Sitzung) | 2026-09-10 | neun Befunde behoben; fünf Sonden gemeldet |
+| Zweite Rolle: `<FRAMEWORK_OWNER>` | 2026-09-10 | Review abgenommen, keine Einwände. **E1 entschieden:** Abschnitt 1.2 auf Overlay und Client Pack einschränken. **E2 entschieden:** Skill-Versionen anheben; die daraus folgende Testpflicht bleibt bis AP2 offen und ist in der Roadmap vermerkt. `FW-VN-01` steht damit auf `bestanden` |
+
+Nachgetragen nach dem Merge des Releases 0.13.0 – wie bei `FW-KO-02`. Der Wortlaut des
+Wiederholungslaufs oberhalb dieser Zeile ist unverändert; ergänzt sind allein die Abnahme und
+der daraus folgende Ergebnisstatus.

@@ -146,5 +146,5 @@ historische Belege und dürfen nicht rückwirkend geglättet werden.
 - [x] V9: Kurzform des Vermerks nennt Framework- und Overlay-Version; beide Beispiele nachgezogen
 - [x] Wiederholungslauf `FW-VN-01`: alle fünf Sonden gemeldet, Ausgangs- und Schlusslauf 0 Fehler
 - [x] Validator, `FW-KO-04` und `install.py --check`: 0 Fehler, 0 Warnungen
-- [ ] **Gegenzeichnung** durch `<FRAMEWORK_OWNER>` – E1 und E2 sind entschieden, die Abnahme des Reviews steht aus. Bis dahin bleibt `FW-VN-01` auf `fehlgeschlagen`
+- [x] **Gegenzeichnung** durch `<FRAMEWORK_OWNER>` am 2026-09-10 erfolgt; die beiden Auflösungen mit Ermessensspielraum wurden einzeln vorgelegt und entschieden (E1: Abschnitt 1.2 einschränken statt einlösen; E2: Skill-Versionen anheben). `FW-VN-01` steht damit auf `bestanden`. Nachgetragen nach dem Merge des Releases
 - [ ] **Folgearbeit:** Die Testfälle in `TESTS.md` je Skill sind wegen der Versionsanhebung erneut auszuführen (`08-skill-conventions.md` Abschnitt 7). Sie sind sämtlich `sitzung` und hängen an AP2; in der Roadmap vermerkt
