@@ -137,12 +137,24 @@ Ohne reale Installation bleibt `FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle
 Herstellerdokumentation – braucht Zugang zu dieser Dokumentation). Alles Übrige sind
 Sitzungstests und hängt an AP2.
 
-**P2 – Übungsrepository auf 0.13.0 nachziehen.** Ein `install.py --update`. Der bisherige
-Punkt („auf 0.11.0 nachziehen") war erledigt: Das Repository stand beim Ausführen von
-`FW-VN-01` bereits auf 0.12.0 (Commit `a4ff67d`), Overlay-Version, Manifest und
-Laufzeitfassung übereinstimmend auf `0.12.0`, der Steckbrief auf `0.12.x`. Beim Nachziehen auf
-0.13.0 ist die Steckbriefzeile auf `0.13.x` zu setzen – die neue Prüfung 13 fordert das ein,
-statt es nur zu empfehlen.
+**Erledigt – Übungsrepository auf 0.13.0.** `install.py --update` hat 39 Core-Dateien erneuert
+und die 20 Projektdateien unangetastet gelassen; die Berechtigungsdatei war nicht betroffen.
+**Prüfung 13 hat beim ersten Lauf gegen den neuen Kern genau einen Fehler gemeldet** – die
+Steckbriefangabe stand noch auf `0.12.x` – und damit im ersten Praxisfall geleistet, wofür sie
+gebaut wurde.
+
+Der Fund dieser Aktualisierung liegt aber außerhalb dessen, was der Validator sehen kann: Die
+Merge-Request-Vorlage des Projekts trug im Beispielblock die **festen** Werte
+`Framework-Version: 0.2.0 · Overlay-Version: 0.1.0` und war damit über elf Releases hinweg
+falsch – in genau der Datei, aus der die Nachweiskette in jeden Merge Request übernommen wird.
+Derselbe Befund wie `FW-VN-01` im Framework, projektseitig und außerhalb der Reichweite jeder
+Prüfung, weil die Vorlage dem Projekt gehört. `ADOPTION_GUIDE` Schritt 3 empfiehlt jetzt
+Platzhalter statt Werte; die Vorlage des Übungsrepositorys ist entsprechend umgestellt.
+
+**Zu erwägen (P3):** ob der Validator eine im Overlay registrierte Merge-Request-Vorlage
+(`<MR_TEMPLATE_PATH>`) auf feste Versionswerte prüfen soll. Dagegen spricht, dass die Vorlage
+Ebene 4 ist und das Framework ihr Format nicht vorschreibt; dafür spricht D-25 – ein von Hand
+gepflegter Wert ohne Prüfung veraltet.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so

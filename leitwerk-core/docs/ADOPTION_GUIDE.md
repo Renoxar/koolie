@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.1` |
+| Version | `0.4.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `leitwerk-core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -153,6 +153,15 @@ bleibt unberührt (P10, Baum 6).
    ebenfalls darauf. Beim Wechsel von 0.4.0 auf 0.10.0 waren es 74 Nennungen in 19
    Projektdateien (`leitwerk-core/tests/protocols/2026-09-10-FW-RE-02.md`). Der Validator
    meldet davon nur, was er als Verweis erkennt – die Suche über das Projekt gehört dazu.
+
+   **Feste Versionswerte in Projektdateien sind dabei die unauffälligste Stelle.** Eine
+   Merge-Request-Vorlage, ein `README` oder ein Onboarding-Dokument, das die Framework- oder
+   Overlay-Version als **Wert** statt als Platzhalter nennt, veraltet mit dem nächsten Release,
+   ohne dass eine Prüfung anschlägt – der Validator kennt die Projektvorlage nicht. Im
+   Übungsrepository trug die Merge-Request-Vorlage über elf Releases hinweg
+   `Framework-Version: 0.2.0`, also genau in der Datei, aus der die Nachweiskette in jeden
+   Merge Request übernommen wird. Empfehlung: An dieser Stelle Platzhalter eintragen
+   (`<Inhalt der Datei leitwerk-core/VERSION>`), keine Werte.
 
 4. Validator (`--strict-overlay`) und Basistests erneut ausführen; bei MAJOR-Releases
    zusätzlich FW-RE-01/02.
