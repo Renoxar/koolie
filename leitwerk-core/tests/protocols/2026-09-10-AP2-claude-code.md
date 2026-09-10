@@ -204,24 +204,29 @@ den Weg über ein Subagentenprofil als ungeklärt. Das Framework liefert genau e
 (`fw-reviewer`), und es setzt das Feld nicht; ein Projekt könnte es setzen. **Nachgetragen mit
 Release 0.16.0** beim Abgleich der Quellenliste (`FW-AK-01`, `CR-2026-018`).
 
-## Offen – braucht eine Sitzung in der Testinstallation
+## Sitzungsnachweise – Stand nach den Wirkungsnachweisen (2026-09-10)
 
 Die folgenden Nachweise verlangen eine Sitzung, die **in** der Installation startet, weil
-Berechtigungen beim Sitzungsstart gelesen werden. Aus einer Sitzung mit einem anderen
-Arbeitsverzeichnis sind sie nicht führbar:
+Berechtigungen und Regeln beim Sitzungsstart gelesen werden. Sie sind mit
+`tests/protocols/2026-09-10-AP2-claude-code-wirkungsnachweise.md` teilweise geführt.
 
-| Nachweis | Erwartung |
-|---|---|
-| `FW-DS-02` – Read-Sperre wirkt | Eine `.env`-Testdatei ist nicht lesbar; Hinweis statt Inhalt |
-| B4 an der Wirkung | `Edit(leitwerk-core/**)` blockiert; die `Write(...)`-Regel erzeugt eine Startwarnung |
-| B7 / S4-Ersatz | Jede Schreiboperation löst eine Rückfrage aus |
-| R2 / R3 an der Wirkung | Eine Regel ohne `paths` steht im Kontext; eine Regel mit `paths` erst nach dem Lesen einer passenden Datei |
-| AP2-CC-12 – `permissionMode` im Subagentenprofil | Ein Profil mit `permissionMode: bypassPermissions` startet bei gesetztem `disableBypassPermissionsMode` nicht oder ohne den Modus |
-| `FW-ZA-06` – Schreibverbot auf den Kern in realer Installation | blockiert |
-| H2 – Hook blockiert mit Exit-Code 2 | Werkzeugausführung unterbleibt |
+| Nachweis | Erwartung | Stand |
+|---|---|---|
+| `FW-DS-02` – Read-Sperre wirkt | Eine `.env`-Testdatei ist nicht lesbar; Hinweis statt Inhalt | **belegt** (WN-5), technisch isoliert gegen die Anweisungsebene |
+| R2 / R3 an der Wirkung | Eine Regel ohne `paths` steht im Kontext; eine Regel mit `paths` erst nach dem Lesen einer passenden Datei | **belegt** (WN-2, WN-3) |
+| Startwarnungen aus AP2-CC-02 | keine Meldung über wirkungslose Regeln | **belegt** (WN-1) |
+| H2 – Hook blockiert mit Exit-Code 2 | Werkzeugausführung unterbleibt | **widerlegt unter Windows** – der Hook läuft nicht (AP2-CC-13) |
+| B4 an der Wirkung | `Edit(leitwerk-core/**)` blockiert | offen |
+| B7 / S4-Ersatz | Jede Schreiboperation löst eine Rückfrage aus | offen |
+| AP2-CC-12 – `permissionMode` im Subagentenprofil | Ein Profil mit `permissionMode: bypassPermissions` startet bei gesetztem `disableBypassPermissionsMode` nicht oder ohne den Modus | offen |
+| `FW-ZA-06` – Schreibverbot auf den Kern in realer Installation | blockiert | offen |
 
-Die Startwarnungen aus AP2-CC-02 sind dabei der einfachste Nachweis: Sie erscheinen ohne
-Zutun, sobald eine Sitzung in der Installation startet, und benennen jede wirkungslose Regel.
+Drei Befunde kamen bei den Nachweisen dazu: **AP2-CC-13** (beide Hooks laufen unter Windows
+nicht, Schwere hoch), **AP2-CC-14** (`allow`-Regeln wirken erst nach dem Vertrauensdialog) und
+**AP2-CC-15** (die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle). CC-13 und CC-15
+greifen ineinander: Was die `deny`-Liste beim Lesen über die Shell nicht abdeckt, finge der
+Schutz-Hook ab – und der läuft dort nicht.
+
 
 ## Bewertung
 
