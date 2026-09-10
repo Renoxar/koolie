@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 
 ## 1. Standardarbeitsablauf (normativ)
 
@@ -15,7 +15,7 @@ Jede KI-Aufgabe folgt den vierzehn Schritten. Schritte DÜRFEN NICHT übersprung
 | Nr. | Schritt | Verantwortung | Mindestinhalt | Referenz |
 |---|---|---|---|---|
 | 1 | Aufgabe verstehen | Mensch, dann KI-Client | Aufgabenziel, Erfolgskriterium, betroffener Bereich in eigenen Worten wiedergeben | `leitwerk-core/prompts/`, `leitwerk-core/checklists/01-preflight.md` |
-| 2 | Scope und Grenzen bestimmen | Mensch | Erlaubte Pfade, ausgeschlossene Pfade, Betriebsmodus, Kontrollstufe (`09-risk-model.md`) | `leitwerk-core/decision-trees/02-may-devin-do-task.md`, `03-analyze-or-modify.md` |
+| 2 | Scope und Grenzen bestimmen | Mensch | Erlaubte Pfade, ausgeschlossene Pfade, Betriebsmodus, Kontrollstufe (`09-risk-model.md`) | `leitwerk-core/decision-trees/02-may-ai-do-task.md`, `03-analyze-or-modify.md` |
 | 3 | Datenschutz und Kontextfreigabe prüfen | Mensch | Kontextklassen aller vorgesehenen Quellen prüfen (`02-privacy.md`); K3-Inhalte ausschließen | `leitwerk-core/checklists/02-privacy-context.md`, `leitwerk-core/decision-trees/01-context-allowed.md` |
 | 4 | Rückfragen und offene Punkte erfassen | KI-Client | Liste der Unklarheiten mit Auswirkung; keine Bearbeitung ungeklärter Punkte (P3) | – |
 | 5 | Relevanten Ist-Zustand analysieren | KI-Client | Nur die für die Aufgabe relevanten Dateien lesen; keine Änderungen (P4) | Skill `fw-repo-analyze` |

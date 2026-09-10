@@ -6,12 +6,12 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 
 ## 1. Ausgangslage (normativ)
 
 1. Jeder Inhalt, der dem KI-Client als Kontext bereitgestellt wird (geöffnete Dateien, per Erwähnung eingebundene Dateien, Suchergebnisse, Befehlsausgaben, eingefügter Text, Inhalte aus MCP-Werkzeugen, Inhalte in Spaces), verlässt den Arbeitsplatz und wird über die Infrastruktur des Anbieters und dessen Modellanbieter verarbeitet (Annahme A-04; Anbieterdokumentation: Opt-out aus Modelltraining auf kostenpflichtigen Plänen, danach Zero Data Retention bei den Modellanbietern; Enterprise-Kunden: kein Training ohne schriftliche Zustimmung `[DOK]`).
-2. Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`.
+2. Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
 3. Bis zum Vorliegen dieser Prüfung gilt die restriktivste Auslegung: Nur Kontextklasse K0 und K1 (Abschnitt 2) dürfen bereitgestellt werden, und nur, wenn die Organisation die Nutzung des Werkzeugs grundsätzlich freigegeben hat.
 
 ## 2. Kontextklassen (normativ)
@@ -51,7 +51,7 @@
 6. **Testdaten:** der KI-Client arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
 7. **Externe Quellen:** Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). Freigaben erfolgen domainbezogen über das Overlay und die Berechtigungskonfiguration (`Fetch(domain:...)` `[DOK]`).
 8. **MCP-Werkzeuge:** Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Standardmäßig fordert Devin Local vor jedem MCP-Aufruf eine Bestätigung an `[DOK]`; diese Einstellung DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist.
-9. **Spaces und geteilter Kontext:** Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
+9. **Spaces und geteilter Kontext:** Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
 10. **Persönliche Regeln:** Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht.
 
 ## 4. Freigabeverfahren für K2-Inhalte (normativ)

@@ -3,7 +3,7 @@
 Framework-Hook: SessionStart – Overlay-Status als Zusatzkontext melden.
 
 Status: entwurf. Hook-Mechanismus [DOK]; Ausgabeschema "hookSpecificOutput.additionalContext"
-laut Dokumentation [DOK], Details <VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>.
+laut Dokumentation [DOK], Details <VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>.
 
 Liest project-overlay/OVERLAY.md und .devin/rules/20-project-overlay.md, ermittelt den
 Overlay-Status (aktiv | inaktiv | unbekannt) und meldet ihn als Zusatzkontext. Bei Status

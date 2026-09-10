@@ -23,7 +23,7 @@ triggers:
      - Frontmatter: nur in der Clientdokumentation belegte Felder (name, description, argument-hint,
        allowed-tools, permissions, triggers; optional model, subagent, agent) [DOK]. Der Verzeichnisname
        ist der Aufrufname /<skill-name> [DOK]. Exakte Syntax von permissions im Skill:
-       <VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>.
+       <VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>.
      - Metadaten des Frameworks (ID, Version, Status, Owner) stehen in der Tabelle unten (D-08).
      - SKILL.md ist normativ und wird bei jedem Aufruf geladen: knapp halten (Least Context).
        Beispiele -> EXAMPLES.md, Testfälle -> TESTS.md, Änderungsverlauf -> CHANGELOG.md.
@@ -37,7 +37,7 @@ triggers:
 |---|---|
 | ID | `<FW-SK-NNN / PRJ-SK-NNN / RP-<PACK>-SK-NNN / TP-<PACK>-SK-NNN>` |
 | Name | `<skill-name>` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER / Modul-Owner / APPROVAL_ROLE>` |
 | Betriebsmodus | `<M1 Read-only Analysis / M2 Guided Planning / M3 Controlled Modification / M4 Test and Validation / M5 Documentation Support>` |

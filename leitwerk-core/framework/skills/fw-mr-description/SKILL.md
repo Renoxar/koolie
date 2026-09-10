@@ -29,7 +29,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
@@ -75,7 +75,7 @@ triggers:
 
 **Ausgeschlossene Informationen:** K3 gemäß `leitwerk-core/framework/core/02-privacy.md`; Inhalte aus `<EXCLUDED_PATHS>` (auch wenn sie im Diff enthalten sind); Autoren-, E-Mail- und Zeitstempelangaben aus der Git-Historie; Ticketinhalte über die Kennung hinaus, Kommentare, Anhänge, Kundenkommunikation; Prompts mit K2- oder K3-Inhalten; Sitzungsprotokolle mit Umgebungsdetails (nur Referenz).
 
-(Erläuterung) Die `permissions`-Regeln im Frontmatter verwenden die Muster-Syntax der Berechtigungskonfiguration (`<PERMISSIONS_FILE>`); ihre Wirkung auf Skill-Ebene ist zu prüfen: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`.
+(Erläuterung) Die `permissions`-Regeln im Frontmatter verwenden die Muster-Syntax der Berechtigungskonfiguration (`<PERMISSIONS_FILE>`); ihre Wirkung auf Skill-Ebene ist zu prüfen: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
 
 ## 3. Arbeitsschritte
 
