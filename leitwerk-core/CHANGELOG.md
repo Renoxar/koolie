@@ -2,6 +2,30 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.20.0] - 2026-09-10
+
+### Behoben
+- **Pruefung 13 sagte mehr zu, als sie pruefte (`CR-2026-022`).** Der Kopfkommentar des Validators nannte seit 0.13.0 „Versionsfelder in der Form `MAJOR.MINOR.PATCH`". Tatsaechlich deckte die Pruefung drei Dinge ab: die Overlay-Version an ihren drei Ablageorten, `<CORE_DIR>/VERSION` und die Steckbriefangabe zur kompatiblen Framework-Version. **Die Versionsfelder der rund sechzig Kernartefakte prueften sie nicht** – `| Version | 0.1 |` und `| Version | abc |` liefen mit 0 Fehlern durch.
+
+  **Der Zeitpunkt des Fundes ist der eigentliche Punkt.** Er fiel bei der Regressionsprobe R1 zu `CR-2026-020` an – waehrend dieses Release **62 Versionsfelder von Hand um eine PATCH-Stelle hob**, ohne dass irgendetwas geprueft haette, ob das Ergebnis gueltig ist. Ein Tippfehler in einem der 62 waere unbemerkt geblieben, in genau dem Release, das die Versionspflege zum Thema hatte.
+
+  Derselbe Befundtyp wie `FW-KO-01` und `AP2-CC-13`: eine Pruefung, die mehr zusagt, als sie leistet.
+
+### Geaendert
+- **Pruefung 13 erfasst jetzt das Versionsfeld jedes Kernartefakts.** Ausgenommen bleiben historische Dokumente – dieselbe Abgrenzung, die Pruefung 14 seit D-28 verwendet –, die Client Packs und nicht ausgefuellte Vorlagen (`<TBD: …>`). Erkannt wird die **Steckbriefzeile**, also genau zwei Spalten; die erste Fassung war zu breit und meldete die Kopfzeile eines Overlay-Aenderungsverlaufs (`| Version | Datum | Aenderung | … |`) als Fehler.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs.
+- **Drei Sonden, zwei Grenzproben, zwei Regressionsproben** (`tests/protocols/2026-09-10-CR-2026-022-artefaktversionen.md`). S3 belegt, dass beide im Kern vorkommenden Schreibweisen erfasst werden – mit Backticks und ohne. G2 belegt, dass eine nicht ausgefuellte Vorlage still bleibt.
+- Die Regressionsproben sind gefahren, nicht behauptet: Pruefung 13 meldet weiterhin eine falsche Steckbriefangabe, Pruefung 15 weiterhin einen nicht lauffaehigen Hook-Interpreter.
+
+### Migrationshinweise fuer Overlays
+Keine. Alle Versionsfelder des aktuellen Stands sind gueltig; kein Artefakt wurde geaendert.
+
+### Bekannte Einschraenkungen
+- **Nicht geprueft wird, ob eine Version sich bewegt, wenn sich das Artefakt aendert.** Das war der tragende Befund von `FW-VN-01` – alle 13 Skills standen unveraendert auf `0.1.0`, obwohl alle 13 geaendert worden waren. Diese Frage braucht die Versionsgeschichte, nicht die Datei; ein Validator, der `git` voraussetzt, prueft etwas anderes als die Struktur. Sie bleibt beim Release-Prozess (`checklists/11-framework-release.md`) und damit ausserhalb der Reichweite jeder automatischen Pruefung.
+- Geprueft wird die **Form**, nicht die Angemessenheit einer MAJOR-, MINOR- oder PATCH-Anhebung.
+
 ## [0.19.0] - 2026-09-10
 
 ### Behoben

@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.19.0 (2026-09-10)
+## Stand nach Release 0.20.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.19.0 gebracht haben
+### Was 0.5.0 bis 0.20.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,6 +35,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Versionsfelder geprüft | Prüfung 13 sagte „jedes Versionsfeld“ zu und prüfte die Artefakte nie; gefunden, während 62 davon von Hand gehoben wurden | `CR-2026-022`, `tests/protocols/2026-09-10-CR-2026-022-artefaktversionen.md` |
 | Hooks laufen wirklich | Beide Hooks liefen unter Windows nicht – `python3` war dort ein Alias ohne Interpreter, H2 galt damit nicht. Der Interpreter wird jetzt an seiner Wirkung geprüft | `CR-2026-021`, D-29, `tests/protocols/2026-09-10-CR-2026-021-hook-interpreter.md` |
 | Kern ohne Akteursnamen | Der Kern nannte einen Client als Handelnden – 248 Nennungen in 78 Dateien, das Dreifache der ausgewiesenen Zahl; Prüfung 14 setzt es jetzt durch | `CR-2026-020`, D-28, `tests/protocols/2026-09-10-CR-2026-020-akteursbezeichnung.md` |
 | Strukturentscheidungen aktuell | Acht der zehn Records von 2026-09-01 beschrieben einen Stand von vor sechzehn Releases; vier nannten Client-Pfade in den Entscheidungen, die den werkzeugneutralen Kern anordnen | `CR-2026-019`, `governance/DECISION_LOG.md` |
@@ -44,6 +45,21 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.20.0 prüft Prüfung 13, was ihr Kopfkommentar zusagt. Er nannte seit 0.13.0
+„Versionsfelder in der Form `MAJOR.MINOR.PATCH`“; tatsächlich deckte die Prüfung die
+Overlay-Version, `VERSION` und die Steckbriefangabe ab – **die Versionsfelder der rund sechzig
+Kernartefakte nicht**. Ein Feld `0.1` oder `abc` lief mit 0 Fehlern durch.
+
+Der Zeitpunkt des Fundes ist der eigentliche Punkt: Er fiel bei einer Regressionsprobe an,
+**während 0.18.0 62 Versionsfelder von Hand hob** – ohne dass irgendetwas das Ergebnis geprüft
+hätte. Derselbe Befundtyp wie `FW-KO-01` und `AP2-CC-13`: eine Prüfung, die mehr zusagt, als sie
+leistet. Das ist inzwischen das häufigste Muster im Fehlerbild dieses Frameworks – und in drei
+aufeinanderfolgenden Releases war es der Wirksamkeitsnachweis nach D-23, der es gefunden hat.
+
+Nicht geprüft wird weiterhin, ob eine Version sich **bewegt**, wenn sich das Artefakt ändert –
+der tragende Befund aus `FW-VN-01`. Das braucht die Versionsgeschichte, nicht die Datei, und
+bleibt beim Release-Prozess.
 
 Mit 0.19.0 laufen die Hooks wirklich. `clientmap.py` verdrahtete den Interpreter fest als
 `python3`; auf einem Windows-System ohne installiertes `python3` ist dieser Name der
@@ -370,13 +386,10 @@ der Dateiname `decision-trees/02-may-devin-do-task.md`, der Marker
 `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` an fünf Kernstellen und die clientspezifischen
 Inhalte der Zeile „Umsetzung beim KI-Client" in `05-working-model.md`.
 
-**P2 – Prüfung 13 prüft die Versionsfelder der Kernartefakte nicht.** Neu aus der
-Regressionsprobe R1 zu `CR-2026-020`. Ihr Kopfkommentar sagt „Versionsfelder in der Form
-`MAJOR.MINOR.PATCH`" zu; tatsächlich deckt sie die Overlay-Version, `VERSION` und die
-Steckbriefangabe ab. Ein Checklisten-Versionsfeld `0.1` oder `abc` läuft mit 0 Fehlern durch.
-Derselbe Befundtyp wie `FW-KO-01`: eine Prüfung, die mehr zusagt, als sie leistet. Aufgefallen,
-während 62 Versionsfelder von Hand gehoben wurden – ohne dass irgendetwas geprüft hätte, ob das
-Ergebnis gültig ist.
+**Erledigt – Prüfung 13 prüft die Versionsfelder der Kernartefakte (0.20.0).**
+`CR-2026-022`. Drei Sonden, zwei Grenzproben, zwei Regressionsproben. Offen bleibt die Frage,
+ob sich eine Version bewegt, wenn sich das Artefakt ändert – sie braucht die Versionsgeschichte
+und bleibt beim Release-Prozess.
 
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`

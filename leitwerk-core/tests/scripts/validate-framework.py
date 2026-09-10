@@ -28,8 +28,8 @@ Prüft (statisch, ohne laufenden KI-Client):
  12. Querverweise (FW-KO-04): Markdown-Links und in Backticks genannte Framework-Pfade
      zeigen auf existierende Dateien oder Verzeichnisse
  13. Versionskette (FW-VN-01): Overlay-Version an allen drei Ablageorten gleich, Steckbrief-
-     angabe zur kompatiblen Framework-Version passend zu <CORE_DIR>/VERSION, Versionsfelder
-     in der Form MAJOR.MINOR.PATCH
+     angabe zur kompatiblen Framework-Version passend zu <CORE_DIR>/VERSION, und das
+     Versionsfeld jedes Kernartefakts in der Form MAJOR.MINOR.PATCH
  14. Akteursbezeichnung (D-02, D-28): Der Kern nennt keinen Client als Handelnden. Die
      Namen stammen aus den Pack-Kennungen; der Produktname mit Zusatz bleibt zulaessig,
      historische Dokumente sind ausgenommen
@@ -1002,6 +1002,48 @@ def _overlay_status_angaben(text: str) -> list[str]:
     return werte
 
 
+# Steckbriefzeile eines versionierten Artefakts - genau zwei Spalten. Die Verankerung
+# auf das Zeilenende ist noetig: Der Aenderungsverlauf eines Overlays beginnt mit der
+# Kopfzeile '| Version | Datum | Aenderung | ... |', und die ist kein Steckbrief. "(Skill)" kommt in einzelnen
+# Steckbriefen vor; die Klammer gehoert zur Beschriftung, nicht zum Wert.
+ARTEFAKT_VERSION_RE = re.compile(
+    r"^\|\s*Version(?:\s*\([^)]*\))?\s*\|\s*`?([^`|]+?)`?\s*\|\s*$", re.M)
+
+
+def check_artefakt_versionen(root: str) -> None:
+    """Teil von Pruefung 13: Die Versionsfelder der Kernartefakte haben die Form
+    MAJOR.MINOR.PATCH.
+
+    Der Kopfkommentar sagte diese Pruefung seit 0.13.0 zu; tatsaechlich deckte
+    check_versions nur die Overlay-Version, <CORE_DIR>/VERSION und die Steckbriefangabe
+    ab. Ein Artefaktfeld '0.1' oder 'abc' lief mit 0 Fehlern durch - aufgefallen bei der
+    Regressionsprobe R1 zu CR-2026-020, waehrend 62 Versionsfelder von Hand gehoben
+    wurden, ohne dass irgendetwas das Ergebnis geprueft haette.
+
+    Historische Dokumente sind ausgenommen: Ein Aenderungsverlauf listet Versionen in
+    Tabellenzeilen, nicht in einem Steckbrief, und beschreibt einen vergangenen Zustand.
+    """
+    for path in iter_text_files(root):
+        if not path.endswith(".md"):
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith(KERN + "/") or rel.startswith(KERN + "/clients/"):
+            continue
+        if rel.startswith(ACTOR_HISTORY) or os.path.basename(rel) in ACTOR_HISTORY_BASENAMES:
+            continue
+        m = ARTEFAKT_VERSION_RE.search(read(path))
+        if not m:
+            continue
+        wert = m.group(1).strip()
+        if not wert or TBD_RE.search(wert):
+            continue
+        if not SEMVER_RE.match(wert):
+            err(f"{rel}: Versionsfeld '{wert}' ist kein Semantic Versioning "
+                f"(MAJOR.MINOR.PATCH). Eine Angabe, die keiner Form folgt, laesst sich "
+                f"nicht vergleichen - und eine Version, die sich nicht vergleichen laesst, "
+                f"unterscheidet keine zwei Zeitpunkte (D-25, FW-VN-01)")
+
+
 def check_strict_overlay(root: str) -> None:
     runtime = os.path.join(root, ".devin", "rules", "20-project-overlay.md")
     overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
@@ -1217,6 +1259,7 @@ def main() -> int:
     check_links(root)
     check_manifest(root)
     check_versions(root, man)
+    check_artefakt_versionen(root)
     check_actor_naming(root)
     check_hook_interpreter(root, man)
     if args.strict_overlay:
