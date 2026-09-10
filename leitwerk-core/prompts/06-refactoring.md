@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-006` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -89,7 +89,7 @@ Regeln:
 - [ ] Verwenderliste stichprobenartig geöffnet (RV2); Schnittstellen unverändert; keine Verwender außerhalb des Bereichs berührt (RV1).
 - [ ] Tests, Assertions, Testkonfiguration und Quality Gates unverändert (RV9); keine neuen Abhängigkeiten oder Abstraktionen (RV6, V3).
 - [ ] Gemeldete Befunde als eigene Aufgaben aufgenommen, nicht in denselben Änderungssatz gemischt (Q1).
-- [ ] Ein Commit je Schritt; `leitwerk-core/checklists/04-review-ai-code.md` abgearbeitet; Merge Request mit Devin-Nutzungsvermerk (`leitwerk-core/checklists/08-merge-request.md`).
+- [ ] Ein Commit je Schritt; `leitwerk-core/checklists/04-review-ai-code.md` abgearbeitet; Merge Request mit KI-Nutzungsvermerk (`leitwerk-core/checklists/08-merge-request.md`).
 
 ## 8. Typische Fehlanwendungen
 

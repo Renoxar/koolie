@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-06` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Wann | bei jeder Änderung mit R3-, R10- oder R11-Bezug; ergänzend zum Review bei Stufe hoch; stichprobenartig bei Stufe mittel |
 | Wer | Bearbeiterin oder Bearbeiter; bei Stufe hoch zusätzlich `<SECURITY_CONTACT>` |
 | Dauer (Richtwert, Erläuterung) | abhängig vom Umfang – keine verbindlichen Aufwände |
-| Nachweis | Security-Abschnitt im Ergebnisbericht und im Devin-Nutzungsvermerk (Langform) |
+| Nachweis | Security-Abschnitt im Ergebnisbericht und im KI-Nutzungsvermerk (Langform) |
 
 ## Zweck
 

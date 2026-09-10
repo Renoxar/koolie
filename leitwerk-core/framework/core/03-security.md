@@ -24,7 +24,7 @@ Das Sicherheitsmodell schützt in dieser Reihenfolge: (1) Vertraulichkeit von Qu
 | T6 | Umgehung von Quality Gates | Devin passt Tests, Linter-Regeln oder Pipeline-Konfigurationen an, „damit es grün wird" | Verweigerungsregeln für Schreibzugriffe auf Quality-Gate-Konfigurationen, Verbot in der Wurzel-Anweisungsdatei, Review-Checkliste |
 | T7 | Übermäßige Berechtigungen | Bypass-Modus, globale Allow-Regeln, sitzungsweite Freigaben für alles | D-05, Regel 3.1 in `leitwerk-core/framework/core/05-working-model.md`, versionierte Berechtigungsdatei, organisationsweite Einstellungen |
 | T8 | Unautorisierte externe Systeme über MCP | Selbst konfigurierte MCP-Server mit weitreichenden Rechten | MCP-Freigabe je Server über Overlay, `ask` als Standard, Registry-Erzwingung (Enterprise) `[DOK]` |
-| T9 | Verlust der Nachvollziehbarkeit | Änderungen ohne Bericht, gemischte Commits, unklare Urheberschaft | Ergebnisbericht, Devin-Nutzungsvermerk im Merge Request, kleine Änderungen (P7) |
+| T9 | Verlust der Nachvollziehbarkeit | Änderungen ohne Bericht, gemischte Commits, unklare Urheberschaft | Ergebnisbericht, KI-Nutzungsvermerk im Merge Request, kleine Änderungen (P7) |
 | T10 | Kompromittierte Erweiterungen oder Plugins der IDE | Installation nicht geprüfter Erweiterungen, Skill-Plugins aus fremden Quellen | Erweiterungs- und Plugin-Freigabe durch Organisation `<TBD: Erweiterungsrichtlinie>` |
 
 ## 3. Kontrollschichten (normativ)

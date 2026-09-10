@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-07` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Wann | bevor eine neue Abhängigkeit oder ein Major-Update eingeführt wird (auch nach einem Devin-Vorschlag) |

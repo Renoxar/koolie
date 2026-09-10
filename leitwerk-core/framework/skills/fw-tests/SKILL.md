@@ -23,7 +23,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-006` |
 | Name | `fw-tests` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
@@ -102,7 +102,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Testerstellung – fw-tests v0.1.0
+## Testerstellung – fw-tests v0.1.1
 
 ### Aufgabe und Scope
 - Komponente: <pfad-oder-symbol> · Fachliche Grundlage: <Akzeptanzkriterien | Dokumentation | Angabe der Bearbeiterin oder des Bearbeiters>
@@ -149,7 +149,7 @@ triggers:
 1. Jeden neuen Test lesen und beantworten: Prüft er fachliches Verhalten oder zementiert er die Implementierung (RV4)? Würde er bei einem realistischen Fehler fehlschlagen?
 2. Testdaten auf Synthetik prüfen; Testprotokoll durch eigene Ausführung von `<TEST_COMMAND>` bestätigen (ab Stufe mittel durch die Reviewerin oder den Reviewer).
 3. Gemeldete vermutete Produktivcode-Fehler als eigene Aufgabe aufnehmen (`fw-error-analyze`), nicht in derselben Sitzung beheben.
-4. Checklisten `leitwerk-core/checklists/05-testing.md` und `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit Devin-Nutzungsvermerk.
+4. Checklisten `leitwerk-core/checklists/05-testing.md` und `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit KI-Nutzungsvermerk.
 
 ## 7. Fehlerbehandlung und Abbruch
 

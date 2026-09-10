@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-01` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jeder Devin-Sitzung, nach Zuschnitt der Aufgabe |
@@ -51,4 +51,4 @@ Aufgabe nicht beginnen und gemäß `leitwerk-core/framework/core/10-error-escala
 
 ## Ergebnis und Nachweis
 
-Kontrollstufe (mit Faktor), Modus, Scope und verwendete Kontextquellen werden in die Aufgabenanweisung übernommen (Pflichtelemente nach `leitwerk-core/framework/core/06-prompting-rules.md`) und erscheinen im Ergebnisbericht sowie ab Stufe mittel im Devin-Nutzungsvermerk des Merge Requests.
+Kontrollstufe (mit Faktor), Modus, Scope und verwendete Kontextquellen werden in die Aufgabenanweisung übernommen (Pflichtelemente nach `leitwerk-core/framework/core/06-prompting-rules.md`) und erscheinen im Ergebnisbericht sowie ab Stufe mittel im KI-Nutzungsvermerk des Merge Requests.

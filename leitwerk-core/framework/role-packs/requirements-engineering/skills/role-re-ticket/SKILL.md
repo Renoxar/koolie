@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `RP-RE-SK-001` |
 | Name | `role-re-ticket` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -98,7 +98,7 @@ triggers:
 Das Gerüst ist fest; die Auszeichnung richtet sich nach dem ermittelten Format (`jira`: `h2.`, `||…||`, `#`-Listen · `markdown`: `##`, Pipe-Tabellen · `neutral`: Klartext-Überschriften). Abschnitte ohne Inhalt werden weggelassen.
 
 ```markdown
-## Aufgabenbeschreibung – role-re-ticket v0.1.0
+## Aufgabenbeschreibung – role-re-ticket v0.1.1
 
 ### Auftrag und Grundlage
 - Absicht: <Kurzfassung in eigenen Worten>

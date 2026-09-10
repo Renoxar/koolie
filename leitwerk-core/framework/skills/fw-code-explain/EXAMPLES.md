@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Methodennamen s
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Code-Erklärung – fw-code-explain v0.1.0
+## Code-Erklärung – fw-code-explain v0.1.1
 
 ### Aufgabe und Scope
 - Einheit: src/ordering/domain/OrderValidator.ext:18–74 (validate) · Tiefe: detail · Leitfrage: keine

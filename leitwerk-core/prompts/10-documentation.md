@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-010` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
@@ -78,7 +78,7 @@ Regeln:
 - [ ] Abweichungsliste entschieden: je Punkt Code fixen (eigene Aufgabe) oder Dokumentation anpassen – dokumentierte Entscheidung.
 - [ ] Prüfung auf vertrauliche Inhalte vor Übernahme oder Ablage in `<DOCUMENTATION_PLATFORM>` (`leitwerk-core/checklists/02-privacy-context.md`).
 - [ ] Konventionen und Glossarbegriffe eingehalten; Beispiele als synthetisch gekennzeichnet.
-- [ ] Review über den regulären Prozess (`leitwerk-core/checklists/08-merge-request.md`), Devin-Nutzungsvermerk enthalten.
+- [ ] Review über den regulären Prozess (`leitwerk-core/checklists/08-merge-request.md`), KI-Nutzungsvermerk enthalten.
 
 ## 8. Typische Fehlanwendungen
 

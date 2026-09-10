@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Merge-Request-Beschreibung – fw-mr-description v0.1.0
+## Merge-Request-Beschreibung – fw-mr-description v0.1.1
 
 ### Aufgabe und Scope
 - Änderungssatz: Branch gegenüber <DEFAULT_BRANCH> · Dateien: 2 · Nicht gelesen (ausgeschlossen): keine
@@ -27,9 +27,10 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 | <LINT_COMMAND> | keine Befunde | Ergebnisbericht fw-change-small |
 #### Hinweise für Reviewerinnen und Reviewer
 - Zuerst prüfen: Randbedingung in OrderValidator.ext:40 (RV3) · Offene Annahmen: keine · Abweichungen vom Plan: keine
-#### KI-Unterstützung (Devin Desktop)
+#### KI-Unterstützung
 - Kontrollstufe: mittel (Faktor R4) · Betriebsmodus: M4, M3
-- Verwendete Skills: fw-error-analyze v0.1.0, fw-bugfix-prepare v0.1.0, fw-tests v0.1.0, fw-change-small v0.1.0
+- Framework-Version: 0.13.0 · Overlay-Version: 0.1.0
+- Verwendete Skills: fw-error-analyze v0.1.1, fw-bugfix-prepare v0.1.1, fw-tests v0.1.1, fw-change-small v0.1.1
 - Bestätigter Plan: Fix-Plan, bestätigt durch Modul-Owner (Referenz im Ticket) · Abweichungen vom Plan: keine
 - Freigabe Stufe hoch: nicht zutreffend (Stufe mittel)
 - Verworfene Vorschläge: <TBD: Anzahl mit Stichwort – aus den Berichten nicht ersichtlich>

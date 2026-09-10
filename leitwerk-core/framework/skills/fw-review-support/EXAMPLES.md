@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen-, Methoden- und Test
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Review-Unterstützung – fw-review-support v0.1.0
+## Review-Unterstützung – fw-review-support v0.1.1
 
 ### Aufgabe und Scope
 - Änderungssatz: lokaler Branch gegenüber <DEFAULT_BRANCH> (2 Commits, 4 Dateien) · Referenz (Plan/Ticket): Plan „Fehlerkennung je Feld", bestätigt

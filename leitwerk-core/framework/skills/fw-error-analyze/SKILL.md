@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-008` |
 | Name | `fw-error-analyze` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -89,7 +89,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Fehleranalyse – fw-error-analyze v0.1.0
+## Fehleranalyse – fw-error-analyze v0.1.1
 
 ### Aufgabe und Scope
 - Fehler: <Symptom in eigenen Worten> · Referenz: <Kennung oder „keine"> · Beobachtet / Erwartet: <...> / <... oder „fachlich zu klären">

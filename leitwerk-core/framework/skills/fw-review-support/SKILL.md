@@ -34,7 +34,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-010` |
 | Name | `fw-review-support` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis (mit freigegebenen lesenden Git-Befehlen) |
@@ -111,7 +111,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Review-Unterstützung – fw-review-support v0.1.0
+## Review-Unterstützung – fw-review-support v0.1.1
 
 ### Aufgabe und Scope
 - Änderungssatz: <Dateiliste | Diff-Basis> · Referenz (Plan/Ticket): <Kennung | keine>

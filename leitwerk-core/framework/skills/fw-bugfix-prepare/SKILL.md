@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-009` |
 | Name | `fw-bugfix-prepare` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -91,7 +91,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Fix-Plan – fw-bugfix-prepare v0.1.0
+## Fix-Plan – fw-bugfix-prepare v0.1.1
 
 ### Aufgabe und Scope
 - Fehler: <Kurzfassung des Fehlverhaltens> · Soll-Verhalten: <Kurzfassung> · Referenz: <Kennung aus <ISSUE_TRACKER> | keine>
@@ -108,7 +108,7 @@ triggers:
 ### Plan (Struktur exakt nach leitwerk-core/templates/PLAN_TEMPLATE.md)
 ## Änderungsplan: Fix <Kurztitel> (<Ticket-Referenz oder Platzhalter>)
 | Attribut | Wert |
-| Erstellt mit | fw-bugfix-prepare v0.1.0 |
+| Erstellt mit | fw-bugfix-prepare v0.1.1 |
 | Betriebsmodus der Umsetzung | M4 (Schritt 1), M3 (ab Schritt 2) |
 | Kontrollstufe | <Stufe> (auslösender Faktor <R#>) |
 | Bestätigungsstatus | entwurf |

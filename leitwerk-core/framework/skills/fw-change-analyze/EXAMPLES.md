@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Feldnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Änderungsanalyse – fw-change-analyze v0.1.0
+## Änderungsanalyse – fw-change-analyze v0.1.1
 
 ### Aufgabe und Scope
 - Aufgabe: Optionales Freitextfeld Lieferhinweis (max. 200 Zeichen) in Erfassung, Validierung, Persistenz und Bestätigung ergänzen · Referenz: keine

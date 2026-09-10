@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-03` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | nach Preflight und Analyse, unmittelbar bevor Devin erstmals schreiben oder Befehle ausführen soll |
@@ -48,4 +48,4 @@ Nicht beginnen bei fehlender Bestätigung oder Freigabe (E1/E2), rotem Ausgangss
 
 ## Ergebnis und Nachweis
 
-Bestätigter Plan (Referenz), Ausgangs-Testergebnis und vereinbarte Grenzen werden im Ergebnisbericht und ab Stufe mittel im Devin-Nutzungsvermerk dokumentiert.
+Bestätigter Plan (Referenz), Ausgangs-Testergebnis und vereinbarte Grenzen werden im Ergebnisbericht und ab Stufe mittel im KI-Nutzungsvermerk dokumentiert.

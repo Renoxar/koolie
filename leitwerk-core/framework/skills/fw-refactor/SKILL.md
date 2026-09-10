@@ -24,7 +24,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-007` |
 | Name | `fw-refactor` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -101,7 +101,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Refactoring-Protokoll – fw-refactor v0.1.0
+## Refactoring-Protokoll – fw-refactor v0.1.1
 
 ### Aufgabe und Scope
 - Bereich: <pfad-oder-symbol> · Ziel: <refactoring-ziel> · Unverändert bleiben: <Verhalten, Schnittstellen, Verwender>
@@ -150,7 +150,7 @@ triggers:
 1. Diff je Schritt vollständig lesen; Verhaltensäquivalenz prüfen (RV3: Randbedingungen, Fehlerbehandlung, Reihenfolgen); Fundstellen der Verwenderliste stichprobenartig öffnen (RV2).
 2. `<TEST_COMMAND>` selbst ausführen; ab Stufe mittel Ausführung durch die Reviewerin oder den Reviewer und Abgleich mit dem bestätigten Plan (RV1).
 3. Gemeldete Befunde als eigene Aufgaben aufnehmen; nicht in denselben Änderungssatz mischen.
-4. Ein Commit je Schritt erstellen; `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit Devin-Nutzungsvermerk.
+4. Ein Commit je Schritt erstellen; `leitwerk-core/checklists/04-review-ai-code.md` abarbeiten; Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess mit KI-Nutzungsvermerk.
 
 ## 7. Fehlerbehandlung und Abbruch
 

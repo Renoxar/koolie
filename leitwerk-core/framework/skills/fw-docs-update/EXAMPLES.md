@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Dokumentnamen s
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Dokumentationsaktualisierung – fw-docs-update v0.1.0
+## Dokumentationsaktualisierung – fw-docs-update v0.1.1
 
 ### Aufgabe und Scope
 - Dokument(e): docs/ordering/validation.md · Code-Bereich / Änderungsreferenz: src/ordering/domain/OrderValidator.ext

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-011` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -19,7 +19,7 @@ Die Vorlage unterstützt eine Reviewerin oder einen Reviewer bei der Prüfung ei
 ## 2. Einzusetzender Kontext
 
 - Lokal verfügbarer Änderungssatz: Diff-Basis (Arbeitsbranch gegen `<DEFAULT_BRANCH>`) oder Dateiliste (K1); lesende Git-Befehle, sofern freigegeben.
-- Devin-Nutzungsvermerk, Ergebnisbericht und – ab Stufe mittel – der bestätigte Plan des Änderungssatzes (K1/K2 bereinigt).
+- KI-Nutzungsvermerk, Ergebnisbericht und – ab Stufe mittel – der bestätigte Plan des Änderungssatzes (K1/K2 bereinigt).
 - Bereinigte Aufgabenbeschreibung beziehungsweise Akzeptanzkriterien (K2 bereinigt).
 - Coding Conventions `<PROJECT_RULES_PATH>` (K1).
 
@@ -47,7 +47,7 @@ Ziel: Review-Unterstützung für den Änderungssatz {diff_basis}: Befunde zu RV1
 Betriebsmodus: M1 Read-only Analysis; zulässig sind nur lesende Git-Befehle (git status, git diff, git log, git show).
 Kontrollstufe des Änderungssatzes: {kontrollstufe} (Faktor {faktor}); wende die Review-Tiefe nach leitwerk-core/framework/core/07-review-rules.md Abschnitt 3 an.
 Scope: Der Änderungssatz {diff_basis} und die unmittelbar betroffenen Verwender innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen: <EXCLUDED_PATHS>, Review-Werkzeug-Inhalte, alles außerhalb des Repositorys.
-Kontext: Aufgabenziel: {aufgabenziel}; Plan: {plan_referenz}; Devin-Nutzungsvermerk und Ergebnisbericht des Änderungssatzes; Coding Conventions <PROJECT_RULES_PATH>. Keine K3-Inhalte.
+Kontext: Aufgabenziel: {aufgabenziel}; Plan: {plan_referenz}; KI-Nutzungsvermerk und Ergebnisbericht des Änderungssatzes; Coding Conventions <PROJECT_RULES_PATH>. Keine K3-Inhalte.
 Akzeptanzkriterien: Jeder Befund nennt RV-Punkt, Schwere (hoch/mittel/niedrig), Fundstelle (pfad/datei:zeile), Beschreibung und Empfehlung als Vorschlag; geprüfte RV-Punkte ohne Befund sind gelistet; der Scope-Abgleich benennt jede Änderung außerhalb von Ziel oder Plan; Aussagen ohne Beleg sind als Vermutung markiert.
 Ausgabeformat: Ausgabeformat des Skills fw-review-support (Befunde nach Schwere; Scope-Abgleich; geprüft ohne Befund; nicht prüfbar mit Grund; Annahmen und offene Fragen); abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen; insbesondere bei mehrdeutiger Diff-Basis oder fehlendem Plan ab Stufe mittel.

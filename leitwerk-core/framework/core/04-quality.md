@@ -34,7 +34,7 @@ Eine Devin-Aufgabe ist abgeschlossen, wenn:
 1. der Ergebnisbericht (`05-working-model.md`, Abschnitt 3.6) vorliegt,
 2. alle im Overlay definierten lokalen Prüfungen erfolgreich sind,
 3. die Review-Checkliste für KI-generierten Code (`leitwerk-core/checklists/04-review-ai-code.md`) durch die Bearbeiterin oder den Bearbeiter abgearbeitet ist,
-4. der Merge Request den Devin-Nutzungsvermerk enthält,
+4. der Merge Request den KI-Nutzungsvermerk enthält,
 5. offene Punkte und Annahmen im Merge Request sichtbar sind,
 6. die projektspezifische Definition of Done (Overlay, Abschnitt 12) erfüllt ist.
 

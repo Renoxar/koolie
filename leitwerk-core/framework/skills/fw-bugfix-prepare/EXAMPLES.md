@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Fix-Plan – fw-bugfix-prepare v0.1.0
+## Fix-Plan – fw-bugfix-prepare v0.1.1
 
 ### Aufgabe und Scope
 - Fehler: Menge 999 wird als ungültig abgewiesen · Soll-Verhalten: 1 bis 999 einschließlich gültig · Referenz: keine

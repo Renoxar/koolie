@@ -12,7 +12,7 @@
 ## 1. Erhebungsgrundsätze (normativ)
 
 1. Definition vor Erhebung: Jede verwendete Metrik erhält vor Pilotstart eine schriftliche Definition (Quelle, Formel, Etiketten, Ausschlüsse) – sonst wird sie nicht erhoben.
-2. Quellen: `<ISSUE_TRACKER>` (Zeiten, Wiedereröffnungen), `<CI_CD_PLATFORM>` (Pipeline-Läufe), Merge-Request-System (Iterationen, Vermerke), Devin-Nutzungsvermerk (Stufe, Modus, Skills, verworfene Vorschläge, Selbsteinschätzungen), Befragungen (Akzeptanz).
+2. Quellen: `<ISSUE_TRACKER>` (Zeiten, Wiedereröffnungen), `<CI_CD_PLATFORM>` (Pipeline-Läufe), Merge-Request-System (Iterationen, Vermerke), KI-Nutzungsvermerk (Stufe, Modus, Skills, verworfene Vorschläge, Selbsteinschätzungen), Befragungen (Akzeptanz).
 3. Vergleiche nur innerhalb gleicher Aufgaben-Etiketten (Kategorie, Kontrollstufe, Größenklasse; `PILOT_CONCEPT.md` Abschnitt 2).
 4. Aggregation mindestens auf Teamebene; Rohdaten mit Personenbezug werden nicht verteilt.
 

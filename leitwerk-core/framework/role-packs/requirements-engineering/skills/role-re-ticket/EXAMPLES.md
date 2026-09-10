@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Das Beispielprojekt „Bestellverwaltung" (
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Aufgabenbeschreibung – role-re-ticket v0.1.0
+## Aufgabenbeschreibung – role-re-ticket v0.1.1
 
 ### Auftrag und Grundlage
 - Absicht: Stornierung einer Bestellung durch die Kundin oder den Kunden vor Versand
