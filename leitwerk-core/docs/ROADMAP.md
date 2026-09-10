@@ -92,15 +92,14 @@ genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` p
 Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
 Zusage ist mit `FW-ZA-05` bereits belegt.
 
-**P2 – Testkatalog ausführen.** 32 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
-Die skriptbaren Testfälle sind damit abgearbeitet: `FW-KO-01`, `FW-KO-04`, `FW-DS-03`,
-`FW-ZA-05` und `FW-RE-02` sind bestanden und protokolliert.
+**P2 – Testkatalog ausführen.** 31 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
+Die skriptbaren Testfälle sind abgearbeitet und der erste Review-Testfall dazu: `FW-KO-01`,
+`FW-KO-02`, `FW-KO-04`, `FW-DS-03`, `FW-ZA-05` und `FW-RE-02` sind bestanden und protokolliert.
 
-`FW-KO-02` ist durchgeführt und seine sieben Befunde sind behoben, steht aber weiter auf
-`offen`: Die Prüfmethode `review` verlangt eine zweite Rolle, und die Gegenzeichnung ist ein
-menschlicher Akt. Ohne reale Installation bleiben damit `FW-VN-01` (Versionskette) und
-`FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle Herstellerdokumentation – braucht Zugang zu
-dieser Dokumentation). Alles Übrige sind Sitzungstests und hängt an AP2.
+`FW-KO-02` ist durchgeführt, seine sieben Befunde sind behoben und die Gegenzeichnung durch
+`<FRAMEWORK_OWNER>` liegt vor – damit `bestanden`. Ohne reale Installation bleiben `FW-VN-01`
+(Versionskette) und `FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle Herstellerdokumentation –
+braucht Zugang zu dieser Dokumentation). Alles Übrige sind Sitzungstests und hängt an AP2.
 
 **P2 – Übungsrepository auf 0.11.0 nachziehen.** Ein `install.py --update`; die
 Berechtigungsdatei ist diesmal nicht betroffen, weil sich die Kernregelmenge nicht ändert.

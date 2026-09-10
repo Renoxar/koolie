@@ -26,7 +26,7 @@ Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Ove
 
 ### Nachweise
 - **`FW-KO-02` durchgeführt**, sieben Befunde, alle behoben. Protokoll mit vollständiger Befundtabelle und den dokumentierten Restabweichungen: `leitwerk-core/tests/protocols/2026-09-10-FW-KO-02.md`. Umfang des Abgleichs: 5 Kurzform-Dateien (23.376 Zeichen) gegen 11 Langform-Module (78.122 Zeichen).
-- **Der Testfall bleibt auf `offen`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**; diese Gegenzeichnung steht aus. Eine Selbstbestätigung ist kein Review.
+- **`FW-KO-02` ist `bestanden`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle** – eine Selbstbestätigung ist kein Review. `<FRAMEWORK_OWNER>` hat den Abgleich am selben Tag angesehen, akzeptiert und abgezeichnet; die beiden Auflösungen mit Ermessensspielraum wurden einzeln vorgelegt und bestätigt (M1-Befehlsrecht: erlaubt; Kontrollstufe bei unveränderter Verarbeitungslogik: mittel). Nachgetragen nach der Freigabe des Releases.
 - Validator, `FW-KO-04` und `install.py --check`: 0 Fehler, 0 Warnungen. Hauptdokument baut für beide Client Packs. Zeichenlimits eingehalten: `00-framework-core.md` 3.301 → 3.946 (Grenze 12.000).
 
 ### Migrationshinweise für Overlays
