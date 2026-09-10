@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -151,3 +151,4 @@ Bis `install.py` den Schalter `--client` kennt, ist `devin-desktop` der eingebau
 |---|---|---|---|
 | 0.1.0 | 2026-09-10 | angelegt aus dem Ist-Zustand der Laufzeitschicht (`CR-2026-002`) | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
+| 0.3.0 | 2026-09-10 | Overlay-Laufzeitregel und die beiden Vorlagen in den Kern; Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |

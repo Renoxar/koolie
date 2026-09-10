@@ -1,4 +1,0 @@
-{
-  "_comment": "Vorlage. MCP-Server werden erst nach Freigabe je Server im Project Overlay (Abschnitt 13) eingetragen. Standard des Frameworks: keine Server. Dateiname für die aktive Konfiguration laut Devin-Dokumentation: .mcp.json (projektweit, versioniert) beziehungsweise .claude/mcp_config.local.json (lokal, nicht versioniert). Zugangsdaten gehören niemals in die versionierte Datei. Exakte Struktur: <VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>.",
-  "mcpServers": {}
-}

@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.7.0 (2026-09-10)
+## Stand nach Release 0.8.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.7.0 gebracht haben
+### Was 0.5.0 bis 0.8.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -25,6 +25,11 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Keine Doppelpflege | Skills, Wurzel-Anweisung, Core-Regeltexte, Agentenprofil, Overlay-Vorlage liegen einmal im Kern | D-16, D-17 |
 | Berechtigungen und Hooks | letzte Doppelpflege beseitigt, als **Semantikabbildung** statt Formtransformation; drei Zusicherungen werden erzwungen statt zugesagt | D-18, `CR-2026-008`, `clientmap.py` |
 | Name | Das Framework heißt **Leitwerk**, das Kernverzeichnis `leitwerk-core/`; der Name folgt damit dem Inhalt | D-19, `CR-2026-009` |
+| Client Pack minimal | Vier Dateien statt achtzig; `seed_paths` leer, die gesamte Saat kommt aus dem Kern | D-20, `CR-2026-010` |
+
+Mit 0.8.0 enthält ein Client Pack nur noch, was zwei Clients tatsächlich unterscheidet: die
+Pfadabbildung, die Semantikabbildung, die Fähigkeitsmatrix und zwei erklärende READMEs. Jede
+Doppelpflege im Kern ist beseitigt.
 
 Mit 0.7.0 ist der letzte P3-Punkt der Liste erledigt: Der Name folgt dem Inhalt. Die
 Umbenennung war seit 0.5.0 vorgesehen und wurde bewusst zurückgestellt, bis `FW-KO-04` sie
@@ -54,16 +59,10 @@ Schreibverbote schützen `<CORE_DIR>/framework/**`, nicht den Kern als Ganzes. `
 schreibgeschützt – gerade die Skripte, die die Schutzzusagen durchsetzen. Die Verschärfung auf
 `<CORE_DIR>/**` ändert die Kernregelmenge und braucht einen eigenen Änderungsantrag.
 
-**P2 – Restduplikation zwischen den Client Packs zusammenführen.** Nach Namensnormalisierung
-sind `20-project-overlay.md` zu 91 Prozent, die beiden `*.local.md.example` zu 79 Prozent und
-die MCP-Vorlagen bis auf zwei Zeilen identisch. Reine Formfragen, derselbe Mechanismus wie in
-`CR-2026-007`. Die beiden Laufzeit-`README.md` sind dagegen zu Recht getrennt: Sie
-unterscheiden sich in 64 von 86 Zeilen.
-
 **P2 – Testkatalog ausführen.** 34 von 35 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
 Die Ablage steht (`tests/protocols/`), das Format ist am ersten Protokoll ablesbar.
 
-**P2 – Übungsrepository auf 0.7.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
+**P2 – Übungsrepository auf 0.8.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
 simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Damit wäre zugleich Kriterium 5 von
 D-11 (Übernahme in ein zweites Projekt) belegt.
 

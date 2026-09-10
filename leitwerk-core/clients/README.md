@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `FW-CLIENT-PACKS` |
 | Ebene | keine – Querschnittsschicht (siehe Abschnitt 2) |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -35,9 +35,9 @@ Es ist eine **Abbildungsschicht**: Es übersetzt die Ebenen 3 bis 7 in die Artef
 |---|---|
 | `CLIENT_PACK.md` | Pfadabbildung, **Semantikabbildung**, **Fähigkeitsmatrix**, Abweichungen, Belegstatus – die menschenlesbare Fassung |
 | `manifest.json` | Dieselben Abbildungen maschinenlesbar; `install.py` und `validate-framework.py` lesen sie. **Ohne Manifest ist ein Pack nicht installierbar** |
-| `root-template/` | Nur noch die Artefakte, die tatsächlich clientspezifisch sind – derzeit fünf Dateien je Pack |
+| `root-template/` | Nur noch die Artefakte, die tatsächlich clientspezifisch sind – derzeit zwei erklärende READMEs je Pack |
 
-Alles andere liegt einmal im Kern und wird bei der Installation in die Form dieses Clients gebracht: Regeltexte, Wurzel-Anweisung, Agentenprofil und Skills als **Formtransformation** (D-16, D-17), Berechtigungen und Hooks als **Semantikabbildung** (D-18). Der Unterschied ist wesentlich: Bei einer Formtransformation ist der Inhalt derselbe und nur die Schreibweise anders. Bei der Semantikabbildung unterscheiden sich die Werkzeuge selbst – ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich und dort über ein Präfix. Weil an genau diesen Regeln die Kernzusagen hängen, prüft die Abbildung drei Eigenschaften und bricht ab, wenn eine verletzt ist:
+Alles andere liegt einmal im Kern und wird bei der Installation in die Form dieses Clients gebracht: Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills, Overlay-Laufzeitregel und die beiden Vorlagen als **Formtransformation** (D-16, D-17, D-20), Berechtigungen und Hooks als **Semantikabbildung** (D-18). `seed_paths` ist in beiden Packs leer – die gesamte Saat kommt aus dem Kern. Der Unterschied ist wesentlich: Bei einer Formtransformation ist der Inhalt derselbe und nur die Schreibweise anders. Bei der Semantikabbildung unterscheiden sich die Werkzeuge selbst – ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich und dort über ein Präfix. Weil an genau diesen Regeln die Kernzusagen hängen, prüft die Abbildung drei Eigenschaften und bricht ab, wenn eine verletzt ist:
 
 | Zusicherung | Warum |
 |---|---|
@@ -87,3 +87,4 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 |---|---|---|---|
 | 0.1.0 | 2026-09-10 | angelegt (`CR-2026-002`) | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-09-10 | Semantikabbildung der Berechtigungen und Hooks ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
+| 0.3.0 | 2026-09-10 | Restduplikation zusammengeführt; ein Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |

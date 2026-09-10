@@ -20,7 +20,7 @@ trigger: always_on
 ## Arbeitsbereich
 
 - Erlaubte Pfade (`<ALLOWED_PATHS>`): `<TBD: Liste, zum Beispiel src/**, test/**, docs/**>`
-- Ausgeschlossene Pfade (`<EXCLUDED_PATHS>`): `<TBD: Liste, zum Beispiel deploy/**, infra/**, config/prod/**>` – zusätzlich immer: Secret-Dateien, `.devin/`, `AGENTS.md`, `project-overlay/`
+- Ausgeschlossene Pfade (`<EXCLUDED_PATHS>`): `<TBD: Liste, zum Beispiel deploy/**, infra/**, config/prod/**>` – zusätzlich immer: Secret-Dateien, `<RUNTIME_DIR>/`, `<ROOT_INSTRUCTION_FILE>`, `project-overlay/`
 - Testpfade (`<TEST_PATHS>`): `<TBD>` · Dokumentationspfade (`<DOC_PATHS>`): `<TBD>`
 - Als kritisch eingestufte Komponenten (Änderungen mindestens Kontrollstufe hoch): `<TBD: Liste>`
 
