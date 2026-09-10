@@ -23,7 +23,7 @@ Devin MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschli
 | S7 | Tests oder Prüfungen schlagen fehl und die Ursache liegt außerhalb des Scopes | Bearbeiterin oder Bearbeiter |
 | S8 | Die Aufgabe berührt die Delegationsverbotsliste | Bearbeiterin oder Bearbeiter |
 | S9 | Eine Aktion wäre nicht reversibel (Löschen, Migration, Fernwirkung) | Bearbeiterin oder Bearbeiter |
-| S10 | Wiederholte Fehlschläge desselben Schritts (mehr als zwei Versuche) | Bearbeiterin oder Bearbeiter |
+| S10 | Wiederholte Fehlschläge desselben Schritts (zwei erfolglose Versuche) | Bearbeiterin oder Bearbeiter |
 
 Das Anhalten ist kein Fehlverhalten, sondern das erwartete Verhalten. Onboarding und Skills vermitteln dies ausdrücklich.
 

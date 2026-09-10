@@ -14,9 +14,9 @@ Langform: `leitwerk-core/framework/core/02-privacy.md`, `leitwerk-core/framework
 | K0 | Framework, öffentliche Dokumentation, Open Source mit bekannter Lizenz | frei |
 | K1 | Repository-Inhalte und im Overlay-Manifest freigegebene Dokumente | aufgabenbezogen |
 | K2 | Architekturdokumente mit Infrastrukturdetails, Tickets mit Fallbeschreibungen, Testdaten, Logauszüge, Partner-Schnittstellenverträge | nur nach dokumentierter Freigabe und Bereinigung; Freigabe steht im Overlay-Manifest oder wird in der Aufgabe genannt |
-| K3 | Secrets, Zugangsdaten, Schlüssel, Zertifikate, `.env`-Werte, personenbezogene Echtdaten, Produktionsdaten, nicht freigegebene Kunden-/Behördendokumente, Sicherheitskonfigurationen, interne Adressen und Umgebungskennungen, Inhalte anderer Projekte | nie |
+| K3 | Secrets, Zugangsdaten, Schlüssel, Zertifikate, Keystores, Verbindungszeichenfolgen mit Anmeldedaten, `.env`-Werte, personenbezogene Echtdaten, Produktionsdaten, nicht freigegebene Kunden-/Behördendokumente, Sicherheitskonfigurationen, interne Adressen und Umgebungskennungen, Inhalte anderer Projekte sowie alles, was die Organisation als vertraulich oder höher eingestuft hat | nie |
 
-Regeln: Mischinhalte tragen die höchste enthaltene Klasse. Fehlt eine Einstufung, gilt K3. Bereitgestellte K2-Inhalte werden nicht in das Repository übernommen.
+Regeln: Mischinhalte tragen die höchste enthaltene Klasse. Fehlt eine Einstufung, gilt K3. Bereitgestellte K2-Inhalte werden nicht in das Repository übernommen. Eine K2-Freigabe ist eine dokumentierte Einzel- oder Kategoriefreigabe durch `<APPROVAL_ROLE>` (`leitwerk-core/framework/core/02-privacy.md`, Abschnitt 4); eine mündliche Zusicherung in der Aufgabe ersetzt sie nicht.
 
 ## Verhalten bei Fund von K3-Inhalten
 
