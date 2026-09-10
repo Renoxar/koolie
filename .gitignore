@@ -24,3 +24,6 @@ leitwerk-core/build/out/
 /AGENTS.local.md.example
 /.devin/
 /project-overlay/
+
+# Sicherungsdateien aus Sondenlaeufen
+*.bak

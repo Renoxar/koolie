@@ -2,6 +2,39 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.21.0] - 2026-09-10
+
+### Behoben
+- **Fuer Shell-Befehle bestand keine Lesesperre (`CR-2026-023`, D-30, `AP2-CC-16` und `AP2-CC-15`).** Zwei Ursachen, die zusammen jede Sperre aufhoben.
+
+  **AP2-CC-16 (neu, Schwere hoch): Die Abbildung erreichte den Matcher, nicht die Pruefung.** Das Manifest bildet `exec` auf `Bash` ab – daraus entsteht der Matcher der Hook-Konfiguration, der Hook wird also aufgerufen. Er verglich intern aber gegen die generischen Verbnamen: `if tool_name in WRITE_TOOLS + ("exec",)`. Der Client schickt `Bash`. Ergebnis: `{"tool_name": "Bash", "command": "cat .env"}` wurde **nicht blockiert**, derselbe Zugriff als `Write` schon. Bei `devin-desktop` heisst das Verb `exec` und die Pruefung griff – **der Verlust war clientspezifisch** und bestand seit acht Releases. Genau die Lage, gegen die D-26 gerichtet ist; neu ist die Ebene: Abgebildet wurde die erzeugte Konfiguration, nicht das Skript, das die Zusage durchsetzt.
+
+  **AP2-CC-15: Die Pfadmuster treffen einen Pfad im Befehl nicht.** Sie verlangen davor einen Zeilenanfang oder ein Trennzeichen – `.env` und `cat /pfad/.env` treffen, `cat .env` und `grep X .env` nicht.
+
+### Geaendert
+- **Die Werkzeugnamen kommen aus den Manifesten**, aus **allen** Client Packs: Der Hook liegt einmal im Kern und wird von allen geteilt; ein zusaetzlich erkannter Name ist eine Verschaerfung. Dasselbe Prinzip, mit dem Pruefung 14 seit D-28 die Clientnamen aus den Pack-Kennungen liest.
+- **Ein Shell-Befehl wird tokenisiert.** Fuer ausfuehrende Werkzeuge wird die Eingabe an Shell-Trennzeichen zerlegt und jedes Token wie eine Pfadangabe geprueft – keine neuen Muster, nur eine andere Zerlegung.
+- **Die Pfadlisten sind nach Schutzziel getrennt.** `SECRET_PATH_PATTERNS` schuetzt **Vertraulichkeit** und gilt auch fuer lesende Werkzeuge; `STRUCTURE_PATH_PATTERNS` schuetzt **Integritaet** und gilt nur fuer schreibende. Ohne die Trennung haette die Erweiterung ein `git diff` auf einen Kernpfad blockiert – eine Operation, die das Framework mit P4 ausdruecklich voraussetzt.
+
+### Hinzugefuegt
+- **Pruefung 16: Der Schutz-Hook erkennt jeden abgebildeten Werkzeugnamen.** Geprueft **durch Aufruf** mit einer Sonde, die er blockieren muss, nicht durch Listenvergleich: Genau eine solche Vergleichspruefung ist an diesem Befund vorbeigekommen. Sie liest alle Packs, nicht nur das installierte.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs.
+- **Zwei Sonden, elf Gegenproben, drei Regressionsproben** (`tests/protocols/2026-09-10-CR-2026-023-shell-lesesperre.md`). Sonde S1 meldet woertlich den behobenen Befund: „Der Schutz-Hook erkennt den Werkzeugnamen 'Bash' nicht".
+- Vier Shell-Zugriffe auf Secret-Pfade werden jetzt blockiert, die vorher durchliefen; acht normale Befehle bleiben frei, darunter ein lesender Kernzugriff.
+- **In einer Sitzung belegt, allein durch den Hook:** In einer Testinstallation ohne Regelablage, ohne Wurzel-Anweisungsdatei, ohne `SessionStart`-Hook, mit geloeschten `Read`-`deny`-Regeln fuer `.env` und ausdruecklich erlaubtem `Bash(cat:*)` wurde `cat .env` blockiert (`is_error=True`). Der Wert kommt im Sitzungsverlauf nicht vor.
+- **Pruefung 16 war in der ersten Fassung wirkungslos** – sie las nur das Manifest des installierten Packs, und das ist `devin-desktop`, wo das Verb `exec` heisst. Der Befund betraf `claude-code`, ein Pack ohne Installation: genau die Lage, in der er acht Releases unbemerkt blieb. **Die dritte wirkungslose Pruefung in vier Releases**, jedes Mal aus einem anderen Grund still.
+
+### Migrationshinweise fuer Overlays
+Bestehende Installationen ziehen den Hook ueber `install.py --update` nach. **Verhaltensaenderung:** Shell-Befehle auf Secret-Pfade werden ab sofort blockiert. Umgekehrt sind lesende Zugriffe auf Struktur-Pfade (`framework/core/`, `project-overlay/`, die Laufzeitschicht) fuer ausfuehrende Werkzeuge jetzt frei – bei `devin-desktop` waren sie zuvor gesperrt.
+
+### Bekannte Einschraenkungen
+- **Die Sperre schuetzt gegen Versehen, nicht gegen Absicht.** Geprueft wird die Zeichenkette des Befehls; Verschleierung – `cat .e''nv`, eine Variable, ein base64-Umweg, ein Skript, das die Datei oeffnet – wird nicht erfasst. Das ist die Grenze jeder textuellen Pruefung und hier ausgewiesen, damit die Faehigkeitsmatrix nicht mehr verspricht, als sie haelt.
+- **Die `deny`-Liste bleibt ohne Regel fuer Lesebefehle.** Der Schutz kommt vom Hook.
+- **`AP2-CC-14` bleibt offen** – die `allow`-Regeln wirken erst nach dem Vertrauensdialog.
+- **Das fail-open-Verhalten ist unveraendert.**
+
 ## [0.20.0] - 2026-09-10
 
 ### Behoben

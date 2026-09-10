@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.20.0 (2026-09-10)
+## Stand nach Release 0.21.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.20.0 gebracht haben
+### Was 0.5.0 bis 0.21.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,6 +35,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Shell-Lesesperre | Für Shell-Befehle bestand keine Lesesperre: Die Abbildung erreichte den Matcher, nicht die Prüfung im Hook – bei einem Pack, das keine Installation hat | `CR-2026-023`, D-30, `tests/protocols/2026-09-10-CR-2026-023-shell-lesesperre.md` |
 | Versionsfelder geprüft | Prüfung 13 sagte „jedes Versionsfeld“ zu und prüfte die Artefakte nie; gefunden, während 62 davon von Hand gehoben wurden | `CR-2026-022`, `tests/protocols/2026-09-10-CR-2026-022-artefaktversionen.md` |
 | Hooks laufen wirklich | Beide Hooks liefen unter Windows nicht – `python3` war dort ein Alias ohne Interpreter, H2 galt damit nicht. Der Interpreter wird jetzt an seiner Wirkung geprüft | `CR-2026-021`, D-29, `tests/protocols/2026-09-10-CR-2026-021-hook-interpreter.md` |
 | Kern ohne Akteursnamen | Der Kern nannte einen Client als Handelnden – 248 Nennungen in 78 Dateien, das Dreifache der ausgewiesenen Zahl; Prüfung 14 setzt es jetzt durch | `CR-2026-020`, D-28, `tests/protocols/2026-09-10-CR-2026-020-akteursbezeichnung.md` |
@@ -45,6 +46,29 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.21.0 greift die Lesesperre auch für Shell-Befehle. Zwei Ursachen hoben sie zusammen auf.
+
+**„AP2-CC-16“ (neu, Schwere hoch): Die Abbildung erreichte den Matcher, nicht die Prüfung.**
+Das Manifest bildet `exec` auf `Bash` ab – daraus entsteht der Matcher, der Hook wird also
+aufgerufen. Er verglich intern aber gegen die generischen Verbnamen. Ergebnis: Ein `Bash`-Befehl
+auf `.env` lief durch, derselbe Zugriff als `Write` wurde blockiert. **Bei `devin-desktop` heißt
+das Verb `exec` und die Prüfung griff – der Verlust war clientspezifisch** und bestand seit acht
+Releases. Genau die Lage, gegen die D-26 gerichtet ist; neu ist die Ebene: Abgebildet wurde die
+erzeugte Konfiguration, nicht das Skript, das die Zusage durchsetzt.
+
+Dazu `AP2-CC-15`: Die Pfadmuster verlangen vor dem Pfad einen Zeilenanfang oder ein Trennzeichen
+und hätten `cat .env` auch mit richtigem Werkzeugnamen nicht getroffen.
+
+Seit D-30 liest der Hook die Werkzeugnamen aus den Manifesten **aller** Packs, tokenisiert
+Shell-Befehle und trennt seine Pfadlisten nach Schutzziel – Secret-Pfade sind vertraulich und
+gelten auch für lesende Werkzeuge, Strukturpfade sind integritätsgeschützt und gelten nur für
+schreibende. Ohne die Trennung hätte die Erweiterung ein `git diff` auf einen Kernpfad blockiert.
+
+Prüfung 16 setzt es **durch Aufruf** durch, nicht durch Listenvergleich: Genau eine
+Vergleichsprüfung ist an diesem Befund vorbeigekommen. Sie war in ihrer ersten Fassung selbst
+wirkungslos, weil sie nur das installierte Pack las – **die dritte stille Prüfung in vier
+Releases**, jedes Mal aus einem anderen Grund, jedes Mal durch den Wirksamkeitsnachweis gefunden.
 
 Mit 0.20.0 prüft Prüfung 13, was ihr Kopfkommentar zusagt. Er nannte seit 0.13.0
 „Versionsfelder in der Form `MAJOR.MINOR.PATCH`“; tatsächlich deckte die Prüfung die
