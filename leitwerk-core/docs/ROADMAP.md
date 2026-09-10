@@ -97,17 +97,47 @@ ab, nicht nur gegen sich selbst.
 
 ### Nächste Schritte, nach Priorität
 
-**P1 – AP2: Mechanismen validieren.** Der größte offene Block auf dem Weg zu 1.0.0 und seit
-0.6.0 der einzige verbleibende P1. Je Client Pack sind die VERIFY-Marker gegen eine reale
-Installation abzuarbeiten: 13 von 26 Zeilen bei `devin-desktop`, 9 von 26 bei `claude-code`.
-Danach den Schutz-Hook auf fail-closed umstellen – bei `claude-code` ist das Blockierverhalten
-bereits dokumentiert, dort also zuerst.
+**P1 – AP2: Mechanismen validieren. Begonnen.**
 
-Die Zusammenführung der Berechtigungen hat den Wert dieses Arbeitspakets erhöht: Beide Packs
-tragen jetzt nachweislich dieselbe Regelmenge. Ob ein Client sie durchsetzt, sagt das nicht –
-genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` prüft, ob das
-Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
-Zusage ist mit `FW-ZA-05` bereits belegt.
+**Client Pack `claude-code`: alle zehn Prüfmarker abgearbeitet** (Clientversion 2.1.267,
+`tests/protocols/2026-09-10-AP2-claude-code.md`). Acht Befunde, davon zwei schwer. Der Client
+war die ganze Zeit erreichbar – das Framework wird in einer Claude-Code-Sitzung entwickelt;
+das Pack trug trotzdem seit acht Releases `Geprüfte Clientversion: <TBD>`.
+
+Das Befundmuster ist bemerkenswert: **Sechs von acht Befunden lauten, das Pack habe
+unterschätzt, was der Client leistet.** Kein einziger lautet, es habe eine Fähigkeit
+behauptet, die fehlt.
+
+Zwei Befunde sind schwer und noch offen; ihre Behebung ändert die Semantikabbildung und damit
+D-18, läuft also als eigener Änderungsantrag:
+
+- **AP2-CC-01:** Die Semantikabbildung verwirft `triggers` beim Rendern (`drop_fields`). Die
+  Zusage S4 – schreibende Skills nur benutzergetriggert, vom Validator in der Quelle erzwungen
+  – verfällt damit in der Installation, **obwohl der Client ein Feld dafür hat**:
+  `disable-model-invocation: true`.
+- **AP2-CC-02:** Der Client wertet Pfadregeln nur für `Read` und `Edit` aus. Die Abbildung
+  erzeugt je Pfad zusätzlich eine `Write(...)`-Regel: **17 wirkungslose Regeln** je
+  Installation, jede mit einer Startwarnung, sechs davon vom Validator eingefordert. Der Schutz
+  hält über die `Edit(...)`-Hälfte; die beschriebene Verschärfung ist keine.
+
+Zwei Einstufungen `[NICHT ABBILDBAR]` sind überholt: `.claude/rules/*.md` mit
+`paths:`-Frontmatter bildet R2 und R3 nativ ab – und damit die Grundlage der Technology Packs
+bei diesem Client.
+
+**Offen bei `claude-code`:** die Wirkungsnachweise. Sie brauchen eine Sitzung, die **in** der
+Testinstallation startet, weil Berechtigungen beim Sitzungsstart gelesen werden; aus einer
+Sitzung mit anderem Arbeitsverzeichnis sind sie nicht führbar. Der einfachste ist geschenkt:
+Die Startwarnungen aus AP2-CC-02 erscheinen ohne Zutun und benennen jede wirkungslose Regel.
+
+**Offen bei `devin-desktop`:** alle zwölf Prüfmarker. Sie brauchen eine Installation von Devin
+Desktop; nichts aus dem `claude-code`-Protokoll überträgt sich darauf.
+
+**Offen übergreifend:** die verbindliche Zielversion je Client. Das Protokoll hält fest, gegen
+welche Version geprüft wurde (2.1.267); *freigegeben für* eine Version ist das Pack damit
+nicht – das ist eine Festlegung des `<FRAMEWORK_OWNER>`.
+
+Danach den Schutz-Hook auf fail-closed umstellen – bei `claude-code` ist das Blockierverhalten
+bereits belegt.
 
 **P2 – Testkatalog ausführen.** 30 von 37 Testfällen stehen auf `offen`, keiner auf
 `fehlgeschlagen`. Kriterium 2 von D-11. Die skriptbaren Testfälle sind abgearbeitet und alle
