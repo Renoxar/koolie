@@ -41,7 +41,7 @@ Mit 0.7.0 ist der letzte P3-Punkt der Liste erledigt: Der Name folgt dem Inhalt.
 Umbenennung war seit 0.5.0 vorgesehen und wurde bewusst zurückgestellt, bis `FW-KO-04` sie
 absichern konnte – die Prüfung meldete gegen beide Installationen null Fehler.
 
-Ein Client Pack enthält jetzt fünf Dateien statt achtzig. Mit 0.6.0 ist das Verschärfungsprinzip
+Mit 0.6.0 ist das Verschärfungsprinzip
 an der Stelle, an der die Kernzusagen B1 bis B6 hängen, eine geprüfte Eigenschaft: Eine Regel,
 die ein Client nicht abbilden kann, lässt die Installation scheitern, statt stillschweigend zu
 entfallen – und der Validator gleicht die installierte Berechtigungsdatei gegen die Kernquelle
