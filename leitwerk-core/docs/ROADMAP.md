@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.10.0 (2026-09-10)
+## Stand nach Release 0.11.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.10.0 gebracht haben
+### Was 0.5.0 bis 0.11.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -29,6 +29,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Hauptdokument | Baut aus einem frischen Auscheckstand; Laufzeitdateien aus einer Referenzinstallation mit Herkunftsangabe; Abbildungsschicht eingearbeitet | D-21, `CR-2026-011` |
 | Schreibschutz | Das **gesamte** Kernverzeichnis ist geschützt, nicht nur `framework/**`; der zweite Testfall des Katalogs ist bestanden | D-22, `CR-2026-012`, `tests/protocols/2026-09-10-FW-ZA-05.md` |
 | Übernahme belegt | Übungsrepository von 0.4.0 auf 0.10.0 gehoben – sechs Releases in einem Schritt, ein Handgriff von Hand; Kriterium 5 von D-11 technisch belegt | `FW-RE-02`, `tests/protocols/2026-09-10-FW-RE-02.md` |
+| Prüfungen, die prüfen | Vier Blindstellen des Validators behoben; ein Testfall gilt erst mit Wirksamkeitsnachweis als bestanden | D-23, `CR-2026-013`, `tests/protocols/2026-09-10-FW-KO-01.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
@@ -36,7 +37,14 @@ die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die sein
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
 
-Nach 0.10.0 ist das Übungsrepository von 0.4.0 auf den aktuellen Stand gehoben – als
+Mit 0.11.0 prüfen die Prüfungen, was sie zu prüfen behaupten. `FW-KO-01` war grün – und ließ
+sechs von 22 gezielt eingebrachten Defekten durch. Vier davon waren echte Blindstellen: Die
+Prüfung auf vier Backticks hatte unter Windows nie ausgelöst, die Quellen des Hauptdokuments
+waren von der Inhaltsprüfung ausgenommen, ein Overlay konnte sich über seinen eigenen Status
+widersprechen, und derselbe Schutz war im Hook strenger als im Validator. Seit D-23 gilt ein
+Testfall erst als bestanden, wenn neben dem grünen Lauf ein Wirksamkeitsnachweis vorliegt.
+
+Nach 0.10.0 ist das Übungsrepository von 0.4.0 auf den damaligen Stand gehoben – als
 Aktualisierung, nicht als Neuinstallation, und damit über sechs Releases hinweg. Der einzige
 Handgriff war der im CHANGELOG angekündigte: zwei Zeilen in der Berechtigungsdatei, vom
 Validator zuvor mit genau zwei Fehlern eingefordert. Kriterium 5 von D-11 ist damit
@@ -76,16 +84,17 @@ genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` p
 Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
 Zusage ist mit `FW-ZA-05` bereits belegt.
 
-**P2 – Testkatalog ausführen.** 34 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
-Die Ablage steht (`tests/protocols/`), das Format ist an drei Protokollen ablesbar. `FW-ZA-05`
-zeigt zugleich, wie ein Skripttest aussieht, der etwas belegt: Er prüft nicht nur, was
-blockiert werden muss, sondern auch, was durchgelassen werden muss.
+**P2 – Testkatalog ausführen.** 32 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
+Die skriptbaren Testfälle sind damit abgearbeitet: `FW-KO-01`, `FW-KO-04`, `FW-DS-03`,
+`FW-ZA-05` und `FW-RE-02` sind bestanden und protokolliert.
 
-Der nächste erreichbare Testfall ohne reale Installation ist `FW-KO-01` (Basis, skript) –
-der Validatorlauf selbst; er braucht wie `FW-KO-04` einen Wirksamkeitsnachweis über eine
-Sondendatei, sonst belegt er nur, dass das Skript durchläuft. Danach `FW-DS-03` (Selbsttest
-des Schutz-Hooks) und die Review-Testfälle `FW-KO-02`, `FW-VN-01`, `FW-AK-01`. Alles Übrige
-sind Sitzungstests und hängt an AP2.
+Als Nächstes bleiben ohne reale Installation nur die drei Review-Testfälle: `FW-KO-02`
+(Kurzform gegen Langform der Regeltexte), `FW-VN-01` (Versionskette) und `FW-AK-01`
+(`[DOK]`-Aussagen gegen die aktuelle Herstellerdokumentation – braucht Zugang zu dieser
+Dokumentation). Alles Übrige sind Sitzungstests und hängt an AP2.
+
+**P2 – Übungsrepository auf 0.11.0 nachziehen.** Ein `install.py --update`; die
+Berechtigungsdatei ist diesmal nicht betroffen, weil sich die Kernregelmenge nicht ändert.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
@@ -102,7 +111,9 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
 
 - Zwei Pfadnennungen in AP2 dieses Dokuments: Das Arbeitspaket validiert die Mechanismen *eines*
   Clients und nennt sie deshalb konkret.
-- `PyYAML` ist nicht vorausgesetzt; ohne das Modul prüft der Validator Frontmatter eingeschränkt.
+- `PyYAML` ist für den Betrieb nicht vorausgesetzt, für einen Nachweis schon: Ohne das Modul
+  prüft der Validator Frontmatter und Overlay-Manifest eingeschränkt und sagt das seit 0.11.0
+  als Warnung. Der Testkatalog führt es als Voraussetzung der Skripttests.
 - Ein Client Pack fügt eine Verschachtelungsebene hinzu; unter Windows bleiben bei `MAX_PATH`
   rund 149 Zeichen für den Projektpfad.
 - Bei `claude-code` liegen die Hooks in der Berechtigungsdatei und damit in der Saat. Eine

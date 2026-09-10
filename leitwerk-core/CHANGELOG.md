@@ -2,6 +2,53 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.11.0] – 2026-09-10
+
+### Behoben
+- **Vier Blindstellen des Validators (`CR-2026-013`, Decision Record D-23).** Gefunden beim Ausführen von `FW-KO-01` – einem Testfall, der ohne Wirksamkeitsnachweis grün gewesen wäre. Von 22 gezielt eingebrachten Defekten blieben im ersten Durchgang sechs unbemerkt; vier davon waren echte Befunde.
+
+  **Prüfung 11 hat unter Windows nie ausgelöst.** `os.path.relpath` liefert dort Backslashes, verglichen wurde gegen Präfixe mit Schrägstrich. Betroffen war auch die Ausnahme für `project-overlay/forbidden-terms.txt`: In einem echten Projekt stehen dort die realen Kunden- und Produktnamen, und der Validator hätte die Datei gegen sich selbst geprüft – ein Fehler je Begriff. Hier fiel es nicht auf, weil die Liste des Übungsrepositorys leer ist.
+
+  **Die Quellen des Hauptdokuments waren von der Inhaltsprüfung ausgenommen.** `build` steht in der Überspringliste, weil dort die Erzeugnisse eines Projekts liegen – unter dem Kern liegen darunter aber die 33 handgeschriebenen Kapitelquellen. Ungeprüft auf Secrets, Adressen, Sperrbegriffe und vier Backticks, also genau dort, wo vier Backticks die Assemblierung brechen und ein Secret in den Lieferbestandteil geriete.
+
+  **Ein Overlay konnte sich widersprechen.** Es erklärt seinen Status zweimal – im Steckbrief und im Aktivierungsabschnitt. `--strict-overlay` suchte nur die zweite Form; der Steckbrief konnte `inaktiv` sagen und die Prüfung meldete grün.
+
+  **Derselbe Schutz war an zwei Stellen unterschiedlich streng.** Der Schutz-Hook blockiert sechs Secret-Kategorien in einer Werkzeugeingabe, der Validator suchte drei im Bestand. `api_key = …`, Bearer-Token und Verbindungszeichenfolgen mit Anmeldedaten durften versioniert im Repository stehen.
+
+- **Sammelnennungen mit Auslassungszeichen gelten nicht mehr als Pfadangabe.** `leitwerk-core/framework/core/…` im Fließtext ist keine Datei. Der Falschalarm wurde erst sichtbar, als die Quellen des Hauptdokuments in die Prüfung kamen.
+
+### Geändert
+- **Der Validator sagt, wenn er eingeschränkt prüft.** Fehlt PyYAML, prüfen die Prüfungen 4, 5 und 8 nur, ob ein Frontmatter vorhanden ist – nicht, was darin steht; das Overlay-Manifest wird gar nicht geprüft. Bisher schwieg er dazu. Jetzt meldet er eine Warnung und benennt die drei Prüfungen. Der Testkatalog führt PyYAML als **Voraussetzung der Skripttests**: Ein `bestanden` aus einem Lauf mit dieser Warnung ist ungültig.
+
+- **Die Secret-Muster des Validators entsprechen denen des Hooks.** Ein Wert in spitzen Klammern ist ausgenommen – ein Platzhalter ist konstruktionsbedingt kein Secret, und das Framework schreibt seine Beispiele durchgehend so. Die Gegenthese, die engeren Muster seien Absicht gewesen, wurde geprüft und widerlegt: Über beide Repositorys ergeben die breiteren Muster genau **einen** Treffer, und der ist ein als synthetisch gekennzeichneter Platzhalter.
+
+  Die umgekehrte Angleichung unterbleibt bewusst: Beim Hook bleibt die strengere Auslegung, weil ein Falschalarm dort eine Operation blockiert und keinen Release.
+
+- **Ein Testfall gilt erst mit Wirksamkeitsnachweis als bestanden** (D-23). `FW-KO-01` verlangt jetzt neben dem grünen Lauf, dass jede Sonde gemeldet wird. Das Overlay-Manifest wird zusätzlich auf seine Kopfschlüssel geprüft, und der Name des Kernverzeichnisses steht im Skript einmal statt an drei Stellen.
+
+### Nachweise
+- **`FW-KO-01` (Basis, skript): bestanden.** 22 von 22 Sonden gemeldet – im ersten Durchgang waren es 16. Protokoll: `leitwerk-core/tests/protocols/2026-09-10-FW-KO-01.md`.
+- **`FW-DS-03` (Basis, skript): bestanden.** Zehn synthetische Werkzeugeingaben, alle sechs Musterkategorien des Hooks abgedeckt, vier Negativfälle. Protokoll: `leitwerk-core/tests/protocols/2026-09-10-FW-DS-03.md`; enthält einen bekannten Falschalarm mit Begründung.
+- Validator gegen Framework- und Übungsrepository: 0 Fehler, 0 Warnungen – erstmals mit vollständigem Prüfumfang, weil PyYAML vorhanden ist. `install.py --check` ohne Abweichung; Hauptdokument baut für beide Client Packs.
+- Testkatalog: **5 von 37 Testfällen bestanden**, 32 offen.
+
+### Migrationshinweise für Overlays
+Kein Artefakt ändert sich. Der Validator meldet nach dem Wechsel aber Dinge, die er vorher nicht gemeldet hat – keine neuen Regeln, sondern Regeln, die nicht durchgesetzt wurden:
+
+| Neu gemeldet | Was zu tun ist |
+|---|---|
+| Codeblöcke mit vier oder mehr Backticks in geschützten Ablagen | Auf drei Backticks kürzen; sie brechen sonst die Dokumentassemblierung |
+| Widersprüchlicher Overlay-Status (Steckbrief gegen Aktivierungsabschnitt) | Beide Stellen angleichen |
+| Secret-Muster im Bestand (`api_key = …`, Bearer-Token, Verbindungszeichenfolge mit Anmeldedaten) | Wert entfernen; Beispiele als Platzhalter in spitzen Klammern schreiben |
+| Sperrbegriffe, die bisher unter Windows unbemerkt blieben | Begriff aus dem generischen Bestandteil entfernen |
+| Warnung „PyYAML nicht installiert" | PyYAML installieren, bevor ein Lauf als Nachweis dient |
+
+### Bekannte Einschränkungen
+- Die Sonden zu `FW-KO-01` sind nicht Teil des Repositorys; ein Wiederholungslauf folgt der Tabelle im Protokoll. Ein fester Sondenlauf wäre eine eigene Änderung – er erzeugt ein Werkzeug, das selbst gepflegt und selbst geprüft werden will.
+- Prüfung 10 (Mermaid) bleibt ungeprüft: `mmdc` steht in dieser Umgebung nicht zur Verfügung.
+- Der Schutz-Hook läuft weiterhin fail-open. Die Umstellung steht in AP2 und setzt voraus, dass das Eingabeschema gegen eine reale Installation bestätigt ist.
+- Die Einstufungen der Fähigkeitsmatrizen bleiben unbelegt (Roadmap AP2, weiterhin der einzige P1).
+
 ## [0.10.0] – 2026-09-10
 
 ### Behoben
