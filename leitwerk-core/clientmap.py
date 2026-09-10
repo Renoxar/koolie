@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 
 
 class AbbildungsFehler(ValueError):
@@ -222,12 +223,55 @@ def _hook_matcher(verben: list[str], man: dict) -> str:
     return man.get("hook_matcher_separator", "|").join(namen)
 
 
+# Kandidaten in der Reihenfolge, in der sie geprueft werden. "python3" steht vorn,
+# weil es auf POSIX-Systemen der verlaessliche Name ist; "py" ist der Windows-Launcher.
+INTERPRETER_KANDIDATEN = ("python3", "python", "py")
+_SONDE = "LEITWERK-INTERPRETER-OK"
+_interpreter_gemerkt: list[str] = []
+
+
+def python_interpreter() -> str:
+    """Ermittelt einen Interpreternamen, der auf dieser Maschine wirklich Python startet.
+
+    Nicht "python3" fest verdrahten: Unter Windows ist das haeufig der
+    Microsoft-Store-Alias, der nur eine Fehlermeldung ausgibt und mit Exit-Code 49
+    endet, ohne dass ein Interpreter startet. Ein Hook, der so aufgerufen wird, laeuft
+    nie - und ein Schutz-Hook, der nicht laeuft, blockiert nichts (AP2-CC-13).
+
+    Geprueft wird deshalb nicht die Anwesenheit des Namens, sondern seine Wirkung:
+    Der Kandidat muss eine Sonde ausgeben. Das ist dieselbe Unterscheidung, die D-23
+    fuer Pruefungen verlangt - Anwesenheit ist kein Nachweis.
+    """
+    if _interpreter_gemerkt:
+        return _interpreter_gemerkt[0]
+    versucht = []
+    for kandidat in INTERPRETER_KANDIDATEN:
+        try:
+            lauf = subprocess.run(
+                [kandidat, "-c", "import sys; sys.stdout.write('%s')" % _SONDE],
+                capture_output=True, text=True, timeout=15)
+        except (OSError, subprocess.SubprocessError) as fehler:
+            versucht.append("%s (%s)" % (kandidat, type(fehler).__name__))
+            continue
+        if lauf.returncode == 0 and _SONDE in (lauf.stdout or ""):
+            _interpreter_gemerkt.append(kandidat)
+            return kandidat
+        versucht.append("%s (Exit %s)" % (kandidat, lauf.returncode))
+    raise AbbildungsFehler(
+        "Kein funktionsfaehiger Python-Interpreter fuer die Hook-Aufrufe gefunden. "
+        "Geprueft: " + ", ".join(versucht) + ". Die Hooks des Frameworks setzen die "
+        "Zusagen H2 und die Overlay-Statusmeldung durch; ohne Interpreter liefen sie "
+        "nicht, und ein Schutz-Hook, der nicht laeuft, blockiert nichts (AP2-CC-13). "
+        "Installation abgebrochen, statt eine Zusage zu erzeugen, die nicht traegt (D-26)")
+
+
 def _hook_befehl(script: str, man: dict) -> str:
     variable = man.get("hook_project_dir_var")
     if not variable:
         raise AbbildungsFehler(
             f"{man.get('client', '?')}/manifest.json: Feld hook_project_dir_var fehlt")
-    return 'python3 "$' + variable + '/' + core_dir_name(man) + '/' + script + '"'
+    return (python_interpreter() + ' "$' + variable + '/'
+            + core_dir_name(man) + '/' + script + '"')
 
 
 def _hooks_objekt(quelltext: str, man: dict) -> dict:

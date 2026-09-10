@@ -33,6 +33,9 @@ Prüft (statisch, ohne laufenden KI-Client):
  14. Akteursbezeichnung (D-02, D-28): Der Kern nennt keinen Client als Handelnden. Die
      Namen stammen aus den Pack-Kennungen; der Produktname mit Zusatz bleibt zulaessig,
      historische Dokumente sind ausgenommen
+ 15. Hook-Interpreter (AP2-CC-13, D-29): Der Interpreter der Hook-Aufrufe startet auf
+     dieser Maschine wirklich Python. Geprueft wird die Wirkung, nicht die Anwesenheit
+     des Namens - unter Windows ist 'python3' haeufig ein Alias ohne Interpreter
 
 Ohne PyYAML laufen die Prüfungen 4, 5 und 8 eingeschränkt; das Skript sagt es dann als
 Warnung. Für einen Release- oder Übernahmenachweis ist PyYAML erforderlich.
@@ -47,6 +50,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -1094,6 +1098,78 @@ def check_actor_naming(root: str) -> None:
                 f"Text den Produktnamen tragen, steht dort <CLIENT_NAME>")
 
 
+# Pruefung 15: Der Interpreter der Hook-Aufrufe startet auf dieser Maschine wirklich
+# Python. Geprueft wird die Wirkung, nicht die Anwesenheit des Namens (AP2-CC-13).
+HOOK_SONDE = "LEITWERK-INTERPRETER-OK"
+
+
+def _hook_kommandos(root: str, man: dict) -> list[tuple[str, str]]:
+    """(Fundstelle, Kommando) je konfiguriertem Hook - aus beiden Ablageformen."""
+    treffer: list[tuple[str, str]] = []
+    # Der Ort der Hook-Konfiguration steht in der Platzhalterabbildung des Packs; bei
+    # einem Client ohne eigene Hook-Datei zeigt sie auf die Berechtigungsdatei.
+    orte = {man.get("permissions_file"),
+            (man.get("runtime_placeholders") or {}).get("<HOOKS_FILE>")}
+    for rel in sorted(k for k in orte if k):
+        pfad = os.path.join(root, *rel.split("/"))
+        if not os.path.exists(pfad):
+            continue
+        try:
+            daten = json.loads(read(pfad))
+        except json.JSONDecodeError:
+            continue
+        # Eigene Hook-Datei: das Objekt steht oben. Hooks in der Berechtigungsdatei:
+        # unter dem Schluessel "hooks".
+        hooks = daten.get("hooks") if "hooks" in daten else daten
+        if not isinstance(hooks, dict):
+            continue
+        for ereignis, eintraege in hooks.items():
+            if ereignis.startswith("_") or not isinstance(eintraege, list):
+                continue
+            for eintrag in eintraege:
+                for h in (eintrag or {}).get("hooks", []):
+                    befehl = h.get("command")
+                    if befehl:
+                        treffer.append((f"{rel}:{ereignis}", befehl))
+    return treffer
+
+
+def check_hook_interpreter(root: str, man: dict) -> None:
+    """Pruefung 15 (AP2-CC-13): Ein Hook, der nicht startet, setzt nichts durch.
+
+    Die Hooks tragen die Zusage H2 der Faehigkeitsmatrix und die Overlay-Statusmeldung.
+    Wird der Aufruf mit einem Interpreternamen erzeugt, den es auf der Zielmaschine
+    nicht gibt - unter Windows ist "python3" haeufig der Microsoft-Store-Alias -, endet
+    der Hook mit Fehler statt mit einer Entscheidung, und die Zusage gilt dort nicht.
+
+    Geprueft wird die Wirkung: Der Interpreter muss eine Sonde ausgeben. Anwesenheit im
+    Pfad ist kein Nachweis; genau daran ist der Store-Alias vorbeigekommen.
+    """
+    kommandos = _hook_kommandos(root, man)
+    if not kommandos:
+        return
+    geprueft: dict[str, str] = {}
+    for fundstelle, befehl in kommandos:
+        name = shlex.split(befehl, posix=False)[0].strip('"') if befehl.strip() else ""
+        if not name:
+            continue
+        if name not in geprueft:
+            try:
+                lauf = subprocess.run(
+                    [name, "-c", "import sys; sys.stdout.write('%s')" % HOOK_SONDE],
+                    capture_output=True, text=True, timeout=15)
+                ok = lauf.returncode == 0 and HOOK_SONDE in (lauf.stdout or "")
+                geprueft[name] = "" if ok else f"Exit {lauf.returncode}"
+            except (OSError, subprocess.SubprocessError) as fehler:
+                geprueft[name] = type(fehler).__name__
+        if geprueft[name]:
+            err(f"{fundstelle}: Der Hook wird mit '{name}' aufgerufen, das auf dieser "
+                f"Maschine keinen Python-Interpreter startet ({geprueft[name]}). Der Hook "
+                f"laeuft damit nicht, und ein Schutz-Hook, der nicht laeuft, blockiert "
+                f"nichts (AP2-CC-13). 'install.py --update' erzeugt den Aufruf mit einem "
+                f"Interpreter, der hier funktioniert")
+
+
 def check_mermaid(root: str) -> None:
     mmdc = shutil.which("mmdc")
     if not mmdc:
@@ -1142,6 +1218,7 @@ def main() -> int:
     check_manifest(root)
     check_versions(root, man)
     check_actor_naming(root)
+    check_hook_interpreter(root, man)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:
