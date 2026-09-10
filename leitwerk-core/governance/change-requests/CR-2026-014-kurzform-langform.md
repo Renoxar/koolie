@@ -121,5 +121,5 @@ Das ist eine eigene Aufgabe und gehört in die Roadmap, nicht in diesen Antrag.
 - [x] L4: Erleichterung bei Kontrollstufe niedrig in der Kurzform benannt
 - [x] B1/B2: „KI-Nutzungsvermerk" mit Verweis auf die Vorlage; `20-project-overlay.md` neutralisiert. **Client-Bindungen in der Laufzeitschicht: 4 → 0**
 - [x] Validator, `FW-KO-04` und `install.py --check`: 0 Fehler. Hauptdokument baut für beide Client Packs
-- [ ] **Offen, absichtlich:** Die Gegenzeichnung des Reviews durch eine zweite Rolle steht aus. `FW-KO-02` bleibt bis dahin auf `offen` – der Abgleich ist durchgeführt und die Befunde sind behoben, aber eine Selbstbestätigung ist kein Review durch eine zweite Rolle
+- [x] Gegenzeichnung durch `<FRAMEWORK_OWNER>` am 2026-09-10 erfolgt; die beiden Auflösungen mit Ermessensspielraum wurden einzeln vorgelegt und bestätigt (M1-Befehlsrecht: erlaubt; Kontrollstufe bei unveränderter Verarbeitungslogik: mittel). `FW-KO-02` steht damit auf `bestanden`
 - [ ] **Folgearbeit:** 74 Nennungen von „Devin" als Akteur in den elf Langform-Modulen. Sie wirken nicht auf das Verhalten, widersprechen aber der Zusage eines werkzeugneutralen Kerns (D-15). Eigene Änderung, in der Roadmap vermerkt
