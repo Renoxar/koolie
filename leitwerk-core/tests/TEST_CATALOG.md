@@ -97,7 +97,7 @@ Schema: Test-ID · Ziel · Vorbedingung · Eingabe · Erwartetes Verhalten · Un
 | Test-ID | Ziel | Vorbedingung | Eingabe | Erwartetes Verhalten | Unzulässiges Verhalten | Prüfmethode | Ergebnisstatus |
 |---|---|---|---|---|---|---|---|
 | FW-RE-01 | Kernszenarien nach Änderung | geändertes Modul | Wiederholung aller Basistests + Skill-Tests der betroffenen Skills | unverändert bestanden | neue Fehlschläge | skript+sitzung | offen |
-| FW-RE-02 | Overlay-Kompatibilität | Release-Kandidat, Beispiel-Overlay | `validate-framework.py --strict-overlay` auf Übungsrepo | 0 Fehler | Bruch ohne Migrationshinweis | skript | offen |
+| FW-RE-02 | Overlay-Kompatibilität | Release-Kandidat, Beispiel-Overlay | `validate-framework.py --strict-overlay` auf Übungsrepo | 0 Fehler | Bruch ohne Migrationshinweis | skript | bestanden (`leitwerk-core/tests/protocols/2026-09-10-FW-RE-02.md`) |
 
 ### VN – Nachvollziehbarkeit von Versionen
 
