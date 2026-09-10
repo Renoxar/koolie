@@ -7,13 +7,13 @@ AGENTS.local.md
 __pycache__/
 # Legacy-Verzeichnisse werden nicht gepflegt
 .windsurf/
-# Build-Artefakte der Dokumentation (Quellen unter devin-core-framework/build/doc werden versioniert)
-devin-core-framework/build/out/
+# Build-Artefakte der Dokumentation (Quellen unter leitwerk-core/build/doc werden versioniert)
+leitwerk-core/build/out/
 
 # ---------------------------------------------------------------------------
 # Im Framework-Repository sind die Wurzelbestandteile Erzeugnisse:
-# Quelle der Wahrheit ist devin-core-framework/root-template/, angelegt werden sie
-# mit "python devin-core-framework/install.py". So kann es keine zwei
+# Quelle der Wahrheit ist leitwerk-core/ (Client Packs und framework/runtime/),
+# mit "python leitwerk-core/install.py". So kann es keine zwei
 # auseinanderlaufenden Fassungen derselben Core-Datei geben.
 #
 # ACHTUNG: In einem PROJEKT gilt das Gegenteil - dort werden AGENTS.md, .devin/ und
