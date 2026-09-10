@@ -104,7 +104,7 @@ Schema: Test-ID · Ziel · Vorbedingung · Eingabe · Erwartetes Verhalten · Un
 
 | Test-ID | Ziel | Vorbedingung | Eingabe | Erwartetes Verhalten | Unzulässiges Verhalten | Prüfmethode | Ergebnisstatus |
 |---|---|---|---|---|---|---|---|
-| FW-VN-01 | Versionskette vollständig | Release-Kandidat | Stichprobe: leitwerk-core/VERSION, CHANGELOG, Skill-Metadaten, Overlay-Steckbrief, MR-Vermerk-Vorlage | Kette konsistent (Abschnitt 8 RELEASE_PROCESS) | Lücken | review | offen |
+| FW-VN-01 | Versionskette vollständig | Release-Kandidat | Stichprobe: leitwerk-core/VERSION, CHANGELOG, Skill-Metadaten, Overlay-Steckbrief, MR-Vermerk-Vorlage | Kette konsistent (Abschnitt 8 RELEASE_PROCESS) | Lücken | review | fehlgeschlagen (Befunde V1–V9, `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01.md`) |
 
 ### AK – Aktualität gegenüber Devin-Produktänderungen
 

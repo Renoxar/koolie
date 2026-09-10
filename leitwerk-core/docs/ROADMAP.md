@@ -92,17 +92,31 @@ genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` p
 Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
 Zusage ist mit `FW-ZA-05` bereits belegt.
 
-**P2 – Testkatalog ausführen.** 31 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
-Die skriptbaren Testfälle sind abgearbeitet und der erste Review-Testfall dazu: `FW-KO-01`,
-`FW-KO-02`, `FW-KO-04`, `FW-DS-03`, `FW-ZA-05` und `FW-RE-02` sind bestanden und protokolliert.
+**P2 – Testkatalog ausführen.** 30 von 37 Testfällen stehen auf `offen`, einer auf
+`fehlgeschlagen`. Kriterium 2 von D-11. Die skriptbaren Testfälle sind abgearbeitet und zwei
+Review-Testfälle dazu: `FW-KO-01`, `FW-KO-02`, `FW-KO-04`, `FW-DS-03`, `FW-ZA-05` und `FW-RE-02`
+sind bestanden und protokolliert, `FW-VN-01` ist durchgeführt und fehlgeschlagen.
 
 `FW-KO-02` ist durchgeführt, seine sieben Befunde sind behoben und die Gegenzeichnung durch
-`<FRAMEWORK_OWNER>` liegt vor – damit `bestanden`. Ohne reale Installation bleiben `FW-VN-01`
-(Versionskette) und `FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle Herstellerdokumentation –
-braucht Zugang zu dieser Dokumentation). Alles Übrige sind Sitzungstests und hängt an AP2.
+`<FRAMEWORK_OWNER>` liegt vor – damit `bestanden`.
 
-**P2 – Übungsrepository auf 0.11.0 nachziehen.** Ein `install.py --update`; die
-Berechtigungsdatei ist diesmal nicht betroffen, weil sich die Kernregelmenge nicht ändert.
+`FW-VN-01` (Versionskette) ist durchgeführt und **`fehlgeschlagen`**: neun Befunde, fünf davon
+durch Sonden belegt (`tests/protocols/2026-09-10-FW-VN-01.md`). Die Kette aus Abschnitt 8 des
+Release-Prozesses ist nirgends gebrochen, hält aber ausschließlich durch Sorgfalt – der
+Validator prüft, ob Versionsfelder da sind, nie ob sie stimmen. Schwerster Befund: Bei
+Kontrollstufe niedrig trägt der Merge Request als einzige Versionsangabe die Skill-Version, und
+die steht seit 0.1.0 unverändert auf `0.1.0`, obwohl alle zwölf Skills geändert wurden. Behebung
+und Gegenzeichnung stehen aus; zwei Ermessensentscheidungen (E1, E2) liegen dem
+`<FRAMEWORK_OWNER>` vor.
+
+Ohne reale Installation bleibt `FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle
+Herstellerdokumentation – braucht Zugang zu dieser Dokumentation). Alles Übrige sind
+Sitzungstests und hängt an AP2.
+
+**Erledigt – Übungsrepository nachgezogen.** Es steht auf 0.12.0 (Commit `a4ff67d`,
+„Framework auf 0.12.0: Regeltexte vollstaendig, Vorlagensatz nachgezogen"); Overlay-Version,
+Manifest und Laufzeitfassung tragen `0.12.0`, der Steckbrief `0.12.x`. Beim Ausführen von
+`FW-VN-01` als Referenzinstallation geprüft.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
