@@ -38,8 +38,11 @@ PROTECTED_PATH_PATTERNS = [
     re.compile(r"\.(pem|key|p12|pfx|jks|keystore)$", re.I),
     re.compile(r"(^|[\\/])id_(rsa|ed25519|ecdsa)"),
     re.compile(r"(^|[\\/])secrets?[\\/]", re.I),
-    re.compile(r"(^|[\\/])AGENTS\.md$"),
-    re.compile(r"(^|[\\/])\.devin[\\/]"),
+    # Wurzel-Anweisungsdatei und Laufzeitschicht heissen je nach Client anders. Bewusst
+    # beide Formen: Das Skript wird von allen Client Packs geteilt, und ein zusaetzlich
+    # geschuetzter Pfad ist eine Verschaerfung, keine Lockerung.
+    re.compile(r"(^|[\/])(AGENTS|CLAUDE)\.md$"),
+    re.compile(r"(^|[\/])\.(devin|claude)[\/]"),
     re.compile(r"(^|[\\/])project-overlay[\\/]"),
     re.compile(r"(^|[\\/])framework[\\/]core[\\/]"),
 ]
@@ -96,7 +99,7 @@ def main() -> None:
             for pattern in PROTECTED_PATH_PATTERNS:
                 if pattern.search(s):
                     block("Framework-Regel: Operation betrifft einen geschuetzten Pfad "
-                          "(Secrets, AGENTS.md, .devin/, project-overlay/, devin-core-framework/framework/core/). "
+                          "(Secrets, Wurzel-Anweisungsdatei, Laufzeitschicht, project-overlay/, devin-core-framework/framework/core/). "
                           "Aenderungen daran erfolgen nur ueber den Aenderungsprozess "
                           "(devin-core-framework/governance/CHANGE_REQUEST_TEMPLATE.md).")
     sys.exit(0)

@@ -17,7 +17,7 @@ Die Prompt-Bibliothek enthält zwölf geprüfte Vorlagen für wiederkehrende Auf
 1. Liegt für eine Aufgabe ein Skill vor, MUSS er bevorzugt verwendet werden (`devin-core-framework/framework/core/06-prompting-rules.md`, Regel 7; Aufruf `/skill-name` `[DOK]`). Skills sind versioniert, getestet und über `allowed-tools` und `permissions` technisch abgesichert; eine Prompt-Vorlage ist es nicht.
 2. Eine Prompt-Vorlage mit verwandtem Skill KANN als strukturierte Anweisung um den Skill herum verwendet werden oder den Skill ersetzen, wenn dieser in der Laufzeitschicht nicht verfügbar ist. In beiden Fällen gelten die Grenzen des Skills (Betriebsmodus, Kontrollstufen, Delegationsverbote) unverändert.
 3. Prompt-Vorlagen ohne verwandten Skill (FW-PR-008, FW-PR-009) liefern ausschließlich Befunde und Hypothesen mit Fundstellen; die Bewertung erfolgt durch die benannte Rolle (zum Beispiel `<SECURITY_CONTACT>`) beziehungsweise durch Messung. Sie sind auf den Modus M1 beschränkt und ersetzen weder Security Scans noch Penetrationstests noch Messungen.
-4. Eine Prompt-Vorlage erweitert den Handlungsspielraum von Devin nie über `AGENTS.md`, die Regeln unter `.devin/rules/` und das Project Overlay hinaus; sie kann ihn nur einschränken.
+4. Eine Prompt-Vorlage erweitert den Handlungsspielraum des Werkzeugs nie über die Wurzel-Anweisungsdatei, die Regeln der Regelablage und das Project Overlay hinaus; sie kann ihn nur einschränken.
 
 ## 3. Aufbau einer Prompt-Vorlage
 
@@ -60,7 +60,7 @@ Typische Abfolge einer Änderung: FW-PR-001 (Verstehen) → FW-PR-002 (Impact-An
 Vollständig in `devin-core-framework/framework/core/06-prompting-rules.md`; die Kurzform ersetzt das Dokument nicht.
 
 1. **Ein Ziel je Anweisung.** Mehrere Ziele werden in mehrere Sitzungen zerlegt; eine Vorlage je Sitzung.
-2. **Pflichtelemente vollständig.** Ziel, Betriebsmodus, Kontrollstufe mit Faktor, Scope (erlaubt und ausgeschlossen) sowie Kontext mit Klasse MÜSSEN, Akzeptanzkriterien und Ausgabeformat SOLLEN enthalten sein; die Rückfrageregel KANN wiederholt werden (Standard über `AGENTS.md`). Die Vorlagen enthalten alle acht Elemente.
+2. **Pflichtelemente vollständig.** Ziel, Betriebsmodus, Kontrollstufe mit Faktor, Scope (erlaubt und ausgeschlossen) sowie Kontext mit Klasse MÜSSEN, Akzeptanzkriterien und Ausgabeformat SOLLEN enthalten sein; die Rückfrageregel KANN wiederholt werden (Standard über die Wurzel-Anweisungsdatei). Die Vorlagen enthalten alle acht Elemente.
 3. **Referenzen statt Kopien.** Dateien per Pfad referenzieren; eingefügter Text MUSS vorher auf seine Kontextklasse geprüft sein (`devin-core-framework/decision-trees/01-context-allowed.md`, `devin-core-framework/checklists/02-privacy-context.md`).
 4. **Keine impliziten Berechtigungen.** Formulierungen wie „mach einfach", „räum auf" oder „alles, was nötig ist" DÜRFEN NICHT verwendet werden.
 5. **Keine Rollenspiele mit Regelwirkung.** Aufforderungen, Regeln zu ignorieren oder Prüfungen zu überspringen, sind unzulässig – auch zu Testzwecken außerhalb des Testkatalogs.

@@ -9,6 +9,63 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
+## Stand nach Release 0.5.0 (2026-09-10)
+
+Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
+ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.5.0 gebracht hat
+
+| Thema | Ergebnis | Beleg |
+|---|---|---|
+| Release-Definition | 1.0.0 heißt „technisch validiert und übertragbar", fünf prüfbare Kriterien; Pilot und Onboarding sind projektseitig | D-11, `CR-2026-001` |
+| Querverweisprüfung | `FW-KO-04` umgesetzt und bestanden – der erste Testfall des Katalogs überhaupt | `tests/protocols/2026-09-10-FW-KO-04.md` |
+| Client Packs | Abbildungsschicht mit Fähigkeitsmatrix; zwei Packs: `devin-desktop`, `claude-code` | D-12 bis D-14 |
+| Kern neutralisiert | 61 von 63 Client-Bindungen ersetzt; Begriffe statt Pfade, Glossar als Abbildung | D-15, `docs/RUNTIME_GLOSSARY.md` |
+| Keine Doppelpflege | Skills, Wurzel-Anweisung, Core-Regeltexte, Agentenprofil, Overlay-Vorlage liegen einmal im Kern | D-16, D-17 |
+
+Ein Client Pack enthält jetzt sieben beziehungsweise sechs Dateien statt achtzig.
+
+### Nächste Schritte, nach Priorität
+
+**P1 – Berechtigungsdatei und Hook-Konfiguration zusammenführen.** Die letzten beiden Artefakte,
+die je Client Pack doppelt liegen. Anders als alles bisher Zusammengeführte ist das keine
+Formfrage, sondern eine **Semantikabbildung**: Werkzeugnamen, Präfixmuster, getrennte Werkzeuge
+für Ändern und Anlegen. Dabei entstehen Verschärfungen, die im Client Pack bereits dokumentiert
+sind (`clients/claude-code/CLIENT_PACK.md` Abschnitt 4). Eigener Änderungsantrag; sorgfältig,
+weil hier die Kernzusagen B1 bis B6 hängen.
+
+**P1 – AP2: Mechanismen validieren.** Der größte offene Block auf dem Weg zu 1.0.0. Je Client
+Pack sind die VERIFY-Marker gegen eine reale Installation abzuarbeiten: 13 von 26 Zeilen bei
+`devin-desktop`, 9 von 26 bei `claude-code`. Danach den Schutz-Hook auf fail-closed umstellen –
+bei `claude-code` ist das Blockierverhalten bereits dokumentiert, dort also zuerst.
+
+**P2 – Testkatalog ausführen.** 34 von 35 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
+Die Ablage steht (`tests/protocols/`), das Format ist am ersten Protokoll ablesbar.
+
+**P2 – Übungsrepository auf 0.5.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
+simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Damit wäre zugleich Kriterium 5 von
+D-11 (Übernahme in ein zweites Projekt) belegt.
+
+**P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
+`entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
+steht. D-02 ist bereits fortgeschrieben.
+
+**P3 – Modulstatus heben.** Alle Module stehen auf `entwurf`; Kriterium 3 von D-11.
+
+**P3 – Verzeichnisname `devin-core-framework/`.** Der Kern ist inhaltlich neutral, sein Name
+trägt weiterhin den Produktnamen eines Clients. Eine Umbenennung ist ein Breaking Change und
+sollte, wenn überhaupt, vor 1.0.0 erfolgen – abgesichert durch `FW-KO-04`, das eine solche
+Umbenennung nachweislich vollständig erfasst.
+
+### Bewusst offen gelassen
+
+- Zwei Pfadnennungen in AP2 dieses Dokuments: Das Arbeitspaket validiert die Mechanismen *eines*
+  Clients und nennt sie deshalb konkret.
+- `PyYAML` ist nicht vorausgesetzt; ohne das Modul prüft der Validator Frontmatter eingeschränkt.
+- Ein Client Pack fügt eine Verschachtelungsebene hinzu; unter Windows bleiben bei `MAX_PATH`
+  rund 149 Zeichen für den Projektpfad.
+
 ## Abhängigkeitsübersicht
 
 ```mermaid
@@ -23,15 +80,17 @@ flowchart LR
     AP4 --> AP6
     AP5 --> AP7["AP7 Testkatalog<br/>ausführen"]
     AP6 --> AP7
-    AP7 --> AP8["AP8 Onboarding"]
-    AP8 --> AP9["AP9 Pilot"]
-    AP9 --> AP10["AP10 Auswertung"]
-    AP10 --> AP11["AP11 Stabilisierung"]
+    AP7 --> AP11["AP11 Stabilisierung"]
     AP11 --> AP12["AP12 Version 1.0"]
     AP12 --> AP13["AP13 Übernahme in<br/>weitere Projekte"]
+    AP13 --> AP8["AP8 Onboarding<br/>(projektseitig)"]
+    AP8 --> AP9["AP9 Pilot<br/>(projektseitig)"]
+    AP9 --> AP10["AP10 Auswertung<br/>(projektseitig)"]
 ```
 
-Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel; AP4 benötigt AP2 und AP3; AP5 benötigt AP3 und AP4; AP6 benötigt AP3 und AP4 (Review der realen Konfiguration); AP7 benötigt AP5 und AP6; AP8 benötigt AP7; AP9 benötigt AP8; AP10 folgt AP9; AP11 folgt AP10; AP12 folgt AP11; AP13 folgt AP12.
+Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel; AP4 benötigt AP2 und AP3; AP5 benötigt AP3 und AP4; AP6 benötigt AP3 und AP4 (Review der realen Konfiguration); AP7 benötigt AP5 und AP6; AP11 folgt AP7; AP12 folgt AP11; AP13 folgt AP12; AP8 benötigt AP13; AP9 folgt AP8; AP10 folgt AP9.
+
+> **Zuordnung seit CR-2026-001 (D-11):** AP1–AP7, AP11 und AP12 liegen beim Framework Owner und führen zum Release 1.0.0. AP8 (Onboarding), AP9 (Pilot) und AP10 (Auswertung) sind **projektseitige** Arbeitspakete der aufnehmenden Organisation und setzen eine erfolgte Übernahme (AP13) voraus. Sie sind ausdrücklich **keine** Vorbedingung für 1.0.0 – ein Release 1.0.0 erklärt nicht, dass das Framework im Realbetrieb erprobt wurde.
 
 ## Arbeitspakete
 
@@ -50,6 +109,8 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Offene Entscheidungen | `<TBD: Planstufe>`, `<TBD: Vertragsprüfung>`, `<TBD: Nutzungsumfang Cloud/CLI>` |
 
 ### AP2 – Validierung der Devin-Funktionalitäten (P1)
+
+> Dieses Arbeitspaket ist bewusst clientspezifisch: Es validiert die Mechanismen **eines** KI-Clients. Für jedes weitere Client Pack ist es mit der Fähigkeitsmatrix des jeweiligen Packs zu wiederholen (`devin-core-framework/clients/README.md`).
 
 | Feld | Inhalt |
 |---|---|
@@ -133,7 +194,7 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Risiken | Sitzungs-Tests nicht reproduzierbar dokumentiert → Testblätter mit Version/Modell/Datum führen |
 | Offene Entscheidungen | `<TBD: Ablage der Testprotokolle>` |
 
-### AP8 – Onboarding (P2)
+### AP8 – Onboarding (P3, projektseitig)
 
 | Feld | Inhalt |
 |---|---|
@@ -141,13 +202,13 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Aktivitäten | Mentorinnen und Mentoren briefen; Übungsrepository mit Ködern scharf schalten; Durchläufe nach GUIDE/CL-09; Material-Feedback einarbeiten |
 | Eingaben | AP7-Stand; Onboarding-Paket |
 | Ergebnisse | freigegebene Erstnutzer; Onboarding-Protokolle; Material-CRs |
-| Abhängigkeiten | AP7 |
+| Abhängigkeiten | AP13 (Übernahme in ein Projekt); nicht Vorbedingung für AP12 |
 | Verantwortliche Rolle | Mentorinnen und Mentoren mit `<FRAMEWORK_OWNER>` |
 | Abnahmekriterien | alle Pilotteilnehmer mit dokumentierter Freigabe (COMPLETION_CRITERIA) |
 | Risiken | Onboarding als Formalie behandelt → Köderübungen sind bestehenspflichtig |
 | Offene Entscheidungen | keine |
 
-### AP9 – Pilot (P2)
+### AP9 – Pilot (P3, projektseitig)
 
 | Feld | Inhalt |
 |---|---|
@@ -155,13 +216,13 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Aktivitäten | Referenzbasis erheben; Etikettierung im `<ISSUE_TRACKER>`; Betrieb mit Review-Punkten; Feedback- und Vorfallbehandlung; Zwischenanpassungen als CRs |
 | Eingaben | AP8-Nutzer; Metrikdefinitionen |
 | Ergebnisse | Metrikdaten; Review-Protokolle; CR-Liste |
-| Abhängigkeiten | AP8 |
+| Abhängigkeiten | AP8; nicht Vorbedingung für AP12 |
 | Verantwortliche Rolle | Projektleitung (Pilot) mit Overlay Owner |
 | Abnahmekriterien | Pilot über `<PILOT_DURATION>` ohne Abbruchkriterium beendet oder Abbruch sauber dokumentiert |
 | Risiken | Metrik-Übersteuerung des Verhaltens → Kommunikation „bewertet Prozesse, nie Personen" konsequent halten |
 | Offene Entscheidungen | `<PILOT_DURATION>`, `<TBD: Zielwerte>` |
 
-### AP10 – Auswertung (P2)
+### AP10 – Auswertung (P3, projektseitig)
 
 | Feld | Inhalt |
 |---|---|
@@ -169,7 +230,7 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Aktivitäten | Abschlussbericht (Bündelbetrachtung, Kosten/Nutzen, Vorfälle, Akzeptanz); Lessons Learned; Entscheidungsvorlage |
 | Eingaben | AP9-Daten und -Protokolle |
 | Ergebnisse | Abschlussbericht; dokumentierte Entscheidung im Decision Log |
-| Abhängigkeiten | AP9 |
+| Abhängigkeiten | AP9; nicht Vorbedingung für AP12 |
 | Verantwortliche Rolle | Projektleitung mit `<FRAMEWORK_OWNER>` und beteiligten Rollen |
 | Abnahmekriterien | Entscheidung mit Begründung; abgeleitete CR-Liste priorisiert |
 | Risiken | Bestätigungsfehler (nur positive Signale berichten) → Bericht enthält verpflichtend die Gegenargumente |
@@ -181,25 +242,25 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 |---|---|
 | Ziel | Pilot-Erkenntnisse eingearbeitet; Framework konsistent und dokumentationsfest |
 | Aktivitäten | Priorisierte CRs umsetzen; Skills auf `aktiv` heben, wo bewährt; Regression (FW-RE); Dokumente und Onboarding aktualisieren |
-| Eingaben | AP10-CR-Liste |
+| Eingaben | CR-Liste aus AP2, AP5, AP6 und AP7 |
 | Ergebnisse | bereinigter Stand; Testprotokoll; Release-Kandidat |
-| Abhängigkeiten | AP10 |
+| Abhängigkeiten | AP7 (seit CR-2026-001; zuvor AP10) |
 | Verantwortliche Rolle | `<FRAMEWORK_OWNER>` mit Modul-Ownern |
 | Abnahmekriterien | CR-Liste abgearbeitet oder begründet verschoben; Testkatalog grün |
-| Risiken | Scope-Kriechen durch Wunschliste → nur pilotbegründete CRs für 1.0 |
+| Risiken | Scope-Kriechen durch Wunschliste → nur test- und validierungsbegründete CRs für 1.0 |
 | Offene Entscheidungen | Verschiebeliste |
 
 ### AP12 – Version 1.0 (P2)
 
 | Feld | Inhalt |
 |---|---|
-| Ziel | Release 1.0.0 als verbindlicher, übertragbarer Stand |
+| Ziel | Release 1.0.0 als verbindlicher, übertragbarer Stand im Sinne von D-11: technisch validiert und übertragbar |
 | Aktivitäten | `devin-core-framework/checklists/11-framework-release.md` vollständig; Archiv; Kommunikations- und Migrationspaket; Bestandsliste initialisieren |
 | Eingaben | AP11-Kandidat |
 | Ergebnisse | Release 1.0.0 mit Nachweisen |
-| Abhängigkeiten | AP11 |
+| Abhängigkeiten | AP11 (nicht AP8–AP10, siehe CR-2026-001) |
 | Verantwortliche Rolle | `<FRAMEWORK_OWNER>` |
-| Abnahmekriterien | Release-Checkliste ohne offene MUSS-Punkte; Freigabe dokumentiert |
+| Abnahmekriterien | Die fünf Kriterien aus D-11 erfüllt: kein unbearbeiteter VERIFY-Marker; kein Testfall mit Ergebnisstatus `offen`; alle Modulstatus oberhalb `entwurf`; kein Decision Record im Status `entschieden (Vorschlag)`; Übernahme in ein zweites Projekt nachgewiesen. Release-Checkliste `FW-CL-11` ohne offene MUSS-Punkte; Freigabe dokumentiert |
 | Risiken | Release ohne AK-Prüfung veraltet sofort → FW-AK-01/02 sind Teil der Checkliste |
 | Offene Entscheidungen | keine |
 

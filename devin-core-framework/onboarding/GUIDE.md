@@ -26,7 +26,7 @@ Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontro
 - Zugang zu `<REPOSITORY_NAME>` und Devin Desktop; Grundkenntnisse in `<TECH_STACK>` und Git.
 - Datenschutz- und Vertraulichkeitsunterweisung der Organisation absolviert (`<TBD: Referenz>`).
 - Benannte Mentorin oder benannter Mentor; Übungsrepository eingerichtet (`exercises/README.md`).
-- Gelesen: `QUICKSTART.md`, `AGENTS.md`, Overlay Abschnitte 1–6 und 13–16.
+- Gelesen: `QUICKSTART.md`, die Wurzel-Anweisungsdatei, Overlay Abschnitte 1–6 und 13–16.
 
 ## Programmüberblick
 
@@ -55,11 +55,11 @@ Lies `devin-core-framework/framework/core/02-privacy.md` und arbeite `devin-core
 
 ## Modul 3 – Sichere Arbeitsweise
 
-Lies `devin-core-framework/framework/core/05-working-model.md` (14 Schritte, M1–M5) und `.devin/README.md` (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`devin-core-framework/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
+Lies `devin-core-framework/framework/core/05-working-model.md` (14 Schritte, M1–M5) und die Übersicht der Laufzeitschicht (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`devin-core-framework/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
 
 ## Modul 4 – Repository- und Framework-Struktur
 
-Rundgang mit der Mentorin oder dem Mentor durch: `AGENTS.md` (Hierarchie der Anweisungen), `.devin/` (Regeln, Skills, Berechtigungen, Hooks), `devin-core-framework/framework/` (Core, Packs), `project-overlay/` (die einzige projektspezifische Ebene), `devin-core-framework/checklists/`, `devin-core-framework/decision-trees/`, `devin-core-framework/prompts/`. Verstehe die Prioritätshierarchie (acht Ebenen, Verschärfungsprinzip) und warum ein Projektwechsel nur das Overlay tauscht.
+Rundgang mit der Mentorin oder dem Mentor durch: die Wurzel-Anweisungsdatei (Hierarchie der Anweisungen), die Laufzeitschicht (Regeln, Skills, Berechtigungen, Hooks), `devin-core-framework/framework/` (Core, Packs), `project-overlay/` (die einzige projektspezifische Ebene), `devin-core-framework/checklists/`, `devin-core-framework/decision-trees/`, `devin-core-framework/prompts/`. Verstehe die Prioritätshierarchie (acht Ebenen, Verschärfungsprinzip) und warum ein Projektwechsel nur das Overlay tauscht.
 
 ## Modul 5 – Nutzung von Skills und effektives Prompting
 

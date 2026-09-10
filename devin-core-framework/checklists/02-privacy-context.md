@@ -39,7 +39,7 @@ Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) 
 - [ ] **MUSS** Keine Websuche und kein Abruf externer Seiten ohne domainbezogene Freigabe im Overlay.
 - [ ] **MUSS** MCP-Werkzeuge nur, wenn der Server im Overlay (Abschnitt 13) freigegeben ist; MCP-Bestätigungen bleiben auf `ask`.
 - [ ] **MUSS** Geteilter Kontext (Spaces, parallele Sitzungen) enthält nur Inhalte, die für alle beteiligten Aufgaben freigegeben sind.
-- [ ] **SOLL** Persönliche Regeln (`AGENTS.local.md`) erweitern keine Kontextfreigaben.
+- [ ] **SOLL** Nutzerlokale Überschreibungen erweitern keine Kontextfreigaben.
 
 ## Abbruch- und Eskalationskriterien
 

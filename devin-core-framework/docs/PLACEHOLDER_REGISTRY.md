@@ -19,6 +19,27 @@ Alle im Framework verwendeten Platzhalter. Neue Platzhalter werden hier registri
 | `<APPROVAL_ROLE>` | Rolle für Freigaben Stufe hoch und Overlay | Overlay 15 | „Technische Projektleitung" | ja |
 | `<PROJECT_RULES_PATH>` | Pfad des verbindlichen Convention-Dokuments | Overlay 9 | „project-overlay/documents/coding-guidelines/guidelines.md" | ja |
 
+## Laufzeit-Platzhalter (durch `install.py` aufgelöst)
+
+Diese Platzhalter unterscheiden sich von allen anderen: Sie werden **nicht vom Menschen** befüllt, sondern beim Installieren aus dem `manifest.json` des gewählten Client Packs aufgelöst. Sie stehen in den Quelltexten des Kerns – vor allem in `devin-core-framework/framework/skills/` – dort, wo ein Text auf ein Artefakt der Laufzeitschicht verweist.
+
+Die Begriffsfassung derselben Abbildung steht in `devin-core-framework/docs/RUNTIME_GLOSSARY.md`: Fließtext nennt den Begriff, ein Quelltext, der gerendert wird, den Platzhalter.
+
+| Platzhalter | Bedeutung | `devin-desktop` | `claude-code` |
+|---|---|---|---|
+| `<CLIENT_NAME>` | Produktname des Clients (nur dort, wo ein Text ihn nennen muss) | `Devin Desktop` | `Claude Code` |
+| `<RUNTIME_DIR>` | Laufzeitschicht | `.devin` | `.claude` |
+| `<ROOT_INSTRUCTION_FILE>` | Wurzel-Anweisungsdatei | `AGENTS.md` | `CLAUDE.md` |
+| `<ROOT_INSTRUCTION_LOCAL>` | Nutzerlokale Ergänzung dazu | `AGENTS.local.md` | `CLAUDE.local.md` |
+| `<PERMISSIONS_FILE>` | Berechtigungsdatei | `.devin/config.json` | `.claude/settings.json` |
+| `<SKILLS_DIR>` | Skill-Ablage | `.devin/skills` | `.claude/skills` |
+| `<RULES_DIR>` | Regelablage | `.devin/rules` | `.claude/framework` |
+| `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` |
+| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/hooks.v1.json` | `.claude/settings.json` |
+| `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` |
+
+Ein Client Pack MUSS jeden dieser Platzhalter in seinem `manifest.json` unter `runtime_placeholders` belegen; ein unaufgelöster Laufzeit-Platzhalter in einer Installation ist ein Fehler.
+
 ## Vom Framework ergänzte Platzhalter
 
 | Platzhalter | Bedeutung | Wird gesetzt in | Beispiel (synthetisch) | Pflicht vor Aktivierung |
@@ -47,7 +68,9 @@ Alle im Framework verwendeten Platzhalter. Neue Platzhalter werden hier registri
 | `<PILOT_DURATION>` | Dauer des Piloten | `devin-core-framework/pilot/PILOT_CONCEPT.md` | „8 Wochen" | vor Pilotstart |
 | `<TECH_PACK_NAME>` / `<TECH_PACK_CODE>` | Name und Kürzel eines Technology Packs | Pack-Vorlage | „Sprache X" / „LX" | bei Pack-Erstellung |
 | `<ROLE_PACK_NAME>` / `<ROLE_PACK_CODE>` | Name und Kürzel eines Role Packs | Pack-Vorlage | „Requirements Engineering" / „RE" | bei Pack-Erstellung |
+| `<CLIENT_PACK_NAME>` / `<CLIENT_PACK_CODE>` | Name und Kürzel eines Client Packs (Abbildung auf einen KI-Client, `devin-core-framework/clients/`) | Pack-Vorlage | „Client C" / „CC" | bei Pack-Erstellung |
 | `<FORM_NAME>`, `<PLACEHOLDER>`, `<PACK>` | Generische Platzhalter in Erläuterungen und Beispielen | – | – | – |
 | `<JAHR>`, `<JJJJ>`, `<NNN>` | Schema-Platzhalter für Jahres- und Laufnummern in IDs (`CR-<JAHR>-<NNN>`, `INC-<PROJECT_CODE>-<JJJJ>-<NNN>`) | Vorlagen in `devin-core-framework/governance/` | „CR-2026-001" | – |
 | `<TBD: …>` | Offene projekt- oder organisationsspezifische Entscheidung | überall | – | Overlay-Abschnitte 4, 5, 6, 13, 14, 15: ja |
 | `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` | Technische Aussage, die gegen die aktuelle Devin-Dokumentation geprüft werden muss | Framework | – | vor Version 1.0.0 |
+| `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` | Clientneutrale Form des vorstehenden Markers; zu prüfen gegen die Dokumentation desjenigen KI-Clients, für den das jeweilige Client Pack gilt. Ersetzt die devin-spezifische Form ab Release 0.5.0 | Framework, Client Packs | – | vor Version 1.0.0, je Client Pack |

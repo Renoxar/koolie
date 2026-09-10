@@ -28,7 +28,7 @@ Führt durch das Onboarding-Programm (`devin-core-framework/onboarding/GUIDE.md`
 - [ ] **MUSS** Modul 1 – Möglichkeiten und Grenzen: Leitprinzipien P1–P10, Delegationsverbote V1–V12 erklärt bekommen und an Beispielen eingeordnet.
 - [ ] **MUSS** Modul 2 – Datenschutz und Kontextauswahl: Kontextklassen K0–K3 angewendet (Übung mit gemischten Quellen); Verhalten bei K3-Fund erklärt.
 - [ ] **MUSS** Modul 3 – Sichere Arbeitsweise: Standardarbeitsablauf, Betriebsmodi M1–M5, Kontrollstufen mit Maximumprinzip; Preflight-Check zweimal unter Anleitung durchgeführt.
-- [ ] **MUSS** Modul 4 – Framework-Struktur: AGENTS.md, `.devin/`-Laufzeitschicht, Overlay, Packs, Prioritätshierarchie am Repository gezeigt.
+- [ ] **MUSS** Modul 4 – Framework-Struktur: Wurzel-Anweisungsdatei, Laufzeitschicht, Overlay, Packs, Prioritätshierarchie am Repository gezeigt.
 - [ ] **MUSS** Modul 5 – Skills und Prompting: mindestens `fw-repo-analyze`, `fw-code-explain`, `fw-plan`, `fw-change-small`, `fw-tests` ausgeführt; Prompting-Regeln und unzulässige Muster besprochen.
 - [ ] **MUSS** Modul 6 – Übungsaufgaben: alle synthetischen Übungen aus `devin-core-framework/onboarding/exercises/` bearbeitet, einschließlich der Negativübungen (Injektion, K3-Köder, Scope-Falle).
 - [ ] **MUSS** Modul 7 – Test und Review: eigene Übungsänderung mit `devin-core-framework/checklists/04-review-ai-code.md` und `05-testing.md` geprüft; Ergebnisbericht und Nutzungsvermerk erstellt.

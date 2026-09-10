@@ -6,7 +6,7 @@
 | Version | `0.1.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Laufzeitfassung | `AGENTS.md` Abschnitt 2 |
+| Laufzeitfassung | Wurzel-Anweisungsdatei, Abschnitt 2 |
 
 ## 1. Die Hierarchie (normativ)
 
@@ -16,11 +16,11 @@ Bei Widersprüchen zwischen Anweisungen gilt die höhere Ebene:
 |---|---|---|
 | 1 | Gesetzliche und regulatorische Vorgaben sowie verbindliche Sicherheitsvorgaben | außerhalb des Frameworks; Einbindung über Verweisblätter |
 | 2 | Organisationsweite Richtlinien | `devin-core-framework/framework/org-policies/` (Einbindungspunkt) |
-| 3 | Framework Core | `AGENTS.md`, `devin-core-framework/framework/core/`, `.devin/rules/00-*, 10-*, 15-*`, `.devin/config.json` (Kernregeln) |
-| 4 | Project Overlay | `project-overlay/`, `.devin/rules/2N-*` |
-| 5 | Technology Packs | `devin-core-framework/framework/tech-packs/`, `.devin/rules/40-*` |
-| 6 | Role Packs | `devin-core-framework/framework/role-packs/`, `.devin/rules/30-*` |
-| 7 | Skills | `.devin/skills/*/SKILL.md` |
+| 3 | Framework Core | Wurzel-Anweisungsdatei, `devin-core-framework/framework/core/`, Regelablage `00-*, 10-*, 15-*`, Berechtigungsdatei (Kernregeln) |
+| 4 | Project Overlay | `project-overlay/`, Regelablage `20-*`, `2N-*` |
+| 5 | Technology Packs | `devin-core-framework/framework/tech-packs/`, Regelablage `40-*` |
+| 6 | Role Packs | `devin-core-framework/framework/role-packs/`, Regelablage `30-*` |
+| 7 | Skills | Skill-Ablage, je Skill `SKILL.md` |
 | 8 | Aufgabenbezogene Nutzeranweisung | Sitzung (Ebene E) |
 
 ## 2. Ergänzende Regeln, ohne die die Hierarchie widersprüchlich wäre (normativ)
@@ -44,7 +44,7 @@ Der Arbeitsauftrag enthält zwei Fassungen der Hierarchie: eine 7-stufige (Phase
 
 **Befund 5 – Skills (7) unter den Packs (5, 6):** Konsistent, weil Skills Verfahren sind, die Pack- und Overlay-Vorgaben anwenden. Ein Skill, der einer Pack-Konvention widerspricht, ist ein Fehler des Skills (E4-Feedback), kein Vorrangfall. Die Laufzeit-Anordnung ist zugleich technisch plausibel, da Regeln (Ebenen 3–6) als Systemkontext wirken und Skills als aufgabenbezogene Anweisungen `[DOK]`-Mechanismen unterschiedlicher Art sind – die normative Rangfolge stellt dieselbe Ordnung ausdrücklich her, unabhängig vom technischen Ladeweg `[KONZ]`.
 
-**Ergebnis:** Die 8-stufige Hierarchie ist mit den Regeln 2.1–2.5 widerspruchsfrei anwendbar. Ohne diese Regeln wäre sie es nicht; sie sind daher normativer Bestandteil dieses Moduls und der Laufzeitfassung in `AGENTS.md`.
+**Ergebnis:** Die 8-stufige Hierarchie ist mit den Regeln 2.1–2.5 widerspruchsfrei anwendbar. Ohne diese Regeln wäre sie es nicht; sie sind daher normativer Bestandteil dieses Moduls und der Laufzeitfassung in der Wurzel-Anweisungsdatei.
 
 ## 4. Anwendung in der Praxis (Erläuterung)
 

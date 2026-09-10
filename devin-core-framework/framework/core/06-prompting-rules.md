@@ -21,7 +21,7 @@ Jede Anweisung an Devin, die über eine einfache Rückfrage hinausgeht, SOLL die
 | Kontext | Die konkret bereitgestellten Quellen mit Kontextklasse | MUSS |
 | Akzeptanzkriterien | Woran der Mensch erkennt, dass das Ergebnis brauchbar ist | SOLL |
 | Ausgabeformat | Verweis auf das Standardformat des Skills oder der Prompt-Vorlage | SOLL |
-| Rückfrageregel | „Bei Unklarheit fragen, nicht annehmen" (Standard über `AGENTS.md`; Wiederholung bei komplexen Aufgaben) | KANN |
+| Rückfrageregel | „Bei Unklarheit fragen, nicht annehmen" (Standard über die Wurzel-Anweisungsdatei; Wiederholung bei komplexen Aufgaben) | KANN |
 
 ## 2. Regeln (normativ)
 

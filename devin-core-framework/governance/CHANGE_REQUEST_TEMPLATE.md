@@ -30,7 +30,7 @@
 - [ ] Richtige Ebene nach Entscheidungsbaum 6 (keine Projektwerte im Core, keine Governance in Packs)?
 - [ ] Verschärfungsprinzip eingehalten (keine Lockerung höherer Ebenen; keine Berührung von V1–V12/K3)?
 - [ ] Widerspruchsfreiheit zu bestehenden Modulen geprüft (welche gelesen)?
-- [ ] Laufzeitfassungen betroffen (`AGENTS.md`, `.devin/rules/*`, `.devin/config.json`)? Synchronisierung geplant?
+- [ ] Laufzeitfassungen betroffen (Wurzel-Anweisungsdatei, Regelablage, Berechtigungsdatei)? Synchronisierung in **allen** Client Packs geplant (`devin-core-framework/clients/README.md`)?
 - [ ] Belegstatus korrekt (`[DOK]`-Aussagen mit Quelle; sonst `[EMPF]`/`[KONZ]`/VERIFY-Marker)?
 - [ ] Test- und Validierungsbedarf: betroffene Testkatalog-IDs, neue Testfälle, Validatorlauf?
 - [ ] Auswirkungen auf Overlays und laufende Onboardings; Migrationshinweis nötig?

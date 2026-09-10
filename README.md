@@ -16,8 +16,8 @@ Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet
 
 | Pfad | Warum im Wurzelverzeichnis | Belegstatus |
 |---|---|---|
-| `AGENTS.md` | Zentrale Agentenanweisung, wird von Devin automatisch geladen | `[DOK]` |
-| `.devin/` | Laufzeitschicht: `rules/`, `skills/`, `agents/`, `config.json`, `hooks.v1.json` | `[DOK]` |
+| Wurzel-Anweisungsdatei | Zentrale Agentenanweisung, wird vom Client automatisch geladen | `[DOK]` |
+| Laufzeitschicht | Regelablage, Skill-Ablage, Agentenprofile, Berechtigungsdatei, Hook-Konfiguration | `[DOK]` |
 | `project-overlay/` | Ebene 4, die austauschbare Projektkonfiguration – gehört dem Projekt | `[KONZ]` |
 
 ```text
@@ -37,8 +37,12 @@ Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet
 │
 ├── devin-core-framework/                # ◀ DER KERN: ein Ordner, unveränderlich
 │   ├── install.py                       #   legt die Wurzeldateien an, aktualisiert sie
-│   ├── root-template/                   #   Quelle für AGENTS.md, .devin/, project-overlay/
 │   ├── VERSION · CHANGELOG.md · OWNERS.md
+│   ├── clients/                         #   Abbildung auf KI-Clients (keine Regelebene)
+│   │   ├── README.md                    #     Zweck, Fähigkeitsmatrix, Erstellung
+│   │   └── <client>/                    #     je Client:
+│   │       ├── CLIENT_PACK.md           #       Pfadabbildung + Durchsetzungstiefe
+│   │       └── root-template/           #       Quelle für AGENTS.md, .devin/, project-overlay/
 │   ├── framework/                       #   kanonischer, werkzeugneutraler Kern
 │   │   ├── core/                        #     FW-CORE-00…10
 │   │   ├── role-packs/                  #     Ebene 6
@@ -83,9 +87,9 @@ python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay
 
 | | wird bei `--update` überschrieben | bleibt unberührt |
 |---|---|---|
-| Kern | `AGENTS.md`, `.devin/rules/00-`, `10-`, `15-`, `.devin/skills/fw-*`, `.devin/agents/`, `hooks.v1.json`, die `*-TEMPLATE`-Vorlagen | – |
-| Aktivierte Packs | ihre kopierten Bestandteile (`.devin/rules/30-`, `40-` und `.devin/skills/role-*`, `tech-*`), sofern das Pack im Kern liegt | – |
-| Projekt | – | `.devin/config.json`, `.devin/rules/20-`, `2N-`, `.devin/skills/prj-*`, `project-overlay/**`, projekteigene Packs |
+| Kern | Wurzel-Anweisungsdatei, Regelablage `00-`, `10-`, `15-`, Skill-Ablage `fw-*`, Agentenprofile, Hook-Konfiguration, die `*-TEMPLATE`-Vorlagen | – |
+| Aktivierte Packs | ihre kopierten Bestandteile (Regelablage `30-`, `40-` und Skill-Ablage `role-*`, `tech-*`), sofern das Pack im Kern liegt | – |
+| Projekt | – | Berechtigungsdatei, Regelablage `20-`, `2N-`, Skill-Ablage `prj-*`, `project-overlay/**`, projekteigene Packs |
 
 Weitere Aufrufe:
 
@@ -99,26 +103,28 @@ Der ausführliche Weg mit allen Voraussetzungen, Freigaben und der Aktivierungsr
 
 ## Arbeiten an diesem Repository
 
-In **diesem** Repository sind `AGENTS.md`, `.devin/` und `project-overlay/` **Erzeugnisse** und deshalb nicht versioniert (siehe `.gitignore`). Quelle der Wahrheit ist `devin-core-framework/root-template/`. Nach dem Klonen also einmal:
+In **diesem** Repository sind die Wurzel-Anweisungsdatei, die Laufzeitschicht und `project-overlay/` **Erzeugnisse** und deshalb nicht versioniert (siehe `.gitignore`). Quelle der Wahrheit ist das `root-template/` des jeweiligen Client Packs, standardmäßig `devin-core-framework/clients/devin-desktop/root-template/`. Nach dem Klonen also einmal:
 
 ```bash
 python devin-core-framework/install.py
 ```
 
-Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei. **Änderungen am Kern gehören nach `devin-core-framework/root-template/`**, nicht in das erzeugte `.devin/` im Wurzelverzeichnis – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
+Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei. **Änderungen am Kern gehören in das `root-template/` des Client Packs**, nicht in die erzeugte Laufzeitschicht im Wurzelverzeichnis – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
 
-In einem **Projekt** gilt das Gegenteil: dort werden `AGENTS.md`, `.devin/` und `project-overlay/` versioniert. Die vier entsprechenden Zeilen der `.gitignore` sind beim Übernehmen deshalb nicht mitzunehmen.
+Welcher Client verwendet wird, entscheidet `--client`; `python devin-core-framework/install.py --list-clients` zeigt die verfügbaren. Welche Zusagen des Frameworks ein Client **technisch durchsetzt** und welche nur als Anweisung im Kontext stehen, steht in der Fähigkeitsmatrix seines Client Packs (`devin-core-framework/clients/README.md`).
+
+In einem **Projekt** gilt das Gegenteil: dort werden Wurzel-Anweisungsdatei, Laufzeitschicht und `project-overlay/` versioniert. Die vier entsprechenden Zeilen der `.gitignore` sind beim Übernehmen deshalb nicht mitzunehmen.
 
 ## Schnellzugriff nach Rolle
 
 | Ich bin … | Startpunkt |
 |---|---|
 | neu im Team | `devin-core-framework/onboarding/QUICKSTART.md`, dann `devin-core-framework/onboarding/GUIDE.md` |
-| Entwicklerin oder Entwickler im Alltag | `devin-core-framework/onboarding/REFERENCE.md` (Spickzettel), `devin-core-framework/checklists/01-preflight.md`, Skills unter `.devin/skills/` |
+| Entwicklerin oder Entwickler im Alltag | `devin-core-framework/onboarding/REFERENCE.md` (Spickzettel), `devin-core-framework/checklists/01-preflight.md`, Skills in der Skill-Ablage |
 | Reviewerin oder Reviewer | `devin-core-framework/checklists/04-review-ai-code.md`, `devin-core-framework/framework/core/07-review-rules.md` |
 | Overlay Owner / Projektleitung | `devin-core-framework/docs/ADOPTION_GUIDE.md`, `project-overlay/OVERLAY.md`, `devin-core-framework/checklists/10-project-adoption.md`, `devin-core-framework/pilot/` |
 | Framework Owner | `devin-core-framework/governance/`, `devin-core-framework/tests/TEST_CATALOG.md`, `devin-core-framework/checklists/11-framework-release.md`, `devin-core-framework/docs/ROADMAP.md` |
-| Sicherheit / Datenschutz | `devin-core-framework/framework/core/02-privacy.md`, `03-security.md`, `.devin/config.json`, `devin-core-framework/governance/INCIDENT_HANDLING.md` |
+| Sicherheit / Datenschutz | `devin-core-framework/framework/core/02-privacy.md`, `03-security.md`, Berechtigungsdatei, `devin-core-framework/governance/INCIDENT_HANDLING.md` |
 
 ## Framework prüfen
 

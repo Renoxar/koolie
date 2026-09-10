@@ -67,7 +67,7 @@ Von Devin vorgeschlagene Änderungen MÜSSEN nachvollziehbar, überprüfbar und 
 
 ### P8 Tool Independence
 
-Governance-, Qualitäts- und Strukturprinzipien sind werkzeugneutral formuliert und in `devin-core-framework/framework/` kanonisch abgelegt. Die Konkretisierung für Devin Desktop erfolgt ausschließlich in der Laufzeitschicht (`AGENTS.md`, `.devin/`). Ein Werkzeugwechsel darf nur die Laufzeitschicht betreffen.
+Governance-, Qualitäts- und Strukturprinzipien sind werkzeugneutral formuliert und in `devin-core-framework/framework/` kanonisch abgelegt. Die Konkretisierung für einen konkreten KI-Client erfolgt ausschließlich in der Laufzeitschicht, also in der Wurzel-Anweisungsdatei und der Laufzeitablage (`devin-core-framework/docs/RUNTIME_GLOSSARY.md`). Ein Werkzeugwechsel darf nur die Laufzeitschicht betreffen; er wird über ein Client Pack abgebildet (`devin-core-framework/clients/README.md`).
 
 ### P9 Secure by Default
 

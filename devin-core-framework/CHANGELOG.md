@@ -2,6 +2,161 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `devin-core-framework/governance/RELEASE_PROCESS.md`.
 
+## [0.5.0] – 2026-09-10
+
+### Geändert
+- **Definition des Release 1.0.0 (`CR-2026-001`, Decision Record D-11, ersetzt D-09).** 1.0.0 bezeichnet künftig den Stand „technisch validiert und übertragbar" mit fünf prüfbaren Kriterien: kein unbearbeiteter VERIFY-Marker, Testkatalog vollständig protokolliert (kein Testfall `offen`), alle Modulstatus oberhalb `entwurf`, kein Decision Record im Status `entschieden (Vorschlag)`, Übernahme in ein zweites Projekt nachgewiesen.
+
+  Pilot (AP9), Onboarding (AP8) und organisatorische Freigabe (AP10) sind **keine** Vorbedingung mehr für 1.0.0. Sie setzen eine aufnehmende Organisation mit besetzten Rollen voraus und sind damit projektseitige Arbeitspakete; in der Roadmap hängen sie jetzt an AP13 (Übernahme). AP11 folgt direkt auf AP7.
+
+  Hintergrund: Die bisherige Definition machte das Release-Gate `FW-CL-11` strukturell unerreichbar, solange keine Organisation benannt ist – obwohl die verbleibenden Lücken ausschließlich Nachweise betreffen. Ein Release 1.0.0 erklärt ausdrücklich nicht, dass das Framework im Realbetrieb erprobt wurde.
+
+- `devin-core-framework/checklists/11-framework-release.md`: vier Prüfpunkte mit der Kennzeichnung **(ab 1.0.0, D-11)** ergänzt.
+- `devin-core-framework/docs/ROADMAP.md`: Abhängigkeitsgraph und Arbeitspakete AP8–AP13 neu zugeordnet; AP8–AP10 auf P3 und als projektseitig gekennzeichnet.
+- Neue Ablage für Änderungsanträge: `devin-core-framework/governance/change-requests/`.
+
+### Hinzugefügt
+- **Querverweisprüfung im Validator (`FW-KO-04`).** `validate-framework.py` prüft als zwölfte Prüfung, dass Markdown-Links und in Backticks genannte Framework-Pfade auf existierende Dateien oder Verzeichnisse zeigen. Der Testkatalog führte diese Prüfung bislang als `skript (validate-framework.py-Erweiterung <TBD>)` mit Ergebnisstatus `offen`; sie ist jetzt umgesetzt und bestanden.
+
+  Nicht als Fehler gewertet werden – jeweils im Skript begründet – Laufzeitfassungen aktivierter Packs (`.devin/rules/2N-`, `30-`, `40-`, `.devin/skills/role-`, `tech-`, `prj-`), nutzerlokale Dateien mit Namensbestandteil `.local.`, Pfade mit vorhandener `.example`- oder `.template`-Fassung sowie Globs, Platzhalter und Befehlszeilen.
+
+  Wirksamkeit belegt: Sondendatei mit zwei defekten Verweisen und vier Nicht-Pfad-Angaben → genau 2 Fehler, keine Fehlmeldung. Umbenennungssimulation `devin-core-framework/` → `agent-core-framework/` → 685 gemeldete Fehler. Damit ist die für 0.5.0 vorgesehene Umbenennung abgesichert.
+
+- **Ablage für Testprotokolle: `devin-core-framework/tests/protocols/`.** Löst `<TBD: Ablage der Testprotokolle>` aus dem Testkatalog. Namensschema `JJJJ-MM-TT-<Test-ID>.md` beziehungsweise `JJJJ-MM-TT-release-<Version>.md`; ein Ergebnisstatus außer `offen` MUSS auf ein Protokoll verweisen. Erster Eintrag: `2026-09-10-FW-KO-04.md`.
+
+- **Client Packs als Abbildungsschicht (`CR-2026-002`, Decision Record D-12).** Neu unter `devin-core-framework/clients/`: `README.md`, die Vorlage `_template/CLIENT_PACK.md` und das erste Pack `devin-desktop/CLIENT_PACK.md`.
+
+  Kern der Vorlage ist die **Fähigkeitsmatrix**: 26 technische Zusagen des Frameworks in sieben Gruppen (Regelladung, Skills, Berechtigungen, Hooks, Agentenprofile, Modi, externe Anbindung), jede eingestuft als `[TECHNISCH]` (die Engine erzwingt sie), `[TEXTUELL]` (nur Anweisung im Kontext) oder `[NICHT ABBILDBAR]`. Sechs davon sind Kernzusagen und entsprechen `_core_rules_integrity` in der Berechtigungsdatei; weicht eine ab, ist sie einzeln zu begründen, im Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben.
+
+  Ein Client Pack ist **keine Regelebene**. Es führt keine Verhaltensregel ein und lockert keine; die achtstufige Prioritätshierarchie (D-06) bleibt unberührt. Bei Widerspruch zur werkzeugneutralen Langform gilt die Langform.
+
+  Befund aus dem ersten ausgefüllten Pack: 21 der 26 Zusagen sind als `[TECHNISCH]` vorgesehen, alle sechs Kernzusagen darunter – aber **13 der 26 Zeilen tragen einen VERIFY-Marker und keine einzige Einstufung ist gegen eine Installation geprüft**. Besonders: Der Schutz-Hook läuft fail-open, die Zusage „Prüfung kann blockieren" ist damit derzeit `[TEXTUELL]`.
+
+- Neue Platzhalter: `<CLIENT_PACK_NAME>`, `<CLIENT_PACK_CODE>` sowie der clientneutrale Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`, der die devin-spezifische Form ab 0.5.0 ersetzt.
+
+- **Wurzelartefakte je Client Pack; `install.py --client` (`CR-2026-003`, Decision Record D-13).** `devin-core-framework/root-template/` liegt jetzt unter `devin-core-framework/clients/devin-desktop/root-template/`. Ein Client Pack besteht damit aus `CLIENT_PACK.md` (was der Client durchsetzt) und `root-template/` (was installiert wird).
+
+  `install.py` kennt `--client` (Standard `devin-desktop`) und `--list-clients`; die Vorlage wird aus dem gewählten Pack abgeleitet statt aus einer Konstanten. Ein unbekannter Client bricht mit Exit-Code 1 ab und nennt die verfügbaren Packs.
+
+  Die Schicht selbst wanderte von `framework/client-packs/` nach `clients/` – aus zwei Gründen. Inhaltlich: Unter `framework/` liegen die Regelebenen, und D-12 hält fest, dass ein Client Pack keine ist. Technisch: Die erste Testinstallation brach unter Windows an `MAX_PATH` ab, weil der längste relative Pfad von 89 auf 126 Zeichen wuchs; unter `clients/` sind es 111.
+
+  **Für aufnehmende Projekte ändert sich nichts.** `install.py` ohne Schalter verhält sich unverändert; die installierten Artefakte sind byteweise dieselben. Betroffen ist nur, wer den Kern selbst bearbeitet: Core-Änderungen gehören jetzt nach `devin-core-framework/clients/<client>/root-template/`.
+
+- **Zweites Client Pack: `claude-code` (`CR-2026-004`, Decision Record D-14).** Vollständiges `root-template/` mit 79 Dateien – eine weniger als `devin-desktop`, weil die Hooks dort in einer eigenen Datei stehen und hier in der Berechtigungsdatei aufgehen.
+
+  **Die Abstraktion trägt.** Alle sechs Kernzusagen sind auch bei diesem Client technisch abgebildet (20 von 26 Zusagen `[TECHNISCH]`, gegenüber 21 bei `devin-desktop`). Die vier nicht abbildbaren Zusagen betreffen ausschließlich Least Context und Ergonomie, keine Schutzzusage: Der Client kennt keine Regeldateien mit Ladetriggern. Die Regeltexte sind inhaltlich identisch und werden über Importe in der Wurzel-Anweisung stets geladen – eine Verschärfung, die rund 22.000 Zeichen ständigen Kontext kostet.
+
+- **Manifeste je Client Pack.** `install.py` hatte die Core- und Saatpfade fest auf `.devin/` verdrahtet; sie stehen jetzt in `clients/<name>/manifest.json`. Ein Pack ohne Manifest gilt als nicht installierbar.
+
+- **Der Validator ist clientneutral.** `check_required`, `check_config`, `check_rules` und `skill_dirs` liefen fest gegen `.devin/`; sie ermitteln die Laufzeitschicht jetzt über `detect_client()`. Mehrere gleichzeitig vorhandene Laufzeitschichten sind ein Fehler. `check_rules` unterscheidet zwei Bauarten: mit Ladetriggern wird das Frontmatter geprüft, ohne Ladetrigger, dass jede Kernregel in der Wurzel-Anweisung **eingebunden** ist – dort ist eine nicht eingebundene Regeldatei stillschweigend wirkungslos.
+
+- **`hook-check-secrets.py` schützt beide Namensformen** der Wurzel-Anweisung und der Laufzeitschicht. Das Skript war schema-agnostisch und läuft bei beiden Clients unverändert.
+
+- **Der Kern ist neutralisiert (`CR-2026-005`, Decision Record D-15).** Er bezeichnet die Bestandteile der Laufzeitschicht jetzt mit Begriffen statt mit Pfaden: Wurzel-Anweisungsdatei, Laufzeitschicht, Berechtigungsdatei, Regelablage, Skill-Ablage, Agentenprofile, Hook-Konfiguration, MCP-Konfiguration, nutzerlokale Überschreibung.
+
+  Neu: `devin-core-framework/docs/RUNTIME_GLOSSARY.md` bildet jeden Begriff auf die Pfade je Client Pack ab – das Gegenstück zum Platzhalterregister. Die Regel: im Kern der Begriff, im Client Pack der Pfad, in historischen Dokumenten bleibt beides unverändert.
+
+  **61 von 63 Stellen ersetzt**, gemessen nach jedem Durchgang: 63 → 57 → 33 → 23 → 8 → 2. Die zwei verbliebenen stehen in Roadmap-AP2, das bewusst die Mechanismen *eines* Clients validiert; dort steht jetzt der Hinweis, dass es je Client Pack zu wiederholen ist.
+
+  Mitgenommen: Wo die Prosa eine Eigenschaft beschreibt und keinen Beleg, ist auch der Produktname gewichen – „Devin passt Tests an" wurde zu „Das Werkzeug passt Tests an", „Devin-Nutzungsvermerk" zu „KI-Nutzungsvermerk".
+
+  Decision Record D-02 wurde **nicht** umgeschrieben – ein Decision Record beschreibt eine Entscheidung zu ihrem Zeitpunkt. Er trägt einen Fortschreibungsvermerk auf D-12 bis D-14.
+
+  **Keine Regel wurde inhaltlich geändert.** Nachgewiesen durch byteweise unveränderte Installationen: weiterhin 80 Dateien (`devin-desktop`) und 79 (`claude-code`), `--check` fehlerfrei.
+
+- **Die Skills haben eine gemeinsame Quelle (`CR-2026-006`, Decision Record D-16).** Sie liegen jetzt einmal unter `devin-core-framework/framework/skills/` und werden bei der Installation in die Form des gewählten Clients gebracht. Ein neuer Skill wird einmal geschrieben und gilt für alle Client Packs.
+
+  Zwei Transformationen, beide aus dem Manifest gesteuert: Das **Frontmatter** wird nach `skill_frontmatter` umgeformt (Listenform oder kommagetrennt, Werkzeugabbildung, Wegfall unbekannter Felder), die **Laufzeit-Platzhalter** werden nach `runtime_placeholders` aufgelöst.
+
+  Neun neue registrierte Platzhalter (`<RUNTIME_DIR>`, `<ROOT_INSTRUCTION_FILE>`, `<ROOT_INSTRUCTION_LOCAL>`, `<PERMISSIONS_FILE>`, `<SKILLS_DIR>`, `<RULES_DIR>`, `<AGENTS_DIR>`, `<HOOKS_FILE>`, `<MCP_FILE>`) ersetzen die 17 Pfadnennungen in den Skill-Rümpfen. Sie unterscheiden sich von allen bisherigen: **Nicht der Mensch füllt sie, sondern `install.py`.** Sie sind die gerenderte Entsprechung zu den Begriffen aus D-15.
+
+  Der Validator prüft beide Enden – die Quelle streng nach Skill-Standard, die installierte Laufzeitschicht darauf, dass kein Platzhalter unaufgelöst blieb.
+
+  **Wirkung:** Die Client Packs schrumpfen von 80 auf 32 beziehungsweise von 79 auf 31 Dateien. 48 Dateien liegen einmal statt zweimal. Der Installationsumfang bleibt unverändert bei 80 und 79 Dateien.
+
+### Geprüft (gemeinsame Skill-Quelle)
+- Erstinstallation unverändert: 80 Dateien (`devin-desktop`), 79 (`claude-code`); `--check` gegen beide fehlerfrei.
+- Gerendertes Frontmatter stichprobenartig geprüft: `fw-tests` erhält bei `devin-desktop` die Listenform mit `permissions` und `triggers`, bei `claude-code` `allowed-tools: Read, Grep, Glob, Edit, Write, Bash`.
+- Platzhalterauflösung: 0 unaufgelöste Laufzeit-Platzhalter in beiden Installationen. Bei `claude-code` laufen `<PERMISSIONS_FILE>` und `<HOOKS_FILE>` erwartungsgemäß auf dieselbe Datei zusammen.
+- Drift an einem gerenderten Skill: Exit 1 mit Nennung der gemeinsamen Quelle; `--update` stellt her.
+- Wirksamkeitsnachweis der neuen Prüfung: `<HOOKS_FILE>` testweise aus einem Manifest entfernt → drei gemeldete Fehler; Manifest wiederhergestellt.
+- Übungsrepository mit neuem Kern: 0 Fehler, `--check` fehlerfrei.
+
+- **Ein Client Pack enthält nur noch Clientspezifisches (`CR-2026-007`, Decision Record D-17).** Von 80 Dateien sind sieben geblieben (`devin-desktop`) beziehungsweise sechs (`claude-code`): die Übersicht der Laufzeitschicht, die Berechtigungsdatei, die Hook-Konfiguration, die MCP-Vorlage, die Vorlage für nutzerlokale Ergänzungen und die Overlay-Saat.
+
+  Alles andere liegt einmal im Kern und wird über `shared_core` / `shared_seed` des Manifests installiert:
+
+  | Neue Ablage | Inhalt |
+  |---|---|
+  | `templates/project-overlay/` | Saat für Ebene 4 – hatte im Client Pack nie etwas zu suchen |
+  | `templates/rules/` | die beiden Regelvorlagen |
+  | `framework/runtime/` | Wurzel-Anweisung, Core-Regeltexte `00-`, `10-`, `15-`, Agentenprofil |
+
+  `framework/runtime/` ist die werkzeugneutrale Laufzeitfassung – genau das, was D-02 seit jeher meint, aber bisher nirgends lag.
+
+  **Drei neue Formtransformationen**, aus dem Manifest gesteuert: Regeltexte erhalten bei einem Client ohne Ladetrigger statt des YAML-Frontmatters einen Kommentar mit Zweck und Ladeverhalten; die Wurzel-Anweisung bekommt an der Marke `<!-- RUNTIME_IMPORTS -->` die Einbindungen dieses Clients; das Agentenprofil wird auf Feldname und Werkzeugformat des Clients gebracht. Neu ist der Laufzeit-Platzhalter `<CLIENT_NAME>` – der Titel der Wurzel-Anweisung nannte bisher fest einen Produktnamen und war damit in der anderen Installation schlicht falsch.
+
+### Geprüft (geteilte Kernbestandteile)
+- **Byteweiser Vergleich gegen 0.4.0**: Wurzel-Anweisung, die drei Core-Regeltexte und das Agentenprofil sind nach dem Rendern identisch mit dem bisherigen Stand. Einzige gewollte Abweichung ist der Titel, der jetzt den Namen des verwendeten Clients trägt.
+- Erstinstallation unverändert: 80 Dateien (`devin-desktop`), 79 (`claude-code`); `--check` gegen beide fehlerfrei.
+- Gerendertes Overlay: `devin-desktop` erhält `.devin/config.json` und `.devin/mcp_config.json`, `claude-code` erhält `.claude/settings.json` und `.mcp.json`; 0 unaufgelöste Platzhalter.
+- Drift an einer gerenderten Regel: Exit 1 mit Nennung der gemeinsamen Quelle; `--update` stellt her.
+- Validator gegen beide Installationen und das Übungsrepository: je 0 Fehler.
+
+### Zwischenbefund während der Umsetzung
+Beim Entfernen der Import-Marke blieb eine Leerzeile stehen. Die Wurzel-Anweisung war damit gegenüber 0.4.0 um genau ein Zeichen verschieden – genug, damit `install.py --check` in **jedem** bestehenden Projekt eine Abweichung gemeldet hätte, die keine ist. Aufgefallen ist es nur durch den byteweisen Vergleich gegen den Vorstand; die Prüfungen selbst waren grün.
+
+### Verbliebene Duplikate zwischen den Client Packs
+Von den 32 Dateien des Packs `devin-desktop` sind **18 byteweise identisch** mit ihrer Entsprechung im Pack `claude-code`:
+
+| Bestandteil | Dateien | Warum es dort nicht hingehört |
+|---|---|---|
+| `project-overlay/` | 16 | Ebene 4 (Projekt) – hat mit dem Client nichts zu tun |
+| `21-overlay-TEMPLATE.md.template`, `40-tech-TEMPLATE.md.template` | 2 | Framework-Vorlagen |
+
+Die übrigen 12 zerfallen in zwei Klassen: **Inhalt Framework, Form Client** (Wurzel-Anweisung, die drei Core-Regeltexte, Agentenprofil, Berechtigungsdatei, Hook-Konfiguration) – für sie trägt der mit diesem Release gebaute Renderer – und **echt clientspezifisch** (die beiden Übersichten der Laufzeitschicht, die MCP-Vorlage, die Vorlage für nutzerlokale Ergänzungen, die Overlay-Saat).
+
+### Messung: Wie viel Skill-Inhalt ist wirklich clientspezifisch?
+Grundlage für die noch offene Zusammenführung der Skills. Verglichen wurden die 48 Dateien je Client Pack (12 Skills mal `SKILL.md`, `EXAMPLES.md`, `TESTS.md`, `CHANGELOG.md`):
+
+| Größe | Wert |
+|---|---|
+| Zeilen gesamt | 3.003 |
+| Abweichende Zeilen | 215 (7,2 %) |
+| davon Frontmatter | 147 |
+| davon Pfadnennungen im Rumpf | 68 |
+
+**92,8 Prozent sind identisch.** Beide Abweichungsklassen sind auflösbar: Das Frontmatter ist mechanisch abbildbar (die Abbildung wurde beim Anlegen des zweiten Packs bereits einmal von Hand ausgeführt), die Pfadnennungen im Rumpf verschwinden durch dieselbe Neutralisierung, die dieser Eintrag für den Kern beschreibt.
+
+### Befund: 63 Client-Bindungen im werkzeugneutralen Kern
+Der Validator gegen die erste `claude-code`-Installation meldete 104 Fehler – keiner davon ein Programmfehler. D-02 bezeichnet `framework/` als werkzeugneutral; tatsächlich nennt der Kern an 63 Stellen die Laufzeitpfade genau eines Clients (`AGENTS.md` 37-mal, `.devin/config.json` 17-mal, `.devin/` 16-mal), verteilt über `framework/core/`, `governance/`, `docs/`, `checklists/`, `onboarding/`, `prompts/` und `tests/`.
+
+Der Querverweis-Check unterscheidet solche Nennungen jetzt von toten Referenzen und meldet sie gesammelt als Warnung. Die Neutralisierung des Kerns ist damit eine messbare Restgröße statt einer Schätzung; sie steht noch aus.
+
+### Geprüft
+- Erstinstallation `--client claude-code`: 79 Dateien; `--check` dagegen fehlerfrei. Validator gegen beide Installationen: je 0 Fehler.
+- Regression `devin-desktop`: Erstinstallation weiterhin 80 Dateien, `--check` fehlerfrei.
+- Übungsrepository mit dem Kern dieses Standes gegengeprüft (simulierte Übernahme): 0 Fehler, aktivierte Packs weiterhin erkannt.
+- `hook-check-secrets.py`: beide Namensformen blockieren mit Exit-Code 2, ein Quellcodepfad nicht.
+
+### Geprüft (0.5.0, Client Packs)
+- Erstinstallation in leerem Verzeichnis: 80 Dateien, kein Pack aktiv, `.devin/skills/` nur `fw-*` – identisch zum Stand vor der Verschiebung.
+- `--check` gegen die frische Installation: keine Abweichung. Manipulierte Core-Datei: Exit 1 mit Nennung des Client-Pack-Pfades; `--update` stellt her.
+- Unbekannter Client: Exit 1, verfügbare Packs genannt.
+- `FW-KO-04` meldete unmittelbar nach der Verschiebung genau die zwei gebrochenen Querverweise in `README.md` und `ADOPTION_GUIDE.md` – ohne die historischen Nennungen in `CHANGELOG.md` fälschlich mitzumelden.
+
+### Bekannte Einschränkungen
+- Die Querverweisprüfung prüft die Existenz von Dateien und Verzeichnissen, nicht die Gültigkeit von Anker-Fragmenten (`datei.md#abschnitt`).
+- Backtick-Pfade werden nur unter den Framework-Wurzeln geprüft; Pfade in den Projektbereichen eines aufnehmenden Repositorys bleiben ungeprüft.
+- Das Übungsrepository (Testprojekt) trägt weiterhin die Kernkopie aus 0.4.0 und erhält die neue Prüfung erst mit der Übernahme des Release 0.5.0.
+- Berechtigungsdatei und Hook-Konfiguration liegen weiterhin je Client Pack. Sie sind mehr als eine Formfrage: Eine gemeinsame Quelle erfordert die Semantikabbildung der Regeln (Werkzeugnamen, Präfixmuster, getrennte Werkzeuge für Ändern und Anlegen) und ist einem eigenen Änderungsantrag vorbehalten.
+- Zwei Pfadnennungen verbleiben in Roadmap-AP2; sie sind dort begründet und mit einem Hinweis auf die Wiederholung je Client Pack versehen.
+- Ohne installiertes `PyYAML` prüft der Validator das Frontmatter von Regeln und Skills nur eingeschränkt.
+- Ein Client Pack fügt eine Verschachtelungsebene hinzu: Der längste relative Pfad wächst von 89 auf 111 Zeichen. Unter Windows mit `MAX_PATH` von 260 Zeichen bleiben damit rund 149 Zeichen für den Projektpfad. Bei sehr langen Basispfaden ist entweder die erweiterte Pfadunterstützung des Betriebssystems zu aktivieren oder ein kürzerer Ablageort zu wählen.
+
+### Migrationshinweise
+Keine. Kein Overlay-Feld, kein Laufzeitartefakt (`AGENTS.md`, `.devin/`) und kein Onboarding-Schritt referenziert die Release-Definition.
+
 ## [0.4.0] – 2026-09-09
 
 ### Geändert

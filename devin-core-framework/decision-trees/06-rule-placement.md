@@ -51,4 +51,4 @@ flowchart TD
 ## Hinweise
 
 - **Beispiel (synthetisch):** „Tests laufen mit `<TEST_COMMAND>`" → Logik („Devin führt nur freigegebene Testbefehle aus") ist Core; der Befehl selbst ist Overlay. „Bei Testframework `<TEST_FRAMEWORK>` keine Feld-Injektion in Testklassen" → Technology Pack. „Ein Reviewer ändert den geprüften Code nicht selbst" → Role Pack Code Review.
-- Jede Regelaufnahme zieht die Pflege der Laufzeitfassung (`.devin/rules/`) und einen Validatorlauf nach sich; Release über den Framework- beziehungsweise Overlay-Prozess.
+- Jede Regelaufnahme zieht die Pflege der Laufzeitfassung in der Regelablage und einen Validatorlauf nach sich; Release über den Framework- beziehungsweise Overlay-Prozess.

@@ -18,23 +18,29 @@ byte-gleich zum Release. Änderungswünsche laufen als Änderungsantrag an den F
 Zwei Ladeorte lassen sich nicht mitbündeln, weil sie Werkzeugkonvention sind und nicht
 konfigurierbar `[DOK]`:
 
-| Pfad | Rolle |
+| Bestandteil | Rolle |
 |---|---|
-| `AGENTS.md` | Zentrale Agentenanweisung, wird von Devin automatisch geladen |
-| `.devin/` | Laufzeitschicht: `rules/`, `skills/`, `agents/`, `config.json`, `hooks.v1.json` |
+| Wurzel-Anweisungsdatei | Zentrale Agentenanweisung, wird vom Client automatisch geladen |
+| Laufzeitschicht | Regelablage, Skill-Ablage, Agentenprofile, Berechtigungsdatei, Hook-Konfiguration |
 
-Deshalb bringt der Kern diese Bestandteile in `devin-core-framework/root-template/` mit und
-`devin-core-framework/install.py` legt sie an ihrem Platz an.
+Die tatsächlichen Pfade unterscheiden sich je Client; sie stehen in
+`devin-core-framework/docs/RUNTIME_GLOSSARY.md` und im `CLIENT_PACK.md` des gewählten Packs.
+
+Deshalb bringt der Kern diese Bestandteile im `root-template/` des jeweiligen Client Packs
+mit (`devin-core-framework/clients/<client>/root-template/`) und
+`devin-core-framework/install.py` legt sie an ihrem Platz an. Welcher Client gilt, entscheidet
+`--client`; `--list-clients` zeigt die verfügbaren.
 
 **Projektspezifisch sind ausschließlich:**
 
 | Bestandteil | Ebene |
 |---|---|
 | `project-overlay/` einschließlich `forbidden-terms.txt` | 4 |
-| `.devin/rules/20-project-overlay.md` (plus optionale `2N-overlay-*`) | 4 |
-| die ausgefüllten Werte in `.devin/config.json` | 3/4 |
+| `20-project-overlay.md` in der Regelablage (plus optionale `2N-overlay-*`) | 4 |
+| die ausgefüllten Werte in der Berechtigungsdatei | 3/4 |
 | die **Entscheidung**, welche Packs aktiviert sind (Overlay Abschnitt 1) | 5/6 |
-| `prj-*`-Skills unter `.devin/skills/` | 4 |
+| `prj-*`-Skills in der Skill-Ablage | 4 |
+| die **Entscheidung**, welches Client Pack verwendet wird | – |
 
 Alles andere ist Core. Ein Projektwechsel tauscht nur die Overlay-Bestandteile; der Core
 bleibt unberührt (P10, Baum 6).
@@ -57,19 +63,27 @@ bleibt unberührt (P10, Baum 6).
 
    ```bash
    cd /pfad/zum/projekt
-   python devin-core-framework/install.py
+   python devin-core-framework/install.py --list-clients
+   python devin-core-framework/install.py --client <client>
    ```
 
-   Das Skript legt `AGENTS.md`, `AGENTS.local.md.example`, `.devin/` und – sofern noch nicht
-   vorhanden – `project-overlay/` an. Bestehende Projektdateien werden nie überschrieben.
+   Das Skript legt die Wurzel-Anweisungsdatei, ihre `.example`-Vorlage für nutzerlokale
+   Ergänzungen, die Laufzeitschicht und – sofern noch nicht vorhanden – `project-overlay/`
+   an. Bestehende Projektdateien werden nie überschrieben.
+
+   **Vor der Wahl des Client Packs** die Fähigkeitsmatrix des Kandidaten lesen
+   (`devin-core-framework/clients/<client>/CLIENT_PACK.md`): Sie weist aus, welche Zusagen
+   des Frameworks dieser Client technisch erzwingt und welche nur als Anweisung im Kontext
+   stehen.
 
    Übernimm die `.gitignore` des Framework-Repositorys **nicht** unverändert: Dort sind
-   `AGENTS.md`, `.devin/` und `project-overlay/` ausgeschlossen, weil sie im
-   Framework-Repository Erzeugnisse sind. Im Projekt gehören sie in die Versionierung.
+   die Wurzel-Anweisungsdatei, die Laufzeitschicht und `project-overlay/` ausgeschlossen,
+   weil sie im Framework-Repository Erzeugnisse sind. Im Projekt gehören sie in die
+   Versionierung.
 
 4. **Overlay ausfüllen:** `project-overlay/OVERLAY.md` vollständig; Laufzeitfassung
-   `.devin/rules/20-project-overlay.md` synchron halten; Werte in `.devin/config.json`
-   eintragen, ohne die Kernregeln im Block `_core_rules_integrity` zu entfernen; Manifest und
+   `20-project-overlay.md` in der Regelablage synchron halten; Werte in der
+   Berechtigungsdatei eintragen, ohne die Kernregeln im Block `_core_rules_integrity` zu entfernen; Manifest und
    Dokumente einpflegen.
 
 5. **Packs aktivieren.** Kein Pack ist nach der Installation aktiv — auch nicht das
@@ -77,8 +91,9 @@ bleibt unberührt (P10, Baum 6).
    aufführen, dann Laufzeitfassung und – falls vorhanden – Skills kopieren:
 
    ```bash
+   # <regelablage> ist der Pfad aus dem manifest.json des gewählten Client Packs
    P=devin-core-framework/framework/role-packs/software-development
-   cp $P/runtime/30-role-software-development.md .devin/rules/
+   cp $P/runtime/30-role-software-development.md <regelablage>/
    ```
 
    Einmal aktiviert, hält `install.py --update` diese Bestandteile auf dem Stand des
@@ -86,7 +101,7 @@ bleibt unberührt (P10, Baum 6).
 
 6. **Projektlokale Härtung:** `project-overlay/forbidden-terms.txt` mit den realen Projekt-,
    Kunden-, Behörden-, Produkt- und Systemnamen füllen (bleibt projektlokal); gegebenenfalls
-   zusätzliche `deny`-Pfade in `.devin/config.json`.
+   zusätzliche Verweigerungsregeln in der Berechtigungsdatei.
 
 7. **Validieren und testen:**
 
@@ -122,13 +137,13 @@ bleibt unberührt (P10, Baum 6).
    python devin-core-framework/install.py --update
    ```
 
-   `--update` überschreibt die Core-Dateien im Wurzelverzeichnis (`AGENTS.md`,
-   `.devin/rules/00-`, `10-`, `15-`, die `*-TEMPLATE`-Vorlagen, `.devin/skills/fw-*`,
-   `.devin/agents/`, `hooks.v1.json`) **und die Bestandteile aktivierter Packs**, deren
-   Quelle im Kern liegt (`.devin/rules/30-`, `40-` sowie `.devin/skills/role-*`, `tech-*`).
-   Unberührt bleiben die Projektbestandteile: `.devin/config.json`, das Overlay,
-   `prj-*`-Skills und projekteigene Packs. `.devin/config.json` wird bewusst nicht
-   angefasst, weil sie Projektwerte enthält — prüfe nach dem Wechsel, ob die Kernregeln
+   `--update` überschreibt die Core-Dateien im Wurzelverzeichnis (Wurzel-Anweisungsdatei,
+   Regelablage `00-`, `10-`, `15-`, die `*-TEMPLATE`-Vorlagen, Skill-Ablage `fw-*`,
+   Agentenprofile, Hook-Konfiguration) **und die Bestandteile aktivierter Packs**, deren
+   Quelle im Kern liegt (Regelablage `30-`, `40-` sowie Skill-Ablage `role-*`, `tech-*`).
+   Welche Datei dazuzählt, steht im `manifest.json` des Client Packs. Unberührt bleiben die
+   Projektbestandteile: Berechtigungsdatei, Overlay, `prj-*`-Skills und projekteigene
+   Packs. Die Berechtigungsdatei wird bewusst nicht angefasst, weil sie Projektwerte enthält — prüfe nach dem Wechsel, ob die Kernregeln
    noch vollständig sind.
 
 3. Overlay-Bestandteile gegen die Migrationshinweise prüfen (neue Pflichtfelder, geänderte
@@ -159,14 +174,21 @@ mitkopiert — `install.py` überschreibt `project-overlay/` nie.
 
 ## 5. Deinstallation oder Werkzeugwechsel
 
-**Deaktivierung:** Overlay-Status `inaktiv` (Devin arbeitet nur noch lesend), danach
-Entfernen der `.devin/`-Laufzeitschicht, wenn gewünscht. Das Verzeichnis
+**Deaktivierung:** Overlay-Status `inaktiv` (das Werkzeug arbeitet nur noch lesend), danach
+Entfernen der Laufzeitschicht, wenn gewünscht. Das Verzeichnis
 `devin-core-framework/` kann als Nachweis im Repository bleiben.
 
-**Werkzeugwechsel:** Die kanonische Ebene `devin-core-framework/framework/` bleibt; eine neue
-Laufzeitschicht wird analog zu `.devin/` aufgebaut und als zweite Vorlage unter
-`devin-core-framework/root-template/` geführt (P8; MAJOR-Release,
-`devin-core-framework/governance/RELEASE_PROCESS.md` Abschnitt 6.4).
+**Werkzeugwechsel:** Die kanonische Ebene `devin-core-framework/framework/` bleibt unverändert —
+sie ist werkzeugneutral. Ein anderer KI-Client wird als **Client Pack** unter
+`devin-core-framework/clients/<client>/` angelegt: eine `CLIENT_PACK.md` mit Pfadabbildung und
+Fähigkeitsmatrix sowie ein `root-template/` mit den Wurzelartefakten in der Form dieses Clients
+(`devin-core-framework/clients/README.md`).
+
+Vor dem Wechsel ist die **Fähigkeitsmatrix** des Zielclients auszuwerten: Sie weist je Zusage
+aus, ob der Client sie technisch erzwingt oder ob sie nur noch als Anweisung im Kontext steht.
+Eine Kernzusage, die der Zielclient nicht technisch durchsetzt, ist begründungspflichtig, im
+Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben. Ein Wechsel, der
+diese Prüfung überspringt, senkt das Schutzniveau, ohne dass es jemand bemerkt.
 
 ## 6. Warum der Kern gebündelt ist
 

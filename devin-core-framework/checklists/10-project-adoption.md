@@ -26,11 +26,11 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 
 ### Technische Integration
 
-- [ ] **MUSS** Framework-Release in das Projekt-Repository integriert (`AGENTS.md`, `.devin/`, `devin-core-framework/framework/`, `templates/`, `devin-core-framework/checklists/`, `devin-core-framework/decision-trees/`, `devin-core-framework/prompts/`, `devin-core-framework/onboarding/`, `tests/`); Framework-Version im Overlay notiert.
+- [ ] **MUSS** Framework-Release in das Projekt-Repository integriert (Wurzel-Anweisungsdatei, Laufzeitschicht, `devin-core-framework/framework/`, `templates/`, `devin-core-framework/checklists/`, `devin-core-framework/decision-trees/`, `devin-core-framework/prompts/`, `devin-core-framework/onboarding/`, `tests/`); Framework-Version **und gewähltes Client Pack** im Overlay notiert.
 - [ ] **MUSS** Core-Dateien unverändert (Abgleich gegen das Release-Archiv; Änderungsbedarf läuft als Änderungsantrag an den Framework Owner, nie als lokale Änderung).
 - [ ] **MUSS** `project-overlay/OVERLAY.md` vollständig ausgefüllt; sicherheitsrelevante Abschnitte 4, 5, 6, 13, 14, 15 ohne offene `<TBD>`.
-- [ ] **MUSS** `.devin/rules/20-project-overlay.md` synchron zur Overlay-Datei befüllt (unter 6.000 Zeichen).
-- [ ] **MUSS** `.devin/config.json` mit den Overlay-Werten befüllt (`<ALLOWED_PATHS>`, `<EXCLUDED_PATHS>`, Befehle, CI-/Gate-Pfade); alle Kernregeln aus `_core_rules_integrity` unverändert enthalten.
+- [ ] **MUSS** `20-project-overlay.md` in der Regelablage synchron zur Overlay-Datei befüllt (bei Clients mit Zeichenlimit unter 6.000 Zeichen).
+- [ ] **MUSS** Berechtigungsdatei mit den Overlay-Werten befüllt (`<ALLOWED_PATHS>`, `<EXCLUDED_PATHS>`, Befehle, CI-/Gate-Pfade); alle Kernregeln aus `_core_rules_integrity` unverändert enthalten.
 - [ ] **MUSS** `project-overlay/overlay-manifest.yaml` gepflegt; eingebundene Dokumente bereinigt und freigegeben; nicht registrierte Dokumente gelten als K3.
 - [ ] **MUSS** Benötigte Role Packs und Technology Packs aktiviert (Laufzeitfassungen `30-*`, `40-*` erstellt); nicht benötigte nicht geladen.
 - [ ] **MUSS** `project-overlay/forbidden-terms.txt` projektlokal mit den realen Namen des Projekts befüllt (Datei verbleibt projektlokal).

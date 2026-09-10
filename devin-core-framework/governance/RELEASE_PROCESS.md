@@ -40,7 +40,7 @@ Lebenszyklus und Kriterien: `devin-core-framework/framework/core/08-skill-conven
 1. **Beobachtung:** Der Framework Owner sichtet im Review-Zyklus (und anlassbezogen) die offiziellen Quellen: Produkt-Changelog und Dokumentation von Devin Desktop. Quellenliste: Hauptdokument, Anhang „Quellen und Verifikationsbedarf".
 2. **Bewertung:** Jede relevante Änderung wird klassifiziert: (a) kosmetisch – keine Aktion; (b) erweiternd – Chance, als Änderungsantrag bewerten; (c) brechend – betroffene `[DOK]`-Aussagen, Pfade, Berechtigungen oder Skills identifizieren.
 3. **Reaktion auf brechende Änderungen:** Sofortmaßnahme kommunizieren (zum Beispiel betroffenen Mechanismus nicht nutzen), Änderungsantrag mit Priorität, gegebenenfalls Hotfix-Release; `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`-Marker aktualisieren; Testkatalog-Klasse AK (Aktualität) erneut ausführen.
-4. **Werkzeugwechsel:** Dank Tool Independence (P8) beschränkt sich ein Wechsel oder Parallelbetrieb eines anderen KI-Werkzeugs auf eine neue Laufzeitschicht (Analog zu `.devin/`); die kanonischen Regeln in `devin-core-framework/framework/` bleiben unverändert. Ein solcher Schritt ist ein MAJOR-Release.
+4. **Werkzeugwechsel:** Dank Tool Independence (P8) beschränkt sich ein Wechsel oder Parallelbetrieb eines anderen KI-Werkzeugs auf ein neues Client Pack (`devin-core-framework/clients/README.md`); die kanonischen Regeln in `devin-core-framework/framework/` bleiben unverändert. Vor dem Wechsel ist die Fähigkeitsmatrix des Zielclients auszuwerten. Ein solcher Schritt ist ein MAJOR-Release.
 
 ## 7. Behandlung von Sicherheitsvorfällen, Lessons Learned, Feedback, Ausnahmen (Verweise)
 
@@ -51,4 +51,4 @@ Lebenszyklus und Kriterien: `devin-core-framework/framework/core/08-skill-conven
 
 ## 8. Auditierbarkeit (normativ)
 
-Nachweiskette je Zeitpunkt: Framework-Version (`devin-core-framework/VERSION`, Release-Archiv) → Overlay-Version (Overlay-Steckbrief) → Skill-Versionen (Metadaten) → Berechtigungsstand (`.devin/config.json` im Repository-Verlauf) → Nutzung je Änderung (Devin-Nutzungsvermerk im Merge Request) → Vorfälle und Ausnahmen (Register). Alle Nachweise liegen in versionierten Repositories oder im Merge-Request-System; gesonderte Schattenablagen sind unzulässig.
+Nachweiskette je Zeitpunkt: Framework-Version (`devin-core-framework/VERSION`, Release-Archiv) → Overlay-Version (Overlay-Steckbrief) → Skill-Versionen (Metadaten) → Berechtigungsstand (Berechtigungsdatei im Repository-Verlauf) → Nutzung je Änderung (KI-Nutzungsvermerk im Merge Request) → Vorfälle und Ausnahmen (Register). Alle Nachweise liegen in versionierten Repositories oder im Merge-Request-System; gesonderte Schattenablagen sind unzulässig.

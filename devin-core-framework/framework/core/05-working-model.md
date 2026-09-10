@@ -82,7 +82,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Mensch beobachtet die Sitzung und bestätigt Schreib- und Ausführungsanfragen einzeln (Modus Normal); vollständiger Diff-Review vor Commit; Quality Gates |
 | Abbruchkriterien | Abweichung vom Plan erforderlich; unerwartete Berührung weiterer Komponenten; fehlgeschlagene Tests ohne klare Ursache; Fund von Secrets oder personenbezogenen Echtdaten; Anstieg der Kontrollstufe |
 | Erwartete Ausgabe | Änderungssatz (Diff) mit Schrittprotokoll, ausgeführten Befehlen und Ergebnissen, Abweichungen vom Plan, Restrisiken, Vorschlag für Commit-Nachricht |
-| Devin-Umsetzung | Permission-Modus Normal (Schreib- und Ausführungsanfragen werden einzeln bestätigt) `[DOK]`; `.devin/config.json` mit `deny` für ausgeschlossene Pfade und Fernwirkungs-Befehle, `ask` für Schreiben und Ausführen `[DOK]`; Modus Bypass DARF NICHT verwendet werden (D-05) `[KONZ]`; sitzungsweite Freigaben nur für die im Overlay freigegebenen Testbefehle `[EMPF]` |
+| Umsetzung im Werkzeug | Rückfragender Standardmodus (Schreib- und Ausführungsanfragen werden einzeln bestätigt) `[DOK]`; Berechtigungsdatei mit Verweigerung für ausgeschlossene Pfade und Fernwirkungs-Befehle, Rückfrage für Schreiben und Ausführen `[DOK]`; ein Modus ohne Rückfragen DARF NICHT verwendet werden (D-05) `[KONZ]`; sitzungsweite Freigaben nur für die im Overlay freigegebenen Testbefehle `[EMPF]` |
 
 #### M4 Test and Validation
 
@@ -115,7 +115,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 ### 3.1 Sitzungsdisziplin
 
 1. Eine Sitzung bearbeitet eine Aufgabe. Neue Aufgaben MÜSSEN in neuen Sitzungen begonnen werden (Least Context, Nachvollziehbarkeit).
-2. Sitzungsweite Freigaben („für diese Sitzung erlauben") SOLLEN nur für die im Overlay freigegebenen Test- und Build-Befehle erteilt werden. Projektweite oder globale Freigaben (`Allow for project`, `Allow globally`) `[DOK]` DÜRFEN NICHT durch einzelne Entwicklerinnen oder Entwickler erteilt werden; sie erfordern einen Änderungsantrag an `.devin/config.json`.
+2. Sitzungsweite Freigaben („für diese Sitzung erlauben") SOLLEN nur für die im Overlay freigegebenen Test- und Build-Befehle erteilt werden. Projektweite oder globale Freigaben `[DOK]` DÜRFEN NICHT durch einzelne Entwicklerinnen oder Entwickler erteilt werden; sie erfordern einen Änderungsantrag an die Berechtigungsdatei.
 3. Parallel laufende Agentensitzungen (Agent Command Center) `[DOK]` SOLLEN nur für voneinander unabhängige Aufgaben der Kontrollstufe niedrig verwendet werden; sie DÜRFEN NICHT auf denselben Dateien arbeiten.
 4. Hintergrund-Subagenten `[DOK]` DÜRFEN NICHT für Modus M3 verwendet werden. Für M1 KANN das lesende Profil `subagent_explore` genutzt werden.
 

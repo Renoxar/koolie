@@ -1,0 +1,55 @@
+# Overlay-Manifest – Register der eingebundenen Projektdokumente (Ebene 4)
+# Mechanismus: project-overlay/OVERLAY.md Abschnitt 19. Nicht registrierte Dokumente gelten als K3.
+# Keine Secrets, keine Personen, keine internen Adressen. Rollen statt Personen.
+# Validierung: python3 devin-core-framework/tests/scripts/validate-framework.py prueft Schema und Pflichtfelder.
+
+manifest_version: 1
+project_code: "<PROJECT_CODE>"
+overlay_version: "<TBD: 0.1.0>"
+
+# Zulaessige Werte
+#   type:          ai-governance | ai-process-model | roadmap | architecture | coding-guidelines |
+#                  definition-of-ready | definition-of-done | branching-strategy | deployment |
+#                  security | quality | roles | glossary | other
+#   context_class: K1 | K2          (K3-Dokumente werden nicht registriert)
+#   status:        entwurf | aktuell | veraltet
+#   load:          summary | on-demand | rule | never
+#   approved_by:   generische Rolle
+
+documents:
+  - id: "DOC-001"
+    type: "coding-guidelines"
+    title: "<TBD: Titel ohne Projekt- oder Kundenbezug>"
+    path: "project-overlay/documents/coding-guidelines/<TBD: datei>.md"
+    context_class: "K1"
+    status: "entwurf"
+    load: "rule"
+    rule_file: "<RULES_DIR>/21-overlay-coding-guidelines.md"
+    approved_by: "<APPROVAL_ROLE>"
+    approved_on: "<TBD: Datum>"
+    sanitization: "<TBD: was vor der Einbindung entfernt wurde, oder 'nicht erforderlich'>"
+    notes: "<TBD>"
+
+  - id: "DOC-002"
+    type: "architecture"
+    title: "<TBD>"
+    path: "project-overlay/documents/architecture/<TBD>.md"
+    context_class: "K2"
+    status: "entwurf"
+    load: "on-demand"
+    approved_by: "<ARCHITECT_ROLE>"
+    approved_on: "<TBD>"
+    sanitization: "<TBD: z. B. Kapitel Infrastruktur und Betriebsumgebungen entfernt>"
+    notes: "K2: Freigabe je Aufgabe erforderlich"
+
+  - id: "DOC-003"
+    type: "definition-of-done"
+    title: "<TBD>"
+    path: "project-overlay/documents/definition-of-done/<TBD>.md"
+    context_class: "K1"
+    status: "entwurf"
+    load: "summary"
+    approved_by: "<APPROVAL_ROLE>"
+    approved_on: "<TBD>"
+    sanitization: "nicht erforderlich"
+    notes: "Kernaussagen in <RULES_DIR>/20-project-overlay.md uebernehmen"

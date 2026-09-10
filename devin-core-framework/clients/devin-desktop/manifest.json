@@ -1,0 +1,90 @@
+{
+  "_comment": "Maschinenlesbare Pfadabbildung dieses Client Packs. Die menschenlesbare Fassung mit Fähigkeitsmatrix steht in CLIENT_PACK.md. install.py und validate-framework.py lesen diese Datei; ohne sie ist ein Client Pack nicht installierbar.",
+  "client": "devin-desktop",
+  "runtime_dir": ".devin",
+  "root_instruction_file": "AGENTS.md",
+  "permissions_file": ".devin/config.json",
+  "skills_dir": ".devin/skills",
+  "agents_dir": ".devin/agents",
+  "pack_runtime_dir": ".devin/rules",
+  "has_rule_triggers": true,
+  "core_skill_prefix": "fw-",
+  "core_paths": [
+    "AGENTS.local.md.example",
+    ".devin/README.md",
+    ".devin/hooks.v1.json",
+    ".devin/mcp_config.json.example",
+    ".devin/rules/README.md"
+  ],
+  "seed_paths": [
+    ".devin/config.json",
+    ".devin/rules/20-project-overlay.md"
+  ],
+  "project_owned_hint": [
+    ".devin/rules/2N-overlay-<name>.md   (Overlay-Regelerweiterungen)",
+    ".devin/rules/40-tech-<name>.md      (Packs ohne Quelle im Kern)",
+    ".devin/skills/prj-*/                (projektspezifische Skills)",
+    "project-overlay/tech-packs/**       (projekteigene Packs)",
+    "project-overlay/**                  (das gesamte Overlay)"
+  ],
+  "runtime_placeholders": {
+    "<RUNTIME_DIR>": ".devin",
+    "<ROOT_INSTRUCTION_FILE>": "AGENTS.md",
+    "<ROOT_INSTRUCTION_LOCAL>": "AGENTS.local.md",
+    "<PERMISSIONS_FILE>": ".devin/config.json",
+    "<SKILLS_DIR>": ".devin/skills",
+    "<RULES_DIR>": ".devin/rules",
+    "<AGENTS_DIR>": ".devin/agents",
+    "<HOOKS_FILE>": ".devin/hooks.v1.json",
+    "<MCP_FILE>": ".devin/mcp_config.json",
+    "<CLIENT_NAME>": "Devin Desktop"
+  },
+  "skill_frontmatter": {
+    "tools_format": "list",
+    "tool_names": {},
+    "drop_fields": []
+  },
+  "shared_core": [
+    {
+      "src": "framework/runtime/root-instruction.md",
+      "dst": "<ROOT_INSTRUCTION_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/00-framework-core.md",
+      "dst": "<RULES_DIR>/00-framework-core.md"
+    },
+    {
+      "src": "framework/runtime/rules/10-privacy-security.md",
+      "dst": "<RULES_DIR>/10-privacy-security.md"
+    },
+    {
+      "src": "framework/runtime/rules/15-development-rules.md",
+      "dst": "<RULES_DIR>/15-development-rules.md"
+    },
+    {
+      "src": "framework/runtime/agents/fw-reviewer.md",
+      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+    },
+    {
+      "src": "templates/rules/21-overlay-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/21-overlay-TEMPLATE.md.template"
+    },
+    {
+      "src": "templates/rules/40-tech-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/40-tech-TEMPLATE.md.template"
+    }
+  ],
+  "shared_seed": [
+    {
+      "src": "templates/project-overlay",
+      "dst": "project-overlay"
+    }
+  ],
+  "rule_frontmatter": "yaml",
+  "root_instruction_imports": [],
+  "agent_frontmatter": {
+    "tools_field": "allowed-tools",
+    "tools_format": "list",
+    "tool_names": {}
+  }
+}

@@ -24,7 +24,7 @@ Die Vorlage setzt eine bestätigte, klar abgegrenzte Änderung in kleinen, nachv
 ## 3. Nicht einzusetzender Kontext
 
 - K3 gemäß `devin-core-framework/framework/core/02-privacy.md`; `<EXCLUDED_PATHS>`; `<READ_ONLY_PATHS>` als Änderungsziel; Werte aus Konfigurations- und Umgebungsdateien.
-- `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>`, Lockfiles, Paketquellen, `AGENTS.md`, `.devin/`, `project-overlay/` – weder lesen zur Steuerung noch ändern.
+- `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>`, Lockfiles, Paketquellen, Wurzel-Anweisungsdatei, Laufzeitschicht, `project-overlay/` – weder lesen zur Steuerung noch ändern.
 - Externe Quellen (Websuche, Paketregister, Beispielcode fremder Projekte) und Code aus anderen Projekten oder Mandanten.
 
 ## 4. Eingabeparameter

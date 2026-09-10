@@ -65,7 +65,7 @@ Folgende Aufgaben und Entscheidungen DÜRFEN NICHT an Devin delegiert werden. De
 | V7 | Bewertung von Personen, Leistungsbeurteilungen, arbeitsrechtliche oder disziplinarische Fragen | keine |
 | V8 | Rechtliche Bewertungen (Lizenzkonformität, Datenschutzrechtliche Zulässigkeit, Vertragsauslegung) | Sammlung von Fakten (zum Beispiel Lizenzangaben aus Manifestdateien) mit Fundstellen |
 | V9 | Entscheidung über Fortsetzung bei Sicherheitsvorfall oder Verdacht auf Datenabfluss | keine; sofortiger Stopp und Eskalation |
-| V10 | Änderung der Framework-Regeln, des Project Overlays oder der Berechtigungskonfiguration (`.devin/config.json`) | Vorschläge als Änderungsantrag (`devin-core-framework/governance/CHANGE_REQUEST_TEMPLATE.md`) |
+| V10 | Änderung der Framework-Regeln, des Project Overlays oder der Berechtigungsdatei | Vorschläge als Änderungsantrag (`devin-core-framework/governance/CHANGE_REQUEST_TEMPLATE.md`) |
 | V11 | Kommunikation nach außen (Kunden, Behörden, Öffentlichkeit) im Namen des Projekts | Entwürfe für interne Verwendung |
 | V12 | Löschen von Branches, Historie, Daten oder Artefakten außerhalb des Arbeitsbereichs | keine |
 

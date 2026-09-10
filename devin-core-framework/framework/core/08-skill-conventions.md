@@ -22,7 +22,7 @@ Ein **Skill** ist eine versionierte, testbare, wiederverwendbare Arbeitsanweisun
 └── CHANGELOG.md    # Änderungsverlauf des Skills
 ```
 
-- Ablageort `.devin/skills/<skill-name>/SKILL.md` `[DOK]` (Devin-Desktop-FAQ und CLI-Dokumentation). Alternativer, in der Produktdokumentation als empfohlen genannter Pfad `.agents/skills/` – Discovery durch Devin Local `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`.
+- Ablageort: die Skill-Ablage der Laufzeitschicht, je Skill ein Unterverzeichnis mit `SKILL.md`. Der konkrete Pfad und etwaige Alternativpfade stehen im Client Pack (`devin-core-framework/docs/RUNTIME_GLOSSARY.md`).
 - Der Verzeichnisname ist der Aufrufname (`/skill-name`) `[DOK]`.
 - Framework-Skills tragen das Präfix `fw-`, projektspezifische Skills `prj-`, Role-Pack-Skills `role-<pack>-`, Technology-Pack-Skills `tech-<pack>-`.
 - Skill-Namen bestehen aus Kleinbuchstaben, Ziffern und Bindestrichen.
