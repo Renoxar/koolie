@@ -2,10 +2,15 @@
 """
 install.py - Legt die Wurzeldateien des Devin Desktop Frameworks in einem Projekt an.
 
-Hintergrund: Zwei Dinge muessen im Wurzelverzeichnis des Projekts liegen, weil Devin
-sie nur dort findet - AGENTS.md (Root-Regeldatei) und .devin/ (Laufzeitschicht mit
-rules/, skills/, agents/, config.json, hooks.v1.json). Alles Uebrige des Frameworks
-liegt gebuendelt in devin-core-framework/ und wird nur kopiert, nicht installiert.
+Hintergrund: Zwei Dinge muessen im Wurzelverzeichnis des Projekts liegen, weil der
+KI-Client sie nur dort findet - die Wurzel-Anweisungsdatei und die Laufzeitschicht mit
+Regeln, Skills, Agentenprofilen, Berechtigungen und Hooks. Alles Uebrige des Frameworks
+liegt gebuendelt im Kernverzeichnis und wird nur kopiert, nicht installiert.
+
+Die wenigsten dieser Dateien liegen noch je Client Pack: Regeltexte, Skills, Overlay,
+Berechtigungen und Hooks liegen einmal im Kern und werden bei der Installation in die
+Form des gewaehlten Clients gebracht. Wie, steht im Manifest des Packs; die
+Semantikabbildung der Berechtigungen und Hooks in clientmap.py.
 
 Dieses Skript loest das auf: Es kopiert die Wurzelbestandteile aus dem
 root-template/ des gewaehlten Client Packs an ihren Platz und unterscheidet dabei
@@ -40,6 +45,9 @@ import shutil
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import clientmap  # noqa: E402  (liegt neben dieser Datei)
+
 CLIENT_PACKS = os.path.join(HERE, "clients")
 # Der Standard bleibt der Client, fuer den das Framework urspruenglich gebaut wurde.
 # Ein Projekt waehlt bei der Erstinstallation, danach steht die Wahl im Overlay.
@@ -88,6 +96,10 @@ def load_manifest(client: str) -> dict:
     fehlend = [f for f in MANIFEST_PFLICHTFELDER if f not in m]
     if fehlend:
         raise ValueError(f"{client}/manifest.json: Pflichtfelder fehlen: {', '.join(fehlend)}")
+    # <CORE_DIR> steht in keinem Manifest: Der Name des Kernverzeichnisses ist keine
+    # Eigenschaft eines Clients, sondern dieser Installation. Er wird hier gesetzt,
+    # damit eine spaetere Umbenennung (Roadmap P3) nur eine Stelle beruehrt.
+    m.setdefault("runtime_placeholders", {})["<CORE_DIR>"] = os.path.basename(HERE)
     return m
 
 
@@ -186,16 +198,8 @@ def seed_relpaths(template: str, man: dict) -> list[str]:
     return out
 
 
-def resolve_placeholders(text: str, man: dict) -> str:
-    """Loest die Laufzeit-Platzhalter des Kerns in die Pfade dieses Client Packs auf.
-
-    Projektplatzhalter (<ALLOWED_PATHS>, <TEST_COMMAND>, ...) bleiben unberuehrt - die
-    fuellt der Overlay Owner. Hier werden nur die Platzhalter aufgeloest, deren Wert
-    vom Client abhaengt und die deshalb im Manifest stehen.
-    """
-    for platzhalter, pfad in man.get("runtime_placeholders", {}).items():
-        text = text.replace(platzhalter, pfad)
-    return text
+# Die Platzhalteraufloesung liegt in clientmap, weil der Validator sie ebenfalls braucht.
+resolve_placeholders = clientmap.resolve_placeholders
 
 
 def render_skill_frontmatter(text: str, man: dict) -> str:
@@ -311,7 +315,14 @@ def render_agent(text: str, man: dict) -> str:
 
 
 def render_for_client(text: str, man: dict, src_rel: str) -> str:
-    """Waehlt die Formtransformation anhand der Quelle und loest danach die Platzhalter auf."""
+    """Waehlt die Transformation anhand der Quelle und loest danach die Platzhalter auf."""
+    if src_rel == "framework/runtime/permissions.json":
+        # Kennt der Client keine eigene Hook-Datei, wandern die Hooks hier mit hinein.
+        hooks = (clientmap.load_source(HERE, "hooks.json")
+                 if clientmap.hooks_in_permissions(man) else None)
+        return clientmap.render_permissions(text, man, hooks)
+    if src_rel == "framework/runtime/hooks.json":
+        return clientmap.render_hooks(text, man)
     if os.path.basename(src_rel) == "SKILL.md":
         text = render_skill_frontmatter(text, man)
     elif src_rel.startswith("framework/runtime/rules/"):

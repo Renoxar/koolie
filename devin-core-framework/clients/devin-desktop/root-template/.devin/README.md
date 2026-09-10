@@ -7,9 +7,9 @@ Dieses Verzeichnis enthält alles, was Devin Local aus dem Repository liest. Es 
 | `rules/*.md` | Regeldateien mit `trigger`-Frontmatter (Kurzfassungen von Core, Overlay, Packs) | `[DOK]` Mechanismus |
 | `skills/<name>/SKILL.md` | Skills, Aufruf `/name`; Frontmatter `name`, `description`, `argument-hint`, `allowed-tools`, `permissions`, `triggers` | `[DOK]` |
 | `agents/<name>.md` | Subagent-Profile (hier: nur lesender Reviewer) | `[DOK]` |
-| `config.json` | Berechtigungen `deny` / `ask` / `allow` (projektweit, versioniert) | `[DOK]` Mechanismus; Regelmenge `[EMPF]`; exakte Schemadetails `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| `config.json` | Berechtigungen `deny` / `ask` / `allow` (projektweit, versioniert). Erzeugt aus `devin-core-framework/framework/runtime/permissions.json`; hier trägt das Projekt nur die Platzhalterwerte ein | `[DOK]` Mechanismus; Regelmenge `[EMPF]`; exakte Schemadetails `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 | `config.local.json` (nicht versioniert) | persönliche Überschreibungen; im Framework nur zum Verschärfen zulässig | `[DOK]` |
-| `hooks.v1.json` | Lebenszyklus-Hooks (`PreToolUse`-Secret- und Pfadprüfung, `SessionStart`-Statusmeldung) | `[DOK]` Mechanismus; Skripte `[EMPF]`, Status entwurf |
+| `hooks.v1.json` | Lebenszyklus-Hooks (`PreToolUse`-Secret- und Pfadprüfung, `SessionStart`-Statusmeldung). Erzeugt aus `devin-core-framework/framework/runtime/hooks.json`, Core-Datei – Änderungen laufen als Änderungsantrag | `[DOK]` Mechanismus; Skripte `[EMPF]`, Status entwurf |
 | `mcp_config.json.example` | Vorlage für MCP-Server (Standard: keine) | `[DOK]` Dateiname; Struktur `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 
 ## Nicht enthalten (bewusst)

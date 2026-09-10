@@ -12,12 +12,10 @@
   "core_paths": [
     "AGENTS.local.md.example",
     ".devin/README.md",
-    ".devin/hooks.v1.json",
     ".devin/mcp_config.json.example",
     ".devin/rules/README.md"
   ],
   "seed_paths": [
-    ".devin/config.json",
     ".devin/rules/20-project-overlay.md"
   ],
   "project_owned_hint": [
@@ -72,9 +70,17 @@
     {
       "src": "templates/rules/40-tech-TEMPLATE.md.template",
       "dst": "<RULES_DIR>/40-tech-TEMPLATE.md.template"
+    },
+    {
+      "src": "framework/runtime/hooks.json",
+      "dst": "<HOOKS_FILE>"
     }
   ],
   "shared_seed": [
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
     {
       "src": "templates/project-overlay",
       "dst": "project-overlay"
@@ -86,5 +92,40 @@
     "tools_field": "allowed-tools",
     "tools_format": "list",
     "tool_names": {}
-  }
+  },
+  "permission_tools": {
+    "read": [
+      "Read"
+    ],
+    "search": [],
+    "write": [
+      "Write"
+    ],
+    "exec": [
+      "Exec"
+    ],
+    "fetch": [
+      "Fetch"
+    ],
+    "mcp": [
+      "mcp__*"
+    ]
+  },
+  "permission_tools_bare": [
+    "mcp__*"
+  ],
+  "permission_path_prefix": "",
+  "permission_exec_match": "literal",
+  "permissions_extra": {},
+  "permissions_note": "Dieser Client kennt kein eigenes Suchwerkzeug; die allow-Regel fuer Suchen entfaellt und faellt damit auf den strengeren Standard zurueck.",
+  "hook_tools": {
+    "exec": [
+      "exec"
+    ],
+    "write": [
+      "edit",
+      "write"
+    ]
+  },
+  "hook_project_dir_var": "DEVIN_PROJECT_DIR"
 }

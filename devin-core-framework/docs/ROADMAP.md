@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.5.0 (2026-09-10)
+## Stand nach Release 0.6.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 gebracht hat
+### Was 0.5.0 und 0.6.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -23,27 +23,36 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Client Packs | Abbildungsschicht mit Fähigkeitsmatrix; zwei Packs: `devin-desktop`, `claude-code` | D-12 bis D-14 |
 | Kern neutralisiert | 61 von 63 Client-Bindungen ersetzt; Begriffe statt Pfade, Glossar als Abbildung | D-15, `docs/RUNTIME_GLOSSARY.md` |
 | Keine Doppelpflege | Skills, Wurzel-Anweisung, Core-Regeltexte, Agentenprofil, Overlay-Vorlage liegen einmal im Kern | D-16, D-17 |
+| Berechtigungen und Hooks | letzte Doppelpflege beseitigt, als **Semantikabbildung** statt Formtransformation; drei Zusicherungen werden erzwungen statt zugesagt | D-18, `CR-2026-008`, `clientmap.py` |
 
-Ein Client Pack enthält jetzt sieben beziehungsweise sechs Dateien statt achtzig.
+Ein Client Pack enthält jetzt fünf Dateien statt achtzig. Mit 0.6.0 ist das Verschärfungsprinzip
+an der Stelle, an der die Kernzusagen B1 bis B6 hängen, eine geprüfte Eigenschaft: Eine Regel,
+die ein Client nicht abbilden kann, lässt die Installation scheitern, statt stillschweigend zu
+entfallen – und der Validator gleicht die installierte Berechtigungsdatei gegen die Kernquelle
+ab, nicht nur gegen sich selbst.
 
 ### Nächste Schritte, nach Priorität
 
-**P1 – Berechtigungsdatei und Hook-Konfiguration zusammenführen.** Die letzten beiden Artefakte,
-die je Client Pack doppelt liegen. Anders als alles bisher Zusammengeführte ist das keine
-Formfrage, sondern eine **Semantikabbildung**: Werkzeugnamen, Präfixmuster, getrennte Werkzeuge
-für Ändern und Anlegen. Dabei entstehen Verschärfungen, die im Client Pack bereits dokumentiert
-sind (`clients/claude-code/CLIENT_PACK.md` Abschnitt 4). Eigener Änderungsantrag; sorgfältig,
-weil hier die Kernzusagen B1 bis B6 hängen.
+**P1 – AP2: Mechanismen validieren.** Der größte offene Block auf dem Weg zu 1.0.0 und seit
+0.6.0 der einzige verbleibende P1. Je Client Pack sind die VERIFY-Marker gegen eine reale
+Installation abzuarbeiten: 13 von 26 Zeilen bei `devin-desktop`, 9 von 26 bei `claude-code`.
+Danach den Schutz-Hook auf fail-closed umstellen – bei `claude-code` ist das Blockierverhalten
+bereits dokumentiert, dort also zuerst.
 
-**P1 – AP2: Mechanismen validieren.** Der größte offene Block auf dem Weg zu 1.0.0. Je Client
-Pack sind die VERIFY-Marker gegen eine reale Installation abzuarbeiten: 13 von 26 Zeilen bei
-`devin-desktop`, 9 von 26 bei `claude-code`. Danach den Schutz-Hook auf fail-closed umstellen –
-bei `claude-code` ist das Blockierverhalten bereits dokumentiert, dort also zuerst.
+Die Zusammenführung der Berechtigungen hat den Wert dieses Arbeitspakets erhöht: Beide Packs
+tragen jetzt nachweislich dieselbe Regelmenge. Ob ein Client sie durchsetzt, sagt das nicht –
+genau das ist AP2.
+
+**P2 – Schreibschutz auf das gesamte Kernverzeichnis.** Befund aus `CR-2026-008`: Die
+Schreibverbote schützen `<CORE_DIR>/framework/**`, nicht den Kern als Ganzes. `install.py`,
+`validate-framework.py`, die beiden Hook-Skripte und `clientmap.py` sind damit nicht
+schreibgeschützt – gerade die Skripte, die die Schutzzusagen durchsetzen. Die Verschärfung auf
+`<CORE_DIR>/**` ändert die Kernregelmenge und braucht einen eigenen Änderungsantrag.
 
 **P2 – Testkatalog ausführen.** 34 von 35 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
 Die Ablage steht (`tests/protocols/`), das Format ist am ersten Protokoll ablesbar.
 
-**P2 – Übungsrepository auf 0.5.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
+**P2 – Übungsrepository auf 0.6.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
 simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Damit wäre zugleich Kriterium 5 von
 D-11 (Übernahme in ein zweites Projekt) belegt.
 
@@ -56,7 +65,8 @@ steht. D-02 ist bereits fortgeschrieben.
 **P3 – Verzeichnisname `devin-core-framework/`.** Der Kern ist inhaltlich neutral, sein Name
 trägt weiterhin den Produktnamen eines Clients. Eine Umbenennung ist ein Breaking Change und
 sollte, wenn überhaupt, vor 1.0.0 erfolgen – abgesichert durch `FW-KO-04`, das eine solche
-Umbenennung nachweislich vollständig erfasst.
+Umbenennung nachweislich vollständig erfasst. Seit 0.6.0 ist der Name zudem als `<CORE_DIR>`
+aus dem Verzeichnis abgeleitet und steht in keinem Client Pack mehr.
 
 ### Bewusst offen gelassen
 
@@ -65,6 +75,10 @@ Umbenennung nachweislich vollständig erfasst.
 - `PyYAML` ist nicht vorausgesetzt; ohne das Modul prüft der Validator Frontmatter eingeschränkt.
 - Ein Client Pack fügt eine Verschachtelungsebene hinzu; unter Windows bleiben bei `MAX_PATH`
   rund 149 Zeichen für den Projektpfad.
+- Bei `claude-code` liegen die Hooks in der Berechtigungsdatei und damit in der Saat. Eine
+  Änderung an den Hooks des Kerns erreicht ein bestehendes Projekt dieses Packs nicht über
+  `install.py --update`; sie ist beim Release-Wechsel von Hand nachzuziehen. Eine automatische
+  Teilzusammenführung in eine Datei, die dem Projekt gehört, wäre die schlechtere Lösung.
 
 ## Abhängigkeitsübersicht
 

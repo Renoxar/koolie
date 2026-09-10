@@ -37,6 +37,8 @@ Diese Datei legt die Begriffe fest, mit denen der Kern die Bestandteile der Lauf
 
 Die maßgebliche Fassung je Client steht in `manifest.json` (maschinenlesbar) und `CLIENT_PACK.md` Abschnitt 1 (mit Belegstatus) des jeweiligen Packs.
 
+Der Begriff bezeichnet dabei nur den **Ort**. Berechtigungsdatei und Hook-Konfiguration haben zusätzlich einen **Inhalt**, der je Client anders geschrieben wird – andere Werkzeugnamen, getrennte Werkzeuge für Ändern und Anlegen, wörtliche gegen präfixbasierte Befehlsverbote. Diese zweite Abbildung steht in `CLIENT_PACK.md` Abschnitt 1a und wird von `devin-core-framework/clientmap.py` ausgeführt (D-18).
+
 ## Was der Begriff nicht sagt
 
 Ein Begriff benennt die **Rolle** eines Artefakts, nicht seine Eigenschaften. Ob ein Client eine Zusage des Frameworks technisch erzwingt oder nur als Anweisung führt, steht in der **Fähigkeitsmatrix** seines Client Packs (`devin-core-framework/clients/README.md` Abschnitt 4).

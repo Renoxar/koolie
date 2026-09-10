@@ -26,11 +26,33 @@ Wohin dieser Client die Laufzeitartefakte erwartet. Die linke Spalte ist die fra
 | Regeldateien (Core-Kurzfassungen, Overlay, Packs) | `<TBD: Pfad oder „kein Äquivalent">` | `<TBD>` |
 | Skills | `<TBD>` | `<TBD>` |
 | Subagentenprofile | `<TBD: Pfad oder „kein Äquivalent">` | `<TBD>` |
-| Berechtigungskonfiguration | `<TBD>` | `<TBD>` |
-| Hook-Konfiguration | `<TBD: Pfad oder „kein Äquivalent">` | `<TBD>` |
+| Berechtigungskonfiguration | `<TBD>` (erzeugt aus `framework/runtime/permissions.json`) | `<TBD>` |
+| Hook-Konfiguration | `<TBD: eigene Datei, derselbe Pfad wie die Berechtigungsdatei, oder „kein Äquivalent">` | `<TBD>` |
 | MCP-Konfiguration | `<TBD>` | `<TBD>` |
 | Projektverzeichnis-Variable in Hooks | `<TBD: z. B. Name der Umgebungsvariable>` | `<TBD>` |
 | Nutzerlokale Überschreibung | `<TBD>` | `<TBD>` |
+
+## 1a. Semantikabbildung der Berechtigungen und Hooks
+
+Die Regelmenge liegt werkzeugneutral im Kern (`devin-core-framework/framework/runtime/permissions.json`, `hooks.json`) und wird bei der Installation übersetzt (D-18). Diese Tabelle ist die menschenlesbare Fassung der Abbildungsfelder im `manifest.json`.
+
+| Neutrales Werkzeugverb | Werkzeug bei diesem Client | Anmerkung |
+|---|---|---|
+| `read` | `<TBD>` | |
+| `search` | `<TBD: Werkzeug oder „kein Äquivalent">` | ohne Äquivalent entfällt nur die `allow`-Regel |
+| `write` | `<TBD: ein Werkzeug oder getrennte für Ändern und Anlegen>` | |
+| `exec` | `<TBD>` | wörtlich oder präfixbasiert? |
+| `fetch` | `<TBD>` | |
+| `mcp` | `<TBD>` | |
+
+| Weitere Eigenschaft | Wert |
+|---|---|
+| Name ohne Verzeichnisanteil | `<TBD: mit oder ohne Wurzelangabe>` |
+| Zusätzliche Schlüssel | `<TBD: z. B. ein Standardmodus>` |
+| Hook-Werkzeugnamen | `<TBD>` |
+| Projektverzeichnis im Hook-Befehl | `<TBD: Name der Umgebungsvariable>` |
+
+Drei Zusicherungen werden erzwungen und sind nicht verhandelbar: Eine `deny`- oder `ask`-Regel ohne Zielwerkzeug lässt die Installation scheitern (Weglassen wäre eine Lockerung); die Präfixform eines Befehlsverbots muss ein Präfix seiner wörtlichen Form sein; bei `allow` müssen beide Formen übereinstimmen. Lässt sich eine Kernzusage danach nicht abbilden, gehört sie in Abschnitt 4 und nicht in eine Ausnahme im Code.
 
 ## 2. Fähigkeitsmatrix
 
@@ -74,7 +96,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
-| H1 | Vor einer Werkzeugausführung kann eine eigene Prüfung laufen | `.devin/hooks.v1.json` | `<TBD>` | `<TBD>` | `<TBD>` |
+| H1 | Vor einer Werkzeugausführung kann eine eigene Prüfung laufen | Hook-Konfiguration | `<TBD>` | `<TBD>` | `<TBD>` |
 | H2 | Diese Prüfung kann die Ausführung **blockieren** (nicht nur protokollieren) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 | H3 | Beim Sitzungsstart kann eine Statusmeldung erzeugt werden (Overlay aktiv, Version) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 

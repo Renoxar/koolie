@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -21,13 +21,34 @@
 | Regeldateien | `.devin/rules/*.md` mit `trigger`-Frontmatter | `[DOK]` |
 | Skills | `.devin/skills/<name>/SKILL.md` | `[DOK]`; Alternativpfad `.agents/skills/` unbestätigt (K-12) |
 | Subagentenprofile | `.devin/agents/<name>.md` | `[DOK]` |
-| Berechtigungskonfiguration | `.devin/config.json` | `[DOK]` Mechanismus; Schemadetails `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
-| Hook-Konfiguration | `.devin/hooks.v1.json` | `[DOK]` Mechanismus; Eingabeschema `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| Berechtigungskonfiguration | `.devin/config.json` (erzeugt aus `framework/runtime/permissions.json`) | `[DOK]` Mechanismus; Schemadetails `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| Hook-Konfiguration | `.devin/hooks.v1.json` (eigene Datei; erzeugt aus `framework/runtime/hooks.json`) | `[DOK]` Mechanismus; Eingabeschema `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 | MCP-Konfiguration | `.devin/mcp_config.json` (Vorlage: `.devin/mcp_config.json.example`) | Dateiname `[DOK]`; Struktur `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 | Projektverzeichnis-Variable in Hooks | `DEVIN_PROJECT_DIR` | `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 | Nutzerlokale Überschreibung | `AGENTS.local.md`, `.devin/config.local.json`, `*.local.md` neben Regeln | `[DOK]` |
 
 Legacy: `.windsurf/` wird nicht gepflegt; `.devin/` hat Vorrang `[DOK]`.
+
+## 1a. Semantikabbildung der Berechtigungen und Hooks
+
+Die Regelmenge liegt werkzeugneutral im Kern (`devin-core-framework/framework/runtime/permissions.json`, `hooks.json`) und wird bei der Installation in die Werkzeuge dieses Clients übersetzt (D-18). Was dabei abgebildet wird, steht maschinenlesbar im `manifest.json`; diese Tabelle ist die menschenlesbare Fassung.
+
+| Neutrales Werkzeugverb | Werkzeug bei diesem Client | Anmerkung |
+|---|---|---|
+| `read` | `Read(muster)` | |
+| `search` | – | kein eigenes Suchwerkzeug; die `allow`-Regel entfällt und fällt damit auf den strengeren Standard zurück |
+| `write` | `Write(muster)` | ein Werkzeug für Ändern und Anlegen |
+| `exec` | `Exec(befehl)` | wörtliche Form; die Präfixform der Quelle wird nicht gebraucht |
+| `fetch` | `Fetch(muster)` | |
+| `mcp` | `mcp__*` | ohne Muster |
+
+| Weitere Eigenschaft | Wert |
+|---|---|
+| Name ohne Verzeichnisanteil | ohne Wurzelangabe (`.env`) |
+| Hook-Werkzeugnamen | `exec`, `edit`, `write` |
+| Projektverzeichnis im Hook-Befehl | `$DEVIN_PROJECT_DIR` |
+
+Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dieser Client kein Werkzeug kennt, lässt die Installation scheitern. Nur bei `allow` darf eine Regel entfallen – dort ist das Weglassen eine Verschärfung.
 
 ## 2. Fähigkeitsmatrix
 
@@ -129,3 +150,4 @@ Bis `install.py` den Schalter `--client` kennt, ist `devin-desktop` der eingebau
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-10 | angelegt aus dem Ist-Zustand der Laufzeitschicht (`CR-2026-002`) | `<FRAMEWORK_OWNER>` |
+| 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |

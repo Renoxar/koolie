@@ -16,7 +16,6 @@
     ".claude/framework/README.md"
   ],
   "seed_paths": [
-    ".claude/settings.json",
     ".claude/framework/20-project-overlay.md"
   ],
   "project_owned_hint": [
@@ -96,6 +95,10 @@
   ],
   "shared_seed": [
     {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
+    {
       "src": "templates/project-overlay",
       "dst": "project-overlay"
     }
@@ -128,5 +131,51 @@
         "Bash"
       ]
     }
-  }
+  },
+  "permission_tools": {
+    "read": [
+      "Read"
+    ],
+    "search": [
+      "Grep",
+      "Glob"
+    ],
+    "write": [
+      "Edit",
+      "Write"
+    ],
+    "exec": [
+      "Bash"
+    ],
+    "fetch": [
+      "WebFetch",
+      "WebSearch"
+    ],
+    "mcp": [
+      "mcp__*"
+    ]
+  },
+  "permission_tools_bare": [
+    "WebFetch",
+    "WebSearch",
+    "mcp__*"
+  ],
+  "permission_path_prefix": "./",
+  "permission_exec_match": "prefix",
+  "permission_exec_suffix": ":*",
+  "permissions_extra": {
+    "defaultMode": "default"
+  },
+  "permissions_note": "Zwei Abweichungen gegenueber Clients mit einem einzigen Schreibwerkzeug, beide Verschaerfungen: Schreibschutz erfordert je Pfad eine Edit- und eine Write-Regel, weil Aendern und Anlegen getrennte Werkzeuge sind; Befehlsverbote wirken praefixbasiert und damit breiter (Bash(git reset:*) sperrt jedes git reset, nicht nur --hard).",
+  "hook_tools": {
+    "exec": [
+      "Bash"
+    ],
+    "write": [
+      "Edit",
+      "Write",
+      "NotebookEdit"
+    ]
+  },
+  "hook_project_dir_var": "CLAUDE_PROJECT_DIR"
 }

@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -23,11 +23,33 @@ Maschinenlesbar in `manifest.json`; diese Tabelle ist die menschenlesbare Fassun
 | Regeldateien | `.claude/framework/*.md`, eingebunden über `@pfad`-Importe in `CLAUDE.md` | Importmechanismus `[DOK]`; Ablageort `[KONZ]` Framework-Konvention |
 | Skills | `.claude/skills/<name>/SKILL.md` | `[DOK]` |
 | Subagentenprofile | `.claude/agents/<name>.md` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` (Feldname `tools`) |
-| Berechtigungskonfiguration | `.claude/settings.json` | `[DOK]` Mechanismus; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
-| Hook-Konfiguration | `.claude/settings.json` (**keine eigene Datei**) | `[DOK]` |
+| Berechtigungskonfiguration | `.claude/settings.json` (erzeugt aus `framework/runtime/permissions.json`) | `[DOK]` Mechanismus; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| Hook-Konfiguration | `.claude/settings.json` (**keine eigene Datei**; erzeugt aus `framework/runtime/hooks.json` und in dieselbe Datei eingebettet) | `[DOK]` |
 | MCP-Konfiguration | `.mcp.json` (Vorlage: `.mcp.json.example`) | `[DOK]` |
 | Projektverzeichnis-Variable in Hooks | `CLAUDE_PROJECT_DIR` | `[DOK]` |
 | Nutzerlokale Überschreibung | `CLAUDE.local.md`, `.claude/settings.local.json` | `[DOK]` |
+
+## 1a. Semantikabbildung der Berechtigungen und Hooks
+
+Die Regelmenge liegt werkzeugneutral im Kern (`devin-core-framework/framework/runtime/permissions.json`, `hooks.json`) und wird bei der Installation in die Werkzeuge dieses Clients übersetzt (D-18). Was dabei abgebildet wird, steht maschinenlesbar im `manifest.json`; diese Tabelle ist die menschenlesbare Fassung. Dieser Client ist der Grund, weshalb es die Abbildungsschicht überhaupt braucht: Vier der sechs Zeilen sind keine Umbenennung, sondern eine andere Mengenlehre.
+
+| Neutrales Werkzeugverb | Werkzeug bei diesem Client | Anmerkung |
+|---|---|---|
+| `read` | `Read(muster)` | |
+| `search` | `Grep(muster)`, `Glob(muster)` | eigene Suchwerkzeuge, im Kern als ein Verb geführt |
+| `write` | `Edit(muster)` **und** `Write(muster)` | Ändern und Anlegen sind getrennte Werkzeuge; **eine Regel allein liefe ins Leere** |
+| `exec` | `Bash(präfix:*)` | präfixbasiert statt wörtlich – die Sperre ist damit breiter |
+| `fetch` | `WebFetch`, `WebSearch` | zwei Werkzeuge, beide ohne Muster |
+| `mcp` | `mcp__*` | ohne Muster |
+
+| Weitere Eigenschaft | Wert |
+|---|---|
+| Name ohne Verzeichnisanteil | mit Wurzelangabe (`./.env`) |
+| Zusätzliche Schlüssel | `defaultMode: default` |
+| Hook-Werkzeugnamen | `Bash`, `Edit`, `Write`, `NotebookEdit` |
+| Projektverzeichnis im Hook-Befehl | `$CLAUDE_PROJECT_DIR` |
+
+Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlassen: Eine `deny`- oder `ask`-Regel ohne Zielwerkzeug lässt die Installation scheitern, und die Präfixform eines Befehlsverbots muss ein Präfix seiner wörtlichen Form sein – damit ist sie nachweislich mindestens so breit. Bei `allow` ist jede Verbreiterung unzulässig.
 
 ## 2. Fähigkeitsmatrix
 
@@ -114,8 +136,8 @@ Drei der sechs weichen in der **Form** ab, nicht in der Tiefe; beide Abweichunge
 
 | ID | Abweichung | Wirkung |
 |---|---|---|
-| B4, B5 | Schreibschutz erfordert je Pfad zwei Regeln, weil Ändern und Anlegen getrennte Werkzeuge sind | Keine, sofern beide gesetzt sind. **Eine Regel allein liefe ins Leere** – deshalb prüft der Validator die Kernregelliste, die beide Formen enthält |
-| B6 | Befehlsverbote wirken präfixbasiert: `Bash(git reset:*)` sperrt jedes `git reset`, nicht nur `--hard` | Verschärfung. Auch unkritische Varianten sind gesperrt |
+| B4, B5 | Schreibschutz erfordert je Pfad zwei Regeln, weil Ändern und Anlegen getrennte Werkzeuge sind | Keine. Seit `CR-2026-008` erzeugt die Abbildung beide Regeln aus einer Quellregel; ein Vergessen ist nicht mehr möglich, und der Validator gleicht die Kernregelliste gegen die Kernquelle ab |
+| B6 | Befehlsverbote wirken präfixbasiert: `Bash(git reset:*)` sperrt jedes `git reset`, nicht nur `--hard` | Verschärfung, seit `CR-2026-008` nachweisbar: Die Abbildung verlangt, dass die Präfixform ein Präfix der wörtlichen Form ist, und weist sie sonst zurück. Auch unkritische Varianten sind gesperrt |
 
 ## 5. Bekannte Abweichungen im Verhalten
 
@@ -127,7 +149,9 @@ Drei der sechs weichen in der **Form** ab, nicht in der Tiefe; beide Abweichunge
 
 - **Der Schutz-Hook kann hier tatsächlich blockieren.** Bei `devin-desktop` ist H2 als `[TEXTUELL]` eingestuft, weil das Eingabeschema unbestätigt ist und das Hook-Skript deshalb fail-open läuft. Für diesen Client ist das Blockierverhalten über den Exit-Code dokumentiert. **Empfehlung:** Nach Bestätigung in einer Installation `FW_HOOK_FAIL_CLOSED` auf `1` setzen (über `env` in `settings.json`). Das ist bewusst **nicht** vorbelegt, solange die Bestätigung aussteht.
 
-- **Skills sind zwischen den Client Packs dupliziert.** Die zwölf `fw-*`-Skills liegen jetzt zweimal im Kern – einmal je Pack, mit unterschiedlichem Frontmatter bei identischem Rumpf. Eine Änderung an einem Skill muss in jedem Pack nachgezogen werden. Das ist mit zwei Packs handhabbar und skaliert nicht; ein Erzeugungsschritt aus einer gemeinsamen Quelle ist als Folgearbeit vorzusehen.
+- **Die Berechtigungsdatei trägt hier auch die Hooks.** Weil dieser Client keine eigene Hook-Datei kennt, stehen die Hooks in derselben Datei – und die ist Saat, gehört nach der Erstinstallation also dem Projekt und wird von `install.py --update` nie überschrieben. Eine Änderung an den Hooks des Kerns erreicht ein bestehendes Projekt dieses Packs deshalb nicht von selbst; bei `devin-desktop` mit eigener Hook-Datei tut sie es. Beim Release-Wechsel ist das hier ausdrücklich zu prüfen.
+
+- **Erledigt (`CR-2026-006` bis `CR-2026-008`).** Die zwölf `fw-*`-Skills, die Regeltexte, das Overlay und zuletzt Berechtigungen und Hooks lagen zwischenzeitlich in jedem Pack doppelt. Sie liegen jetzt einmal im Kern.
 
 ## 6. Beobachtung während der Erstellung
 
@@ -151,3 +175,4 @@ Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs (`devin-
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-10 | angelegt (`CR-2026-004`) | `<FRAMEWORK_OWNER>` |
+| 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |

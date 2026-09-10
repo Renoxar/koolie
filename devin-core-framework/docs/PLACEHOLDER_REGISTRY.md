@@ -37,8 +37,11 @@ Die Begriffsfassung derselben Abbildung steht in `devin-core-framework/docs/RUNT
 | `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` |
 | `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/hooks.v1.json` | `.claude/settings.json` |
 | `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` |
+| `<CORE_DIR>` | Name des Kernverzeichnisses | `devin-core-framework` | `devin-core-framework` |
 
 Ein Client Pack MUSS jeden dieser Platzhalter in seinem `manifest.json` unter `runtime_placeholders` belegen; ein unaufgelöster Laufzeit-Platzhalter in einer Installation ist ein Fehler.
+
+Einzige Ausnahme ist `<CORE_DIR>`: Der Name des Kernverzeichnisses ist keine Eigenschaft eines Clients, sondern dieser Installation. `install.py` und der Validator setzen ihn aus dem tatsächlichen Verzeichnisnamen; ein Client Pack darf ihn nicht belegen. Damit berührt eine spätere Umbenennung des Kernverzeichnisses (Roadmap P3) die Client Packs nicht.
 
 ## Vom Framework ergänzte Platzhalter
 

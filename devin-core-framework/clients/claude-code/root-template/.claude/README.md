@@ -9,7 +9,7 @@ Die Durchsetzungstiefe – welche Zusage dieser Client technisch erzwingt und we
 | `framework/*.md` | Regeltexte (Core, Overlay, Packs); werden über Importe in `CLAUDE.md` geladen | `[DOK]` Importmechanismus |
 | `skills/<name>/SKILL.md` | Skills, Aufruf über den Namen mit vorangestelltem Schrägstrich; Frontmatter `name`, `description`, `argument-hint`, `allowed-tools` | `[DOK]` |
 | `agents/<name>.md` | Subagentenprofile (hier: nur lesender Reviewer); Frontmatter `name`, `description`, `tools` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
-| `settings.json` | Berechtigungen `deny` / `ask` / `allow` **und** Hooks (projektweit, versioniert) | `[DOK]` Mechanismus; Regelmenge `[EMPF]`; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
+| `settings.json` | Berechtigungen `deny` / `ask` / `allow` **und** Hooks (projektweit, versioniert). Erzeugt aus `devin-core-framework/framework/runtime/permissions.json` und `hooks.json`; hier trägt das Projekt nur die Platzhalterwerte ein | `[DOK]` Mechanismus; Regelmenge `[EMPF]`; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
 | `settings.local.json` (nicht versioniert) | persönliche Überschreibungen; im Framework nur zum Verschärfen zulässig | `[DOK]` |
 
 Im Wurzelverzeichnis liegen außerdem `CLAUDE.md` (Wurzel-Anweisung, lädt die Regeltexte per Import) und `.mcp.json.example` (Vorlage für MCP-Server; Standard: keine).

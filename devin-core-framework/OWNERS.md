@@ -7,7 +7,7 @@
 | Framework gesamt, Releases, Prioritätshierarchie | `/`, `devin-core-framework/VERSION`, `devin-core-framework/CHANGELOG.md`, `devin-core-framework/governance/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |
 | Framework Core | `devin-core-framework/framework/core/`, Wurzel-Anweisungsdatei, Regelablage `00-*`, `10-*`, `15-*` | `<FRAMEWORK_OWNER>` | `<TBD>` |
 | Datenschutzmodell (FW-CORE-02) | `devin-core-framework/framework/core/02-privacy.md`, Regelablage `10-*` | `<FRAMEWORK_OWNER>` mit `<DATA_PROTECTION_CONTACT>` | – |
-| Sicherheitsmodell (FW-CORE-03), Berechtigungen, Hooks | `devin-core-framework/framework/core/03-security.md`, Berechtigungsdatei und Hook-Konfiguration je Client Pack, `devin-core-framework/tests/scripts/hook-*` | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>` | – |
+| Sicherheitsmodell (FW-CORE-03), Berechtigungen, Hooks | `devin-core-framework/framework/core/03-security.md`, `devin-core-framework/framework/runtime/permissions.json`, `devin-core-framework/framework/runtime/hooks.json`, `devin-core-framework/clientmap.py`, `devin-core-framework/tests/scripts/hook-*` | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>` | – |
 | Role Pack Softwareentwicklung | `devin-core-framework/framework/role-packs/software-development/`, Regelablage `30-role-software-development.md` | `<FRAMEWORK_OWNER>` (bis Benennung Modul-Owner: `<TBD>`) | – |
 | Role Pack Requirements Engineering (RP-RE), Skill `role-re-ticket` | `devin-core-framework/framework/role-packs/requirements-engineering/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |
 | Technology Packs | `devin-core-framework/framework/tech-packs/` | je Pack `<TBD: Modul-Owner>` | – |

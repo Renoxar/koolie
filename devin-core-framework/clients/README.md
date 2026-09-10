@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `FW-CLIENT-PACKS` |
 | Ebene | keine – Querschnittsschicht (siehe Abschnitt 2) |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -33,9 +33,17 @@ Es ist eine **Abbildungsschicht**: Es übersetzt die Ebenen 3 bis 7 in die Artef
 
 | Bestandteil | Inhalt |
 |---|---|
-| `CLIENT_PACK.md` | Pfadabbildung, **Fähigkeitsmatrix**, Abweichungen, Belegstatus – die menschenlesbare Fassung |
-| `manifest.json` | Dieselbe Pfadabbildung maschinenlesbar; `install.py` und `validate-framework.py` lesen sie. **Ohne Manifest ist ein Pack nicht installierbar** |
-| `root-template/` | Die Wurzelartefakte dieses Clients, aus denen `install.py` installiert |
+| `CLIENT_PACK.md` | Pfadabbildung, **Semantikabbildung**, **Fähigkeitsmatrix**, Abweichungen, Belegstatus – die menschenlesbare Fassung |
+| `manifest.json` | Dieselben Abbildungen maschinenlesbar; `install.py` und `validate-framework.py` lesen sie. **Ohne Manifest ist ein Pack nicht installierbar** |
+| `root-template/` | Nur noch die Artefakte, die tatsächlich clientspezifisch sind – derzeit fünf Dateien je Pack |
+
+Alles andere liegt einmal im Kern und wird bei der Installation in die Form dieses Clients gebracht: Regeltexte, Wurzel-Anweisung, Agentenprofil und Skills als **Formtransformation** (D-16, D-17), Berechtigungen und Hooks als **Semantikabbildung** (D-18). Der Unterschied ist wesentlich: Bei einer Formtransformation ist der Inhalt derselbe und nur die Schreibweise anders. Bei der Semantikabbildung unterscheiden sich die Werkzeuge selbst – ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich und dort über ein Präfix. Weil an genau diesen Regeln die Kernzusagen hängen, prüft die Abbildung drei Eigenschaften und bricht ab, wenn eine verletzt ist:
+
+| Zusicherung | Warum |
+|---|---|
+| Keine `deny`- oder `ask`-Regel ohne Zielwerkzeug | Sie wegzulassen wäre eine Lockerung. Bei `allow` ist Weglassen zulässig – es fällt auf den strengeren Standard zurück |
+| Die Präfixform eines Befehlsverbots muss ein Präfix der wörtlichen Form sein | Damit ist sie nachweislich mindestens so breit; die Abweichung ist belegbar eine Verschärfung |
+| Bei `allow` müssen beide Formen übereinstimmen | Dort wäre jede Verbreiterung eine Lockerung |
 
 ## 4. Die Fähigkeitsmatrix
 
@@ -62,8 +70,9 @@ Die Delegationsverbote V1 bis V12 (`devin-core-framework/framework/core/09-risk-
 3. Fähigkeitsmatrix ausfüllen. Jede Zeile ohne Beleg trägt den VERIFY-Marker.
 4. `root-template/` anlegen: die Wurzelartefakte in der Form dieses Clients.
 5. `manifest.json` anlegen: Pflichtfelder `client`, `skills_dir`, `pack_runtime_dir`, `core_skill_prefix`, `core_paths`, `seed_paths`; zusätzlich `runtime_dir`, `root_instruction_file`, `permissions_file`, `agents_dir`, `has_rule_triggers`.
-6. Pack in dieser Datei und in `devin-core-framework/OWNERS.md` eintragen.
-7. Probeinstallation in ein leeres Verzeichnis; Validator dagegen ausführen; Testkatalog-Basistests gegen eine Installation des Clients fahren.
+6. Semantikabbildung eintragen: `permission_tools`, `permission_tools_bare`, `permission_path_prefix`, `permission_exec_match` und gegebenenfalls `permission_exec_suffix`, `permissions_extra`, `permissions_note`; für die Hooks `hook_tools` und `hook_project_dir_var`. Kennt der Client keine eigene Hook-Datei, zeigt `<HOOKS_FILE>` auf dieselbe Datei wie `<PERMISSIONS_FILE>` – daran wird die Einbettung erkannt. `<CORE_DIR>` wird **nicht** belegt; den setzt die Installation.
+7. Pack in dieser Datei und in `devin-core-framework/OWNERS.md` eintragen.
+8. Probeinstallation in ein leeres Verzeichnis; Validator dagegen ausführen; Testkatalog-Basistests gegen eine Installation des Clients fahren.
 
 ## 6. Verfügbare Client Packs
 
@@ -77,3 +86,4 @@ Die Delegationsverbote V1 bis V12 (`devin-core-framework/framework/core/09-risk-
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-10 | angelegt (`CR-2026-002`) | `<FRAMEWORK_OWNER>` |
+| 0.2.0 | 2026-09-10 | Semantikabbildung der Berechtigungen und Hooks ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |

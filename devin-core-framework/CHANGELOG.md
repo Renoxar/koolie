@@ -2,6 +2,46 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `devin-core-framework/governance/RELEASE_PROCESS.md`.
 
+## [0.6.0] – 2026-09-10
+
+### Geändert
+- **Berechtigungen und Hooks liegen einmal im Kern (`CR-2026-008`, Decision Record D-18).** Die Regelmenge steht werkzeugneutral in `devin-core-framework/framework/runtime/permissions.json` und `hooks.json`; die drei Vorlagendateien in den Client Packs (`.devin/config.json`, `.devin/hooks.v1.json`, `.claude/settings.json`) entfallen. Ein Client Pack enthält jetzt fünf Dateien.
+
+  Das war die letzte Doppelpflege im Kern – und die einzige, bei der sie sicherheitsrelevant war. `CR-2026-007` hatte sie ausdrücklich vertagt: Anders als bei Regeltexten, Skills und Overlay ist die Abbildung hier keine Formfrage. Die Werkzeuge selbst unterscheiden sich – ein Client trennt Ändern und Anlegen in `Edit` und `Write`, ein anderer nicht; Befehlsverbote greifen hier wörtlich (`Exec(git reset --hard)`) und dort präfixbasiert (`Bash(git reset:*)`); Netzzugriff ist einmal ein Werkzeug mit Muster und einmal zwei ohne. An genau diesen Regeln hängen die Kernzusagen **B1 bis B6**: Eine beim Nachziehen in das zweite Pack vergessene Regel wäre eine stille Lücke gewesen, während die Fähigkeitsmatrix weiterhin `[TECHNISCH]` behauptet.
+
+- **`_core_rules_integrity.deny_must_contain` wird erzeugt, nicht gepflegt.** Die Kernzusagen sind in der Quelle mit `"core": true` gekennzeichnet; die Liste je Client entsteht daraus (13 Regeln bei `devin-desktop`, 17 bei `claude-code` – dort trägt jeder Schreibschutz zwei Regeln).
+
+### Hinzugefügt
+- **`devin-core-framework/clientmap.py` – die Semantikabbildung.** Von `install.py` zum Erzeugen und von `validate-framework.py` zum Prüfen genutzt. Das Modul **erzwingt** drei Eigenschaften, statt sie zuzusagen:
+
+  | Zusicherung | Bei Verletzung |
+  |---|---|
+  | Keine `deny`- oder `ask`-Regel ohne Zielwerkzeug beim Client | Installation bricht ab; Weglassen wäre eine Lockerung. Bei `allow` ist Weglassen zulässig – es fällt auf den strengeren Standard zurück |
+  | Die Präfixform eines Befehlsverbots muss ein Präfix seiner wörtlichen Form sein | Installation bricht ab. Damit ist die Präfixform nachweislich mindestens so breit – die Abweichung ist belegbar eine Verschärfung |
+  | Bei `allow` müssen wörtliche und Präfixform übereinstimmen | Installation bricht ab; dort wäre jede Verbreiterung eine Lockerung |
+
+- **Der Validator prüft die Kernregeln gegen die Kernquelle.** Bisher genügte es, eine Kernregel in `deny` **und** in `_core_rules_integrity` zu streichen: Die Datei blieb in sich stimmig, der Verlust unbemerkt. Weil die Berechtigungsdatei Saat ist und `install.py --check` sie nie anfasst, war das die letzte Lücke in der Kette. Fehlt `clientmap.py`, wird gewarnt statt abgebrochen; die bisherigen Prüfungen greifen weiter.
+
+- **Neun Abbildungsfelder je Manifest:** `permission_tools`, `permission_tools_bare`, `permission_path_prefix`, `permission_exec_match`, `permission_exec_suffix`, `permissions_extra`, `permissions_note`, `hook_tools`, `hook_project_dir_var`. Ob ein Client eine eigene Hook-Datei kennt, wird **nicht** eigens angegeben, sondern daran erkannt, dass `<HOOKS_FILE>` und `<PERMISSIONS_FILE>` auf denselben Pfad zeigen – zwei Angaben über dieselbe Tatsache wären eine Fehlerquelle.
+
+- **Laufzeit-Platzhalter `<CORE_DIR>`.** Der Name des Kernverzeichnisses steht in den Schreibverboten und im Hook-Befehl. Er ist keine Eigenschaft eines Clients, sondern dieser Installation, und wird deshalb von `install.py` und dem Validator aus dem tatsächlichen Verzeichnisnamen gesetzt; ein Client Pack darf ihn nicht belegen. Die in der Roadmap vorgesehene Umbenennung des Kernverzeichnisses berührt damit kein Pack.
+
+- **Abschnitt 1a „Semantikabbildung" in beiden Client Packs und der Vorlage.** Die menschenlesbare Fassung der Abbildungsfelder, Werkzeugverb für Werkzeugverb.
+
+### Nachweise
+- **Byteweiser Vergleich gegen 0.5.0:** Jede erzeugte Berechtigungsregel und beide `_core_rules_integrity`-Blöcke sind identisch; die Hook-Datei von `devin-desktop` vollständig. Zwei gewollte Abweichungen ohne Wirkung auf das Schutzniveau: der erzeugte `_comment` (er nennt jetzt die Kernquelle) und die Reihenfolge im Hook-Matcher von `claude-code` (`Bash|Edit|Write|NotebookEdit` statt `Edit|Write|Bash|NotebookEdit` – dieselbe Menge, eine Alternation ist ungeordnet).
+- Erstinstallation beider Packs in ein leeres Verzeichnis: 80 beziehungsweise 79 Dateien wie zuvor; `--check` gegen beide fehlerfrei; Validator gegen beide Installationen und die Wurzelinstallation dieses Repositorys: 0 Fehler.
+- **Negativtests:** Kernregel aus *beiden* Listen einer installierten Datei entfernt → gemeldet (vor dieser Änderung unbemerkt). Abbildung ohne Schreibwerkzeug, `prefix` ohne Präfixeigenschaft, `allow`-Regel mit verkürzter Präfixform, Hook-Werkzeugklasse ohne Werkzeug → Installation bricht jeweils mit benannter Ursache ab.
+
+### Migrationshinweise für Overlays
+- Für ein bestehendes Projekt ändert sich nichts. Die Berechtigungsdatei ist Saat und wird von `--update` nie überschrieben; die eingetragenen Projektwerte bleiben.
+- `install.py --update` bringt bei `devin-desktop` die Hook-Datei auf den Kernstand (unverändert gegenüber 0.5.0). Bei `claude-code` liegen die Hooks in der Berechtigungsdatei und damit in der Saat – eine spätere Änderung an den Hooks des Kerns erreicht ein bestehendes Projekt dieses Packs **nicht** von selbst und ist beim Release-Wechsel von Hand nachzuziehen.
+- Prüfung nach dem Wechsel wie bisher: `python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay`.
+
+### Bekannte Einschränkungen
+- Die Schreibverbote schützen `<CORE_DIR>/framework/**`, nicht das gesamte Kernverzeichnis. `install.py`, `validate-framework.py`, die beiden Hook-Skripte und nun auch `clientmap.py` sind damit nicht schreibgeschützt – gerade die Skripte, die die Schutzzusagen durchsetzen. Der Befund ist älter als diese Änderung; die naheliegende Verschärfung auf `<CORE_DIR>/**` ändert die Kernregelmenge und braucht deshalb einen eigenen Änderungsantrag.
+- Die Einstufungen der Fähigkeitsmatrix bleiben unbelegt (Roadmap AP2). Diese Änderung stellt sicher, dass beide Packs dieselbe Regelmenge tragen – nicht, dass ein Client sie durchsetzt.
+
 ## [0.5.0] – 2026-09-10
 
 ### Geändert

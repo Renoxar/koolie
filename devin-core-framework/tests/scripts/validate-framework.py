@@ -7,8 +7,9 @@ Aufruf (im Wurzelverzeichnis des Repositorys):
 
 Prüft (statisch, ohne Devin):
   1. Pflichtdateien und -verzeichnisse
-  2. .devin/config.json: gültiges JSON, Kernregeln vorhanden, keine Kernverbote in allow
-  3. .devin/hooks.v1.json und mcp-Vorlage: gültiges JSON
+  2. Berechtigungsdatei: gültiges JSON, Kernregeln vollständig (Abgleich gegen die
+     Kernquelle framework/runtime/permissions.json), keine Kernverbote in allow
+  3. weitere JSON-Dateien der Laufzeitschicht (Hooks, mcp-Vorlage): gültiges JSON
   4. .devin/rules/*.md: Frontmatter (description, trigger, globs), Zeichenlimits
   5. Skills (.devin/skills/ und die Quellablagen der Packs): Pflichtdateien, Frontmatter,
      Metadatenblock, Pflichtabschnitte,
@@ -207,6 +208,10 @@ def detect_client(root: str) -> dict:
                 err(f"clients/{name}/manifest.json ist kein gültiges JSON: {exc}")
                 continue
             if os.path.isdir(os.path.join(root, *man.get("runtime_dir", "").split("/"))):
+                # mp = <root>/<kern>/clients/<pack>/manifest.json - drei Ebenen hoch
+                # liegt das Kernverzeichnis, dessen Name <CORE_DIR> ist.
+                man.setdefault("runtime_placeholders", {})["<CORE_DIR>"] = os.path.basename(
+                    os.path.dirname(os.path.dirname(os.path.dirname(mp))))
                 treffer.append(man)
     if len(treffer) > 1:
         namen = ", ".join(m["client"] for m in treffer)
@@ -225,6 +230,34 @@ def check_required(root: str, man: dict) -> None:
     for rel in pflicht:
         if not os.path.exists(os.path.join(root, rel)):
             err(f"Pflichtpfad fehlt: {rel}")
+
+
+def soll_kernregeln(root: str, man: dict) -> list[str]:
+    """Kernzusagen B1 bis B6 in der Schreibweise dieses Clients, aus der Kernquelle.
+
+    Berechtigungen sind Saat: Nach der Erstinstallation gehoert die Datei dem Projekt und
+    wird nie ueberschrieben - install.py --check meldet dort also nichts. Diese Pruefung
+    ist deshalb die einzige Stelle, an der eine entfernte Kernregel auffaellt. Fehlt das
+    Abbildungsmodul (etwa in einer Teilkopie des Kerns), wird nur gewarnt: Die Pruefungen
+    gegen die Datei selbst greifen weiterhin.
+    """
+    kern = os.path.join(root, "devin-core-framework")
+    if not os.path.isdir(kern):
+        return []
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        warn("clientmap.py nicht gefunden – Kernregeln werden nur gegen die "
+             "Berechtigungsdatei selbst geprüft, nicht gegen die Kernquelle")
+        return []
+    try:
+        quelle = json.loads(clientmap.load_source(kern, "permissions.json"))
+        return clientmap.core_rules(quelle, man)
+    except (OSError, ValueError) as exc:
+        err(f"Kernquelle der Berechtigungen nicht auswertbar: {exc}")
+        return []
 
 
 def check_config(root: str, man: dict) -> None:
@@ -248,6 +281,16 @@ def check_config(root: str, man: dict) -> None:
             err(f"{rel}: Kernregel fehlt in deny: {rule}")
         if rule in allow:
             err(f"{rel}: Kernverbot steht in allow: {rule}")
+    # Die Liste gegen die Kernquelle abgleichen, nicht nur gegen sich selbst. Ohne diesen
+    # Schritt genuegte es, eine Kernregel in beiden Listen zu streichen - die Datei bliebe
+    # in sich stimmig und der Verlust unbemerkt.
+    for rule in soll_kernregeln(root, man):
+        if rule in must:
+            continue  # von der Schleife darueber bereits geprueft
+        err(f"{rel}: Kernregel fehlt in _core_rules_integrity.deny_must_contain "
+            f"(laut Kernquelle vorgesehen): {rule}")
+        if rule not in deny:
+            err(f"{rel}: Kernregel fehlt in deny: {rule}")
     # Nie erlaubt, unabhaengig vom Client: Push, Merge, Rechteausweitung, Loeschen,
     # Netzzugriff. Die Werkzeugnamen unterscheiden sich je Client, die Absicht nicht.
     verboten = ("Exec(git push", "Exec(sudo", "Exec(rm -rf", "Fetch(*",

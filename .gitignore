@@ -3,6 +3,8 @@ AGENTS.local.md
 .devin/config.local.json
 .devin/mcp_config.local.json
 .devin/plans/
+# Bytecode der Python-Werkzeuge (install.py importiert clientmap.py)
+__pycache__/
 # Legacy-Verzeichnisse werden nicht gepflegt
 .windsurf/
 # Build-Artefakte der Dokumentation (Quellen unter devin-core-framework/build/doc werden versioniert)
