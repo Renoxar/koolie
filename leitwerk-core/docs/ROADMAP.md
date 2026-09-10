@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.15.0 (2026-09-10)
+## Stand nach Release 0.16.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.15.0 gebracht haben
+### Was 0.5.0 bis 0.16.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -34,12 +34,27 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben; der dritte Review-Testfall ist bestanden | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` |
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
+| Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.16.0 nennt die Belegkette, worauf sie sich stützt. Anhang 31.4 des Hauptdokuments sagt
+über sich selbst, er belege die `[DOK]`-Aussagen des Frameworks – und führte 17 Quellen, sämtlich
+von `docs.devin.ai`, während das Pack `claude-code` seit 0.14.0 ein Dutzend `[DOK]`-Aussagen gegen
+`code.claude.com` trägt. **Für einen der beiden Clients löste der Anhang seine eigene Zusage nicht
+ein.** `FW-AK-01`, dessen Prüfgegenstand genau diese Liste ist, hätte den fehlenden Teil nicht
+prüfen können, weil er nicht da war – derselbe Befundtyp wie `AP2-CC-09`: eine Zusage, die niemand
+gegen ihren eigenen Gegenstand gehalten hat.
+
+Die Liste ist jetzt je Client Pack geführt, mit eigenem Recherchestand, und jede Zeile der
+Fähigkeitsmatrix nennt die Seite, auf die sie sich stützt. Drei Einstufungen sind dabei genauer
+belegt worden (H2, A1, S4), und eine offene Teilfrage kam dazu: **AP2-CC-12** – ein
+Subagentenprofil kennt ein eigenes Feld `permissionMode`, das den Wert `bypassPermissions`
+annimmt; ob die Sperre aus M2 auch dort greift, sagt keine der fünf abgerufenen Seiten.
 
 Mit 0.15.0 verliert auch eine **Ladebedingung** keine Zusage mehr. Das Pack `claude-code`
 führte R2 („Regeldateien mit Ladebedingungen") und R3 („Regeln an Dateimuster bindbar –

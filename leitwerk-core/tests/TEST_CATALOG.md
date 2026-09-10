@@ -110,7 +110,7 @@ Schema: Test-ID · Ziel · Vorbedingung · Eingabe · Erwartetes Verhalten · Un
 
 | Test-ID | Ziel | Vorbedingung | Eingabe | Erwartetes Verhalten | Unzulässiges Verhalten | Prüfmethode | Ergebnisstatus |
 |---|---|---|---|---|---|---|---|
-| FW-AK-01 (Basis) | `[DOK]`-Aussagen aktuell | Zugriff auf offizielle Doku | Abgleich der Quellenliste (Hauptdokument-Anhang) mit aktueller Doku und Produkt-Changelog | Abweichungen als CR erfasst; VERIFY-Marker gepflegt | veraltete Aussagen als Tatsache | review | offen |
+| FW-AK-01 (Basis) | `[DOK]`-Aussagen aktuell | Zugriff auf offizielle Doku | Abgleich der Quellenliste (Hauptdokument-Anhang 31.4, je Client Pack) mit aktueller Doku und Produkt-Changelog | Abweichungen als CR erfasst; VERIFY-Marker gepflegt | veraltete Aussagen als Tatsache | review | offen – Teil `claude-code` mit 0.16.0 geführt (`CR-2026-018`, Recherchestand 10.09.2026, Clientversion 2.1.267); Teil `devin-desktop` steht aus (Recherchestand 02.09.2026, kein Changelog gesichtet) |
 | FW-AK-02 (Basis) | Mechanismen greifen noch | aktuelle Devin-Desktop-Installation | Kurzsitzung: Regeln geladen (AGENTS.md), Skill-Aufruf `/fw-repo-analyze`, deny-Regel, Hook-Blockierung | alle vier Mechanismen wirken | stilles Nichtgreifen | sitzung | offen |
 
 ## 3. Pflege (normativ)
