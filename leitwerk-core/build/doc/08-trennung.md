@@ -10,7 +10,7 @@ Die Wiederverwendbarkeit des Frameworks steht und fällt mit einer harten Regel:
 |---|---|
 | Platzhalter-Schnittstellen (Anhang 31.2) | Core-Regeln bleiben generisch formulierbar; Projekte füllen Werte ausschließlich im Overlay und in der Berechtigungsdatei |
 | Verschärfungsprinzip (Kap. 25) | Das Overlay darf konkretisieren und verschärfen, nie lockern – Core-Garantien gelten damit projektübergreifend |
-| Getrennte Ablage und Ownership | Core: Framework Owner über Releases; Overlay: Overlay Owner über den Projektprozess; technische Schreibsperren (`Write(leitwerk-core/framework/**)`, `Write(.devin/**)`, `Write(AGENTS.md)`, `Write(project-overlay/**)` als `deny` für Devin) |
+| Getrennte Ablage und Ownership | Core: Framework Owner über Releases; Overlay: Overlay Owner über den Projektprozess; technische Schreibsperren (`Write(leitwerk-core/**)` – das Kernverzeichnis als Ganzes, einschließlich der Skripte, die die Schutzzusagen durchsetzen –, dazu Laufzeitschicht, Wurzel-Anweisungsdatei und `Write(project-overlay/**)` als `deny`) |
 | Dokumenten-Manifest | Projektwissen wird als registriertes Dokument mit Klasse und Ladeverhalten eingebunden – nie durch Editieren von Core-Dateien (Kap. 17) |
 | Integritätsprüfung | `validate-framework.py` prüft unter anderem, dass die Kernregeln in der Berechtigungsdatei unverändert enthalten sind (`_core_rules_integrity`) und Overlay-Pflichtfelder gefüllt sind (`--strict-overlay`) |
 | Release-Abgleich | Bei Übernahme und Aktualisierung werden Core-Bestandteile byte-gleich aus dem Release übernommen (Adoption Guide, CL-10/CL-11) |

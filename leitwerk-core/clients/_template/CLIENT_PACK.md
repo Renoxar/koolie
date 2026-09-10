@@ -85,7 +85,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 | B1 | Berechtigungen liegen versioniert im Repository, nicht nur je Arbeitsplatz | ja | `<TBD>` | `<TBD>` | `<TBD>` |
 | B2 | Dreistufige Semantik: verweigern vor rückfragen vor erlauben | ja | `<TBD>` | `<TBD>` | `<TBD>` |
 | B3 | Lesezugriff auf Secret-Dateien ist per Pfadmuster verweigerbar (`.env`, `*.pem`, `*.key`, `secrets/**`) | ja | `<TBD>` | `<TBD>` | `<TBD>` |
-| B4 | Schreibzugriff auf Framework- und Overlay-Artefakte ist verweigerbar | ja | `<TBD>` | `<TBD>` | `<TBD>` |
+| B4 | Schreibzugriff auf Framework- und Overlay-Artefakte ist verweigerbar, einschließlich des Kernverzeichnisses als Ganzes | ja | `<TBD>` | `<TBD>` | `<TBD>` |
 | B5 | Schreibzugriff auf CI-, Quality-Gate- und Lockdateien ist verweigerbar | ja | `<TBD>` | `<TBD>` | `<TBD>` |
 | B6 | Befehle sind per Muster verweigerbar (`git push`, `git merge`, `rm -rf`, `sudo`) | ja | `<TBD>` | `<TBD>` | `<TBD>` |
 | B7 | Schreiboperationen lösen standardmäßig eine Rückfrage aus | – | `<TBD>` | `<TBD>` | `<TBD>` |

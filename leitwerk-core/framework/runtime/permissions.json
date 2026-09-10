@@ -22,7 +22,7 @@
     { "tool": "write", "pattern": "<ROOT_INSTRUCTION_FILE>", "core": true },
     { "tool": "write", "pattern": "<ROOT_INSTRUCTION_LOCAL>" },
     { "tool": "write", "pattern": "<RUNTIME_DIR>/**", "core": true },
-    { "tool": "write", "pattern": "<CORE_DIR>/framework/**", "core": true },
+    { "tool": "write", "pattern": "<CORE_DIR>/**", "core": true },
     { "tool": "write", "pattern": "project-overlay/**", "core": true },
     { "tool": "write", "pattern": "**/*.lock" },
     { "tool": "write", "pattern": "**/package-lock.json" },

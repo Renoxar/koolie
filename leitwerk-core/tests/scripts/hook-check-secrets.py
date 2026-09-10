@@ -9,6 +9,9 @@ Es durchsucht alle Zeichenketten der über stdin gelieferten JSON-Struktur.
 Verhalten:
 - Fund eines Secret-Musters oder eines geschützten Pfads in der Werkzeugeingabe
   -> Ausgabe {"decision": "block", "reason": "..."} und Exit-Code 2 (blockiert laut Dokumentation).
+- Schreibende Werkzeuge zusätzlich: jeder Pfad im Kernverzeichnis. Ausführende Werkzeuge
+  sind davon ausgenommen, damit die Skripte des Kerns (Validator, install.py --check)
+  weiterhin aufrufbar bleiben; dort greift die deny-Regel der Berechtigungsdatei.
 - Kein Fund -> Exit-Code 0.
 - Nicht parsebare Eingabe -> standardmäßig Exit-Code 0 mit Warnung auf stderr (fail-open),
   weil das Eingabeschema noch nicht in einer Zielinstallation validiert wurde.
@@ -41,10 +44,30 @@ PROTECTED_PATH_PATTERNS = [
     # Wurzel-Anweisungsdatei und Laufzeitschicht heissen je nach Client anders. Bewusst
     # beide Formen: Das Skript wird von allen Client Packs geteilt, und ein zusaetzlich
     # geschuetzter Pfad ist eine Verschaerfung, keine Lockerung.
-    re.compile(r"(^|[\/])(AGENTS|CLAUDE)\.md$"),
-    re.compile(r"(^|[\/])\.(devin|claude)[\/]"),
+    re.compile(r"(^|[\\/])(AGENTS|CLAUDE)\.md$"),
+    re.compile(r"(^|[\\/])\.(devin|claude)[\\/]"),
     re.compile(r"(^|[\\/])project-overlay[\\/]"),
     re.compile(r"(^|[\\/])framework[\\/]core[\\/]"),
+]
+
+# Das Kernverzeichnis als Ganzes. Es steht bewusst in einer zweiten Liste: Die Muster
+# oben gelten auch fuer 'exec', und ein Befehl, der lediglich einen Kernpfad nennt -
+# der Validator, install.py --check, ein git diff - muss weiterhin laufen koennen. Fuer
+# schreibende Werkzeuge gilt das Verbot vollstaendig; bei exec traegt die deny-Regel der
+# Berechtigungsdatei. Die Liste ist damit rein additiv: Sie verschaerft, ohne eine
+# bisher blockierte Operation freizugeben.
+#
+# Der Name des Kernverzeichnisses ist keine Eigenschaft eines Clients, sondern dieser
+# Installation (<CORE_DIR>, docs/PLACEHOLDER_REGISTRY.md). Dieses Skript liegt unter
+# <CORE_DIR>/tests/scripts/ und leitet ihn deshalb aus dem eigenen Ort ab, statt ihn
+# festzuschreiben - eine Umbenennung des Kerns erreicht den Hook damit von selbst.
+CORE_DIR_NAME = os.path.basename(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+WRITE_TOOLS = ("edit", "write", "notebookedit")
+
+PROTECTED_WRITE_PATH_PATTERNS = [
+    re.compile(r"(^|[\\/])" + re.escape(CORE_DIR_NAME) + r"[\\/]"),
 ]
 
 # Zusätzliche projektspezifische Muster können über die Umgebungsvariable
@@ -93,15 +116,29 @@ def main() -> None:
                   f"Secrets duerfen nicht verarbeitet werden. Fundstelle melden, Sitzung anhalten "
                   f"(leitwerk-core/framework/core/02-privacy.md, Abschnitt 5).")
 
-    # Schreib- und Ausfuehrungsoperationen auf geschuetzte Pfade blockieren
-    if tool_name in ("edit", "write", "exec") or not tool_name:
+    # Schreib- und Ausfuehrungsoperationen auf geschuetzte Pfade blockieren. WRITE_TOOLS
+    # steht auch hier, damit kein schreibendes Werkzeug an dieser Liste vorbeilaeuft -
+    # 'notebookedit' tat das bisher.
+    if tool_name in WRITE_TOOLS + ("exec",) or not tool_name:
         for s in strings:
             for pattern in PROTECTED_PATH_PATTERNS:
                 if pattern.search(s):
                     block("Framework-Regel: Operation betrifft einen geschuetzten Pfad "
-                          "(Secrets, Wurzel-Anweisungsdatei, Laufzeitschicht, project-overlay/, leitwerk-core/framework/core/). "
+                          "(Secrets, Wurzel-Anweisungsdatei, Laufzeitschicht, project-overlay/, framework/core/). "
                           "Aenderungen daran erfolgen nur ueber den Aenderungsprozess "
                           "(leitwerk-core/governance/CHANGE_REQUEST_TEMPLATE.md).")
+
+    # Schreiboperationen zusaetzlich auf das gesamte Kernverzeichnis blockieren. Das
+    # Kernverzeichnis gehoert dem Framework Owner und wird ausschliesslich ueber ein
+    # Release ausgetauscht - auch die Skripte darin, die genau diese Zusagen durchsetzen.
+    if tool_name in WRITE_TOOLS:
+        for s in strings:
+            for pattern in PROTECTED_WRITE_PATH_PATTERNS:
+                if pattern.search(s):
+                    block(f"Framework-Regel: Schreiboperation betrifft das Kernverzeichnis "
+                          f"({CORE_DIR_NAME}/). Es gehoert dem Framework Owner und wird nur "
+                          f"ueber ein Release ausgetauscht; Aenderungen laufen als "
+                          f"Aenderungsantrag ({CORE_DIR_NAME}/governance/CHANGE_REQUEST_TEMPLATE.md).")
     sys.exit(0)
 
 
