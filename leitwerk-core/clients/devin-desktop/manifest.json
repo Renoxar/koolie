@@ -10,14 +10,10 @@
   "has_rule_triggers": true,
   "core_skill_prefix": "fw-",
   "core_paths": [
-    "AGENTS.local.md.example",
     ".devin/README.md",
-    ".devin/mcp_config.json.example",
     ".devin/rules/README.md"
   ],
-  "seed_paths": [
-    ".devin/rules/20-project-overlay.md"
-  ],
+  "seed_paths": [],
   "project_owned_hint": [
     ".devin/rules/2N-overlay-<name>.md   (Overlay-Regelerweiterungen)",
     ".devin/rules/40-tech-<name>.md      (Packs ohne Quelle im Kern)",
@@ -74,12 +70,24 @@
     {
       "src": "framework/runtime/hooks.json",
       "dst": "<HOOKS_FILE>"
+    },
+    {
+      "src": "framework/runtime/root-instruction-local.example.md",
+      "dst": "<ROOT_INSTRUCTION_LOCAL>.example"
+    },
+    {
+      "src": "framework/runtime/mcp-config.example.json",
+      "dst": "<MCP_FILE>.example"
     }
   ],
   "shared_seed": [
     {
       "src": "framework/runtime/permissions.json",
       "dst": "<PERMISSIONS_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/20-project-overlay.md",
+      "dst": "<RULES_DIR>/20-project-overlay.md"
     },
     {
       "src": "templates/project-overlay",

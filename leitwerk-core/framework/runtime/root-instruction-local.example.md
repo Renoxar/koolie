@@ -1,10 +1,10 @@
-# Persönliche Ergänzung (Vorlage) – AGENTS.local.md
+# Persönliche Ergänzung (Vorlage) – <ROOT_INSTRUCTION_LOCAL>
 
-<!-- Kopiere diese Datei nach AGENTS.local.md (nicht versioniert, siehe .gitignore).
-     Mechanismus: AGENTS.local.md wird als persönliche Regeldatei gelesen und überschreibt
+<!-- Kopiere diese Datei nach <ROOT_INSTRUCTION_LOCAL> (nicht versioniert, siehe .gitignore).
+     Mechanismus: <ROOT_INSTRUCTION_LOCAL> wird als persönliche Regeldatei gelesen und überschreibt
      gleichnamige geteilte Regeln [DOK]. Im Framework gilt: Persönliche Regeln dürfen den
      Handlungsspielraum nur einschränken oder Arbeitsvorlieben beschreiben – niemals
-     Berechtigungen, Kontextfreigaben oder Kontrollstufen erweitern (AGENTS.md Abschnitt 2). -->
+     Berechtigungen, Kontextfreigaben oder Kontrollstufen erweitern (<ROOT_INSTRUCTION_FILE> Abschnitt 2). -->
 
 ## Zulässige persönliche Einstellungen (Beispiele, synthetisch)
 

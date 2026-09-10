@@ -254,10 +254,11 @@ def render_rule(text: str, man: dict) -> str:
     trig = re.search(r"^trigger:\s*(\S+)\s*$", fm, re.M)
     desc = desc.group(1).strip() if desc else ""
     trig = trig.group(1).strip() if trig else "unbekannt"
-    hinweis = ("Wird über den Import in der Wurzel-Anweisungsdatei immer geladen."
-               if trig != "always_on" else
-               "Wird über den Import in der Wurzel-Anweisungsdatei geladen.")
-    if trig not in ("always_on",):
+    # Ohne Ladetrigger wirkt eine Regel nur ueber die Einbindung - und dann ausnahmslos.
+    # Fuer eine Regel, die auch beim Trigger-Client always_on ist, aendert das nichts; fuer
+    # jede andere ist es eine Verschaerfung, die hier benannt wird.
+    hinweis = "Wird über den Import in der Wurzel-Anweisungsdatei immer geladen."
+    if trig != "always_on":
         hinweis += (" Bei Clients mit Ladetriggern lädt diese Datei nur bei Relevanz;"
                     " immer zu laden ist eine Verschärfung, keine Lockerung.")
     kommentar = (f"<!-- Laufzeitregel. Inhaltlich identisch zur Fassung anderer Client Packs;\n"

@@ -2,6 +2,44 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.8.0] – 2026-09-10
+
+### Geändert
+- **Die letzte Restduplikation zwischen den Client Packs ist zusammengeführt (`CR-2026-010`, Decision Record D-20).** Overlay-Laufzeitregel, nutzerlokale Ergänzungsvorlage und MCP-Vorlage liegen jetzt einmal unter `framework/runtime/`. **Ein Client Pack besteht aus vier Dateien statt sieben:** `CLIENT_PACK.md`, `manifest.json` und zwei Laufzeit-READMEs.
+
+  Gemessen wurde vor der Zusammenführung – nach Normalisierung der Client- und Pfadnamen:
+
+  | Dateipaar | Zeilen | abweichend | Ergebnis |
+  |---|---|---|---|
+  | `20-project-overlay.md` | 119 | 11 | zusammengeführt |
+  | `*.local.md.example` | 38 | 8 | zusammengeführt |
+  | MCP-Vorlage | 8 | 2 | zusammengeführt |
+  | Laufzeit-`README.md` | 86 | 64 | **bleibt je Pack** |
+
+  Entscheidend war nicht der Prozentsatz, sondern was in den abweichenden Zeilen stand: **ausschließlich Werte, für die bereits ein Laufzeit-Platzhalter registriert ist** (`<RUNTIME_DIR>`, `<ROOT_INSTRUCTION_FILE>`, `<ROOT_INSTRUCTION_LOCAL>`, `<MCP_FILE>`). Es war keine neue Abbildung zu erfinden, sondern nur eine vorhandene anzuwenden – kein neuer Mechanismus, kein neues Manifestfeld.
+
+  Die letzte Zeile der Tabelle ist die Gegenprobe: Die beiden Laufzeit-READMEs beschreiben tatsächlich verschiedene Mechanismen und bleiben getrennt. Eine gemeinsame Fassung wäre für beide Clients ungenau.
+
+- **`seed_paths` ist in beiden Manifesten leer.** Die gesamte Saat eines Projekts – Overlay, Overlay-Laufzeitregel, Berechtigungsdatei – kommt jetzt aus dem Kern. `root-template/` enthält nur noch Core-Dateien.
+
+- **Zwei Ungenauigkeiten in der MCP-Vorlage korrigiert.** „laut Devin-Dokumentation" wurde zu „laut Dokumentation dieses Clients", und der Marker `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` zu seiner clientneutralen Form. In der Fassung des Packs `claude-code` standen beide bislang falsch – ein Rest aus der Konvertierung, der dort nie zutraf.
+
+### Behoben
+- **`render_rule` beschrieb das Ladeverhalten invertiert.** Eine Regel mit `trigger: always_on` erhielt den Satz „Wird über den Import in der Wurzel-Anweisungsdatei geladen." – *ohne* das Wort „immer" –, während eine Regel mit `model_decision` ihn *mit* erhielt. Genau umgekehrt wäre richtig gewesen: `always_on` lädt ausnahmslos, und für die andere ist die Einbindung eine Verschärfung, die eigens benannt wird.
+
+  Ohne Wirkung auf das Verhalten, aber irreführend – der erzeugte Kommentar behauptete den schwächeren Ladezustand für die Regel, die tatsächlich immer lädt. Beide Fälle sagen jetzt „immer geladen"; nur die Verschärfungsnotiz unterscheidet sie. Gefunden beim Zusammenführen der Overlay-Regel, weil deren handgeschriebene Fassung im Pack `claude-code` die richtige Formulierung trug.
+
+### Nachweise
+- **Zeichenweiser Vergleich gegen 0.7.0:** Fünf der sechs erzeugten Dateien sind identisch. Die sechste – die Overlay-Regel des Packs `claude-code` – weicht in drei Zeilen ihres erzeugten Kommentars ab und liest sich dadurch wie ihre drei Nachbarregeln.
+- Erstinstallation beider Packs: 80 beziehungsweise 79 Dateien wie zuvor; `--check` gegen beide fehlerfrei; `FW-KO-04` und der Validator gegen beide Installationen und die Wurzelinstallation: 0 Fehler.
+
+### Migrationshinweise für Overlays
+Keine Handarbeit nötig. Die beiden Vorlagen sind Core und werden von `python leitwerk-core/install.py --update` erneuert; die Overlay-Laufzeitregel ist Saat und wird nie überschrieben – ein bestehendes Projekt behält seine ausgefüllte Fassung unverändert.
+
+### Bekannte Einschränkungen
+- `root-template/` enthält je Pack nur noch zwei READMEs, und `seed_paths` ist überall leer. Beides bleibt im Manifest, weil ein künftiges Client Pack wieder eigene Wurzelartefakte mitbringen kann.
+- Die Einstufungen der Fähigkeitsmatrix bleiben unbelegt (Roadmap AP2).
+
 ## [0.7.0] – 2026-09-10
 
 > **Brechende Änderung.** Das Kernverzeichnis heißt jetzt `leitwerk-core/`. Ein bestehendes Projekt muss migrieren – der Weg steht unten und ist durchgespielt.
