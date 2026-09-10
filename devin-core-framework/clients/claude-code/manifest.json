@@ -1,0 +1,181 @@
+{
+  "_comment": "Maschinenlesbare Pfadabbildung dieses Client Packs. Die menschenlesbare Fassung mit Fähigkeitsmatrix steht in CLIENT_PACK.md. Besonderheit gegenüber devin-desktop: Der Client kennt keine Regeldateien mit Ladetriggern (has_rule_triggers=false); die Regeltexte liegen in .claude/framework/ und werden über Importe in CLAUDE.md geladen. Hooks stehen nicht in einer eigenen Datei, sondern in .claude/settings.json.",
+  "client": "claude-code",
+  "runtime_dir": ".claude",
+  "root_instruction_file": "CLAUDE.md",
+  "permissions_file": ".claude/settings.json",
+  "skills_dir": ".claude/skills",
+  "agents_dir": ".claude/agents",
+  "pack_runtime_dir": ".claude/framework",
+  "has_rule_triggers": false,
+  "core_skill_prefix": "fw-",
+  "core_paths": [
+    "CLAUDE.local.md.example",
+    ".mcp.json.example",
+    ".claude/README.md",
+    ".claude/framework/README.md"
+  ],
+  "seed_paths": [
+    ".claude/framework/20-project-overlay.md"
+  ],
+  "project_owned_hint": [
+    ".claude/framework/2N-overlay-<name>.md   (Overlay-Regelerweiterungen)",
+    ".claude/framework/40-tech-<name>.md      (Packs ohne Quelle im Kern)",
+    ".claude/settings.local.json              (persönliche Überschreibungen)",
+    ".claude/skills/prj-*/                    (projektspezifische Skills)",
+    "project-overlay/tech-packs/**            (projekteigene Packs)",
+    "project-overlay/**                       (das gesamte Overlay)"
+  ],
+  "runtime_placeholders": {
+    "<RUNTIME_DIR>": ".claude",
+    "<ROOT_INSTRUCTION_FILE>": "CLAUDE.md",
+    "<ROOT_INSTRUCTION_LOCAL>": "CLAUDE.local.md",
+    "<PERMISSIONS_FILE>": ".claude/settings.json",
+    "<SKILLS_DIR>": ".claude/skills",
+    "<RULES_DIR>": ".claude/framework",
+    "<AGENTS_DIR>": ".claude/agents",
+    "<HOOKS_FILE>": ".claude/settings.json",
+    "<MCP_FILE>": ".mcp.json",
+    "<CLIENT_NAME>": "Claude Code"
+  },
+  "skill_frontmatter": {
+    "tools_format": "csv",
+    "tool_names": {
+      "read": [
+        "Read"
+      ],
+      "grep": [
+        "Grep"
+      ],
+      "glob": [
+        "Glob"
+      ],
+      "edit": [
+        "Edit",
+        "Write"
+      ],
+      "exec": [
+        "Bash"
+      ]
+    },
+    "drop_fields": [
+      "permissions",
+      "triggers"
+    ]
+  },
+  "shared_core": [
+    {
+      "src": "framework/runtime/root-instruction.md",
+      "dst": "<ROOT_INSTRUCTION_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/00-framework-core.md",
+      "dst": "<RULES_DIR>/00-framework-core.md"
+    },
+    {
+      "src": "framework/runtime/rules/10-privacy-security.md",
+      "dst": "<RULES_DIR>/10-privacy-security.md"
+    },
+    {
+      "src": "framework/runtime/rules/15-development-rules.md",
+      "dst": "<RULES_DIR>/15-development-rules.md"
+    },
+    {
+      "src": "framework/runtime/agents/fw-reviewer.md",
+      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+    },
+    {
+      "src": "templates/rules/21-overlay-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/21-overlay-TEMPLATE.md.template"
+    },
+    {
+      "src": "templates/rules/40-tech-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/40-tech-TEMPLATE.md.template"
+    }
+  ],
+  "shared_seed": [
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
+    {
+      "src": "templates/project-overlay",
+      "dst": "project-overlay"
+    }
+  ],
+  "rule_frontmatter": "comment",
+  "root_instruction_imports": [
+    "@.claude/framework/00-framework-core.md",
+    "@.claude/framework/10-privacy-security.md",
+    "@.claude/framework/15-development-rules.md",
+    "@.claude/framework/20-project-overlay.md"
+  ],
+  "agent_frontmatter": {
+    "tools_field": "tools",
+    "tools_format": "csv",
+    "tool_names": {
+      "read": [
+        "Read"
+      ],
+      "grep": [
+        "Grep"
+      ],
+      "glob": [
+        "Glob"
+      ],
+      "edit": [
+        "Edit",
+        "Write"
+      ],
+      "exec": [
+        "Bash"
+      ]
+    }
+  },
+  "permission_tools": {
+    "read": [
+      "Read"
+    ],
+    "search": [
+      "Grep",
+      "Glob"
+    ],
+    "write": [
+      "Edit",
+      "Write"
+    ],
+    "exec": [
+      "Bash"
+    ],
+    "fetch": [
+      "WebFetch",
+      "WebSearch"
+    ],
+    "mcp": [
+      "mcp__*"
+    ]
+  },
+  "permission_tools_bare": [
+    "WebFetch",
+    "WebSearch",
+    "mcp__*"
+  ],
+  "permission_path_prefix": "./",
+  "permission_exec_match": "prefix",
+  "permission_exec_suffix": ":*",
+  "permissions_extra": {
+    "defaultMode": "default"
+  },
+  "permissions_note": "Zwei Abweichungen gegenueber Clients mit einem einzigen Schreibwerkzeug, beide Verschaerfungen: Schreibschutz erfordert je Pfad eine Edit- und eine Write-Regel, weil Aendern und Anlegen getrennte Werkzeuge sind; Befehlsverbote wirken praefixbasiert und damit breiter (Bash(git reset:*) sperrt jedes git reset, nicht nur --hard).",
+  "hook_tools": {
+    "exec": [
+      "Bash"
+    ],
+    "write": [
+      "Edit",
+      "Write",
+      "NotebookEdit"
+    ]
+  },
+  "hook_project_dir_var": "CLAUDE_PROJECT_DIR"
+}

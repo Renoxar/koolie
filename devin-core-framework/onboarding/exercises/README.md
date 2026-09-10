@@ -6,7 +6,7 @@ Alle Übungen laufen auf einem **synthetischen Übungsrepository** – nie auf d
 
 Das Übungsrepository wird im Arbeitspaket „Onboarding" der Roadmap je Projekt im eigenen `<TECH_STACK>` erstellt (`<TBD: Übungsrepository für <TECH_STACK> erzeugen>`), damit Build- und Testbefehle real funktionieren. Es MUSS enthalten:
 
-1. **Framework-Integration:** `AGENTS.md`, `.devin/` und ein Übungs-Overlay mit Status `aktiv`, ausgefüllten Pfaden und Befehlen (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`) – das Übungs-Overlay ist zugleich das Anschauungsbeispiel für ein ausgefülltes Overlay.
+1. **Framework-Integration:** Wurzel-Anweisungsdatei, Laufzeitschicht und ein Übungs-Overlay mit Status `aktiv`, ausgefüllten Pfaden und Befehlen (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`) – das Übungs-Overlay ist zugleich das Anschauungsbeispiel für ein ausgefülltes Overlay.
 2. **Fachlich neutralen Beispielcode:** zwei bis drei kleine Module mit erfundener Fachlichkeit (zum Beispiel eine Bestellvalidierung `src/ordering` mit `OrderValidator`), inklusive vorhandener Tests für einen Teil des Verhaltens und einer bewussten Testlücke.
 3. **Einen eingebauten synthetischen Fehler** mit reproduzierbarem Fehlverhalten an einer Randbedingung (für Ü3/Ü4), dokumentiert nur im Mentorenblatt.
 4. **Drei Köder für Ü6** (nur im Übungsrepository, klar als Übung markiert im Mentorenblatt):

@@ -6,7 +6,7 @@ Role Packs sind optionale, rollenbezogene Module. Sie konkretisieren die Arbeits
 
 1. Ein Role Pack enthält **keine** Governance-, Datenschutz- oder Sicherheitsregeln und **keine** Projektwerte. Solche Inhalte gehören in den Core (Ebene 3) beziehungsweise das Overlay (Ebene 4). Bei Zweifeln: `devin-core-framework/decision-trees/06-rule-placement.md`.
 2. Ein Role Pack darf Core- und Overlay-Regeln nur konkretisieren oder verschärfen, nie lockern.
-3. Aufbau je Pack: `ROLE_PACK.md` (Langform), optional `skills/` (Quellablage rollenspezifischer Skills, Präfix `role-<pack>-`, werden zur Aktivierung nach `.devin/skills/` kopiert) und eine Laufzeitfassung `.devin/rules/30-role-<pack>.md` mit `trigger: model_decision`.
+3. Aufbau je Pack: `ROLE_PACK.md` (Langform), optional `skills/` (Quellablage rollenspezifischer Skills, Präfix `role-<pack>-`, werden zur Aktivierung in die Skill-Ablage kopiert) und eine Laufzeitfassung `30-role-<pack>.md` in der Regelablage. Bei Clients mit Ladetriggern lädt sie bei Relevanz; bei Clients ohne Ladetrigger wird sie in der Wurzel-Anweisungsdatei eingebunden (`devin-core-framework/docs/RUNTIME_GLOSSARY.md`).
 4. Ein Pack wird im Overlay aktiviert (Abschnitt 1 „Rollen im Team" und Laufzeitfassung vorhanden). Nicht aktivierte Packs liegen nur im Verzeichnis `devin-core-framework/framework/role-packs/` und werden von Devin nicht als Regel geladen.
 5. Jedes Pack hat einen Modul-Owner (`devin-core-framework/OWNERS.md`), eine Version und einen Änderungsverlauf.
 
@@ -14,9 +14,9 @@ Role Packs sind optionale, rollenbezogene Module. Sie konkretisieren die Arbeits
 
 | Pack | Status | Laufzeitfassung | Owner |
 |---|---|---|---|
-| `software-development` | entwurf (Referenz) | `.devin/rules/30-role-software-development.md` | `<FRAMEWORK_OWNER>` |
+| `software-development` | entwurf (Referenz) | `30-role-software-development.md` in der Regelablage | `<FRAMEWORK_OWNER>` |
 | `software-architecture` | vorgesehen | – | `<TBD>` |
-| `requirements-engineering` | entwurf | `.devin/rules/30-role-requirements-engineering.md` | `<FRAMEWORK_OWNER>` |
+| `requirements-engineering` | entwurf | `30-role-requirements-engineering.md` in der Regelablage | `<FRAMEWORK_OWNER>` |
 | `testing-qa` | vorgesehen | – | `<TBD>` |
 | `devops` | vorgesehen | – | `<TBD>` |
 | `documentation` | vorgesehen | – | `<TBD>` |

@@ -47,12 +47,12 @@
 2. **Aktualität:** Veraltete Dokumente SOLLEN nicht bereitgestellt werden; ist ein Dokument im Manifest als veraltet markiert, DARF es NICHT verwendet werden.
 3. **Bereinigung vor Bereitstellung:** K2-Inhalte werden vor der Bereitstellung bereinigt: Personen durch Rollen, Organisationen durch Platzhalter, Adressen und Kennungen durch `<PLACEHOLDER>`, Fallbeschreibungen durch abstrahierte Sachverhalte ersetzt. Die bereinigte Fassung wird nicht in das Repository übernommen (Ebene E).
 4. **Tickets:** Aus `<ISSUE_TRACKER>` werden nur Titel, technische Beschreibung und Akzeptanzkriterien übernommen – nach Prüfung auf personenbezogene Daten und vertrauliche Inhalte. Kommentarverläufe, Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden.
-5. **Befehlsausgaben und Logs:** Vor der Weitergabe an Devin werden Befehlsausgaben und Logauszüge auf personenbezogene Daten, Secrets und Hostnamen geprüft. Devin selbst wird angewiesen, vermutete Secrets oder personenbezogene Daten in Ausgaben nicht zu wiederholen (`AGENTS.md`).
+5. **Befehlsausgaben und Logs:** Vor der Weitergabe an Devin werden Befehlsausgaben und Logauszüge auf personenbezogene Daten, Secrets und Hostnamen geprüft. Das Werkzeug selbst wird angewiesen, vermutete Secrets oder personenbezogene Daten in Ausgaben nicht zu wiederholen (Wurzel-Anweisungsdatei).
 6. **Testdaten:** Devin arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
 7. **Externe Quellen:** Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). Freigaben erfolgen domainbezogen über das Overlay und die Berechtigungskonfiguration (`Fetch(domain:...)` `[DOK]`).
 8. **MCP-Werkzeuge:** Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Standardmäßig fordert Devin Local vor jedem MCP-Aufruf eine Bestätigung an `[DOK]`; diese Einstellung DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist.
 9. **Spaces und geteilter Kontext:** Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
-10. **Persönliche Regeln:** Persönliche Ergänzungen (`AGENTS.local.md`, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht.
+10. **Persönliche Regeln:** Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht.
 
 ## 4. Freigabeverfahren für K2-Inhalte (normativ)
 
@@ -79,9 +79,9 @@ Eine Löschung beim Anbieter ist über den vertraglich vereinbarten Weg zu beant
 
 | Maßnahme | Umsetzung | Belegstatus |
 |---|---|---|
-| Lesezugriff auf Secret-Pfade verhindern | `deny`-Regeln `Read(...)` in `.devin/config.json` für `.env*`, Schlüsseldateien, Keystores, `<EXCLUDED_PATHS>`; im Sandbox-Modus werden `Read`-Deny-Pfade für Befehle unsichtbar | `[DOK]` |
+| Lesezugriff auf Secret-Pfade verhindern | Verweigerungsregeln für Lesezugriffe in der Berechtigungsdatei auf `.env*`, Schlüsseldateien, Keystores, `<EXCLUDED_PATHS>`; im Sandbox-Modus werden `Read`-Deny-Pfade für Befehle unsichtbar | `[DOK]` |
 | Websuche deaktivieren | Team-Einstellung (Enterprise) beziehungsweise keine `Fetch`-Allow-Regeln | `[DOK]` (Enterprise), `[EMPF]` (andere Pläne) |
-| MCP nur nach Freigabe | keine Einträge in `.devin/mcp_config.json`, bis Freigabe vorliegt; `ask` als Standard belassen | `[DOK]` |
+| MCP nur nach Freigabe | keine Einträge in der MCP-Konfiguration, bis Freigabe vorliegt; Rückfrage als Standard belassen | `[DOK]` |
 | Training-Opt-out und Zero Data Retention | Data-Controls-Einstellung durch Administrator (Teams) beziehungsweise vertragliche Regelung (Enterprise) | `[DOK]`, Umsetzung `<TBD: Nachweis der Einstellung>` |
 | Prüfung von Werkzeugaufrufen auf Secrets | Hook `PreToolUse` mit Skript, das Schreib- und Ausführungsanfragen auf Secret-Muster prüft und blockiert (`devin-core-framework/tests/scripts/hook-check-secrets.py`) | `[DOK]` (Hook-Mechanismus), `[EMPF]` (Skript) |
 | Sandbox für Befehlsausführung | Sandbox-Modus mit Domain-Allowlist; unter Windows laut Dokumentation nicht verfügbar; Netzwerkfilterung laut Dokumentation instabil | `[DOK]`, Einsatz `<TBD: Betriebssystem und Sandbox-Verfügbarkeit>` |

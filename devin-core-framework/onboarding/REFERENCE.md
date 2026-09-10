@@ -1,6 +1,6 @@
 # Nachschlagewerk – eine Seite für das Tagesgeschäft
 
-> Kurzreferenz; maßgeblich sind `AGENTS.md` und `devin-core-framework/framework/core/`. Version: siehe `devin-core-framework/VERSION`.
+> Kurzreferenz; maßgeblich sind die Wurzel-Anweisungsdatei und `devin-core-framework/framework/core/`. Version: siehe `devin-core-framework/VERSION`.
 
 ## Kontextklassen
 

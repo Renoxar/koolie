@@ -1,0 +1,80 @@
+{
+  "_comment": "Werkzeugneutrale Regelmenge der Berechtigungsdatei (Ebene 3). Diese Datei wird nicht installiert, sondern bei der Installation in die Form des gewaehlten Client Packs uebersetzt (clientmap.py, Abbildung in clients/<pack>/manifest.json). Werkzeugverben: read, search, write, exec, fetch, mcp. Ein Pfadmuster steht in 'pattern', ein Befehlsverbot in 'command'; 'prefix' nennt die Form fuer Clients, die Befehle ueber ein Praefix sperren, und muss ein Praefix von 'command' sein. 'core': true kennzeichnet die Kernzusagen B1 bis B6 - aus ihnen wird _core_rules_integrity.deny_must_contain je Client erzeugt, und der Validator prueft die installierte Datei dagegen.",
+
+  "deny": [
+    { "tool": "read",  "pattern": ".env", "core": true },
+    { "tool": "read",  "pattern": ".env.*" },
+    { "tool": "read",  "pattern": "**/.env" },
+    { "tool": "read",  "pattern": "**/.env.*" },
+    { "tool": "read",  "pattern": "**/*.pem", "core": true },
+    { "tool": "read",  "pattern": "**/*.key", "core": true },
+    { "tool": "read",  "pattern": "**/*.p12" },
+    { "tool": "read",  "pattern": "**/*.pfx" },
+    { "tool": "read",  "pattern": "**/*.jks" },
+    { "tool": "read",  "pattern": "**/*.keystore" },
+    { "tool": "read",  "pattern": "**/id_rsa*" },
+    { "tool": "read",  "pattern": "**/id_ed25519*" },
+    { "tool": "read",  "pattern": "**/secrets/**", "core": true },
+    { "tool": "read",  "pattern": "**/*secret*" },
+    { "tool": "read",  "pattern": "**/*credential*" },
+    { "tool": "read",  "pattern": "<EXCLUDED_PATHS>" },
+
+    { "tool": "write", "pattern": "<ROOT_INSTRUCTION_FILE>", "core": true },
+    { "tool": "write", "pattern": "<ROOT_INSTRUCTION_LOCAL>" },
+    { "tool": "write", "pattern": "<RUNTIME_DIR>/**", "core": true },
+    { "tool": "write", "pattern": "<CORE_DIR>/framework/**", "core": true },
+    { "tool": "write", "pattern": "project-overlay/**", "core": true },
+    { "tool": "write", "pattern": "**/*.lock" },
+    { "tool": "write", "pattern": "**/package-lock.json" },
+    { "tool": "write", "pattern": "**/yarn.lock" },
+    { "tool": "write", "pattern": "**/pnpm-lock.yaml" },
+    { "tool": "write", "pattern": "**/poetry.lock" },
+    { "tool": "write", "pattern": "**/Cargo.lock" },
+    { "tool": "write", "pattern": "**/go.sum" },
+    { "tool": "write", "pattern": "<CI_CONFIG_PATHS>" },
+    { "tool": "write", "pattern": "<QUALITY_GATE_CONFIG_PATHS>" },
+    { "tool": "write", "pattern": "<EXCLUDED_PATHS>" },
+
+    { "tool": "exec",  "command": "git push", "core": true },
+    { "tool": "exec",  "command": "git merge", "core": true },
+    { "tool": "exec",  "command": "git rebase" },
+    { "tool": "exec",  "command": "git reset --hard", "prefix": "git reset", "core": true },
+    { "tool": "exec",  "command": "git tag" },
+    { "tool": "exec",  "command": "git branch -D", "prefix": "git branch" },
+    { "tool": "exec",  "command": "git clean" },
+    { "tool": "exec",  "command": "git remote" },
+    { "tool": "exec",  "command": "rm -rf", "prefix": "rm", "core": true },
+    { "tool": "exec",  "command": "sudo", "core": true },
+    { "tool": "exec",  "command": "su ", "prefix": "su" },
+    { "tool": "exec",  "command": "curl" },
+    { "tool": "exec",  "command": "wget" },
+    { "tool": "exec",  "command": "ssh" },
+    { "tool": "exec",  "command": "scp" },
+    { "tool": "exec",  "command": "chmod 777", "prefix": "chmod" },
+    { "tool": "exec",  "command": "npm publish" },
+    { "tool": "exec",  "command": "docker push" },
+    { "tool": "exec",  "command": "kubectl" },
+    { "tool": "exec",  "command": "helm" },
+    { "tool": "exec",  "command": "terraform" },
+
+    { "tool": "fetch", "pattern": "*" }
+  ],
+
+  "ask": [
+    { "tool": "write", "pattern": "**" },
+    { "tool": "exec",  "command": "<BUILD_COMMAND>" },
+    { "tool": "exec",  "command": "<TEST_COMMAND>" },
+    { "tool": "exec",  "command": "<LINT_COMMAND>" },
+    { "tool": "mcp",   "pattern": "*" }
+  ],
+
+  "allow": [
+    { "tool": "read",   "pattern": "**" },
+    { "tool": "search", "pattern": "**" },
+    { "tool": "exec",   "command": "git status" },
+    { "tool": "exec",   "command": "git diff" },
+    { "tool": "exec",   "command": "git log" },
+    { "tool": "exec",   "command": "git show" },
+    { "tool": "exec",   "command": "git blame" }
+  ]
+}

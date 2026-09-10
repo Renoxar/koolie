@@ -1,6 +1,6 @@
 # Beispiel (synthetisch): ausgefüllte Overlay-Laufzeitfassung
 
-> Synthetisches Beispiel für `.devin/rules/20-project-overlay.md`. Projekt, Pfade und Befehle sind erfunden („Bestellverwaltung", Kürzel `BSV`); sie bezeichnen kein reales Vorhaben. Frontmatter wie im Original (`trigger: always_on`).
+> Synthetisches Beispiel für `20-project-overlay.md` in der Regelablage. Projekt, Pfade und Befehle sind erfunden („Bestellverwaltung", Kürzel `BSV`); sie bezeichnen kein reales Vorhaben. Frontmatter wie im Original (`trigger: always_on`).
 
 ```markdown
 # Project Overlay – Laufzeitfassung für Bestellverwaltung (BSV)
@@ -12,7 +12,7 @@
 
 ## Arbeitsbereich
 - Erlaubte Pfade: `src/**`, `test/**`, `docs/**`
-- Ausgeschlossene Pfade: `deploy/**`, `config/env/**` – zusätzlich immer: Secret-Dateien, `.devin/`, `AGENTS.md`, `project-overlay/`
+- Ausgeschlossene Pfade: `deploy/**`, `config/env/**` – zusätzlich immer: Secret-Dateien, Laufzeitschicht, Wurzel-Anweisungsdatei, `project-overlay/`
 - Testpfade: `test/**` · Dokumentationspfade: `docs/**`
 - Als kritisch eingestufte Komponenten (mindestens Stufe hoch): `src/auth/**`, `src/export/**`
 

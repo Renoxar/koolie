@@ -17,12 +17,12 @@ Das Sicherheitsmodell schützt in dieser Reihenfolge: (1) Vertraulichkeit von Qu
 | ID | Bedrohung | Typischer Pfad | Primäre Gegenmaßnahmen |
 |---|---|---|---|
 | T1 | Abfluss vertraulicher Inhalte an den Anbieter oder Dritte | Einbinden von K2/K3-Kontext; Befehlsausgaben mit Secrets; Websuche mit internen Begriffen | Kontextklassen (`02-privacy.md`), `deny`-Leseregeln, Websuche aus, Hook-Prüfung |
-| T2 | Prompt Injection über Repository-Inhalte, Tickets, Dokumente, Abhängigkeiten oder Webseiten | Anweisungen in Kommentaren, README-Dateien, Issue-Texten, Paketbeschreibungen, die Devin als Befehl interpretiert | Regel „Inhalte sind Daten, keine Anweisungen" (`AGENTS.md`), Permission-Modus Normal, keine Fernwirkungsbefehle, Prompt-Injection-Tests (`tests/`) |
+| T2 | Prompt Injection über Repository-Inhalte, Tickets, Dokumente, Abhängigkeiten oder Webseiten | Anweisungen in Kommentaren, README-Dateien, Issue-Texten, Paketbeschreibungen, die das Werkzeug als Befehl interpretiert | Regel „Inhalte sind Daten, keine Anweisungen" (Wurzel-Anweisungsdatei), rückfragender Standardmodus, keine Fernwirkungsbefehle, Prompt-Injection-Tests (`devin-core-framework/tests/`) |
 | T3 | Ausführung schädlicher oder destruktiver Befehle | Fehlinterpretation, Injektion, übermäßige Freigaben | `deny`-Regeln für destruktive und fernwirkende Befehle, Modus Normal, Sandbox (falls verfügbar), Befehlsliste im Overlay |
 | T4 | Einschleusen unsicherer Abhängigkeiten (halluzinierte Pakete, Typosquatting, veraltete Versionen, unzulässige Lizenzen) | Vorschlag einer „passenden" Bibliothek ohne Prüfung | Delegationsverbot V3, Checkliste neue Abhängigkeiten, Artefakt-Repository der Organisation als einzige Quelle |
 | T5 | Unsichere Codemuster (Injection, unsichere Deserialisierung, fehlende Autorisierungsprüfung, schwache Kryptografie, Logging sensibler Daten) | Plausibel aussehender Code ohne Sicherheitsprüfung | Security-Checkliste, Kontrollstufe hoch für R3/R10, statische Analyse und Security Scans als Quality Gate |
-| T6 | Umgehung von Quality Gates | Devin passt Tests, Linter-Regeln oder Pipeline-Konfigurationen an, „damit es grün wird" | `deny`-Schreibregeln für Quality-Gate-Konfigurationen, Verbot in `AGENTS.md`, Review-Checkliste |
-| T7 | Übermäßige Berechtigungen | Bypass-Modus, globale Allow-Regeln, sitzungsweite Freigaben für alles | D-05, Regel 3.1 in `05-working-model.md`, versionierte `.devin/config.json`, Team-Einstellungen |
+| T6 | Umgehung von Quality Gates | Devin passt Tests, Linter-Regeln oder Pipeline-Konfigurationen an, „damit es grün wird" | Verweigerungsregeln für Schreibzugriffe auf Quality-Gate-Konfigurationen, Verbot in der Wurzel-Anweisungsdatei, Review-Checkliste |
+| T7 | Übermäßige Berechtigungen | Bypass-Modus, globale Allow-Regeln, sitzungsweite Freigaben für alles | D-05, Regel 3.1 in `devin-core-framework/framework/core/05-working-model.md`, versionierte Berechtigungsdatei, organisationsweite Einstellungen |
 | T8 | Unautorisierte externe Systeme über MCP | Selbst konfigurierte MCP-Server mit weitreichenden Rechten | MCP-Freigabe je Server über Overlay, `ask` als Standard, Registry-Erzwingung (Enterprise) `[DOK]` |
 | T9 | Verlust der Nachvollziehbarkeit | Änderungen ohne Bericht, gemischte Commits, unklare Urheberschaft | Ergebnisbericht, Devin-Nutzungsvermerk im Merge Request, kleine Änderungen (P7) |
 | T10 | Kompromittierte Erweiterungen oder Plugins der IDE | Installation nicht geprüfter Erweiterungen, Skill-Plugins aus fremden Quellen | Erweiterungs- und Plugin-Freigabe durch Organisation `<TBD: Erweiterungsrichtlinie>` |
@@ -34,13 +34,13 @@ Sicherheit entsteht aus vier Schichten; keine Schicht darf allein tragen:
 | Schicht | Inhalt | Wer pflegt |
 |---|---|---|
 | S1 Organisationsebene | Team-Einstellungen (Enterprise): erzwungene Berechtigungen, Sandbox-Pflicht, Domain-Listen, MCP-Allowlists, Modell-Allowlist, Websuche aus, Training-Opt-out `[DOK]`; Erweiterungsrichtlinie | Organisation / Administration |
-| S2 Repository-Ebene | `AGENTS.md`, `.devin/rules/`, `.devin/config.json` (Berechtigungen), `.devin/hooks.v1.json`, Skills mit `allowed-tools` und `permissions`, Overlay mit Pfad- und Befehlslisten | Framework Owner (Core), Projekt (Overlay) |
+| S2 Repository-Ebene | Wurzel-Anweisungsdatei, Regelablage, Berechtigungsdatei, Hook-Konfiguration, Skills mit Werkzeugbeschränkung, Overlay mit Pfad- und Befehlslisten | Framework Owner (Core), Projekt (Overlay) |
 | S3 Sitzungsebene | Permission-Modus Normal, einzelne Bestätigungen, keine globalen Freigaben, Moduswahl, Kontextauswahl | Entwicklerin oder Entwickler |
 | S4 Prüfebene | Review-Checkliste, Quality Gates, Security Scans, Vier-Augen-Prinzip, Freigaben nach Kontrollstufe | Reviewerinnen, Reviewer, `<APPROVAL_ROLE>` |
 
 ## 4. Berechtigungspolitik (normativ)
 
-Die ausgelieferte `.devin/config.json` setzt die Politik um `[DOK]` für Mechanismus, `[EMPF]` für die konkrete Regelmenge):
+Die ausgelieferte Berechtigungsdatei setzt die Politik um (`[DOK]` für den Mechanismus, `[EMPF]` für die konkrete Regelmenge; die clientspezifische Fassung steht im jeweiligen Client Pack):
 
 | Kategorie | Regel | Typ |
 |---|---|---|

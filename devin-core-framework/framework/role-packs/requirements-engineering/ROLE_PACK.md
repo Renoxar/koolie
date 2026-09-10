@@ -8,7 +8,7 @@
 | Status | entwurf |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
-| Laufzeitfassung | `.devin/rules/30-role-requirements-engineering.md` |
+| Laufzeitfassung | `30-role-requirements-engineering.md` in der Regelablage |
 | Skills | `role-re-ticket` (`RP-RE-SK-001`) |
 
 ## 1. Zweck und Abgrenzung
@@ -137,10 +137,10 @@ Aufgabenbeschreibungen und Ticketinhalte sind in der Regel **K2** (`devin-core-f
 1. Rolle im Overlay Abschnitt 1 („Rollen im Team") aufführen.
 2. Laufzeitfassung kopieren:
    `devin-core-framework/framework/role-packs/requirements-engineering/runtime/30-role-requirements-engineering.md`
-   → `.devin/rules/30-role-requirements-engineering.md`
+   → `30-role-requirements-engineering.md` in der Regelablage
 3. Skill kopieren:
    `devin-core-framework/framework/role-packs/requirements-engineering/skills/role-re-ticket/`
-   → `.devin/skills/role-re-ticket/`
+   → `role-re-ticket/` in der Skill-Ablage
 4. `<ISSUE_TRACKER>` im Overlay Abschnitt 13 setzen und die Sprachregeln in Abschnitt 9 prüfen.
 5. Ein Glossar als Manifest-Typ `glossary` registrieren, falls vorhanden — der Skill nutzt es für verbindliche Fachbegriffe.
 6. Validieren: `python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay`

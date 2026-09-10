@@ -8,7 +8,7 @@
 | Status | entwurf (Referenzpack der Erstfassung) |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Softwareentwicklerinnen und Softwareentwickler |
-| Laufzeitfassung | `runtime/30-role-software-development.md`, zur Aktivierung nach `.devin/rules/` |
+| Laufzeitfassung | `runtime/30-role-software-development.md`, zur Aktivierung in die Regelablage |
 
 ## 1. Zweck und Abgrenzung
 
@@ -67,7 +67,7 @@ Dieses Pack ist nach einer Erstinstallation **nicht** aktiv. Es wird wie jedes P
 
 1. Rolle im Overlay Abschnitt 1 („Rollen im Team") aufführen.
 2. Laufzeitfassung kopieren:
-   `runtime/30-role-software-development.md` → `.devin/rules/30-role-software-development.md`
+   `runtime/30-role-software-development.md` → `30-role-software-development.md` in der Regelablage
 3. Validieren: `python devin-core-framework/tests/scripts/validate-framework.py --strict-overlay`
 
 Eigene Skills sind nicht mitzukopieren – das Pack nutzt die Framework-Skills, die ohnehin in der Laufzeitschicht liegen (Abschnitt 6).

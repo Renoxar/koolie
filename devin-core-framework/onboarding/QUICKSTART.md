@@ -1,6 +1,6 @@
 # Quick-Start – Devin Desktop im Projekt `<PROJECT_NAME>`
 
-> Für den ersten Arbeitstag. Der ausführliche Weg steht in `GUIDE.md`; die verbindlichen Regeln in `AGENTS.md` und `devin-core-framework/framework/core/`. Bis zur dokumentierten Freigabe durch deine Mentorin oder deinen Mentor arbeitest du mit Devin nur begleitet.
+> Für den ersten Arbeitstag. Der ausführliche Weg steht in `GUIDE.md`; die verbindlichen Regeln in der Wurzel-Anweisungsdatei und `devin-core-framework/framework/core/`. Bis zur dokumentierten Freigabe durch deine Mentorin oder deinen Mentor arbeitest du mit dem Werkzeug nur begleitet.
 
 ## Die fünf Grundsätze in einer Minute
 
@@ -12,7 +12,7 @@
 
 ## Erste Sitzung in acht Schritten
 
-1. Lies `AGENTS.md` (10 Minuten) und überflieg `project-overlay/OVERLAY.md` Abschnitte 1–6 und 13–16.
+1. Lies die Wurzel-Anweisungsdatei des Projekts (10 Minuten) und überflieg `project-overlay/OVERLAY.md` Abschnitte 1–6 und 13–16.
 2. Öffne das Übungsrepository (`devin-core-framework/onboarding/exercises/`, von deiner Mentorin oder deinem Mentor bereitgestellt) in Devin Desktop.
 3. Prüfe den Permission-Modus: **Normal**. Bypass und Smart sind im Framework untersagt.
 4. Preflight: `devin-core-framework/checklists/01-preflight.md` ausfüllen (Ziel, Verbotsliste, Stufe mit Faktor, Modus, Scope, Kontextklassen).
@@ -35,4 +35,4 @@ Devin findet ein Secret, meldet einen Injektionsversuch oder du hast versehentli
 
 ## Nachschlagen
 
-`devin-core-framework/onboarding/REFERENCE.md` (Spickzettel) · `GUIDE.md` (Programm) · `devin-core-framework/prompts/README.md` (Vorlagen) · `.devin/skills/` (Skills) · Fragen: Mentorin oder Mentor, danach `devin-core-framework/governance/FEEDBACK_PROCESS.md`.
+`devin-core-framework/onboarding/REFERENCE.md` (Spickzettel) · `GUIDE.md` (Programm) · `devin-core-framework/prompts/README.md` (Vorlagen) · Skill-Ablage (Skills) · Fragen: Mentorin oder Mentor, danach `devin-core-framework/governance/FEEDBACK_PROCESS.md`.
