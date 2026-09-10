@@ -28,7 +28,7 @@ Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Ove
 
 ### Nachweise
 - **`FW-VN-01` durchgeführt**, neun Befunde, fünf davon durch Sonden belegt. Protokoll mit vollständiger Befundtabelle, Sondenlauf und den beiden Ermessensentscheidungen: `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01.md`. Wiederholungslauf nach der Behebung: `leitwerk-core/tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` – alle fünf Sonden gemeldet.
-- **`FW-VN-01` steht weiterhin auf `fehlgeschlagen`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**. Die beiden Auflösungen mit Ermessensspielraum sind entschieden (E1: Abschnitt 1.2 einschränken; E2: Skill-Versionen anheben), die Abnahme des Reviews steht aus. Der Status wechselt erst mit der Gegenzeichnung.
+- **`FW-VN-01` ist `bestanden`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle** – ein grüner Lauf ersetzt sie nicht. `<FRAMEWORK_OWNER>` hat die Befunde und ihre Behebung am selben Tag angesehen, akzeptiert und abgezeichnet; die beiden Auflösungen mit Ermessensspielraum wurden einzeln vorgelegt und entschieden (E1: Abschnitt 1.2 einschränken statt in 35 Artefakten einlösen; E2: Skill-Versionen anheben). Nachgetragen nach dem Merge des Releases. Der Vorlauf behält seinen Ergebnisstatus `fehlgeschlagen` – er hält fest, was der Testfall vorgefunden hat.
 - Validator, `FW-KO-04` und `install.py --check`: 0 Fehler, 0 Warnungen (PyYAML 6.0.3 installiert).
 
 ### Migrationshinweise für Overlays
