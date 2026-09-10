@@ -27,13 +27,15 @@ Sechs dieser Zusagen sind **Kernzusagen** (B1 bis B6) und entsprechen dem Integr
 Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich das zweite Pack – derselbe Kern, ein anderer Client:
 
 {{EMBED-RAW:leitwerk-core/clients/claude-code/CLIENT_PACK.md:1}}
-Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab. Die Unterschiede – 21 gegenüber 20 technisch durchgesetzten Zusagen – liegen bei Ladetriggern und Ergonomie, nicht beim Schutzniveau.
+Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab. Ein Vergleich der Gesamtzahlen trägt allerdings nicht: Bei `devin-desktop` sind 21 von 26 Zusagen als `[TECHNISCH]` **vorgesehen**, aber keine Einstufung ist geprüft; bei `claude-code` sind es nach AP2 25 von 26, und keine steht mehr auf `[NICHT ABBILDBAR]`. Die Zahlen messen bis zum Abschluss von AP2 Verschiedenes.
 
 ## 7a.4 Form und Semantik
 
 Ein Client Pack enthält vier Dateien. Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei sind zwei Fälle zu unterscheiden, und der Unterschied ist wesentlich:
 
-**Formtransformation.** Der Inhalt ist derselbe, nur die Schreibweise unterscheidet sich – ein Frontmatter-Feld heißt anders, eine Werkzeugliste ist kommagetrennt statt eingerückt, ein Client ohne Ladetrigger bekommt statt des YAML-Kopfes einen Kommentar. Das betrifft Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills und die Vorlagen.
+**Formtransformation.** Der Inhalt ist derselbe, nur die Schreibweise unterscheidet sich – ein Frontmatter-Feld heißt anders, eine Werkzeugliste ist kommagetrennt statt eingerückt. Das betrifft Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills und die Vorlagen.
+
+Die Ladebedingung einer Regel ist dagegen **keine** Formfrage, sondern eine zweite Semantikabbildung (D-27): Die Kernquelle kennt fünf Ladetrigger, ein Client kennt seine eigene Bedingungssprache. Bei `claude-code` heißt sie `paths` und bindet eine Regel an Glob-Muster; `always_on` und `model_decision` bilden dort auf unbedingtes Laden ab – eine Verschärfung. Ein Ladetrigger ohne Eintrag in der Abbildung lässt die Installation scheitern; er wird nicht verworfen.
 
 **Semantikabbildung.** Die Werkzeuge selbst unterscheiden sich. Ein Client trennt Ändern und Anlegen in zwei Werkzeuge, ein anderer nicht; Befehlsverbote greifen hier wörtlich (`Exec(git reset --hard)`) und dort präfixbasiert (`Bash(git reset:*)`); Netzzugriff ist einmal ein Werkzeug mit Muster und einmal zwei ohne. Das betrifft Berechtigungen und Hooks – und damit genau die Regeln, an denen die Kernzusagen hängen.
 

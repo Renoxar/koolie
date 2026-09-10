@@ -2,6 +2,49 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.15.0] - 2026-09-10
+
+### Behoben
+- **Zwei Zusagen galten als nicht abbildbar, weil das Pack den Client nicht kannte (`CR-2026-017`, Decision Record D-27).** Die Fähigkeitsmatrix von `claude-code` führte R2 („Regeldateien mit Ladebedingungen") und R3 („Regeln an Dateimuster bindbar – Grundlage der Technology Packs") als `[NICHT ABBILDBAR]`, begründet mit „`@pfad`-Importe werden immer geladen". Das ist für Importe richtig und für den Client falsch: `.claude/rules/*.md` mit `paths:`-Frontmatter bindet eine Regel an Glob-Muster, und **eine Regeldatei ohne `paths` lädt unbedingt – ohne Import**.
+
+  Die Regelablage liegt deshalb jetzt in `.claude/rules/`, und die `@`-Importe der Wurzel-Anweisung entfallen. Die Ladetrigger der Kernquelle werden abgebildet statt zu Kommentar zu werden: `glob` auf `paths`, `always_on` und `model_decision` auf unbedingtes Laden. Für `model_decision` ist das eine Verschärfung – mehr Regeln aktiv, nicht weniger.
+
+- **Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen.** `install.py` band nur die vier Core-Regeln ein. Ein Projekt, das ein Role Pack aktivierte, legte `30-role-<name>.md` in die Regelablage, wo sie mangels Import wirkungslos blieb – genau der stille Fehlerfall, den das Client Pack selbst beschrieben hatte, eingetreten am framework-eigenen Mechanismus. Dieselbe Datei lief zudem nie durch die Formtransformation: `render_rule` griff ausschließlich für `framework/runtime/rules/`, nicht für die Regelvorlagen und nicht für die Laufzeitfassungen aktivierter Packs.
+
+- **Eine gescheiterte Installation war zur Hälfte gelungen.** Ließ sich eine Quelle nicht abbilden, brach `install.py` mitten im Schreiben ab und hinterließ ein halb angelegtes Projekt. Es rendert jetzt alle Quellen, bevor es die erste Datei schreibt, und bricht ohne Schreiboperation ab. Das betrifft auch die Semantikabbildung der Berechtigungen aus D-18.
+
+### Geaendert
+- **Die Fähigkeitsmatrix von `claude-code` kennt keine Zeile `[NICHT ABBILDBAR]` mehr** – 4 vor AP2, jetzt 0. Neben R2 und R3 ist die Zeile S4 nachgezogen: Ihre Abbildung wurde mit 0.14.0 ausgeliefert, die Einstufung stand aber weiter auf „überholt". Ebenso beschrieben die Abschnitte 1a, 4, 5 und 7 des Packs sowie die Laufzeit-README noch die zwei Regeln je Pfad, die es seit 0.14.0 nicht mehr gibt.
+- **Neuer Abschnitt 1b im Client Pack: Semantikabbildung der Ladebedingungen.** Die Kernquelle kennt drei Ladetrigger, dieser Client eine Bedingung; die Tabelle sagt je Ladetrigger, was daraus wird und ob es eine wörtliche Entsprechung oder eine Verschärfung ist.
+- **Drei neue Prüfungen für einen Client mit eigener Bedingungssprache.** Ein Frontmatter-Feld, das der Client für Regeldateien nicht auswertet, ist ein Fehler (K-18) – ein stehen gebliebenes `trigger:` oder `globs:` heißt, die Datei ist nicht durch die Abbildung gelaufen. Die Ladebedingung muss die Form haben, die der Client erwartet. Und **eine Kernregel darf keine Ladebedingung tragen**: Sie gilt für jede Aufgabe, sie an Dateimuster zu binden wäre eine Lockerung.
+- Die beiden Regelvorlagen nennen weder „Devin" noch client-gebundene Feldnamen; welche Felder gelten, steht in der README der Regelablage.
+
+### Nachweise
+- **Wirksamkeitsnachweis nach D-23, sechs Sonden, alle gemeldet:** `trigger:` im Frontmatter stehen gelassen; `paths` an einer Kernregel; `paths` als Zeichenkette statt Liste; `paths` als leere Liste; Ladetrigger `manual` ohne Abbildung; `trigger: glob` ohne `globs`. Die letzten beiden lassen die Installation scheitern und hinterlassen kein Verzeichnis. Vier Gegenproben: ein korrektes Technology Pack und eine Regeldatei ohne Frontmatter bleiben grün, und die beiden Prüfungen aus `CR-2026-016` melden weiterhin.
+- **`install.py --client claude-code` gefolgt von `validate-framework.py`: 0 Fehler.** Ein aktiviertes Role Pack wird beim nächsten `--update` in die Form des Clients gebracht.
+- Framework-Repository (`devin-desktop`): Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; `build/assemble.py` baut fuer beide Packs.
+- Protokoll: `tests/protocols/2026-09-10-AP2-claude-code.md`, Nachtrag 2.
+
+### Migrationshinweise fuer Overlays
+Betrifft nur Projekte mit dem Client Pack **`claude-code`**; derzeit gibt es keine.
+
+Die Regelablage wird umbenannt, und `install.py --update` legt die neuen Dateien an, ohne die alten zu entfernen. Ein bestehendes Projekt zieht von Hand nach:
+
+1. `python leitwerk-core/install.py --client claude-code --update` ausfuehren. Danach liegen die Core-Regeltexte in `.claude/rules/`.
+2. Projekteigene Regeln aus `.claude/framework/` nach `.claude/rules/` verschieben: `20-project-overlay.md` (Saat, wird nicht mitkopiert), `2N-overlay-*.md`, `30-role-*.md`, `40-tech-*.md`. Bei `40-tech-*.md` das Frontmatter auf `paths:` mit den Dateimustern der Technologie umstellen; bei allen uebrigen `trigger:`, `globs:` und `description:` entfernen. Der Validator meldet jedes verbliebene Feld einzeln mit Fundstelle.
+3. `.claude/framework/` loeschen.
+4. Den Importblock aus `CLAUDE.md` entfernen – `CLAUDE.md` ist Core und wird von `--update` ohnehin ueberschrieben.
+
+Die Berechtigungsdatei ist nicht betroffen: Das Schreibverbot lautet `Edit(.claude/**)` und deckt beide Verzeichnisse ab.
+
+### Bekannte Einschraenkungen
+- **Die Wirkungsnachweise stehen weiter aus** und haben einen zweiten bekommen: Dass eine Regel ohne `paths` tatsaechlich im Kontext steht und eine Regel mit `paths` erst beim Lesen einer passenden Datei, ist dokumentiert, nicht beobachtet.
+- **Eine pfadgebundene Regel laedt beim Lesen einer passenden Datei, nicht bei jedem Werkzeugaufruf.** Ein Technology Pack steht damit nicht schon zu Beginn der Aufgabe im Kontext. Fuer Regeln, die vorher gelten muessen, bleibt unbedingtes Laden.
+- **`claudeMdExcludes` kann Regeldateien nutzerlokal vom Laden ausnehmen** – eine Lockerung und damit eine Luecke in B9, technisch nicht verhindert. Sie ist nicht neu: Vorher haette ein Muster auf die Wurzel-Anweisungsdatei saemtliche importierten Regeltexte auf einmal entfernt. Neu ist, dass wir sie kennen und ausweisen.
+- **Ein ungueltiges Glob-Muster trifft nichts und meldet das nicht.** Ein `[`, das sich nicht als Klammerausdruck lesen laesst, macht das Muster ungueltig; die `paths`-Liste einer Regel teilt sich ausserdem ein Budget von 1.000 expandierten Mustern.
+- **Die Importmechanik der Wurzel-Anweisung ist von keinem ausgelieferten Pack mehr erprobt.** Sie bleibt manifestgesteuert erhalten; der Belegstand steht in der Roadmap unter „Bewusst offen gelassen".
+- Das Client Pack `devin-desktop` ist unberuehrt; seine zwoelf Pruefmarker brauchen eine Installation von Devin Desktop.
+
 ## [0.14.0] - 2026-09-10
 
 ### Behoben

@@ -69,7 +69,7 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 2. Pfadabbildung eintragen: Wo erwartet dieser Client Anweisungsdatei, Regeln, Skills, Berechtigungen, Hooks?
 3. Fähigkeitsmatrix ausfüllen. Jede Zeile ohne Beleg trägt den VERIFY-Marker.
 4. `root-template/` anlegen: die Wurzelartefakte in der Form dieses Clients.
-5. `manifest.json` anlegen: Pflichtfelder `client`, `skills_dir`, `pack_runtime_dir`, `core_skill_prefix`, `core_paths`, `seed_paths`; zusätzlich `runtime_dir`, `root_instruction_file`, `permissions_file`, `agents_dir`, `has_rule_triggers`.
+5. `manifest.json` anlegen: Pflichtfelder `client`, `skills_dir`, `pack_runtime_dir`, `core_skill_prefix`, `core_paths`, `seed_paths`; zusätzlich `runtime_dir`, `root_instruction_file`, `permissions_file`, `agents_dir`, `has_rule_triggers`. Kennt der Client eine **eigene** Bedingungssprache für Regeldateien, kommt `rule_triggers` dazu: Es bildet jeden Ladetrigger der Kernquelle auf sie ab. Ein Ladetrigger ohne Eintrag lässt die Installation scheitern – ersatzloses Verwerfen wäre ein Verlust der Zusage (D-26, D-27).
 6. Semantikabbildung eintragen: `permission_tools`, `permission_tools_bare`, `permission_path_prefix`, `permission_exec_match` und gegebenenfalls `permission_exec_suffix`, `permissions_extra`, `permissions_note`; für die Hooks `hook_tools` und `hook_project_dir_var`. Kennt der Client keine eigene Hook-Datei, zeigt `<HOOKS_FILE>` auf dieselbe Datei wie `<PERMISSIONS_FILE>` – daran wird die Einbettung erkannt. `<CORE_DIR>` wird **nicht** belegt; den setzt die Installation.
 7. Pack in dieser Datei und in `leitwerk-core/OWNERS.md` eintragen.
 8. Probeinstallation in ein leeres Verzeichnis; Validator dagegen ausführen; Testkatalog-Basistests gegen eine Installation des Clients fahren.
@@ -79,7 +79,7 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 | Pack | Code | Status | `[TECHNISCH]` | Kernzusagen | Fähigkeitsmatrix belegt |
 |---|---|---|---|---|---|
 | `devin-desktop` | `CP-DD` | entwurf | 21 von 26 | 6 von 6 | nein – Belege stehen aus (Roadmap AP2) |
-| `claude-code` | `CP-CC` | entwurf | 20 von 26 | 6 von 6 | nein – Belege stehen aus (Roadmap AP2) |
+| `claude-code` | `CP-CC` | entwurf | 25 von 26 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2); die Wirkungsnachweise aus einer Sitzung stehen aus |
 
 ## 7. Änderungsverlauf
 

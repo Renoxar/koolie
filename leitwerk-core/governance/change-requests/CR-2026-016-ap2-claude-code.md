@@ -37,7 +37,7 @@ In einer frischen Installation waren das 15 `Write(...)` in `deny`, eine in `ask
 **Vier** der wirkungslosen Regeln standen in `_core_rules_integrity.deny_must_contain`: Der
 Validator erzwang die Anwesenheit von Regeln, die der Client ignoriert.
 
-**AP2-CC-03 (neu, bei der Behebung gefunden) – die vorgeschriebene Prüfung ist nie gelaufen.**
+**AP2-CC-09 (neu, bei der Behebung gefunden) – die vorgeschriebene Prüfung ist nie gelaufen.**
 `CLIENT_PACK.md` Abschnitt 7 nennt zwei Befehle: `install.py --client claude-code`, dann
 `validate-framework.py`. Führt man sie nacheinander aus, meldet der Validator **zwölf Fehler**
 „triggers fehlt" – er verlangt das Feld unbedingt, während die Abbildung es für diesen Client
@@ -91,7 +91,7 @@ das Gegenteil einer ausgewiesenen Durchsetzungstiefe (D-12).
 
 - [x] Richtige Ebene nach Entscheidungsbaum 6? — Ja. Die Abbildungsschicht ist keine Regelebene; sie führt keine Regel ein und lockert keine. Geändert werden das Manifest eines Packs und die beiden Skripte, die es auswerten.
 - [x] Verschärfungsprinzip eingehalten? — Ja, in beide Richtungen. S4 gilt nach der Änderung technisch statt gar nicht. Die entfernten Regeln waren wirkungslos: Der Schutz von B4 und B5 trug schon vorher allein die `Edit(...)`-Hälfte, es entfällt keine wirksame Verweigerung.
-- [x] Widerspruchsfreiheit geprüft? — Der Widerspruch zwischen `install.py` und `validate-framework.py` (AP2-CC-03) ist der Anlass und mit Punkt 1 und 2 behoben. Beide Befehle laufen jetzt nacheinander fehlerfrei.
+- [x] Widerspruchsfreiheit geprüft? — Der Widerspruch zwischen `install.py` und `validate-framework.py` (AP2-CC-09) ist der Anlass und mit Punkt 1 und 2 behoben. Beide Befehle laufen jetzt nacheinander fehlerfrei.
 - [x] Laufzeitfassungen betroffen? — Ja, bei `claude-code`: alle Skills und die Berechtigungsdatei werden neu erzeugt. Die Berechtigungsdatei ist **Saat** und wird von `--update` nicht angefasst; Migrationshinweis im CHANGELOG.
 - [x] Belegstatus korrekt? — Das ist der Kern dieses Antrags. Jede Aussage stützt sich auf die Herstellerdokumentation der Clientversion 2.1.267, im Protokoll mit Zitat.
 - [x] Test- und Validierungsbedarf? — Vier Sonden nach D-23, alle gemeldet (siehe Abschnitt 5). `FW-KO-01` bleibt davon unberührt; die Skill-Testfälle je `TESTS.md` sind ohnehin offen (AP2).
@@ -112,10 +112,16 @@ das Gegenteil einer ausgewiesenen Durchsetzungstiefe (D-12).
 
 - [x] AP2-CC-01: `model_invocation_field` im Manifest; `install.py` übersetzt `triggers` ohne `model` in `disable-model-invocation: true`. **9 von 12 Skills** tragen die Sperre; die drei ohne sind die rein lesenden mit `model`-Trigger
 - [x] AP2-CC-02: `permission_tools.write` → `["Edit"]`, `search` → `[]`; `permission_path_tools` im Manifest. Berechtigungsdatei 83 → 65 Regeln, `deny_must_contain` 17 → 13
-- [x] AP2-CC-03: Validator liest `allowed-tools` in beiden Formen, führt Werkzeugnamen über `tool_names` zurück und prüft bei abgebildetem `triggers` das Zielfeld statt des Quellfelds
+- [x] AP2-CC-09: Validator liest `allowed-tools` in beiden Formen, führt Werkzeugnamen über `tool_names` zurück und prüft bei abgebildetem `triggers` das Zielfeld statt des Quellfelds
 - [x] Neue Prüfung: Pfadregel für ein Werkzeug ohne Pfadauswertung ist ein Fehler
 - [x] **Wirksamkeitsnachweis (D-23), vier Sonden, alle gemeldet:** Sperre entfernt → Fehler; Sperre auf `false` → Fehler; `Write(leitwerk-core/**)` von Hand eingefügt → Fehler; `NotebookEdit(project-overlay/**)` → Fehler. Ausgangs- und Schlusslauf je 0 Fehler
 - [x] `install.py --client claude-code` gefolgt von `validate-framework.py`: **0 Fehler** – erstmals seit 0.5.0
 - [x] Framework-Repository (`devin-desktop`): 0 Fehler, 0 Warnungen; `install.py --check` unverändert
 - [ ] **Folgearbeit:** Die Wirkungsnachweise aus einer Sitzung *in* der Installation stehen weiter aus (AP2-Protokoll, Abschnitt „Offen"). Sie sind der Beleg dafür, dass die Sperre auch greift – dieses Release belegt, dass sie gesetzt wird
-- [ ] **Folgearbeit:** R2 und R3 stehen weiter auf `[NICHT ABBILDBAR]`, obwohl `.claude/rules/` mit `paths:`-Frontmatter sie abbildet (AP2-CC-03 des Protokolls). Eigener Antrag, weil er die Technology Packs betrifft
+- [x] **Folgearbeit, erledigt mit `CR-2026-017` (Release 0.15.0):** R2 und R3 standen weiter auf `[NICHT ABBILDBAR]`, obwohl `.claude/rules/` mit `paths:`-Frontmatter sie abbildet (AP2-CC-03 des Protokolls). Eigener Antrag, weil er die Technology Packs betrifft
+
+## 6. Berichtigung (`CR-2026-017`, 2026-09-10)
+
+Der dritte Befund war an drei Stellen dieses Antrags als „AP2-CC-03" bezeichnet; im
+Protokoll trägt er die Nummer **AP2-CC-09**, und `AP2-CC-03` ist die Nummer eines anderen
+Befundes. Die drei Stellen sind berichtigt; der Sachverhalt ist unverändert.

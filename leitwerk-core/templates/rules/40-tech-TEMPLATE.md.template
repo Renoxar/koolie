@@ -1,5 +1,5 @@
 ---
-description: Technology Pack <TECH_PACK_NAME> (Ebene 5). Wird automatisch geladen, wenn Devin Dateien liest oder ändert, die auf die unten stehenden Muster passen.
+description: Technology Pack <TECH_PACK_NAME> (Ebene 5). Wird geladen, wenn der KI-Client Dateien liest oder ändert, die auf die unten stehenden Muster passen.
 trigger: glob
 globs: "<TBD: Dateimuster, zum Beispiel **/*.java oder src/**/*.ts>"
 ---
