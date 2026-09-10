@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.11.0 (2026-09-10)
+## Stand nach Release 0.12.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.11.0 gebracht haben
+### Was 0.5.0 bis 0.12.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -30,12 +30,20 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Schreibschutz | Das **gesamte** Kernverzeichnis ist geschützt, nicht nur `framework/**`; der zweite Testfall des Katalogs ist bestanden | D-22, `CR-2026-012`, `tests/protocols/2026-09-10-FW-ZA-05.md` |
 | Übernahme belegt | Übungsrepository von 0.4.0 auf 0.10.0 gehoben – sechs Releases in einem Schritt, ein Handgriff von Hand; Kriterium 5 von D-11 technisch belegt | `FW-RE-02`, `tests/protocols/2026-09-10-FW-RE-02.md` |
 | Prüfungen, die prüfen | Vier Blindstellen des Validators behoben; ein Testfall gilt erst mit Wirksamkeitsnachweis als bestanden | D-23, `CR-2026-013`, `tests/protocols/2026-09-10-FW-KO-01.md` |
+| Kurzform trägt | Sieben Abweichungen zwischen geladener Kurzform und kanonischer Langform behoben; Laufzeitschicht ohne Client-Bindung | D-24, `CR-2026-014`, `tests/protocols/2026-09-10-FW-KO-02.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.12.0 sagt die geladene Kurzform dasselbe wie die kanonische Langform. Der Abgleich
+`FW-KO-02` ergab sieben Abweichungen; die schwerste war keine widersprüchliche Regel, sondern
+eine fehlende: **Vier der zwölf Delegationsverbote kamen in keiner geladenen Datei vor.** Die
+Langform steht nicht im Kontext einer Sitzung – eine Regel, die nur dort steht, wirkt nicht.
+Seit D-24 wird die Richtung jeder Auflösung einzeln begründet, statt pauschal die Langform
+gewinnen zu lassen.
 
 Mit 0.11.0 prüfen die Prüfungen, was sie zu prüfen behaupten. `FW-KO-01` war grün – und ließ
 sechs von 22 gezielt eingebrachten Defekten durch. Vier davon waren echte Blindstellen: Die
@@ -88,10 +96,11 @@ Zusage ist mit `FW-ZA-05` bereits belegt.
 Die skriptbaren Testfälle sind damit abgearbeitet: `FW-KO-01`, `FW-KO-04`, `FW-DS-03`,
 `FW-ZA-05` und `FW-RE-02` sind bestanden und protokolliert.
 
-Als Nächstes bleiben ohne reale Installation nur die drei Review-Testfälle: `FW-KO-02`
-(Kurzform gegen Langform der Regeltexte), `FW-VN-01` (Versionskette) und `FW-AK-01`
-(`[DOK]`-Aussagen gegen die aktuelle Herstellerdokumentation – braucht Zugang zu dieser
-Dokumentation). Alles Übrige sind Sitzungstests und hängt an AP2.
+`FW-KO-02` ist durchgeführt und seine sieben Befunde sind behoben, steht aber weiter auf
+`offen`: Die Prüfmethode `review` verlangt eine zweite Rolle, und die Gegenzeichnung ist ein
+menschlicher Akt. Ohne reale Installation bleiben damit `FW-VN-01` (Versionskette) und
+`FW-AK-01` (`[DOK]`-Aussagen gegen die aktuelle Herstellerdokumentation – braucht Zugang zu
+dieser Dokumentation). Alles Übrige sind Sitzungstests und hängt an AP2.
 
 **P2 – Übungsrepository auf 0.11.0 nachziehen.** Ein `install.py --update`; die
 Berechtigungsdatei ist diesmal nicht betroffen, weil sich die Kernregelmenge nicht ändert.
@@ -100,6 +109,11 @@ Berechtigungsdatei ist diesmal nicht betroffen, weil sich die Kernregelmenge nic
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
 steht. D-02 ist bereits fortgeschrieben. D-04 ist der nächste Kandidat: Er beschreibt die
 Berechtigungsdatei noch client-gebunden und ohne die Kernregelintegrität.
+
+**P3 – „Devin" als Akteursbezeichnung aus den Langform-Modulen lösen.** 74 Nennungen in elf
+Modulen. Sie wirken nicht auf das Verhalten, weil die Langform nicht in die Sitzung geladen
+wird – die Laufzeitschicht ist seit 0.12.0 frei davon –, widersprechen aber der Zusage eines
+werkzeugneutralen Kerns. D-15 hatte Pfade ersetzt, nicht die Akteursbezeichnung.
 
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`

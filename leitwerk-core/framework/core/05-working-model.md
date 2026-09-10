@@ -38,7 +38,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Modus | Kurzzweck | Schreibzugriff auf Dateien | Befehlsausführung | Zulässig bis Kontrollstufe |
 |---|---|---|---|---|
 | M1 Read-only Analysis | Verstehen und Befunde liefern | nein | nur lesende Analysebefehle, falls im Overlay freigegeben | hoch |
-| M2 Guided Planning | Änderungsplan erarbeiten | nur Plan-Datei außerhalb des Quellcodes | nein | hoch |
+| M2 Guided Planning | Änderungsplan erarbeiten | nur Plan-Datei außerhalb des Quellcodes | wie M1 (nur lesende Analysebefehle) | hoch |
 | M3 Controlled Modification | Freigegebene Änderung umsetzen | ja, innerhalb des freigegebenen Scopes | freigegebene Build-, Test- und Lint-Befehle | hoch (nur mit Freigabe und Pairing) |
 | M4 Test and Validation | Tests erstellen, ausführen, Ergebnisse bewerten | ja, nur in Testverzeichnissen | freigegebene Testbefehle | hoch (ohne Produktivcode-Änderung) |
 | M5 Documentation Support | Dokumentation erstellen oder aktualisieren | ja, nur in Dokumentationspfaden | nur lesende Git-Befehle (status, diff, log, show, blame) | hoch |

@@ -2,6 +2,44 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.12.0] – 2026-09-10
+
+### Behoben
+- **Vier der zwölf Delegationsverbote standen in keiner geladenen Datei (`CR-2026-014`, Decision Record D-24).** V6 (Produktionssysteme, Infrastruktur, Berechtigungen, Sicherheitskonfigurationen), V9 (Entscheidung über die Fortsetzung bei einem Sicherheitsvorfall), V11 (Kommunikation nach außen) und V12 (Löschen von Branches, Historie, Daten außerhalb des Arbeitsbereichs) kamen nur in der Langform vor.
+
+  Die Delegationsverbotsliste ist die schärfste Regel des Frameworks: Sie gilt unabhängig von der Kontrollstufe, und ein Overlay darf sie erweitern, aber nicht verkürzen. Die Langform wird nicht in die Sitzung geladen – eine Regel, die nur dort steht, wirkt nicht.
+
+- **Drei Widersprüche zwischen Kurz- und Langform.** Gefunden beim Ausführen von `FW-KO-02`:
+
+  **M1-Befehlsrecht.** Die Kurzform verbot in M1 jede Befehlsausführung, die Langform erlaubt lesende Analysebefehle – und die ausgelieferte Berechtigungsdatei stellt `git status`, `diff`, `log`, `show` und `blame` in jedem Modus auf `allow`. Die Kurzform behauptete ein Verbot, das an keiner Stelle durchgesetzt wird.
+
+  **Kontrollstufe bei personenbezogenen Daten.** Die Kurzform stufte jede Berührung als mindestens hoch ein; die Langform unterscheidet: ein Code-Pfad, der personenbezogene Daten verarbeitet, ohne dass sich die Verarbeitungslogik ändert, ist **mittel** – das Rechenbeispiel in `09-risk-model.md` stuft genau so ein.
+
+  **Abbruchschwelle.** `10-error-escalation.md` ließ in S10 „mehr als zwei Versuche" zu und verlangte in Abschnitt 3.1 desselben Moduls den Abbruch „nach zwei fehlgeschlagenen Korrekturschleifen" – ein Widerspruch innerhalb der Langform.
+
+- **Drei weitere Lücken in der Laufzeitschicht:** die K3-Auffangkategorie „alles, was die Organisation als vertraulich oder höher eingestuft hat" (eine Aufzählung ohne Auffangkategorie lädt zum Umkehrschluss ein), die Größenschwelle aus Q8 (`<CHANGE_SIZE_THRESHOLD>` kam in keiner geladenen Regel vor) und die Erleichterung bei Kontrollstufe niedrig, die bisher nur die Langform nannte.
+
+### Geändert
+- **Die Laufzeitschicht ist client-neutral: 4 Client-Bindungen → 0.** `20-project-overlay.md` – eine Kernvorlage, die in **jedes** Client Pack installiert wird – nannte an vier Stellen „Devin" als Akteur; ein Projekt mit dem Pack `claude-code` las dort den Produktnamen eines Werkzeugs, das bei ihm nicht im Einsatz ist. Ebenso hieß der Nutzungsvermerk im Merge Request an drei Stellen verschieden; er heißt jetzt durchgehend **KI-Nutzungsvermerk** mit Verweis auf `leitwerk-core/templates/MR_AI_DISCLOSURE.md`.
+
+- **Die Richtung einer Auflösung wird begründet, nicht vorausgesetzt** (D-24). Der Satz „bei Abweichungen gilt die Langform" liest sich wie eine Konfliktregel, ist aber keine – die Langform wird nicht geladen. Zweimal folgt deshalb die Kurzform der Langform, einmal die Langform der Kurzform, und jede Richtung steht mit Begründung im Änderungsantrag.
+
+### Nachweise
+- **`FW-KO-02` durchgeführt**, sieben Befunde, alle behoben. Protokoll mit vollständiger Befundtabelle und den dokumentierten Restabweichungen: `leitwerk-core/tests/protocols/2026-09-10-FW-KO-02.md`. Umfang des Abgleichs: 5 Kurzform-Dateien (23.376 Zeichen) gegen 11 Langform-Module (78.122 Zeichen).
+- **Der Testfall bleibt auf `offen`.** Die Prüfmethode `review` verlangt ein Dokumentenreview durch eine **zweite Rolle**; diese Gegenzeichnung steht aus. Eine Selbstbestätigung ist kein Review.
+- Validator, `FW-KO-04` und `install.py --check`: 0 Fehler, 0 Warnungen. Hauptdokument baut für beide Client Packs. Zeichenlimits eingehalten: `00-framework-core.md` 3.301 → 3.946 (Grenze 12.000).
+
+### Migrationshinweise für Overlays
+Die vier Regeltexte `root-instruction`, `00-*`, `10-*` und `15-*` sind **Core** und werden von `python leitwerk-core/install.py --update` überschrieben – keine Handarbeit.
+
+Einzige Ausnahme ist `20-project-overlay.md`: Es ist Saat und behält in einem bestehenden Projekt seine ausgefüllte Fassung. Die vier neutralisierten Stellen können von Hand nachgezogen werden (`Devin` → direkte Anrede); sie sind erläuternd, nicht normativ, und ein Unterlassen bricht nichts.
+
+### Bekannte Einschränkungen
+- **74 Nennungen von „Devin" als Akteur in den elf Langform-Modulen.** Sie wirken nicht auf das Verhalten, weil die Langform nicht in die Sitzung geladen wird, widersprechen aber der Zusage eines werkzeugneutralen Kerns (D-15, dort wurden Pfade ersetzt, nicht die Akteursbezeichnung). Eigene Änderung, in der Roadmap vermerkt.
+- Geprüft wurde die Widerspruchsfreiheit der Texte, nicht das Verhalten des Werkzeugs. Ob eine Regel in einer Sitzung greift, prüfen die Sitzungstests – alle abhängig von AP2.
+- Nicht Gegenstand des Abgleichs: die Regeltexte aktivierter Packs (`30-*`, `40-*`) und projekteigene Overlay-Erweiterungen (`2N-*`). Sie werden gegen das Verschärfungsprinzip geprüft, nicht gegen die Langform des Kerns.
+- Die Einstufungen der Fähigkeitsmatrizen bleiben unbelegt (Roadmap AP2, weiterhin der einzige P1).
+
 ## [0.11.0] – 2026-09-10
 
 ### Behoben

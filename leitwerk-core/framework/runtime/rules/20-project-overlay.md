@@ -8,12 +8,12 @@ trigger: always_on
 <!-- AUSFÜLLHINWEIS: Diese Datei ist die kompakte, immer geladene Fassung des Overlays.
      Quelle und Detailfassung: project-overlay/OVERLAY.md. Beide Dateien werden gemeinsam
      versioniert. Halte diese Datei unter 6.000 Zeichen. Trage nur Werte ein, die durch den
-     Overlay Owner freigegeben sind. Offene Werte bleiben als <TBD: …> stehen; Devin behandelt
+     Overlay Owner freigegeben sind. Offene Werte bleiben als <TBD: …> stehen; du behandelst
      offene Werte als nicht freigegeben. Keine Secrets, keine Personen, keine internen Adressen. -->
 
 ## Status
 
-- Overlay-Status: `<TBD: aktiv | inaktiv>` (bei `inaktiv` oder fehlendem Eintrag arbeitet Devin nur lesend)
+- Overlay-Status: `<TBD: aktiv | inaktiv>` (bei `inaktiv` oder fehlendem Eintrag arbeitest du nur lesend)
 - Overlay-Version: `<TBD: Version>` · Framework-Version: siehe `leitwerk-core/VERSION`
 - Overlay Owner (Rolle): `<APPROVAL_ROLE>`
 
@@ -48,11 +48,11 @@ trigger: always_on
 
 - Freigabe Kontrollstufe hoch: `<APPROVAL_ROLE>` · Sicherheit: `<SECURITY_CONTACT>` · Datenschutz: `<DATA_PROTECTION_CONTACT>`
 - Fachliche Klärung: `<PRODUCT_OWNER_ROLE>` · Architektur: `<ARCHITECT_ROLE>`
-- Devin nennt bei Eskalation immer die Rolle, nie eine Person.
+- Nenne bei Eskalation immer die Rolle, nie eine Person.
 
 ## Projektspezifische Verschärfungen
 
-`<TBD: zusätzliche Verbote oder Verschärfungen, zum Beispiel „keine Änderungen an Datenbankmigrationen durch Devin">`
+`<TBD: zusätzliche Verbote oder Verschärfungen, zum Beispiel „keine Änderungen an Datenbankmigrationen">`
 
 ## Aktive projektspezifische Skills
 
