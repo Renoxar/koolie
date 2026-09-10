@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.16.0 (2026-09-10)
+## Stand nach Release 0.17.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.16.0 gebracht haben
+### Was 0.5.0 bis 0.17.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,12 +35,26 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Strukturentscheidungen aktuell | Acht der zehn Records von 2026-09-01 beschrieben einen Stand von vor sechzehn Releases; vier nannten Client-Pfade in den Entscheidungen, die den werkzeugneutralen Kern anordnen | `CR-2026-019`, `governance/DECISION_LOG.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.17.0 sagen die Strukturentscheidungen, was gilt. D-01 bis D-10 datieren sämtlich auf den
+2026-09-01; zwischen ihnen und heute liegen sechzehn Releases und die Records D-11 bis D-27.
+**Acht der zehn waren überholt oder unvollständig**, fortgeschrieben war genau einer (D-02).
+
+Vier nannten Pfade und Produktnamen eines einzelnen Clients – darunter ausgerechnet die
+Entscheidungen, die den werkzeugneutralen Kern anordnen. D-15 und D-19 haben 63 Client-Bindungen
+und 994 Pfadnennungen ersetzt; das Decision Log lag außerhalb dieses Umfangs. Vier weitere waren
+richtig, aber unvollständig: Sie kannten die Mechanismen nicht, die ihre Zusage später von einer
+Behauptung zu einer geprüften Eigenschaft gemacht haben.
+
+Der Wortlaut von 2026-09-01 bleibt stehen, die Fortschreibung steht daneben – der Unterschied ist
+selbst die Aussage.
 
 Mit 0.16.0 nennt die Belegkette, worauf sie sich stützt. Anhang 31.4 des Hauptdokuments sagt
 über sich selbst, er belege die `[DOK]`-Aussagen des Frameworks – und führte 17 Quellen, sämtlich
@@ -269,9 +283,23 @@ Ebene 4 ist und das Framework ihr Format nicht vorschreibt; dafür spricht D-25 
 gepflegter Wert ohne Prüfung veraltet.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
-`entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
-steht. D-02 ist bereits fortgeschrieben. D-04 ist der nächste Kandidat: Er beschreibt die
-Berechtigungsdatei noch client-gebunden und ohne die Kernregelintegrität.
+`entschieden (Vorschlag)`; Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so steht.
+
+Die **Vorbedingung** ist mit 0.17.0 erledigt: Alle zehn beschreiben jetzt den geltenden Stand
+(`CR-2026-019`). Offen ist die Entscheidung selbst, und sie liegt je Record vor – sieben ohne
+erkennbaren Einwand, drei mit einem benannten:
+
+- **D-05** (Berechtigungsmodi): AP2-CC-12 ist offen – ob die Sperre gegen den Modus ohne
+  Rückfragen auch für das Feld `permissionMode` eines Subagentenprofils gilt, ist nicht
+  dokumentiert.
+- **D-07** (Kontextklassen): K-20 – Art und Ort der Codebasis-Indexierung – ist bei
+  `devin-desktop` unbelegt; das Datenschutzmodell setzt eine Aussage darüber voraus. Bei
+  `claude-code` ist die Abwesenheit belegt (X2).
+- **D-10** (Erweiterungsmodule): K-04 – Nutzungsumfang Cloud/CLI – ist offen und liegt außerhalb
+  des Frameworks.
+
+Bei allen dreien ist sowohl eine Bestätigung als auch eine ausdrückliche Zurückstellung mit
+Bedingung vertretbar; entschieden ist keine von beiden.
 
 **P3 – „Devin" als Akteursbezeichnung aus den Langform-Modulen lösen.** Noch 76 Nennungen in
 elf Modulen (vor 0.13.0: 83 – die Umbenennung des Nutzungsvermerks hat sieben davon gelöst).
