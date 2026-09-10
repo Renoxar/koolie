@@ -2,6 +2,53 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.10.0] – 2026-09-10
+
+### Behoben
+- **Die Schreibverbote schützten die Regeltexte, nicht die Skripte, die sie durchsetzen (`CR-2026-012`, Decision Record D-22).** Die Kernregel lautete `<CORE_DIR>/framework/**`. Ungeschützt blieben damit `install.py`, `clientmap.py`, `validate-framework.py` und die beiden Hook-Skripte – **genau die fünf Dateien, an denen die Schutzzusagen hängen**. Wer `clientmap.py` ändern kann, ändert die Kernregeln jeder künftigen Installation; wer `validate-framework.py` ändern kann, schaltet die Prüfung ab, die das bemerken würde.
+
+  Der Befund stammt aus `CR-2026-008` und war dort ausdrücklich zurückgestellt worden, weil seine Behebung die Kernregelmenge ändert.
+
+- **`NotebookEdit` lief am Schutz-Hook vorbei.** Das Werkzeug stand in keiner der geprüften Werkzeugklassen und wurde deshalb gar nicht betrachtet – auch nicht gegen die Muster für Secrets-Pfade, Laufzeitschicht und Project Overlay. Die schreibenden Werkzeugklassen stehen jetzt einmal in `WRITE_TOOLS` und werden von beiden Musterlisten verwendet.
+
+- **Fünf Muster des Schutz-Hooks griffen unter Windows nicht.** Die Zeichenklasse `[\/]` trifft nur den Schrägstrich, nicht den umgekehrten; betroffen waren die Muster für die Wurzel-Anweisungsdatei und die Laufzeitschicht. Ein Pfad wie `C:\proj\.devin\config.json` blieb unerkannt. Alle fünf lauten jetzt `[\/]` wie die übrigen Muster der Liste.
+
+### Geändert
+- **Die Kernregel lautet `<CORE_DIR>/**`.** Eine Regel wird durch eine breitere ersetzt, keine kommt hinzu: 13 Kernregeln bei `devin-desktop`, 17 bei `claude-code` – unverändert.
+
+  **Ohne Ausnahme für einzelne Unterverzeichnisse**, und das ist keine Härte um der Härte willen, sondern Mechanik: In der Berechtigungsdatei gewinnt `deny` immer, und keine der beiden abgebildeten Clientformen kennt ein Ausnahmemuster innerhalb eines Verbots. „Der Kern bis auf ein Verzeichnis" ist nicht ausdrückbar – ausdrückbar ist nur ein engeres Verbot, und genau das war der Zustand. Wo ein Projekt im Kernverzeichnis schreiben müsste, ist entweder der Ablageort falsch gewählt (Projektartefakte gehören in das Project Overlay) oder es liegt ein Fall für den Ausnahmeprozess vor.
+
+- **Der Schutz-Hook zieht nach – für schreibende Werkzeuge.** Seine bestehende Musterliste gilt auch für `exec`. Hätte das Kernmuster dort gestanden, wäre jeder Befehl blockiert, der einen Kernpfad nennt: der Aufruf des Validators, `install.py --check`, ein `git diff leitwerk-core/`. Das Framework hätte sich seine eigene Prüfung verboten. Das Muster steht deshalb in einer zweiten Liste, die nur für `edit`, `write` und `notebookedit` ausgewertet wird – rein additiv, ohne eine bisher blockierte Operation freizugeben.
+
+  Den Namen des Kernverzeichnisses leitet der Hook aus seinem eigenen Ort ab, statt ihn festzuschreiben. Eine Umbenennung des Kerns erreicht ihn damit von selbst.
+
+- **`03-security.md` Abschnitt 4 nennt den Schutz beim Namen** – und verliert dabei zwei Client-Bindungen: Die Zeile führte `Write(.devin/**)` und `Write(AGENTS.md)` statt der Begriffe (D-15).
+
+### Nachweise
+- **`FW-ZA-05` (neu, skript): bestanden.** Vierzehn synthetische Werkzeugeingaben, vierzehnmal wie erwartet. Acht müssen blockieren, sechs müssen durchlassen – der zweite Teil ist der eigentliche Test. Protokoll: `leitwerk-core/tests/protocols/2026-09-10-FW-ZA-05.md`.
+
+  **Sieben der acht Blockadefälle liefen vor dieser Änderung durch**, darunter der Schreibzugriff auf das Hook-Skript selbst.
+- **Die Migration ist erzwungen, nicht angekündigt.** Gegen eine nicht migrierte Installation meldet der Validator zwei Fehler (`Kernregel fehlt in deny`, `… in _core_rules_integrity.deny_must_contain`). Nachgewiesen durch Rückbau der Referenzinstallation dieses Repositorys und erneuten Lauf.
+- Frische Installation beider Client Packs in leeren Verzeichnissen erzeugt die neue Regel; Validator, `FW-KO-04` und `install.py --check`: 0 Fehler. Installationsumfang unverändert.
+
+### Migrationshinweise für Overlays
+**Erforderlich, einmalig, zwei Zeilen.** Die Berechtigungsdatei ist Saat – `install.py --update` fasst sie nicht an. In einer bestehenden Installation ist deshalb von Hand zu ersetzen, in `permissions.deny` **und** in `_core_rules_integrity.deny_must_contain`:
+
+| Client Pack | vorher | nachher |
+|---|---|---|
+| `devin-desktop` | `Write(leitwerk-core/framework/**)` | `Write(leitwerk-core/**)` |
+| `claude-code` | `Edit(leitwerk-core/framework/**)`, `Write(leitwerk-core/framework/**)` | `Edit(leitwerk-core/**)`, `Write(leitwerk-core/**)` |
+
+Unterbleibt die Migration, meldet `validate-framework.py` sie als Fehler. Die alte Regel darf stehen bleiben; sie ist in der neuen enthalten.
+
+Wer im Kernverzeichnis bisher Projektartefakte abgelegt hat, verschiebt sie in das Project Overlay. Ein begründeter Einzelfall läuft über `leitwerk-core/governance/EXCEPTION_PROCESS.md`.
+
+### Bekannte Einschränkungen
+- Ein Shell-Befehl, der in den Kern schreibt, wird vom Hook nicht erfasst; dort trägt allein die `deny`-Liste der Berechtigungsdatei. Das gilt für jedes Pfadverbot des Frameworks gleichermaßen.
+- Im Framework-Repository selbst schützt die Regel den Kern auch vor dem KI-Client, der am Framework arbeitet. Das ist beabsichtigt: V10 verlangt für Änderungen an Framework-Regeln ohnehin den Änderungsantrag.
+- Ob ein Client die `deny`-Regel tatsächlich durchsetzt, bleibt unbelegt wie alle Einstufungen der Fähigkeitsmatrizen (`FW-ZA-06`, neu im Katalog; Roadmap AP2, weiterhin der einzige P1).
+- Die Word-Fassung (`build-docx.py`) wurde weiterhin nicht erzeugt – `pandoc` und `mmdc` stehen in dieser Umgebung nicht zur Verfügung.
+
 ## [0.9.0] – 2026-09-10
 
 ### Behoben

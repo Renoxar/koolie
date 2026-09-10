@@ -47,13 +47,16 @@ Die ausgelieferte Berechtigungsdatei setzt die Politik um (`[DOK]` für den Mech
 | Lesen im Arbeitsbereich | `Read(./**)` außer ausgeschlossene Pfade | allow |
 | Lesen von Secret- und Ausschlusspfaden | `Read(.env*)`, `Read(**/*.pem)`, `Read(**/*.key)`, `Read(**/*.p12)`, `Read(**/*.jks)`, `Read(**/secrets/**)`, `Read(<EXCLUDED_PATHS>)` | deny |
 | Schreiben im Arbeitsbereich | `Write(./**)` | ask |
-| Schreiben auf Quality-Gate- und Pipeline-Konfiguration | `Write(<CI_CONFIG_PATHS>)`, `Write(<QUALITY_GATE_CONFIG_PATHS>)`, `Write(.devin/**)`, `Write(AGENTS.md)`, `Write(project-overlay/**)` | deny |
+| Schreiben auf Framework- und Overlay-Artefakte | Kernverzeichnis **als Ganzes** (`Write(leitwerk-core/**)`), Wurzel-Anweisungsdatei, Laufzeitschicht, `Write(project-overlay/**)` | deny |
+| Schreiben auf Quality-Gate- und Pipeline-Konfiguration | `Write(<CI_CONFIG_PATHS>)`, `Write(<QUALITY_GATE_CONFIG_PATHS>)` | deny |
 | Freigegebene Projektbefehle | `Exec(<TEST_COMMAND>)`, `Exec(<BUILD_COMMAND>)`, `Exec(<LINT_COMMAND>)` | ask (KANN im Overlay für Stufe niedrig auf allow gesetzt werden) |
 | Fernwirkende und destruktive Befehle | `Exec(git push)`, `Exec(git merge)`, `Exec(git rebase)`, `Exec(git reset --hard)`, `Exec(git tag)`, `Exec(rm -rf)`, `Exec(sudo)`, `Exec(curl)`, `Exec(wget)`, Paketveröffentlichung, Deployment-Befehle | deny |
 | Netzwerkzugriff | `Fetch(*)` | deny; Ausnahmen je Domain im Overlay |
 | MCP-Werkzeuge | `mcp__*` | ask; Freigaben je Server im Overlay |
 
 Regeln aus höheren Ebenen (Organisation) haben Vorrang, `deny` gewinnt immer `[DOK]`. Änderungen an der Regelmenge erfolgen ausschließlich über Änderungsantrag (V10).
+
+Das Schreibverbot auf das Kernverzeichnis gilt **ohne Ausnahme für einzelne Unterverzeichnisse**. Der Grund ist mechanisch: In der Berechtigungsdatei gewinnt `deny` immer, und keine der abgebildeten Clientformen kennt ein Ausnahmemuster innerhalb eines Verbots. Ein Schutz „des Kerns bis auf ein Verzeichnis" wäre also nicht ausdrückbar, sondern nur als engeres Verbot – und genau das hatte die Skripte des Kerns ungeschützt gelassen. Wo ein Projekt innerhalb des Kernverzeichnisses schreiben müsste, ist entweder der Ablageort falsch gewählt (Projektartefakte gehören in das Project Overlay) oder es liegt ein Fall für den Ausnahmeprozess vor (`leitwerk-core/governance/EXCEPTION_PROCESS.md`).
 
 ## 5. Regeln gegen Prompt Injection (normativ)
 

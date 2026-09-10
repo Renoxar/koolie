@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.9.0 (2026-09-10)
+## Stand nach Release 0.10.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.9.0 gebracht haben
+### Was 0.5.0 bis 0.10.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -27,6 +27,13 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Name | Das Framework heißt **Leitwerk**, das Kernverzeichnis `leitwerk-core/`; der Name folgt damit dem Inhalt | D-19, `CR-2026-009` |
 | Client Pack minimal | Vier Dateien statt achtzig; `seed_paths` leer, die gesamte Saat kommt aus dem Kern | D-20, `CR-2026-010` |
 | Hauptdokument | Baut aus einem frischen Auscheckstand; Laufzeitdateien aus einer Referenzinstallation mit Herkunftsangabe; Abbildungsschicht eingearbeitet | D-21, `CR-2026-011` |
+| Schreibschutz | Das **gesamte** Kernverzeichnis ist geschützt, nicht nur `framework/**`; der zweite Testfall des Katalogs ist bestanden | D-22, `CR-2026-012`, `tests/protocols/2026-09-10-FW-ZA-05.md` |
+
+Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
+Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
+die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
+Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
+Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
 
 Mit 0.9.0 ist das Hauptdokument wieder ein Lieferbestandteil: Es baut aus einem frischen
 Auscheckstand, weist bei jeder Laufzeitdatei aus, aus welchem Client Pack sie stammt, und
@@ -57,24 +64,24 @@ bereits dokumentiert, dort also zuerst.
 
 Die Zusammenführung der Berechtigungen hat den Wert dieses Arbeitspakets erhöht: Beide Packs
 tragen jetzt nachweislich dieselbe Regelmenge. Ob ein Client sie durchsetzt, sagt das nicht –
-genau das ist AP2.
+genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` prüft, ob das
+Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
+Zusage ist mit `FW-ZA-05` bereits belegt.
 
-**P2 – Schreibschutz auf das gesamte Kernverzeichnis.** Befund aus `CR-2026-008`: Die
-Schreibverbote schützen `<CORE_DIR>/framework/**`, nicht den Kern als Ganzes. `install.py`,
-`validate-framework.py`, die beiden Hook-Skripte und `clientmap.py` sind damit nicht
-schreibgeschützt – gerade die Skripte, die die Schutzzusagen durchsetzen. Die Verschärfung auf
-`<CORE_DIR>/**` ändert die Kernregelmenge und braucht einen eigenen Änderungsantrag.
+**P2 – Testkatalog ausführen.** 35 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
+Die Ablage steht (`tests/protocols/`), das Format ist an zwei Protokollen ablesbar. `FW-ZA-05`
+zeigt zugleich, wie ein Skripttest aussieht, der etwas belegt: Er prüft nicht nur, was
+blockiert werden muss, sondern auch, was durchgelassen werden muss.
 
-**P2 – Testkatalog ausführen.** 34 von 35 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
-Die Ablage steht (`tests/protocols/`), das Format ist am ersten Protokoll ablesbar.
-
-**P2 – Übungsrepository auf 0.9.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme wurde
-simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Damit wäre zugleich Kriterium 5 von
-D-11 (Übernahme in ein zweites Projekt) belegt.
+**P2 – Übungsrepository auf 0.10.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme
+wurde simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Seit 0.10.0 kommt ein
+Migrationsschritt hinzu: die zwei Zeilen in der Berechtigungsdatei. Damit wäre zugleich
+Kriterium 5 von D-11 (Übernahme in ein zweites Projekt) belegt.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so
-steht. D-02 ist bereits fortgeschrieben.
+steht. D-02 ist bereits fortgeschrieben. D-04 ist der nächste Kandidat: Er beschreibt die
+Berechtigungsdatei noch client-gebunden und ohne die Kernregelintegrität.
 
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
@@ -93,6 +100,9 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
   Änderung an den Hooks des Kerns erreicht ein bestehendes Projekt dieses Packs nicht über
   `install.py --update`; sie ist beim Release-Wechsel von Hand nachzuziehen. Eine automatische
   Teilzusammenführung in eine Datei, die dem Projekt gehört, wäre die schlechtere Lösung.
+- Ein Shell-Befehl, der in den Kern schreibt, wird vom Schutz-Hook nicht erfasst; dort trägt
+  allein die `deny`-Liste der Berechtigungsdatei. Das gilt für jedes Pfadverbot gleichermaßen
+  und ist kein Sonderfall des Kernverzeichnisses.
 
 ## Abhängigkeitsübersicht
 

@@ -77,7 +77,7 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 | B1 | Berechtigungen versioniert im Repository | ja | `.devin/config.json` | `[TECHNISCH]` | `[DOK]` |
 | B2 | Verweigern vor Rückfragen vor Erlauben | ja | Zusammenführung über Ebenen | `[TECHNISCH]` | `[DOK]` |
 | B3 | Secret-Dateien per Pfadmuster lesegeschützt | ja | Verweigerungsregeln auf `.env`, `**/*.pem`, `**/secrets/**` und weitere | `[TECHNISCH]` | Mechanismus `[DOK]`; Muster-Semantik `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
-| B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | Verweigerungsregeln auf `AGENTS.md`, `.devin/`, `project-overlay/` | `[TECHNISCH]` | wie B3 |
+| B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | Verweigerungsregeln auf `AGENTS.md`, `.devin/`, `project-overlay/` und das **gesamte** Kernverzeichnis (`leitwerk-core/**`, seit `CR-2026-012`) | `[TECHNISCH]` | wie B3 |
 | B5 | CI-, Quality-Gate- und Lockdateien schreibgeschützt | ja | Verweigerungsregeln auf Lockdateien und die Overlay-Platzhalterpfade | `[TECHNISCH]` | wie B3 |
 | B6 | Befehle per Muster verweigerbar | ja | Verweigerungsregeln auf Push-, Merge-, Lösch- und Rechteausweitungsbefehle | `[TECHNISCH]` | wie B3 |
 | B7 | Schreiboperationen fragen zurück | – | Rückfrageregel auf alle Schreiboperationen | `[TECHNISCH]` | `[DOK]` |

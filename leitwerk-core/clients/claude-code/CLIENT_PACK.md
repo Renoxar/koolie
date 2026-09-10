@@ -78,7 +78,7 @@ Zwei Zusicherungen sichern die Abbildung ab, statt sich auf Sorgfalt zu verlasse
 | B1 | Berechtigungen versioniert im Repository | ja | `.claude/settings.json` | `[TECHNISCH]` | `[DOK]` |
 | B2 | Verweigern vor Rückfragen vor Erlauben | ja | `permissions.deny` / `.ask` / `.allow` | `[TECHNISCH]` | `[DOK]` |
 | B3 | Secret-Dateien per Pfadmuster lesegeschützt | ja | Verweigerungsregeln auf `./.env`, `**/*.pem`, `**/secrets/**` und weitere | `[TECHNISCH]` | Mechanismus `[DOK]`; Mustersemantik `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` |
-| B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | Je Pfad **zwei** Regeln, weil Ändern und Anlegen getrennte Werkzeuge sind | `[TECHNISCH]` | wie B3 |
+| B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | Je Pfad **zwei** Regeln, weil Ändern und Anlegen getrennte Werkzeuge sind; das Kernverzeichnis ist seit `CR-2026-012` als Ganzes erfasst (`Edit(leitwerk-core/**)` und `Write(leitwerk-core/**)`) | `[TECHNISCH]` | wie B3 |
 | B5 | CI-, Quality-Gate- und Lockdateien schreibgeschützt | ja | dito, je Pfad zwei Regeln | `[TECHNISCH]` | wie B3 |
 | B6 | Befehle per Muster verweigerbar | ja | Präfixmuster, z. B. `Bash(git push:*)`. Wirkt **breiter** als eine Verweigerung des vollständigen Befehls | `[TECHNISCH]` | wie B3 |
 | B7 | Schreiboperationen fragen zurück | – | `ask` auf `Edit(**)` und `Write(**)` | `[TECHNISCH]` | `[DOK]` |
