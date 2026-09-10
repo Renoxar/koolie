@@ -2,43 +2,33 @@
 
 ## 31.1 Inventar des Referenz-Repositorys
 
-Stand Release 0.2.0. Der Kern liegt vollständig in `leitwerk-core/`; die Wurzelbestandteile (`AGENTS.md`, `.devin/`, `project-overlay/`) werden daraus durch `install.py` angelegt und sind im Framework-Repository deshalb Erzeugnisse, im Projekt hingegen versionierte Projektbestände.
+Stand Release 0.9.0, 233 versionierte Dateien im Kern. Die vollständige Struktur mit Erläuterung steht in Kap. 15.2; hier nur die Größenordnung je Bereich.
 
-**Wurzelverzeichnis** – nur, was dort stehen muss:
-
-| Bereich | Dateien | Kerninhalte |
+| Bereich | Dateien | Inhalt |
 |---|---|---|
-| Wurzel (versioniert) | 2 | `README.md`, `.gitignore` |
-| `AGENTS.md`, `AGENTS.local.md.example` | 2 | aus `root-template/` installiert `[DOK]` |
-| `.devin/` | 61 | 7 Regeldateien (+2 Vorlagen), 12 Skills × 4 Dateien, Subagentenprofil, `config.json`, `hooks.v1.json`, MCP-Vorlage, 2 READMEs `[DOK]` |
-| `project-overlay/` | 18 | Overlay-Vorlage, Manifest, Sperrbegriffsliste, 13 Dokumenttyp-Verzeichnisse, Ausnahmeregister, README |
-
-**`leitwerk-core/`** – der Kern, ein Verzeichnis:
-
-| Bereich | Dateien | Kerninhalte |
-|---|---|---|
-| direkt im Verzeichnis | 4 | `install.py`, `VERSION`, `CHANGELOG.md`, `OWNERS.md` |
-| `root-template/` | 81 | Quelle der Wurzelbestandteile: `AGENTS.md`, `AGENTS.local.md.example`, `.devin/` (61), `project-overlay/` (18) |
-| `framework/` | 18 | 11 Core-Module, Role-Pack-Referenz und -Vorlage, Tech-Pack-Vorlage, org-policies mit Klassifizierungs-Mapping, READMEs |
-| `templates/` | 3 | Skill-, Plan-, MR-Vermerk-Vorlage |
-| `prompts/` | 13 | 12 Prompt-Vorlagen + README |
-| `checklists/` | 12 | 11 Checklisten + README |
-| `decision-trees/` | 7 | 6 Bäume + README |
-| `onboarding/` | 8 | Quick-Start, Leitfaden, Mentor-Checkliste, Übungen (2), Wissenstest, Kriterien, Nachschlagewerk |
-| `examples/` | 4 | 3 synthetische Beispiele + README |
-| `governance/` | 8 | Decision Log, RACI, Hierarchie, Release-/Änderungs-/Ausnahme-/Feedback-/Vorfallprozess |
-| `pilot/` | 2 | Pilotkonzept, Metriken |
-| `docs/` | 3 | Adoption Guide, Roadmap, Platzhalterregister |
-| `tests/` | 5 | Testkatalog + 4 Skripte (Validierung, Ausgabeprüfung, 2 Hooks) |
+| direkt im Kernverzeichnis | 5 | `install.py`, `clientmap.py`, `VERSION`, `CHANGELOG.md`, `OWNERS.md` |
+| `clients/` | 10 | Abbildungsschicht: zwei Client Packs zu je vier Dateien, Regeln der Schicht, Vorlage |
+| `framework/` | 83 | Core-Module, Laufzeitfassung, 12 Referenz-Skills, Role- und Tech-Packs, Organisationsvorgaben |
+| `templates/` | 23 | Project-Overlay-Saat, Regelvorlagen, Skill-Vorlage |
 | `build/` | 37 | 33 Kapitelquellen, Assemblierungs- und DOCX-Skript, Referenzdokument, README |
+| `prompts/` · `checklists/` · `decision-trees/` | 32 | 12 Prompt-Vorlagen, 11 Checklisten, 6 Entscheidungsbäume, je README |
+| `governance/` | 18 | Decision Log, RACI, Hierarchie, Prozesse, Änderungsanträge |
+| `onboarding/` · `examples/` · `pilot/` · `docs/` · `tests/` | 25 | Onboarding-Paket, synthetische Beispiele, Pilotkonzept, Leitfäden, Testkatalog mit Skripten und Protokollen |
 
-Die projektlokale Sperrbegriffsliste liegt seit 0.2.0 unter `project-overlay/forbidden-terms.txt` – sie ist Projektbestand, nicht Kern.
+**Was daraus in ein Projekt installiert wird:** 80 Dateien beim Client Pack `devin-desktop`, 79 bei `claude-code` – Wurzel-Anweisungsdatei, Laufzeitschicht und Project Overlay. Der Unterschied liegt allein darin, dass ein Client keine eigene Hook-Datei kennt.
 
-## 31.2 Platzhalterregister
+Bewusst ohne Dateizahlen je Unterverzeichnis: Diese Tabelle stand bis Release 0.8.0 auf dem Stand von 0.2.0, weil sie beschrieb, was das Dateisystem ohnehin weiß. Verbindlich ist der Baum in Kap. 15.2 und – für den Installationsumfang – die Ausgabe von `install.py`.
+
+## 31.2 Laufzeitglossar
+
+Der Kern nennt die Bestandteile der Laufzeitschicht mit Begriffen, nicht mit Pfaden. Die Abbildung auf die Pfade eines konkreten Client Packs steht hier:
+
+{{EMBED-RAW:leitwerk-core/docs/RUNTIME_GLOSSARY.md:2}}
+## 31.3 Platzhalterregister
 
 {{EMBED-RAW:leitwerk-core/docs/PLACEHOLDER_REGISTRY.md:2}}
 
-## 31.3 Quellen (offizielle Devin-Dokumentation) und Belegzuordnung
+## 31.4 Quellen der Produktdokumentation und Belegzuordnung
 
 Recherchestand: 01.–02.09.2026. Die Quellen belegen die als `[DOK]` gekennzeichneten Aussagen; der Framework Owner hält diese Liste im Rahmen der Produktbeobachtung aktuell (FW-AK-01).
 
@@ -62,9 +52,11 @@ Recherchestand: 01.–02.09.2026. Die Quellen belegen die als `[DOK]` gekennzeic
 | Q16 | docs.devin.ai/cli/enterprise/team-settings | Team-Kontrollen: Modell-Allowlist, Websuche standardmäßig aus, MCP-Kontrollen und Registry-Erzwingung, unüberschreibbare Terminal-Permissions, Sandbox-Erzwingung, Attribution-Filter |
 | Q17 | docs.devin.ai/admin/security | Training-Opt-out auf kostenpflichtigen Plänen; Zero Data Retention nach Opt-out; Teams-Opt-out nur durch Admin; Enterprise nur mit schriftlicher Zustimmung; SOC 2 Type II; Verschlüsselung |
 
-## 31.4 Konsolidierter Verifikationsbedarf
+## 31.5 Konsolidierter Verifikationsbedarf
 
-Alle Punkte, die vor Version 1.0.0 gegen die aktuelle offizielle Devin-Dokumentation beziehungsweise in einer Zielinstallation zu prüfen sind (`<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`; Prüfweg: Roadmap-AP2, Testklasse AK):
+Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg trägt dort den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: 13 von 26 Zeilen bei `devin-desktop`, 9 von 26 bei `claude-code`. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
+
+Die folgende Liste ergänzt sie um Punkte, die keiner einzelnen Zusage der Matrix zugeordnet sind, sondern das Zusammenspiel betreffen. Sie gilt für das Client Pack `devin-desktop`; Prüfweg ist Roadmap-AP2, Testklasse AK:
 
 | Nr. | Prüfpunkt | Betroffene Stellen |
 |---|---|---|
@@ -79,6 +71,6 @@ Alle Punkte, die vor Version 1.0.0 gegen die aktuelle offizielle Devin-Dokumenta
 | V9 | Wirkung additiver Skill-`permissions` gegenüber Sitzungs- und Projektregeln in Devin Local | Skills mit `permissions`, u. a. `fw-mr-description` |
 | V10 | Zeichen-/Größenbudget und Ladeverhalten der always-on-Summe (AGENTS.md + `00-*` + `20-*`) im realen Systemprompt | Laufzeitschicht gesamt |
 
-## 31.5 Beispielartefakte (synthetisch)
+## 31.6 Beispielartefakte (synthetisch)
 
 Im Repository unter `leitwerk-core/examples/`: ausgefüllte Overlay-Laufzeitfassung, vollständiger Devin-Ergebnisbericht und Merge-Request-Beschreibung mit Nutzungsvermerk – alle ausdrücklich synthetisch und mit erfundenen Bezeichnern (siehe `leitwerk-core/examples/README.md`).

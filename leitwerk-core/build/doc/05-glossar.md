@@ -2,33 +2,37 @@
 
 | Begriff | Bedeutung im Framework |
 |---|---|
-| Devin Desktop | IDE-Produkt (ehemals Windsurf) von Cognition; Rebranding zum 02.06.2026 `[DOK]` |
+| KI-Codierassistent | Sammelbegriff für das Werkzeug, das dieses Framework steuert. Welches Produkt konkret, legt das Client Pack fest |
+| Client Pack | Abbildungsschicht für genau einen KI-Client: Pfadabbildung, Semantikabbildung und Fähigkeitsmatrix (Kap. 7a). Keine Regelebene |
+| Fähigkeitsmatrix | Einstufung aller 26 technischen Zusagen je Client: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `[NICHT ABBILDBAR]` |
+| Kernzusage B1–B6 | Die sechs Zusagen, die dem Integritätsblock der Berechtigungsdatei entsprechen; eine Abweichung von `[TECHNISCH]` ist begründungs- und freigabepflichtig |
+| Devin Desktop | IDE-Produkt (ehemals Windsurf) von Cognition; Rebranding zum 02.06.2026 `[DOK]`. Client Pack `devin-desktop`, in diesem Dokument das durchgehende Beispiel |
 | Devin Local | Standard-Agent in Devin Desktop; Nachfolger von Cascade `[DOK]`; Gegenstand dieses Frameworks |
 | Cascade | Vorgänger-Agent (Windsurf-Ära); dessen Workflows und Memories werden von Devin Local nicht unterstützt `[DOK]` und im Framework nicht verwendet |
-| AGENTS.md | zentrale Agentenanweisung im Workspace-Wurzelverzeichnis; wird als always-on-Regel geladen `[DOK]` |
-| Regel (Rule) | Markdown-Datei unter `.devin/rules/` mit Frontmatter-Feldern `description`, `trigger` (`always_on`, `model_decision`, `glob`, `manual`, `agent`), `globs` `[DOK]` |
-| Skill | versionierte, testbare Arbeitsanweisung unter `.devin/skills/<name>/SKILL.md`; Aufruf `/name` `[DOK]`; Standard in Kap. 18 |
-| Subagent | eigenständiges Agentenprofil (`.devin/agents/<name>.md`) für abgegrenzte Teilaufgaben `[DOK]`; im Framework nur das lesende Profil `fw-reviewer` |
-| Hook | konfigurierter Eingriffspunkt im Agenten-Lebenszyklus (`.devin/hooks.v1.json`), kann Aktionen blockieren `[DOK]` |
-| Permission-Modus | Bestätigungsverhalten von Devin Local (Normal, Accept Edits, Smart, Bypass, Autonomous) `[DOK]`; Framework-Standard: Normal |
-| Berechtigungsregeln | `deny`/`ask`/`allow`-Regeln (`Read()`, `Write()`, `Exec()`, `Fetch()`, `mcp__*`) in `.devin/config.json`; `deny` gewinnt immer `[DOK]` |
+| Wurzel-Anweisungsdatei | zentrale Agentenanweisung im Wurzelverzeichnis; wird zu Beginn jeder Sitzung geladen `[DOK]`. Dateiname je Client Pack (Anhang 31.2) |
+| Regel (Rule) | Markdown-Datei in der Regelablage mit Ladebedingung – bei Clients mit Ladetriggern über Frontmatter `description`, `trigger` (`always_on`, `model_decision`, `glob`, `manual`, `agent`), `globs` `[DOK]` |
+| Skill | versionierte, testbare Arbeitsanweisung in der Skill-Ablage (`<name>/SKILL.md`); Aufruf `/name` `[DOK]`; Standard in Kap. 18 |
+| Subagent | eigenständiges Agentenprofil für abgegrenzte Teilaufgaben `[DOK]`; im Framework nur das lesende Profil `fw-reviewer` |
+| Hook | konfigurierter Eingriffspunkt im Agenten-Lebenszyklus (Hook-Konfiguration), kann Aktionen blockieren `[DOK]` |
+| Permission-Modus | Bestätigungsverhalten des Clients; Framework-Standard ist der Modus, der bei Schreiben und Befehlen rückfragt. Bezeichnungen je Client (bei `devin-desktop`: Normal, Accept Edits, Smart, Bypass, Autonomous `[DOK]`) |
+| Berechtigungsregeln | `deny`/`ask`/`allow`-Regeln in der Berechtigungsdatei; `deny` gewinnt immer `[DOK]`. Die Regelmenge liegt werkzeugneutral im Kern, die Werkzeugnamen entstehen aus der Semantikabbildung (Kap. 7a) |
 | Sandbox | optionale Isolation der Befehlsausführung mit Pfad- und Domainfilter `[DOK]`; Verfügbarkeit betriebssystemabhängig |
 | MCP | Model Context Protocol; Anbindung externer Werkzeuge/Server; im Framework nur nach Overlay-Freigabe, Standard `ask` `[DOK]` |
 | Spaces / Agent Command Center | Desktop-Funktionen für geteilten Kontext beziehungsweise parallele Agenten `[DOK]`; im Framework restriktiv geregelt (Kap. 12) |
 | Ebenen A–E | Trennungsmodell nach P10: A universelle Framework-Regeln, B Organisationsvorgaben, C Projektkonfiguration, D Rollen-/Technologieerweiterungen, E aufgabenbezogene flüchtige Informationen |
 | Framework Core | Ebene 3 der Prioritätshierarchie; projektunabhängige Module FW-CORE-00…10 unter `leitwerk-core/framework/core/` |
-| Role Pack / Technology Pack | optionale rollen- beziehungsweise technologiebezogene Module (Ebenen 6 und 5) mit Laufzeitfassung unter `.devin/rules/30-*` / `40-*` |
-| Project Overlay | einzige projektspezifische Ebene (4): `project-overlay/` plus Laufzeitfassung `.devin/rules/20-*`; austauschbar ohne Core-Änderung |
-| Overlay-Manifest | Register der für Devin freigegebenen Projektdokumente (`overlay-manifest.yaml`) mit Klasse, Status, Ladeverhalten |
-| Kontextklasse K0–K3 | Zulässigkeitsstufen für Inhalte an Devin: frei / projektintern freigegeben / nur nach Freigabe und Bereinigung / nie (Kap. 11) |
+| Role Pack / Technology Pack | optionale rollen- beziehungsweise technologiebezogene Module (Ebenen 6 und 5) mit Laufzeitfassung `30-*` / `40-*` in der Regelablage |
+| Project Overlay | einzige projektspezifische Ebene (4): `project-overlay/` plus Laufzeitfassung `20-*` in der Regelablage; austauschbar ohne Core-Änderung |
+| Overlay-Manifest | Register der für den Assistenten freigegebenen Projektdokumente (`overlay-manifest.yaml`) mit Klasse, Status, Ladeverhalten |
+| Kontextklasse K0–K3 | Zulässigkeitsstufen für Inhalte an den Assistenten: frei / projektintern freigegeben / nur nach Freigabe und Bereinigung / nie (Kap. 11) |
 | Kontrollstufe | Risikoklasse einer Aufgabe (niedrig/mittel/hoch) nach Faktoren R1–R13, Maximumprinzip (Kap. 13) |
-| Delegationsverbotsliste V1–V12 | Aufgaben und Entscheidungen, die nie an Devin delegiert werden (Kap. 13) |
+| Delegationsverbotsliste V1–V12 | Aufgaben und Entscheidungen, die nie an den Assistenten delegiert werden (Kap. 13) |
 | Betriebsmodus M1–M5 | Read-only Analysis, Guided Planning, Controlled Modification, Test and Validation, Documentation Support (Kap. 9) |
-| Standardarbeitsablauf | die vierzehn Schritte jeder Devin-Aufgabe (Kap. 10) |
+| Standardarbeitsablauf | die vierzehn Schritte jeder Assistenz-Aufgabe (Kap. 10) |
 | Stop-Bedingungen S1–S10 / Eskalationsstufen E0–E4 | definierte Anhalte- und Eskalationspunkte (Kap. 10, 25; Baum 5) |
-| Preflight | Pflichtprüfung vor jeder Devin-Aufgabe (Checkliste FW-CL-01) |
+| Preflight | Pflichtprüfung vor jeder Assistenz-Aufgabe (Checkliste FW-CL-01) |
 | Ergebnisbericht | Pflichtabschluss jeder Sitzung nach festem Format (Kap. 10) |
-| Devin-Nutzungsvermerk | Kennzeichnungsblock in Merge Requests (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`) |
+| KI-Nutzungsvermerk | Kennzeichnungsblock in Merge Requests (`leitwerk-core/templates/MR_AI_DISCLOSURE.md`) |
 | Quality Gate | bestehende Prüfschranke des Projekts (`<QUALITY_GATE>`); gilt für KI-Code unverändert (P6) |
 | Merge Request | Änderungsvorschlag mit Review im Git-Prozess (plattformneutral; synonym Pull Request) |
 | MUSS / SOLL / KANN / DARF NICHT | Verbindlichkeitsstufen des Frameworks (Kap. 6) |

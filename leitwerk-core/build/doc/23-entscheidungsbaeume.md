@@ -12,7 +12,7 @@ Sechs Entscheidungsbäume beantworten die wiederkehrenden Weichenfragen des Allt
 
 {{EMBED-RAW:leitwerk-core/decision-trees/02-may-devin-do-task.md:2}}
 
-## 23.3 Baum 3 – Muss Devin nur analysieren oder darf Devin ändern?
+## 23.3 Baum 3 – Darf der Assistent nur analysieren oder auch ändern?
 
 {{EMBED-RAW:leitwerk-core/decision-trees/03-analyze-or-modify.md:2}}
 

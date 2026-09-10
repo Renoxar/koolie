@@ -1,63 +1,56 @@
 # 15 Technische Referenzstruktur
 
-## 15.1 Validierung der Devin-Mechanismen (Phase-3-Prüfung)
+## 15.1 Belegstatus und Durchsetzungstiefe
 
-Vor dem Entwurf der Struktur wurde anhand der offiziellen Dokumentation geprüft, welche Dateinamen, Verzeichnisse und Mechanismen der zugrunde gelegte Produktstand tatsächlich unterstützt (Quellen: Anhang 31.3; Produktstand: Kap. 4.4). Es wurden keine Devin-Konventionen erfunden; jede verwendete Konvention ist nachfolgend mit Belegstatus klassifiziert – **offiziell dokumentiert** `[DOK]`, **technisch begründete Empfehlung** `[EMPF]` (aus dokumentierten Mechanismen abgeleitet, noch nicht in einer Installation ausgeführt), **konzeptioneller Vorschlag** `[KONZ]` (Framework-Konvention ohne Produktbezug) oder **noch zu verifizieren**.
+Für die Struktur wurden keine Client-Konventionen erfunden. Jede verwendete Konvention trägt einen **Belegstatus** – **offiziell dokumentiert** `[DOK]`, **technisch begründete Empfehlung** `[EMPF]` (aus dokumentierten Mechanismen abgeleitet, noch nicht in einer Installation ausgeführt), **konzeptioneller Vorschlag** `[KONZ]` (Framework-Konvention ohne Produktbezug) oder **noch zu verifizieren** (`<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`).
 
-| Mechanismus | Verwendete Konvention | Belegstatus |
-|---|---|---|
-| Zentrale Agentenanweisung | `AGENTS.md` im Workspace-Root, always-on, wird in die Regel-Engine eingespeist; `AGENTS.local.md` persönlich | `[DOK]` |
-| Regeldateien | `.devin/rules/*.md` mit Frontmatter `description`, `trigger` (`always_on`, `model_decision`, `glob`, `manual`, `agent`), `globs`; Legacy `.windsurf/` nur Fallback | `[DOK]` |
-| Zeichenlimits Regeln | 6.000 (global) / 12.000 (Workspace-Datei) – für Cascade-Regeln dokumentiert; Gültigkeit für Devin Local: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`; Framework hält die Grenzen konservativ ein | `[DOK]`/verify |
-| Skills | `.devin/skills/<name>/SKILL.md`; Aufruf `/name`; Frontmatter `name`, `description`, `argument-hint`, `allowed-tools`, `permissions` (additiv), `triggers`, optional `model`, `subagent`, `agent` | `[DOK]` |
-| Alternativer Skill-Pfad | `.agents/skills/` (in der Produktdokumentation als empfohlen genannt); Discovery durch Devin Local: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` – Framework nutzt primär `.devin/skills/` (D-03, K-12) | `[DOK]`/verify |
-| Berechtigungen | `.devin/config.json` (projekt, versioniert), `.devin/config.local.json` (persönlich), Benutzer- und Organisationsebene; Regeln `deny`/`ask`/`allow` mit Mustern `Read()`, `Write()`, `Exec()`, `Fetch()`, `mcp__*`; `deny` gewinnt; Sitzungs-Grant-Stufen | `[DOK]` (exakte Schemadetails: verify) |
-| Permission-Modi | Normal, Accept Edits, Smart, Bypass, Autonomous(+Sandbox) | `[DOK]` |
-| Hooks | `.devin/hooks.v1.json`; Ereignisse u. a. `PreToolUse`, `SessionStart`; Blockierung per Exit-Code 2 oder `{"decision":"block"}`; `DEVIN_PROJECT_DIR` | `[DOK]` (stdin-Schema: verify) |
-| Subagenten | `.devin/agents/<name>.md` mit `name`, `description`, `allowed-tools`, `model`, `max-nesting`; eingebaute Profile; Hintergrundläufe nur mit vorab genehmigten Rechten | `[DOK]` |
-| Plan-Modus | read-only Recherche, Plan-Datei `~/.devin/plans/plan-<session>.md` | `[DOK]` |
-| MCP | `.devin/mcp_config.json` / `.local.json`; Standard: Bestätigung je Aufruf; Enterprise-Allowlists und Registry-Erzwingung | `[DOK]` (Dateistruktur: verify) |
-| Sandbox | Pfad-Ableitung aus `Write()`-Scopes, Domainfilter, `sandbox.excluded`; nicht unter Windows; Netzfilter laut Doku instabil | `[DOK]` |
-| Enterprise-Einstellungen | erzwungene Berechtigungen, Sandbox-Pflicht, Domainlisten, MCP-/Modell-Kontrollen, Websuche standardmäßig aus; Systempfade für organisationsweite Regeln | `[DOK]` |
-| Nicht verwendet | Cascade-Workflows und -Memories (von Devin Local nicht unterstützt), `.windsurf/`-Pflege, Bypass-Modus | `[DOK]` (Nichtunterstützung) |
-| Framework-Konventionen | Nummernschema der Regeldateien, Präfixe `fw-`/`prj-`/`role-*`/`tech-*`, Skill-Begleitdateien, Metadatentabellen, Manifest-Mechanismus | `[KONZ]` |
+Wo diese Belege stehen, hat sich mit den Client Packs verschoben (Kap. 7a). Die Zuordnung von Mechanismen zu Dateinamen ist keine Eigenschaft des Frameworks mehr, sondern eine Eigenschaft des jeweiligen Client Packs – und wird dort geführt, versioniert und maschinenlesbar. Dieses Kapitel bettet sie ein, statt sie ein zweites Mal aufzuschreiben.
 
-Alle verify-Punkte sind in der Verifikationsliste des Abschlussteils zusammengeführt und werden in Roadmap-AP2 in einer Zielinstallation geprüft; nicht verifizierte produktspezifische Pfade sind im Repository zusätzlich vor Ort markiert.
+Der Belegstatus beantwortet die Frage „ist das dokumentiert?“. Die **Fähigkeitsmatrix** beantwortet die zweite, wichtigere: „setzt der Client es durch?“ Beide zusammen ergeben die Durchsetzungstiefe einer Zusage. Für das Client Pack, das dieses Dokument als durchgehendes Beispiel verwendet:
+
+{{EMBED-RAW:leitwerk-core/clients/devin-desktop/CLIENT_PACK.md:1}}
+Die Einstufungen sind **nicht** gegen eine Installation belegt; das leistet Roadmap-AP2. Bis dahin nennt die Spalte „Einstufung“ die vorgesehene, nicht die nachgewiesene Durchsetzungstiefe.
 
 ## 15.2 Repository-Struktur
 
-Der gesamte unveränderliche Kern liegt in **einem** Verzeichnis: `leitwerk-core/`. Im Wurzelverzeichnis des Projekts stehen nur die drei Dinge, die dort stehen müssen: `AGENTS.md` und `.devin/`, weil Devin sie ausschließlich dort findet `[DOK]`, sowie `project-overlay/` als austauschbare Projektkonfiguration. Angelegt und aktualisiert werden diese Wurzelbestandteile durch `leitwerk-core/install.py` aus `leitwerk-core/root-template/`; damit ist die Übernahme in ein Projekt das Kopieren eines Ordners und ein Skriptaufruf (Kap. 28).
+Der gesamte unveränderliche Kern liegt in **einem** Verzeichnis: `leitwerk-core/`. Im Wurzelverzeichnis des Projekts stehen nur die Dinge, die dort stehen müssen: die Wurzel-Anweisungsdatei und die Laufzeitschicht, weil der KI-Client sie ausschließlich dort findet, sowie `project-overlay/` als austauschbare Projektkonfiguration. Wie diese Bestandteile heißen, entscheidet das gewählte Client Pack; der Baum unten zeigt sie in der Fassung von `devin-desktop`.
+
+Angelegt und aktualisiert werden die Wurzelbestandteile durch `leitwerk-core/install.py`. Damit ist die Übernahme in ein Projekt das Kopieren eines Ordners und ein Skriptaufruf (Kap. 28).
 
 ```text
 <REPOSITORY_NAME>/                       # Projekt-Repository
-├── AGENTS.md                            # zentrale Agentenanweisung (Kap. 16) [DOK]
-├── AGENTS.local.md.example              # Vorlage persönliche Ergänzung (nicht versioniert) [DOK]
+├── AGENTS.md                            # Wurzel-Anweisungsdatei (Kap. 16), erzeugt
+├── AGENTS.local.md.example              # Vorlage persönliche Ergänzung, erzeugt
 ├── .gitignore                           # schützt persönliche Konfiguration, Legacy, Build
-├── .devin/                              # DEVIN-LAUFZEITSCHICHT [DOK]
-│   ├── README.md                        # Mechanismen, Modi, Sitzungsfreigaben (mit Belegstatus)
-│   ├── rules/                           # 00/10/15 Core-Kurzfassungen (Kern)
-│   │                                    # · 20 Overlay always-on · 2N Overlay-Erweiterungen
-│   │                                    # · 30 Role Pack · 40 Technology Packs (Projekt)
-│   │                                    # · 21-/40-TEMPLATE Vorlagen (Kern) · README
-│   ├── skills/                          # fw-* : 12 Referenz-Skills (Kern)
-│   │                                    # prj-*: projektspezifische Skills (Projekt)
-│   │                                    # je SKILL.md + EXAMPLES + TESTS + CHANGELOG
+├── .devin/                              # LAUFZEITSCHICHT – vollständig erzeugt
+│   ├── README.md                        # Mechanismen, Modi, Sitzungsfreigaben
+│   ├── rules/                           # 00/10/15 Core-Kurzfassungen · 20 Overlay
+│   │                                    # · 2N Overlay-Erweiterungen · 30 Role Pack
+│   │                                    # · 40 Technology Packs · Vorlagen · README
+│   ├── skills/                          # fw-* : 12 Referenz-Skills · prj-*: projekteigene
 │   ├── agents/fw-reviewer.md            # nur lesendes Review-Subagentenprofil
-│   ├── config.json                      # Berechtigungen deny/ask/allow + Kernregel-Integritätsblock
-│   ├── hooks.v1.json                    # PreToolUse-Schutzprüfung, SessionStart-Statusmeldung
+│   ├── config.json                      # Berechtigungen deny/ask/allow + Integritätsblock
+│   ├── hooks.v1.json                    # PreToolUse-Schutzprüfung, SessionStart-Meldung
 │   └── mcp_config.json.example          # MCP-Vorlage (Standard: keine Server)
 │
-├── leitwerk-core/                # DER KERN – ein Verzeichnis, byte-gleich zum Release
+├── leitwerk-core/                       # DER KERN – ein Verzeichnis, byte-gleich zum Release
 │   ├── install.py                       # legt die Wurzelbestandteile an (--update / --check)
-│   ├── root-template/                   # Quelle für AGENTS.md, .devin/, project-overlay/
+│   ├── clientmap.py                     # Semantikabbildung Berechtigungen und Hooks (Kap. 7a)
 │   ├── VERSION · CHANGELOG.md           # Versionsstand, Änderungsverzeichnis
 │   ├── OWNERS.md                        # Ownership je Bereich (Governance)
+│   ├── clients/                         # ABBILDUNGSSCHICHT – je Client vier Dateien
+│   │   ├── README.md · _template/       # Regeln der Schicht, Vorlage für neue Packs
+│   │   ├── devin-desktop/               # CLIENT_PACK.md · manifest.json · root-template/
+│   │   └── claude-code/                 # dito
 │   ├── framework/                       # KANONISCHE, WERKZEUGNEUTRALE EBENE
 │   │   ├── core/00…10-*.md              # Framework Core (Kap. 6, 10–14, 18, 25)
-│   │   ├── role-packs/                  # README, _template, software-development
-│   │   ├── tech-packs/                  # README, _template (Packs entstehen projektbezogen)
+│   │   ├── runtime/                     # Laufzeitfassung, einmal für alle Clients:
+│   │   │                                # Wurzel-Anweisung · Regeltexte · Agentenprofil
+│   │   │                                # · permissions.json · hooks.json · Vorlagen
+│   │   ├── skills/                      # fw-* Referenz-Skills, eine Quelle je Skill
+│   │   ├── role-packs/ · tech-packs/    # Ebene 6 und 5
 │   │   └── org-policies/                # Ebene B: Einbindungspunkt + Klassifizierungs-Mapping
-│   ├── templates/                       # SKILL_TEMPLATE · PLAN_TEMPLATE · MR_AI_DISCLOSURE
+│   ├── templates/                       # Project-Overlay-Saat · Regelvorlagen · SKILL_TEMPLATE
 │   ├── prompts/                         # Prompt-Bibliothek FW-PR-001…012 + README (Kap. 21)
 │   ├── checklists/                      # FW-CL-01…11 + README (Kap. 22)
 │   ├── decision-trees/                  # FW-DT-01…06 + README (Kap. 23; Mermaid validiert)
@@ -65,13 +58,13 @@ Der gesamte unveränderliche Kern liegt in **einem** Verzeichnis: `leitwerk-core
 │   │                                    # · KNOWLEDGE_CHECK · COMPLETION_CRITERIA · REFERENCE
 │   ├── examples/                        # ausschließlich synthetische Beispiele
 │   ├── governance/                      # DECISION_LOG · RACI · PRIORITY_HIERARCHY
-│   │                                    # · RELEASE_PROCESS · CHANGE_REQUEST_TEMPLATE
+│   │                                    # · RELEASE_PROCESS · change-requests/
 │   │                                    # · EXCEPTION/FEEDBACK/INCIDENT
 │   ├── pilot/                           # PILOT_CONCEPT · METRICS (Kap. 27)
-│   ├── docs/                            # ADOPTION_GUIDE · ROADMAP · PLACEHOLDER_REGISTRY
-│   ├── tests/                           # TEST_CATALOG.md
-│   │   └── scripts/                     # validate-framework.py · validate-output.py · Hooks
-│   └── build/                           # Assemblierung des Gesamtdokuments
+│   ├── docs/                            # ADOPTION_GUIDE · ROADMAP · RUNTIME_GLOSSARY
+│   │                                    # · PLACEHOLDER_REGISTRY
+│   ├── tests/                           # TEST_CATALOG.md · protocols/ · scripts/
+│   └── build/                           # Assemblierung dieses Dokuments
 │
 ├── project-overlay/                     # EBENE 4 (austauschbar; Kap. 17)
 │   ├── OVERLAY.md                       # 21 Abschnitte mit Ausfüllhinweisen
@@ -85,30 +78,30 @@ Der gesamte unveränderliche Kern liegt in **einem** Verzeichnis: `leitwerk-core
 
 **Warum diese Aufteilung.** Vor dieser Fassung lagen zwölf Kern-Verzeichnisse und vier Kern-Dateien direkt im Wurzelverzeichnis – neben dem Produktivcode des Projekts. Das machte die Übernahme fehleranfällig (was gehört zum Framework, was zum Projekt?) und das Wurzelverzeichnis unübersichtlich. Die Bündelung ändert nichts an der inhaltlichen Ebenenhierarchie (Kap. 7); sie trennt lediglich physisch, was ohnehin logisch getrennt war: Der Kern ist ein Ordner, den man ersetzt; das Projekt ist alles daneben.
 
-**Grenze der Bündelung.** `AGENTS.md` und `.devin/` lassen sich nicht mitverschieben – beide Ladeorte sind Werkzeugkonvention und nicht konfigurierbar `[DOK]`. `.devin/` enthält deshalb weiterhin Kern und Projektbestandteile gemischt. Genau diese Mischung löst `install.py` auf: Kern-Dateien kommen aus `root-template/` und werden bei `--update` überschrieben, Projektdateien (`config.json`, `20-`, `2N-`, `30-`, `40-`, `prj-*`) nie. `--check` meldet, wenn eine Kern-Datei im Wurzelverzeichnis lokal verändert wurde – also an der falschen Stelle bearbeitet.
+**Die Laufzeitschicht ist Erzeugnis, nicht Quelle.** Kein Bestandteil von `.devin/` wird von Hand geschrieben. Regeltexte, Skills, Agentenprofil, Berechtigungen und Hooks liegen einmal unter `leitwerk-core/framework/runtime/` beziehungsweise `framework/skills/` und werden bei der Installation in die Form des gewählten Client Packs gebracht (Kap. 7a). Ein Client Pack selbst enthält nur noch vier Dateien: die Pfad- und Semantikabbildung (`manifest.json`), die Fähigkeitsmatrix (`CLIENT_PACK.md`) und zwei erklärende READMEs.
 
-Damit sind alle geforderten Inhalte logisch abgebildet: zentrale Agentenanweisungen (`AGENTS.md`, `.devin/rules/`), Framework Core, Datenschutz- und Sicherheitsregeln (Core 02/03 plus Laufzeitregel 10), allgemeine Entwicklungsregeln (Core 04/06/07 plus Laufzeitregel 15), projektspezifisches Overlay, Rollenmodule, Technologiepakete, Skills, Skill-Vorlagen, Prompt-Vorlagen, Checklisten, Onboarding, Beispiele, Tests und Validierungen der Agentenanweisungen, Änderungsverzeichnis sowie Governance und Ownership.
+**Grenze der Bündelung.** Die Wurzel-Anweisungsdatei und die Laufzeitschicht lassen sich nicht mitverschieben – beide Ladeorte sind Werkzeugkonvention und nicht konfigurierbar `[DOK]`. Die Laufzeitschicht enthält deshalb Kern- und Projektbestandteile gemischt. Genau diese Mischung löst `install.py` auf: **Core** wird bei `--update` überschrieben, **Saat** (Berechtigungsdatei, Overlay, Overlay-Regel) nur bei der Erstinstallation angelegt und danach nie wieder angefasst. `--check` meldet, wenn eine Core-Datei im Wurzelverzeichnis lokal verändert wurde – also an der falschen Stelle bearbeitet.
+
+Damit sind alle geforderten Inhalte logisch abgebildet: zentrale Agentenanweisungen, Framework Core, Datenschutz- und Sicherheitsregeln (Core 02/03 plus Laufzeitregel 10), allgemeine Entwicklungsregeln (Core 04/06/07 plus Laufzeitregel 15), projektspezifisches Overlay, Rollenmodule, Technologiepakete, Skills, Skill-Vorlagen, Prompt-Vorlagen, Checklisten, Onboarding, Beispiele, Tests und Validierungen der Agentenanweisungen, Änderungsverzeichnis sowie Governance und Ownership.
 
 ## 15.3 Laufzeitschicht im Detail
 
-Die folgende Dokumentationsdatei der Laufzeitschicht beschreibt verbindlich, was Devin aus dem Repository liest, welche Mechanismen bewusst nicht verwendet werden und welche Sitzungsfreigaben zulässig sind:
+Die folgende Dokumentationsdatei der Laufzeitschicht beschreibt verbindlich, was der KI-Client aus dem Repository liest, welche Mechanismen bewusst nicht verwendet werden und welche Sitzungsfreigaben zulässig sind:
 
-{{EMBED-RAW:.devin/README.md:1}}
-
+{{EMBED-RAW:<RUNTIME_DIR>/README.md:1}}
 Die zugehörige Regeldatei-Systematik:
 
-{{EMBED-RAW:.devin/rules/README.md:1}}
-
+{{EMBED-RAW:<RULES_DIR>/README.md:1}}
 ## 15.4 Zentrale Konfigurationsdateien
 
-**Berechtigungen** – restriktiver Standard mit Kernregel-Integritätsblock (Mechanismus `[DOK]`, Regelmenge `[EMPF]`, Schemadetails verify):
+Alle drei folgenden Dateien sind **erzeugt**. Sie stammen aus einer Referenzinstallation, die beim Bau dieses Dokuments angelegt wird – bei einem anderen Client Pack sehen sie anders aus, ohne dass sich eine Regel ändert. Die Quellen liegen unter `leitwerk-core/framework/runtime/`.
 
-{{EMBED:.devin/config.json:json}}
+**Berechtigungen** – restriktiver Standard mit Kernregel-Integritätsblock. Die Regelmenge ist werkzeugneutral; Werkzeugnamen, Musterform und der Integritätsblock entstehen aus der Semantikabbildung des Client Packs (Kap. 7a, `clientmap.py`):
 
-**Hooks** – technische Prüfung vor Schreib-/Ausführungsoperationen und Statusmeldung beim Sitzungsstart (Mechanismus `[DOK]`, Skripte `[EMPF]`, Status entwurf):
+{{EMBED:<PERMISSIONS_FILE>:json}}
+**Hooks** – technische Prüfung vor Schreib- und Ausführungsoperationen sowie Statusmeldung beim Sitzungsstart (Mechanismus `[DOK]`, Skripte `[EMPF]`, Status entwurf):
 
-{{EMBED:.devin/hooks.v1.json:json}}
-
+{{EMBED:<HOOKS_FILE>:json}}
 **Subagentenprofil** – nur lesende Review-Zulieferung:
 
-{{EMBED:.devin/agents/fw-reviewer.md}}
+{{EMBED:<AGENTS_DIR>/fw-reviewer.md}}

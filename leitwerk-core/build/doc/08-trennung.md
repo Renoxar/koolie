@@ -8,16 +8,16 @@ Die Wiederverwendbarkeit des Frameworks steht und fällt mit einer harten Regel:
 
 | Mechanismus | Wirkung |
 |---|---|
-| Platzhalter-Schnittstellen (Anhang 31.2) | Core-Regeln bleiben generisch formulierbar; Projekte füllen Werte ausschließlich im Overlay und in `.devin/config.json` |
+| Platzhalter-Schnittstellen (Anhang 31.2) | Core-Regeln bleiben generisch formulierbar; Projekte füllen Werte ausschließlich im Overlay und in der Berechtigungsdatei |
 | Verschärfungsprinzip (Kap. 25) | Das Overlay darf konkretisieren und verschärfen, nie lockern – Core-Garantien gelten damit projektübergreifend |
 | Getrennte Ablage und Ownership | Core: Framework Owner über Releases; Overlay: Overlay Owner über den Projektprozess; technische Schreibsperren (`Write(leitwerk-core/framework/**)`, `Write(.devin/**)`, `Write(AGENTS.md)`, `Write(project-overlay/**)` als `deny` für Devin) |
 | Dokumenten-Manifest | Projektwissen wird als registriertes Dokument mit Klasse und Ladeverhalten eingebunden – nie durch Editieren von Core-Dateien (Kap. 17) |
-| Integritätsprüfung | `validate-framework.py` prüft unter anderem, dass die Kernregeln in `.devin/config.json` unverändert enthalten sind (`_core_rules_integrity`) und Overlay-Pflichtfelder gefüllt sind (`--strict-overlay`) |
+| Integritätsprüfung | `validate-framework.py` prüft unter anderem, dass die Kernregeln in der Berechtigungsdatei unverändert enthalten sind (`_core_rules_integrity`) und Overlay-Pflichtfelder gefüllt sind (`--strict-overlay`) |
 | Release-Abgleich | Bei Übernahme und Aktualisierung werden Core-Bestandteile byte-gleich aus dem Release übernommen (Adoption Guide, CL-10/CL-11) |
 
 ## 8.3 Grenzfälle und ihre Auflösung
 
-Regeln mit gemischtem Charakter werden getrennt: die generische Logik wandert mit Platzhalter in den Core, der Wert in das Overlay (**Beispiel (synthetisch):** „Devin führt nur freigegebene Testbefehle aus" ist Core; „der Testbefehl lautet `build-tool test`" ist Overlay). Stellt ein Projekt fest, dass eine Core-Regel für alle denkbaren Projekte falsch oder unvollständig ist, ist das ein Änderungsantrag an den Framework Owner – bis zur Entscheidung gilt die Regel oder eine dokumentierte, befristete Ausnahme (nie eine stille lokale Abweichung). Die vollständige Einordnungslogik – einschließlich Ebene B (Organisationsvorgaben werden eingebunden, nicht kopiert) und Ebene E (Aufgabenkontext bleibt außerhalb des Repositorys) – bildet Entscheidungsbaum 6 ab (Kap. 23).
+Regeln mit gemischtem Charakter werden getrennt: die generische Logik wandert mit Platzhalter in den Core, der Wert in das Overlay (**Beispiel (synthetisch):** „Der Assistent führt nur freigegebene Testbefehle aus" ist Core; „der Testbefehl lautet `build-tool test`" ist Overlay). Stellt ein Projekt fest, dass eine Core-Regel für alle denkbaren Projekte falsch oder unvollständig ist, ist das ein Änderungsantrag an den Framework Owner – bis zur Entscheidung gilt die Regel oder eine dokumentierte, befristete Ausnahme (nie eine stille lokale Abweichung). Die vollständige Einordnungslogik – einschließlich Ebene B (Organisationsvorgaben werden eingebunden, nicht kopiert) und Ebene E (Aufgabenkontext bleibt außerhalb des Repositorys) – bildet Entscheidungsbaum 6 ab (Kap. 23).
 
 ## 8.4 Nachweis der Trennung in dieser Erstfassung
 
