@@ -2,6 +2,31 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.17.0] - 2026-09-10
+
+### Behoben
+- **Acht der zehn Strukturentscheidungen beschrieben einen Stand, den es nicht mehr gibt (`CR-2026-019`).** D-01 bis D-10 datieren saemtlich auf den 2026-09-01, den Tag der Erstfassung. Zwischen ihnen und heute liegen sechzehn Releases und die Decision Records D-11 bis D-27 – und die haben acht der zehn ueberholt, ohne dass es jemand vermerkt haette. Fortgeschrieben war genau **einer** (D-02), ein weiterer ist ersetzt (D-09 durch D-11).
+
+  **Vier waren ueberholt, weil sie Pfade und Produktnamen eines einzelnen Clients nannten:** D-03 („Skills liegen unter `.devin/skills/…`"), D-04 („Berechtigungen … in `.devin/config.json`"), D-05 (die Modusnamen `Bypass`, `Smart`, `Accept Edits`, `Normal`) und D-10 („Devin Cloud, Devin CLI und ACP-Fremdagenten"). Bemerkenswert daran: D-15 und D-19 haben genau das behoben – im **Kern**, an 63 Client-Bindungen und 994 Pfadnennungen. Das Decision Log lag ausserhalb dieses Umfangs, und niemandem fiel auf, dass die Entscheidungen, die den werkzeugneutralen Kern **anordnen**, selbst client-gebunden formuliert waren.
+
+  **Vier waren richtig, aber unvollstaendig:** D-01 (die Zaehlung meint die Regelebenen; die Prioritaetshierarchie fuehrt acht Stufen, weil dazwischen die Skills stehen), D-06 (das Verschaerfungsprinzip ist seit D-18 an der tragenden Stelle eine **geprueft**e Eigenschaft und keine Zusage mehr), D-07 (D-24 hat die K3-Auffangkategorie nachgeschaerft) und D-08 (die Begruendung war eine Vorsichtsannahme, die fuer einen Client inzwischen geklaert ist).
+
+  Derselbe Befundtyp wie `FW-VN-01` und `CR-2026-018`, eine Ebene hoeher: Eine Angabe, die sich nie bewegt, waehrend sich ihr Gegenstand bewegt, sagt irgendwann nichts mehr.
+
+### Geaendert
+- **Der Wortlaut von 2026-09-01 bleibt stehen; die Fortschreibung steht daneben** – nach dem Muster, das D-02 seit `CR-2026-002` verwendet. Ein Decision Log ist ein Verlaufsdokument: Wer wissen will, warum eine Entscheidung so getroffen wurde, braucht die Begruendung von damals. Und der Unterschied ist selbst die Aussage – dass D-04 am 2026-09-01 einen Client-Pfad nannte, erklaert, warum es D-15 gebraucht hat.
+- **Klaerungspunkt K-18** (Toleranz unbekannter Frontmatter-Schluessel) ist fuer `claude-code` geklaert und stuetzt D-08: Die Herstellerdokumentation zaehlt die Felder je Artefaktart auf, die Abbildung erzeugt seit D-26 und D-27 nur solche, und der Validator meldet jedes andere. Fuer `devin-desktop` bleibt der Punkt `verify`.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs. Keine Sonde nach D-23: Die Aenderung fuegt keine Pruefung hinzu und aendert keine.
+
+### Migrationshinweise fuer Overlays
+Keine. Kein Mechanismus, keine Regel und keine Einstufung aendert sich; Installation, Validator und Laufzeitschicht sind unberuehrt.
+
+### Bekannte Einschraenkungen
+- **Der Statuswechsel ist nicht Gegenstand dieses Releases.** Alle zehn Records tragen weiterhin `entschieden (Vorschlag)`; Kriterium 4 aus D-11 ist damit **nicht** erfuellt. Die Fortschreibung ist die Vorbedingung, nicht die Entscheidung: Ob ein Record bestaetigt wird, entscheidet `<FRAMEWORK_OWNER>`. `CR-2026-019` Abschnitt 4 legt die Frage je Record vor.
+- **Drei Records tragen einen benannten Einwand:** D-05 (AP2-CC-12 ist offen), D-07 (K-20, Art und Ort der Codebasis-Indexierung, ist bei `devin-desktop` unbelegt) und D-10 (K-04, Nutzungsumfang Cloud/CLI, ist offen und liegt ausserhalb des Frameworks). Bei den uebrigen sieben ist kein Einwand erkennbar.
+
 ## [0.16.0] - 2026-09-10
 
 ### Behoben
