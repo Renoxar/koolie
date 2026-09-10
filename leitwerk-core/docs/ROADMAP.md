@@ -28,12 +28,20 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Client Pack minimal | Vier Dateien statt achtzig; `seed_paths` leer, die gesamte Saat kommt aus dem Kern | D-20, `CR-2026-010` |
 | Hauptdokument | Baut aus einem frischen Auscheckstand; Laufzeitdateien aus einer Referenzinstallation mit Herkunftsangabe; Abbildungsschicht eingearbeitet | D-21, `CR-2026-011` |
 | Schreibschutz | Das **gesamte** Kernverzeichnis ist geschützt, nicht nur `framework/**`; der zweite Testfall des Katalogs ist bestanden | D-22, `CR-2026-012`, `tests/protocols/2026-09-10-FW-ZA-05.md` |
+| Übernahme belegt | Übungsrepository von 0.4.0 auf 0.10.0 gehoben – sechs Releases in einem Schritt, ein Handgriff von Hand; Kriterium 5 von D-11 technisch belegt | `FW-RE-02`, `tests/protocols/2026-09-10-FW-RE-02.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Nach 0.10.0 ist das Übungsrepository von 0.4.0 auf den aktuellen Stand gehoben – als
+Aktualisierung, nicht als Neuinstallation, und damit über sechs Releases hinweg. Der einzige
+Handgriff war der im CHANGELOG angekündigte: zwei Zeilen in der Berechtigungsdatei, vom
+Validator zuvor mit genau zwei Fehlern eingefordert. Kriterium 5 von D-11 ist damit
+technisch belegt; organisatorisch bleibt es offen, weil das Übungsrepository keinen
+Organisationsbezug hat.
 
 Mit 0.9.0 ist das Hauptdokument wieder ein Lieferbestandteil: Es baut aus einem frischen
 Auscheckstand, weist bei jeder Laufzeitdatei aus, aus welchem Client Pack sie stammt, und
@@ -68,15 +76,16 @@ genau das ist AP2. Seit 0.10.0 hängt daran ein benannter Testfall: `FW-ZA-06` p
 Schreibverbot auf den Kern in einer realen Installation greift. Der Hook-Anteil derselben
 Zusage ist mit `FW-ZA-05` bereits belegt.
 
-**P2 – Testkatalog ausführen.** 35 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
-Die Ablage steht (`tests/protocols/`), das Format ist an zwei Protokollen ablesbar. `FW-ZA-05`
+**P2 – Testkatalog ausführen.** 34 von 37 Testfällen stehen auf `offen`. Kriterium 2 von D-11.
+Die Ablage steht (`tests/protocols/`), das Format ist an drei Protokollen ablesbar. `FW-ZA-05`
 zeigt zugleich, wie ein Skripttest aussieht, der etwas belegt: Er prüft nicht nur, was
 blockiert werden muss, sondern auch, was durchgelassen werden muss.
 
-**P2 – Übungsrepository auf 0.10.0 heben.** Es trägt noch den Kern aus 0.4.0. Die Übernahme
-wurde simuliert und war fehlerfrei; sie ist noch nicht vollzogen. Seit 0.10.0 kommt ein
-Migrationsschritt hinzu: die zwei Zeilen in der Berechtigungsdatei. Damit wäre zugleich
-Kriterium 5 von D-11 (Übernahme in ein zweites Projekt) belegt.
+Der nächste erreichbare Testfall ohne reale Installation ist `FW-KO-01` (Basis, skript) –
+der Validatorlauf selbst; er braucht wie `FW-KO-04` einen Wirksamkeitsnachweis über eine
+Sondendatei, sonst belegt er nur, dass das Skript durchläuft. Danach `FW-DS-03` (Selbsttest
+des Schutz-Hooks) und die Review-Testfälle `FW-KO-02`, `FW-VN-01`, `FW-AK-01`. Alles Übrige
+sind Sitzungstests und hängt an AP2.
 
 **P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
 `entschieden (Vorschlag)`. Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so

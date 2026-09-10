@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.0` |
+| Version | `0.4.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `leitwerk-core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -147,7 +147,12 @@ bleibt unberührt (P10, Baum 6).
    noch vollständig sind.
 
 3. Overlay-Bestandteile gegen die Migrationshinweise prüfen (neue Pflichtfelder, geänderte
-   Platzhalter, deprecatete Skills).
+   Platzhalter, deprecatete Skills). Nennt ein Release einen geänderten Kernpfad, betrifft
+   das nicht nur die Berechtigungsdatei: Das Overlay, seine Laufzeitfassung, projekteigene
+   Packs, `prj-*`-Skills, `README`, Onboarding-Material und die `.gitignore` verweisen
+   ebenfalls darauf. Beim Wechsel von 0.4.0 auf 0.10.0 waren es 74 Nennungen in 19
+   Projektdateien (`leitwerk-core/tests/protocols/2026-09-10-FW-RE-02.md`). Der Validator
+   meldet davon nur, was er als Verweis erkennt – die Suche über das Projekt gehört dazu.
 
 4. Validator (`--strict-overlay`) und Basistests erneut ausführen; bei MAJOR-Releases
    zusätzlich FW-RE-01/02.
