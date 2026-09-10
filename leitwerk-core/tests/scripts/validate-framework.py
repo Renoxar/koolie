@@ -14,15 +14,22 @@ Prüft (statisch, ohne Devin):
   5. Skills (.devin/skills/ und die Quellablagen der Packs): Pflichtdateien, Frontmatter,
      Metadatenblock, Pflichtabschnitte,
      Trigger-Regel (schreibende Skills nur user-getriggert), Beispiele und Testfälle
-  6. Verbotene Inhalte (ohne erzeugte Lockdateien): Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen,
-     URLs außerhalb der Quellen-Allowlist, projektspezifische Sperrbegriffe (project-overlay/forbidden-terms.txt)
+  6. Verbotene Inhalte (ohne erzeugte Lockdateien): Secret-Muster – dieselben Kategorien,
+     die der Schutz-Hook in einer Werkzeugeingabe blockiert –, E-Mail-Adressen, IP-Adressen,
+     interne Hostnamen, URLs außerhalb der Quellen-Allowlist, projektspezifische Sperrbegriffe
+     (project-overlay/forbidden-terms.txt)
   7. Platzhalter: nur registrierte Platzhalter (leitwerk-core/docs/PLACEHOLDER_REGISTRY.md)
-  8. Overlay-Manifest: YAML-Schema und Aufzählungswerte
-  9. --strict-overlay: keine offenen <TBD> in sicherheitsrelevanten Overlay-Feldern, Status aktiv
+  8. Overlay-Manifest: Kopfschlüssel, Pflichtfelder je Dokumenteintrag, Aufzählungswerte
+  9. --strict-overlay: keine offenen <TBD> in sicherheitsrelevanten Overlay-Feldern; Status
+     aktiv an *jeder* Stelle, an der das Overlay ihn erklärt (Steckbrief und Aktivierung)
  10. --mermaid: Syntaxprüfung aller Mermaid-Blöcke mit mmdc (falls installiert)
- 11. Codeblöcke mit vier oder mehr Backticks (brechen die Dokumentassemblierung)
+ 11. Codeblöcke mit vier oder mehr Backticks (brechen die Dokumentassemblierung) –
+     einschließlich der Quellen unter <CORE_DIR>/build/doc, aus denen sie entsteht
  12. Querverweise (FW-KO-04): Markdown-Links und in Backticks genannte Framework-Pfade
      zeigen auf existierende Dateien oder Verzeichnisse
+
+Ohne PyYAML laufen die Prüfungen 4, 5 und 8 eingeschränkt; das Skript sagt es dann als
+Warnung. Für einen Release- oder Übernahmenachweis ist PyYAML erforderlich.
 
 Exit-Code 0 = keine Fehler (Warnungen möglich), 1 = Fehler.
 Status des Skripts: entwurf. Es prüft Struktur, nicht Semantik; die semantische Prüfung
@@ -43,6 +50,9 @@ try:
     import yaml  # type: ignore
 except ImportError:  # pragma: no cover
     yaml = None
+
+# Name des Kernverzeichnisses. Er steht hier einmal statt an drei Stellen im Skript.
+KERN = "leitwerk-core"
 
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
@@ -84,10 +94,25 @@ SKILL_SECTIONS = [
 SKILL_META_KEYS = ["ID", "Name", "Version", "Status", "Owner (Rolle)", "Betriebsmodus", "Zulässige Kontrollstufen"]
 SKILL_STATUS = {"entwurf", "pilot", "aktiv", "veraltet", "zurückgezogen"}
 
+# Dieselben Kategorien, die der Schutz-Hook in einer Werkzeugeingabe blockiert
+# (tests/scripts/hook-check-secrets.py). Ein Muster, das dort blockiert, darf in einer
+# versionierten Datei nicht unbemerkt stehen bleiben - sonst waere dieselbe Zusage an
+# zwei Stellen unterschiedlich streng.
+#
+# Ein Wert in spitzen Klammern ist ein Platzhalter und kein Secret; das Framework
+# schreibt seine Beispiele durchgehend so. Nur deshalb kommen die Regeln hier ohne
+# Ausnahmeliste aus. Bei der Verbindungszeichenfolge zaehlt allein das Kennwort: Ein
+# Platzhalter als Benutzername sagt nichts darueber, ob das Kennwort echt ist.
 SECRET_PATTERNS = [
     ("privater Schlüssel", re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")),
     ("Cloud-Zugangsschlüssel", re.compile(r"\b(AKIA|ASIA)[0-9A-Z]{16}\b")),
     ("JWT", re.compile(r"\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b")),
+    ("Bearer-Token", re.compile(r"\bBearer\s+[A-Za-z0-9\-_\.=]{20,}", re.I)),
+    ("Zugangsdaten-Zuweisung", re.compile(
+        r"(?i)\b(password|passwd|pwd|secret|api[_-]?key|access[_-]?key|token)\b"
+        r"\s*[:=]\s*['\"]?(?![<`])[^\s'\"]{8,}")),
+    ("Verbindungszeichenfolge mit Anmeldedaten", re.compile(
+        r"(?i)\b[a-z][a-z0-9+\-.]*://[^/\s:]+:(?!<)[^@\s]+@")),
 ]
 EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
 IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
@@ -155,13 +180,26 @@ def read(path: str) -> str:
         return fh.read()
 
 
-def iter_text_files(root: str):
-    for dirpath, dirnames, filenames in os.walk(root):
+def _walk_text_files(start: str):
+    for dirpath, dirnames, filenames in os.walk(start):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
         for fn in filenames:
             ext = os.path.splitext(fn)[1]
-            if ext in TEXT_EXT or fn in ("leitwerk-core/VERSION", ".gitignore"):
+            if ext in TEXT_EXT or fn in ("VERSION", ".gitignore"):
                 yield os.path.join(dirpath, fn)
+
+
+def iter_text_files(root: str):
+    yield from _walk_text_files(root)
+    # 'build' steht in SKIP_DIRS, weil dort die Erzeugnisse eines Projekts liegen. Die
+    # handgeschriebenen Quellen des Hauptdokuments liegen aber darunter und gehoeren
+    # geprueft - gerade weil aus ihnen ein Lieferbestandteil entsteht. Vier Backticks
+    # brechen genau hier die Assemblierung, und ein Secret erschiene im ausgelieferten
+    # Dokument. Das Werkzeug daneben (assemble.py, build/README.md) bleibt aussen vor:
+    # Es fuehrt eigene Marker in spitzen Klammern, die keine Framework-Platzhalter sind.
+    doc = os.path.join(root, KERN, "build", "doc")
+    if os.path.isdir(doc):
+        yield from _walk_text_files(doc)
 
 
 def parse_frontmatter(text: str):
@@ -195,7 +233,7 @@ MANIFEST_FALLBACK = {
 
 def detect_client(root: str) -> dict:
     """Manifest des installierten Client Packs. Fallback, wenn keines zutrifft."""
-    base = os.path.join(root, "leitwerk-core", "clients")
+    base = os.path.join(root, KERN, "clients")
     treffer = []
     if os.path.isdir(base):
         for name in sorted(os.listdir(base)):
@@ -241,7 +279,7 @@ def soll_kernregeln(root: str, man: dict) -> list[str]:
     Abbildungsmodul (etwa in einer Teilkopie des Kerns), wird nur gewarnt: Die Pruefungen
     gegen die Datei selbst greifen weiterhin.
     """
-    kern = os.path.join(root, "leitwerk-core")
+    kern = os.path.join(root, KERN)
     if not os.path.isdir(kern):
         return []
     if kern not in sys.path:
@@ -511,8 +549,10 @@ def check_content(root: str) -> None:
                            if l.strip() and not l.startswith("#")]
     unknown_placeholders: dict[str, set[str]] = {}
     for path in iter_text_files(root):
-        rel = os.path.relpath(path, root)
-        if rel.startswith("leitwerk-core/tests/scripts/") or rel == "project-overlay/forbidden-terms.txt":
+        # os.path.relpath liefert unter Windows Backslashes; ohne diese Normalisierung
+        # greift unten kein einziger Pfadvergleich - check_links macht es seit jeher so.
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if rel.startswith(f"{KERN}/tests/scripts/") or rel == "project-overlay/forbidden-terms.txt":
             continue
         if os.path.basename(path) in SKIP_FILES:
             continue
@@ -534,9 +574,11 @@ def check_content(root: str) -> None:
         for term in forbidden_terms:
             if re.search(rf"(?i)\b{re.escape(term)}\b", text):
                 err(f"{rel}: gesperrter Begriff '{term}'")
-        if FENCE4_RE.search(text) and rel.startswith((".devin/", "leitwerk-core/framework/", "leitwerk-core/prompts/", "leitwerk-core/checklists/",
-                                                       "leitwerk-core/decision-trees/", "leitwerk-core/onboarding/", "leitwerk-core/templates/",
-                                                       "project-overlay/", "leitwerk-core/governance/", "leitwerk-core/pilot/")):
+        if FENCE4_RE.search(text) and rel.startswith(
+                (".devin/", ".claude/", "project-overlay/") +
+                tuple(f"{KERN}/{d}/" for d in ("framework", "prompts", "checklists", "decision-trees",
+                                               "onboarding", "templates", "governance", "pilot",
+                                               "build", "docs", "examples"))):
             err(f"{rel}: Codeblock mit vier oder mehr Backticks (bricht die Dokumentassemblierung)")
         if registry:
             for ph in set(PLACEHOLDER_RE.findall(text)):
@@ -558,6 +600,8 @@ def _normalize_target(raw: str):
         return None
     if t.endswith("-"):                       # Präfixnennung, z. B. ".devin/rules/00-"
         return None
+    if "…" in t or t.endswith("..."):     # Sammelnennung, z. B. "framework/core/…"
+        return None
     if any(c in NOT_A_PATH for c in t):
         return None
     return t
@@ -572,7 +616,7 @@ def _client_runtime_paths(root: str) -> dict:
     kein Fehler - aber es gehoert sichtbar gemacht.
     """
     out = {}
-    base = os.path.join(root, "leitwerk-core", "clients")
+    base = os.path.join(root, KERN, "clients")
     if not os.path.isdir(base):
         return out
     for name in sorted(os.listdir(base)):
@@ -710,6 +754,9 @@ def check_manifest(root: str) -> None:
     types = {"ai-governance", "ai-process-model", "roadmap", "architecture", "coding-guidelines",
              "definition-of-ready", "definition-of-done", "branching-strategy", "deployment",
              "security", "quality", "roles", "glossary", "other"}
+    for key in ("manifest_version", "project_code", "overlay_version"):
+        if key not in data:
+            err(f"overlay-manifest.yaml: Kopfschlüssel {key} fehlt")
     seen = set()
     for doc in data.get("documents", []) or []:
         did = doc.get("id", "?")
@@ -733,6 +780,23 @@ def check_manifest(root: str) -> None:
             err(f"overlay-manifest.yaml {did}: summary-Laden nur für K1 zulässig")
 
 
+def _overlay_status_angaben(text: str) -> list[str]:
+    """Alle Stellen, an denen eine Overlay-Datei ihren Status *erklaert*.
+
+    Der Status steht zweimal: als Zeile im Steckbrief und als Aussage im
+    Aktivierungsabschnitt. Geprueft wurde frueher nur die zweite Form - der Steckbrief
+    konnte `inaktiv` sagen, ohne dass es auffiel. Erfasst werden deshalb beide
+    Schreibweisen, aber nur am Zeilenanfang: Eine Erwaehnung im Fliesstext oder in einem
+    Ausnahmeregister ist keine Erklaerung.
+    """
+    werte = []
+    for m in re.finditer(r"^\|\s*Overlay-Status\s*\|\s*`?([^`|]+)", text, re.M):
+        werte.append(m.group(1).strip())
+    for m in re.finditer(r"^-?\s*Overlay-Status:\s*`?([^`\n]+)", text, re.M):
+        werte.append(m.group(1).strip())
+    return werte
+
+
 def check_strict_overlay(root: str) -> None:
     runtime = os.path.join(root, ".devin", "rules", "20-project-overlay.md")
     overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
@@ -741,8 +805,12 @@ def check_strict_overlay(root: str) -> None:
             continue
         text = read(path)
         rel = os.path.relpath(path, root)
-        if not re.search(r"Overlay-Status:\s*`?aktiv", text):
-            err(f"{rel}: Overlay-Status ist nicht 'aktiv' (strict-overlay)")
+        angaben = _overlay_status_angaben(text)
+        if not angaben:
+            err(f"{rel}: keine Angabe zum Overlay-Status gefunden (strict-overlay)")
+        for wert in angaben:
+            if not wert.lower().startswith("aktiv"):
+                err(f"{rel}: Overlay-Status ist nicht 'aktiv', sondern '{wert}' (strict-overlay)")
         if path == runtime and TBD_RE.search(text):
             err(f"{rel}: enthält offene <TBD>-Werte (strict-overlay)")
         if path == overlay:
@@ -782,6 +850,15 @@ def main() -> int:
     ap.add_argument("--mermaid", action="store_true")
     args = ap.parse_args()
     root = os.path.abspath(args.root)
+
+    if yaml is None:
+        # Ohne PyYAML pruefen drei Pruefungen nur noch, ob ein Frontmatter da ist - nicht,
+        # was darin steht. Ein Release-Nachweis, der das nicht sagt, behauptet mehr als er
+        # geprueft hat; deshalb steht es hier und nicht nur in der Roadmap.
+        warn("PyYAML nicht installiert – Prüfung 4 (Frontmatter der Regeltexte), Prüfung 5 "
+             "(Frontmatter der Skills) und Prüfung 8 (Overlay-Manifest) laufen eingeschränkt: "
+             "Das Vorhandensein wird geprüft, die Feldinhalte nicht. Für einen Release- oder "
+             "Übernahmenachweis (FW-KO-01, FW-CL-11, CL-10) muss PyYAML installiert sein")
 
     man = detect_client(root)
     check_required(root, man)
