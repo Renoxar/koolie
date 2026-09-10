@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.0 |
+| Version | 0.3.1 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -96,7 +96,8 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| A1 | Rein lesendes Reviewprofil | `.devin/agents/fw-reviewer.md` | `[TECHNISCH]` | `[DOK]`; Profilwirkung `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| A1 | Rein lesendes Reviewprofil | `.devin/agents/fw-reviewer.md` | `[TECHNISCH]` | `[DOK]`; Profilwirkung `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| A2 | Rein lesendes Analyseprofil für Modus M1 | Subagent-Profil `subagent_explore` | `[TECHNISCH]` | `[DOK]`; übernommen aus `framework/core/05-working-model.md` mit `CR-2026-025`, wo die clientgebundene Angabe im Kern stand |
 
 ### M – Modi und Sitzungsfreigaben
 
@@ -104,7 +105,9 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 |---|---|---|---|---|
 | M1 | Standardmodus fragt bei Schreiben und Befehlen zurück | Modus `Normal` | `[TECHNISCH]` | `[DOK]` |
 | M2 | Modus ohne Rückfragen ausschließbar | `Bypass` ist per D-05 untersagt; eine technische Sperre setzt Admin-Kontrollen der Planstufe voraus (K-05 offen) | `[TEXTUELL]` | `[EMPF]`; Verfügbarkeit der Sperre `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
-| M3 | Freigabe auf die Sitzung begrenzbar | Sitzungsfreigaben „einmalig" und „für die Sitzung" | `[TECHNISCH]` | `[DOK]` |
+| M3 | Freigabe auf die Sitzung begrenzbar | Sitzungsfreigaben „einmalig" und „für die Sitzung" | `[TECHNISCH]` | `[DOK]` |
+| M4 | Eigener Planungsmodus für Modus M2 | Plan-Modus mit persistenter Plan-Datei unter `~/.devin/plans/plan-<session>.md`; die Datei liegt außerhalb des Repositorys | `[TECHNISCH]` | `[DOK]`; übernommen mit `CR-2026-025` |
+| M5 | Eigener Nur-Lese-Modus für Modus M1 | Plan-Modus („read-only research“) | `[TECHNISCH]` | `[DOK]`; übernommen mit `CR-2026-025` |
 
 ### X – Externe Anbindung
 

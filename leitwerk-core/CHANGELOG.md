@@ -2,6 +2,29 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.23.0] - 2026-09-10
+
+### Behoben
+- **Der Kern beschrieb bei den Betriebsmodi, was ein bestimmter Client kann (`CR-2026-025`).** Der dritte und letzte Restpunkt aus `CR-2026-020` – und der schwierigste, weil er **keine Bezeichnungsfrage** war. Vier Modustabellen fuehrten eine Zeile „Umsetzung beim KI-Client"; genannt wurden ein Plan-Modus („read-only research"), das Subagent-Profil `subagent_explore` und ein Pfad unter `~/.devin/plans/plan-<session>.md`.
+
+  **M4 und M5 waren bereits neutral** – `permissions`, `PreToolUse` und die Schreibweise `Write(…)` sind Kernbegriffe des Frameworks, keine Produktnamen. **M1 und M2 nicht.** Der Unterschied zur Akteursbezeichnung: Dort stand ein falscher Name fuer dieselbe Sache; hier sagte der Kern eine Sache aus, die nur fuer einen Client gilt. Dass die Zeile nach `CR-2026-020` „Umsetzung beim KI-Client" hiess, machte es eher schlimmer: Der Titel behauptete Neutralitaet, die der Inhalt nicht einloeste.
+
+### Geaendert
+- **Die Zeile heisst „Durchsetzung"** und nennt, was durchzusetzen ist – Werkzeugbeschraenkung des Skills, `deny: edit, exec`, Schreibrecht allein auf die Plan-Datei. Wo ein Client einen eigenen Weg kennt, verweist sie auf die Faehigkeitsmatrix seines Packs.
+- **Die drei clientgebundenen Angaben stehen jetzt im Pack `devin-desktop`** als A2 (rein lesendes Analyseprofil), M4 (eigener Planungsmodus) und M5 (eigener Nur-Lese-Modus). Die Belegspalte weist aus, dass sie aus dem Kern uebernommen wurden – sie sind nicht neu erhoben. **AP2 fuer `devin-desktop` steht weiterhin aus.**
+- **Die `[DOK]`-Marken in den Kernzeilen entfallen.** Ein Belegstatus kennzeichnet eine Produktaussage; was das Framework anordnet, ist keine.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Hauptdokument baut fuer beide Client Packs; Testinstallation `claude-code` 0 Fehler.
+- **Keine Sonde nach D-23:** Der Antrag fuegt keine Pruefung hinzu und aendert keine. Was er aendert, ist Text – und dessen Wirkung ist, dass eine Aussage an der richtigen Stelle steht.
+
+### Migrationshinweise fuer Overlays
+Keine. Kein Mechanismus, keine Regel und keine Einstufung aendert sich.
+
+### Bekannte Einschraenkungen
+- **Wieder eine zu kleine Zaehlung.** Die Roadmap fuehrte „zwei Pfadnennungen in AP2 dieses Dokuments". Pruefung 12 meldet in einer `claude-code`-Installation **zehn**: zwei in der Roadmap, acht in den Quellen des Hauptdokuments. Die acht sind **nicht geprueft** worden – `assemble.py` loest Laufzeit-Platzhalter je Client auf, diese Stellen koennten also neutral sein. **Die dritte zu kleine Zaehlung in Folge:** `CR-2026-020` (76 statt 248), `CR-2026-024` (fuenf statt zehn), hier (zwei statt zehn). Jedes Mal von Hand erhoben, jedes Mal dort gezaehlt, wo man den Fehler vermutete. Die Roadmap-Notiz nennt jetzt die gepruefte Zahl mit Aufschluesselung.
+- **`~/.devin/plans/` fiel nicht unter Pruefung 12**, weil der Pfad im Home-Verzeichnis liegt und nicht unter den geprueften Wurzeln. Eine Erweiterung waere moeglich, ist aber nicht Gegenstand.
+
 ## [0.22.0] - 2026-09-10
 
 ### Behoben

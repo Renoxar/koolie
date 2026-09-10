@@ -9,12 +9,12 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.22.0 (2026-09-10)
+## Stand nach Release 0.23.0 (2026-09-10)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.22.0 gebracht haben
+### Was 0.5.0 bis 0.23.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -35,6 +35,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
+| Betriebsmodi werkzeugneutral | Der Kern beschrieb bei vier Betriebsmodi, was ein bestimmter Client kann; das gehört in dessen Fähigkeitsmatrix | `CR-2026-025`, `clients/devin-desktop/CLIENT_PACK.md` A2/M4/M5 |
 | Letzte Client-Bindungen | Ein Dateiname, ein Platzhalter und acht Markerstellen banden den Kern weiter an ein Produkt; Prüfung 14 erfasst jetzt auch Platzhalter | `CR-2026-024`, `tests/protocols/2026-09-10-CR-2026-024-clientbindungen.md` |
 | Shell-Lesesperre | Für Shell-Befehle bestand keine Lesesperre: Die Abbildung erreichte den Matcher, nicht die Prüfung im Hook – bei einem Pack, das keine Installation hat | `CR-2026-023`, D-30, `tests/protocols/2026-09-10-CR-2026-023-shell-lesesperre.md` |
 | Versionsfelder geprüft | Prüfung 13 sagte „jedes Versionsfeld“ zu und prüfte die Artefakte nie; gefunden, während 62 davon von Hand gehoben wurden | `CR-2026-022`, `tests/protocols/2026-09-10-CR-2026-022-artefaktversionen.md` |
@@ -47,6 +48,19 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.23.0 beschreibt der Kern bei den Betriebsmodi nur noch, **was durchzusetzen ist** – nicht,
+womit ein bestimmter Client es tut. Vier Modustabellen führten eine Zeile „Umsetzung beim
+KI-Client“, die den Plan-Modus eines Produkts, ein Subagentenprofil mit Namen und einen Pfad
+unter `~/.devin/plans/` nannte. Das war keine Bezeichnungsfrage: Der Kern sagte dort, **was ein
+bestimmter Client kann**.
+
+Die Zeile heißt jetzt „Durchsetzung“ und nennt die Kernbegriffe – Werkzeugbeschränkung des
+Skills, `deny: edit, exec`, Schreibrecht allein auf die Plan-Datei. Wo ein Client einen eigenen
+Weg kennt, verweist sie auf die Fähigkeitsmatrix seines Packs. Die drei clientgebundenen
+Angaben stehen jetzt dort, wo sie hingehören: als A2, M4 und M5 im Pack `devin-desktop`.
+
+Damit ist der dritte und letzte Restpunkt aus `CR-2026-020` abgearbeitet.
 
 Mit 0.22.0 sind die letzten Client-Bindungen des Kerns gelöst – und die Prüfung, die sie hätte
 finden müssen, sieht jetzt auch dorthin, wo sie standen.
@@ -422,11 +436,8 @@ Bedingung vertretbar; entschieden ist keine von beiden.
 **Erledigt – die Akteursbezeichnung ist aus dem Kern gelöst (0.18.0).** Nicht 76 Nennungen in
 elf Modulen, wie hier bis 0.17.0 stand, sondern **248 in 78 Dateien**: Die Zahl war allein aus
 `framework/core/` erhoben, während die Kerndefinition des Glossars zehn Verzeichnisse umfasst.
-Gelöst mit `CR-2026-020` und D-28, durchgesetzt von Prüfung 14. Die drei damals ausgewiesenen
-Restpunkte sind mit 0.22.0 abgearbeitet, bis auf einen: Die clientspezifischen Inhalte der Zeile
-„Umsetzung beim KI-Client" in `05-working-model.md` (`~/.devin/plans/`, `subagent_explore`) bleiben
-client-gebunden – sie beschreiben, was ein bestimmter Client kann, und gehören damit in dessen
-Fähigkeitsmatrix. Das ist ein eigener Vorgang.
+Gelöst mit `CR-2026-020` und D-28, durchgesetzt von Prüfung 14. **Alle drei damals ausgewiesenen
+Restpunkte sind abgearbeitet** – zwei mit 0.22.0, der dritte mit 0.23.0 (`CR-2026-025`).
 
 **Erledigt – Prüfung 13 prüft die Versionsfelder der Kernartefakte (0.20.0).**
 `CR-2026-022`. Drei Sonden, zwei Grenzproben, zwei Regressionsproben. Offen bleibt die Frage,
@@ -441,8 +452,13 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
 
 ### Bewusst offen gelassen
 
-- Zwei Pfadnennungen in AP2 dieses Dokuments: Das Arbeitspaket validiert die Mechanismen *eines*
-  Clients und nennt sie deshalb konkret.
+- **Zehn Pfadnennungen der Laufzeitschicht eines Clients im Kern**, gemeldet als Warnung von
+  Prüfung 12. Zwei stehen in AP2 dieses Dokuments – das Arbeitspaket validiert die Mechanismen
+  *eines* Clients und nennt sie deshalb konkret. Die übrigen acht stehen in den Quellen des
+  Hauptdokuments (`build/doc/15-referenzstruktur.md`, `build/doc/31-anhaenge.md`) und sind
+  **nicht** geprüft worden: `assemble.py` löst Laufzeit-Platzhalter je Client auf, diese Stellen
+  könnten also neutral sein. Bis 0.23.0 stand hier „zwei“ – dieselbe zu kleine Zählung wie bei
+  `CR-2026-020` (76 statt 248) und `CR-2026-024` (fünf statt zehn). Ein eigener Vorgang.
 - `PyYAML` ist für den Betrieb nicht vorausgesetzt, für einen Nachweis schon: Ohne das Modul
   prüft der Validator Frontmatter und Overlay-Manifest eingeschränkt und sagt das seit 0.11.0
   als Warnung. Der Testkatalog führt es als Voraussetzung der Skripttests.
