@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.4.0 |
+| Version | 0.5.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -186,7 +186,7 @@ angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet.
 
 Die Semantikabbildung erzeugt je Pfad zusaetzlich eine `Write(...)`-Regel. In einer frischen
 Installation sind das **16 wirkungslose Regeln**, dazu ein `Glob(**)` in `allow` - jede mit
-einer Startwarnung. Sechs davon stehen in `_core_rules_integrity.deny_must_contain` und werden
+einer Startwarnung. Vier davon stehen in `_core_rules_integrity.deny_must_contain` und werden
 vom Validator eingefordert.
 
 **Der Schutz haelt trotzdem:** Die `Edit(...)`-Haelfte greift, B4 und B5 bleiben `[TECHNISCH]`.
@@ -205,3 +205,4 @@ Aenderungsantrag.
 | 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-10 | Overlay-Laufzeitregel und die beiden Vorlagen in den Kern; Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |
 | 0.4.0 | 2026-09-10 | **Erste Validierung gegen eine reale Installation und die Herstellerdokumentation (AP2, Clientversion 2.1.267).** Alle zehn Pruefmarker abgearbeitet: sechs belegt, zwei als ueberholt gekennzeichnet (R2/R3, S4), einer als Abwesenheitsbeleg, einer um die dokumentierte Grenze der Praefixmuster ergaenzt. Abschnitt 7 nennt die 17 wirkungslosen Regeln der erzeugten Berechtigungsdatei. Protokoll: `tests/protocols/2026-09-10-AP2-claude-code.md` | `<FRAMEWORK_OWNER>` |
+| 0.5.0 | 2026-09-10 | **Drei Befunde aus AP2 behoben (`CR-2026-016`, D-26).** `triggers` wird nicht mehr ersatzlos verworfen, sondern auf `disable-model-invocation` abgebildet - die Zusage S4 gilt damit auch in der Installation. Pfadregeln werden nur noch fuer `Read` und `Edit` erzeugt: 18 wirkungslose Regeln entfallen, die Berechtigungsdatei schrumpft von 83 auf 65 Regeln. `install.py --client claude-code` gefolgt von `validate-framework.py` laeuft erstmals fehlerfrei | `<FRAMEWORK_OWNER>` |

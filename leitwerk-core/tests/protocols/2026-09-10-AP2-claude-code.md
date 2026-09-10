@@ -82,11 +82,11 @@ eine Edit- und eine Write-Regel, weil Ändern und Anlegen getrennte Werkzeuge si
 **17 Regeln ohne Wirkung, jede davon mit einer Startwarnung.** Der Schutz selbst hält, weil die
 `Edit(...)`-Hälfte greift; die beschriebene Verschärfung ist aber keine.
 
-Verschärfend: Sechs der wirkungslosen Regeln stehen in
+Verschärfend: **Vier** der wirkungslosen Regeln stehen in
 `_core_rules_integrity.deny_must_contain` – `Write(./CLAUDE.md)`, `Write(.claude/**)`,
-`Write(leitwerk-core/**)`, `Write(project-overlay/**)` und zwei weitere. Der Validator
-**erzwingt** damit die Anwesenheit von Regeln, die der Client ignoriert: Ein Projekt, das sie
-folgenlos entfernte, bekäme sechs Fehler gemeldet.
+`Write(leitwerk-core/**)` und `Write(project-overlay/**)`. Der Validator **erzwingt** damit die
+Anwesenheit von Regeln, die der Client ignoriert: Ein Projekt, das sie folgenlos entfernte,
+bekäme vier Fehler gemeldet.
 
 Nicht betroffen ist eine Regel ohne Pfad: „Claude Code doesn't warn about a tool-name rule with
 no path, such as a deny rule for `Write`; it matches that rule at the tool level everywhere."
@@ -214,7 +214,7 @@ Zutun, sobald eine Sitzung in der Installation startet, und benennen jede wirkun
 
 ## Bewertung
 
-Zehn Marker geprüft, **acht Befunde**, davon zwei schwer. Zwei Einstufungen `[NICHT ABBILDBAR]`
+Zehn Marker geprüft, **acht Befunde** aus dem Abgleich, davon zwei schwer; ein neunter (AP2-CC-09) kam bei der Behebung dazu, siehe Nachtrag. Zwei Einstufungen `[NICHT ABBILDBAR]`
 (R2, R3) und zwei weitere (R4, S4) sind überholt; der Client kann mehr, als das Pack ihm
 zutraut. Eine Einstufung `[TEXTUELL]` (M2) und eine (B9) sind auf `[TECHNISCH]` zu heben.
 
@@ -230,9 +230,64 @@ eine Verschärfung beschrieben, die keine ist – 17 Regeln ohne Wirkung, sechs 
 Validator erzwungen.
 
 **Ergebnis: AP2 für `claude-code` ist begonnen und nicht abgeschlossen.** Die Marker sind
-belegt oder korrigiert; die Wirkungsnachweise stehen aus. Die Behebung von AP2-CC-01 und
-AP2-CC-02 ändert die Semantikabbildung und damit D-18; sie gehört in einen eigenen
-Änderungsantrag, nicht in dieses Protokoll.
+belegt oder korrigiert; die Wirkungsnachweise stehen aus. AP2-CC-01, AP2-CC-02 und der bei der
+Behebung gefundene AP2-CC-09 sind mit `CR-2026-016` (Release 0.14.0) behoben – siehe Nachtrag.
+
+## Nachtrag: Behebung mit Release 0.14.0 (`CR-2026-016`, D-26)
+
+AP2-CC-01 und AP2-CC-02 sind behoben. Bei der Behebung kam ein dritter schwerer Befund dazu.
+
+### AP2-CC-09 – Die in Abschnitt 7 vorgeschriebene Prüfung ist nie gelaufen
+
+**Schwere: hoch.** Gefunden beim Versuch, die Behebung zu prüfen.
+
+`CLIENT_PACK.md` Abschnitt 7 nennt zwei Befehle: `install.py --client claude-code`, dann
+`validate-framework.py`. Nacheinander ausgeführt – gegen den unveränderten Stand 0.13.0 – meldet
+der Validator **zwölf Fehler „triggers fehlt"**. Er verlangt das Feld unbedingt, während die
+Abbildung es für diesen Client verwirft. Die beiden Befehle widersprachen einander seit 0.5.0.
+
+Dieselbe Prüfung trug einen zweiten Defekt: `allowed-tools` steht in der installierten Fassung
+als **kommagetrennte Zeichenkette**. Die Prüfung `any(t in ("edit","exec","write") for t in
+tools)` lief damit über die *Zeichen* dieser Zeichenkette und meldete jeden installierten Skill
+als nicht schreibend.
+
+**Damit ist erklärt, warum AP2-CC-01 acht Releases unbemerkt blieb:** Die Prüfung, die es hätte
+finden müssen, war gegen diese Installation nie gelaufen – und hätte es auch nicht gefunden.
+
+### Was 0.14.0 ändert
+
+| Befund | Behebung | Wirkung |
+|---|---|---|
+| AP2-CC-01 | `model_invocation_field` im Manifest; `triggers` ohne `model` wird zu `disable-model-invocation: true` | 9 von 12 Skills tragen die Sperre; die drei ohne sind die rein lesenden mit `model`-Trigger |
+| AP2-CC-02 | `permission_tools.write` → `["Edit"]`, `search` → `[]`; neues `permission_path_tools` | Berechtigungsdatei 83 → 65 Regeln, `deny_must_contain` 17 → 13 |
+| AP2-CC-09 | Validator liest beide Formen von `allowed-tools`, führt Werkzeugnamen über `tool_names` zurück und prüft bei abgebildetem `triggers` das Zielfeld | Beide Befehle laufen nacheinander mit **0 Fehlern** – erstmals seit 0.5.0 |
+
+Zusätzlich eine neue Prüfung: Eine Pfadregel für ein Werkzeug, für das der Client keine
+Pfadregeln auswertet, ist ein Fehler. Ohne die Manifestangabe `permission_path_tools` unterbleibt
+sie – bei `devin-desktop` ist sie unbelegt und wird deshalb nicht behauptet.
+
+### Wirksamkeitsnachweis (D-23)
+
+Vier Sonden in einer frischen `claude-code`-Installation. Ausgangs- und Schlusslauf je 0 Fehler.
+
+| Sonde | Eingebrachter Defekt | Ergebnis |
+|---|---|---|
+| S1 | `disable-model-invocation` aus `fw-change-small` entfernt | **gemeldet:** „schreibender/ausführender Skill ohne 'disable-model-invocation: true'" |
+| S2 | dasselbe Feld auf `false` gesetzt | **gemeldet:** dieselbe Meldung |
+| S3 | `Write(leitwerk-core/**)` von Hand in `deny` eingefügt | **gemeldet:** „nennt ein Werkzeug, für das dieser Client keine Pfadregeln auswertet" |
+| S4 | `NotebookEdit(project-overlay/**)` eingefügt | **gemeldet:** dieselbe Meldung |
+
+### Was der Nachtrag nicht belegt
+
+**Dass die Sperre gesetzt wird, ist nicht dasselbe wie, dass sie greift.** Der Beleg dafür steht
+weiter unter „Offen" und braucht eine Sitzung in der Installation. Bis dahin ist S4 belegt als
+`[DOK]` – dokumentiert und korrekt gesetzt –, nicht als beobachtete Durchsetzung.
+
+Ebenfalls offen bleibt eine Unsicherheit aus AP2-CC-02: Ob `Grep(pfad)` tatsächlich nicht
+ausgewertet wird, stützt sich auf die Formulierung „checks file permissions against `Edit(path)`
+and `Read(path)` rules **only**"; in der Warnliste des Herstellers ist `Grep` nicht genannt. Die
+Regel wurde entfernt, weil `Read(**)` den Lesezugriff ohnehin abdeckt. Die Startwarnungen einer
+realen Sitzung entscheiden es endgültig.
 
 ## Bekannte Grenzen
 
