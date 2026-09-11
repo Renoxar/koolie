@@ -125,10 +125,10 @@ erklären muss.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E5 einzeln entscheiden>` |
+| Auflagen | E1 bis E6 wie vorgelegt, mit der Änderung aus dem Nachtrag: Die Importsteuerung wird gesetzt (`agents_standard` bleibt **true** – das ist die eigene Wurzel-Anweisungsdatei), ihre Einstufung ist jedoch **`[TEXTUELL]`**, weil die Benutzerkonfiguration Vorrang hat (K-27); bei `claude-code` **keine** Vorgabe von `claudeMdExcludes`; die Auskunft umfasst auch **Konfigurationsquellen**; Zeile R5 trägt den Vorbehalt aus ERH-02; Prüfung 22 kommt hinzu; **E6: Zeile B9 im Pack `devin-desktop` wird auf den gemessenen Stand gebracht** (ERH-11 widerlegt die Zusage für diesen Client). Ziel-Release 0.26.0 |
 
 ## 7. Nachtrag 2026-09-11 – K-27 ist erhoben, und die Antwort ist ungünstig
 
