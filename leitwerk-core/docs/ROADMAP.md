@@ -3,18 +3,18 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.23.0 (2026-09-10)
+## Stand nach Release 0.24.0 (2026-09-11)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.23.0 gebracht haben
+### Was 0.5.0 bis 0.24.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -36,6 +36,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
 | Betriebsmodi werkzeugneutral | Der Kern beschrieb bei vier Betriebsmodi, was ein bestimmter Client kann; das gehört in dessen Fähigkeitsmatrix | `CR-2026-025`, `clients/devin-desktop/CLIENT_PACK.md` A2/M4/M5 |
+| Schutz-Hook fail-closed | Der Hook liess eine Eingabe, die er nicht lesen kann, durch – begruendet mit einem Schema, das fuer `claude-code` seit fuenf Releases bestaetigt ist. Der Vorbehalt steht jetzt im Pack, nicht im Skript | `CR-2026-026`, D-31, `tests/protocols/2026-09-11-CR-2026-026-fail-closed.md` |
 | Letzte Client-Bindungen | Ein Dateiname, ein Platzhalter und acht Markerstellen banden den Kern weiter an ein Produkt; Prüfung 14 erfasst jetzt auch Platzhalter | `CR-2026-024`, `tests/protocols/2026-09-10-CR-2026-024-clientbindungen.md` |
 | Shell-Lesesperre | Für Shell-Befehle bestand keine Lesesperre: Die Abbildung erreichte den Matcher, nicht die Prüfung im Hook – bei einem Pack, das keine Installation hat | `CR-2026-023`, D-30, `tests/protocols/2026-09-10-CR-2026-023-shell-lesesperre.md` |
 | Versionsfelder geprüft | Prüfung 13 sagte „jedes Versionsfeld“ zu und prüfte die Artefakte nie; gefunden, während 62 davon von Hand gehoben wurden | `CR-2026-022`, `tests/protocols/2026-09-10-CR-2026-022-artefaktversionen.md` |
@@ -48,6 +49,20 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.24.0 laeuft der Schutz-Hook fail-closed – dort, wo das Eingabeschema belegt ist.
+
+Sein Kopfkommentar nannte seit 0.1.0 eine Bedingung: fail-closed, sobald das Schema gegen eine
+Zielinstallation bestaetigt ist. Fuer `claude-code` ist sie seit 0.19.0 und WN-5 erfuellt, fuer
+`devin-desktop` nicht. **Ein gemeinsamer Standard waere in beide Richtungen falsch gewesen** –
+fail-open verschenkt eine belegte Sperre, fail-closed behauptet eine ungepruefte und blockierte
+bei abweichendem Schema jeden Werkzeugaufruf. Der Vorbehalt ist deshalb nicht aufgehoben, sondern
+in das Pack verlagert, dessen Client er beschreibt.
+
+**Der Schalter steht im Kommando, nicht in `env`.** Das Pack empfahl bis dahin die
+Umgebungsvariable – das haette die Sperre an eine zweite Clientzusage gehaengt, die fuer kein
+Pack belegt und vom Validator nicht pruefbar ist. Dieselbe Art unbelegter Annahme trug
+`AP2-CC-13` acht Releases lang.
 
 Mit 0.23.0 beschreibt der Kern bei den Betriebsmodi nur noch, **was durchzusetzen ist** – nicht,
 womit ein bestimmter Client es tut. Vier Modustabellen führten eine Zeile „Umsetzung beim
@@ -347,11 +362,18 @@ nicht bestätigt ist. Eine Verschärfung, kein Bruch von B9 – aber die Berecht
 nach der Installation nicht so, wie sie geschrieben ist, und der Weg zur Behebung liegt
 außerhalb des Repositorys.
 
-**P2 – AP2-CC-15: Die Lesesperre gilt für `Read`, nicht für Shell-Lesebefehle.** Die
-`deny`-Liste führt 21 Bash-Regeln und keine für Lesebefehle; `cat .env` scheiterte im Test nur
-an der grundsätzlichen Nachfrage für Bash-Befehle. Ein Projekt, das eine breite Leseerlaubnis in
-`allow` aufnimmt, öffnet damit die Secret-Sperre, ohne eine `deny`-Regel zu verletzen –
-aufgefangen würde das vom Schutz-Hook, der nach AP2-CC-13 unter Windows nicht läuft.
+**Erledigt – AP2-CC-15: Die Lesesperre gilt auch für Shell-Lesebefehle (0.21.0).**
+`CR-2026-023`, D-30. Behoben zusammen mit dem schwereren `AP2-CC-16`; das AP2-Protokoll führt
+den Befund seit 0.21.0 als behoben.
+
+**Bis 0.23.0 stand er hier weiter als offen** – mit einer Begründung, die auf den Schutz-Hook
+verwies, „der nach AP2-CC-13 unter Windows nicht läuft", während zehn Zeilen höher AP2-CC-13
+als mit 0.19.0 erledigt geführt wurde. Zwei Releases lang widersprach der Steuerungsabschnitt
+dem Protokoll, auf das er sich stützt, und zwar in der Datei, aus der man liest, womit
+weiterzuarbeiten ist. **Derselbe Befundtyp, den dieses Framework verfolgt** – eine Aussage, die
+ihren Gegenstand überlebt hat –, diesmal in der Roadmap selbst. Gefunden beim Abgleich der
+offenen Punkte mit den Protokollen, nicht von einer Prüfung: Ob ein Befund, den ein Protokoll
+als behoben führt, hier noch als offen steht, prüft nichts.
 
 **Offen als Gegenzeichnung:** Nachtrag 2 des AP2-Protokolls ist **vorgelegt, nicht abgezeichnet**.
 Die Prüfmethode `review` verlangt eine zweite Rolle; drei Auflösungen mit Ermessensspielraum (E1
@@ -364,8 +386,14 @@ Desktop; nichts aus dem `claude-code`-Protokoll überträgt sich darauf.
 welche Version geprüft wurde (2.1.267); *freigegeben für* eine Version ist das Pack damit
 nicht – das ist eine Festlegung des `<FRAMEWORK_OWNER>`.
 
-Danach den Schutz-Hook auf fail-closed umstellen – bei `claude-code` ist das Blockierverhalten
-bereits belegt.
+**Erledigt – der Schutz-Hook läuft fail-closed, wo das Schema belegt ist (0.24.0).**
+`CR-2026-026`, D-31. Nicht für beide Packs: Bei `claude-code` ist das Eingabeschema gegen eine
+Installation bestätigt, bei `devin-desktop` steht V3 offen – ein gemeinsamer Standard hätte
+entweder eine belegte Sperre verschenkt oder eine ungeprüfte behauptet. Der Schalter steht im
+Aufrufkommando statt in `env`: Das bis dahin im Pack empfohlene `FW_HOOK_FAIL_CLOSED` hätte die
+Sperre an eine zweite, für kein Pack belegte Clientzusage gehängt. Prüfung 17 hält beide Packs
+an ihrer Zusage fest. **Offen bleibt `devin-desktop`** – mit dem Abschluss von AP2 für dieses
+Pack ist `hook_fail_closed` dort auf `true` zu setzen.
 
 **P2 – Testkatalog ausführen.** 30 von 37 Testfällen stehen auf `offen`, keiner auf
 `fehlgeschlagen`. Kriterium 2 von D-11. Die skriptbaren Testfälle sind abgearbeitet und alle

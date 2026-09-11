@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.1 |
+| Version | 0.3.2 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -89,7 +89,7 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
 | H1 | Prüfung vor Werkzeugausführung | `PreToolUse` mit Matcher auf schreibende und ausführende Werkzeuge | `[TECHNISCH]` | `[DOK]` Mechanismus |
-| H2 | Prüfung kann **blockieren** | `hook-check-secrets.py` läuft derzeit fail-open; blockierend erst mit gesetzter Umgebungsvariable `FW_HOOK_FAIL_CLOSED` | `[TEXTUELL]` | Eingabeschema und Blockierverhalten `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` (V3) |
+| H2 | Prüfung kann **blockieren** | `hook-check-secrets.py` läuft bei diesem Pack fail-open (`hook_fail_closed: false`, Eingabeschema unbestätigt – V3): Eine nicht lesbare Eingabe wird durchgelassen. Erprobbar mit `FW_HOOK_FAIL_CLOSED=1`, verbindlich erst mit dem Abschluss von AP2 für dieses Pack (D-31) | `[TEXTUELL]` | Eingabeschema und Blockierverhalten `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` (V3) |
 | H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py` | `[TECHNISCH]` | `[DOK]` Mechanismus |
 
 ### A – Agentenprofile
@@ -134,7 +134,9 @@ Ergibt die Prüfung, dass eine der sechs Zusagen nicht technisch durchgesetzt wi
 
 ## 5. Bekannte Abweichungen im Verhalten
 
-- **Der Schutz-Hook blockiert nicht.** `hook-check-secrets.py` läuft bis zum Abschluss von AP2 fail-open: Bei einem Fehler im Hook läuft die Werkzeugausführung weiter. Die Umstellung auf fail-closed setzt die Klärung des Eingabeschemas voraus. Bis dahin ist H2 eine Absichtserklärung, keine Schranke – die technische Durchsetzung von B3 ruht damit allein auf den Verweigerungsregeln der Berechtigungsdatei.
+- **Der Schutz-Hook blockiert nicht.** `hook-check-secrets.py` läuft bei diesem Pack fail-open: Eine Werkzeugeingabe, die der Hook nicht als JSON lesen kann, läuft weiter. Die Umstellung auf fail-closed setzt die Klärung des Eingabeschemas voraus (V3), und AP2 steht für dieses Pack aus. Bis dahin ist H2 eine Absichtserklärung, keine Schranke – die technische Durchsetzung von B3 ruht damit allein auf den Verweigerungsregeln der Berechtigungsdatei.
+
+  **Seit 0.24.0 ist das eine ausgewiesene Abweichung, kein gemeinsamer Stand.** Das Manifest führt `hook_fail_closed: false`, das Pack `claude-code` führt `true` – dort ist das Schema gegen eine Installation bestätigt. Prüfung 17 hält beide Zusagen an ihrer Wirkung fest. Mit dem Abschluss von AP2 für dieses Pack ist der Wert auf `true` zu setzen; fail-closed bei unbekanntem Schema wäre keine Härtung, sondern eine Sitzung, die bei jedem Werkzeugaufruf blockiert (D-31).
 - **Zwei Skill-Ablagen dokumentiert.** `.devin/skills/` ist Primärpfad, `.agents/skills/` dokumentierte Alternative; welche der Client tatsächlich findet, ist unbestätigt (K-12).
 - **Keine Workflows, keine Memories.** Beides wird vom Client nicht unterstützt `[DOK]`; Skills und versionierte Regeln übernehmen diese Funktion. Für ein Client Pack mit Memory-Mechanismus wäre zu klären, wie das Framework verhindert, dass Wissen an den versionierten Regeln vorbei entsteht.
 - **Sandbox nicht auf allen Betriebssystemen.** Laut Dokumentation unter Windows nicht verfügbar (K-11); der Modus `Autonomous` ist damit dort nicht absicherbar.
@@ -155,3 +157,4 @@ Bis `install.py` den Schalter `--client` kennt, ist `devin-desktop` der eingebau
 | 0.1.0 | 2026-09-10 | angelegt aus dem Ist-Zustand der Laufzeitschicht (`CR-2026-002`) | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-10 | Overlay-Laufzeitregel und die beiden Vorlagen in den Kern; Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |
+| 0.3.2 | 2026-09-11 | **Fail-open ausgewiesen statt vorausgesetzt (`CR-2026-026`, D-31).** Das Manifest führt `hook_fail_closed: false`; der Schutz-Hook dieses Packs lässt eine nicht lesbare Eingabe weiter durch, weil das Eingabeschema unbestätigt ist (V3). Prüfung 17 hält die Zusage an ihrer Wirkung fest. Das Pack `claude-code` führt seit diesem Release `true` – die Abweichung steht jetzt in der Matrix, statt aus dem Fehlen einer Angabe zu folgen | `<FRAMEWORK_OWNER>` |
