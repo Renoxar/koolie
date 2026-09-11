@@ -179,8 +179,23 @@ Regeltexte** zu führen, in der nichts als Anweisung wirken kann. Dieselbe Metho
 | AP2-DD-03 | `CR-2026-028` – Modus-Zuordnung und Mechanismus M2 |
 | AP2-DD-10 | `CR-2026-029` – Ablageort der Hook-Konfiguration |
 | AP2-DD-11 | `CR-2026-030` – lesende Werkzeuge erreichen den Schutz-Hook nicht (**Kern**) |
+| AP2-DD-12 | `CR-2026-033` – die Durchsetzung der Berechtigungszeilen hängt am Betriebsmodus |
+| AP2-DD-13 | `CR-2026-034` – Nachweise aus dem nicht-interaktiven Betrieb |
+| AP2-DD-14 | `CR-2026-034` – dieselbe Frage, andere Ursache (Vertrauensschranke) |
+| AP2-DD-15 | `CR-2026-031` – Regelquellen außerhalb des Projekts haben keine Ebene |
+| AP2-DD-16 | `CR-2026-032` – fremde Skill-Ablage auf Ebene 7 |
+| AP2-DD-17 | `CR-2026-035` – die README der Regelablage steht im Regelregister |
 
-AP2-DD-12 bis AP2-DD-17 sind erfasst und noch keinem Antrag zugeordnet.
+Damit trägt jeder Befund, der eine Änderung am Framework verlangt, einen Antrag. Ohne Antrag
+bleiben **AP2-DD-04 bis AP2-DD-09** – Belege und Belegvorbehalte, keine Mängel – sowie
+**AP2-DD-01**: Recherchestand und Steckbriefzeilen hängen an der verbindlichen Zielversion je
+Client, und die ist eine Festlegung des `<FRAMEWORK_OWNER>`, kein Antragsgegenstand (Roadmap,
+„Offen übergreifend“).
+
+Zwei weitere Anträge entstanden bei dieser Zuordnung und tragen **keine AP2-Kennung**, weil sie
+nicht aus einem AP2-Lauf stammen, sondern aus der Antragsarbeit: `CR-2026-036` (drei
+Dokumentstellen nennen weiter den Ort der Hook-Konfiguration, den D-32 abgelöst hat) und
+`CR-2026-037` (das meldende Hook-Skript des Kerns nennt die Laufzeitschicht eines Clients).
 
 ## 6. Gegenproben – durchgeführt
 
