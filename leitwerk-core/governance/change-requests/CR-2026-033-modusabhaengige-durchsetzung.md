@@ -124,7 +124,7 @@ stattfinden dürfte – als Testnachweis zulässig, als Betriebszustand nicht.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E5 einzeln entscheiden>` |
+| Auflagen | E1 bis E5 wie vorgelegt: Die Einstufungen bleiben `[TECHNISCH]`, die Bedingung kommt als **Vorbemerkung** in den B-Block; keine eigene Matrixspalte; die Klassendefinition in `clients/README.md` wird präzisiert; T7 nennt künftig die technische Gegenmaßnahme; keine neue Prüfung; der Bypass-Lauf für `claude-code` wird als Folgearbeit in AP2 geführt und im Protokoll als Testnachweis ausgewiesen. Ziel-Release 0.26.0 |

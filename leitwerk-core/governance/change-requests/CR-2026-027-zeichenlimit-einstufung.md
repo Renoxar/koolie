@@ -98,7 +98,7 @@ Antrags.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E3 einzeln entscheiden>` |
+| Auflagen | E1 bis E3 wie vorgelegt: Einstufung R4 auf `[TEXTUELL]`; V1 wird mit dem Ergebnis „nicht dokumentiert“ samt Datum und Clientversion geschlossen; die Zahlen 12.000/6.000 bleiben als **ausgewiesene Vorgabe des Frameworks** erhalten. Ziel-Release 0.26.0 |
