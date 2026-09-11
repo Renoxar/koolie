@@ -117,7 +117,9 @@ erklären muss.
 | E2 | `claudeMdExcludes` als Vorgabe der Installation bei `claude-code`? | **Nein.** Eine `CLAUDE.md` im Elternverzeichnis ist im Mehrprojekt-Verzeichnis oft **gewollt**; ein pauschaler Ausschluss bräche legitime Anordnungen | Bei diesem Pack bleibt es bei Auskunft und Empfehlung – die Lage ist damit zwischen den Packs verschieden, und die Matrix muss das zeigen |
 | E3 | Auskunft auf Konfigurationsquellen erweitern? | **Ja.** Berechtigungen und Hooks außerhalb des Projekts betreffen genau die Linien, auf denen B1 bis B6 stehen | Der Abschnitt wird länger und verlangt bei jeder Erhebung mehr Arbeit |
 | E4 | Prüfung 22 aufnehmen? | **Ja.** Ohne sie ist die Importsteuerung eine Zeile, die eine Installation still verlieren kann – der Befundtyp dieses Projekts | Eine Prüfung mehr, gebunden an ein clientspezifisches Feld; ein Pack ohne den Mechanismus muss ausdrücklich ausgenommen sein |
-| E5 | K-27 (Vorrang nutzerglobal gegen projektseitig) vor der Umsetzung erheben? | **Ja.** Die Antwort entscheidet, ob E1 eine Schranke oder eine Empfehlung ist. Der Versuch ist billig: eine Einstellung, zwei Läufe | Eine weitere Messung vor der Umsetzung; dafür steht danach fest, was die Zeile in der Matrix wert ist |
+| E5 | K-27 (Vorrang nutzerglobal gegen projektseitig) vor der Umsetzung erheben? | **Erledigt am 2026-09-11.** Ergebnis im Nachtrag unten: Die Benutzerkonfiguration hat Vorrang | Die Antwort ist ungünstig – sie kostet die Einstufung, nicht die Maßnahme |
+
+> **Vor der Entscheidung Abschnitt 7 lesen.** K-27 ist nach dem Verfassen dieses Antrags erhoben worden; das Ergebnis ändert die Einstufung der Maßnahme und bringt eine sechste Frage mit.
 
 ## 6. Entscheidung
 
@@ -127,3 +129,30 @@ erklären muss.
 | Datum | `<TBD>` |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
 | Auflagen | `<TBD: E1 bis E5 einzeln entscheiden>` |
+
+## 7. Nachtrag 2026-09-11 – K-27 ist erhoben, und die Antwort ist ungünstig
+
+`tests/protocols/2026-09-11-erhebungen-K21-K26.md`, Abschnitt 7.
+
+**Die nutzerglobale Einstellung hat Vorrang vor der projektseitigen** – gemessen in beiden
+Richtungen. Was Abschnitt 4 als Risiko benannt hat, ist eingetreten: „Fiele die Antwort ungünstig
+aus, wäre die Schranke wieder eine Auskunft."
+
+**Was das für diesen Antrag ändert – und was nicht:**
+
+- **Die Maßnahme bleibt richtig.** Ein Standard, der ohne Zutun gilt, ist besser als keiner. Wo
+  die Benutzerkonfiguration schweigt – der Normalfall – wirkt die projektseitige Einstellung;
+  das ist gemessen.
+- **Die Einstufung ändert sich.** Die Zeile ist `[TEXTUELL]`, nicht `[TECHNISCH]`: Das Framework
+  setzt einen Standard, den es nicht durchsetzt. Alles andere wäre die Art Zusage, gegen die
+  dieses Projekt seine Sonden gebaut hat.
+- **B9 ist bei diesem Pack widerlegt, nicht nur unbelegt** (ERH-11). Der VERIFY-Marker der Zeile
+  („ob der Client eine Lockerung technisch verhindert") ist aufgelöst: Er verhindert sie nicht.
+  Das gehört in dieselbe Umsetzung – als Korrektur der Zeile B9 und als bekannte Abweichung in
+  Abschnitt 5 des Packs.
+
+**Neue Frage zur Entscheidung:**
+
+| Nr. | Frage | Auflösung | Preis |
+|---|---|---|---|
+| E6 | B9 im Pack `devin-desktop` auf den gemessenen Stand bringen? | **Ja.** Die Zeile trägt heute einen offenen Marker, wo eine Messung vorliegt – und die Messung widerlegt die Zusage für diesen Client | Das Pack weist eine Zusage weniger aus. Dafür steht in der Matrix, was gilt, statt einer Frage, die beantwortet ist |
