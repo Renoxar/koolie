@@ -109,7 +109,7 @@ verbindlich; billiger wird die Beweisführung dadurch nicht.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E5 einzeln entscheiden>` |
+| Auflagen | E1 bis E5 wie vorgelegt: **ein** Antrag für beide Befunde; die Regel steht als Nummer 7 im Testkatalog, D-23 wird nur fortgeschrieben; Nachweise mit abgeschalteter Vertrauensprüfung bleiben zulässig, mit Ausweis im Protokoll; die **einmalige Durchsicht** der bestehenden Protokolle auf ungedeckte Abwesenheitsnachweise wird als Review durchgeführt; die Meldung an den Hersteller bleibt zurückgestellt. Ziel-Release 0.26.0 |

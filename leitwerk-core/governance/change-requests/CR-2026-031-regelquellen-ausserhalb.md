@@ -175,7 +175,7 @@ Releases lang getragen hat. Erst wenn H3 belegt ist, lohnt die Frage erneut.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E5 einzeln entscheiden>` |
+| Auflagen | E1 bis E5 wie vorgelegt: Rang **wie Ebene 8** (einschränken ja, erweitern nein); keine Unwirksamkeitserklärung; **eine** Matrixzeile (R5), die Unterbindbarkeit bleibt als K-21 offen; Prüfung 19 mit der im Antrag benannten Grenze im Kopfkommentar; **keine** SessionStart-Meldung, solange H3 unbeobachtet ist. Ziel-Release 0.26.0 |

@@ -141,7 +141,9 @@ ist der Grund, den Punkt zu erheben und nicht zu schätzen.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **zurückgestellt** – die Auflage ist am 2026-09-11 erfüllt worden, der Antrag ist erneut vorzulegen |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E5 einzeln entscheiden>` |
+| Auflagen | Zuerst ist **K-24** zu erheben: ob der Aufruf eines Skills Werkzeugaufrufe erzeugt, die Berechtigungsregeln und Schutz-Hook sehen. Fällt die Messung negativ aus, betrifft der Befund den Kern und nicht nur die Auskunft – der Antrag ist dann neu zuzuschneiden. Bis dahin bleiben E1 bis E5 unentschieden. **Unberührt davon** führt der Auskunftsabschnitt aus `CR-2026-031` die Skill-Ablage des anderen Clients als bekannte Quelle: Die Auskunftspflicht ist dort nicht auf Regeltexte beschränkt |
+
+**Nachtrag 2026-09-11 – K-24 ist erhoben** (`tests/protocols/2026-09-11-erhebungen-K21-K26.md`): Eine Sonde in der fremden Skill-Ablage erzeugte zwei `read`-Werkzeugaufrufe; beide erreichten den Schutz-Hook, der Zugriff auf die Secret-Datei wurde blockiert – auch im Modus ohne Rückfragen und mit Positivkontrolle im selben Lauf. Der Skill-Aufruf selbst erzeugt **keinen** eigenen Werkzeugaufruf. **Die Schwere bleibt mittel, der vorgelegte Zuschnitt trägt.** Dazu ist K-23 beantwortet: Die fremde Ablage lässt sich projektseitig abschalten (`read_config_from.claude: false`, gemessen 69 → 2 Skills) – E4 ist damit neu zu bewerten, und `CR-2026-038` legt den Mechanismus vor
