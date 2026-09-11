@@ -39,6 +39,31 @@ Prüft (statisch, ohne laufenden KI-Client):
  16. Hook-Abdeckung (AP2-CC-16, D-30): Der Schutz-Hook erkennt jeden Werkzeugnamen,
      den ein Client Pack in hook_tools abbildet. Geprueft durch Aufruf mit einer Sonde,
      die er blockieren muss - ein Listenvergleich belegt Uebereinstimmung, nicht Wirkung
+ 17. Fail-closed (D-31): Der durchsetzende Hook verhaelt sich so, wie das Pack es zusagt -
+     geprueft am Skript und an der erzeugten Konfiguration, nicht am Manifestfeld
+ 18. Hook-Ablageort (D-32): keine verwaiste Hook-Datei neben der wirksamen, und keine
+     root-template-Vorlage, die eine solche Datei als geliefertes Artefakt fuehrt
+ 19. Quellenauskunft (D-34, D-37): Jedes Client Pack fuehrt den Abschnitt
+     "Anweisungs- und Konfigurationsquellen ausserhalb des Projekts", mit mindestens einer
+     Quellenzeile oder einem datierten Abwesenheitsbeleg. Belegt Anwesenheit, nicht
+     Richtigkeit - siehe Kopfkommentar der Pruefung
+ 20. Dokumenttabellen (CR-2026-036): Die Client-Spalten von PLACEHOLDER_REGISTRY.md und
+     RUNTIME_GLOSSARY.md stimmen je Pack mit dessen manifest.json ueberein. Belegt
+     Uebereinstimmung, nicht Richtigkeit
+ 21. Hook-Skripte (D-30, CR-2026-037): Ein Hook-Skript des Kerns leitet seine Pfade nicht
+     aus einer clientgebundenen Umgebungsvariablen oder Laufzeitschicht ab; es bekommt sie
+     als Argumente aus der Semantikabbildung
+ 22. Importsteuerung (D-37): Die installierte Berechtigungsdatei fuehrt sie so, wie das
+     Manifest sie abbildet. Belegt Anwesenheit und Uebereinstimmung, nicht Wirkung -
+     die Benutzerkonfiguration der Arbeitsstation hat Vorrang (K-27)
+ 23. Normative Kommentare (D-38): kein normatives Schluesselwort in einem HTML-Kommentar
+     der Laufzeitartefakte - ein Kommentar erreicht die Sitzung nicht (ERH-01)
+ 24. Regelablage (D-36): In der Vorlage der Regelablage liegt nur, was dem Nummernschema
+     der Regeltexte folgt; erklaerender Text steht in der Laufzeit-README eine Ebene hoeher
+
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 24 laeuft als eigenes
+Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
+Gegenprobe, auf einer Kopie des Repositoriums).
 
 Ohne PyYAML laufen die Prüfungen 4, 5 und 8 eingeschränkt; das Skript sagt es dann als
 Warnung. Für einen Release- oder Übernahmenachweis ist PyYAML erforderlich.
@@ -1459,6 +1484,39 @@ def check_hook_fail_closed(root: str, man: dict) -> None:
 VERWAISTE_HOOK_DATEIEN = ("hooks.v1.json",)
 
 
+def _check_vorlagen_ohne_hookdatei(root: str) -> None:
+    """Teil von Pruefung 18 (CR-2026-036 E3): Keine Vorlage liefert eine Hook-Datei aus.
+
+    Ein ausgeliefertes Dokument beschrieb bis 0.25.0 genau den Zustand, den dieselbe
+    Pruefung als Altlast meldete: Die Laufzeit-README fuehrte die eigene Hook-Datei unter
+    den gelieferten Dateien, obwohl die Installation sie nicht mehr anlegt (D-32).
+
+    Gemeldet wird deshalb nur die **Behauptung einer Lieferung** - der Dateiname als
+    erste Zelle einer Tabellenzeile, dort steht in diesen READMEs das gelieferte
+    Artefakt. Eine Nennung im Fliesstext, die die Abwesenheit **erklaert**, bleibt
+    unbeanstandet; sie ist der Migrationshinweis und soll dort stehen. Der Fehlalarm,
+    den eine reine Namenssuche erzeugt haette, ist damit vermieden.
+    """
+    for name in sorted(os.listdir(os.path.join(root, KERN, "clients"))
+                       if os.path.isdir(os.path.join(root, KERN, "clients")) else []):
+        vorlage = os.path.join(root, KERN, "clients", name, "root-template")
+        if not os.path.isdir(vorlage):
+            continue
+        for pfad in _walk_text_files(vorlage):
+            if not pfad.endswith(".md"):
+                continue
+            rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+            for i, zeile in enumerate(read(pfad).splitlines(), 1):
+                erste = zeile.strip().strip("|").split("|")[0].strip("` *") \
+                    if zeile.strip().startswith("|") else ""
+                if erste in VERWAISTE_HOOK_DATEIEN or \
+                        any(erste.endswith("/" + v) for v in VERWAISTE_HOOK_DATEIEN):
+                    err(f"{rel}:{i}: Die Vorlage fuehrt '{erste}' als geliefertes "
+                        f"Artefakt. Seit D-32 legt die Installation keine eigene "
+                        f"Hook-Datei an; ein ausgeliefertes Dokument beschriebe damit "
+                        f"genau den Zustand, den Pruefung 18 als Altlast meldet")
+
+
 def check_hook_ablageort(root: str, man: dict) -> None:
     """Pruefung 18 (D-32): Keine verwaiste Hook-Datei neben der wirksamen.
 
@@ -1476,6 +1534,7 @@ def check_hook_ablageort(root: str, man: dict) -> None:
     einer Migration entsteht. Das ist ausdruecklich weniger als ein Wirkungsnachweis
     nach D-23 und hier auch nicht mehr moeglich.
     """
+    _check_vorlagen_ohne_hookdatei(root)
     rechte = man.get("permissions_file")
     hooks_ort = (man.get("runtime_placeholders") or {}).get("<HOOKS_FILE>")
     if not rechte or hooks_ort != rechte:
@@ -1492,6 +1551,418 @@ def check_hook_ablageort(root: str, man: dict) -> None:
                  f"(AP2-DD-10, D-32); 'install.py --update' entfernt sie nicht. Die "
                  f"verwaiste Datei ist von Hand zu loeschen - sonst steht dort eine "
                  f"Regelmenge, die aussieht, als gaelte sie")
+
+
+# ---------------------------------------------------------------------------
+# Pruefungen 19 bis 24 (Release 0.26.0)
+# ---------------------------------------------------------------------------
+
+AUSKUNFT_UEBERSCHRIFT = "Anweisungs- und Konfigurationsquellen außerhalb des Projekts"
+DATUM_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
+
+
+def _client_packs(root: str) -> list[tuple[str, str, dict]]:
+    """(Kennung, Verzeichnis, Manifest) je Client Pack; _template ohne Manifest."""
+    raus: list[tuple[str, str, dict]] = []
+    cdir = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(cdir):
+        return raus
+    for name in sorted(os.listdir(cdir)):
+        pdir = os.path.join(cdir, name)
+        if not os.path.isdir(pdir):
+            continue
+        if not os.path.isfile(os.path.join(pdir, "CLIENT_PACK.md")):
+            continue
+        mf = os.path.join(pdir, "manifest.json")
+        man: dict = {}
+        if os.path.isfile(mf):
+            try:
+                man = json.loads(read(mf))
+            except Exception:
+                man = {}
+        raus.append((name, pdir, man))
+    return raus
+
+
+def _abschnitt(text: str, ueberschrift: str) -> str | None:
+    """Text eines Abschnitts bis zur naechsten gleichrangigen Ueberschrift."""
+    m = re.search(r"^(#{2,3})\s*\d*[a-z]?\.?\s*" + re.escape(ueberschrift) + r"\s*$",
+                  text, re.M)
+    if not m:
+        return None
+    ebene = len(m.group(1))
+    rest = text[m.end():]
+    weiter = re.search(r"^#{1,%d}\s" % ebene, rest, re.M)
+    return rest[:weiter.start()] if weiter else rest
+
+
+def check_quellenauskunft(root: str) -> None:
+    """Pruefung 19 (D-34, D-37): Jedes Client Pack gibt Auskunft ueber Quellen ausserhalb.
+
+    GRENZE DIESER PRUEFUNG - sie steht hier, weil sie im Antrag vorab benannt und nicht
+    spaeter gefunden werden soll (CR-2026-031 E4): Geprueft wird die **Anwesenheit** der
+    Auskunft, nicht ihre **Richtigkeit**. Eine falsche oder veraltete Zeile besteht sie.
+    Ein Abwesenheitsbeleg altert, und dieses Skript sieht den Unterschied nicht - "keine
+    bekannt, Stand 2026-09-11" ist am Tag der naechsten Clientversion eine Behauptung
+    ueber die Vergangenheit. Die Richtigkeit haengt an einer Erhebung, nicht an einem
+    Skript; dasselbe gilt fuer Pruefung 22.
+    """
+    for kennung, pdir, _man in _client_packs(root):
+        rel = f"{KERN}/clients/{kennung}/CLIENT_PACK.md"
+        text = read(os.path.join(pdir, "CLIENT_PACK.md"))
+        abschnitt = _abschnitt(text, AUSKUNFT_UEBERSCHRIFT)
+        if abschnitt is None:
+            err(f"{rel}: Abschnitt '{AUSKUNFT_UEBERSCHRIFT}' fehlt. Jedes Pack fuehrt die "
+                f"bekannten Quellen ausserhalb des Repositoriums - Regeltexte, Skills, "
+                f"Agentenprofile, Berechtigungen, Hooks - oder einen datierten "
+                f"Abwesenheitsbeleg (D-34, D-37)")
+            continue
+        zeilen = [z for z in abschnitt.splitlines()
+                  if z.strip().startswith("|") and not re.match(r"^\|[\s:|-]+\|?$", z.strip())]
+        inhalt = [z for z in zeilen
+                  if not re.search(r"\|\s*(Quelle|Ladebedingung|Wirkung)\s*\|", z)]
+        abwesend = re.search(r"keine bekannt", abschnitt, re.I)
+        if not inhalt and not abwesend:
+            err(f"{rel}: Abschnitt '{AUSKUNFT_UEBERSCHRIFT}' ist leer. Er braucht je "
+                f"bekannter Quelle eine Zeile oder die ausdrueckliche Angabe 'keine "
+                f"bekannt' mit Datum und Erhebungsweg - ein leerer Abschnitt ist kein "
+                f"Abwesenheitsbeleg")
+            continue
+        if kennung.startswith("_"):
+            continue  # Vorlage: Erhebungsstand steht als <TBD>
+        if not DATUM_RE.search(abschnitt):
+            err(f"{rel}: Abschnitt '{AUSKUNFT_UEBERSCHRIFT}' nennt keinen Erhebungsstand "
+                f"(JJJJ-MM-TT). Eine Quellenliste ohne Datum ist keine Auskunft, sondern "
+                f"eine Behauptung mit Fussnote")
+
+
+# Begriff der Dokumenttabellen -> Platzhalter des Manifests. Ein Begriff ohne Eintrag
+# bleibt unbeanstandet: "Nutzerlokale Ueberschreibung" hat kein Manifestfeld und ist
+# zugleich die Gegenprobe dieser Pruefung.
+GLOSSAR_ZU_PLATZHALTER = {
+    "Wurzel-Anweisungsdatei": "<ROOT_INSTRUCTION_FILE>",
+    "Laufzeitschicht": "<RUNTIME_DIR>",
+    "Berechtigungsdatei": "<PERMISSIONS_FILE>",
+    "Regelablage": "<RULES_DIR>",
+    "Skill-Ablage": "<SKILLS_DIR>",
+    "Agentenprofile": "<AGENTS_DIR>",
+    "Hook-Konfiguration": "<HOOKS_FILE>",
+    "MCP-Konfiguration": "<MCP_FILE>",
+}
+# <CORE_DIR> ist keine Eigenschaft eines Clients, sondern dieser Installation; ein Pack
+# darf ihn nicht belegen (PLACEHOLDER_REGISTRY.md).
+PLATZHALTER_OHNE_PACK = ("<CORE_DIR>",)
+
+
+def _tabellenzeilen(text: str):
+    for zeile in text.splitlines():
+        z = zeile.strip()
+        if not z.startswith("|") or re.match(r"^\|[\s:|-]+\|?$", z):
+            continue
+        yield [f.strip() for f in z.strip("|").split("|")]
+
+
+def _spalten_je_pack(felder: list[str], packs: list[str]) -> dict[str, int]:
+    zuordnung: dict[str, int] = {}
+    for i, feld in enumerate(felder):
+        nackt = feld.strip("`* ")
+        if nackt in packs:
+            zuordnung[nackt] = i
+    return zuordnung
+
+
+def _wert_passt(zelle: str, erwartet: str) -> bool:
+    """Der Manifestwert steht in der Zelle - Schreibvarianten zugelassen.
+
+    Die Tabellen schreiben ein Verzeichnis mal mit und mal ohne abschliessenden
+    Schraegstrich und setzen den Wert gelegentlich in einen erklaerenden Satz. Geprueft
+    wird deshalb Enthaltensein, nicht Gleichheit: Diese Pruefung soll eine **abweichende**
+    Angabe finden, nicht eine anders formulierte.
+    """
+    zelle = zelle.replace("\\", "/")
+    kandidaten = {erwartet, erwartet.rstrip("/") + "/", erwartet.rstrip("/")}
+    return any(k and k in zelle for k in kandidaten)
+
+
+def check_dokumenttabellen(root: str) -> None:
+    """Pruefung 20 (CR-2026-036): Dokumenttabellen und Manifest sagen dasselbe.
+
+    GRENZE: Sie prueft **Uebereinstimmung, nicht Richtigkeit.** Steht im Manifest ein
+    falscher Pfad, sind Tabelle und Manifest danach einig - und beide falsch. Was den
+    Manifestwert prueft, ist die Installation selbst und der Nachweis an ihr (D-23).
+    Abgedeckt sind nur Zeilen mit Manifestentsprechung; Begriffe ohne Feld altern weiter
+    still.
+    """
+    packs = {k: m for k, _p, m in _client_packs(root) if m}
+    if not packs:
+        return
+    namen = sorted(packs)
+
+    registry = f"{KERN}/docs/PLACEHOLDER_REGISTRY.md"
+    pfad = os.path.join(root, *registry.split("/"))
+    if os.path.isfile(pfad):
+        text = read(pfad)
+        spalten: dict[str, int] = {}
+        for felder in _tabellenzeilen(text):
+            gefunden = _spalten_je_pack(felder, namen)
+            if gefunden:
+                spalten = gefunden
+                continue
+            platzhalter = felder[0].strip("`* ")
+            if not spalten or not platzhalter.startswith("<"):
+                continue
+            if platzhalter in PLATZHALTER_OHNE_PACK:
+                continue
+            for pack, i in spalten.items():
+                erwartet = (packs[pack].get("runtime_placeholders") or {}).get(platzhalter)
+                if erwartet is None or i >= len(felder):
+                    continue
+                if not _wert_passt(felder[i].strip("`* "), erwartet):
+                    err(f"{registry}: {platzhalter} steht fuer '{pack}' als "
+                        f"'{felder[i]}', das Manifest fuehrt '{erwartet}'. Die "
+                        f"maschinenlesbare Quelle gilt; die Tabelle wird nachgezogen")
+
+    glossar = f"{KERN}/docs/RUNTIME_GLOSSARY.md"
+    pfad = os.path.join(root, *glossar.split("/"))
+    if os.path.isfile(pfad):
+        text = read(pfad)
+        spalten = {}
+        for felder in _tabellenzeilen(text):
+            gefunden = _spalten_je_pack(felder, namen)
+            if gefunden:
+                spalten = gefunden
+                continue
+            if not spalten:
+                continue
+            begriff = felder[0].strip("`* ")
+            platzhalter = GLOSSAR_ZU_PLATZHALTER.get(begriff)
+            if not platzhalter:
+                continue  # Begriff ohne Manifestfeld - siehe Kommentar oben
+            for pack, i in spalten.items():
+                erwartet = (packs[pack].get("runtime_placeholders") or {}).get(platzhalter)
+                if erwartet is None or i >= len(felder):
+                    continue
+                if not _wert_passt(felder[i], erwartet):
+                    err(f"{glossar}: '{begriff}' steht fuer '{pack}' als '{felder[i]}', "
+                        f"das Manifest fuehrt '{erwartet}'. Die maschinenlesbare Quelle "
+                        f"gilt; die Tabelle wird nachgezogen")
+
+
+PFAD_HERLEITUNG_RE = re.compile(r"os\.path\.join|os\.environ|os\.getenv")
+
+
+def check_hook_skripte_neutral(root: str) -> None:
+    """Pruefung 21 (D-30, CR-2026-037): Hook-Skripte raten die Laufzeitschicht nicht.
+
+    Ein Skript, das in einer Sitzung laeuft, bekommt Projektverzeichnis und Regelablage
+    aus der Semantikabbildung seines Client Packs - es leitet sie nicht aus einem
+    clientgebundenen Namen ab. Gemeldet wird deshalb zweierlei: die Umgebungsvariable
+    eines Packs (hook_project_dir_var) an jeder Stelle, und ein Laufzeitpfad eines Packs
+    dort, wo ein Pfad gebaut oder aus der Umgebung gelesen wird.
+
+    GRENZE - und zugleich die Gegenprobe: Die **Schutzmuster** von hook-check-secrets.py
+    nennen die Laufzeitpfade beider Packs ausdruecklich. Das ist Absicht (ein zusaetzlich
+    geschuetzter Pfad ist eine Verschaerfung) und bleibt unbeanstandet, weil dort kein
+    Pfad hergeleitet wird. Ausgenommen ist ferner der Validator selbst: Er fuehrt eine
+    dokumentierte Rueckfallabbildung, wenn kein Pack gefunden wird (CR-2026-037 E3).
+
+    Die Pruefung sieht Skripte, nicht Wirkung. Ein Hook mit sauber uebergebenen Pfaden,
+    der trotzdem den falschen Status meldet, faellt ihr nicht auf.
+    """
+    variablen: dict[str, str] = {}
+    pfade: dict[str, str] = {}
+    for kennung, _pdir, man in _client_packs(root):
+        if not man:
+            continue
+        v = man.get("hook_project_dir_var")
+        if v:
+            variablen[v] = kennung
+        for schluessel in ("<RUNTIME_DIR>", "<RULES_DIR>", "<SKILLS_DIR>", "<AGENTS_DIR>",
+                           "<PERMISSIONS_FILE>", "<HOOKS_FILE>", "<MCP_FILE>"):
+            wert = (man.get("runtime_placeholders") or {}).get(schluessel)
+            if wert:
+                pfade[wert] = kennung
+    sdir = os.path.join(root, KERN, "tests", "scripts")
+    if not os.path.isdir(sdir):
+        return
+    for name in sorted(os.listdir(sdir)):
+        if not name.startswith("hook-") or not name.endswith(".py"):
+            continue
+        rel = f"{KERN}/tests/scripts/{name}"
+        for i, zeile in enumerate(read(os.path.join(sdir, name)).splitlines(), 1):
+            ohne_kommentar = zeile.split("#", 1)[0]
+            for variable, kennung in variablen.items():
+                if variable in ohne_kommentar:
+                    err(f"{rel}:{i}: '{variable}' ist die Umgebungsvariable des Packs "
+                        f"'{kennung}'. Ein Hook-Skript des Kerns nennt sie nicht - der "
+                        f"Wert kommt als Argument aus der Semantikabbildung (D-30)")
+            if not PFAD_HERLEITUNG_RE.search(ohne_kommentar):
+                continue
+            for wert, kennung in sorted(pfade.items()):
+                if re.search(r"['\"]%s['\"/]" % re.escape(wert), ohne_kommentar) or \
+                        re.search(r"['\"]%s['\"]" % re.escape(wert.split("/")[0]),
+                                  ohne_kommentar):
+                    err(f"{rel}:{i}: Hier wird ein Pfad aus '{wert}' gebaut - der "
+                        f"Laufzeitschicht des Packs '{kennung}'. Ein Skript des Kerns "
+                        f"kennt sie nicht; sie kommt als Argument (D-30)")
+                    break
+
+
+def check_importsteuerung(root: str, man: dict) -> None:
+    """Pruefung 22 (D-37): Die Importsteuerung steht so, wie das Manifest sie abbildet.
+
+    GRENZE - vorab benannt wie bei Pruefung 19: Sie belegt **Anwesenheit und
+    Uebereinstimmung, nicht Richtigkeit und erst recht nicht Wirkung.** Dass die
+    Einstellung in der Datei steht, heisst nicht, dass sie greift: Die Benutzer-
+    konfiguration dieser Arbeitsstation hat Vorrang, in beide Richtungen gemessen
+    (K-27). Die Masznahme ist ein Standard, keine Schranke. Was wirkt, misst nur eine
+    Sitzung, die den Kontext prueft - nicht das Register des Clients (ERH-02).
+
+    Ein Pack ohne das Feld laeuft durch: Kennt ein Client keinen solchen Mechanismus -
+    oder liefert das Framework bewusst keine Vorgabe aus, wie bei claude-code -, bleibt
+    es bei der Auskunft im Client Pack (CR-2026-038 E2).
+    """
+    steuerung = man.get("import_control")
+    rechte = man.get("permissions_file")
+    if not rechte:
+        return
+    pfad = os.path.join(root, *rechte.split("/"))
+    if not os.path.isfile(pfad):
+        return
+    try:
+        installiert = json.loads(read(pfad))
+    except Exception:
+        return  # ungueltiges JSON meldet Pruefung 2
+    if not steuerung:
+        return
+    schluessel = steuerung.get("key")
+    erwartet = steuerung.get("value")
+    if not schluessel:
+        err(f"{man.get('client', '?')}/manifest.json: import_control ohne 'key'")
+        return
+    ist = installiert.get(schluessel)
+    if ist is None:
+        err(f"{rechte}: Die Importsteuerung '{schluessel}' fehlt. Das Manifest des Packs "
+            f"'{man.get('client', '?')}' bildet sie ab (D-37): Das Framework importiert "
+            f"keine Regel- und Skillquellen fremder Werkzeugformate. Eine Installation, "
+            f"die sie verliert, laedt sie wieder - still")
+        return
+    if ist != erwartet:
+        err(f"{rechte}: Die Importsteuerung '{schluessel}' steht als {json.dumps(ist, ensure_ascii=False)}, "
+            f"das Manifest bildet {json.dumps(erwartet, ensure_ascii=False)} ab. Die "
+            f"maschinenlesbare Quelle gilt (D-37)")
+
+
+# Normative Schluesselwoerter. Ein Kommentar traegt Herkunft - Ebene, Version, Owner,
+# Ladeverhalten -, keine Anweisung: Er erreicht die Sitzung nicht (ERH-01, D-38).
+NORMATIVE_WOERTER = (
+    re.compile(r"\bMUSS\b"),
+    re.compile(r"\bMUESSEN\b"),
+    re.compile(r"\bDARF NICHT\b"),
+    re.compile(r"\bDUERFEN NICHT\b"),
+    re.compile(r"\bSOLL\b"),
+    re.compile(r"\bNICHT ZULAESSIG\b"),
+    re.compile(r"(?i)nur über den änderungsprozess"),
+    re.compile(r"(?i)darf nur über"),
+)
+HTML_KOMMENTAR_RE = re.compile(r"<!--(.*?)-->", re.S)
+
+
+def _laufzeitartefakte(root: str, man: dict):
+    """Die Artefakte, die in einer Sitzung geladen werden - Quelle und Installation."""
+    for unterbau in (f"{KERN}/framework/runtime", f"{KERN}/templates/rules"):
+        basis = os.path.join(root, *unterbau.split("/"))
+        if os.path.isdir(basis):
+            for pfad in _walk_text_files(basis):
+                if pfad.endswith((".md", ".template")):
+                    yield pfad
+    orte = [man.get("root_instruction_file"),
+            (man.get("runtime_placeholders") or {}).get("<RULES_DIR>")]
+    for ort in orte:
+        if not ort:
+            continue
+        ziel = os.path.join(root, *ort.split("/"))
+        if os.path.isfile(ziel):
+            yield ziel
+        elif os.path.isdir(ziel):
+            for pfad in _walk_text_files(ziel):
+                if pfad.endswith((".md", ".template")):
+                    yield pfad
+
+
+def check_normative_kommentare(root: str, man: dict) -> None:
+    """Pruefung 23 (D-38): Kein normatives Schluesselwort in einem HTML-Kommentar.
+
+    Gemessen am 2026-09-11 (ERH-01): Dieselbe Messmarke blieb unsichtbar, solange sie in
+    Kommentarklammern stand, und war im Klartext sofort im Kontext - in der
+    Wurzel-Anweisungsdatei und in der Regelablage. Eine Anweisung im Kommentar ist damit
+    eine Regel, die niemanden erreicht. Was gilt, steht im Fliesstext.
+
+    GRENZE: Eine Wortlistenpruefung meldet auch eine zutreffende Erwaehnung - etwa den
+    Verweis auf eine Regel, die 'MUSS' enthaelt. Fehlalarme sind moeglich und beim
+    Beschluss ausdruecklich in Kauf genommen (CR-2026-039 E3). Gemessen ist ausserdem
+    **ein** Client und **zwei** Dateiarten; fuer das zweite Pack ist es offen (K-28), und
+    solange gilt die strengere Lesart fuer beide.
+    """
+    gesehen = set()
+    for pfad in _laufzeitartefakte(root, man):
+        if pfad in gesehen:
+            continue
+        gesehen.add(pfad)
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        text = read(pfad)
+        for m in HTML_KOMMENTAR_RE.finditer(text):
+            inhalt = m.group(1)
+            zeile = text.count("\n", 0, m.start()) + 1
+            for muster in NORMATIVE_WOERTER:
+                treffer = muster.search(inhalt)
+                if not treffer:
+                    continue
+                err(f"{rel}:{zeile}: '{treffer.group(0)}' steht in einem HTML-Kommentar. "
+                    f"Ein Kommentar erreicht die Sitzung nicht (ERH-01); eine normative "
+                    f"Aussage gehoert in den Fliesstext, im Kommentar bleibt die Herkunft "
+                    f"(D-38)")
+                break
+
+
+# Was in der Vorlage einer Regelablage liegen darf: Regeltexte nach dem Nummernschema
+# und Vorlagen. Alles andere ist ein Nicht-Regeltext - der Client registriert, was in
+# der Ablage liegt, und macht es damit ladbar (AP2-DD-17, K-26).
+REGELDATEI_RE = re.compile(r"^\d[\dN]-[A-Za-z0-9._-]+\.md(\.template)?$")
+
+
+def check_regelablage_sauber(root: str) -> None:
+    """Pruefung 24 (D-36): In der Vorlage der Regelablage liegt nur, was Regel ist.
+
+    Bis 0.25.0 lag dort je Pack eine erklaerende README. Bei einem Pack fuehrte der
+    Client sie als Regel mit Trigger 'manual' (AP2-DD-17), beim anderen stand sie sogar
+    unbedingt im Kontext (K-26) - mit Belegvorbehalten, die damit den Rang eines
+    Regeltexts trugen. Der erklaerende Text steht seither eine Ebene hoeher, in der
+    Laufzeit-README.
+
+    GRENZE: Geprueft wird die **Vorlage** des Packs, nicht die installierte Ablage. Was
+    ein Projekt dort selbst ablegt, sieht diese Pruefung nicht.
+    """
+    for kennung, pdir, man in _client_packs(root):
+        if not man:
+            continue
+        regelablage = (man.get("runtime_placeholders") or {}).get("<RULES_DIR>")
+        if not regelablage:
+            continue
+        basis = os.path.join(pdir, "root-template", *regelablage.split("/"))
+        if not os.path.isdir(basis):
+            continue
+        for name in sorted(os.listdir(basis)):
+            if os.path.isdir(os.path.join(basis, name)):
+                err(f"{KERN}/clients/{kennung}/root-template/{regelablage}/{name}: "
+                    f"Unterverzeichnis in der Vorlage der Regelablage")
+                continue
+            if REGELDATEI_RE.match(name):
+                continue
+            err(f"{KERN}/clients/{kennung}/root-template/{regelablage}/{name}: kein "
+                f"Regeltext. Die Regelablage enthaelt ausschliesslich Regeln (D-36) - "
+                f"der Client registriert, was dort liegt, und macht es ladbar. "
+                f"Erklaerender Text gehoert in die Laufzeit-README eine Ebene hoeher")
 
 
 def check_mermaid(root: str) -> None:
@@ -1548,6 +2019,12 @@ def main() -> int:
     check_hook_tool_coverage(root, man)
     check_hook_fail_closed(root, man)
     check_hook_ablageort(root, man)
+    check_quellenauskunft(root)
+    check_dokumenttabellen(root)
+    check_hook_skripte_neutral(root)
+    check_importsteuerung(root, man)
+    check_normative_kommentare(root, man)
+    check_regelablage_sauber(root)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:

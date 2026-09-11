@@ -27,7 +27,7 @@ Sechs dieser Zusagen sind **Kernzusagen** (B1 bis B6) und entsprechen dem Integr
 Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich das zweite Pack – derselbe Kern, ein anderer Client:
 
 {{EMBED-RAW:leitwerk-core/clients/claude-code/CLIENT_PACK.md:1}}
-Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab. Ein Vergleich der Gesamtzahlen trägt allerdings nicht: Bei `devin-desktop` sind 21 von 26 Zusagen als `[TECHNISCH]` **vorgesehen**, aber keine Einstufung ist geprüft; bei `claude-code` sind es nach AP2 25 von 26, und keine steht mehr auf `[NICHT ABBILDBAR]`. Die Zahlen messen bis zum Abschluss von AP2 Verschiedenes.
+Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab. Ein Vergleich der Gesamtzahlen trägt allerdings nicht: Bei `devin-desktop` sind 24 von 34 Zusagen als `[TECHNISCH]` **vorgesehen**, und nur fünf Zeilen sind in einer Sitzung beobachtet; bei `claude-code` sind es nach AP2 25 von 29, und keine steht mehr auf `[NICHT ABBILDBAR]` – dafür ist dort keine Zeile in einer Sitzung beobachtet. Die Zahlen messen bis zum Abschluss von AP2 Verschiedenes. Die Matrizen sind seit 0.26.0 unterschiedlich lang, weil `devin-desktop` fünf Zusagen mehr führt, die nur dort einen Mechanismus haben.
 
 ## 7a.4 Form und Semantik
 

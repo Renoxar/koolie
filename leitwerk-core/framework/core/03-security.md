@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
-| Version | 0.1.1 |
+| Version | 0.2.0 |
 
 ## 1. Schutzziele (normativ)
 
@@ -22,7 +22,7 @@ Das Sicherheitsmodell schützt in dieser Reihenfolge: (1) Vertraulichkeit von Qu
 | T4 | Einschleusen unsicherer Abhängigkeiten (halluzinierte Pakete, Typosquatting, veraltete Versionen, unzulässige Lizenzen) | Vorschlag einer „passenden" Bibliothek ohne Prüfung | Delegationsverbot V3, Checkliste neue Abhängigkeiten, Artefakt-Repository der Organisation als einzige Quelle |
 | T5 | Unsichere Codemuster (Injection, unsichere Deserialisierung, fehlende Autorisierungsprüfung, schwache Kryptografie, Logging sensibler Daten) | Plausibel aussehender Code ohne Sicherheitsprüfung | Security-Checkliste, Kontrollstufe hoch für R3/R10, statische Analyse und Security Scans als Quality Gate |
 | T6 | Umgehung von Quality Gates | Der KI-Client passt Tests, Linter-Regeln oder Pipeline-Konfigurationen an, „damit es grün wird" | Verweigerungsregeln für Schreibzugriffe auf Quality-Gate-Konfigurationen, Verbot in der Wurzel-Anweisungsdatei, Review-Checkliste |
-| T7 | Übermäßige Berechtigungen | Bypass-Modus, globale Allow-Regeln, sitzungsweite Freigaben für alles | D-05, Regel 3.1 in `leitwerk-core/framework/core/05-working-model.md`, versionierte Berechtigungsdatei, organisationsweite Einstellungen |
+| T7 | Übermäßige Berechtigungen | Bypass-Modus, globale Allow-Regeln, sitzungsweite Freigaben für alles | D-05, Regel 3.1 in `leitwerk-core/framework/core/05-working-model.md`, versionierte Berechtigungsdatei, organisationsweite Einstellungen. **Technisch trägt dann der Schutz-Hook:** Er prüft vor der Werkzeugausführung und blockiert, seit 0.25.0 auch für lesende Werkzeuge (D-33). Das ist die zweite Linie – und die einzige, die bleibt, wenn der Betriebsmodus die Berechtigungsprüfung abschaltet; beobachtet am 2026-09-11 (D-35). Er trägt nur, wo er läuft: Fällt seine Konfiguration aus, steht in einem solchen Modus nichts mehr |
 | T8 | Unautorisierte externe Systeme über MCP | Selbst konfigurierte MCP-Server mit weitreichenden Rechten | MCP-Freigabe je Server über Overlay, `ask` als Standard, Registry-Erzwingung (Enterprise) `[DOK]` |
 | T9 | Verlust der Nachvollziehbarkeit | Änderungen ohne Bericht, gemischte Commits, unklare Urheberschaft | Ergebnisbericht, KI-Nutzungsvermerk im Merge Request, kleine Änderungen (P7) |
 | T10 | Kompromittierte Erweiterungen oder Plugins der IDE | Installation nicht geprüfter Erweiterungen, Skill-Plugins aus fremden Quellen | Erweiterungs- und Plugin-Freigabe durch Organisation `<TBD: Erweiterungsrichtlinie>` |

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-GLOSSARY` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -31,7 +31,7 @@ Diese Datei legt die Begriffe fest, mit denen der Kern die Bestandteile der Lauf
 | **Regelablage** | Verzeichnis der Regeltexte (Core-Kurzfassungen, Overlay, Packs) | `.devin/rules/` | `.claude/rules/` |
 | **Skill-Ablage** | Verzeichnis der Skills, je Skill ein Unterverzeichnis mit `SKILL.md` | `.devin/skills/` | `.claude/skills/` |
 | **Agentenprofile** | Verzeichnis der Subagentenprofile | `.devin/agents/` | `.claude/agents/` |
-| **Hook-Konfiguration** | Ort der Lebenszyklus-Hooks | `.devin/hooks.v1.json` | in der Berechtigungsdatei |
+| **Hook-Konfiguration** | Ort der Lebenszyklus-Hooks | in der Berechtigungsdatei (`.devin/config.json`, D-32) | in der Berechtigungsdatei (`.claude/settings.json`) |
 | **MCP-Konfiguration** | Ort der Anbindung externer Systeme | `.devin/mcp_config.json` | `.mcp.json` |
 | **Nutzerlokale Überschreibung** | Nicht versionierte, persönliche Ergänzung; im Framework nur zum Verschärfen zulässig | `AGENTS.local.md`, `.devin/config.local.json` | `CLAUDE.local.md`, `.claude/settings.local.json` |
 

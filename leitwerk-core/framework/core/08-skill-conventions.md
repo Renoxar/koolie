@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.2.0 |
 
 ## 1. Begriff (normativ)
 
@@ -100,6 +100,10 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 - MAJOR: Änderung des Ausgabeformats oder des Scopes; MINOR: neue Schritte oder Prüfungen ohne Formatbruch; PATCH: Korrekturen und Formulierungen.
 - Jede Versionsänderung erfordert die erneute Ausführung der Testfälle in `TESTS.md`; Ergebnisse werden im Testkatalog vermerkt.
 - Die strukturelle Konformität prüft `leitwerk-core/tests/scripts/validate-framework.py` (Pflichtabschnitte, Frontmatter, Platzhalter, verbotene Muster).
+
+**Reichweite dieser Konventionen.** Sie gelten für die **Skill-Ablage, die das Framework schreibt**. Skills aus Ablagen außerhalb des Repositoriums – etwa aus dem Benutzerprofil – unterliegen ihnen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken, nie erweitern. Der KI-Client kann sie dennoch aufrufen: Am 2026-09-11 führte eine Installation 81 Skills, 67 davon aus einer fremden Ablage und mit Aufrufbarkeit durch Mensch **und** Modell.
+
+Was ein solcher Skill tut, läuft durch die normalen Werkzeuge des Clients und erreicht damit Berechtigungsregeln und Schutz-Hook – gemessen im selben Lauf, einschließlich Positivkontrolle und einschließlich des Modus ohne Rückfragen. **Der Skill-Aufruf selbst ist kein Werkzeugaufruf** und damit nicht einzeln kontrollierbar; kontrolliert wird, was er auslöst. Welche fremden Ablagen ein Client führt und ob sie abschaltbar sind, steht im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts" seines Client Packs (D-34, D-37).
 
 ## 8. Erläuterung
 

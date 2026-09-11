@@ -40,7 +40,7 @@ Die **maßgebliche Zuordnung je einzelner Zusage** steht in der Fähigkeitsmatri
 
 ### 31.4.1 Client Pack `devin-desktop`
 
-Recherchestand: 01.–02.09.2026, gegen Devin Desktop 3.8.20 (QD-4). **Seither nicht erneut abgeglichen.** Keine Einstufung der Fähigkeitsmatrix dieses Packs ist gegen eine Installation belegt; 13 von 26 Zeilen tragen einen VERIFY-Marker (Roadmap AP2).
+Recherchestand: 01.–02.09.2026, gegen Devin Desktop 3.8.20 (QD-4). Ergänzt am 11.09.2026 gegen Devin Desktop 3.9.19 / CLI 3000.10.21 (Erhebungen zu K-21 bis K-27). Fünf Zeilen der Fähigkeitsmatrix sind inzwischen in einer Sitzung **beobachtet** (H1, H2, R5, R6, S5); die übrigen Einstufungen sind gegen eine Installation nicht belegt, 8 von 34 Zeilen tragen einen VERIFY-Marker (Roadmap AP2).
 
 | Nr. | Quelle | Belegt im Framework insbesondere |
 |---|---|---|
@@ -82,13 +82,13 @@ Eine Quelle ohne Abrufdatum ist kein Beleg, sondern eine Behauptung mit Fußnote
 
 ## 31.5 Konsolidierter Verifikationsbedarf
 
-Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg trägt dort den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: 13 von 26 Zeilen bei `devin-desktop` tragen den Marker; bei `claude-code` trägt ihn nach AP2 **keine** Zeile mehr, dafür ist dort keine Einstufung als **beobachtete** Durchsetzung belegt – ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
+Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg trägt dort den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: 8 von 34 Zeilen bei `devin-desktop` tragen den Marker; bei `claude-code` sind es 2 von 29 – beide mit 0.26.0 neu (R5, S5) und für diesen Client nicht erhoben –, und dort ist weiterhin keine Einstufung als **beobachtete** Durchsetzung belegt – ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
 
 Die folgende Liste ergänzt sie um Punkte, die keiner einzelnen Zusage der Matrix zugeordnet sind, sondern das Zusammenspiel betreffen. Sie gilt für das Client Pack `devin-desktop`; Prüfweg ist Roadmap-AP2, Testklasse AK:
 
 | Nr. | Prüfpunkt | Betroffene Stellen |
 |---|---|---|
-| V1 | Zeichenlimits für Regeldateien unter Devin Local (dokumentiert bislang für Cascade-Regeln: 6.000/12.000) | `.devin/rules/README.md`, AGENTS.md-Größenbudget, Validator-Grenzen |
+| ~~V1~~ | **Geschlossen mit 0.26.0, Ergebnis „nicht dokumentiert".** Der Abgleich am 2026-09-11 gegen Devin Desktop 3.9.19 (`cli/extensibility/rules`) nennt für Regeldateien **keine** Zeichen- oder Größengrenze – weder für `AGENTS.md` noch für `.devin/rules/*.md` noch für globale Regeln; zweite unabhängige Bestätigung in derselben Sitzung (ERH-10). Die Zahlen 6.000/12.000 stammen aus der Cascade-Dokumentation (QD-7) und bleiben als **Vorgabe des Frameworks** in Kraft: Zeile R4 führt sie seit 0.26.0 als `[TEXTUELL]` (`CR-2026-027`). Wird die Grenze später doch dokumentiert, ist V1 erneut zu öffnen; K-19 bleibt offen | Laufzeit-README des Packs (Abschnitt „Regelablage"), AGENTS.md-Größenbudget, Validator-Grenzen |
 | V2 | Exakte Schemadetails von `.devin/config.json` (Schlüsselstruktur, Glob-/Präfix-Semantik, Wildcard `Fetch(*)`, Kommentarfelder-Toleranz) | `.devin/config.json`, FW-CORE-03 Abschnitt 4 |
 | ~~V3~~ | **Erledigt mit 0.25.0.** Das Hook-Eingabeschema ist in einer Sitzung erhoben: `hook_event_name`, `tool_name`, `tool_input`, `session_id`, `prompt_id` und ein in der Dokumentation nicht genanntes `tool_use_id`; Werkzeugnamen `read` und `exec`; Blockieren über Exit 2. Die Umstellung auf fail-closed ist mit `CR-2026-026` je Pack entschieden. **Dabei fiel auf, dass die Hook-Datei des Packs gar nicht gelesen wurde** (`AP2-DD-10`, `CR-2026-029`) | `leitwerk-core/tests/protocols/2026-09-11-AP2-devin-desktop.md` |
 | V4 | Skill-Discovery über `.agents/skills/` durch Devin Local; Verhalten der `@skills:`-Erwähnung im Desktop; Grenze „ein Skill aktiv" | FW-CORE-08 Abschnitt 2, K-12 |

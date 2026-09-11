@@ -126,4 +126,5 @@ mit Admin-Kontrollen zur Verfügung steht.
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E4 wie vorgelegt: zwei Matrixzeilen für den Modus mit automatischer Übernahme und den selbst beurteilenden Modus; `Autonomous` wird in D-05 aufgenommen, mit Bezug auf K-11; M2 nennt die **Wirkungsbegrenzung durch Berechtigungsregeln der Organisationsebene** statt einer Modus-Sperre; alle betroffenen Zeilen `[TEXTUELL]`. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E4 wie vorgelegt: zwei Matrixzeilen für den Modus mit automatischer Übernahme und den selbst beurteilenden Modus; `Autonomous` wird in D-05 aufgenommen, mit Bezug auf K-11; M2 nennt die **Wirkungsbegrenzung durch Berechtigungsregeln der Organisationsebene** statt einer Modus-Sperre; alle betroffenen Zeilen `[TEXTUELL]`. Ziel-Release 0.26.0 |
+| Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |

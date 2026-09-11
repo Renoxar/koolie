@@ -63,7 +63,7 @@ Unvermeidbare Annahmen dieser Erstfassung – alle gekennzeichnet, keine stillsc
 
 ## Verifikationsbedarf
 
-Gegen die Dokumentation des gewählten Clients beziehungsweise in einer Zielinstallation zu prüfen: die Fähigkeitsmatrix des Client Packs (13 von 26 Zeilen bei `devin-desktop`, 9 von 26 bei `claude-code` tragen einen VERIFY-Marker) sowie die konsolidierten Punkte V1–V10 aus Anhang 31.4 – Zeichenlimits der Regeln unter Devin Local; exakte `config.json`-Schemadetails; Hook-Eingabeschema (danach fail-closed als Standard); Skill-Discovery `.agents/skills/` und `@skills:`-Verhalten; Frontmatter-Toleranz; MCP-Dateistruktur; Codebasis-Indexierung; Spaces-Kontextreichweite; Wirkung additiver Skill-Permissions; reales Ladeverhalten der always-on-Summe. Prüfweg: Roadmap-AP2 mit Protokollpflicht; laufend: Testklasse AK im Release-Zyklus.
+Gegen die Dokumentation des gewählten Clients beziehungsweise in einer Zielinstallation zu prüfen: die Fähigkeitsmatrix des Client Packs (8 von 34 Zeilen bei `devin-desktop`, 2 von 29 bei `claude-code` tragen einen VERIFY-Marker) sowie die konsolidierten Punkte V2–V10 aus Anhang 31.4 – V1 ist mit 0.26.0 geschlossen, Ergebnis „nicht dokumentiert"; exakte `config.json`-Schemadetails; Hook-Eingabeschema (danach fail-closed als Standard); Skill-Discovery `.agents/skills/` und `@skills:`-Verhalten; Frontmatter-Toleranz; MCP-Dateistruktur; Codebasis-Indexierung; Spaces-Kontextreichweite; Wirkung additiver Skill-Permissions; reales Ladeverhalten der always-on-Summe. Prüfweg: Roadmap-AP2 mit Protokollpflicht; laufend: Testklasse AK im Release-Zyklus.
 
 ## Datenschutzprüfung
 

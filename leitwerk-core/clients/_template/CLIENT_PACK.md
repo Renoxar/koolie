@@ -9,7 +9,7 @@
 |---|---|
 | Modul-ID | `CP-<CLIENT_PACK_CODE>` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<TBD: Rolle>` |
 | Client | `<TBD: Produktname>` |
@@ -63,9 +63,11 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
 | R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung ungefragt geladen | `AGENTS.md` | `<TBD>` | `<TBD>` | `<TBD>` |
-| R2 | Weitere Regeldateien lassen sich mit Ladebedingungen versehen (immer, bei Relevanz, manuell) | `.devin/rules/README.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| R2 | Weitere Regeldateien lassen sich mit Ladebedingungen versehen (immer, bei Relevanz, manuell) | Laufzeit-README, Abschnitt „Regelablage" | `<TBD>` | `<TBD>` | `<TBD>` |
 | R3 | Regeln lassen sich an Dateimuster binden, damit ein Technology Pack nur bei passenden Dateien lädt | Ebene 5 | `<TBD>` | `<TBD>` | `<TBD>` |
-| R4 | Regelinhalte unterliegen einem bekannten Zeichenlimit, das das Framework einhalten kann | `.devin/rules/README.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| R4 | Regelinhalte unterliegen einem bekannten Zeichenlimit, das das Framework einhalten kann | Laufzeit-README der Regelablage | `<TBD>` | `<TBD>` | `<TBD>` |
+| R5 | Die geladenen Regelquellen sind vollständig aufzählbar | D-34, `CR-2026-031` | `<TBD>` | `<TBD>` | `<TBD>` |
+| R6 | Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate | D-37, `CR-2026-038` | `<TBD>` – kennt der Client keine Importsteuerung, ist die Zeile `[NICHT ABBILDBAR]`, und es bleibt bei der Auskunft in Abschnitt 7 | `<TBD>` | `<TBD>` |
 
 ### S – Skills
 
@@ -74,9 +76,12 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 | S1 | Standardaufgaben liegen als versionierte Skills im Repository | `leitwerk-core/framework/core/08-skill-conventions.md` | `<TBD>` | `<TBD>` | `<TBD>` |
 | S2 | Ein Skill ist gezielt aufrufbar | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 | S3 | Ein Skill kann die ihm erlaubten Werkzeuge einschränken (lesende Skills schreiben nicht) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
-| S4 | Schreibende Skills sind nur benutzergetriggert, nicht modellgetriggert | dito | `<TBD>` | `<TBD>` | `<TBD>` |
+| S4 | Schreibende Skills sind nur benutzergetriggert, nicht modellgetriggert – die Zusage gilt für die Skill-Ablage, die das Framework schreibt | dito | `<TBD>` | `<TBD>` | `<TBD>` |
+| S5 | Die geladenen Skills sind vollständig aufzählbar, samt Herkunft und Aufrufbarkeit | `CR-2026-032` | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### B – Berechtigungen
+
+> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet.** Im Modus ohne Rückfragen, den D-05 untersagt, ist diese Linie bei mindestens einem Client nachweislich aus; dann trägt allein der Schutz-Hook (D-35, `AP2-DD-12`). Diese Vorbemerkung ist **Pflicht** in jedem Pack; sie ist je Client um den eigenen Belegstand zu ergänzen – erhoben oder ausdrücklich nicht erhoben.
 
 Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei. Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
 
@@ -112,7 +117,9 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 |---|---|---|---|---|---|
 | M1 | Es gibt einen Standardmodus, der bei Schreiben und Befehlen rückfragt | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 | M2 | Ein Modus, der alle Rückfragen übergeht, lässt sich organisatorisch oder technisch ausschließen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
-| M3 | Eine erteilte Freigabe lässt sich auf die Sitzung begrenzen, statt sie dauerhaft zu speichern | `.devin/README.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| M3 | Eine erteilte Freigabe lässt sich auf die Sitzung begrenzen, statt sie dauerhaft zu speichern | Laufzeit-README | `<TBD>` | `<TBD>` | `<TBD>` |
+| M6 | Ein Modus mit automatischer Übernahme von Dateiänderungen lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
+| M7 | Ein Modus, der selbst beurteilt, was sicher ist, lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### X – Externe Anbindung
 
@@ -150,7 +157,33 @@ python leitwerk-core/tests/scripts/validate-framework.py
 
 Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs (`leitwerk-core/tests/TEST_CATALOG.md`, Kennzeichnung „Basis") gegen diesen Client zu fahren und zu protokollieren.
 
-## 7. Änderungsverlauf
+## 7. Anweisungs- und Konfigurationsquellen außerhalb des Projekts
+
+**Pflichtabschnitt.** Er führt, was dieser Client aus Ablagen **außerhalb des Repositoriums** lädt. Solche Quellen haben nach Regel 2.6 der Prioritätshierarchie **keine Ebene**: Sie dürfen einschränken, nie über die Ebenen 1 bis 4 hinaus erweitern und keine Governance-, Datenschutz- oder Sicherheitsregeln setzen (D-34). Prüfung 19 meldet ein Pack ohne diesen Abschnitt.
+
+**Erhebungsstand: `<TBD: JJJJ-MM-TT>`**, Clientversion `<TBD>`, erhoben mit `<TBD: Kommandos oder Messweg>`.
+
+### 7.1 Anweisungsquellen
+
+Regeltexte, Skills, Agentenprofile. Je bekannter Quelle eine Zeile – **oder** die ausdrückliche Angabe „keine bekannt" mit Datum und Erhebungsweg. Ein Abwesenheitsbeleg ist ein Ergebnis; ein leerer Abschnitt ist keines.
+
+| Quelle | Ladebedingung | Belegstatus | Maßnahme des Frameworks |
+|---|---|---|---|
+| `<TBD: Pfad>` | `<TBD>` | `<TBD>` | `<TBD>` |
+
+### 7.2 Konfigurationsquellen
+
+Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums – sie betreffen genau die Linien, auf denen B1 bis B6 stehen (`CR-2026-038`).
+
+| Quelle | Wirkung | Belegstatus |
+|---|---|---|
+| `<TBD: Pfad>` | `<TBD>` | `<TBD>` |
+
+### 7.3 Was dieser Abschnitt nicht leistet
+
+**Eine Auskunft ist keine Schranke**, und ein **Abwesenheitsbeleg altert**: Am Tag der nächsten Clientversion ist er eine Aussage über die Vergangenheit. Prüfung 19 prüft die **Anwesenheit** dieser Auskunft, nicht ihre Richtigkeit – die hängt an einer Erhebung, nicht an einem Skript.
+
+## 8. Änderungsverlauf
 
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|

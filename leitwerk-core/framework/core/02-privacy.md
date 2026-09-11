@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.2 |
+| Version | 0.1.3 |
 
 ## 1. Ausgangslage (normativ)
 
@@ -52,7 +52,7 @@
 7. **Externe Quellen:** Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). Freigaben erfolgen domainbezogen über das Overlay und die Berechtigungskonfiguration (`Fetch(domain:...)` `[DOK]`).
 8. **MCP-Werkzeuge:** Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Standardmäßig fordert Devin Local vor jedem MCP-Aufruf eine Bestätigung an `[DOK]`; diese Einstellung DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist.
 9. **Spaces und geteilter Kontext:** Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
-10. **Persönliche Regeln:** Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht.
+10. **Persönliche Regeln:** Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht. Dies ist eine Regel **an den Menschen**, keine Rangaussage: Welchen Rang eine Anweisungsquelle außerhalb des Repositoriums hat – nämlich keinen –, regelt Regel 2.6 der Prioritätshierarchie (D-34). Welche Quellen ein Client kennt und was davon abgeschaltet ist, führt sein Client Pack im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts".
 
 ## 4. Freigabeverfahren für K2-Inhalte (normativ)
 

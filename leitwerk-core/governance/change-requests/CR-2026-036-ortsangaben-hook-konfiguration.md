@@ -104,4 +104,5 @@ in Fließtext, kein Platzhalterfeld; dafür braucht es E3 oder weiterhin das Les
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E5 wie vorgelegt: Die drei Stellen werden nachgezogen; Prüfung 20 hält die Client-Spalten von `PLACEHOLDER_REGISTRY.md` und `RUNTIME_GLOSSARY.md` je Pack gegen das Manifest; Prüfung 18 wird auf die `root-template`-Vorlagen ausgedehnt; eigener Antrag statt Nachtrag zu `CR-2026-029`; **keine** AP2-Kennung. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E5 wie vorgelegt: Die drei Stellen werden nachgezogen; Prüfung 20 hält die Client-Spalten von `PLACEHOLDER_REGISTRY.md` und `RUNTIME_GLOSSARY.md` je Pack gegen das Manifest; Prüfung 18 wird auf die `root-template`-Vorlagen ausgedehnt; eigener Antrag statt Nachtrag zu `CR-2026-029`; **keine** AP2-Kennung. Ziel-Release 0.26.0 |
+| Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |

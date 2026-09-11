@@ -29,6 +29,13 @@ _core_rules_integrity.deny_must_contain wird aus denselben Quellregeln erzeugt
 (Kennzeichnung "core": true). Der Validator vergleicht die installierte Datei damit -
 eine geloeschte Kernregel faellt dadurch auf, auch wenn das Projekt zugleich die
 Integritaetsliste gekuerzt hat.
+
+Seit 0.26.0 traegt die Berechtigungsdatei zusaetzlich die Importsteuerung des Clients
+(D-37): Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate.
+Das Manifest fuehrt sie unter "import_control" als Schluessel und Wert; kennt ein Client
+keinen solchen Mechanismus, fehlt das Feld und es bleibt bei der Auskunft im Client Pack.
+Die Masznahme ist ein Standard, keine Schranke - die Benutzerkonfiguration hat Vorrang
+(K-27 gemessen 2026-09-11). Pruefung 22 haelt die Abbildung fest, nicht ihre Wirkung.
 """
 from __future__ import annotations
 
@@ -150,6 +157,24 @@ def core_rules(quelle: dict, man: dict) -> list[str]:
     return raus
 
 
+def import_control(man: dict) -> tuple[str, object] | None:
+    """Importsteuerung dieses Clients als (Schluessel, Wert) - oder None.
+
+    Ein Client ohne solchen Mechanismus traegt das Feld nicht; dann bleibt es bei der
+    Auskunft im Abschnitt "Anweisungs- und Konfigurationsquellen ausserhalb des
+    Projekts" seines Client Packs (D-37). Dasselbe Feld liest Pruefung 22.
+    """
+    steuerung = man.get("import_control")
+    if not steuerung:
+        return None
+    schluessel = steuerung.get("key")
+    if not schluessel or "value" not in steuerung:
+        raise AbbildungsFehler(
+            f"{man.get('client', '?')}/manifest.json: import_control braucht 'key' "
+            f"und 'value'")
+    return schluessel, steuerung["value"]
+
+
 def _kommentar(man: dict, mit_hooks: bool) -> str:
     kern = core_dir_name(man)
     pack = man.get("client", "?")
@@ -171,6 +196,12 @@ def _kommentar(man: dict, mit_hooks: bool) -> str:
         "Die unter _core_rules_integrity aufgefuehrten Regeln duerfen vom Projekt nicht "
         f"entfernt werden; {kern}/tests/scripts/validate-framework.py prueft sie gegen "
         "die Kernquelle.")
+    if import_control(man) is not None:
+        teile.append(
+            "Die Importsteuerung schaltet Regel- und Skillquellen fremder "
+            "Werkzeugformate ab (D-37). Das eigene Format der Wurzel-Anweisungsdatei "
+            "bleibt eingeschaltet. Sie ist ein Standard, keine Schranke: Die "
+            "Benutzerkonfiguration dieser Arbeitsstation hat Vorrang.")
     hinweis = man.get("permissions_note")
     if hinweis:
         teile.append(hinweis)
@@ -192,6 +223,9 @@ def render_permissions(quelltext: str, man: dict, hooks_quelltext: str | None = 
 
     ergebnis: dict = {"_comment": _kommentar(man, hooks_quelltext is not None),
                       "permissions": rechte}
+    steuerung = import_control(man)
+    if steuerung is not None:
+        ergebnis[steuerung[0]] = steuerung[1]
     if hooks_quelltext is not None:
         ergebnis["hooks"] = _hooks_objekt(hooks_quelltext, man)
     ergebnis["_core_rules_integrity"] = {"deny_must_contain": core_rules(quelle, man)}
@@ -265,7 +299,8 @@ def python_interpreter() -> str:
         "Installation abgebrochen, statt eine Zusage zu erzeugen, die nicht traegt (D-26)")
 
 
-def _hook_befehl(script: str, man: dict, enforcing: bool = False) -> str:
+def _hook_befehl(script: str, man: dict, enforcing: bool = False,
+                 needs_project_paths: bool = False) -> str:
     """Aufrufkommando eines Hooks fuer diesen Client.
 
     Bei einem durchsetzenden Hook (enforcing in der Kernquelle) haengt die Abbildung
@@ -274,6 +309,11 @@ def _hook_befehl(script: str, man: dict, enforcing: bool = False) -> str:
     nicht in einer Umgebungsvariablen: Ob ein Client env an den Hook-Prozess weiterreicht,
     ist fuer keines der Packs belegt, und eine Sperre, die auf einer unbelegten
     Clientzusage steht, ist genau die Lage, aus der AP2-CC-13 kam (D-31).
+
+    Dieselbe Begruendung traegt needs_project_paths: Ein Hook, der Projektverzeichnis und
+    Regelablage braucht, bekommt sie als Argumente aus dieser Abbildung - nicht aus der
+    Umgebung und schon gar nicht geraten. Ein Skript des Kerns kennt die Laufzeitschicht
+    eines Packs nicht (D-30, fortgeschrieben mit CR-2026-037).
     """
     variable = man.get("hook_project_dir_var")
     if not variable:
@@ -283,6 +323,13 @@ def _hook_befehl(script: str, man: dict, enforcing: bool = False) -> str:
               + core_dir_name(man) + '/' + script + '"')
     if enforcing and man.get("hook_fail_closed") is True:
         befehl += " --fail-closed"
+    if needs_project_paths:
+        regelablage = man.get("runtime_placeholders", {}).get("<RULES_DIR>")
+        if not regelablage:
+            raise AbbildungsFehler(
+                f"{man.get('client', '?')}/manifest.json: <RULES_DIR> fehlt in "
+                f"runtime_placeholders; der meldende Hook braucht die Regelablage")
+        befehl += ' "$' + variable + '" "' + regelablage + '"'
     return befehl
 
 
@@ -297,11 +344,14 @@ def _hooks_objekt(quelltext: str, man: dict) -> dict:
             neu: dict = {}
             if "on" in eintrag:
                 neu["matcher"] = _hook_matcher(eintrag["on"], man)
-            # "enforcing" ist Steuerinformation der Kernquelle und kein Feld des
-            # Clients; es steuert nur, ob das Kommando --fail-closed traegt.
+            # "enforcing" und "needs_project_paths" sind Steuerinformation der
+            # Kernquelle und keine Felder des Clients; sie steuern nur, ob das Kommando
+            # --fail-closed traegt und ob ihm Projektverzeichnis und Regelablage folgen.
             neu["hooks"] = [
                 {"type": h["type"],
-                 "command": _hook_befehl(h["script"], man, h.get("enforcing") is True),
+                 "command": _hook_befehl(h["script"], man,
+                                         h.get("enforcing") is True,
+                                         h.get("needs_project_paths") is True),
                  "timeout": h["timeout"]}
                 for h in eintrag["hooks"]
             ]
