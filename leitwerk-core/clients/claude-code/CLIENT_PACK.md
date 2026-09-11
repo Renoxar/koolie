@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.8.0 |
+| Version | 0.8.1 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -113,7 +113,7 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| H1 | Prüfung vor Werkzeugausführung | `hooks.PreToolUse` in `settings.json`, Matcher auf schreibende und ausführende Werkzeuge | `[TECHNISCH]` | `[DOK]` |
+| H1 | Prüfung vor Werkzeugausführung | `hooks.PreToolUse` in `settings.json`, Matcher auf **lesende**, schreibende und ausführende Werkzeuge | `[TECHNISCH]` | `[DOK]`; das Lesewerkzeug seit 0.25.0 (`CR-2026-030`, D-33) – bis dahin erreichte ein Lesezugriff den Hook nicht |
 | H2 | Prüfung kann **blockieren** | Exit-Code 2 des Hook-Befehls blockiert die Ausführung, und zwar **bevor** die Berechtigungsregeln ausgewertet werden – ein blockierender Hook geht damit auch einer `allow`-Regel vor. Umgekehrt hebt eine Hook-Entscheidung keine `deny`- oder `ask`-Regel auf. Seit 0.24.0 **fail-closed**: Das erzeugte Hook-Kommando trägt `--fail-closed`, eine Werkzeugeingabe, die der Hook nicht lesen kann, wird blockiert statt durchgelassen (D-31) | `[TECHNISCH]` | [DOK] `docs/en/permissions` (AP2, Clientversion 2.1.267) – **stärker belegt als beim Client Pack `devin-desktop`**, siehe Abschnitt 5 |
 | H3 | Statusmeldung beim Sitzungsstart | `hooks.SessionStart` | `[TECHNISCH]` | `[DOK]` |
 
@@ -228,3 +228,4 @@ Werkzeugnamens `Write` wirkt überall.
 | 0.6.0 | 2026-09-10 | **R2 und R3 abgebildet (`CR-2026-017`, D-27).** Die Regelablage liegt in `.claude/rules/`; der Client laedt sie von sich aus, die `@`-Importe der Wurzel-Anweisung entfallen. Die Ladetrigger der Kernquelle werden abgebildet statt zu Kommentar zu werden: `glob` auf `paths`, `always_on` und `model_decision` auf unbedingtes Laden. Erstmals gerendert werden auch die Regelvorlagen und die Laufzeitfassungen aktivierter Role und Technology Packs - eine aktivierte Role-Pack-Regel war bei diesem Client bisher wirkungslos. Keine Einstufung steht mehr auf `[NICHT ABBILDBAR]`; die mit `CR-2026-016` bereits behobene Zeile S4 und die Restangaben zu AP2-CC-02 in den Abschnitten 1a, 4, 5 und 7 sind nachgezogen | `<FRAMEWORK_OWNER>` |
 | 0.7.0 | 2026-09-10 | **Belegspalte nennt die Quelle (`CR-2026-018`, `FW-AK-01`).** Jede mit AP2 belegte Zeile nennt die Seite der Herstellerdokumentation, auf die sie sich stuetzt; die vollstaendige Belegzuordnung steht im Hauptdokument in Anhang 31.4.2, der bis dahin ausschliesslich Devin-Quellen fuehrte. Neu aufgenommen: AP2-CC-12 (`permissionMode` im Subagentenprofil, offene Teilfrage zu M2). Genauer belegt: H2 (ein blockierender Hook geht auch einer `allow`-Regel vor), A1 (`disallowedTools` zuerst; ein Profil ohne aufloesbares Werkzeug startet nicht), S4 (die Sperre haelt die Skill-Beschreibung aus dem Kontext) | `<FRAMEWORK_OWNER>` |
 | 0.8.0 | 2026-09-11 | **Der Schutz-Hook läuft fail-closed (`CR-2026-026`, D-31).** Das Eingabeschema dieses Clients ist gegen eine Installation bestätigt (AP2, WN-5); das Manifest führt deshalb `hook_fail_closed: true`, und die Abbildung hängt dem Kommando des durchsetzenden Hooks `--fail-closed` an. Eine Werkzeugeingabe, die der Hook nicht als JSON lesen kann, wird blockiert statt durchgelassen. Der Schalter steht im Kommando, nicht in `env` – die bis 0.23.0 hier empfohlene Umgebungsvariable hätte die Sperre an eine zweite, unbelegte Clientzusage gehängt. Prüfung 17 belegt die Wirkung; weil die Hooks hier in der Saat liegen, ist das Argument in einer bestehenden Installation von Hand nachzuziehen | `<FRAMEWORK_OWNER>` |
+| 0.8.1 | 2026-09-11 | **Der Matcher deckt das Lesewerkzeug ab (`CR-2026-030`, D-33).** D-30 hatte entschieden, dass Secret-Pfade auch gegen lesende Werkzeuge durchgesetzt werden; eingelöst war das nie – die Hook-Quelle nannte kein Leseverb, und `hook_tools` bildete keines ab. Aufgefallen ist es bei AP2 des anderen Packs, gilt aber hier genauso: `Read` steht jetzt in der Abbildung, Prüfung 16 sondiert es | `<FRAMEWORK_OWNER>` |

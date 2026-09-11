@@ -96,22 +96,30 @@ CORE_DIR_NAME = os.path.basename(
 # Lockerung - dieselbe Begruendung wie bei den Pfadmustern oben.
 BASIS_WRITE_TOOLS = ("edit", "write", "notebookedit")
 BASIS_EXEC_TOOLS = ("exec",)
+# Lesende Werkzeuge werden allein an den Secret-Pfaden gemessen. D-30 hatte das bereits
+# entschieden - "Secret-Pfade sind vertraulich und werden auch gegen lesende Werkzeuge
+# durchgesetzt" -, der Code loeste es nicht ein: Ein Leseverb stand weder in der
+# Hook-Quelle noch in einer Werkzeugliste, und ein Zugriff mit tool_name "read" lief
+# mit Exit 0 durch. Beobachtet in AP2, als ein blockiertes "cat .env" den Agenten dazu
+# brachte, dieselbe Datei mit dem Lesewerkzeug zu oeffnen (AP2-DD-11, D-33).
+BASIS_READ_TOOLS = ("read",)
 
 
 def _werkzeugnamen() -> tuple:
-    """(write-Namen, exec-Namen) aus den Manifesten aller Client Packs, klein geschrieben.
+    """(write-Namen, exec-Namen, read-Namen) aus den Manifesten aller Packs, klein geschrieben.
 
     Faellt auf die Basisnamen zurueck, wenn kein Manifest lesbar ist: Ein Hook, der
     wegen einer fehlenden Datei gar nichts mehr blockiert, waere die schlechtere Lage.
     """
     schreiben = set(BASIS_WRITE_TOOLS)
     ausfuehren = set(BASIS_EXEC_TOOLS)
+    lesen = set(BASIS_READ_TOOLS)
     kern = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     packs = os.path.join(kern, "clients")
     try:
         eintraege = sorted(os.listdir(packs))
     except OSError:
-        return tuple(sorted(schreiben)), tuple(sorted(ausfuehren))
+        return tuple(sorted(schreiben)), tuple(sorted(ausfuehren)), tuple(sorted(lesen))
     for name in eintraege:
         pfad = os.path.join(packs, name, "manifest.json")
         if not os.path.isfile(pfad):
@@ -121,14 +129,14 @@ def _werkzeugnamen() -> tuple:
                 abbildung = (json.load(fh) or {}).get("hook_tools") or {}
         except (OSError, ValueError):
             continue
-        for verb, ziel in (("write", schreiben), ("exec", ausfuehren)):
+        for verb, ziel in (("write", schreiben), ("exec", ausfuehren), ("read", lesen)):
             for werkzeug in abbildung.get(verb) or []:
                 if isinstance(werkzeug, str) and werkzeug.strip():
                     ziel.add(werkzeug.strip().lower())
-    return tuple(sorted(schreiben)), tuple(sorted(ausfuehren))
+    return tuple(sorted(schreiben)), tuple(sorted(ausfuehren)), tuple(sorted(lesen))
 
 
-WRITE_TOOLS, EXEC_TOOLS = _werkzeugnamen()
+WRITE_TOOLS, EXEC_TOOLS, READ_TOOLS = _werkzeugnamen()
 
 # Ein Shell-Befehl ist keine Pfadangabe: In "cat .env" steht der Pfad mitten im String,
 # und die Pfadmuster verlangen einen Zeilenanfang oder ein Trennzeichen davor. Fuer
@@ -215,21 +223,26 @@ def main() -> None:
                   f"Secrets duerfen nicht verarbeitet werden. Fundstelle melden, Sitzung anhalten "
                   f"(leitwerk-core/framework/core/02-privacy.md, Abschnitt 5).")
 
-    # Schreib- und Ausfuehrungsoperationen auf geschuetzte Pfade blockieren. WRITE_TOOLS
-    # steht auch hier, damit kein schreibendes Werkzeug an dieser Liste vorbeilaeuft -
-    # 'notebookedit' tat das bisher.
-    if tool_name in WRITE_TOOLS + EXEC_TOOLS or not tool_name:
+    # Schreib-, Ausfuehrungs- und Leseoperationen auf geschuetzte Pfade blockieren.
+    # WRITE_TOOLS steht auch hier, damit kein schreibendes Werkzeug an dieser Liste
+    # vorbeilaeuft - 'notebookedit' tat das bisher.
+    if tool_name in WRITE_TOOLS + EXEC_TOOLS + READ_TOOLS or not tool_name:
         # Bei einem ausfuehrenden Werkzeug steht der Pfad mitten im Befehl; die
         # Pfadmuster verlangen davor einen Zeilenanfang oder ein Trennzeichen. Die
         # Eingabe wird deshalb zusaetzlich tokenisiert (AP2-CC-15).
         zu_pruefen = list(strings)
-        nur_ausfuehrend = tool_name in EXEC_TOOLS and tool_name not in WRITE_TOOLS
+        # Ohne Werkzeugnamen ist die Art der Operation unbekannt; dann gilt die
+        # strengere Liste. Eine unbekannte Operation als lesend zu behandeln, waere
+        # die Annahme zugunsten des Zugriffs.
+        schreibend = tool_name in WRITE_TOOLS or not tool_name
         if tool_name in EXEC_TOOLS or not tool_name:
             zu_pruefen += list(shell_tokens(strings))
-        # Ein ausfuehrendes Werkzeug wird an den Secret-Pfaden gemessen, nicht an den
-        # Strukturpfaden: Ein Befehl darf den Kern lesen, ein Secret nie. Fuer
-        # schreibende Werkzeuge gelten beide Listen.
-        muster = SECRET_PATH_PATTERNS if nur_ausfuehrend else PROTECTED_PATH_PATTERNS
+        # Zwei Schutzziele, zwei Listen (D-30): Ein ausfuehrendes oder lesendes Werkzeug
+        # wird an den Secret-Pfaden gemessen, nicht an den Strukturpfaden - ein Befehl
+        # darf den Kern lesen, ein Secret nie. Fuer schreibende Werkzeuge gelten beide
+        # Listen. Ohne die Trennung blockierte ein 'git diff' auf einen Kernpfad oder
+        # das Lesen einer Regeldatei, also Operationen, die das Framework voraussetzt.
+        muster = PROTECTED_PATH_PATTERNS if schreibend else SECRET_PATH_PATTERNS
         for s in zu_pruefen:
             for pattern in muster:
                 if pattern.search(s):

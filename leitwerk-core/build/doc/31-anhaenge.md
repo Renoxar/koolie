@@ -90,7 +90,7 @@ Die folgende Liste ergänzt sie um Punkte, die keiner einzelnen Zusage der Matri
 |---|---|---|
 | V1 | Zeichenlimits für Regeldateien unter Devin Local (dokumentiert bislang für Cascade-Regeln: 6.000/12.000) | `.devin/rules/README.md`, AGENTS.md-Größenbudget, Validator-Grenzen |
 | V2 | Exakte Schemadetails von `.devin/config.json` (Schlüsselstruktur, Glob-/Präfix-Semantik, Wildcard `Fetch(*)`, Kommentarfelder-Toleranz) | `.devin/config.json`, FW-CORE-03 Abschnitt 4 |
-| V3 | Hook-Eingabeschema (Feldnamen wie `tool_name`/`tool_input`) und Blockierverhalten; anschließend Umstellung des Schutz-Hooks auf fail-closed | `leitwerk-core/tests/scripts/hook-check-secrets.py`, `hook-overlay-status.py`, `.devin/hooks.v1.json` |
+| ~~V3~~ | **Erledigt mit 0.25.0.** Das Hook-Eingabeschema ist in einer Sitzung erhoben: `hook_event_name`, `tool_name`, `tool_input`, `session_id`, `prompt_id` und ein in der Dokumentation nicht genanntes `tool_use_id`; Werkzeugnamen `read` und `exec`; Blockieren über Exit 2. Die Umstellung auf fail-closed ist mit `CR-2026-026` je Pack entschieden. **Dabei fiel auf, dass die Hook-Datei des Packs gar nicht gelesen wurde** (`AP2-DD-10`, `CR-2026-029`) | `leitwerk-core/tests/protocols/2026-09-11-AP2-devin-desktop.md` |
 | V4 | Skill-Discovery über `.agents/skills/` durch Devin Local; Verhalten der `@skills:`-Erwähnung im Desktop; Grenze „ein Skill aktiv" | FW-CORE-08 Abschnitt 2, K-12 |
 | V5 | Toleranz unbekannter Frontmatter-Schlüssel in SKILL.md (D-08 bleibt unabhängig davon bestehen) | Skill-Standard, K-18 |
 | V6 | Struktur von `.devin/mcp_config.json` im Desktop und Status des Legacy-Pfads `~/.codeium/mcp_config.json` | `.devin/mcp_config.json.example` |

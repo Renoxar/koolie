@@ -4,17 +4,17 @@
 |---|---|
 | Gegenstand | Die zwölf Prüfmarker des Packs gegen Dokumentation und eine reale Installation |
 | Datum | 2026-09-11 |
-| Framework-Version | 0.24.0 |
+| Framework-Version | 0.24.0 (Befunde) / 0.25.0 (Behebung) |
 | Geprüfte Clientversionen | **Devin Desktop 3.9.19** (installiert 08.09.2026) und **Devin CLI 3000.10.21** (`611c1cba`) |
 | Umgebung | Windows 11, Python über den Launcher-Namen `python` |
-| Ergebnisstatus | **fehlgeschlagen** – zwei Befunde der Schwere hoch, davon einer im Kern |
+| Ergebnisstatus | **bestanden nach Behebung** – zwei Befunde der Schwere hoch, beide mit 0.25.0 behoben und in der Sitzung nachgewiesen |
 
-> **Was hier belegt ist und was nicht.** Die Verhaltensnachweise sind über die **Devin CLI**
-> geführt, nicht über die Desktop-Oberfläche. Beide teilen die Projektkonfiguration unter
-> `.devin/`, und Annahme **A-05** des Decision Logs setzt voraus, dass die dokumentierten
-> Mechanismen der CLI für Devin Local im Desktop gelten. **Diese Annahme wird durch dieses
-> Protokoll nicht belegt.** Drei Gegenproben im Desktop stehen aus; sie sind in Abschnitt 6
-> benannt.
+> **Was hier belegt ist und was nicht.** Die Verhaltensnachweise sind überwiegend über die
+> **Devin CLI** geführt. Annahme **A-05** des Decision Logs setzt voraus, dass die
+> dokumentierten Mechanismen der CLI für Devin Local im Desktop gelten. Drei Gegenproben in
+> der Desktop-Anwendung sind durchgeführt (Abschnitt 6): **A-05 ist damit gestützt, nicht
+> belegt** – zwei von drei geprüften Oberflächen verhielten sich deckungsgleich, die dritte
+> wich in einem einzelnen Lauf ab, was ebenso gut Modellvarianz ist.
 
 ## 1. Teil 1 – Dokumentationsabgleich (`FW-AK-01`)
 
@@ -118,8 +118,8 @@ oder eine interaktive Bestätigung lassen den Lauf zu. **Eine Verschärfung gege
 `AP2-CC-14`**, wo `allow`-Regeln lediglich wirkungslos blieben: Hier läuft der Agent gar
 nicht.
 
-**Alle Sitzungsnachweise dieses Protokolls liefen mit abgeschaltetem Workspace-Trust.** Ob
-ein interaktiv erteilter Trust dasselbe Verhalten ergibt, ist eine der Gegenproben.
+**Die Sitzungsnachweise der Befundaufnahme liefen mit abgeschaltetem Workspace-Trust.**
+Gegenprobe G-3 hat gezeigt, dass ein interaktiv erteilter Trust am Verhalten nichts ändert.
 
 ### AP2-DD-15 – Eine fremde globale Regel lädt in jedem Projekt mit (Schwere: mittel)
 
@@ -182,19 +182,59 @@ Regeltexte** zu führen, in der nichts als Anweisung wirken kann. Dieselbe Metho
 
 AP2-DD-12 bis AP2-DD-17 sind erfasst und noch keinem Antrag zugeordnet.
 
-## 6. Ausstehende Gegenproben im Desktop
+## 6. Gegenproben – durchgeführt
 
-Drei Läufe, die A-05 prüfen statt voraussetzen:
+| Nr. | Frage | Ergebnis |
+|---|---|---|
+| G-1 | Lädt der Desktop dieselben Regeln? | **Ja, mit einer Abweichung in der Darstellung.** Die Agent-Sidebar trennt „geladen" von „nachgeladen bei Bedarf" wie die CLI; der Desktop-Chat listete alle sechs als „aktiv". `global_rules.md` aus dem Benutzerprofil erscheint in **allen** Oberflächen mit vollem Pfad unter den geladenen Dateien – `AP2-DD-15` ist damit im Kontext belegt, nicht nur im Register |
+| G-2 | Liest der Desktop die Hook-Datei? | **Nein.** Die Agent-Sidebar führte `echo hallo` aus – ein echter `exec`-Aufruf –, und es entstand **keine** Aufzeichnung. `AP2-DD-10` trifft das Pack vollständig |
+| G-3 | Ändert erteilter Workspace-Trust etwas? | **Nein.** Der interaktive Lauf mit bestätigtem Trust verhielt sich wie die Läufe mit `--respect-workspace-trust false` |
 
-1. **Regelladung** – „Liste nur auf, welche Regel- und Anweisungsdateien in deinem Kontext
-   stehen." Erwartet: dieselben vier Regeln wie in der CLI, dazu `global_rules`.
-2. **Hook-Ablageort** – `.env` lesen lassen, nachdem die Hooks **nur** in
-   `.devin/hooks.v1.json` stehen. Läuft der Hook im Desktop, gilt AP2-DD-10 allein für die
-   CLI; läuft er auch dort nicht, trifft der Befund das Pack vollständig.
-3. **Workspace-Trust** – nach interaktiv erteiltem Trust dieselbe Anfrage. Prüft, ob der
-   abgeschaltete Trust die übrigen Nachweise beeinflusst hat.
+**Damit sind vier Alternativerklärungen für `AP2-DD-10` ausgeschlossen:** abgeschalteter Trust,
+nicht-interaktiver Modus, Bypass-Modus und Variablensyntax im Pfad. Der Hook feuert nicht, weil
+die Datei nicht gelesen wird.
 
-## 7. Gegenzeichnung
+### Was die Gegenproben über A-05 sagen
+
+**A-05 ist gestützt, nicht widerlegt.** Zwei von drei geprüften Oberflächen – CLI und
+Agent-Sidebar – verhielten sich deckungsgleich: dieselbe Trennung geladener und nachladbarer
+Regeln, dieselbe Ausführung des Shell-Befehls, dasselbe Nichtlesen der Hook-Datei.
+
+Der Desktop-Chat wich in einem Lauf ab: Er verweigerte `echo hallo` unter Verweis auf das
+inaktive Overlay (AGENTS.md §3 und §7) – **regelkonform**, während die CLI den Befehl ausführte.
+Aus einem Lauf folgt daraus keine Oberflächendifferenz: **Dieselbe CLI hat denselben Befehl in
+einem späteren Lauf ebenfalls verweigert.** Es ist Varianz im Modellverhalten.
+
+Das ist die beste Illustration dessen, was `[TEXTUELL]` in der Fähigkeitsmatrix bedeutet: eine
+Anweisung, die befolgt werden **kann**, keine Schranke, die greift. Hier stand beides nebeneinander.
+
+## 7. Nachweise nach der Behebung (0.25.0)
+
+Alle in derselben Umgebung erhoben, nach Umsetzung von `CR-2026-029` und `CR-2026-030`:
+
+| Nachweis | Ergebnis |
+|---|---|
+| Der Hook feuert aus der Berechtigungsdatei | **ja** – ein Lesezugriff auf `README.md` wurde als `tool_name: read` aufgezeichnet, wo zuvor nie eine Aufzeichnung entstand |
+| Das Leseverb erreicht den Hook | **ja** – derselbe Aufruf; vor 0.25.0 deckte kein Matcher ein Lesewerkzeug ab |
+| **Die Lücke ist geschlossen** | **ja** – ein Lesezugriff auf die Secret-Datei wurde **blockiert**: „Der Zugriff auf die `.env`-Datei wurde blockiert, da sie als geschützter Pfad (Secrets) klassifiziert ist." Geführt in einer Umgebung **ohne Regeltexte** und mit **ausgeschalteter Berechtigungsschranke** – dort kann nichts als Anweisung gewirkt haben |
+| Die Trennung nach Schutzziel hält | **ja** – sieben Direkttests: Lesen eines Secrets blockiert, Lesen eines Kernpfads erlaubt, `git diff` auf den Kern erlaubt, Schreiben auf ein Kernskript blockiert |
+
+**Derselbe Test, der vor der Behebung den Dateiinhalt preisgab, blockiert danach.**
+
+### Befund bei der Umsetzung
+
+**Die erste Fassung der neuen Gegenprobe war wirkungslos.** Sie prüfte einen Zugriff auf
+`leitwerk-core/VERSION` – ein Pfad, der in keiner der beiden Musterlisten steht und deshalb auch
+bei aufgehobener Trennung der Schutzziele nicht blockiert worden wäre. Sie bestand, ohne etwas zu
+messen. Gefunden hat das die Sonde, nicht der Validatorlauf. **Die vierte stille Prüfung in sechs
+Releases** – und die erste, die in derselben Sitzung entstand, in der sie auffiel.
+
+**Prüfung 14 meldete den Kopfkommentar der neuen Prüfung 18**, weil er einen Clientnamen nannte.
+Zu Recht: Wer einen Namen im Kern verbietet, verbietet ihn auch in der eigenen Begründung.
+
+## 8. Offen
+
+## 9. Gegenzeichnung
 
 | Rolle | Datum | Ergebnis |
 |---|---|---|

@@ -1,9 +1,9 @@
 {
-  "_comment": "Werkzeugneutrale Hook-Konfiguration. Wird nicht installiert, sondern uebersetzt: 'on' nennt die Werkzeugklassen, auf die der Hook anspricht (Verben wie in permissions.json), 'script' den Pfad relativ zum Kernverzeichnis. Woher der Client den Projektpfad nimmt und wie seine Werkzeuge heissen, steht im Manifest des Client Packs. Schluessel mit fuehrendem Unterstrich werden beim Rendern entfernt. 'enforcing' kennzeichnet einen Hook, der eine Sperre durchsetzt statt nur zu melden: Nur einem solchen haengt die Abbildung --fail-closed an, und auch nur dann, wenn das Client Pack das Eingabeschema seines Clients als bestaetigt fuehrt (hook_fail_closed im Manifest, D-31).",
+  "_comment": "Werkzeugneutrale Hook-Konfiguration. Wird nicht installiert, sondern uebersetzt: 'on' nennt die Werkzeugklassen, auf die der Hook anspricht (Verben wie in permissions.json), 'script' den Pfad relativ zum Kernverzeichnis. Woher der Client den Projektpfad nimmt und wie seine Werkzeuge heissen, steht im Manifest des Client Packs. Schluessel mit fuehrendem Unterstrich werden beim Rendern entfernt. Das Leseverb steht hier, weil D-30 Secret-Pfade auch gegen lesende Werkzeuge durchsetzt; ohne Nennung in dieser Quelle bildet kein Pack ein Lesewerkzeug ab, und die Zusage bliebe uneingeloest (AP2-DD-11, D-33). 'enforcing' kennzeichnet einen Hook, der eine Sperre durchsetzt statt nur zu melden: Nur einem solchen haengt die Abbildung --fail-closed an, und auch nur dann, wenn das Client Pack das Eingabeschema seines Clients als bestaetigt fuehrt (hook_fail_closed im Manifest, D-31).",
 
   "PreToolUse": [
     {
-      "on": ["exec", "write"],
+      "on": ["read", "exec", "write"],
       "hooks": [
         { "type": "command", "script": "tests/scripts/hook-check-secrets.py", "timeout": 10, "enforcing": true }
       ]

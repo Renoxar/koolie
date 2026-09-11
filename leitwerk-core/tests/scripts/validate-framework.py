@@ -1268,6 +1268,14 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
     je Werkzeugname mit einer Sonde aufgerufen, die er blockieren MUSS. Eine Zusage,
     die man nur durch Vergleich zweier Listen belegt, ist genau die Art Pruefung, an
     der dieser Befund vorbeigekommen ist.
+
+    Dazu je eine Gegenprobe, die NICHT blockiert werden darf: Ein lesender oder
+    ausfuehrender Zugriff auf einen Kernpfad. Ohne sie bliebe unbemerkt, wenn die
+    Secret-Sperre sich still in eine Sperre auf das gesamte Kernverzeichnis verwandelt.
+
+    Die Grenze bleibt: Geprueft werden die Verben, die das Manifest fuehrt. Ein Client
+    mit einem vierten Werkzeugverb faellt hier nicht auf - das kann nur eine Sitzung
+    erheben, die die Werkzeugnamen misst (AP2-DD-11).
     """
     skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
     if not os.path.isfile(skript):
@@ -1299,7 +1307,23 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
         except json.JSONDecodeError:
             continue
         abbildungen.append((daten.get("client", name), daten.get("hook_tools") or {}))
-    sonden = {"exec": {"command": "cat .env"}, "write": {"file_path": ".env", "content": "x"}}
+    # Je Verb eine Sonde auf einen Secret-Pfad, die blockiert werden MUSS. Das Leseverb
+    # steht seit D-33 dabei: D-30 hatte Secret-Pfade auch gegen lesende Werkzeuge
+    # durchgesetzt, der Code loeste es nicht ein, und diese Pruefung konnte es nicht
+    # finden - sie sondierte genau die beiden Verben, die das Manifest fuehrte, und mass
+    # die Abbildung damit an sich selbst (AP2-DD-11).
+    sonden = {"exec": {"command": "cat .env"}, "write": {"file_path": ".env", "content": "x"},
+              "read": {"file_path": ".env"}}
+    # Gegenprobe je Verb: Ein Zugriff auf einen Kernpfad, der NICHT blockiert werden darf.
+    # Lesende und ausfuehrende Werkzeuge duerfen den Kern lesen - P4 setzt das voraus, und
+    # ohne diese Probe verwandelte die Erweiterung die Secret-Sperre still in eine Sperre
+    # auf das gesamte Kernverzeichnis (D-30, zweites Schutzziel).
+    # Der Pfad muss ein Strukturpfad sein, sonst prueft die Gegenprobe nichts: Ein
+    # beliebiger Kernpfad wie VERSION steht in keiner der beiden Musterlisten und waere
+    # auch dann nicht blockiert, wenn die Trennung aufgehoben ist. Genau daran ist die
+    # erste Fassung dieser Gegenprobe vorbeigelaufen - sie bestand, ohne etwas zu messen.
+    gegenproben = {"exec": {"command": f"git diff {KERN}/framework/core/00-purpose.md"},
+                   "read": {"file_path": f"{KERN}/framework/core/00-purpose.md"}}
     for pack, abbildung in abbildungen:
       for verb, eingabe in sonden.items():
         for werkzeug in abbildung.get(verb) or []:
@@ -1316,6 +1340,22 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
                     f"'{verb}' abbildet - eine Sonde auf einen Secret-Pfad wurde nicht "
                     f"blockiert (Exit {lauf.returncode} statt 2). Die Abbildung erreicht "
                     f"den Matcher, aber nicht die Pruefung im Hook (AP2-CC-16)")
+      for verb, eingabe in gegenproben.items():
+        for werkzeug in abbildung.get(verb) or []:
+            payload = json.dumps({"tool_name": werkzeug, "tool_input": eingabe})
+            try:
+                lauf = subprocess.run([interpreter, skript], input=payload,
+                                      capture_output=True, text=True, timeout=20)
+            except (OSError, subprocess.SubprocessError):
+                continue  # der Sondenlauf oben meldet einen nicht ausfuehrbaren Hook
+            if lauf.returncode != 0:
+                err(f"{pack}/manifest.json: Der Schutz-Hook blockiert einen nicht "
+                    f"schreibenden Zugriff auf einen Strukturpfad des Kerns mit dem "
+                    f"Werkzeug '{werkzeug}' (Verb '{verb}', Exit {lauf.returncode} "
+                    f"statt 0). "
+                    f"Strukturpfade sind integritaetsgeschuetzt und gelten nur fuer "
+                    f"schreibende Werkzeuge; P4 setzt voraus, dass der Kern lesbar "
+                    f"bleibt (D-30)")
 
 
 # Pruefung 17: Der Schutz-Hook laesst eine unlesbare Eingabe nur dort durch, wo das
@@ -1414,6 +1454,46 @@ def check_hook_fail_closed(root: str, man: dict) -> None:
                 f"(D-31). {weg}")
 
 
+# Pruefung 18: Die Hook-Konfiguration steht dort, wo der Client sie liest - und nirgends
+# sonst. Ein zweiter, verwaister Ort ist gefaehrlicher als gar keiner (D-32).
+VERWAISTE_HOOK_DATEIEN = ("hooks.v1.json",)
+
+
+def check_hook_ablageort(root: str, man: dict) -> None:
+    """Pruefung 18 (D-32): Keine verwaiste Hook-Datei neben der wirksamen.
+
+    Ob ein Client eine Datei **liest**, kann kein Validator feststellen - das kann nur
+    eine Sitzung, und genau dort ist AP2-DD-10 aufgefallen: Aus der eigenen Hook-Datei
+    des Packs fuehrte der KI-Client keinen Hook aus, dieselbe Konfiguration in der
+    Berechtigungsdatei lief sofort. Seit D-32 liegen die Hooks dort.
+
+    Was diese Pruefung leisten kann, ist das Aufraeumen danach: 'install.py --update'
+    schreibt die neue Datei, entfernt die alte aber nicht. Zurueck bleibt eine
+    Hook-Konfiguration, die aussieht, als gaelte sie - und die bei einer kuenftigen
+    Clientversion, die den Ort doch liest, eine zweite, veraltete Regelmenge waere.
+
+    Sie belegt damit nichts ueber die Wirkung; sie haelt einen Zustand fest, der nach
+    einer Migration entsteht. Das ist ausdruecklich weniger als ein Wirkungsnachweis
+    nach D-23 und hier auch nicht mehr moeglich.
+    """
+    rechte = man.get("permissions_file")
+    hooks_ort = (man.get("runtime_placeholders") or {}).get("<HOOKS_FILE>")
+    if not rechte or hooks_ort != rechte:
+        return  # Client mit eigener Hook-Datei - nichts aufzuraeumen
+    runtime = (man.get("runtime_placeholders") or {}).get("<RUNTIME_DIR>")
+    if not runtime:
+        return
+    for name in VERWAISTE_HOOK_DATEIEN:
+        pfad = os.path.join(root, *runtime.split("/"), name)
+        if os.path.exists(pfad):
+            warn(f"{runtime}/{name} liegt neben der wirksamen Hook-Konfiguration in "
+                 f"{rechte}. Dieses Pack fuehrt seine Hooks seit 0.25.0 in der "
+                 f"Berechtigungsdatei, weil der Client die eigene Datei nicht liest "
+                 f"(AP2-DD-10, D-32); 'install.py --update' entfernt sie nicht. Die "
+                 f"verwaiste Datei ist von Hand zu loeschen - sonst steht dort eine "
+                 f"Regelmenge, die aussieht, als gaelte sie")
+
+
 def check_mermaid(root: str) -> None:
     mmdc = shutil.which("mmdc")
     if not mmdc:
@@ -1467,6 +1547,7 @@ def main() -> int:
     check_hook_interpreter(root, man)
     check_hook_tool_coverage(root, man)
     check_hook_fail_closed(root, man)
+    check_hook_ablageort(root, man)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:

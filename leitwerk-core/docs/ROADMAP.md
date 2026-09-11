@@ -3,18 +3,18 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.24.0 (2026-09-11)
+## Stand nach Release 0.25.0 (2026-09-11)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.24.0 gebracht haben
+### Was 0.5.0 bis 0.25.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -36,6 +36,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
 | Betriebsmodi werkzeugneutral | Der Kern beschrieb bei vier Betriebsmodi, was ein bestimmter Client kann; das gehört in dessen Fähigkeitsmatrix | `CR-2026-025`, `clients/devin-desktop/CLIENT_PACK.md` A2/M4/M5 |
+| AP2 `devin-desktop` | Das Pack erstmals gegen eine Installation gefahren: 17 Befunde, zwei schwer. Die Hook-Datei wurde nie gelesen, und ein lesendes Werkzeug erreichte den Schutz-Hook bei **keinem** Pack | D-32, D-33, `CR-2026-029`, `CR-2026-030`, `tests/protocols/2026-09-11-AP2-devin-desktop.md` |
 | Schutz-Hook fail-closed | Der Hook liess eine Eingabe, die er nicht lesen kann, durch – begruendet mit einem Schema, das fuer `claude-code` seit fuenf Releases bestaetigt ist. Der Vorbehalt steht jetzt im Pack, nicht im Skript | `CR-2026-026`, D-31, `tests/protocols/2026-09-11-CR-2026-026-fail-closed.md` |
 | Letzte Client-Bindungen | Ein Dateiname, ein Platzhalter und acht Markerstellen banden den Kern weiter an ein Produkt; Prüfung 14 erfasst jetzt auch Platzhalter | `CR-2026-024`, `tests/protocols/2026-09-10-CR-2026-024-clientbindungen.md` |
 | Shell-Lesesperre | Für Shell-Befehle bestand keine Lesesperre: Die Abbildung erreichte den Matcher, nicht die Prüfung im Hook – bei einem Pack, das keine Installation hat | `CR-2026-023`, D-30, `tests/protocols/2026-09-10-CR-2026-023-shell-lesesperre.md` |
@@ -49,6 +50,25 @@ Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.25.0 ist AP2 fuer das zweite Client Pack gefahren - und hat zwei Zusagen widerlegt, die
+seit der ersten Fassung als technisch durchgesetzt galten.
+
+**Die Hook-Datei wurde nie gelesen.** Das Pack legte seine Hook-Konfiguration dorthin, wo die
+Herstellerdokumentation den Projektort nennt. Aus dieser Datei fuehrte der Client keinen einzigen
+Hook aus; dieselbe Konfiguration in der Berechtigungsdatei loeste sofort aus. H1, H2 und H3 waren
+damit wirkungslos. **Belegt war die Dokumentation, nicht das Verhalten** - derselbe Befundtyp wie
+`AP2-CC-13`, und der Grund, warum D-23 auf Wirkungsnachweisen besteht.
+
+**Ein lesendes Werkzeug erreichte den Schutz-Hook bei keinem Pack.** D-30 hatte einen Tag zuvor
+entschieden, dass Secret-Pfade auch gegen lesende Werkzeuge gelten. Eingeloest war das nie. In der
+Sitzung sichtbar geworden, als der Hook `cat .env` blockierte und der Agent daraufhin schrieb, er
+koenne die Datei stattdessen mit dem Lesewerkzeug oeffnen - und es tat. **Pruefung 16 konnte es
+nicht finden: Sie sondiert die Verben, die das Manifest fuehrt, und misst die Abbildung damit an
+sich selbst.**
+
+Das ist der Unterschied zwischen einer Entscheidung und ihrer Einloesung. D-30 stand im Decision
+Log, der Code stand daneben, und keine Pruefung verglich beide.
 
 Mit 0.24.0 laeuft der Schutz-Hook fail-closed – dort, wo das Eingabeschema belegt ist.
 

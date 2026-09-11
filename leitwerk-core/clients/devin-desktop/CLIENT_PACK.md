@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.2 |
+| Version | 0.3.3 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -22,7 +22,7 @@
 | Skills | `.devin/skills/<name>/SKILL.md` | `[DOK]`; Alternativpfad `.agents/skills/` unbestätigt (K-12) |
 | Subagentenprofile | `.devin/agents/<name>.md` | `[DOK]` |
 | Berechtigungskonfiguration | `.devin/config.json` (erzeugt aus `framework/runtime/permissions.json`) | `[DOK]` Mechanismus; Schemadetails `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
-| Hook-Konfiguration | `.devin/hooks.v1.json` (eigene Datei; erzeugt aus `framework/runtime/hooks.json`) | `[DOK]` Mechanismus; Eingabeschema `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| Hook-Konfiguration | `.devin/config.json` unter `hooks` (erzeugt aus `framework/runtime/hooks.json`) | **In einer Sitzung erhoben** (AP2, 3.9.19 / CLI 3000.10.21): Aus `.devin/hooks.v1.json` wird kein Hook ausgeführt, aus `config.json` sofort. Eingabeschema belegt, einschließlich des undokumentierten Feldes `tool_use_id` |
 | MCP-Konfiguration | `.devin/mcp_config.json` (Vorlage: `.devin/mcp_config.json.example`) | Dateiname `[DOK]`; Struktur `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 | Projektverzeichnis-Variable in Hooks | `DEVIN_PROJECT_DIR` | `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
 | Nutzerlokale Überschreibung | `AGENTS.local.md`, `.devin/config.local.json`, `*.local.md` neben Regeln | `[DOK]` |
@@ -88,9 +88,9 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| H1 | Prüfung vor Werkzeugausführung | `PreToolUse` mit Matcher auf schreibende und ausführende Werkzeuge | `[TECHNISCH]` | `[DOK]` Mechanismus |
-| H2 | Prüfung kann **blockieren** | `hook-check-secrets.py` läuft bei diesem Pack fail-open (`hook_fail_closed: false`, Eingabeschema unbestätigt – V3): Eine nicht lesbare Eingabe wird durchgelassen. Erprobbar mit `FW_HOOK_FAIL_CLOSED=1`, verbindlich erst mit dem Abschluss von AP2 für dieses Pack (D-31) | `[TEXTUELL]` | Eingabeschema und Blockierverhalten `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` (V3) |
-| H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py` | `[TECHNISCH]` | `[DOK]` Mechanismus |
+| H1 | Prüfung vor Werkzeugausführung | `hooks.PreToolUse` in `.devin/config.json`; Matcher auf lesende, schreibende und ausführende Werkzeuge | `[TECHNISCH]` | **beobachtet** (AP2, `tests/protocols/2026-09-11-AP2-devin-desktop.md`) – bis 0.24.0 wirkungslos, weil die Konfiguration in einer Datei stand, die der Client nicht liest |
+| H2 | Prüfung kann **blockieren** | Exit-Code 2 des Hook-Befehls bricht die Operation ab. Seit 0.25.0 **fail-closed** (`hook_fail_closed: true`): Das Eingabeschema ist gegen eine Installation belegt, damit ist die Bedingung aus D-31 erfüllt | `[TECHNISCH]` | **beobachtet**: Ein Lesezugriff auf eine Secret-Datei wurde blockiert – in einer Umgebung ohne Regeltexte und bei ausgeschalteter Berechtigungsschranke, dort kann nichts als Anweisung gewirkt haben |
+| H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py`, seit 0.25.0 in `.devin/config.json` | `[TECHNISCH]` | `[DOK]` Mechanismus; **die Meldung selbst ist nicht beobachtet**. Der Agent nannte den Overlay-Status zwar, konnte ihn aber aus den Regeltexten haben – bis 0.24.0 lief der Hook ohnehin nicht (AP2-DD-10) |
 
 ### A – Agentenprofile
 
@@ -158,3 +158,4 @@ Bis `install.py` den Schalter `--client` kennt, ist `devin-desktop` der eingebau
 | 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-10 | Overlay-Laufzeitregel und die beiden Vorlagen in den Kern; Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |
 | 0.3.2 | 2026-09-11 | **Fail-open ausgewiesen statt vorausgesetzt (`CR-2026-026`, D-31).** Das Manifest führt `hook_fail_closed: false`; der Schutz-Hook dieses Packs lässt eine nicht lesbare Eingabe weiter durch, weil das Eingabeschema unbestätigt ist (V3). Prüfung 17 hält die Zusage an ihrer Wirkung fest. Das Pack `claude-code` führt seit diesem Release `true` – die Abweichung steht jetzt in der Matrix, statt aus dem Fehlen einer Angabe zu folgen | `<FRAMEWORK_OWNER>` |
+| 0.3.3 | 2026-09-11 | **Die Hooks liegen in der Berechtigungsdatei (`CR-2026-029`, D-32) und der Schutz-Hook läuft fail-closed (`CR-2026-026`, D-31).** AP2 hat gezeigt, dass aus `.devin/hooks.v1.json` kein Hook ausgeführt wird – H1 bis H3 waren wirkungslos. Mit dem belegten Eingabeschema ist auch die Bedingung für fail-closed erfüllt. H1 und H2 sind jetzt **beobachtet**, nicht nur dokumentiert; H3 bleibt unbeobachtet. Der Matcher deckt zusätzlich das Lesewerkzeug ab (`CR-2026-030`, D-33) | `<FRAMEWORK_OWNER>` |
