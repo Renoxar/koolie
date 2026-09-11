@@ -193,16 +193,7 @@
     "defaultMode": "default"
   },
   "permissions_note": "Eine Abweichung gegenueber Clients mit einem einzigen Schreibwerkzeug: Befehlsverbote wirken praefixbasiert und damit breiter (Bash(git reset:*) sperrt jedes git reset, nicht nur --hard); ihre Grenze ist eine andere Schreibweise desselben Befehls, etwa git -C . push. Pfadregeln werden von diesem Client nur fuer Read und Edit ausgewertet: Eine Pfadregel fuer Write, NotebookEdit, Glob oder MultiEdit wird angenommen, nie konsultiert und beim Sitzungsstart als Warnung gemeldet. write bildet deshalb auf Edit ab und search auf Grep - bis 0.13.0 erzeugte die Abbildung je Pfad zusaetzlich eine Write-Regel und ein Glob(**), zusammen 17 wirkungslose Regeln je Installation (AP2-CC-02, D-26). Eine Verweigerung des blossen Werkzeugnamens ohne Pfad wirkt weiterhin ueberall.",
-  "hook_tools": {
-    "exec": [
-      "Bash"
-    ],
-    "write": [
-      "Edit",
-      "Write",
-      "NotebookEdit"
-    ]
-  },
+  "hook_tools": {"read": ["Read"], "exec": ["Bash"], "write": ["Edit", "Write", "NotebookEdit"]},
   "hook_project_dir_var": "CLAUDE_PROJECT_DIR",
   "hook_fail_closed": true,
   "_hook_fail_closed_note": "Das Eingabeschema dieses Clients ist gegen eine Installation bestaetigt (AP2-Protokoll, WN-5; Clientversion 2.1.267), und Pruefung 15 belegt, dass der Hook startet. Ein durchsetzender Hook wird deshalb mit --fail-closed aufgerufen: Eine Eingabe, die er nicht lesen kann, blockiert, statt durchgelassen zu werden. Der Schalter steht im Kommando und nicht in env - dass ein Client env an den Hook-Prozess weiterreicht, ist fuer keines der Packs belegt (D-31)."

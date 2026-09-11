@@ -2,6 +2,46 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.25.0] - 2026-09-11
+
+### Behoben
+- **Die Hook-Datei des Packs `devin-desktop` wurde nie gelesen (`CR-2026-029`, D-32, `AP2-DD-10`).** Das Pack legte seine Hook-Konfiguration in eine eigene Datei der Laufzeitschicht - so nennt die Herstellerdokumentation den Projektort. **Aus dieser Datei fuehrte der Client keinen einzigen Hook aus.** Weder mit Variablenpfad noch mit absolutem Pfad, weder mit Matcher noch ohne. Dieselbe Konfiguration in der Berechtigungsdatei loeste sofort aus.
+
+  **Damit waren H1, H2 und H3 wirkungslos** - keine Pruefung vor der Werkzeugausfuehrung, keine Blockierung, keine Statusmeldung beim Sitzungsstart. Die technische Durchsetzung von B3 ruhte allein auf den Verweigerungsregeln.
+
+  **Belegt war die Dokumentation, nicht das Verhalten** - derselbe Befundtyp wie `AP2-CC-13`. Bestaetigt in drei Oberflaechen: nicht-interaktiv, interaktiv mit erteiltem Trust und in der Sidebar der Desktop-Anwendung.
+
+- **Ein lesendes Werkzeug erreichte den Schutz-Hook nicht (`CR-2026-030`, D-33, `AP2-DD-11`).** D-30 hatte am Vortag entschieden: „Secret-Pfade sind vertraulich und werden auch gegen lesende Werkzeuge durchgesetzt." **Der Kern loeste das nie ein**, auf zwei voneinander unabhaengigen Wegen: Die werkzeugneutrale Hook-Quelle fuehrte `on: [exec, write]`, kein Pack bildete ein Leseverb ab - und der Hook liess einen Lesezugriff auf eine Secret-Datei auch dann durch, wenn man ihn direkt aufrief.
+
+  **In einer Sitzung beobachtet:** Der Hook blockierte `cat .env` korrekt, woraufhin der Agent schrieb „Ich kann die Datei stattdessen direkt mit dem read-Tool lesen" - und den Inhalt ausgab. **Der Befund betrifft beide Packs**, nicht nur das validierte.
+
+  **Warum Pruefung 16 ihn nicht fand:** Sie sondiert genau die Verben, die das Manifest fuehrt. Eine Zusage ueber ein drittes Verb kann sie nicht widerlegen - sie misst die Abbildung an sich selbst.
+
+### Geaendert
+- **`devin-desktop` laeuft fail-closed.** Die Bedingung aus D-31 war, dass das Eingabeschema gegen eine Installation belegt ist. Das ist es jetzt: In einer AP2-Sitzung aufgezeichnet wurden `hook_event_name`, `tool_name`, `tool_input`, `session_id`, `prompt_id` **und ein in der Dokumentation nicht genanntes `tool_use_id`**. Beide Packs laufen damit fail-closed.
+- **H1 und H2 des Packs sind `beobachtet`, nicht mehr nur `[DOK]`.** **H3 ausdruecklich nicht**: Der Agent nannte den Overlay-Status zwar, konnte ihn aber aus den Regeltexten haben.
+- **V3 des Verifikationsbedarfs ist erledigt** und traegt jetzt das Ergebnis statt der offenen Frage.
+
+### Hinzugefuegt
+- **Pruefung 18 meldet eine verwaiste Hook-Datei.** `install.py --update` schreibt die neue Konfiguration, entfernt die alte aber nicht; zurueck bleibt eine Datei, die aussieht, als gaelte sie. Die Pruefung belegt **keine Wirkung** - sie haelt einen Zustand fest, der nach einer Migration entsteht, und sagt das in ihrem Kopfkommentar.
+- **Pruefung 16 sondiert das Leseverb und fuehrt Gegenproben.** Je Verb ein Zugriff auf einen Strukturpfad, der **nicht** blockiert werden darf.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Testinstallationen beider Packs 0 Fehler.
+- **Sitzungsnachweise mit der Devin CLI 3000.10.21 und Devin Desktop 3.9.19** (`tests/protocols/2026-09-11-AP2-devin-desktop.md`): Der Hook feuert aus der Berechtigungsdatei; ein Lesezugriff wird als `read` erfasst; **ein Lesezugriff auf eine Secret-Datei wird blockiert** - in einer Umgebung ohne Regeltexte und bei ausgeschalteter Berechtigungsschranke, dort kann nichts als Anweisung gewirkt haben.
+- **Zwei Sonden, zwei Gegenproben, sieben Direkttests.**
+- **Die erste Fassung der Gegenprobe war wirkungslos.** Sie prueft einen Kernpfad, der in keiner der beiden Musterlisten steht und deshalb auch bei aufgehobener Trennung nicht blockiert worden waere - sie bestand, ohne etwas zu messen. Gefunden hat das die Sonde. **Die vierte stille Pruefung in sechs Releases**, und die erste, die in derselben Sitzung entstand, in der sie auffiel.
+- **Pruefung 14 meldete den Kopfkommentar der neuen Pruefung** - er nannte einen Clientnamen. Zu Recht.
+
+### Migrationshinweise fuer Overlays
+**Fuer bestehende Installationen des Packs `devin-desktop` zwei Handgriffe:** `install.py --update` schreibt die Hooks in die Berechtigungsdatei - diese gehoert nach der Erstinstallation aber dem Projekt und wird **nicht** ueberschrieben; die Hooks sind dort von Hand einzutragen. Die alte Hook-Datei der Laufzeitschicht ist zu **loeschen**; Pruefung 18 meldet sie als Warnung. Bei `claude-code` genuegt das Nachziehen des Matchers um das Lesewerkzeug.
+
+### Bekannte Einschraenkungen
+- **H3 bleibt unbeobachtet.** Dass die Statusmeldung den Sitzungsanfang erreicht, ist nicht belegt.
+- **Die Blindstelle von Pruefung 16 verschiebt sich, sie verschwindet nicht.** Fuehrte ein Client ein viertes Werkzeugverb, fiele das weiterhin nicht auf. Dagegen hilft kein Validator, sondern eine Sitzung, die die Werkzeugnamen **erhebt**.
+- **Die Sitzungsnachweise stammen ueberwiegend aus der CLI**, nicht aus der Desktop-Oberflaeche. Annahme A-05 ist damit gestuetzt, nicht belegt: Zwei von drei gepruefte Oberflaechen verhielten sich deckungsgleich.
+- **Nicht erhoben ist, wie das schreibende Werkzeug heisst.** In keinem Lauf kam ein Schreibvorgang vor.
+
 ## [0.24.0] - 2026-09-11
 
 ### Geaendert
