@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.3 |
+| Version | 0.4.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -59,7 +59,9 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 | R1 | Wurzel-Anweisungsdatei wird ungefragt geladen | `AGENTS.md` wird als always-on-Regel in die Regel-Engine eingespeist | `[TECHNISCH]` | `[DOK]` |
 | R2 | Regeldateien mit Ladebedingungen | Frontmatter `trigger`: `always_on`, `model_decision`, `manual`, `agent` | `[TECHNISCH]` | `[DOK]` |
 | R3 | Regeln an Dateimuster bindbar | Frontmatter `trigger: glob` mit `globs` – Grundlage der Technology Packs | `[TECHNISCH]` | `[DOK]` |
-| R4 | Bekanntes Zeichenlimit | 12.000 je Workspace-Regel, 6.000 global | `[TECHNISCH]` | `[DOK]` für Cascade; für Devin Local `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` (K-19) |
+| R4 | Bekanntes Zeichenlimit | 12.000 je Workspace-Regel, 6.000 global – **Vorgabe des Frameworks, keine Produkteigenschaft** | `[TEXTUELL]` | `[EMPF]`. Die Zahlen stammen aus der Cascade-Dokumentation (QD-7); für Devin Local nennt der Hersteller **keine** Grenze. Zweimal unabhängig geprüft am 2026-09-11 gegen Devin Desktop 3.9.19 (`cli/extensibility/rules`, ERH-10). V1 ist damit geschlossen; K-19 bleibt offen |
+| R5 | Die geladenen Regelquellen sind vollständig aufzählbar | `devin rules list` und `devin rules show <name>` führen die Regeln samt Herkunftspfad und Aktivierung; `devin rules paths` nennt die Ablageorte. Die vollständige Auskunft des Frameworks steht in Abschnitt 7 dieses Packs | `[TEXTUELL]` | **Beobachtet – und mit gemessenem Vorbehalt.** Die Kommandos laufen und listen (K-21). Ihre Aufzählung ist aber **nicht deckungsgleich mit dem, was lädt**: Mit `windsurf: false` führt `devin rules list` die abgeschaltete Quelle unverändert auf, obwohl ihr Inhalt nicht mehr im Kontext steht (ERH-02), und `devin rules paths` nennt `~/.claude/skills/` nicht, obwohl 67 von 81 Skills von dort stammen (ERH-03). Die Zusage ist damit **nicht technisch getragen**: Das Register ist eine Auskunft des Clients über seine Konfiguration, kein Abbild des Kontexts. Wer die Wirkung prüfen will, misst den Kontext |
+| R6 | Keine Importe fremder Werkzeugformate | `read_config_from` in der Berechtigungsdatei: `cursor`, `windsurf` und `claude` auf `false`, **`agents_standard` bleibt `true`** – das ist bei diesem Client das Format der **eigenen** Wurzel-Anweisungsdatei; es abzuschalten hieße, das Framework abzuschalten. Erzeugt von `clientmap.py` aus dem Manifest (D-37) | `[TEXTUELL]` | **Wirkung gemessen, Durchsetzung widerlegt.** Am 2026-09-11 gemessen: Mit abgeschalteten Fremdformaten verschwinden 67 fremde Skills (69 → 2) und der Inhalt der fremden Regel aus dem Kontext (K-21, K-23). Ebenso gemessen: Die Benutzerkonfiguration hat in **beide** Richtungen Vorrang (K-27, ERH-11) – die Einstellung ist damit ein Standard, den jede Arbeitsstation still aufheben kann, wirksam dort, wo die Benutzerkonfiguration schweigt. Prüfung 22 hält die Abbildung fest, nicht ihre Wirkung |
 
 ### S – Skills
 
@@ -68,9 +70,12 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 | S1 | Versionierte Skills im Repository | `.devin/skills/<name>/SKILL.md` mit Frontmatter | `[TECHNISCH]` | `[DOK]` |
 | S2 | Gezielter Aufruf | Aufruf über den Skill-Namen mit vorangestelltem Schrägstrich | `[TECHNISCH]` | `[DOK]` |
 | S3 | Werkzeugbeschränkung je Skill | Frontmatter `allowed-tools`, `permissions` | `[TECHNISCH]` | Wirkung additiver Skill-Permissions `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
-| S4 | Schreibende Skills nur benutzergetriggert | Frontmatter `triggers` – Framework-Konvention, statisch geprüft durch `leitwerk-core/tests/scripts/validate-framework.py` | `[TEXTUELL]` | `[EMPF]`; die Laufzeitwirkung ist Modellverhalten |
+| S4 | Schreibende Skills nur benutzergetriggert | Frontmatter `triggers` – Framework-Konvention, statisch geprüft durch `leitwerk-core/tests/scripts/validate-framework.py` | `[TEXTUELL]` | `[EMPF]`; die Laufzeitwirkung ist Modellverhalten. **Reichweite:** Die Zusage gilt für die Skill-Ablage, die das Framework schreibt. Skills aus Ablagen außerhalb des Repositoriums unterliegen diesen Konventionen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken (`AP2-DD-16`, `CR-2026-032`) |
+| S5 | Die geladenen Skills sind vollständig aufzählbar, samt Herkunft und Aufrufbarkeit | `devin skills list --json` führt je Skill `provider`, `base_dir` und `triggers`; `devin skills paths` nennt die Suchpfade | `[TEXTUELL]` | **Beobachtet – mit demselben Vorbehalt wie R5.** Am 2026-09-11 führte die Liste 81 Skills, davon 67 aus `~\.claude\skills\` mit `[user,model]` (`AP2-DD-16`, K-24). `devin skills paths` nennt diese Ablage jedoch **nicht** (ERH-03): Die Aufzählung der Skills ist vollständig, die der Pfade nicht. Aufzählbarkeit ist zudem keine Kontrolle – die Liste entsteht nur, wenn ein Mensch das Kommando ausführt |
 
 ### B – Berechtigungen
+
+> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet.** Im Modus ohne Rückfragen, den D-05 untersagt, ist diese Linie aus; dann trägt allein der Schutz-Hook. Beobachtet am 2026-09-11 (`devin-desktop`, Modus `Bypass`): Eine `deny`-Regel auf einen Secret-Pfad griff **nicht**, der Schutz-Hook griff (`AP2-DD-12`, D-35). Erste und zweite Linie fallen damit unter verschiedenen Bedingungen – das ist die empirische Rechtfertigung des Hooks.
 
 | ID | Zusage des Frameworks | Kern | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
@@ -82,7 +87,7 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 | B6 | Befehle per Muster verweigerbar | ja | Verweigerungsregeln auf Push-, Merge-, Lösch- und Rechteausweitungsbefehle | `[TECHNISCH]` | wie B3 |
 | B7 | Schreiboperationen fragen zurück | – | Rückfrageregel auf alle Schreiboperationen | `[TECHNISCH]` | `[DOK]` |
 | B8 | Netzwerkzugriff standardmäßig unterbunden | – | Verweigerungsregeln auf Abruf- und Download-Werkzeuge | `[TECHNISCH]` | wie B3 |
-| B9 | Nutzerlokale Konfiguration kann nur verschärfen | – | `.devin/config.local.json` – **Framework-Regel, keine Produkteigenschaft** | `[TEXTUELL]` | `[EMPF]`; ob der Client eine Lockerung technisch verhindert: `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| B9 | Nutzerlokale Konfiguration kann nur verschärfen | – | `.devin/config.local.json` und die Benutzerkonfiguration `%APPDATA%\devin\config.json` – **Framework-Regel, keine Produkteigenschaft** | `[TEXTUELL]` | `[EMPF]`. **Der Marker ist aufgelöst, und zwar zum Schlechteren: Der Client verhindert eine Lockerung nicht.** Gemessen am 2026-09-11 in beiden Richtungen (K-27, ERH-11): Der Wert der Benutzerkonfiguration setzt sich gegen den projektseitigen durch – auch dann, wenn der projektseitige der strengere ist. Eine projektseitige Verschärfung ist damit ein Standard, den jede Arbeitsstation still aufheben kann, wirksam dort, wo die Benutzerkonfiguration schweigt (der Normalfall). Bei `claude-code` ist die Lage anders: Dort kann keine Ebene eine Verweigerung aufheben |
 
 ### H – Hooks
 
@@ -103,12 +108,14 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| M1 | Standardmodus fragt bei Schreiben und Befehlen zurück | Modus `Normal` | `[TECHNISCH]` | `[DOK]` |
-| M2 | Modus ohne Rückfragen ausschließbar | `Bypass` ist per D-05 untersagt; eine technische Sperre setzt Admin-Kontrollen der Planstufe voraus (K-05 offen) | `[TEXTUELL]` | `[EMPF]`; Verfügbarkeit der Sperre `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| M1 | Standardmodus fragt bei Schreiben und Befehlen zurück | Modus `Normal` (CLI: `auto`) | `[TECHNISCH]` | `[DOK]` (QD-11); die CLI-Namen abgeglichen am 2026-09-11 gegen 3.9.19 (ERH-08) |
+| M2 | Modus ohne Rückfragen ausschließbar | `Bypass` (CLI: `dangerous`, auch über `DEVIN_PERMISSION_MODE`) ist per D-05 untersagt. **Eine Sperre des Modus selbst ist bei diesem Client nicht dokumentiert; was es gibt, ist die Begrenzung seiner Wirkung** durch die Terminal Permissions der Organisationsebene, die laut Team-Dokumentation den höchsten Vorrang haben und von lokalen wie projektseitigen Konfigurationen nicht überschrieben werden – sie greifen also auch bei gewähltem Bypass | `[TEXTUELL]` | `[DOK]` für die Wirkungsbegrenzung (QD-16); **nicht beobachtet** – ohne Team-Plan mit Admin-Kontrollen nicht beobachtbar (K-05). Abgeglichen am 2026-09-11 gegen 3.9.19. Bei `claude-code` ist die Modus-Sperre selbst dokumentiert und belegt (AP2-CC-05) – die Packs unterscheiden sich hier |
 | M3 | Freigabe auf die Sitzung begrenzbar | Sitzungsfreigaben „einmalig" und „für die Sitzung" | `[TECHNISCH]` | `[DOK]` |
 | M4 | Eigener Planungsmodus für Modus M2 | Plan-Modus mit persistenter Plan-Datei unter `~/.devin/plans/plan-<session>.md`; die Datei liegt außerhalb des Repositorys | `[TECHNISCH]` | `[DOK]`; übernommen mit `CR-2026-025` |
 | M5 | Eigener Nur-Lese-Modus für Modus M1 | Plan-Modus („read-only research“) | `[TECHNISCH]` | `[DOK]`; übernommen mit `CR-2026-025` |
 
+| M6 | Modus mit automatischer Übernahme von Dateiänderungen begrenzbar | `Accept Edits` (CLI: `accept-edits`) genehmigt Dateiänderungen im Workspace ohne Rückfrage; nach D-05 nur über dokumentierte Ausnahme bei Kontrollstufe niedrig zulässig. Eine Abschaltung des Modus ist nicht dokumentiert; wirksam ist auch hier allein die Wirkungsbegrenzung der Organisationsebene | `[TEXTUELL]` | `[DOK]` für den Modus (QD-11), `[EMPF]` für die Beschränkung; **nicht beobachtet** (K-05) |
+| M7 | Selbst beurteilender Modus begrenzbar | `Smart` (CLI: `smart`) genehmigt Workspace-Änderungen selbsttätig und beurteilt die übrigen Aktionen nach eigener Sicherheitseinschätzung; nach D-05 nur über dokumentierte Ausnahme bei Kontrollstufe niedrig zulässig. **Ein Modus, der selbst beurteilt, was sicher ist, ersetzt die menschliche Freigabe durch Modellverhalten** – das Framework lässt ihn deshalb nur als Ausnahme zu. Abschaltung nicht dokumentiert; Wirkungsbegrenzung wie M2 | `[TEXTUELL]` | `[DOK]` für den Modus (QD-11), `[EMPF]` für die Beschränkung; **nicht beobachtet** (K-05) |
 ### X – Externe Anbindung
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
@@ -120,11 +127,13 @@ Die Abbildung ist kein freies Feld: Eine `deny`- oder `ask`-Regel, für die dies
 
 | Klasse | Anzahl | davon Kernzusagen |
 |---|---|---|
-| `[TECHNISCH]` | 21 von 26 | 6 von 6 |
-| `[TEXTUELL]` | 4 von 26 | 0 |
-| `[NICHT ABBILDBAR]` | 1 von 26 | 0 |
+| `[TECHNISCH]` | 24 von 34 | 6 von 6 |
+| `[TEXTUELL]` | 9 von 34 | 0 |
+| `[NICHT ABBILDBAR]` | 1 von 34 | 0 |
 
-**Belegstand:** 13 der 26 Zeilen tragen einen VERIFY-Marker. Keine Einstufung ist gegen eine Installation geprüft.
+**Die Zeilenzahl ist mit 0.26.0 nachgezählt worden – sie stimmte vorher nicht.** Die Zusammenfassung führte „von 26", während die Matrix 29 Zeilen trug: A2, M4 und M5 kamen mit `CR-2026-025` hinzu, ohne dass die Summen nachgezogen wurden. Derselbe Befundtyp, den dieses Projekt sonst an seinen Zusagen findet, hier an seiner eigenen Buchführung. Fünf Zeilen sind mit 0.26.0 dazugekommen (R5, R6, S5, M6, M7).
+
+**Belegstand:** **8 der 34 Zeilen** tragen einen offenen VERIFY-Marker – S3, B3, A1 und X2 unmittelbar, B4, B5, B6 und B8 über den Verweis „wie B3". Keine Einstufung ist gegen eine Installation geprüft; **beobachtet** sind H1, H2 (AP2) sowie R5, R6 und S5 (Erhebungen vom 2026-09-11), und drei Marker sind mit diesem Release aufgelöst worden: R4 und B9 zum Schlechteren (die Messung widerlegt die Zusage), M2 durch den richtigen Mechanismus.
 
 ## 4. Kernzusagen ohne technische Durchsetzung
 
@@ -137,9 +146,13 @@ Ergibt die Prüfung, dass eine der sechs Zusagen nicht technisch durchgesetzt wi
 - **Der Schutz-Hook blockiert nicht.** `hook-check-secrets.py` läuft bei diesem Pack fail-open: Eine Werkzeugeingabe, die der Hook nicht als JSON lesen kann, läuft weiter. Die Umstellung auf fail-closed setzt die Klärung des Eingabeschemas voraus (V3), und AP2 steht für dieses Pack aus. Bis dahin ist H2 eine Absichtserklärung, keine Schranke – die technische Durchsetzung von B3 ruht damit allein auf den Verweigerungsregeln der Berechtigungsdatei.
 
   **Seit 0.24.0 ist das eine ausgewiesene Abweichung, kein gemeinsamer Stand.** Das Manifest führt `hook_fail_closed: false`, das Pack `claude-code` führt `true` – dort ist das Schema gegen eine Installation bestätigt. Prüfung 17 hält beide Zusagen an ihrer Wirkung fest. Mit dem Abschluss von AP2 für dieses Pack ist der Wert auf `true` zu setzen; fail-closed bei unbekanntem Schema wäre keine Härtung, sondern eine Sitzung, die bei jedem Werkzeugaufruf blockiert (D-31).
+- **Der nicht-interaktive Lauf bricht still ab.** Braucht ein Lauf eine Rückfrage, endet er gelegentlich **ohne jede Ausgabe mit Erfolgscode** (`AP2-DD-13`, am 2026-09-11 erneut aufgetreten: ERH-05). Ein leeres Ergebnis ist damit nicht unbedingt ein leeres Ergebnis. **Folge für die in Abschnitt 6 vorgeschriebene Prüfung:** Jeder Nachweislauf bekommt `--export <pfad>` mit – die Mitschrift führt alle Schritte, auch wenn stdout leer bleibt –, und jeder Nachweis aus dem Ausbleiben einer Wirkung trägt eine Positivkontrolle im selben Lauf (Testkatalog Nr. 7).
+- **Die Vertrauensschranke greift im nicht-interaktiven Betrieb.** In einem unbestätigten Verzeichnis scheitert der Print-Modus, solange die Vertrauensprüfung nicht abgeschaltet ist (`--respect-workspace-trust false`) (`AP2-DD-14`). **Folge für Abschnitt 6:** Die vorgeschriebene Prüfung läuft in einem frischen Verzeichnis erst nach dieser Bestätigung. Ein Nachweis, der dafür die Schranke abschaltet, bleibt zulässig, gilt aber nicht für den Normalbetrieb und weist die Bedingung im Protokoll aus (Testkatalog Nr. 7).
+- **Nutzerlokale Konfiguration kann lockern – B9 gilt bei diesem Client nicht.** Die Benutzerkonfiguration (`%APPDATA%\devin\config.json`) setzt sich gegen die projektseitige durch, in beide Richtungen gemessen (K-27, ERH-11). Eine projektseitige Verschärfung ist damit ein Standard, den jede Arbeitsstation still aufheben kann – in einer Datei, die außerhalb des Repositoriums liegt und die niemand im Projekt sieht. Wirksam bleibt sie, wo die Benutzerkonfiguration schweigt; das ist der Normalfall, aber es ist keine Zusage. Was das Framework dagegen setzen kann, steht auf Ebene 2 (Organisation), nicht im Repositorium.
 - **Zwei Skill-Ablagen dokumentiert.** `.devin/skills/` ist Primärpfad, `.agents/skills/` dokumentierte Alternative; welche der Client tatsächlich findet, ist unbestätigt (K-12).
 - **Keine Workflows, keine Memories.** Beides wird vom Client nicht unterstützt `[DOK]`; Skills und versionierte Regeln übernehmen diese Funktion. Für ein Client Pack mit Memory-Mechanismus wäre zu klären, wie das Framework verhindert, dass Wissen an den versionierten Regeln vorbei entsteht.
-- **Sandbox nicht auf allen Betriebssystemen.** Laut Dokumentation unter Windows nicht verfügbar (K-11); der Modus `Autonomous` ist damit dort nicht absicherbar.
+- **Sandbox nicht auf allen Betriebssystemen.** Laut Dokumentation unter Windows nicht verfügbar (K-11); der Modus `Autonomous` – in der CLI kein eigener Modus, sondern das Flag `--sandbox` (ERH-08) – ist damit dort nicht absicherbar. D-05 lässt ihn nur zu, wo die Sandbox verfügbar ist; auf der Zielplattform ist er untersagt. Er bekommt **keine** Matrixzeile, weil das Framework hier keine Zusage abbildet, sondern eine Beschränkung benennt, deren Träger auf dieser Plattform fehlt.
+- **Die Modusnamen der Oberfläche und der CLI weichen voneinander ab.** Oberfläche: `Normal`, `Accept Edits`, `Smart`, `Bypass`. CLI (`devin --help`, 2026-09-11): `auto`, `accept-edits`, `smart`, `dangerous`. Die Matrixzeilen M1, M2, M6 und M7 führen beide Namensräume; D-05 nennt die der Oberfläche.
 
 ## 6. Installation und Prüfung
 
@@ -150,7 +163,38 @@ python leitwerk-core/tests/scripts/validate-framework.py
 
 Bis `install.py` den Schalter `--client` kennt, ist `devin-desktop` der eingebaute Standard und der Aufruf erfolgt ohne Schalter.
 
-## 7. Änderungsverlauf
+## 7. Anweisungs- und Konfigurationsquellen außerhalb des Projekts
+
+Was dieser Client aus Ablagen **außerhalb des Repositoriums** lädt. Solche Quellen haben nach Regel 2.6 der Prioritätshierarchie **keine Ebene**: Sie dürfen einschränken, nie über die Ebenen 1 bis 4 hinaus erweitern und keine Governance-, Datenschutz- oder Sicherheitsregeln setzen (D-34).
+
+**Erhebungsstand: 2026-09-11**, Devin Desktop 3.9.19 / CLI 3000.10.21, erhoben mit `devin rules list`, `devin rules show <name>`, `devin rules paths`, `devin skills list --json`, `devin skills paths` und `devin doctor`, dazu gemessene Kontextläufe in einer Installation ohne Regeltexte (`tests/protocols/2026-09-11-erhebungen-K21-K26.md`).
+
+### 7.1 Anweisungsquellen
+
+| Quelle | Ladebedingung | Belegstatus | Maßnahme des Frameworks |
+|---|---|---|---|
+| `~\.codeium\windsurf\memories\global_rules.md` | always-on, in **jedem** Projekt – auch in einem ohne jeden Regeltext | **Gemessen** (`AP2-DD-15`, K-21 Lauf A): Der Inhalt stand wörtlich im Kontext einer Sitzung in einem Verzeichnis ohne Regeltexte | abgeschaltet über `read_config_from.windsurf: false` (R6); die Wirkung ist gemessen (K-21 Lauf B) |
+| `~\.claude\skills\` | 67 von 81 Skills, Aufrufbarkeit `[user,model]` | **Gemessen** (`AP2-DD-16`, K-24): Ein Skill von dort läuft; seine Werkzeugaufrufe erreichen Berechtigungsschranke und Schutz-Hook | abgeschaltet über `read_config_from.claude: false` (R6); gemessen 69 → 2 Skills (K-23) |
+| `%APPDATA%\devin\AGENTS.md`, `~\.devin\rules\*.md`, `~\.devin\global_rules.md`, `~\.claude\CLAUDE.md` | laut Herstellerdokumentation weitere Ablageorte für Regeln | `[DOK]` (ERH-09); **auf dieser Arbeitsstation nicht erhoben** – die ersten drei sind das eigene Format des Clients und von `read_config_from` **nicht** erfasst | keine; sie bleiben Auskunft |
+
+### 7.2 Konfigurationsquellen
+
+Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums betreffen genau die Linien, auf denen B1 bis B6 stehen.
+
+| Quelle | Wirkung | Belegstatus |
+|---|---|---|
+| `%APPDATA%\devin\config.json` (Benutzerkonfiguration) | führt dieselben Schlüssel wie die Projektdatei – Berechtigungen, Hooks, `read_config_from` – und **hat Vorrang**, auch gegenüber einer projektseitigen Verschärfung | **Gemessen in beiden Richtungen** (K-27, ERH-11). Damit ist B9 bei diesem Pack widerlegt |
+| `.devin/config.local.json` | nutzerlokale Überschreibung im Projekt, nicht versioniert | `[DOK]`; dieselbe Lage wie oben |
+
+### 7.3 Was dieser Abschnitt nicht leistet
+
+**Eine Auskunft ist keine Schranke, und die Abschaltung ist ein Standard, keine Sperre.** Was in `read_config_from` steht, kann die Benutzerkonfiguration aufheben (7.2) – wirksam ist die Einstellung dort, wo jene schweigt, und das ist der Normalfall.
+
+**Ein Abwesenheitsbeleg altert.** Der Erhebungsstand oben ist am Tag der nächsten Clientversion eine Aussage über die Vergangenheit. Prüfung 19 sieht den Unterschied nicht: Sie prüft die **Anwesenheit** dieser Auskunft, nicht ihre Richtigkeit.
+
+**Das Register des Clients ist keine zweite Quelle.** Es zeigt mehr, als lädt (ERH-02), und seine Pfadauskunft weniger, als es gibt (ERH-03). Maßgeblich ist dieser Abschnitt, gestützt auf gemessene Kontextläufe.
+
+## 8. Änderungsverlauf
 
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
@@ -158,4 +202,5 @@ Bis `install.py` den Schalter `--client` kennt, ist `devin-desktop` der eingebau
 | 0.2.0 | 2026-09-10 | Berechtigungen und Hooks aus dem Pack in den Kern; Semantikabbildung ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-10 | Overlay-Laufzeitregel und die beiden Vorlagen in den Kern; Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |
 | 0.3.2 | 2026-09-11 | **Fail-open ausgewiesen statt vorausgesetzt (`CR-2026-026`, D-31).** Das Manifest führt `hook_fail_closed: false`; der Schutz-Hook dieses Packs lässt eine nicht lesbare Eingabe weiter durch, weil das Eingabeschema unbestätigt ist (V3). Prüfung 17 hält die Zusage an ihrer Wirkung fest. Das Pack `claude-code` führt seit diesem Release `true` – die Abweichung steht jetzt in der Matrix, statt aus dem Fehlen einer Angabe zu folgen | `<FRAMEWORK_OWNER>` |
+| 0.4.0 | 2026-09-11 | **Fünf Zusagen mehr, drei VERIFY-Marker aufgelöst – zwei davon zum Schlechteren.** Neu: R5 und S5 (Aufzählbarkeit der Regelquellen und Skills, beobachtet, mit dem Vorbehalt aus ERH-02/ERH-03), R6 (Importsteuerung, `CR-2026-038`/D-37), M6 und M7 (die beiden Modi, die D-05 regelt und die Matrix nicht führte, `CR-2026-028`). Aufgelöst: **R4** – für diesen Client ist kein Zeichenlimit dokumentiert, die Zahlen bleiben als Vorgabe des Frameworks (`CR-2026-027`); **B9** – die Benutzerkonfiguration hebt eine projektseitige Verschärfung auf, gemessen in beide Richtungen (ERH-11); **M2** – eine Modus-Sperre ist nicht dokumentiert, wirksam ist die Wirkungsbegrenzung der Organisationsebene. Neuer Abschnitt 7 mit den Anweisungs- und Konfigurationsquellen außerhalb des Projekts. **Die Zeilenzahl der Zusammenfassung ist nachgezählt worden: Sie führte „von 26", während die Matrix 29 Zeilen trug** | `<FRAMEWORK_OWNER>` |
 | 0.3.3 | 2026-09-11 | **Die Hooks liegen in der Berechtigungsdatei (`CR-2026-029`, D-32) und der Schutz-Hook läuft fail-closed (`CR-2026-026`, D-31).** AP2 hat gezeigt, dass aus `.devin/hooks.v1.json` kein Hook ausgeführt wird – H1 bis H3 waren wirkungslos. Mit dem belegten Eingabeschema ist auch die Bedingung für fail-closed erfüllt. H1 und H2 sind jetzt **beobachtet**, nicht nur dokumentiert; H3 bleibt unbeobachtet. Der Matcher deckt zusätzlich das Lesewerkzeug ab (`CR-2026-030`, D-33) | `<FRAMEWORK_OWNER>` |

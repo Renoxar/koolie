@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.8.1 |
+| Version | 0.9.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -85,6 +85,8 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 | R2 | Regeldateien mit Ladebedingungen | `.claude/rules/*.md`: ohne `paths`-Frontmatter unbedingt geladen, mit `paths` nur bei passenden Dateien. Der Client kennt **eine** Bedingung, die Kernquelle drei Ladetrigger; `model_decision` bildet deshalb auf unbedingtes Laden ab – eine Verschärfung, siehe Abschnitt 1b | `[TECHNISCH]` | [DOK] `docs/en/memory` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 | R3 | Regeln an Dateimuster bindbar (Grundlage der Technology Packs) | `paths:` im Frontmatter bindet eine Regel an Glob-Muster; mehrere Muster und Klammer-Expansion sind zulässig. Ein Technology Pack liegt damit als `.claude/rules/40-tech-<name>.md` und lädt bei den Dateien seiner Technologie. Grenzen: Abschnitt 5 | `[TECHNISCH]` | [DOK] `docs/en/memory` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 | R4 | Bekanntes Zeichenlimit, das das Framework einhalten kann | **4 MiB** je Anweisungsdatei; eine größere Datei wird übersprungen. Zusätzlich als Empfehlung 200 Zeilen | `[TECHNISCH]` | [DOK] `docs/en/memory` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
+| R5 | Die geladenen Regelquellen sind vollständig aufzählbar | Kein Kommando dieses Clients führt die wirksamen Regelquellen auf. Was es gibt, ist die **Selbstauskunft der Sitzung**: Gefragt nach ihrem geladenen Bestand zählte sie zwei `CLAUDE.md`, vier Regeldateien und die README der Regelablage auf. Die vollständige Auskunft des Frameworks steht in Abschnitt 8 dieses Packs | `[TEXTUELL]` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` für einen **technischen** Aufzählungsweg. Die Selbstauskunft ist am 2026-09-11 gegen 2.1.268 beobachtet (K-22, K-26) und traf zu – sie ist aber Modellverhalten, kein Mechanismus: Sie entsteht nur auf Nachfrage und ist nicht nachprüfbar, ohne den Kontext ein zweites Mal zu messen |
+| R6 | Keine Importe fremder Werkzeugformate | Der Client kennt `claudeMdExcludes`, das Anweisungs- und Regeldateien über Glob-Muster vom Laden ausnimmt. **Das Framework liefert keine Vorgabe aus** (D-37): Eine `CLAUDE.md` im Elternverzeichnis ist in einem Mehrprojekt-Verzeichnis oft gewollt, ein pauschaler Ausschluss bräche legitime Anordnungen. Es bleibt bei Auskunft (Abschnitt 8) und Empfehlung | `[TEXTUELL]` | Der Mechanismus ist am 2026-09-11 gegen 2.1.268 gemessen: Drei Muster gleichzeitig nahmen die fremde Datei vom Laden aus, zwei geladene `CLAUDE.md` wurden eine (K-21). **Welches der drei Muster greift, ist nicht getrennt gemessen.** Dass hier keine Vorgabe steht, ist eine Entscheidung, kein fehlender Beleg |
 
 ### S – Skills
 
@@ -93,9 +95,12 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 | S1 | Versionierte Skills im Repository | `.claude/skills/<name>/SKILL.md` mit Frontmatter | `[TECHNISCH]` | `[DOK]`; zusätzlich **beobachtet** (siehe Abschnitt 6) |
 | S2 | Gezielter Aufruf | Aufruf über den Skill-Namen mit vorangestelltem Schrägstrich | `[TECHNISCH]` | `[DOK]` |
 | S3 | Werkzeugbeschränkung je Skill | Frontmatter `allowed-tools` als kommagetrennte Liste | `[TECHNISCH]` | `[DOK]` |
-| S4 | Schreibende Skills nur benutzergetriggert | `disable-model-invocation: true` verhindert, dass das Modell den Skill selbst lädt, und hält zusätzlich seine Beschreibung aus dem Kontext; die Installation setzt das Feld für jeden Skill, dessen Quelle `triggers` ohne `model` nennt (9 von 12). Ergänzend wirkt `ask` auf `Edit(**)`: jede Schreiboperation löst eine Rückfrage aus | `[TECHNISCH]` | [DOK] `docs/en/skills` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) – dokumentiert und in der Installation gesetzt; die **beobachtete** Durchsetzung steht als Wirkungsnachweis aus |
+| S4 | Schreibende Skills nur benutzergetriggert | `disable-model-invocation: true` verhindert, dass das Modell den Skill selbst lädt, und hält zusätzlich seine Beschreibung aus dem Kontext; die Installation setzt das Feld für jeden Skill, dessen Quelle `triggers` ohne `model` nennt (9 von 12). Ergänzend wirkt `ask` auf `Edit(**)`: jede Schreiboperation löst eine Rückfrage aus | `[TECHNISCH]` | [DOK] `docs/en/skills` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) – dokumentiert und in der Installation gesetzt; die **beobachtete** Durchsetzung steht als Wirkungsnachweis aus. **Reichweite:** Die Zusage gilt für die Skill-Ablage, die das Framework schreibt. Skills aus Ablagen außerhalb des Repositoriums unterliegen diesen Konventionen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken (`CR-2026-032`) |
+| S5 | Die geladenen Skills sind vollständig aufzählbar, samt Herkunft und Aufrufbarkeit | Kein Aufzählungskommando dieses Clients ist erhoben | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` | **Nicht erhoben** – AP2 hat am 2026-09-10 nicht danach gefragt, und die Erhebung vom 2026-09-11 hat die Frage nur spiegelbildlich beantwortet: Der andere Client liest `~\.claude\skills\` mit (`AP2-DD-16`). Ob dieser Client seinerseits fremde Skill-Ablagen führt, ist unbekannt – nicht verneint |
 
 ### B – Berechtigungen
+
+> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet.** Im Modus ohne Rückfragen, den D-05 untersagt, ist diese Linie aus; dann trägt allein der Schutz-Hook (D-35). **Für diesen Client ist der Fall nicht erhoben** – die Lage ist eine andere, denn hier ist der Modus selbst sperrbar (`permissions.disableBypassPermissionsMode`, `AP2-CC-05`) und in verwalteten Einstellungen unüberschreibbar. Anders als gemessen ist das aber nicht: Ein Bypass-Lauf gegen die isolierte Umgebung steht als Folgearbeit in AP2 aus (`CR-2026-033` E5).
 
 | ID | Zusage des Frameworks | Kern | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
@@ -142,15 +147,16 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 
 | Klasse | Anzahl | davon Kernzusagen | Stand vor AP2 |
 |---|---|---|---|
-| `[TECHNISCH]` | 25 von 26 | 6 von 6 | 20 |
-| `[TEXTUELL]` | 1 von 26 (B9, für den Teil jenseits der Verweigerungen) | 0 | 2 |
-| `[NICHT ABBILDBAR]` | **0 von 26** | 0 | 4 |
+| `[TECHNISCH]` | 25 von 29 | 6 von 6 | 20 |
+| `[TEXTUELL]` | 3 von 29 (R5, R6 und B9 für den Teil jenseits der Verweigerungen) | 0 | 2 |
+| `[NICHT ABBILDBAR]` | **0 von 29** | 0 | 4 |
+| ohne Einstufung | 1 von 29 (S5 – nicht erhoben) | 0 | – |
 
 **Der entscheidende Befund:** Alle sechs Kernzusagen sind technisch abgebildet – und seit `CR-2026-017` steht keine Zusage mehr auf `[NICHT ABBILDBAR]`. Die vier Zeilen, die dort standen (R2, R3, R4, S4), waren sämtlich Unterschätzungen des Clients: `.claude/rules/` mit `paths:` bildet R2 und R3 ab, ein Zeichenlimit ist dokumentiert (R4), und `disable-model-invocation` trägt S4 (`CR-2026-016`).
 
-Ein Vergleich mit dem Client Pack `devin-desktop` trägt nicht: Dort sind 21 von 26 Zeilen als `[TECHNISCH]` **vorgesehen**, aber keine einzige Einstufung ist gegen eine Installation oder gegen die Herstellerdokumentation geprüft. Die Zahlen messen bis dahin Verschiedenes.
+Ein Vergleich mit dem Client Pack `devin-desktop` trägt nicht: Dort sind 24 von 34 Zeilen als `[TECHNISCH]` **vorgesehen**, aber keine einzige Einstufung ist gegen eine Installation oder gegen die Herstellerdokumentation geprüft. Die Zahlen messen bis dahin Verschiedenes.
 
-**Belegstand:** Keine Zeile trägt mehr einen VERIFY-Marker (bei `devin-desktop`: 13). Offen ist eine **Teilfrage** innerhalb von M2: ob die Sperre gegen den Modus ohne Rückfragen auch für das Feld `permissionMode` eines Subagentenprofils gilt (AP2-CC-12). Zehn Zeilen sind gegen die Herstellerdokumentation der Clientversion 2.1.267 und die erzeugten Artefakte belegt; **beobachtete Durchsetzung in einer laufenden Sitzung ist für keine Zeile belegt** – die Wirkungsnachweise stehen aus (`tests/protocols/2026-09-10-AP2-claude-code.md`, Abschnitt „Offen").
+**Belegstand:** **Zwei** Zeilen tragen einen VERIFY-Marker – R5 und S5, beide mit 0.26.0 neu und beide für diesen Client nicht erhoben (bei `devin-desktop`: 8 von 34). Bis 0.25.0 trug keine Zeile einen Marker; die beiden neuen sind kein Rückschritt, sondern zwei Fragen, die vorher nicht gestellt waren. Offen ist eine **Teilfrage** innerhalb von M2: ob die Sperre gegen den Modus ohne Rückfragen auch für das Feld `permissionMode` eines Subagentenprofils gilt (AP2-CC-12). Zehn Zeilen sind gegen die Herstellerdokumentation der Clientversion 2.1.267 und die erzeugten Artefakte belegt; **beobachtete Durchsetzung in einer laufenden Sitzung ist für keine Zeile belegt** – die Wirkungsnachweise stehen aus (`tests/protocols/2026-09-10-AP2-claude-code.md`, Abschnitt „Offen").
 
 ## 4. Kernzusagen ohne technische Durchsetzung
 
@@ -216,7 +222,39 @@ Pfadauswertung als Fehler (`permission_path_tools` im Manifest).
 Für eine Regel **ohne** Pfad gilt die Trennung weiterhin: Eine Verweigerung des bloßen
 Werkzeugnamens `Write` wirkt überall.
 
-## 8. Änderungsverlauf
+## 8. Anweisungs- und Konfigurationsquellen außerhalb des Projekts
+
+Was dieser Client aus Ablagen **außerhalb des Repositoriums** lädt. Solche Quellen haben nach Regel 2.6 der Prioritätshierarchie **keine Ebene**: Sie dürfen einschränken, nie über die Ebenen 1 bis 4 hinaus erweitern und keine Governance-, Datenschutz- oder Sicherheitsregeln setzen (D-34).
+
+**Erhebungsstand: 2026-09-11**, Clientversion 2.1.268, erhoben in einer frischen Installation in einem Temporärverzeichnis und durch Auslesen der Schlüssel der nutzerglobalen Einstellungsdatei (ohne Werte); `tests/protocols/2026-09-11-erhebungen-K21-K26.md`.
+
+### 8.1 Anweisungsquellen
+
+| Quelle | Ladebedingung | Belegstatus | Maßnahme des Frameworks |
+|---|---|---|---|
+| `<Elternverzeichnis>\CLAUDE.md` | lädt zusätzlich zur Anweisungsdatei des Projekts, in jedes darunterliegende Projekt | **Gemessen** (K-22): Ohne Einstellung lud die Sitzung **zwei** `CLAUDE.md` – die des Projekts und eine aus einem Elternverzeichnis, die mit dem Projekt nichts zu tun hat. Die Quelle ist nicht an das Benutzerprofil gebunden; ein Elternverzeichnis genügt | keine Vorgabe (R6). `claudeMdExcludes` in der Berechtigungsdatei nimmt sie aus, wenn ein Projekt das will – **empfohlen, nicht ausgeliefert** |
+| `~\.claude\CLAUDE.md` | laut Herstellerdokumentation nutzerglobale Anweisungsdatei | **Nicht belegt.** Die Datei existiert auf der Messstation nicht; ob diese Ablage zusätzlich lädt, ist damit unbekannt – nicht verneint | keine |
+| `~\.claude\skills\` | Skill-Ablage im Benutzerprofil | **Nicht erhoben** für diesen Client. Belegt ist nur, dass ein **anderer** Client sie mitliest (`AP2-DD-16`, 67 Skills). Offen als Teilfrage zu S5 | keine |
+
+### 8.2 Konfigurationsquellen
+
+Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums betreffen genau die Linien, auf denen B1 bis B6 stehen.
+
+| Quelle | Wirkung | Belegstatus |
+|---|---|---|
+| `~\.claude\settings.json` (nutzerglobal) | führt **Berechtigungen und Hooks**: am 2026-09-11 sechs `allow`-Regeln sowie `SessionStart`-, `PreToolUse`- und `PostToolUse`-Hooks | **Gemessen** (ERH-07), Schlüssel ausgelesen, Werte nicht. Ein Hook von dort läuft vor jedem Werkzeugaufruf – dieselbe Stelle, an der die zweite Linie des Frameworks steht |
+| `<Elternverzeichnis>\.claude\settings.local.json` | nutzerlokale Einstellungsdatei **über** dem Projekt | **Gemessen** (ERH-07) |
+| Vertrauen in das Verzeichnis (`~\.claude.json`) | Ohne Vertrauen werden die `allow`-Regeln des Projekts ignoriert – der Client meldet es beim Sitzungsstart | **Gemessen** (`AP2-CC-14`, ERH-06): „Ignoring 6 permissions.allow entries from .claude/settings.json: this workspace has not been trusted." `deny`- und `ask`-Regeln sowie die Regeltexte bleiben davon unberührt |
+
+### 8.3 Was dieser Abschnitt nicht leistet
+
+**Eine Auskunft ist keine Schranke.** Dieser Abschnitt macht die Quellen sichtbar; er verhindert sie nicht. Das Framework liest das Benutzerprofil nicht und sperrt dort nichts.
+
+**Ein Abwesenheitsbeleg altert.** Der Erhebungsstand oben ist am Tag der nächsten Clientversion eine Aussage über die Vergangenheit. Prüfung 19 prüft die **Anwesenheit** dieser Auskunft, nicht ihre Richtigkeit.
+
+**Die Liste ist nicht vollständig, sie ist belegt.** Zwei der drei Anweisungsquellen oben tragen ausdrücklich „nicht erhoben" beziehungsweise „nicht belegt". Das ist ein Ergebnis, kein fehlendes Ergebnis – und es ist der Unterschied zu einem Pack, das schweigt.
+
+## 9. Änderungsverlauf
 
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
@@ -229,3 +267,4 @@ Werkzeugnamens `Write` wirkt überall.
 | 0.7.0 | 2026-09-10 | **Belegspalte nennt die Quelle (`CR-2026-018`, `FW-AK-01`).** Jede mit AP2 belegte Zeile nennt die Seite der Herstellerdokumentation, auf die sie sich stuetzt; die vollstaendige Belegzuordnung steht im Hauptdokument in Anhang 31.4.2, der bis dahin ausschliesslich Devin-Quellen fuehrte. Neu aufgenommen: AP2-CC-12 (`permissionMode` im Subagentenprofil, offene Teilfrage zu M2). Genauer belegt: H2 (ein blockierender Hook geht auch einer `allow`-Regel vor), A1 (`disallowedTools` zuerst; ein Profil ohne aufloesbares Werkzeug startet nicht), S4 (die Sperre haelt die Skill-Beschreibung aus dem Kontext) | `<FRAMEWORK_OWNER>` |
 | 0.8.0 | 2026-09-11 | **Der Schutz-Hook läuft fail-closed (`CR-2026-026`, D-31).** Das Eingabeschema dieses Clients ist gegen eine Installation bestätigt (AP2, WN-5); das Manifest führt deshalb `hook_fail_closed: true`, und die Abbildung hängt dem Kommando des durchsetzenden Hooks `--fail-closed` an. Eine Werkzeugeingabe, die der Hook nicht als JSON lesen kann, wird blockiert statt durchgelassen. Der Schalter steht im Kommando, nicht in `env` – die bis 0.23.0 hier empfohlene Umgebungsvariable hätte die Sperre an eine zweite, unbelegte Clientzusage gehängt. Prüfung 17 belegt die Wirkung; weil die Hooks hier in der Saat liegen, ist das Argument in einer bestehenden Installation von Hand nachzuziehen | `<FRAMEWORK_OWNER>` |
 | 0.8.1 | 2026-09-11 | **Der Matcher deckt das Lesewerkzeug ab (`CR-2026-030`, D-33).** D-30 hatte entschieden, dass Secret-Pfade auch gegen lesende Werkzeuge durchgesetzt werden; eingelöst war das nie – die Hook-Quelle nannte kein Leseverb, und `hook_tools` bildete keines ab. Aufgefallen ist es bei AP2 des anderen Packs, gilt aber hier genauso: `Read` steht jetzt in der Abbildung, Prüfung 16 sondiert es | `<FRAMEWORK_OWNER>` |
+| 0.9.0 | 2026-09-11 | **Drei Zusagen mehr, zwei davon mit offenem Marker – und das ist der Punkt.** Neu: **R5** (Aufzählbarkeit der Regelquellen – dieser Client kennt kein Aufzählungskommando; was es gibt, ist die Selbstauskunft der Sitzung, beobachtet, aber Modellverhalten), **S5** (Aufzählbarkeit der Skills – für diesen Client **nicht erhoben**, VERIFY) und **R6** (keine Importe fremder Werkzeugformate: Der Mechanismus `claudeMdExcludes` ist gemessen, eine Vorgabe wird bewusst **nicht** ausgeliefert, `CR-2026-038` E2). Neuer Abschnitt 8 mit den Anweisungs- und Konfigurationsquellen außerhalb des Projekts – gemessen ist dort, dass eine `CLAUDE.md` aus einem **Elternverzeichnis** mitlädt (K-22) und dass die nutzerglobale Einstellungsdatei **Berechtigungen und Hooks** führt (ERH-07). Der B-Block trägt die Vorbemerkung zur Betriebsmodus-Abhängigkeit (D-35); die README der Regelablage ist in die Laufzeit-README aufgegangen (D-36). Nach zwei Releases ohne VERIFY-Marker stehen wieder zwei – sie sind kein Rückschritt, sondern zwei Fragen, die vorher nicht gestellt waren | `<FRAMEWORK_OWNER>` |

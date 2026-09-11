@@ -10,8 +10,7 @@
   "has_rule_triggers": true,
   "core_skill_prefix": "fw-",
   "core_paths": [
-    ".devin/README.md",
-    ".devin/rules/README.md"
+    ".devin/README.md"
   ],
   "seed_paths": [],
   "project_owned_hint": [
@@ -124,6 +123,16 @@
   "permissions_note": "Dieser Client kennt kein eigenes Suchwerkzeug; die allow-Regel fuer Suchen entfaellt und faellt damit auf den strengeren Standard zurueck.",
   "hook_tools": {"read": ["read"], "exec": ["exec"], "write": ["edit", "write"]},
   "hook_project_dir_var": "DEVIN_PROJECT_DIR",
+  "import_control": {
+    "key": "read_config_from",
+    "value": {
+      "agents_standard": true,
+      "cursor": false,
+      "windsurf": false,
+      "claude": false
+    }
+  },
+  "_import_control_note": "D-37: Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate. agents_standard bleibt true - das ist bei diesem Client das Format der eigenen Wurzel-Anweisungsdatei; es abzuschalten hiesse, das Framework abzuschalten. Wirkung gemessen am 2026-09-11 (K-21, K-23): 67 fremde Skills und der Inhalt einer fremden Regel verschwinden aus dem Kontext. Einstufung [TEXTUELL], nicht [TECHNISCH]: Die Benutzerkonfiguration hat in beide Richtungen Vorrang (K-27, ERH-11).",
   "hook_fail_closed": true,
   "_hook_fail_closed_note": "Das Eingabeschema dieses Clients ist seit 0.25.0 gegen eine Installation belegt: In einer AP2-Sitzung aufgezeichnet wurden die Felder hook_event_name, tool_name, tool_input, session_id, prompt_id und das in der Dokumentation nicht genannte tool_use_id (tests/protocols/2026-09-11-AP2-devin-desktop.md). Damit ist die Bedingung aus D-31 erfuellt und der durchsetzende Hook wird mit --fail-closed aufgerufen. Beobachtet ist auch das Blockieren selbst: Ein Lesezugriff auf eine Secret-Datei wurde abgebrochen - in einer Umgebung ohne Regeltexte und bei ausgeschalteter Berechtigungsschranke."
 }

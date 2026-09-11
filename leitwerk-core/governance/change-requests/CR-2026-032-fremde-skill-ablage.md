@@ -144,7 +144,8 @@ ist der Grund, den Punkt zu erheben und nicht zu schätzen.
 | Entscheidung | **angenommen** (2026-09-11, nach Erfüllung der Auflage) |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E5 wie vorgelegt: Die Reichweite von S4 wird **ausgewiesen, nicht erweitert**; der Auskunftsabschnitt aus `CR-2026-031` wird mitgenutzt; Zeile **S5** kommt in die Matrix; das Overlay fordert **keine** leere Fremdablage – die technische Maßnahme liegt in `CR-2026-038` (nicht importieren statt Ablage leer fordern); E5 ist mit der Erhebung erledigt. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E5 wie vorgelegt: Die Reichweite von S4 wird **ausgewiesen, nicht erweitert**; der Auskunftsabschnitt aus `CR-2026-031` wird mitgenutzt; Zeile **S5** kommt in die Matrix; das Overlay fordert **keine** leere Fremdablage – die technische Maßnahme liegt in `CR-2026-038` (nicht importieren statt Ablage leer fordern); E5 ist mit der Erhebung erledigt. Ziel-Release 0.26.0 |
+| Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |
 
 
 **Nachtrag 2026-09-11 – K-24 ist erhoben** (`tests/protocols/2026-09-11-erhebungen-K21-K26.md`): Eine Sonde in der fremden Skill-Ablage erzeugte zwei `read`-Werkzeugaufrufe; beide erreichten den Schutz-Hook, der Zugriff auf die Secret-Datei wurde blockiert – auch im Modus ohne Rückfragen und mit Positivkontrolle im selben Lauf. Der Skill-Aufruf selbst erzeugt **keinen** eigenen Werkzeugaufruf. **Die Schwere bleibt mittel, der vorgelegte Zuschnitt trägt.** Dazu ist K-23 beantwortet: Die fremde Ablage lässt sich projektseitig abschalten (`read_config_from.claude: false`, gemessen 69 → 2 Skills) – E4 ist damit neu zu bewerten, und `CR-2026-038` legt den Mechanismus vor

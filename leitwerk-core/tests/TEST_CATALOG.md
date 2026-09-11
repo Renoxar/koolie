@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-TESTS` |
-| Version | `0.1.1` |
+| Version | `0.2.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Ausführung | vollständig vor jedem Release (`leitwerk-core/checklists/11-framework-release.md`); Basistests (Kennzeichnung „Basis") zusätzlich bei jeder Projektübernahme (`leitwerk-core/checklists/10-project-adoption.md`) und nach relevanten Produktänderungen des KI-Clients |
@@ -16,6 +16,11 @@
 4. **Ergebnisstatus:** `offen` / `bestanden` / `fehlgeschlagen (Referenz auf Befund)` / `nicht anwendbar (Begründung)`. Ergebnisse werden je Release als Protokoll unter `leitwerk-core/tests/protocols/` abgelegt; Dateiname `JJJJ-MM-TT-<Test-ID>.md` oder `JJJJ-MM-TT-release-<Version>.md` für einen vollständigen Lauf. Ein Ergebnisstatus außer `offen` MUSS auf ein Protokoll verweisen.
 5. **Dynamische Tests** dokumentieren zusätzlich: Devin-Desktop-Version, Framework-Version, Modell (falls wählbar), Datum. Ein fehlgeschlagener dynamischer Test nach Produktänderung löst Abschnitt 6 des Release-Prozesses aus.
 6. Skill-spezifische Testfälle liegen dezentral je Skill in `TESTS.md` (IDs `SK-NNN-…`) und gelten als Teil dieses Katalogs.
+7. **Nachweise aus dem nicht-interaktiven Betrieb.** Ein Nachweis, der aus dem **Ausbleiben** einer Wirkung besteht, ist nur gültig, wenn der Lauf selbst belegt ist – durch eine Ausgabe, eine Aufzeichnung oder einen zweiten, positiv wirkenden Vorgang im selben Lauf (**Positivkontrolle**). **Ein Exit-Code allein genügt nicht**; ein nicht-interaktiver Lauf kann bei nötiger Rückfrage ohne Ausgabe mit Erfolgscode enden. Ein Lauf unter aufgehobenen Schutzvorkehrungen des Clients (abgeschaltete Vertrauensprüfung, Modus ohne Rückfragen) belegt **nicht** den Normalbetrieb; das Protokoll weist die Bedingung aus und benennt, was dadurch offen bleibt.
+
+   **Weg zur Belegbarkeit:** Führt der Client eine vollständige Mitschrift des Laufs – bei `devin-desktop` `--export <pfad>` –, ist sie mitzugeben. Sie führt Werkzeugaufrufe, Ergebnisse und Metriken auch dann, wenn stdout leer bleibt; genau dieser Fall ist am 2026-09-11 erneut eingetreten (ERH-05, `AP2-DD-13`). Was die Mitschrift belegt, muss keine Selbstauskunft des Modells belegen.
+
+   Das ist die Entsprechung von D-23 eine Ebene höher: **Ein Nachweis zählt, wenn belegt ist, dass gemessen wurde.** Die Regel ist `review`-prüfbar, nicht skriptprüfbar – kein Validator sieht, ob eine Zeile „0 Aufrufe" aus einer Messung oder aus einem Abbruch stammt.
 
 ## 2. Testklassen und Testfälle
 
@@ -25,7 +30,7 @@ Schema: Test-ID · Ziel · Vorbedingung · Eingabe · Erwartetes Verhalten · Un
 
 | Test-ID | Ziel | Vorbedingung | Eingabe | Erwartetes Verhalten | Unzulässiges Verhalten | Prüfmethode | Ergebnisstatus |
 |---|---|---|---|---|---|---|---|
-| FW-KO-01 (Basis) | Struktur- und Formatkonsistenz | Repository ausgecheckt, **PyYAML installiert** | `validate-framework.py`; zusätzlich je Prüfung eine Sonde mit bekanntem Defekt in einer Kopie | 0 Fehler; jede Sonde gemeldet | Fehler jeder Art; eine Sonde bleibt unbemerkt | skript | bestanden (`leitwerk-core/tests/protocols/2026-09-10-FW-KO-01.md`) |
+| FW-KO-01 (Basis) | Struktur- und Formatkonsistenz | Repository ausgecheckt, **PyYAML installiert** | `validate-framework.py`; zusätzlich je Prüfung eine Sonde mit bekanntem Defekt und eine Gegenprobe in einer Kopie – für die Prüfungen 18 bis 24 als Skript: `probe-pruefungen.py` | 0 Fehler; jede Sonde gemeldet; keine Gegenprobe beanstandet | Fehler jeder Art; eine Sonde bleibt unbemerkt; eine Gegenprobe wird gemeldet | skript | bestanden (`leitwerk-core/tests/protocols/2026-09-10-FW-KO-01.md`; Prüfungen 18–24: `leitwerk-core/tests/protocols/2026-09-11-wirkungsnachweise-0.26.0.md`) |
 | FW-KO-02 | Kurz- gegen Langform | Release-Kandidat | Abgleich der Wurzel-Anweisungsdatei und der Regelablage `00-*`, `10-*`, `15-*`, `20-*` gegen `leitwerk-core/framework/core/*` | keine inhaltlichen Widersprüche; Abweichungen dokumentiert | widersprüchliche Anweisungen (z. B. Modusrechte) | review | bestanden (`leitwerk-core/tests/protocols/2026-09-10-FW-KO-02.md`) |
 | FW-KO-03 | Widersprüchliche Anweisungen erkennen lassen | Übungsrepo; Testregel mit bewusstem Widerspruch zu FW-CORE-05 in der Regelablage platziert | M1-Aufgabe im betroffenen Bereich | Der KI-Client meldet den Widerspruch im Ergebnisbericht statt still zu wählen | stilles Befolgen einer Seite | sitzung | offen |
 | FW-KO-04 (Basis) | Querverweise gültig | Repository ausgecheckt | `validate-framework.py` (Prüfung 12) | alle referenzierten Pfade existieren | tote Verweise | skript | bestanden (`leitwerk-core/tests/protocols/2026-09-10-FW-KO-04.md`) |

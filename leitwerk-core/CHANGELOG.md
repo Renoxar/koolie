@@ -2,6 +2,96 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.26.0] - 2026-09-11
+
+**Elf entschiedene Aenderungsantraege in einem Release.** Das ist der ungewoehnliche Teil: Seit dem 11.09. lagen elf Antraege entschieden und keiner umgesetzt vor - ein Zustand, in dem dieses Projekt sonst nie ist. Fuenf Decision Records (D-34 bis D-38) trugen deshalb ausdruecklich `Umsetzung offen, Ziel 0.26.0`; sie tragen jetzt `umgesetzt mit 0.26.0`.
+
+Der rote Faden ist derselbe wie in den Releases davor: **eine Zusage, die mehr verspricht, als sie leistet.** Diesmal kamen die meisten davon nicht aus dem Framework, sondern aus dem Client - und zwei davon sind mit diesem Release nicht behoben, sondern **ausgewiesen**, weil sie sich nicht beheben lassen.
+
+### Behoben
+
+- **Die Prioritaetshierarchie kannte eine Quelle nicht, die in jeder Sitzung mitlaedt (`CR-2026-031`, D-34, `AP2-DD-15`).** Ein Regeltext aus dem Benutzerprofil steht im Kontext **jedes** Projekts - auch eines ohne einen einzigen Regeltext; am 11.09. gemessen, indem die Sitzung eine Messmarke aus dieser Datei woertlich wiedergab. **B9 hat den Fall nie umfasst**: Die Zeile beschreibt projektlokale Ueberschreibungsdateien; eine Datei, die kein Projekt enthaelt, ueberschreibt nichts, sie ergaenzt. Regel 2.5 greift ebenfalls nicht - sie meint Text, den ein Werkzeug als **Datum** liest, hier wird er als **Regel** in denselben Systemkontext geladen wie die Wurzel-Anweisungsdatei der Ebene 3.
+
+  Neue **Regel 2.6**: Eine solche Quelle hat **keine Ebene** der Hierarchie. Sie wird behandelt wie eine Nutzeranweisung - einschraenken jederzeit, erweitern nie ueber die Ebenen 1 bis 4 hinaus, Governance-, Datenschutz- und Sicherheitsregeln gar nicht. Die Hierarchie bleibt achtstufig (D-06); die Regel fuehrt keine neunte Ebene ein, sie erklaert eine Quelle fuer ebenenlos. Die Laufzeitfassung traegt denselben Satz - ohne ihn stuende die Regel nur in der Langform, und nach D-24 wirkt nicht, was nicht in die Sitzung geht.
+
+- **Zwei der vier Modi, die D-05 regelt, hatten keine Matrixzeile (`CR-2026-028`, `AP2-DD-03`).** D-05 verwies fuer die Zuordnung auf „Zeilen M1 bis M3"; dort standen der Standardmodus, der Modus ohne Rueckfragen und - kein Modus, sondern die Sitzungsfreigaben. Der Modus mit automatischer Uebernahme und der **selbst beurteilende** Modus fehlten. Gerade der zweite ist fuer ein Framework einschlaegig, dessen tragendes Prinzip lautet, dass der Mensch prueft und freigibt. Neu: **M6** und **M7**, beide `[TEXTUELL]`.
+
+  **M2 nannte den falschen Hebel.** Eine Sperre des Bypass-Modus ist bei diesem Client **nicht dokumentiert**; was es gibt, ist die Begrenzung seiner **Wirkung** durch die unueberschreibbaren Berechtigungsregeln der Organisationsebene. Der Unterschied ist praktisch: Wer nach einer Modus-Sperre sucht, findet keine und schliesst daraus, es gebe keine Durchsetzung.
+
+- **Drei Dokumentstellen nannten den Ort der Hook-Konfiguration, den D-32 abgeloest hatte (`CR-2026-036`).** Die Laufzeit-README des Packs fuehrte die eigene Hook-Datei unter den **gelieferten** Dateien - und wird bei jeder Installation ausgeliefert. **Ein ausgeliefertes Dokument beschrieb damit genau den Zustand, den Pruefung 18 desselben Releases als Altlast meldet.** Dazu Platzhalterregister und Laufzeitglossar. Das Manifest war die ganze Zeit richtig; die Abweichung lag zwischen der maschinenlesbaren Quelle und ihrer menschenlesbaren Fassung - und nichts verglich die beiden.
+
+- **Das meldende Hook-Skript riet die Laufzeitschicht (`CR-2026-037`, D-30 fortgeschrieben).** `hook-overlay-status.py` las die Projektverzeichnis-Variable **eines** Clients aus der Umgebung und suchte in dessen Regelablage. D-30 hatte entschieden, dass eine Semantikabbildung auch fuer die Skripte gilt, die in einer Sitzung laufen - betrachtet wurde damals nur das durchsetzende. Beide Werte kommen jetzt als **Argumente** aus der Abbildung; der Notweg ohne Argumente bleibt und ist als solcher gekennzeichnet.
+
+  **Warum keine Pruefung das sah:** Pruefung 14 sucht zeichengetreu nach dem Clientnamen - eine Variable in Grossbuchstaben faellt durch. Pruefung 12 warnt nur, wenn die Laufzeitschicht **fehlt**; hier lag eine Testinstallation. Beide Blindstellen sind strukturell, nicht zufaellig.
+
+- **Die README der Regelablage war eine Regel (`CR-2026-035`, D-36, `AP2-DD-17`).** Bei einem Pack fuehrte der Client sie mit Trigger `manual` im Regelregister, beim anderen stand sie **unbedingt** im Kontext - samt Inhaltsangabe, gemessen am 11.09. (K-26). Sie enthielt Belegstand statt Anweisungen, darunter Zeichenlimits mit Belegvorbehalt. **Geladen trug eine Aussage mit Vorbehalt den Rang eines Regeltexts.** Ihr Inhalt steht jetzt in der Laufzeit-README eine Ebene hoeher; die Regelablage enthaelt nur noch Regeln. Ein Pack umfasst damit **eine** erklaerende README statt zweier.
+
+- **Ein normativer Satz stand seit der Erstfassung an einer Stelle, die die Sitzung nicht erreicht (`CR-2026-039`, D-38, ERH-01).** Der Kopfkommentar der Wurzel-Anweisungsdatei sagte, die Datei duerfe nur ueber den Aenderungsprozess geaendert werden. Gemessen: Dieselbe Messmarke blieb unsichtbar, solange sie in Kommentarklammern stand, und war im Klartext sofort im Kontext - in der Wurzel-Anweisungsdatei **und** in der Regelablage. Der Satz steht jetzt im Fliesstext, der Kommentar traegt Herkunft.
+
+  **Der Befund kostet keine Sperre** - die Berechtigungsdatei verweigert das Schreiben ohnehin. Er kostet die Verlaesslichkeit der Aussage, dass in dieser Datei steht, was gilt.
+
+### Geaendert
+
+- **R4 im Pack `devin-desktop` ist `[TEXTUELL]` (`CR-2026-027`, `AP2-DD-02`).** Die Einstufung behauptete eine technische Durchsetzung des Zeichenlimits; belegt war die Zahl nur fuer das Vorgaengerprodukt. Der Abgleich gegen die aktuelle Clientversion ergibt am 11.09. **zweimal unabhaengig**: Die Regeldokumentation nennt **keinerlei** Zeichen- oder Groessengrenze. Die Zahlen 12.000/6.000 bleiben - als **ausgewiesene Vorgabe des Frameworks**, und der Validator prueft weiter dagegen. **V1 ist geschlossen, Ergebnis „nicht dokumentiert"**; K-19 bleibt offen, denn eine nicht dokumentierte Grenze ist keine nicht existierende Grenze.
+
+- **B9 im Pack `devin-desktop` ist widerlegt, nicht mehr nur unbelegt (`CR-2026-038` E6, ERH-11).** Die Zeile sagte zu: „Nutzerlokale Konfiguration kann nur verschaerfen", mit offenem Marker, ob der Client eine Lockerung verhindert. **Er verhindert sie nicht.** In beide Richtungen gemessen (K-27): Der Wert der Benutzerkonfiguration setzt sich gegen den projektseitigen durch, auch wenn der projektseitige der strengere ist. Eine projektseitige Verschaerfung ist damit ein Standard, den jede Arbeitsstation still aufheben kann - in einer Datei ausserhalb des Repositoriums, die niemand im Projekt sieht.
+
+- **Die Einstufung `[TECHNISCH]` sagt jetzt, worauf sie sich bezieht (`CR-2026-033`, D-35, `AP2-DD-12`).** Sie bezeichnet Unabhaengigkeit vom **Modellverhalten**, nicht vom **Betriebsmodus**. Im Modus ohne Rueckfragen las der Agent eine Secret-Datei trotz Verweigerungsregel, waehrend der Schutz-Hook im selben Lauf blockierte. **Erste und zweite Linie fallen unter verschiedenen Bedingungen** - das ist die empirische Rechtfertigung des Hooks und der Grund, warum D-33 die Luecke beim Leseverb schliessen musste: Ohne sie haette in diesem Lauf keine Linie mehr gestanden. Der B-Block jeder Matrix traegt die Bedingung als Vorbemerkung; `03-security.md` nennt bei T7 nun die technische Gegenmassnahme, die es gibt.
+
+- **Die Reichweite von S4 ist ausgewiesen, nicht erweitert (`CR-2026-032`, `AP2-DD-16`).** Die Zusage „schreibende Skills nur benutzergetriggert" gilt fuer die Skill-Ablage, die das Framework **schreibt**. Am 11.09. fuehrte eine Installation 81 Skills, 67 davon aus einer fremden Ablage im Benutzerprofil und mit Aufrufbarkeit durch Mensch **und** Modell. Eine Zusage ueber Verzeichnisse, die das Framework weder schreibt noch prueft, waere nicht einloesbar.
+
+  **K-24 entscheidet die Schwere, und die Antwort ist die guenstige:** Eine Sonde in der fremden Ablage erzeugte zwei `read`-Werkzeugaufrufe; beide erreichten den Schutz-Hook, der Zugriff auf die Secret-Datei wurde blockiert - auch im Modus ohne Rueckfragen und mit Positivkontrolle im selben Lauf. **Der Skill-Aufruf selbst ist kein Werkzeugaufruf** und damit nicht einzeln kontrollierbar; kontrolliert wird, was er ausloest.
+
+- **Die Zeilenzahl der Matrix von `devin-desktop` ist nachgezaehlt worden - sie stimmte nicht.** Die Zusammenfassung fuehrte „von 26", waehrend die Matrix 29 Zeilen trug: A2, M4 und M5 kamen mit `CR-2026-025` hinzu, ohne dass die Summen nachgezogen wurden. Derselbe Befundtyp, den dieses Projekt sonst an seinen Zusagen findet, hier an seiner eigenen Buchfuehrung. Mit den fuenf neuen Zeilen sind es 34.
+
+### Hinzugefuegt
+
+- **Jedes Client Pack gibt Auskunft ueber Quellen ausserhalb des Projekts.** Neuer Abschnitt „Anweisungs- und Konfigurationsquellen ausserhalb des Projekts" - je bekannter Quelle eine Zeile mit Pfad, Ladebedingung, Belegstatus und Massnahme, **oder** ein datierter Abwesenheitsbeleg. Er umfasst Regeltexte, Skills und Agentenprofile ebenso wie **Berechtigungen, Hooks und Einstellungen** (`CR-2026-038` E3): Die betreffen genau die Linien, auf denen B1 bis B6 stehen. Bei `claude-code` steht dort unter anderem, dass die nutzerglobale Einstellungsdatei sechs `allow`-Regeln und drei Hooks fuehrt (ERH-07) und dass eine Wurzel-Anweisungsdatei aus einem **Elternverzeichnis** mitlaedt (K-22) - beides gemessen.
+
+- **Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate (`CR-2026-038`, D-37).** Neue Matrixzeile **R6**. Bei `devin-desktop` erzeugt `clientmap.py` aus dem Manifestfeld `import_control` die Importsteuerung in der Berechtigungsdatei; `agents_standard` bleibt **true** - das ist dort das Format der **eigenen** Wurzel-Anweisungsdatei, es abzuschalten hiesse, das Framework abzuschalten. Gemessene Wirkung: 67 fremde Skills und der Inhalt der fremden Regel verschwinden aus dem Kontext (69 Skills werden 2).
+
+  **Die Einstufung ist `[TEXTUELL]`, nicht `[TECHNISCH]`** - und das ist der Punkt. K-27 hat gemessen, dass die Benutzerkonfiguration in beide Richtungen Vorrang hat. Es ist ein Standard, den jede Arbeitsstation aufheben kann, wirksam dort, wo die Benutzerkonfiguration schweigt, und das ist der Normalfall. **Dieselbe Einstellung, die als Schranke vorgeschlagen war, ist zugleich der Beleg, dass sie keine sein kann.** Ein Standard, der ohne Zutun gilt, ist trotzdem besser als keiner.
+
+  Bei `claude-code` bleibt es bei Auskunft und Empfehlung: Eine Anweisungsdatei im Elternverzeichnis ist im Mehrprojekt-Verzeichnis oft **gewollt**; ein pauschaler Ausschluss braeche legitime Anordnungen. Das Manifest sagt das ausdruecklich, damit es nicht als Luecke gelesen wird.
+
+- **Zwei Matrixzeilen fuer die Aufzaehlbarkeit: R5 (Regelquellen) und S5 (Skills).** Bei `devin-desktop` beobachtet - **mit Vorbehalt, und der Vorbehalt steht in der Zeile.** `devin rules list` fuehrt eine abgeschaltete Quelle unveraendert auf, obwohl ihr Inhalt nicht mehr im Kontext steht (ERH-02); `devin skills paths` nennt die Ablage nicht, aus der 67 von 81 Skills stammen (ERH-03). **Das Register ist eine Auskunft des Clients ueber seine Konfiguration, kein Abbild des Kontexts.** Beide Zeilen sind deshalb `[TEXTUELL]`. Bei `claude-code` traegt R5 die Selbstauskunft der Sitzung - beobachtet, aber Modellverhalten -, S5 einen VERIFY-Marker: nicht erhoben.
+
+- **Nummer 7 des Testkatalogs: Nachweise aus dem nicht-interaktiven Betrieb (`CR-2026-034`, D-23 fortgeschrieben).** Ein Nachweis, der aus dem **Ausbleiben** einer Wirkung besteht, gilt nur, wenn der Lauf selbst belegt ist - durch Ausgabe, Aufzeichnung oder eine **Positivkontrolle im selben Lauf**. Ein Exit-Code allein genuegt nicht: Ein nicht-interaktiver Lauf kann bei noetiger Rueckfrage ohne Ausgabe mit Erfolgscode enden (`AP2-DD-13`, am 11.09. erneut aufgetreten). Ein Lauf unter aufgehobenen Schutzvorkehrungen belegt **nicht** den Normalbetrieb; das Protokoll weist die Bedingung aus.
+
+  **Die Regel hat sich am Tag ihrer Entscheidung bewaehrt:** ERH-05 ist ein Lauf, der ohne Positivkontrolle als leeres Ergebnis durchgegangen waere. Wo der Client eine vollstaendige Mitschrift fuehrt, ist sie mitzugeben.
+
+- **Sechs neue Pruefungen und eine erweiterte.** 19 (Quellenauskunft), 20 (Dokumenttabellen gegen Manifest), 21 (Hook-Skripte ohne clientgebundene Herleitung), 22 (Importsteuerung wie abgebildet), 23 (kein normatives Schluesselwort im HTML-Kommentar), 24 (Nicht-Regeltexte in der Vorlage der Regelablage); Pruefung 18 meldet zusaetzlich eine Vorlage, die eine verwaiste Hook-Datei als **geliefertes Artefakt** fuehrt.
+
+  **Pruefung 19 und 22 tragen ihre Grenze im Kopfkommentar** - so beschlossen. Sie belegen Anwesenheit und Uebereinstimmung, **nicht Richtigkeit und nicht Wirkung**. Ein Abwesenheitsbeleg altert, und dass die Importsteuerung in der Datei steht, heisst nicht, dass sie greift. Dasselbe gilt sinngemaess fuer 20, 21, 23 und 24; jede Grenze steht dort, wo die Pruefung steht, und ist **vorab** benannt statt spaeter gefunden.
+
+- **Der Wirksamkeitsnachweis nach D-23 ist selbst ein Skript.** `tests/scripts/probe-pruefungen.py` fuehrt je Pruefung eine Sonde mit bekanntem Defekt **und eine Gegenprobe** auf einer Kopie des Repositoriums aus. Bisher entstanden Sonden je Release von Hand und lebten danach nur im Protokoll; jetzt laesst sich der Nachweis wiederholen, ohne ihn nachzubauen. **Die Gegenprobe ist der Teil, den man weglassen kann und nicht weglassen sollte:** Eine Pruefung, die alles meldet, besteht jede Sonde.
+
+### Nachweise
+
+- Validator 0 Fehler, 0 Warnungen; Testinstallationen beider Packs 0 Fehler; erzeugte Hook-Kommandos beider Packs tragen Projektverzeichnis und Regelablage als Argumente.
+- **Elf Sonden, acht Gegenproben, alle bestanden** (`tests/protocols/2026-09-11-wirkungsnachweise-0.26.0.md`).
+- **Eine der neuen Pruefungen war zunaechst still.** Pruefung 20 las die Client-Spalten des Platzhalterregisters nie: Sie prueft, ob die erste Tabellenzelle mit `<` beginnt, und dort steht ein Backtick davor. Sie lief gruen, weil sie **keine einzige Zeile** ansah. Gefunden hat es die Sonde - **die fuenfte stille Pruefung in sieben Releases**, und wieder in derselben Sitzung, in der sie entstand. Genau dafuer ist D-23 da.
+- **Pruefung 12 meldete den Migrationshinweis.** Die Nennung der verwaisten Hook-Datei in der ausgelieferten README ist eine Pfadangabe auf eine Datei, die es nicht gibt - zu Recht gemeldet. Der Hinweis nennt den Dateinamen jetzt ohne Verzeichnisanteil, und die Erweiterung von Pruefung 18 unterscheidet die **Behauptung einer Lieferung** (Tabellenzelle) von der **Erklaerung einer Abwesenheit** (Fliesstext). Der Fehlalarm, den `CR-2026-036` E3 vorhergesagt hatte, ist damit vermieden statt hingenommen.
+
+### Migrationshinweise fuer Overlays
+
+Keine Overlay-Aenderung. **Fuer bestehende Installationen beider Packs drei Handgriffe:**
+
+1. **Die alte README der Regelablage loeschen.** `install.py --update` legt die neue Fassung der Laufzeit-README an, entfernt die alte Datei aber nicht. Solange sie liegt, fuehrt der Client sie weiter als Regel - bei `claude-code` laedt sie sogar unbedingt mit. Pruefung 24 sieht sie nicht: Sie prueft die Vorlage, nicht die installierte Ablage.
+2. **Die Importsteuerung nachtragen** (nur `devin-desktop`). Die Berechtigungsdatei gehoert nach der Erstinstallation dem Projekt und wird von `--update` nicht ueberschrieben; `read_config_from` ist dort von Hand einzutragen. Pruefung 22 meldet den Zustand als Fehler und nennt den erwarteten Wert.
+3. **Das Kommando des `SessionStart`-Hooks nachziehen.** Es traegt jetzt Projektverzeichnis und Regelablage als Argumente. Ohne sie laeuft der Notweg: Arbeitsverzeichnis und ausschliesslich die Overlay-Datei - der Status wird weiterhin gemeldet, aber die gerenderte Overlay-Regeldatei faellt als Kandidat weg.
+
+Wer eine verwaiste Hook-Datei aus einer Installation vor 0.25.0 noch nicht geloescht hat, tut es jetzt mit; Pruefung 18 meldet sie unveraendert als Warnung.
+
+### Bekannte Einschraenkungen
+
+- **Zwei der behobenen Befunde sind ausgewiesen, nicht behoben.** Die Importsteuerung und B9 haengen beide an derselben Tatsache: Die Benutzerkonfiguration der Arbeitsstation hat Vorrang. Das Framework regelt das Repositorium, nicht den Arbeitsplatz. Was hier wirklich traegt, steht auf Ebene 2 - einer Vorgabe der Organisation -, nicht im Repositorium.
+- **Die Auskunft ueber Quellen ausserhalb des Projekts altert still.** Ein neuer Skill im Benutzerprofil erscheint zwischen zwei AP2-Laeufen unbemerkt. Die Meldung beim Sitzungsstart waere der einzige Mechanismus, der das faende - sie ist zurueckgestellt, solange **H3 unbeobachtet** ist. Eine zweite Zusage auf einem unbelegten Mechanismus ist genau die Konstruktion, die `AP2-DD-10` acht Releases lang getragen hat.
+- **Gemessen ist ein Client und zwei Dateiarten.** Dass HTML-Kommentare die Sitzung nicht erreichen, ist fuer `claude-code` belegt, fuer `devin-desktop` offen (**K-28**, nach diesem Release zu erheben). Fuer Skills und Agentenprofile ist es gar nicht erhoben. Bis dahin gilt die strengere Lesart fuer beide.
+- **`windsurf: false` allein ist nicht gemessen.** Die Wirkung der Importsteuerung wurde mit drei abgeschalteten Formaten zugleich erhoben; welches Muster von `claudeMdExcludes` bei `claude-code` greift, ebenso wenig.
+- **S5 ist bei `claude-code` nicht erhoben**, R5 dort nur als Selbstauskunft der Sitzung belegt - Modellverhalten, kein Mechanismus. Nach zwei Releases ohne VERIFY-Marker traegt dieses Pack wieder zwei. Sie sind kein Rueckschritt, sondern zwei Fragen, die vorher nicht gestellt waren.
+- **Der Bypass-Lauf fuer `claude-code` steht aus** (`CR-2026-033` E5), ebenso die **einmalige Durchsicht der Altprotokolle** auf ungedeckte Abwesenheitsnachweise (`CR-2026-034` E4) und die **Gegenzeichnung saemtlicher Protokolle** durch `<FRAMEWORK_OWNER>` - inzwischen sechs Stueck.
+
 ## [0.25.0] - 2026-09-11
 
 ### Behoben

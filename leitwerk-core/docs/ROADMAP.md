@@ -3,18 +3,18 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.25.0 (2026-09-11)
+## Stand nach Release 0.26.0 (2026-09-11)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 
-### Was 0.5.0 bis 0.25.0 gebracht haben
+### Was 0.5.0 bis 0.26.0 gebracht haben
 
 | Thema | Ergebnis | Beleg |
 |---|---|---|
@@ -44,12 +44,58 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Hooks laufen wirklich | Beide Hooks liefen unter Windows nicht – `python3` war dort ein Alias ohne Interpreter, H2 galt damit nicht. Der Interpreter wird jetzt an seiner Wirkung geprüft | `CR-2026-021`, D-29, `tests/protocols/2026-09-10-CR-2026-021-hook-interpreter.md` |
 | Kern ohne Akteursnamen | Der Kern nannte einen Client als Handelnden – 248 Nennungen in 78 Dateien, das Dreifache der ausgewiesenen Zahl; Prüfung 14 setzt es jetzt durch | `CR-2026-020`, D-28, `tests/protocols/2026-09-10-CR-2026-020-akteursbezeichnung.md` |
 | Strukturentscheidungen aktuell | Acht der zehn Records von 2026-09-01 beschrieben einen Stand von vor sechzehn Releases; vier nannten Client-Pfade in den Entscheidungen, die den werkzeugneutralen Kern anordnen | `CR-2026-019`, `governance/DECISION_LOG.md` |
+| Quellen außerhalb des Projekts | Die Hierarchie kannte eine Quelle nicht, die in **jedem** Projekt mitlädt – auch in einem ohne jeden Regeltext. Regel 2.6 erklärt sie für ebenenlos; jedes Pack gibt Auskunft, und wo der Client eine Importsteuerung kennt, wird abgeschaltet statt nur ausgewiesen | D-34, D-37, `CR-2026-031`, `CR-2026-038`, `tests/protocols/2026-09-11-erhebungen-K21-K26.md` |
+| `[TECHNISCH]` ist bedingt | Die Klasse bezeichnet Unabhängigkeit vom **Modellverhalten**, nicht vom **Betriebsmodus**. Im untersagten Modus griff die Verweigerungsregel nicht, der Schutz-Hook griff – erste und zweite Linie fallen unter verschiedenen Bedingungen | D-35, `CR-2026-033` |
+| Regelablage enthält Regeln | Die erklärende README der Regelablage wurde vom Client als Regel geführt – bei einem Pack sogar unbedingt geladen, samt Belegvorbehalten. Ihr Inhalt steht jetzt eine Ebene höher | D-36, `CR-2026-035` |
+| Was gilt, steht im Fließtext | Der normative Satz im Kopfkommentar der Wurzel-Anweisungsdatei erreichte die Sitzung seit der Erstfassung nicht – gemessen, nicht vermutet | D-38, `CR-2026-039`, ERH-01 |
+| Nachweise mit Positivkontrolle | Ein Abwesenheitsnachweis zählt nur mit belegtem Lauf; ein Exit-Code genügt nicht. Die Regel bewährte sich am Tag ihrer Entscheidung | D-23 fortgeschrieben, `CR-2026-034`, Testkatalog Nr. 7 |
+| Sonden als Skript | Der Wirksamkeitsnachweis nach D-23 ist wiederholbar statt beschrieben: elf Sonden, acht Gegenproben, auf einer Kopie | `tests/scripts/probe-pruefungen.py`, `tests/protocols/2026-09-11-wirkungsnachweise-0.26.0.md` |
 
 Mit 0.10.0 schützen die Schreibverbote nicht mehr nur die Regeltexte, sondern auch die fünf
 Skripte, die die Schutzzusagen durchsetzen – `install.py`, `clientmap.py`, den Validator und
 die beiden Hook-Skripte. Vorher konnte ein KI-Client die Datei ändern, die seine eigenen
 Regeln erzeugt, und die Prüfung abschalten, die das bemerkt hätte. Die Migration bestehender
 Installationen kostet zwei Zeilen und wird vom Validator erzwungen, nicht bloß angekündigt.
+
+Mit 0.26.0 sind elf entschiedene Anträge in einem Zug umgesetzt – und der Befundtyp des
+Projekts hat die Seite gewechselt.
+
+Bis hierher galt: *eine Prüfung oder Zusage, die mehr verspricht, als sie leistet.* Sie stand
+fast immer im Framework, und sie ließ sich beheben. Am 11.09. kamen drei dazu, die im **Client**
+stehen – und zwei davon lassen sich nicht beheben, sondern nur ausweisen:
+
+- **Ein Regelregister, das mehr zeigt, als lädt.** Mit abgeschalteter Importsteuerung führt das
+  Kommando die Quelle unverändert auf, obwohl ihr Inhalt nicht mehr im Kontext steht. Wer die
+  Wirkung prüfen will, muss den Kontext messen, nicht das Register lesen.
+- **Eine Pfadauskunft, die ihre größte Quelle verschweigt.** 67 von 81 Skills stammen aus einer
+  Ablage, die das zugehörige Kommando nicht nennt.
+- **Eine Importsteuerung, die jede Arbeitsstation still aufheben kann.** In beide Richtungen
+  gemessen: Die Benutzerkonfiguration hat Vorrang vor der projektseitigen. Dieselbe Einstellung,
+  die als Schranke vorgeschlagen war, ist zugleich der Beleg, dass sie keine sein kann.
+
+**Die Maßnahme bleibt trotzdem richtig.** Ein Standard, der ohne Zutun gilt, ist besser als
+keiner; wirksam ist er dort, wo die Benutzerkonfiguration schweigt, und das ist der Normalfall.
+Was er nicht ist, steht jetzt in der Zeile: `[TEXTUELL]`, nicht `[TECHNISCH]`. Dieselbe
+Unterscheidung trifft B9, dessen VERIFY-Marker mit diesem Release aufgelöst ist – **zum
+Schlechteren**: Der Client verhindert eine Lockerung nicht.
+
+**Die Hierarchie kannte den Kanal nicht, über den das läuft.** Ein Regeltext aus dem
+Benutzerprofil lädt in jedem Projekt mit, auch in einem ohne einen einzigen Regeltext. Regel 2.6
+erklärt eine solche Quelle für **ebenenlos** – einschränken jederzeit, erweitern nie. Sie führt
+keine neunte Ebene ein: Das gäbe einer Quelle Rang, die das Framework weder sieht noch
+kontrolliert.
+
+**Drei Prüfungen tragen ihre Grenze jetzt im Kopfkommentar**, vorab benannt statt später
+gefunden. Prüfung 19 belegt die Anwesenheit der Quellenauskunft, nicht ihre Richtigkeit;
+Prüfung 20 die Übereinstimmung von Tabelle und Manifest, nicht deren Richtigkeit; Prüfung 22 die
+Abbildung der Importsteuerung, nicht ihre Wirkung. Das ist derselbe Befundtyp, gegen den dieses
+Projekt seine Sonden gebaut hat – hier bewusst eingegangen und benannt.
+
+**Eine der neuen Prüfungen war zunächst still.** Prüfung 20 las die Client-Spalten des
+Platzhalterregisters nie und lief grün, weil sie keine einzige Zeile ansah. Gefunden hat es die
+Sonde – die fünfte stille Prüfung in sieben Releases, und wieder in derselben Sitzung, in der
+sie entstand. Genau dafür ist D-23 da. Neu ist, dass der Nachweis selbst ein **Skript** ist:
+elf Sonden, acht Gegenproben, wiederholbar auf einer Kopie statt aus einem Protokoll nachgebaut.
 
 Mit 0.25.0 ist AP2 fuer das zweite Client Pack gefahren - und hat zwei Zusagen widerlegt, die
 seit der ersten Fassung als technisch durchgesetzt galten.
@@ -492,6 +538,15 @@ Restpunkte sind abgearbeitet** – zwei mit 0.22.0, der dritte mit 0.23.0 (`CR-2
 ob sich eine Version bewegt, wenn sich das Artefakt ändert – sie braucht die Versionsgeschichte
 und bleibt beim Release-Prozess.
 
+**Erledigt – elf entschiedene Anträge sind umgesetzt (0.26.0).** `CR-2026-027`, `-028`, `-031` bis `-039`; D-34 bis D-38 tragen statt `Umsetzung offen` nun `umgesetzt mit 0.26.0`. **Offen bleibt daraus:**
+
+- **K-28** – Entfernt auch `devin-desktop` HTML-Kommentare, bevor es einen Regeltext einspeist? Nach der Umsetzung von `CR-2026-039` zu erheben; bis dahin gilt die strengere Lesart für beide Packs.
+- **H3 ist unbeobachtet.** Der Nachweis braucht eine Sitzung mit Aufzeichnung. Solange er fehlt, bleibt die Meldung der Quellen beim Sitzungsstart zurückgestellt (`CR-2026-031` E5) – eine zweite Zusage auf einem unbelegten Mechanismus ist genau die Konstruktion, die `AP2-DD-10` acht Releases lang trug.
+- **Bypass-Lauf für `claude-code`** (`CR-2026-033` E5), im Protokoll als Testnachweis auszuweisen.
+- **Einmalige Durchsicht der Altprotokolle** auf ungedeckte Abwesenheitsnachweise (`CR-2026-034` E4) – als Review, nicht als Testfall.
+- **Gegenzeichnung sämtlicher Protokolle** durch `<FRAMEWORK_OWNER>`; es sind inzwischen sechs.
+- **S5 bei `claude-code` erheben** und den Vorrang der nutzerglobalen Konfiguration bei diesem Pack messen – bei `devin-desktop` ist er belegt (K-27), hier nicht.
+
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
 fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
@@ -500,13 +555,15 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
 
 ### Bewusst offen gelassen
 
-- **Zehn Pfadnennungen der Laufzeitschicht eines Clients im Kern**, gemeldet als Warnung von
+- **Neun Pfadnennungen der Laufzeitschicht eines Clients im Kern**, gemeldet als Warnung von
   Prüfung 12. Zwei stehen in AP2 dieses Dokuments – das Arbeitspaket validiert die Mechanismen
-  *eines* Clients und nennt sie deshalb konkret. Die übrigen acht stehen in den Quellen des
+  *eines* Clients und nennt sie deshalb konkret. Die übrigen sieben stehen in den Quellen des
   Hauptdokuments (`build/doc/15-referenzstruktur.md`, `build/doc/31-anhaenge.md`) und sind
   **nicht** geprüft worden: `assemble.py` löst Laufzeit-Platzhalter je Client auf, diese Stellen
   könnten also neutral sein. Bis 0.23.0 stand hier „zwei“ – dieselbe zu kleine Zählung wie bei
-  `CR-2026-020` (76 statt 248) und `CR-2026-024` (fünf statt zehn). Ein eigener Vorgang.
+  `CR-2026-020` (76 statt 248) und `CR-2026-024` (fünf statt zehn). Mit 0.26.0 ist eine Nennung
+  entfallen, weil die README der Regelablage nicht mehr existiert; die Zahl ist gegen den
+  Validator nachgezählt, nicht fortgeschrieben. Ein eigener Vorgang.
 - `PyYAML` ist für den Betrieb nicht vorausgesetzt, für einen Nachweis schon: Ohne das Modul
   prüft der Validator Frontmatter und Overlay-Manifest eingeschränkt und sagt das seit 0.11.0
   als Warnung. Der Testkatalog führt es als Voraussetzung der Skripttests.

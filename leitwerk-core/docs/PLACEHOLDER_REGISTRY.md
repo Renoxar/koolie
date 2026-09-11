@@ -35,7 +35,7 @@ Die Begriffsfassung derselben Abbildung steht in `leitwerk-core/docs/RUNTIME_GLO
 | `<SKILLS_DIR>` | Skill-Ablage | `.devin/skills` | `.claude/skills` |
 | `<RULES_DIR>` | Regelablage | `.devin/rules` | `.claude/rules` |
 | `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` |
-| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/hooks.v1.json` | `.claude/settings.json` |
+| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/config.json` | `.claude/settings.json` |
 | `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` |
 | `<CORE_DIR>` | Name des Kernverzeichnisses | `leitwerk-core` | `leitwerk-core` |
 

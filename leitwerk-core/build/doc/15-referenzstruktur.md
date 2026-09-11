@@ -78,7 +78,7 @@ Angelegt und aktualisiert werden die Wurzelbestandteile durch `leitwerk-core/ins
 
 **Warum diese Aufteilung.** Vor dieser Fassung lagen zwölf Kern-Verzeichnisse und vier Kern-Dateien direkt im Wurzelverzeichnis – neben dem Produktivcode des Projekts. Das machte die Übernahme fehleranfällig (was gehört zum Framework, was zum Projekt?) und das Wurzelverzeichnis unübersichtlich. Die Bündelung ändert nichts an der inhaltlichen Ebenenhierarchie (Kap. 7); sie trennt lediglich physisch, was ohnehin logisch getrennt war: Der Kern ist ein Ordner, den man ersetzt; das Projekt ist alles daneben.
 
-**Die Laufzeitschicht ist Erzeugnis, nicht Quelle.** Kein Bestandteil von `.devin/` wird von Hand geschrieben. Regeltexte, Skills, Agentenprofil, Berechtigungen und Hooks liegen einmal unter `leitwerk-core/framework/runtime/` beziehungsweise `framework/skills/` und werden bei der Installation in die Form des gewählten Client Packs gebracht (Kap. 7a). Ein Client Pack selbst enthält nur noch vier Dateien: die Pfad- und Semantikabbildung (`manifest.json`), die Fähigkeitsmatrix (`CLIENT_PACK.md`) und zwei erklärende READMEs.
+**Die Laufzeitschicht ist Erzeugnis, nicht Quelle.** Kein Bestandteil von `.devin/` wird von Hand geschrieben. Regeltexte, Skills, Agentenprofil, Berechtigungen und Hooks liegen einmal unter `leitwerk-core/framework/runtime/` beziehungsweise `framework/skills/` und werden bei der Installation in die Form des gewählten Client Packs gebracht (Kap. 7a). Ein Client Pack selbst enthält nur noch vier Dateien: die Pfad- und Semantikabbildung (`manifest.json`), die Fähigkeitsmatrix (`CLIENT_PACK.md`) und eine erklärende README der Laufzeitschicht.
 
 **Grenze der Bündelung.** Die Wurzel-Anweisungsdatei und die Laufzeitschicht lassen sich nicht mitverschieben – beide Ladeorte sind Werkzeugkonvention und nicht konfigurierbar `[DOK]`. Die Laufzeitschicht enthält deshalb Kern- und Projektbestandteile gemischt. Genau diese Mischung löst `install.py` auf: **Core** wird bei `--update` überschrieben, **Saat** (Berechtigungsdatei, Overlay, Overlay-Regel) nur bei der Erstinstallation angelegt und danach nie wieder angefasst. `--check` meldet, wenn eine Core-Datei im Wurzelverzeichnis lokal verändert wurde – also an der falschen Stelle bearbeitet.
 
@@ -86,12 +86,11 @@ Damit sind alle geforderten Inhalte logisch abgebildet: zentrale Agentenanweisun
 
 ## 15.3 Laufzeitschicht im Detail
 
-Die folgende Dokumentationsdatei der Laufzeitschicht beschreibt verbindlich, was der KI-Client aus dem Repository liest, welche Mechanismen bewusst nicht verwendet werden und welche Sitzungsfreigaben zulässig sind:
+Die folgende Dokumentationsdatei der Laufzeitschicht beschreibt verbindlich, was der KI-Client aus dem Repository liest, welche Mechanismen bewusst nicht verwendet werden, welche Sitzungsfreigaben zulässig sind – und, in einem eigenen Abschnitt, die Systematik der Regelablage:
 
 {{EMBED-RAW:<RUNTIME_DIR>/README.md:1}}
-Die zugehörige Regeldatei-Systematik:
+Dass diese Systematik **hier** steht und nicht in der Regelablage selbst, ist eine Entscheidung dieses Releases: Der KI-Client führt jede Datei der Regelablage als Regel und macht sie damit ladbar – bei einem Pack sogar unbedingt. **Ein Verzeichnis, das als Regelmenge gelesen wird, enthält nur Regeln** (D-36); erklärender Text steht eine Ebene höher.
 
-{{EMBED-RAW:<RULES_DIR>/README.md:1}}
 ## 15.4 Zentrale Konfigurationsdateien
 
 Alle drei folgenden Dateien sind **erzeugt**. Sie stammen aus einer Referenzinstallation, die beim Bau dieses Dokuments angelegt wird – bei einem anderen Client Pack sehen sie anders aus, ohne dass sich eine Regel ändert. Die Quellen liegen unter `leitwerk-core/framework/runtime/`.

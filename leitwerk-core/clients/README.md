@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `FW-CLIENT-PACKS` |
 | Ebene | keine – Querschnittsschicht (siehe Abschnitt 2) |
-| Version | 0.3.0 |
+| Version | 0.4.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -35,7 +35,7 @@ Es ist eine **Abbildungsschicht**: Es übersetzt die Ebenen 3 bis 7 in die Artef
 |---|---|
 | `CLIENT_PACK.md` | Pfadabbildung, **Semantikabbildung**, **Fähigkeitsmatrix**, Abweichungen, Belegstatus – die menschenlesbare Fassung |
 | `manifest.json` | Dieselben Abbildungen maschinenlesbar; `install.py` und `validate-framework.py` lesen sie. **Ohne Manifest ist ein Pack nicht installierbar** |
-| `root-template/` | Nur noch die Artefakte, die tatsächlich clientspezifisch sind – derzeit zwei erklärende READMEs je Pack |
+| `root-template/` | Nur noch die Artefakte, die tatsächlich clientspezifisch sind – seit 0.26.0 **eine** erklärende README je Pack (die Laufzeit-README; die der Regelablage ist in sie aufgegangen, D-36) |
 
 Alles andere liegt einmal im Kern und wird bei der Installation in die Form dieses Clients gebracht: Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills, Overlay-Laufzeitregel und die beiden Vorlagen als **Formtransformation** (D-16, D-17, D-20), Berechtigungen und Hooks als **Semantikabbildung** (D-18). `seed_paths` ist in beiden Packs leer – die gesamte Saat kommt aus dem Kern. Der Unterschied ist wesentlich: Bei einer Formtransformation ist der Inhalt derselbe und nur die Schreibweise anders. Bei der Semantikabbildung unterscheiden sich die Werkzeuge selbst – ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich und dort über ein Präfix. Weil an genau diesen Regeln die Kernzusagen hängen, prüft die Abbildung drei Eigenschaften und bricht ab, wenn eine verletzt ist:
 
@@ -51,7 +51,7 @@ Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine
 
 | Klasse | Bedeutung |
 |---|---|
-| `[TECHNISCH]` | Der Client erzwingt die Zusage. Ein Verstoß ist nicht möglich, unabhängig vom Modellverhalten. |
+| `[TECHNISCH]` | Der Client erzwingt die Zusage. Ein Verstoß ist nicht möglich, **unabhängig vom Modellverhalten** – nicht notwendig unabhängig vom **Betriebsmodus**. Die Abhängigkeit vom Betriebsmodus weist der B-Block des jeweiligen Packs in einer Vorbemerkung aus; sie ist dort Pflicht (D-35). |
 | `[TEXTUELL]` | Die Zusage steht als Anweisung im Kontext. Ein Modell kann ihr folgen; erzwungen ist sie nicht. |
 | `[NICHT ABBILDBAR]` | Der Client bietet keinen Mechanismus. Die Zusage entfällt für diesen Client. |
 
@@ -67,19 +67,20 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 
 1. `_template/` nach `<client-name>/` kopieren und alle Platzhalter ersetzen.
 2. Pfadabbildung eintragen: Wo erwartet dieser Client Anweisungsdatei, Regeln, Skills, Berechtigungen, Hooks?
-3. Fähigkeitsmatrix ausfüllen. Jede Zeile ohne Beleg trägt den VERIFY-Marker.
+3. Fähigkeitsmatrix ausfüllen. Jede Zeile ohne Beleg trägt den VERIFY-Marker. Der B-Block trägt die **Vorbemerkung zur Betriebsmodus-Abhängigkeit** von `[TECHNISCH]`, ergänzt um den eigenen Belegstand (D-35). Keine Prüfung meldet ihr Fehlen – sie ist eine Anweisung, und das ist hier bewusst so entschieden (`CR-2026-033` E4).
 4. `root-template/` anlegen: die Wurzelartefakte in der Form dieses Clients.
 5. `manifest.json` anlegen: Pflichtfelder `client`, `skills_dir`, `pack_runtime_dir`, `core_skill_prefix`, `core_paths`, `seed_paths`; zusätzlich `runtime_dir`, `root_instruction_file`, `permissions_file`, `agents_dir`, `has_rule_triggers`. Kennt der Client eine **eigene** Bedingungssprache für Regeldateien, kommt `rule_triggers` dazu: Es bildet jeden Ladetrigger der Kernquelle auf sie ab. Ein Ladetrigger ohne Eintrag lässt die Installation scheitern – ersatzloses Verwerfen wäre ein Verlust der Zusage (D-26, D-27).
 6. Semantikabbildung eintragen: `permission_tools`, `permission_tools_bare`, `permission_path_prefix`, `permission_exec_match` und gegebenenfalls `permission_exec_suffix`, `permissions_extra`, `permissions_note`; für die Hooks `hook_tools` und `hook_project_dir_var`. Kennt der Client keine eigene Hook-Datei, zeigt `<HOOKS_FILE>` auf dieselbe Datei wie `<PERMISSIONS_FILE>` – daran wird die Einbettung erkannt. `<CORE_DIR>` wird **nicht** belegt; den setzt die Installation.
-7. Pack in dieser Datei und in `leitwerk-core/OWNERS.md` eintragen.
-8. Probeinstallation in ein leeres Verzeichnis; Validator dagegen ausführen; Testkatalog-Basistests gegen eine Installation des Clients fahren.
+7. **Anweisungs- und Konfigurationsquellen außerhalb des Projekts erheben und eintragen.** Der gleichnamige Abschnitt des Packs führt je bekannter Quelle eine Zeile – Pfad, Ladebedingung, Belegstatus, Maßnahme – **oder** einen datierten Abwesenheitsbeleg samt Erhebungsweg („keine bekannt, Stand `<JJJJ-MM-TT>`, erhoben mit `<Kommando>`"). Er umfasst Regeltexte, Skills und Agentenprofile ebenso wie Berechtigungen, Hooks und Einstellungen (D-34, D-37). Prüfung 19 meldet ein Pack ohne diesen Abschnitt; sie prüft seine **Anwesenheit**, nicht seine Richtigkeit. Kennt der Client eine Importsteuerung für fremde Werkzeugformate, wird sie gesetzt und in Zeile R6 ausgewiesen – abschalten statt nur ausweisen.
+8. Pack in dieser Datei und in `leitwerk-core/OWNERS.md` eintragen.
+9. Probeinstallation in ein leeres Verzeichnis; Validator dagegen ausführen; Testkatalog-Basistests gegen eine Installation des Clients fahren.
 
 ## 6. Verfügbare Client Packs
 
 | Pack | Code | Status | `[TECHNISCH]` | Kernzusagen | Fähigkeitsmatrix belegt |
 |---|---|---|---|---|---|
-| `devin-desktop` | `CP-DD` | entwurf | 21 von 26 | 6 von 6 | nein – Belege stehen aus (Roadmap AP2) |
-| `claude-code` | `CP-CC` | entwurf | 25 von 26 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; die Wirkungsnachweise aus einer Sitzung stehen aus |
+| `devin-desktop` | `CP-DD` | entwurf | 24 von 34 | 6 von 6 | teilweise – H1, H2, R5, R6 und S5 sind in Sitzungen beobachtet; 8 Zeilen tragen einen VERIFY-Marker (Roadmap AP2) |
+| `claude-code` | `CP-CC` | entwurf | 25 von 29 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; die Wirkungsnachweise aus einer Sitzung stehen aus |
 
 ## 7. Änderungsverlauf
 
@@ -88,3 +89,4 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 | 0.1.0 | 2026-09-10 | angelegt (`CR-2026-002`) | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-09-10 | Semantikabbildung der Berechtigungen und Hooks ergänzt (`CR-2026-008`) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-10 | Restduplikation zusammengeführt; ein Pack umfasst vier Dateien (`CR-2026-010`) | `<FRAMEWORK_OWNER>` |
+| 0.4.0 | 2026-09-11 | **Auskunftspflicht über Quellen außerhalb des Projekts** als Schritt beim Anlegen eines Packs (`CR-2026-031`, `CR-2026-038`; D-34, D-37); die Definition von `[TECHNISCH]` nennt die Abhängigkeit vom **Betriebsmodus** (`CR-2026-033`, D-35), der B-Block jedes Packs trägt sie als Pflicht-Vorbemerkung; ein Pack umfasst noch **eine** erklärende README, die der Regelablage ist in die Laufzeit-README aufgegangen (`CR-2026-035`, D-36) | `<FRAMEWORK_OWNER>` |
