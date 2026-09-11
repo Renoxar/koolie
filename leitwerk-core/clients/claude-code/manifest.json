@@ -203,5 +203,7 @@
       "NotebookEdit"
     ]
   },
-  "hook_project_dir_var": "CLAUDE_PROJECT_DIR"
+  "hook_project_dir_var": "CLAUDE_PROJECT_DIR",
+  "hook_fail_closed": true,
+  "_hook_fail_closed_note": "Das Eingabeschema dieses Clients ist gegen eine Installation bestaetigt (AP2-Protokoll, WN-5; Clientversion 2.1.267), und Pruefung 15 belegt, dass der Hook startet. Ein durchsetzender Hook wird deshalb mit --fail-closed aufgerufen: Eine Eingabe, die er nicht lesen kann, blockiert, statt durchgelassen zu werden. Der Schalter steht im Kommando und nicht in env - dass ein Client env an den Hook-Prozess weiterreicht, ist fuer keines der Packs belegt (D-31)."
 }

@@ -265,13 +265,25 @@ def python_interpreter() -> str:
         "Installation abgebrochen, statt eine Zusage zu erzeugen, die nicht traegt (D-26)")
 
 
-def _hook_befehl(script: str, man: dict) -> str:
+def _hook_befehl(script: str, man: dict, enforcing: bool = False) -> str:
+    """Aufrufkommando eines Hooks fuer diesen Client.
+
+    Bei einem durchsetzenden Hook (enforcing in der Kernquelle) haengt die Abbildung
+    --fail-closed an, sobald das Pack das Eingabeschema seines Clients als bestaetigt
+    fuehrt. Der Schalter steht damit im Kommando, das der Client ohnehin ausfuehrt, und
+    nicht in einer Umgebungsvariablen: Ob ein Client env an den Hook-Prozess weiterreicht,
+    ist fuer keines der Packs belegt, und eine Sperre, die auf einer unbelegten
+    Clientzusage steht, ist genau die Lage, aus der AP2-CC-13 kam (D-31).
+    """
     variable = man.get("hook_project_dir_var")
     if not variable:
         raise AbbildungsFehler(
             f"{man.get('client', '?')}/manifest.json: Feld hook_project_dir_var fehlt")
-    return (python_interpreter() + ' "$' + variable + '/'
-            + core_dir_name(man) + '/' + script + '"')
+    befehl = (python_interpreter() + ' "$' + variable + '/'
+              + core_dir_name(man) + '/' + script + '"')
+    if enforcing and man.get("hook_fail_closed") is True:
+        befehl += " --fail-closed"
+    return befehl
 
 
 def _hooks_objekt(quelltext: str, man: dict) -> dict:
@@ -285,9 +297,11 @@ def _hooks_objekt(quelltext: str, man: dict) -> dict:
             neu: dict = {}
             if "on" in eintrag:
                 neu["matcher"] = _hook_matcher(eintrag["on"], man)
+            # "enforcing" ist Steuerinformation der Kernquelle und kein Feld des
+            # Clients; es steuert nur, ob das Kommando --fail-closed traegt.
             neu["hooks"] = [
                 {"type": h["type"],
-                 "command": _hook_befehl(h["script"], man),
+                 "command": _hook_befehl(h["script"], man, h.get("enforcing") is True),
                  "timeout": h["timeout"]}
                 for h in eintrag["hooks"]
             ]

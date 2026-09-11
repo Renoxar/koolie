@@ -13,11 +13,16 @@ Verhalten:
   sind davon ausgenommen, damit die Skripte des Kerns (Validator, install.py --check)
   weiterhin aufrufbar bleiben; dort greift die deny-Regel der Berechtigungsdatei.
 - Kein Fund -> Exit-Code 0.
-- Nicht parsebare Eingabe -> standardmäßig Exit-Code 0 mit Warnung auf stderr (fail-open),
-  weil das Eingabeschema noch nicht in einer Zielinstallation validiert wurde.
-  Mit Umgebungsvariable FW_HOOK_FAIL_CLOSED=1 wird stattdessen blockiert (fail-closed).
-  Nach erfolgreicher Validierung im Arbeitspaket "Validierung der Clientfunktionalitäten"
-  SOLL fail-closed zum Standard gemacht werden (Secure by Default).
+- Nicht parsebare Eingabe -> Exit-Code 0 mit Warnung auf stderr (fail-open), solange das
+  Eingabeschema des Clients nicht in einer Zielinstallation bestaetigt ist.
+  Mit dem Aufrufargument --fail-closed wird stattdessen blockiert (fail-closed).
+  Wo es steht, entscheidet das Client Pack: Das Manifest fuehrt hook_fail_closed, und
+  clientmap.py haengt das Argument beim Rendern an das Hook-Kommando. Das Argument steht
+  damit in der Konfiguration, die der Client ohnehin ausfuehrt - laeuft der Hook, kommt es
+  an. Eine Umgebungsvariable haette die Zusage an eine zweite, unbestaetigte Clientzusage
+  gehaengt: dass der Client sie an den Hook-Prozess weiterreicht (D-31).
+  FW_HOOK_FAIL_CLOSED=1 wirkt weiterhin und bleibt der Weg fuer eine Installation, die
+  fail-closed ohne Neuinstallation erproben will.
 
 Das Skript gibt gefundene Secrets niemals aus; es nennt nur die Musterkategorie.
 Alle Muster sind generisch; sie enthalten keine realen Werte.
@@ -163,6 +168,23 @@ def iter_strings(obj):
             yield from iter_strings(v)
 
 
+def fail_closed() -> bool:
+    """Wahr, wenn eine nicht lesbare Eingabe blockiert statt durchgelassen wird.
+
+    Der Schalter steht im Aufrufargument, nicht in der Umgebung. Das Argument ist Teil
+    des Kommandos, das die Hook-Konfiguration fuehrt und der Client ohnehin ausfuehrt:
+    Laeuft der Hook - was Pruefung 15 an seiner Wirkung belegt -, dann kommt es an. Eine
+    Umgebungsvariable haette die Zusage zusaetzlich davon abhaengig gemacht, dass der
+    Client sie an den Hook-Prozess weiterreicht; das ist eine Clientzusage, die fuer
+    keines der Packs belegt ist, und genau die Art unbelegter Annahme, an der AP2-CC-13
+    acht Releases lang hing (D-31).
+
+    Die Umgebungsvariable bleibt zusaetzlich wirksam, damit eine bestehende Installation
+    fail-closed erproben kann, ohne neu installiert zu werden.
+    """
+    return "--fail-closed" in sys.argv[1:] or os.environ.get("FW_HOOK_FAIL_CLOSED") == "1"
+
+
 def block(reason: str) -> None:
     print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
     sys.exit(2)
@@ -174,8 +196,13 @@ def main() -> None:
         payload = json.loads(raw) if raw.strip() else {}
     except json.JSONDecodeError:
         msg = "[fw-hook] Eingabe nicht als JSON lesbar; Schema gegen aktuelle Clientdokumentation pruefen."
-        if os.environ.get("FW_HOOK_FAIL_CLOSED") == "1":
-            block(msg)
+        if fail_closed():
+            block("Framework-Regel: Die Werkzeugeingabe ist nicht als JSON lesbar. Der "
+                  "Schutz-Hook kann sie deshalb nicht auf Secrets und geschuetzte Pfade "
+                  "pruefen und blockiert die Operation, statt sie ungeprueft durchzulassen "
+                  "(fail-closed). Moegliche Ursache: Das Eingabeschema des Clients hat sich "
+                  "geaendert. Fundstelle melden, Schema gegen die aktuelle "
+                  "Clientdokumentation pruefen und als Aenderungsantrag aufnehmen.")
         print(msg, file=sys.stderr)
         sys.exit(0)
 

@@ -135,5 +135,7 @@
       "write"
     ]
   },
-  "hook_project_dir_var": "DEVIN_PROJECT_DIR"
+  "hook_project_dir_var": "DEVIN_PROJECT_DIR",
+  "hook_fail_closed": false,
+  "_hook_fail_closed_note": "Das Eingabeschema und das Blockierverhalten dieses Clients sind unbestaetigt (Verifikationsbedarf V3; AP2 fuer dieses Pack steht aus). Der durchsetzende Hook laeuft deshalb fail-open: Eine Eingabe, die er nicht lesen kann, wird durchgelassen und als Warnung gemeldet. Das ist eine bewusste Luecke, keine Nachlaessigkeit - fail-closed bei unbekanntem Schema wuerde jede Sitzung blockieren, und eine Sperre ohne Nachweis ist nach D-26 keine. Mit dem Abschluss von AP2 fuer dieses Pack ist der Wert auf true zu setzen (D-31)."
 }

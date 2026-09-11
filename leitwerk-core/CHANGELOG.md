@@ -2,6 +2,33 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.24.0] - 2026-09-11
+
+### Geaendert
+- **Der Schutz-Hook laeuft fail-closed, wo das Eingabeschema belegt ist (`CR-2026-026`, D-31).** Der Kopfkommentar von `hook-check-secrets.py` nannte seit 0.1.0 eine Bedingung: fail-closed, sobald das Eingabeschema gegen eine Zielinstallation bestaetigt ist. Fuer `claude-code` ist sie seit 0.19.0 (H2 in einer Sitzung beobachtet) und WN-5 erfuellt, fuer `devin-desktop` nicht (V3 offen, AP2 steht aus).
+
+  **Ein gemeinsamer Standard waere in beide Richtungen falsch gewesen.** Fail-open fuer beide verschenkt eine belegte Sperre; fail-closed fuer beide behauptet eine ungepruefte und blockierte bei abweichendem Schema jeden Werkzeugaufruf. Der Vorbehalt ist deshalb nicht aufgehoben, sondern **dorthin verlagert, wo er hingehoert**: in das Pack, dessen Client er beschreibt.
+
+- **Der Schalter steht im Aufrufkommando, nicht in der Umgebung.** Das Pack `claude-code` empfahl bis 0.23.0, `FW_HOOK_FAIL_CLOSED` ueber `env` in der erzeugten Konfiguration zu setzen. Das haette die Sperre an eine **zweite Clientzusage** gehaengt – dass der Client `env` an den Hook-Prozess weiterreicht –, die fuer **kein** Pack belegt und vom Validator nicht pruefbar ist. Das Argument dagegen steht in derselben Konfiguration, die der Client ohnehin ausfuehrt: Laeuft der Hook, kommt es an. Dieselbe Art unbelegter Annahme trug `AP2-CC-13` acht Releases lang. Die Umgebungsvariable wirkt weiterhin und bleibt der Weg, fail-closed ohne Neuinstallation zu erproben.
+
+### Hinzugefuegt
+- **Zwei Felder, zwei Zustaendigkeiten.** `enforcing` in `framework/runtime/hooks.json` kennzeichnet einen Hook, der eine Sperre durchsetzt statt zu melden – eine Eigenschaft des Hooks und damit Sache des Kerns. `hook_fail_closed` im Manifest sagt, ob das Eingabeschema **dieses** Clients bestaetigt ist – eine Eigenschaft des Clients und damit Sache des Packs. Trifft beides zu, haengt die Abbildung `--fail-closed` an. Der Statusmelder traegt es nicht.
+- **Pruefung 17 prueft die Wirkung auf zwei Ebenen.** Am Skript, dass das Argument ueberhaupt greift (mit Argument Exit 2, ohne Exit 0) – diese Ebene laeuft auch dort, wo es keine Installation gibt. An der erzeugten Konfiguration, dass ihr Verhalten der Zusage ihres Packs entspricht – diese Ebene prueft die ganze Kette. Die Umgebungsvariable wird fuer den Pruefaufruf entfernt, sonst bestuende der Test auch bei wirkungslosem Argument.
+
+### Nachweise
+- Validator 0 Fehler, 0 Warnungen; `install.py --check` unveraendert; Testinstallationen beider Packs 0 Fehler.
+- **Vier Sonden, vier Grenzproben, fuenf Regressionsproben** (`tests/protocols/2026-09-11-CR-2026-026-fail-closed.md`).
+- **Die neue Pruefung sagte selbst einen Behebungsweg zu, den sie nicht leistet.** Ihre erste Fassung riet zu `install.py --update`; bei `claude-code` liegen die Hooks in der Saat, die `--update` nie ueberschreibt. Gefunden von der Grenzprobe G4 – derselbe Befundtyp, gegen den dieser Antrag gerichtet ist. Die Meldung unterscheidet jetzt nach Ablageform.
+- **Die Blockierbegruendung war dieselbe Zeichenkette wie die Warnung.** Im fail-open-Zweig genuegt ein Hinweis an die Entwicklung; im fail-closed-Zweig ist der Text die Begruendung einer abgelehnten Operation in der Sitzung. Getrennt.
+
+### Migrationshinweise fuer Overlays
+Keine Overlay-Aenderung. **Fuer bestehende `claude-code`-Installationen ein Handgriff:** Die Hooks liegen dort in der Berechtigungsdatei und damit in der Saat; `install.py --update` fasst sie nicht an. Das Kommando des `PreToolUse`-Hooks ist um ` --fail-closed` zu ergaenzen. Pruefung 17 meldet den Zustand als Fehler und nennt den Weg – die Pflicht ist sichtbar, nicht stillschweigend. Bei `devin-desktop` aendert sich nichts.
+
+### Bekannte Einschraenkungen
+- **`devin-desktop` bleibt fail-open.** Ausgewiesene Folge des offenen V3, jetzt als Angabe im Manifest und in der Matrix statt als Folge einer fehlenden Angabe. Mit dem Abschluss von AP2 fuer dieses Pack ist `hook_fail_closed` auf `true` zu setzen.
+- **Fail-closed deckt einen einzigen Zweig:** eine Eingabe, die sich nicht als JSON lesen laesst. Gehaertet ist der Fall, in dem der Hook **gar nichts** sehen kann – nicht der, in dem er etwas uebersieht.
+- **Kein Sitzungsnachweis moeglich.** Dass ein Client eine nicht lesbare Eingabe erzeugt, laesst sich nicht herbeifuehren; belegt ist, dass das Kommando das Argument traegt und der Hook damit blockiert.
+
 ## [0.23.0] - 2026-09-10
 
 ### Behoben

@@ -1318,6 +1318,102 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
                     f"den Matcher, aber nicht die Pruefung im Hook (AP2-CC-16)")
 
 
+# Pruefung 17: Der Schutz-Hook laesst eine unlesbare Eingabe nur dort durch, wo das
+# Client Pack das Eingabeschema als unbestaetigt fuehrt (D-31).
+HOOK_UNLESBAR = "kein json {"
+
+
+def _hook_selbsttest(interpreter: str, skript: str, argumente: list[str]) -> int:
+    """Ruft den Schutz-Hook mit einer nicht parsebaren Eingabe auf und liefert den Exit-Code."""
+    try:
+        lauf = subprocess.run([interpreter, skript] + argumente, input=HOOK_UNLESBAR,
+                              capture_output=True, text=True, timeout=20,
+                              env={k: v for k, v in os.environ.items()
+                                   if k != "FW_HOOK_FAIL_CLOSED"})
+    except (OSError, subprocess.SubprocessError):
+        return -1
+    return lauf.returncode
+
+
+def check_hook_fail_closed(root: str, man: dict) -> None:
+    """Pruefung 17 (D-31): Fail-closed gilt dort, wo das Pack es zusagt - und wirkt.
+
+    Der Schutz-Hook laesst eine Eingabe, die er nicht als JSON lesen kann, standardmaessig
+    durch. Das war richtig, solange kein Eingabeschema gegen eine Installation bestaetigt
+    war; fuer ein Pack, das es fuehrt, ist es eine Luecke. Der Schalter steht im
+    Aufrufkommando (--fail-closed), nicht in der Umgebung: Ob ein Client env an den
+    Hook-Prozess weiterreicht, ist fuer keines der Packs belegt.
+
+    Geprueft wird in zwei Ebenen, und beide sind noetig:
+
+    1. Am Skript: Das Argument muss ueberhaupt wirken - mit --fail-closed Exit 2, ohne
+       Exit 0. Diese Ebene laeuft auch dort, wo es keine Installation gibt. Ohne sie
+       faellt ein Schalter, der ins Leere greift, erst in einer Installation auf - genau
+       die Lage, in der AP2-CC-16 acht Releases lang unbemerkt blieb.
+    2. An der erzeugten Konfiguration: Das Kommando wird so aufgerufen, wie es dort steht,
+       und sein Verhalten gegen die Zusage des Packs gehalten. Diese Ebene prueft die
+       ganze Kette - Manifest, Abbildung, Konfiguration, Verhalten -, nicht die
+       Uebereinstimmung zweier Felder.
+
+    Die Umgebungsvariable wird fuer den Aufruf entfernt: Sonst bestuende der Test auch
+    dann, wenn das Argument nichts bewirkt.
+    """
+    skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
+    if not os.path.isfile(skript):
+        return
+    interpreter = None
+    for kandidat in ("python3", "python", "py"):
+        try:
+            lauf = subprocess.run([kandidat, "-c", "import sys; sys.stdout.write('%s')" % HOOK_SONDE],
+                                  capture_output=True, text=True, timeout=15)
+            if lauf.returncode == 0 and HOOK_SONDE in (lauf.stdout or ""):
+                interpreter = kandidat
+                break
+        except (OSError, subprocess.SubprocessError):
+            continue
+    if interpreter is None:
+        return  # Pruefung 15 meldet diesen Fall bereits
+
+    # Ebene 1: Wirkt das Argument?
+    mit = _hook_selbsttest(interpreter, skript, ["--fail-closed"])
+    ohne = _hook_selbsttest(interpreter, skript, [])
+    if mit != 2:
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: Der Aufruf mit --fail-closed "
+            f"blockiert eine nicht lesbare Eingabe nicht (Exit {mit} statt 2). Ein Pack, "
+            f"das fail-closed zusagt, erzeugt damit ein Kommando ohne Wirkung (D-31)")
+    if ohne != 0:
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: Der Aufruf ohne --fail-closed "
+            f"laesst eine nicht lesbare Eingabe nicht durch (Exit {ohne} statt 0). Bei "
+            f"einem Pack mit unbestaetigtem Eingabeschema blockierte damit jede Sitzung, "
+            f"deren Schema abweicht (D-31)")
+
+    # Ebene 2: Traegt die erzeugte Konfiguration die Zusage ihres Packs?
+    zusage = man.get("hook_fail_closed") is True
+    for fundstelle, befehl in _hook_kommandos(root, man):
+        teile = [t.strip('"') for t in shlex.split(befehl, posix=False)]
+        if not any(os.path.basename(t) == "hook-check-secrets.py" for t in teile[1:]):
+            continue
+        argumente = [t for t in teile[2:] if t.startswith("-")]
+        ergebnis = _hook_selbsttest(interpreter, skript, argumente)
+        erwartet = 2 if zusage else 0
+        if ergebnis != erwartet:
+            wie = ("blockiert eine nicht lesbare Eingabe nicht" if zusage
+                   else "blockiert eine nicht lesbare Eingabe, statt sie durchzulassen")
+            # Liegt die Hook-Konfiguration in der Berechtigungsdatei, ist sie Saat und
+            # gehoert nach der Erstinstallation dem Projekt: '--update' fasst sie nie an.
+            # Ein Rat, der dorthin verweist, saegte eine Behebung zu, die nicht eintritt.
+            in_saat = fundstelle.split(":")[0] == man.get("permissions_file")
+            weg = ("Bei diesem Client steht die Hook-Konfiguration in der "
+                   "Berechtigungsdatei und damit in der Saat; 'install.py --update' "
+                   "fasst sie nicht an. Das Kommando ist von Hand nachzuziehen"
+                   if in_saat else "'install.py --update' erzeugt das Kommando neu")
+            err(f"{fundstelle}: Das Pack '{man.get('client', '?')}' fuehrt "
+                f"hook_fail_closed={str(zusage).lower()}, aber das erzeugte Kommando "
+                f"{wie} (Exit {ergebnis} statt {erwartet}). Die Abbildung erreicht die "
+                f"Konfiguration nicht, oder das Kommando traegt das falsche Argument "
+                f"(D-31). {weg}")
+
+
 def check_mermaid(root: str) -> None:
     mmdc = shutil.which("mmdc")
     if not mmdc:
@@ -1370,6 +1466,7 @@ def main() -> int:
     check_placeholder_naming(root)
     check_hook_interpreter(root, man)
     check_hook_tool_coverage(root, man)
+    check_hook_fail_closed(root, man)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:
