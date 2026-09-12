@@ -573,7 +573,7 @@ Review **B03** nachgewiesen hat; der Validator meldet ihn als Fehler und **gibt 
 Klartext aus**, also genau das, was B03 beanstandet. Im Repositorium ließe das jeden
 Validatorlauf rot werden – und über `probe-pruefungen.py` jede Gegenprobe mit ihm.
 
-Vier davon sind am Tag des Eingangs gegengeprüft:
+Sechs davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am selben Tag nachgezogen**:
 
 | Befund | Prüfung dieser Sitzung |
 |---|---|
@@ -581,8 +581,17 @@ Vier davon sind am Tag des Eingangs gegengeprüft:
 | **B02** – `--strict-overlay` prüft fest verdrahtete Pfade **eines** Clients | **Im Code bestätigt:** `check_strict_overlay(root)` liest `.devin/rules/…` und bekommt das erkannte Manifest nicht übergeben. Für das zweite Pack prüft die Aktivierungsprüfung damit nichts |
 | **B03** – Der Inhaltsvalidator gibt gefundene sensible Werte aus | **Im Code bestätigt und unbeabsichtigt vorgeführt:** Der Validatorlauf dieser Sitzung schrieb den synthetischen Kontakt aus dem Prüfprotokoll des Reviews in das Terminal. Der Befund demonstriert sich an seinem eigenen Bericht |
 | **B10** – `--update` ohne `--client` fällt auf das Standardpack zurück | **Im Code bestätigt:** `--client` trägt einen Vorgabewert, der Leitfaden empfiehlt den Aufruf ohne das Argument |
+| **B04** – Die Reichweite der Datei- und Netzwerksperren ist weiter beschrieben, als sie reicht | **Gemessen und bestätigt**, damit über den Belegstand des Reviews hinaus: `tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, vierzehn Läufe mit drei Positivkontrollen, **keine Abweichung**. Für Shell, Unterprozess und Suche gilt keine der Zusagen B3, B4, B5, B8 technisch. **Drei eigene Feststellungen dazu:** Der Hook begründet seine Lücke mit einer deny-Regel, die die Berechtigungsdatei für `exec` nicht enthält (21 Verweigerungen, sämtlich Befehlsverbote, keine einzige Pfadregel); der Suchkanal ist nicht bloß unbewacht, sondern derzeit **nicht bewachbar** – eine `search`-Verweigerung bricht die Abbildung bei beiden Packs ab, weil `permission_tools.search` leer ist, was **D-30 berührt**; und der `permissions_note` des Packs `claude-code` beschreibt eine `search`-Abbildung, die das Manifest nicht mehr trägt |
+| **B05** – Die technischen M4/M5-Pfadgrenzen fehlen im ausgelieferten Hook | **Gemessen und bestätigt** (ebenda). Der Hook entscheidet **gleich**, ob innerhalb oder außerhalb des zugesagten Scopes geschrieben wird, und liest ein mitgeführtes `mode`-Feld nicht. **Eigene Feststellung:** Es sind nicht zwei Modi, sondern **drei von fünf** – M1 nennt denselben Mechanismus, den `install.py` still verwirft (B01), M2 nennt eine Wirkung statt eines Mechanismus, und M3, der Modus mit Zugriff auf Produktivcode, nennt als einziger gar keine Durchsetzung |
 
-Die übrigen acht sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+Die übrigen sechs sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+
+**Aus der Gegenprüfung von B04/B05 sind drei Anträge hervorgegangen, alle drei offen:**
+`CR-2026-047` (Zusagen je Zugriffskanal ausweisen), `CR-2026-048` (die Betriebsmodi nennen
+eine Durchsetzung, die es nicht gibt) und `CR-2026-049` (der Sondenlauf hängt von der
+Kodierung der aufrufenden Umgebung ab). **Die tragende Frage liegt zur Entscheidung vor:**
+welche Zugriffskanäle überhaupt zugesagt werden – `CR-2026-047` E2 und E3, `CR-2026-048` E1
+und E3. Ohne sie ist in Paket 3 nichts umsetzbar.
 
 #### Arbeitsplan für alle zwölf Befunde
 
