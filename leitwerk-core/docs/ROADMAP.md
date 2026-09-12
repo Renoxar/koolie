@@ -555,9 +555,16 @@ und bleibt beim Release-Prozess.
 
 ### Unabhängiges Review vom 2026-09-12
 
-Ein externes Review (`review/2026-09-12-leitwerk-review.md`) hat zwölf Befunde **B01 bis B12**
-vorgelegt, fünf davon P1, mit Lösungswegen je Befund. **Es ist kein Antrag und keine
-Entscheidung** – die Befunde durchlaufen den regulären Prozess.
+Ein externes Review hat zwölf Befunde **B01 bis B12** vorgelegt, fünf davon P1, mit Lösungswegen
+je Befund. **Es ist kein Antrag und keine Entscheidung** – die Befunde durchlaufen den regulären
+Prozess.
+
+Der Bericht selbst liegt **außerhalb des Repositoriums**, neben dem Auscheckstand, mit einer
+eigenen README. Zwei Gründe: Er ist Eingangsmaterial eines Fremdprozesses – was davon gilt, steht
+nach der Übernahme hier. Und sein Prüfprotokoll enthält den synthetischen Kontakt, mit dem das
+Review **B03** nachgewiesen hat; der Validator meldet ihn als Fehler und **gibt ihn dabei im
+Klartext aus**, also genau das, was B03 beanstandet. Im Repositorium ließe das jeden
+Validatorlauf rot werden – und über `probe-pruefungen.py` jede Gegenprobe mit ihm.
 
 Vier davon sind am Tag des Eingangs gegengeprüft:
 
@@ -568,8 +575,35 @@ Vier davon sind am Tag des Eingangs gegengeprüft:
 | **B03** – Der Inhaltsvalidator gibt gefundene sensible Werte aus | **Im Code bestätigt und unbeabsichtigt vorgeführt:** Der Validatorlauf dieser Sitzung schrieb den synthetischen Kontakt aus dem Prüfprotokoll des Reviews in das Terminal. Der Befund demonstriert sich an seinem eigenen Bericht |
 | **B10** – `--update` ohne `--client` fällt auf das Standardpack zurück | **Im Code bestätigt:** `--client` trägt einen Vorgabewert, der Leitfaden empfiehlt den Aufruf ohne das Argument |
 
-Die übrigen acht sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet. Die
-Reihenfolge aus Abschnitt 6 des Reviews ist eine Empfehlung, kein beschlossener Plan.
+Die übrigen acht sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+
+#### Arbeitsplan für alle zwölf Befunde
+
+Die Reihenfolge folgt der Empfehlung des Reviews, weicht aber in drei Punkten ab; die Abweichungen
+sind jeweils begründet. **Nichts davon ist entschieden** – jeder Schritt braucht seinen Antrag.
+
+| Paket | Befunde | Warum hier | Voraussetzung |
+|---|---|---|---|
+| **1 – Zuerst, weil billig und weil es bei jedem Lauf leckt** | **B03** | Der Validator schreibt gefundene E-Mail-Adressen, IP-Adressen, Hostnamen und Sperrbegriffe im Klartext in seine Ausgabe. **Jeder Prüflauf kann damit genau die Angaben verbreiten, die er finden soll** – in eine Sitzung, ein Protokoll, ein Terminal. Die Secret-Diagnose direkt daneben macht es bereits richtig: Kategorie ohne Wert | keine |
+| **2 – Vor einem dritten Client Pack** | **B02**, B10 | **B02 verdreifacht seinen Schaden mit jedem Pack:** Die Aktivierungsprüfung liest fest verdrahtete Pfade **eines** Clients und bekommt das erkannte Manifest nicht übergeben. B10 ist derselbe Fehlertyp im Installer – `--update` ohne `--client` fällt auf das Standardpack zurück und legt in einem fremden Projekt eine zweite Laufzeitschicht an | keine; beide sind lokale Korrekturen |
+| **3 – Aussagen an den Belegstand angleichen** | **B01**, B04, B05, B12 | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
+| **4 – Regelkonflikte, die nur der Mensch entscheiden kann** | **B09**, B07 | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`.** Ohne sie ist hier nichts umsetzbar |
+| **5 – Abläufe** | **B08**, B11 | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) |
+| **6 – Technische Härtung** | **B06**, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3) | Pakete 3 und 4 |
+
+**Drei Abweichungen von der Reihenfolge des Reviews, jeweils mit Grund:**
+
+1. **B03 zuerst statt in Paket A.** Es ist die einzige Stelle, an der ein Schutzlauf selbst Schaden
+   anrichten kann, und die Korrektur ist klein. Diese Sitzung hat es unbeabsichtigt vorgeführt.
+2. **B02 vor jedem neuen Client Pack**, nicht nur „im nächsten Konsistenzdurchlauf". Der Grund ist
+   das geplante Pack `openai-codex` (siehe unten).
+3. **B06 zuletzt statt in Paket D-Mitte.** Ein gehärteter Hook, der eine Zusage stützt, die so
+   nicht gilt, ist genau der Befundtyp dieses Projekts – nur mit mehr Code.
+
+**Was der Arbeitsplan nicht enthält:** Die acht ungeprüften Befunde sind **nach Belegstand des
+Reviews** eingeordnet, nicht nach eigener Messung. Bei B01 hat die Gegenprüfung den Befund
+bestätigt und den Belegtyp gehoben; bei den übrigen steht das aus. **Vor der Umsetzung gehört
+jeder Befund gegengeprüft** – das ist D-23, und es gilt auch für einen Befund von außen.
 
 > **Das Review nennt einen Punkt, den dieses Projekt selbst erlebt:** Die Prüfung eines frischen
 > Auscheckstands verlangt Rechte, die das inaktive Overlay nicht erteilt (B07). Das Review musste
@@ -578,21 +612,35 @@ Reihenfolge aus Abschnitt 6 des Reviews ist eine Empfehlung, kein beschlossener 
 
 ### Mehrere Repositorien unter einem Arbeitsbereich
 
-**Gemessen am 2026-09-12** (`tests/protocols/2026-09-12-mehrprojekt-arbeitsbereich.md`): Eine
-Installation **über** mehreren Repositorien trägt nicht. Die Wurzel-Anweisungsdatei und die
-Regelablage wirken aus der Elternebene nach unten – **die Berechtigungsdatei und die Hooks nicht.**
-Startet die Sitzung in einem Unterverzeichnis, fallen **beide** Durchsetzungslinien aus, und zwar
-**still**: Der Agent sieht seine Regeln vollständig und verhält sich regelkonform.
+**Gemessen am 2026-09-12** (`tests/protocols/2026-09-12-mehrprojekt-arbeitsbereich.md`, fünf Läufe
+mit Kontrollen). Eine Installation **über** mehreren Repositorien trägt – **aber nur, wenn die
+Sitzung in der Wurzel startet.** Der Startort ist die einzige entscheidende Variable:
+
+| Aufbau | Textuelle Schicht | Technische Schicht |
+|---|---|---|
+| Installation in der Wurzel, **Sitzung in der Wurzel** | wirkt | **wirkt**, über beliebig viele Repositorien, ohne Zutun |
+| Installation in der Wurzel, **Sitzung im Repositorium** | wirkt | **fällt still aus** – Berechtigungen und Hooks beide |
+
+`--add-dir` wird dafür **nicht** gebraucht: Ein Verzeichnis unterhalb des Sitzungsverzeichnisses
+ist ohnehin erreichbar. Der Schalter ist für Verzeichnisse **außerhalb** gedacht.
+
+**Der Mehrprojektaufbau braucht damit keine Sonderbehandlung im Framework – er braucht eine
+Bedingung, die bisher nirgends steht.** Ein Projekt, das sie nicht kennt, tut das Naheliegende: Es
+öffnet das Repositorium, an dem es arbeitet. Genau dann fällt der Schutz aus, ohne dass etwas
+meldet: Der Agent sieht seine Regeln vollständig und verhält sich regelkonform.
 
 Folgen, noch nicht als Antrag gefasst:
 
+- **Die wichtigste Stelle ist die Vorbemerkung des B-Blocks.** Dort steht bereits, unter welcher
+  Bedingung `[TECHNISCH]` gilt (Betriebsmodus, D-35). **Der Startort der Sitzung ist die zweite
+  solche Bedingung** und gehört daneben – in beide Packs.
 - Der Ausfüllhinweis in `templates/project-overlay/OVERLAY.md` Abschnitt 3 stellt „je Repository
-  ein Overlay **oder** ein Abschnitt je Repository" als gleichwertig dar. Das ist zu berichtigen.
-- Die Zusagen des B- und H-Blocks gelten unter einer bisher unausgesprochenen Bedingung:
-  **Die Sitzung startet im Installationsverzeichnis.** Das gehört in die Vorbemerkung, neben die
-  Betriebsmodus-Abhängigkeit aus D-35.
-- **Ungemessen und die naheliegende Gegenprobe:** eine Sitzung, die in der Wurzel startet und die
-  Repositorien über `--add-dir` einbezieht.
+  ein Overlay **oder** ein Abschnitt je Repository" als gleichwertig dar. Zu berichtigen: Ein
+  gemeinsames Overlay trägt, das Sitzungsverzeichnis entscheidet.
+- `docs/ADOPTION_GUIDE.md` braucht den Mehrprojektfall als eigenen, gemessenen Abschnitt.
+- **Offen: Kann etwas den falschen Startort melden?** Der meldende Hook läuft in diesem Fall
+  gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
+  die auch dann lädt, also aus der Regelablage.
 
 ### Geplant: Client Pack `openai-codex`
 
