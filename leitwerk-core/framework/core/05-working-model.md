@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.3 |
+| Version | 0.1.4 |
 
 ## 1. Standardarbeitsablauf (normativ)
 
@@ -56,7 +56,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Mensch prüft Befunde stichprobenartig an den angegebenen Fundstellen; unbelegte Aussagen gelten als unbestätigt |
 | Abbruchkriterien | Zugriff auf K3-Inhalte erforderlich; Fundstellen nicht auffindbar; Frage erfordert Informationen außerhalb des Repositorys, die nicht freigegeben sind |
 | Erwartete Ausgabe | Strukturierter Analysebericht: Fragestellung, untersuchte Bereiche, Befunde mit Fundstellen, offene Punkte, ausdrückliche Kennzeichnung von Vermutungen |
-| Durchsetzung | Werkzeugbeschränkung des Skills auf lesende Verben (`read`, `grep`, `glob`) und `deny: edit, exec` über dessen `permissions`. Kennt der KI-Client einen eigenen Nur-Lese-Modus oder ein rein lesendes Agentenprofil, ist dieser Weg vorzuziehen – welcher das ist, steht in der Fähigkeitsmatrix seines Client Packs (S3, A1) |
+| Umsetzung im Werkzeug | **Die Modusgrenze gilt normativ; technisch durchgesetzt ist sie nicht.** Kennt der KI-Client einen eigenen Nur-Lese-Modus oder ein rein lesendes Agentenprofil, ist dieser Weg vorzuziehen – welcher das ist, steht in der Fähigkeitsmatrix seines Client Packs (S3, A1) `[DOK]` je Pack. **Die Skill-`permissions` tragen sie nicht:** `allowed-tools` ist bei mindestens einem Pack keine Werkzeugbeschränkung, sondern eine Vorabfreigabe, und das Feld `permissions` wird bei der Installation verworfen – gemessen am 2026-09-12 (`tests/protocols/2026-09-12-B01-allowed-tools.md`, B01) `[KONZ]`. Unabhängig vom Modus wirken die Sperren auf Secret- und Kernpfade `[DOK]` |
 
 #### M2 Guided Planning
 
@@ -69,7 +69,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Mensch bestätigt oder verwirft den Plan schriftlich (Stufe mittel) beziehungsweise `<APPROVAL_ROLE>` gibt frei (Stufe hoch); jede Planänderung nach Freigabe erfordert erneute Bestätigung |
 | Abbruchkriterien | Anforderungen widersprüchlich; Plan würde Delegationsverbotsliste berühren; Plan erfordert Kontext außerhalb der Freigabe |
 | Erwartete Ausgabe | Plan nach `leitwerk-core/templates/PLAN_TEMPLATE.md`: Ziel, Annahmen (gekennzeichnet), offene Fragen, Schritte, betroffene Dateien, Teststrategie, Risiken, Rollback |
-| Durchsetzung | Schreibrecht allein auf die Plan-Datei. Kennt der KI-Client einen eigenen Planungsmodus mit persistenter Plan-Datei, ist dieser vorzuziehen (Fähigkeitsmatrix des Client Packs). Liegt die Plan-Datei außerhalb des Repositorys, wird sie für die Nachvollziehbarkeit in das im Overlay festgelegte Ablageformat übernommen (`<TBD: Ablage von Plänen im Projekt>`) |
+| Umsetzung im Werkzeug | **Die Beschränkung des Schreibrechts auf die Plan-Datei gilt normativ; technisch durchgesetzt ist sie nicht** – kein Mechanismus des Frameworks kennt sie `[KONZ]`. Kennt der KI-Client einen eigenen Planungsmodus mit persistenter Plan-Datei, ist dieser vorzuziehen (Fähigkeitsmatrix des Client Packs) `[DOK]` je Pack. Liegt die Plan-Datei außerhalb des Repositorys, wird sie für die Nachvollziehbarkeit in das im Overlay festgelegte Ablageformat übernommen (`<TBD: Ablage von Plänen im Projekt>`) |
 
 #### M3 Controlled Modification
 
@@ -95,7 +95,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Mensch prüft, ob Tests das fachliche Verhalten und nicht die Implementierung zementieren; prüft synthetische Testdaten; prüft Aussagekraft fehlschlagender Tests |
 | Abbruchkriterien | Test erfordert Änderung am Produktivcode (dann Wechsel nach M2/M3 durch den Menschen); Testinfrastruktur nicht verfügbar; Testdaten nur aus Echtdaten ableitbar |
 | Erwartete Ausgabe | Testdateien, Testprotokoll (Befehl, Ergebnis, Dauer), Liste nicht abgedeckter Fälle, Bewertung der Aussagekraft |
-| Durchsetzung | Skill-`permissions` mit `Write(<TEST_PATHS>/**)` und `Exec(<TEST_COMMAND>)`; Hook `PreToolUse` zur Blockierung von Schreibzugriffen außerhalb der Testpfade |
+| Umsetzung im Werkzeug | **Die Beschränkung auf `<TEST_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Der Schutz-Hook kennt weder den Betriebsmodus noch eine Liste erlaubter Schreibpfade und entscheidet innerhalb und außerhalb des Scopes gleich – gemessen am 2026-09-12 (`leitwerk-core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Die Skill-`permissions` tragen sie ebenfalls nicht (B01, siehe M1). Getragen wird sie von der Regelschicht und der Prüfpflicht dieses Modus; unabhängig davon wirken die Sperren auf Secret- und Kernpfade `[DOK]` |
 
 #### M5 Documentation Support
 
@@ -108,7 +108,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Fachliche Prüfung durch eine Person mit Domänenwissen; Prüfung auf vertrauliche Inhalte vor Ablage in `<DOCUMENTATION_PLATFORM>` |
 | Abbruchkriterien | Dokumentierter Sachverhalt aus dem Code nicht belegbar; Widerspruch zwischen Code und bestehender Dokumentation, der eine fachliche Entscheidung erfordert |
 | Erwartete Ausgabe | Geänderte Dokumentationsdateien, Änderungsübersicht, Liste belegter Quellen, Liste offener fachlicher Klärungen |
-| Durchsetzung | Skill-`permissions` mit `Write(<DOC_PATHS>/**)`, `deny: exec` |
+| Umsetzung im Werkzeug | **Die Beschränkung auf `<DOC_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Eine Beschränkung auf `<DOC_PATHS>` unter Ausschluss aller übrigen Pfade ist über Skill-`permissions` nicht ausdrückbar (`<DOC_PATHS>` ist Teilmenge von `<ALLOWED_PATHS>`, und `deny` gewinnt gegen `allow`) `[DOK]`, und das Feld `permissions` wird bei der Installation ohnehin verworfen (B01). Der Schutz-Hook trägt sie nicht – er kennt den Modus nicht (`leitwerk-core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Getragen wird sie von der Regelschicht und der fachlichen Prüfpflicht dieses Modus |
 
 ## 3. Querschnittsregeln für alle Modi (normativ)
 

@@ -119,8 +119,8 @@ Mal verloren geht.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<offen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **Angenommen, alle vier Fragen wie vorgelegt.** E1 jeder Unterprozessaufruf des Skripts wird angeglichen, nicht nur `lauf()`; E2 Suchtexte mit Umlaut bleiben erlaubt; E3 die Zweifachprüfung ist eine Auflage der Abnahme, kein Sondenblock; E4 kein eigenes Release |
+| Datum | 2026-09-12 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD>` |
-| Umsetzung | `<offen>` |
+| Auflagen | **E1 ist als Bauform umgesetzt, nicht als Reparatur an sieben Stellen:** Alle Aufrufe laufen über die neue Funktion `unterprozess()`, die Umgebung und Dekodierung festlegt; `subprocess.run` steht nur noch dort. Damit ist die Eigenschaft eine des Skripts und nicht die einzelner Funktionen. **Abnahme erfüllt:** Der Sondenlauf besteht vollständig **in beiden Umgebungen** – mit und ohne `PYTHONIOENCODING=utf-8`. Vorher war er mit der Variablen rot. **E4 ist durch den weiteren Sitzungsverlauf überholt:** Die Korrektur geht nicht als reine Erhebung nach `main`, sondern mit `0.30.0`, weil im selben Zug zwei Anträge mit Codeänderung entschieden wurden |
+| Umsetzung | umgesetzt mit `0.30.0` |

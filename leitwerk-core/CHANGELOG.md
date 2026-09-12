@@ -2,6 +2,68 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.30.0] - 2026-09-12
+
+**Vier Zusagen versprachen mehr, als die Mechanismen leisten - und eine Suche erreichte den Schutz-Hook gar nicht.**
+
+Zwei Befunde eines externen Reviews, beide gegengeprueft und gemessen statt gelesen: vierzehn
+Laeufe gegen den ausgelieferten Hook, davon drei Positivkontrollen, keine Abweichung vom
+Bericht (`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`). Drei Feststellungen gehen
+darueber hinaus, und eine davon betrifft das Nachweiswerkzeug selbst.
+
+### Behoben
+
+- **Der Suchkanal war auf beiden Schichten unbewacht** (B04). Kein Hook-Eintrag, keine
+  Berechtigungsregel: Eine Suche ueber einen Secret-Pfad passierte beides. Eine Regel traegt
+  hier auch nicht - dieser Client wertet fuer `Grep` und `Glob` keine Pfadregeln aus
+  (`AP2-CC-02`). Der Schutz-Hook misst Suchwerkzeuge jetzt wie lesende an den Secret-Pfaden;
+  **damit ist D-30 auch fuer das Suchwerkzeug eingeloest** (`CR-2026-047`, D-47).
+- **Der Hook begruendete eine Luecke mit einer Sperre, die es nicht gibt.** Sein Kommentar nannte
+  die deny-Regel der Berechtigungsdatei als Traeger des Shell-Schreibwegs; diese fuehrt fuer
+  `exec` 21 Verweigerungen, saemtlich Befehlsverbote, und keine einzige Pfadregel. Beide
+  Schichten zeigten aufeinander, keine trug. Kommentar und Berechtigungsdatei sagen es jetzt.
+- **Der Sondenlauf haengt nicht mehr von der Umgebung ab, aus der er gestartet wird**
+  (`CR-2026-049`, D-49). Mit `PYTHONIOENCODING=utf-8` - also genau nach dem eigenen
+  Arbeitswissen - wurde er rot, ohne die Variable gruen. Alle Unterprozessaufrufe laufen jetzt
+  ueber eine Funktion, die Umgebung und Dekodierung festlegt. **Die Abnahme verlangt kuenftig
+  beide Umgebungen.**
+
+### Geaendert
+
+- **B3, B4, B5 und B8 nennen ihre Reichweite je Zugriffskanal** - direktes Lesen, direktes
+  Schreiben, Suche, Shell, Unterprozess. `[TECHNISCH]` gilt nur noch dort, wo es gemessen ist;
+  fuer Shell und Unterprozess tragen B4, B5 und B8 **`[TEXTUELL]`**. Die bereits gemessenen
+  Sperren sind dabei ausdruecklich anerkannt, nicht nur die Luecken benannt.
+- **Alle fuenf Betriebsmodi nennen ihre Umsetzung unter derselben Ueberschrift**, mit Belegklasse
+  je Mechanismus (`CR-2026-048`, D-48). Die Pfadgrenze von M4 und M5 gilt **normativ**; der Hook
+  kennt sie nicht und entschied innerhalb und ausserhalb des Scopes gleich. **M3 hatte die
+  richtige Form bereits** - die vier uebrigen sind darauf nachgezogen, nicht umgekehrt.
+- Die Kurzform der Regelablage sagt dasselbe wie die Langform (D-24).
+
+### Neu
+
+- **Pruefung 26:** Eine erklaerte Werkzeugabwesenheit (`hook_tools_absent`) muss folgerichtig und
+  begruendet sein. Ohne sie waere die Deklaration ein Schlupfloch - wer dort `write` eintraege,
+  naehme das schreibende Werkzeug aus der Durchsetzung. Zwei Sonden, eine Gegenprobe.
+- Vier weitere Sonden und Gegenproben fuer den Suchkanal am Hook.
+
+### Bekannte Einschraenkungen
+
+- **Fuer Shell und Unterprozess gibt es keine technische Pfaddurchsetzung.** Sie braucht eine
+  Isolationsschicht des Betriebssystems; deren Reichweite ist auf dieser Plattform unerhoben.
+  Das steht als eigener Gegenstand in Paket 6 (`CR-2026-047` E5).
+- **Die Modusgrenze von M4 und M5 bleibt Modellverhalten.** Ein Sitzungsobjekt mit `mode` und
+  `writable_roots` setzt B06 voraus (`CR-2026-048` E1).
+- Die Messung belegt den Hook, nicht den Client: Ein Exit 0 heisst, dass diese Schranke nicht
+  greift - nicht, dass ein Zugriff gelingt.
+
+### Migrationshinweise
+
+- **Bestehende Installationen brauchen ein `--update`**, damit die Hook-Konfiguration die
+  Suchwerkzeuge erfasst. Ohne das bleibt der Suchkanal unbewacht wie bisher.
+- Ein eigenes Client Pack ohne Suchwerkzeug traegt kuenftig `hook_tools_absent` samt
+  Begleitsatz; eine leere Liste allein bricht die Abbildung ab.
+
 ## [0.29.0] - 2026-09-12
 
 **Der erste Befehl des Uebernahmeleitfadens haette eine Projektdatei geloescht.**

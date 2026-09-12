@@ -71,9 +71,37 @@ def baumhash(root: str) -> str:
     return h.hexdigest()
 
 
+def unterprozess(argv: list, **kw):
+    """Unterprozess mit fester Kodierung auf beiden Seiten.
+
+    Ohne beides haengt das Ergebnis von der aufrufenden Umgebung ab: Der Kindprozess
+    schreibt unter Windows in der Konsolenkodierung, solange PYTHONIOENCODING nicht
+    gesetzt ist, und diese Seite dekodiert mit der Locale-Vorgabe, solange encoding
+    fehlt. Ein Diagnosetext mit Umlaut kommt dann veraendert zurueck und trifft keinen
+    Suchtext mehr.
+
+    Bei einer Sonde faellt das auf - sie sucht den Text und meldet, dass er fehlt. Bei
+    einer Gegenprobe nicht: Ein zerschossener Text ist abwesend, die Gegenprobe besteht
+    klaglos, und niemand erfaehrt etwas. Genau der Befundtyp, gegen den D-23 gebaut ist.
+
+    Aufgefallen am 2026-09-12: Derselbe Sondenlauf wurde mit PYTHONIOENCODING=utf-8 in
+    der Elternumgebung rot und ohne sie gruen - also gerade bei der Konfiguration, die
+    fuer Unterprozesse empfohlen ist. Von 28 Aufrufen der generischen Runner trug
+    genau einer einen Suchtext mit Umlaut; die uebrigen 27 warteten darauf
+    (CR-2026-049, D-49).
+
+    Diese Funktion ist deshalb der einzige Weg, auf dem dieses Skript einen Prozess
+    startet. Zwei Aufrufe trugen die Korrektur, fuenf nicht - das war kein Muster,
+    sondern die Reihenfolge ihrer Entstehung.
+    """
+    umgebung = dict(kw.pop("env", None) or os.environ, PYTHONIOENCODING="utf-8")
+    return subprocess.run(argv, capture_output=True, text=True, encoding="utf-8",
+                          errors="replace", env=umgebung, **kw)
+
+
 def lauf(root: str) -> str:
-    p = subprocess.run([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
-                        "--root", root], capture_output=True, text=True)
+    p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                      "--root", root])
     return (p.stdout or "") + (p.stderr or "")
 
 
@@ -383,11 +411,11 @@ def sonde_hook_zusatzmuster() -> None:
     """
     marker = "b03hookmarke.internal"
     umgebung = dict(os.environ, FW_HOOK_EXTRA_PATH_PATTERNS=marker + "/[")
-    p = subprocess.run(
+    p = unterprozess(
         [sys.executable, os.path.join(QUELLE, "leitwerk-core", "tests", "scripts",
                                       "hook-check-secrets.py")],
         input='{"tool_name": "Read", "tool_input": {"file_path": "beispiel.txt"}}',
-        capture_output=True, text=True, env=umgebung)
+        env=umgebung)
     ausgabe = (p.stdout or "") + (p.stderr or "")
     gemeldet = "Ungueltiges Zusatzmuster an Position 1" in ausgabe
     verschwiegen = marker not in ausgabe
@@ -445,9 +473,8 @@ def sonde_list_skills() -> None:
         # Gegenprobe: ein Verzeichnis ohne SKILL.md ist kein Skill.
         os.makedirs(os.path.join(ablage, "sonde-d41-kein-skill"), exist_ok=True)
 
-        p = subprocess.run([sys.executable, os.path.join(root, "leitwerk-core", "install.py"),
-                            "--client", "devin-desktop", "--root", root, "--list-skills"],
-                           capture_output=True, text=True)
+        p = unterprozess([sys.executable, os.path.join(root, "leitwerk-core", "install.py"),
+                          "--client", "devin-desktop", "--root", root, "--list-skills"])
         ausgabe = (p.stdout or "") + (p.stderr or "")
 
         gefuehrt = "sonde-d41-projektskill" in ausgabe
@@ -492,8 +519,8 @@ def installation(pack: str) -> str:
     ziel = tempfile.mkdtemp(prefix="lw-inst-")
     root = os.path.join(ziel, "projekt")
     os.makedirs(root)
-    subprocess.run([sys.executable, os.path.join(QUELLE, "leitwerk-core", "install.py"),
-                    "--client", pack, "--root", root], capture_output=True, text=True)
+    unterprozess([sys.executable, os.path.join(QUELLE, "leitwerk-core", "install.py"),
+                  "--client", pack, "--root", root])
     shutil.copytree(os.path.join(QUELLE, "leitwerk-core"),
                     os.path.join(root, "leitwerk-core"),
                     ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
@@ -501,19 +528,12 @@ def installation(pack: str) -> str:
 
 
 def strict_ausgabe(root: str) -> str:
-    """Ausgabe der Aktivierungspruefung - ausdruecklich als UTF-8.
+    """Ausgabe der Aktivierungspruefung.
 
-    Ohne PYTHONIOENCODING schreibt der Unterprozess unter Windows in der
-    Konsolenkodierung; ein Diagnosetext mit Umlaut kommt dann veraendert zurueck und
-    trifft keinen Suchtext mehr. Eine Gegenprobe auf "nicht enthalten" besteht das
-    klaglos - sie ist dann wertlos, ohne es zu zeigen. Aufgefallen ist es nur, weil
-    die zugehoerige Sonde denselben Text sucht und fiel.
+    Die Kodierung besorgt unterprozess(); dort steht auch, warum sie noetig ist.
     """
-    umgebung = dict(os.environ, PYTHONIOENCODING="utf-8")
-    p = subprocess.run([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
-                        "--root", root, "--strict-overlay"],
-                       capture_output=True, text=True, encoding="utf-8",
-                       errors="replace", env=umgebung)
+    p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                      "--root", root, "--strict-overlay"])
     return (p.stdout or "") + (p.stderr or "")
 
 
@@ -598,9 +618,7 @@ def sonden_clientwahl() -> None:
         try:
             werkzeug = os.path.join(root, "leitwerk-core", "install.py")
 
-            p = subprocess.run([sys.executable, werkzeug, "--update", "--root", root],
-                               capture_output=True, text=True, encoding="utf-8",
-                               errors="replace")
+            p = unterprozess([sys.executable, werkzeug, "--update", "--root", root])
             aus = (p.stdout or "") + (p.stderr or "")
             getroffen = f"Client:  {pack}" in aus
             keine_zweite = not os.path.isdir(os.path.join(root, fremd))
@@ -610,10 +628,8 @@ def sonden_clientwahl() -> None:
                 print("        Ausgabe:", " | ".join(aus.splitlines()[:6]))
 
             anderes = "devin-desktop" if pack == "claude-code" else "claude-code"
-            q = subprocess.run([sys.executable, werkzeug, "--update", "--root", root,
-                                "--client", anderes],
-                               capture_output=True, text=True, encoding="utf-8",
-                               errors="replace")
+            q = unterprozess([sys.executable, werkzeug, "--update", "--root", root,
+                              "--client", anderes])
             abgewiesen = q.returncode == 1
             unberuehrt = not os.path.isdir(os.path.join(root, fremd))
             melde("GEGENPROBE", "B10", abgewiesen and unberuehrt,
@@ -650,9 +666,8 @@ def sonden_erstinstallation() -> None:
                   "Erstinstallation nicht verlorengehen.\r\n")
         schreib(eigen, inhalt)
 
-        p = subprocess.run([sys.executable, werkzeug, "--client", "claude-code",
-                            "--root", projekt],
-                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        p = unterprozess([sys.executable, werkzeug, "--client", "claude-code",
+                          "--root", projekt])
         abgebrochen = p.returncode == 1
         unberuehrt = lies(eigen) == inhalt
         nichts_geschrieben = not os.path.isdir(os.path.join(projekt, man["runtime_dir"]))
@@ -669,9 +684,8 @@ def sonden_erstinstallation() -> None:
         # Erstinstallation ueberhaupt noch funktioniert.
         leer = os.path.join(ziel, "leer")
         os.makedirs(leer)
-        q = subprocess.run([sys.executable, werkzeug, "--client", "claude-code",
-                            "--root", leer],
-                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        q = unterprozess([sys.executable, werkzeug, "--client", "claude-code",
+                          "--root", leer])
         melde("GEGENPROBE", "D46",
               q.returncode == 0 and os.path.isfile(os.path.join(leer, wurzeldatei)),
               "Erstinstallation in ein freies Verzeichnis laeuft durch")
@@ -680,6 +694,83 @@ def sonden_erstinstallation() -> None:
 
 
 sonden_erstinstallation()
+
+
+# --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
+#
+# Zwei Gegenstaende in einem Block, weil sie dieselbe Entscheidung tragen: Der Suchkanal
+# wird vom Schutz-Hook durchgesetzt (nicht von der Berechtigungsdatei), und ein Client
+# ohne Suchwerkzeug darf das erklaeren, ohne dass daraus ein Schlupfloch wird.
+
+def _manifest_pfad(root: str, pack: str) -> str:
+    return os.path.join(root, "leitwerk-core", "clients", pack, "manifest.json")
+
+
+def _manifest_aendern(root: str, pack: str, aenderung) -> None:
+    pfad = _manifest_pfad(root, pack)
+    man = json.loads(lies(pfad))
+    aenderung(man)
+    schreib(pfad, json.dumps(man, ensure_ascii=False, indent=2) + "\r\n")
+
+
+def _abwesenheit_ohne_begruendung(root: str) -> None:
+    def f(man):
+        man["hook_tools_absent"] = ["search"]
+        man.pop("_hook_tools_absent_note", None)
+    _manifest_aendern(root, "devin-desktop", f)
+
+
+def _abwesenheit_widerspricht(root: str) -> None:
+    # 'write' fuer abwesend erklaeren, obwohl die Berechtigungsschicht ein
+    # Schreibwerkzeug kennt - das ist der Missbrauchsfall, gegen den die Pruefung steht.
+    def f(man):
+        man["hook_tools_absent"] = ["write"]
+        man["_hook_tools_absent_note"] = "Sonde: absichtlich widerspruechlich."
+    _manifest_aendern(root, "devin-desktop", f)
+
+
+sonde("26", "Erklaerte Abwesenheit ohne Begruendung wird gemeldet",
+      _abwesenheit_ohne_begruendung, "_hook_tools_absent_note fehlt oder ist leer")
+sonde("26", "Erklaerte Abwesenheit im Widerspruch zu permission_tools wird gemeldet",
+      _abwesenheit_widerspricht, "permission_tools nennt dafuer aber")
+gegenprobe("26", "Die ausgelieferte Abwesenheitserklaerung bleibt unbeanstandet",
+           None, "hook_tools_absent")
+
+
+def sonden_suchkanal() -> None:
+    """Der Schutz-Hook erreicht die Suchwerkzeuge - und nur mit dem richtigen Pfad.
+
+    Bis 0.29.0 war der Suchkanal auf beiden Schichten unbewacht: kein Hook-Eintrag und
+    keine Berechtigungsregel (B04, Lauf B04-5). Eine Regel traegt hier auch nicht - die
+    Suchwerkzeuge dieses Clients werten keine Pfadregeln aus (AP2-CC-02). Der Hook ist
+    die einzige Schranke, und deshalb wird sie gemessen.
+
+    Die Gegenprobe ist der wichtigere Teil: Ein Hook, der jede Suche blockiert, bestuende
+    die Sonde und machte das Suchwerkzeug unbenutzbar.
+    """
+    hook = os.path.join(QUELLE, "leitwerk-core", "tests", "scripts",
+                        "hook-check-secrets.py")
+
+    def hooklauf(werkzeug: str, eingabe: dict) -> int:
+        p = unterprozess([sys.executable, hook, "--fail-closed"],
+                         input=json.dumps({"tool_name": werkzeug,
+                                           "tool_input": eingabe},
+                                          ensure_ascii=False))
+        return p.returncode
+
+    melde("SONDE", "B04", hooklauf("Grep", {"pattern": "x", "path": "sonde/.env"}) == 2,
+          "Suchwerkzeug auf einen Secret-Pfad wird blockiert")
+    melde("SONDE", "B04", hooklauf("Glob", {"pattern": "**/*.pem"}) == 2,
+          "Suchmuster auf Schluesseldateien wird blockiert")
+    melde("GEGENPROBE", "B04",
+          hooklauf("Grep", {"pattern": "x", "path": "src/"}) == 0,
+          "Suche in einem gewoehnlichen Pfad bleibt moeglich")
+    melde("GEGENPROBE", "B04",
+          hooklauf("Grep", {"pattern": "x", "path": "leitwerk-core/framework/core/"}) == 0,
+          "Suche im Kernverzeichnis bleibt moeglich - lesen darf der Agent ihn")
+
+
+sonden_suchkanal()
 
 
 print()

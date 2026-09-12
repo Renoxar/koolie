@@ -58,11 +58,16 @@ tragen das Feld; keine installierte Fassung trägt es.
 |---|---|---|
 | M1 Read-only Analysis | Werkzeugbeschränkung des Skills auf lesende Verben und `deny: edit, exec` über dessen `permissions` | **trägt nicht** – dasselbe verworfene Feld (B01) |
 | M2 Guided Planning | Schreibrecht allein auf die Plan-Datei | **kein benannter Mechanismus**, nur eine Wirkung |
-| M3 Controlled Modification | **keine Zeile** | Der Modus, der Produktivcode ändert, benennt als einziger keine Durchsetzung |
+| M3 Controlled Modification | keine Zeile `Durchsetzung`, wohl aber `Umsetzung im Werkzeug` – mit Belegklasse je Mechanismus | **trägt, und zwar als einziger richtig.** Bei der Umsetzung hat sich gezeigt: Das ist die Form, die die anderen vier haben sollten |
 
 Drei von fünf Modi nennen einen Mechanismus, und alle drei nennen einen, der nicht trägt. **Zwei
 Zeilen zu berichtigen und zwei stehen zu lassen wäre genau der Fehler, den dieses Projekt
 wiederholt bei sich selbst gefunden hat** (76 statt 248, fünf statt zehn, sechs statt zwölf).
+
+> **Berichtigt bei der Umsetzung:** Der Antrag führte M3 zunächst als Ausreißer, weil ihm die
+> Zeile `Durchsetzung` fehlt. Er hat stattdessen `Umsetzung im Werkzeug` – und nennt dort je
+> Mechanismus eine Belegklasse (`[DOK]`, `[KONZ]`, `[EMPF]`). Das ist die ehrlichere Form.
+> **Die vier übrigen Modi sind deshalb auf M3 nachgezogen worden, nicht umgekehrt.**
 
 ## 2. Vorgeschlagene Änderung
 
@@ -125,8 +130,8 @@ wiederholt bei sich selbst gefunden hat** (76 statt 248, fünf statt zehn, sechs
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<offen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **Angenommen, alle sechs Fragen wie vorgelegt.** E1 jetzt ausweisen statt das Sitzungsobjekt bauen; E2 die Modusgrenze trägt `[TEXTUELL]`; E3 **alle fünf Modi**, nicht nur M4 und M5; E4 der Mechanismus bleibt im Client Pack genannt, nicht im Kern; E5 die Kurzform der Regelablage wird mitgezogen; E6 kein neuer Sondenblock, aber der Beleg im Protokoll |
+| Datum | 2026-09-12 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD>` |
-| Umsetzung | `<offen>` |
+| Auflagen | **E3 hat den Befund bei der Umsetzung berichtigt, und zwar zugunsten des Bestands:** M3 nennt seine Durchsetzung nicht gar nicht, sondern unter der Überschrift `Umsetzung im Werkzeug` – mit Belegklassen je Mechanismus. **Das ist die richtige Form, und die vier übrigen Modi sind darauf nachgezogen worden**, statt M3 auf die schlechtere zu bringen. Der Antragstext hatte M3 als Ausreißer geführt; das ist im Protokoll und in der Roadmap berichtigt. **E5 ist eingelöst:** `framework/runtime/rules/00-framework-core.md` trägt den Satz, dass die Schreibrechte der Modustabelle normativ gelten – das ist die Fassung, die in jede Sitzung lädt (D-24). **Offen bleibt E1:** Das Sitzungsobjekt mit `mode` und `writable_roots` setzt B06 voraus und bleibt Paket 6 |
+| Umsetzung | umgesetzt mit `0.30.0` |

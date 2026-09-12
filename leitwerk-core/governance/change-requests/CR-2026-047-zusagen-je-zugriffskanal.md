@@ -126,8 +126,8 @@ Grep" ab. Das beschreibt einen Stand, den das Manifest seit `CR-2026-016` nicht 
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<offen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **Angenommen, alle sechs Fragen wie vorgelegt.** E1 die Aufteilung steht in der Matrixzeile; E2 Shell und Unterprozess tragen bei B4/B5 `[TEXTUELL]`; E3 **der Suchkanal wird geschlossen – Hook-Eintrag ja, Berechtigungsregel nein**; E4 die Befehlsliste von B8 wird nicht verlängert; E5 die Betriebssystem-Sandbox bleibt einer eigenen Erhebung; E6 der Ausweis braucht keine Sonde, der Hook-Eintrag schon |
+| Datum | 2026-09-12 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD>` |
-| Umsetzung | `<offen>` |
+| Auflagen | **E3 war die einzige Frage, die über eine Textkorrektur hinausgeht, und sie hat eine zweite aufgeworfen:** Ein Pack ohne Suchwerkzeug kann keines abbilden, und eine leere Liste galt bisher als Abbildungsfehler. Die Abwesenheit wird deshalb **deklariert statt erraten** – `hook_tools_absent` im Manifest, mit Begleitsatz. Weil das ein Schlupfloch wäre, wenn jemand dort `write` einträge, prüft **Prüfung 26** beides: dass ein so erklärtes Verb auch in `permission_tools` leer ist und dass der Begleitsatz existiert. **Nachgewiesen:** zwei Sonden und eine Gegenprobe für Prüfung 26, zwei Sonden und zwei Gegenproben für den Suchkanal am Hook. **Die Gegenproben sind hier der wichtigere Teil** – ein Hook, der jede Suche blockiert, bestünde jede Sonde und machte das Suchwerkzeug unbenutzbar. **Offen bleibt E5:** Die technische Durchsetzung für Shell und Unterprozess braucht eine Isolationsschicht des Betriebssystems und ist unerhoben; sie steht als eigener Gegenstand in Paket 6 |
+| Umsetzung | umgesetzt mit `0.30.0` |
