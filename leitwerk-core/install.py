@@ -751,6 +751,34 @@ def list_skills(root: str, man: dict, client: str) -> int:
     return 0
 
 
+def installierte_clients(root: str) -> list[str]:
+    """Welche Client Packs in diesem Projekt installiert sind - an ihrer Laufzeitschicht.
+
+    Dieselbe Regel wie im Validator: Das Pack, dessen runtime_dir im Zielverzeichnis
+    tatsaechlich liegt. Eine Aktualisierung richtet sich an etwas Vorhandenes; was
+    vorhanden ist, ist ablesbar, und ein Vorgabewert ist dort eine Vermutung, die niemand
+    braucht.
+
+    Bis 0.27.0 gab es diese Erkennung hier nicht. `--update` ohne `--client` fiel auf die
+    Vorgabe zurueck und legte in einer Installation des anderen Packs eine **zweite**
+    Laufzeitschicht an - gemessen am 2026-09-12: 60 Dateien, und dabei "0 aktualisiert".
+    Der Aufruf tat nicht zu viel, er tat das Falsche (B10, D-45).
+
+    Liegen bereits zwei Schichten da, meldet die Funktion beide. Der Schaden ist dann
+    schon eingetreten; die Aufgabe der Erkennung ist es, ihn zu zeigen statt ihn
+    fortzuschreiben.
+    """
+    treffer = []
+    for name in available_clients():
+        try:
+            man = load_manifest(name)
+        except (OSError, ValueError, json.JSONDecodeError):
+            continue
+        if os.path.isdir(os.path.join(root, *man["runtime_dir"].split("/"))):
+            treffer.append(name)
+    return treffer
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Installiert die Wurzeldateien des Leitwerk-Frameworks in ein Projekt.")
@@ -762,8 +790,8 @@ def main() -> int:
                     help="Nur pruefen: meldet fehlende und abweichende Core-Dateien, schreibt nichts")
     ap.add_argument("--dry-run", action="store_true",
                     help="Zeigen, was geschehen wuerde, ohne zu schreiben")
-    ap.add_argument("--client", default=DEFAULT_CLIENT,
-                    help=f"Client Pack, aus dem installiert wird (Standard: {DEFAULT_CLIENT})")
+    ap.add_argument("--client", default=None,
+                    help=f"Client Pack, aus dem installiert wird. Ohne Angabe wird das installierte Pack erkannt; bei einer Erstinstallation gilt {DEFAULT_CLIENT}")
     ap.add_argument("--list-clients", action="store_true",
                     help="Verfuegbare Client Packs auflisten und beenden")
     ap.add_argument("--list-skills", action="store_true",
@@ -786,6 +814,33 @@ def main() -> int:
         print("leitwerk-core/clients/<name>/CLIENT_PACK.md.")
         return 0
 
+    # Das Ziel steht vor der Clientwahl fest - denn es entscheidet sie.
+    root = os.path.abspath(args.root)
+    if os.path.abspath(HERE) == root:
+        print("FEHLER: --root zeigt auf leitwerk-core/ selbst. Gemeint ist das "
+              "Wurzelverzeichnis des Projekts, also eine Ebene darueber.", file=sys.stderr)
+        return 1
+
+    erkannt = installierte_clients(root)
+    if len(erkannt) > 1:
+        print(f"FEHLER: In {root} liegen bereits mehrere Laufzeitschichten: "
+              f"{', '.join(erkannt)}. Welche gilt, entscheidet der Client - und die "
+              f"Packs kennen einander nicht. Entferne die nicht gewollte Schicht und "
+              f"rufe erneut auf.", file=sys.stderr)
+        return 1
+
+    if args.client is None:
+        # Erkanntes Pack vor Vorgabe. Die Vorgabe gilt nur, wo es nichts zu erkennen
+        # gibt - bei einer Erstinstallation.
+        args.client = erkannt[0] if erkannt else DEFAULT_CLIENT
+    elif erkannt and args.client not in erkannt:
+        print(f"FEHLER: In {root} ist das Client Pack '{erkannt[0]}' installiert, "
+              f"angefordert ist '{args.client}'. Eine Aktualisierung wuerde hier keine "
+              f"Datei aktualisieren, sondern eine zweite Laufzeitschicht anlegen. Ein "
+              f"Wechsel des Packs ist eine Entscheidung: Entferne dazu die vorhandene "
+              f"Laufzeitschicht und rufe erneut auf.", file=sys.stderr)
+        return 1
+
     if args.client not in clients:
         print(f"FEHLER: Unbekanntes Client Pack: {args.client}", file=sys.stderr)
         if clients:
@@ -799,12 +854,6 @@ def main() -> int:
         man = load_manifest(args.client)
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"FEHLER: Manifest des Client Packs {args.client} nicht lesbar: {exc}", file=sys.stderr)
-        return 1
-
-    root = os.path.abspath(args.root)
-    if os.path.abspath(HERE) == root:
-        print("FEHLER: --root zeigt auf leitwerk-core/ selbst. Gemeint ist das "
-              "Wurzelverzeichnis des Projekts, also eine Ebene darueber.", file=sys.stderr)
         return 1
 
     if args.list_skills:

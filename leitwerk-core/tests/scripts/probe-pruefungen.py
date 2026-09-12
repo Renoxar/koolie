@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Wirkungsnachweis nach D-23 fuer die Pruefungen 18 bis 24 (Release 0.26.0)
-fuer Pruefung 6 (Release 0.26.1, Befund B03) und fuer Pruefung 25 samt
-install.py --list-skills (Release 0.27.0, CR-2026-041).
+fuer Pruefung 6 (Release 0.26.1, Befund B03), fuer Pruefung 25 samt
+install.py --list-skills (Release 0.27.0) und fuer die Aktivierungspruefung samt
+Clientwahl der Installation (Release 0.28.0, Befunde B02 und B10).
 
 Aufruf (im Wurzelverzeichnis des Repositoriums):
     python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD]
@@ -29,6 +30,7 @@ Kopfkommentar in validate-framework.py.
 """
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
@@ -464,6 +466,162 @@ def sonde_list_skills() -> None:
 
 
 sonde_list_skills()
+
+
+# --- strict-overlay (D-44): Aktivierungspruefung, dieselben Faelle je Pack --------
+#
+# Diese Sonden brauchen eine **Installation**, keine Kopie des Repositoriums: Die
+# Aktivierungspruefung liest die Laufzeitschicht eines Projekts. Das macht sie teurer als
+# alle uebrigen - und es ist der Grund, warum der Befund so lange unbemerkt blieb. Eine
+# Sonde, die nur im Repositorium laeuft, kann ihn nicht finden.
+#
+# Der Kern des Nachweises ist die Wiederholung je Pack. B02 war nicht, dass eine Pruefung
+# falsch prueft, sondern dass sie **einen Client gar nicht sieht**. Das faellt nur auf, wenn
+# derselbe Fall in jeder Installation laeuft.
+
+SO_STATUSFORMEN = (
+    (re.compile(r"^(\|\s*Overlay-Status\s*\|\s*)`?[^`|]+`?", re.M), r"\1`{}`"),
+    (re.compile(r"^(-\s*Overlay-Status:\s*)`?[^`\n]+`?", re.M), r"\1`{}`"),
+)
+SO_PLATZHALTER = re.compile(r"<[A-Z][A-Z0-9_]{2,}>|<TBD[^>]*>")
+
+
+def installation(pack: str) -> str:
+    """Frische Installation eines Packs samt Kern - das Ziel der Aktivierungspruefung."""
+    ziel = tempfile.mkdtemp(prefix="lw-inst-")
+    root = os.path.join(ziel, "projekt")
+    os.makedirs(root)
+    subprocess.run([sys.executable, os.path.join(QUELLE, "leitwerk-core", "install.py"),
+                    "--client", pack, "--root", root], capture_output=True, text=True)
+    shutil.copytree(os.path.join(QUELLE, "leitwerk-core"),
+                    os.path.join(root, "leitwerk-core"),
+                    ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
+    return root
+
+
+def strict_ausgabe(root: str) -> str:
+    """Ausgabe der Aktivierungspruefung - ausdruecklich als UTF-8.
+
+    Ohne PYTHONIOENCODING schreibt der Unterprozess unter Windows in der
+    Konsolenkodierung; ein Diagnosetext mit Umlaut kommt dann veraendert zurueck und
+    trifft keinen Suchtext mehr. Eine Gegenprobe auf "nicht enthalten" besteht das
+    klaglos - sie ist dann wertlos, ohne es zu zeigen. Aufgefallen ist es nur, weil
+    die zugehoerige Sonde denselben Text sucht und fiel.
+    """
+    umgebung = dict(os.environ, PYTHONIOENCODING="utf-8")
+    p = subprocess.run([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                        "--root", root, "--strict-overlay"],
+                       capture_output=True, text=True, encoding="utf-8",
+                       errors="replace", env=umgebung)
+    return (p.stdout or "") + (p.stderr or "")
+
+
+def _so_status(pfad: str, wert: str) -> None:
+    t = lies(pfad)
+    for muster, ersatz in SO_STATUSFORMEN:
+        t = muster.sub(ersatz.format(wert), t)
+    schreib(pfad, t)
+
+
+def sonden_aktivierungspruefung() -> None:
+    """Dieselben Faelle in jeder Installation (B02, D-44)."""
+    for pack in ("claude-code", "devin-desktop"):
+        root = installation(pack)
+        try:
+            man = json.loads(lies(os.path.join(QUELLE, "leitwerk-core", "clients", pack,
+                                               "manifest.json")))
+            regel = os.path.join(root, *man["pack_runtime_dir"].split("/"),
+                                 "20-project-overlay.md")
+            rechte = os.path.join(root, *man["permissions_file"].split("/"))
+            overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
+
+            # --- Status: 'aktiv' ist aktiv, alles andere nicht ---------------------
+            for pfad in (regel, overlay):
+                _so_status(pfad, "aktiv")
+            aus = strict_ausgabe(root)
+            melde("GEGENPROBE", "SO", "Overlay-Status ist nicht" not in aus,
+                  f"Status 'aktiv' bleibt unbeanstandet ({pack})")
+
+            # 'aktivierung-ausstehend' bestand bis 0.27.0 die Pruefung - der Vergleich
+            # war ein Praefixvergleich. Ein Wert, der sagt, dass die Aktivierung
+            # aussteht, liess den Fehler sogar verschwinden.
+            _so_status(regel, "aktivierung-ausstehend")
+            aus = strict_ausgabe(root)
+            melde("SONDE", "SO", "sondern 'aktivierung-ausstehend'" in aus,
+                  f"Status 'aktivierung-ausstehend' wird gemeldet ({pack})")
+            _so_status(regel, "aktiv")
+
+            # --- Berechtigungsdatei: Platzhalter ------------------------------------
+            schreib(rechte, SO_PLATZHALTER.sub("platzhalterfrei", lies(rechte)))
+            aus = strict_ausgabe(root)
+            melde("GEGENPROBE", "SO", "enthält noch Platzhalter" not in aus,
+                  f"Bereinigte Berechtigungsdatei bleibt unbeanstandet ({pack})")
+
+            schreib(rechte, lies(rechte).replace(
+                '"permissions"', '"_sonde": "<TBD: offen>",\r\n  "permissions"', 1))
+            aus = strict_ausgabe(root)
+            melde("SONDE", "SO", "enthält noch Platzhalter" in aus,
+                  f"Platzhalter in der Berechtigungsdatei wird gemeldet ({pack})")
+
+            # --- Fehlender sicherheitsrelevanter Abschnitt ---------------------------
+            # Bis 0.27.0 stand ein Overlay ohne Abschnitt 13 besser da als eines mit
+            # einem offenen Wert darin: Die Pruefung sah nur in vorhandene Abschnitte.
+            t = lies(overlay)
+            start = t.index("## 13.")
+            ende = t.index("## 14.")
+            schreib(overlay, t[:start] + t[ende:])
+            aus = strict_ausgabe(root)
+            melde("SONDE", "SO", "Abschnitt ## 13. fehlt" in aus,
+                  f"Fehlender sicherheitsrelevanter Abschnitt wird gemeldet ({pack})")
+        finally:
+            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+sonden_aktivierungspruefung()
+
+
+# --- B10 (D-45): Die Aktualisierung trifft das installierte Pack -----------------
+#
+# Kein Validatorlauf: Der Gegenstand ist das Installationswerkzeug. Gemessen wird an dem,
+# was es anlegt - und vor allem an dem, was es **nicht** anlegt.
+#
+# Die Gegenprobe ist hier die wichtigere Haelfte. Dass eine Aktualisierung das richtige
+# Pack trifft, sagt noch nicht, dass ein falsches abgewiesen wird; bis 0.27.0 wurde es
+# stillschweigend ausgefuehrt und legte 60 Dateien an.
+
+def sonden_clientwahl() -> None:
+    """Wirkungsnachweis fuer die Erkennung des installierten Packs (B10, D-45)."""
+    fremde_schicht = {"claude-code": ".devin", "devin-desktop": ".claude"}
+    for pack, fremd in fremde_schicht.items():
+        root = installation(pack)
+        try:
+            werkzeug = os.path.join(root, "leitwerk-core", "install.py")
+
+            p = subprocess.run([sys.executable, werkzeug, "--update", "--root", root],
+                               capture_output=True, text=True, encoding="utf-8",
+                               errors="replace")
+            aus = (p.stdout or "") + (p.stderr or "")
+            getroffen = f"Client:  {pack}" in aus
+            keine_zweite = not os.path.isdir(os.path.join(root, fremd))
+            melde("SONDE", "B10", getroffen and keine_zweite,
+                  f"Aktualisierung ohne --client trifft das installierte Pack ({pack})")
+            if not (getroffen and keine_zweite):
+                print("        Ausgabe:", " | ".join(aus.splitlines()[:6]))
+
+            anderes = "devin-desktop" if pack == "claude-code" else "claude-code"
+            q = subprocess.run([sys.executable, werkzeug, "--update", "--root", root,
+                                "--client", anderes],
+                               capture_output=True, text=True, encoding="utf-8",
+                               errors="replace")
+            abgewiesen = q.returncode == 1
+            unberuehrt = not os.path.isdir(os.path.join(root, fremd))
+            melde("GEGENPROBE", "B10", abgewiesen and unberuehrt,
+                  f"Widersprechendes --client bricht ab statt anzulegen ({pack} statt {anderes})")
+        finally:
+            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+sonden_clientwahl()
 
 
 print()
