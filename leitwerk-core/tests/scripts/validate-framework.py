@@ -57,9 +57,11 @@ Prüft (statisch, ohne laufenden KI-Client):
      Manifest sie abbildet. Belegt Anwesenheit und Uebereinstimmung, nicht Wirkung -
      die Benutzerkonfiguration der Arbeitsstation hat Vorrang (K-27)
  23. Normative Kommentare (D-38): kein normatives Schluesselwort in einem HTML-Kommentar
-     der Laufzeitartefakte - ein Kommentar erreicht die Sitzung nicht (ERH-01)
+     der Laufzeitartefakte - ein Kommentar erreicht nicht jede Sitzung (ERH-01, K-28)
  24. Regelablage (D-36): In der Vorlage der Regelablage liegt nur, was dem Nummernschema
      der Regeltexte folgt; erklaerender Text steht in der Laufzeit-README eine Ebene hoeher
+ 25. Ausfall mit Ersatz (D-41): Eine Matrixzeile eines Client Packs auf [NICHT ABBILDBAR]
+     benennt den Ersatz - oder haelt ausdruecklich fest, dass es keinen gibt
 
 Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 24 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
@@ -1884,7 +1886,7 @@ def check_importsteuerung(root: str, man: dict) -> None:
 
 
 # Normative Schluesselwoerter. Ein Kommentar traegt Herkunft - Ebene, Version, Owner,
-# Ladeverhalten -, keine Anweisung: Er erreicht die Sitzung nicht (ERH-01, D-38).
+# Ladeverhalten -, keine Anweisung: Er erreicht nicht jede Sitzung (ERH-01, K-28, D-38).
 NORMATIVE_WOERTER = (
     re.compile(r"\bMUSS\b"),
     re.compile(r"\bMUESSEN\b"),
@@ -1923,16 +1925,25 @@ def _laufzeitartefakte(root: str, man: dict):
 def check_normative_kommentare(root: str, man: dict) -> None:
     """Pruefung 23 (D-38): Kein normatives Schluesselwort in einem HTML-Kommentar.
 
-    Gemessen am 2026-09-11 (ERH-01): Dieselbe Messmarke blieb unsichtbar, solange sie in
-    Kommentarklammern stand, und war im Klartext sofort im Kontext - in der
-    Wurzel-Anweisungsdatei und in der Regelablage. Eine Anweisung im Kommentar ist damit
-    eine Regel, die niemanden erreicht. Was gilt, steht im Fliesstext.
+    Gemessen an **beiden** Clients, mit entgegengesetztem Ergebnis. Bei 'claude-code' blieb
+    dieselbe Messmarke unsichtbar, solange sie in Kommentarklammern stand, und war im
+    Klartext sofort im Kontext - in der Wurzel-Anweisungsdatei und in der Regelablage
+    (2026-09-11, ERH-01). Bei 'devin-desktop' steht der Kommentar **woertlich** in dem
+    Regelblock, den der Client bildet; die Sitzung gab die Marke aus dem Kommentar zurueck,
+    ohne eine Datei zu lesen (2026-09-12, K-28).
+
+    Genau das traegt die Pruefung. Ein Ablageort, an dem eine Aussage bei dem einen Client
+    verschwindet und beim anderen mitlaeuft, ist fuer eine normative Aussage untauglich:
+    Was gilt, darf nicht davon abhaengen, mit welchem Werkzeug gearbeitet wird. Die
+    Begruendung ist damit belastbarer als vorher - die alte ('erreicht die Sitzung nicht')
+    waere mit einem Client, der Kommentare durchreicht, hinfaellig gewesen; genau so einer
+    ist gemessen worden. Was gilt, steht im Fliesstext.
 
     GRENZE: Eine Wortlistenpruefung meldet auch eine zutreffende Erwaehnung - etwa den
     Verweis auf eine Regel, die 'MUSS' enthaelt. Fehlalarme sind moeglich und beim
-    Beschluss ausdruecklich in Kauf genommen (CR-2026-039 E3). Gemessen ist ausserdem
-    **ein** Client und **zwei** Dateiarten; fuer das zweite Pack ist es offen (K-28), und
-    solange gilt die strengere Lesart fuer beide.
+    Beschluss ausdruecklich in Kauf genommen (CR-2026-039 E3). Die strengere Lesart gilt
+    fuer beide Packs - nicht mehr vorsorglich, weil das Verhalten des zweiten unerhoben
+    waere, sondern weil es erhoben ist und **abweicht** (K-28, CR-2026-040).
     """
     gesehen = set()
     for pfad in _laufzeitartefakte(root, man):
@@ -1949,7 +1960,7 @@ def check_normative_kommentare(root: str, man: dict) -> None:
                 if not treffer:
                     continue
                 err(f"{rel}:{zeile}: '{treffer.group(0)}' steht in einem HTML-Kommentar. "
-                    f"Ein Kommentar erreicht die Sitzung nicht (ERH-01); eine normative "
+                    f"Ein Kommentar erreicht nicht jede Sitzung (ERH-01, K-28); eine normative "
                     f"Aussage gehoert in den Fliesstext, im Kommentar bleibt die Herkunft "
                     f"(D-38)")
                 break
@@ -2021,6 +2032,60 @@ def check_mermaid(root: str) -> None:
                         f"(Renderer-Exitcode {res.returncode}; Fehlerausgabe nicht wiedergegeben)")
 
 
+# Pruefung 25: Eine Zeile auf [NICHT ABBILDBAR] nennt den Ersatz.
+#
+# Die Einstufungsklasse sagt "der Client bietet keinen Mechanismus". Sie sagt nicht, was an
+# seine Stelle tritt - und genau dort entsteht die stillschweigende Verschlechterung: Ein
+# Ausfall wird eingetragen, niemand widerspricht, und die Zusage ist weg, ohne dass eine
+# Entscheidung darueber gefallen waere.
+#
+# D-41 unterscheidet deshalb Kernzusagen von Faehigkeitszusagen. Eine Kernzusage auf
+# [NICHT ABBILDBAR] sperrt die Inbetriebnahme; eine Faehigkeitszusage sperrt nicht, MUSS aber
+# den Ersatz benennen. Diese Pruefung setzt den zweiten Teil durch - den ersten kann kein
+# Skript durchsetzen, er ist eine Freigabe durch einen Menschen.
+NICHT_ABBILDBAR_RE = re.compile(r"`\[NICHT ABBILDBAR\]`")
+MATRIXZEILE_RE = re.compile(r"^\|\s*([A-Z]{1,2}\d+)\s*\|")
+
+
+def check_ausfall_mit_ersatz(root: str) -> None:
+    """Pruefung 25 (D-41): Kein Ausfall ohne benannten Ersatz.
+
+    Geprueft werden die Matrixzeilen der Client Packs - erkennbar an der Zeilenkennung am
+    Zeilenanfang (B3, S5, X2). Die Zusammenfassungstabellen desselben Dokuments fuehren
+    dieselbe Klasse als Zeilenbeschriftung; sie sind keine Zusagen und bleiben unberuehrt.
+
+    Verlangt wird das Wort 'Ersatz' in der Zeile. Das ist bewusst grob: Die Pruefung kann
+    nicht beurteilen, ob ein Ersatz taugt - sie kann nur erzwingen, dass jemand die Frage
+    gestellt und beantwortet hat. Ein 'kein Ersatz' genuegt ihr, und das ist richtig so:
+    Der Satz 'hierfuer gibt es keinen Ersatz' ist eine Aussage, die jemand verantwortet.
+
+    GRENZE: Eine Wortpruefung. Wer 'Ersatz' hinschreibt, ohne einen zu nennen, kommt durch.
+    Sie faengt das Vergessen, nicht die Absicht - wie Pruefung 23 (CR-2026-041 E3).
+    """
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "CLIENT_PACK.md")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        for i, zeile in enumerate(read(pfad).splitlines(), 1):
+            if not NICHT_ABBILDBAR_RE.search(zeile):
+                continue
+            m = MATRIXZEILE_RE.match(zeile)
+            if not m:
+                continue
+            if "ersatz" in zeile.lower():
+                continue
+            err(f"{rel}:{i}: Zeile {m.group(1)} steht auf [NICHT ABBILDBAR], ohne einen "
+                f"Ersatz zu benennen. Ein Ausfall, der nur eingetragen und nicht ersetzt "
+                f"wird, ist eine stillschweigende Verschlechterung: Die Zeile nennt den "
+                f"Ersatz oder haelt fest, dass es keinen gibt (D-41)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -2061,6 +2126,7 @@ def main() -> int:
     check_importsteuerung(root, man)
     check_normative_kommentare(root, man)
     check_regelablage_sauber(root)
+    check_ausfall_mit_ersatz(root)
     if args.strict_overlay:
         check_strict_overlay(root)
     if args.mermaid:

@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.26.1 (2026-09-12)
+## Stand nach Release 0.27.0 (2026-09-12)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -33,7 +33,7 @@ ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
 | Kurzform trägt | Sieben Abweichungen zwischen geladener Kurzform und kanonischer Langform behoben; Laufzeitschicht ohne Client-Bindung | D-24, `CR-2026-014`, `tests/protocols/2026-09-10-FW-KO-02.md` |
 | Versionskette sagt etwas | Versionsfelder werden auf **Stimmigkeit** geprüft, nicht nur auf Anwesenheit; 13 Skills, 10 Checklisten und 13 Prompts nach zwölf Releases erstmals angehoben; der dritte Review-Testfall ist bestanden | D-25, `CR-2026-015`, `tests/protocols/2026-09-10-FW-VN-01-wiederholung.md` |
 | AP2 begonnen | Das Pack `claude-code` erstmals gegen eine reale Installation gefahren: neun Befunde, drei schwer. Eine Kernzusage verfiel beim Rendern, 18 Regeln waren wirkungslos, die vorgeschriebene Pruefung war nie gelaufen | D-26, `CR-2026-016`, `tests/protocols/2026-09-10-AP2-claude-code.md` |
-| Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
+| Ladebedingungen abgebildet | `.claude/rules/` mit `paths:` bildet R2 und R3 ab; die vier Einstufungen auf `[NICHT ABBILDBAR]` entfielen. Eine aktivierte Role-Pack-Regel wurde bei diesem Client nie geladen. **Seit 2026-09-12 steht S5 wieder dort** – gemessen, keine Kernzusage, mit Ersatz (`CR-2026-041`, D-41, D-42) | D-27, `CR-2026-017`, AP2-Protokoll Nachtrag 2 |
 | Belegkette vollständig | Die Quellenliste des Hauptdokuments kannte nur einen der beiden Clients; jede Matrixzeile nennt jetzt ihre Fundstelle | `CR-2026-018`, Anhang 31.4 |
 | Betriebsmodi werkzeugneutral | Der Kern beschrieb bei vier Betriebsmodi, was ein bestimmter Client kann; das gehört in dessen Fähigkeitsmatrix | `CR-2026-025`, `clients/devin-desktop/CLIENT_PACK.md` A2/M4/M5 |
 | AP2 `devin-desktop` | Das Pack erstmals gegen eine Installation gefahren: 17 Befunde, zwei schwer. Die Hook-Datei wurde nie gelesen, und ein lesendes Werkzeug erreichte den Schutz-Hook bei **keinem** Pack | D-32, D-33, `CR-2026-029`, `CR-2026-030`, `tests/protocols/2026-09-11-AP2-devin-desktop.md` |
@@ -407,8 +407,13 @@ behauptet, die fehlt.
 Zehn Sonden nach D-23 belegen die neuen Pruefungen (vier zu 0.14.0, sechs zu 0.15.0), alle
 gemeldet; die vier Gegenproben zu 0.15.0 zeigen, dass keine bestehende Pruefung verdraengt wurde.
 
-**Keine Einstufung des Packs steht mehr auf `[NICHT ABBILDBAR]`** – 4 vor AP2, jetzt 0. Alle vier
+**Die vier Einstufungen auf `[NICHT ABBILDBAR]` entfielen** – 4 vor AP2, danach 0. Alle vier
 waren Unterschaetzungen des Clients.
+
+**Fortgeschrieben am 2026-09-12 (`CR-2026-041`, D-41):** Der Satz galt bis zur Erhebung von S5.
+Seither steht **eine** Einstufung dort – gemessen und nicht unterschaetzt, keine Kernzusage,
+mit benanntem Ersatz (`install.py --list-skills`). D-27 wird dadurch nicht aufgehoben: Die
+Entscheidung war richtig, der Satz beschrieb einen **Stand**, keinen Beschluss.
 
 **Erledigt bei `claude-code`: die Wirkungsnachweise** (`tests/protocols/2026-09-10-AP2-claude-code-wirkungsnachweise.md`).
 Fünf Nachweise in Sitzungen, die **in** der Testinstallation starten: keine Startwarnung über
@@ -547,11 +552,13 @@ und bleibt beim Release-Prozess.
 - **Einmalige Durchsicht der Altprotokolle** auf ungedeckte Abwesenheitsnachweise (`CR-2026-034` E4) – als Review, nicht als Testfall. **Zweites Kriterium seit dem 2026-09-12:** ein Abwesenheitsnachweis, der auf einem Suchwerkzeug beruht, ist für Punktdateien keiner (ERH-12, `CR-2026-042`).
 - **Gegenzeichnung sämtlicher Protokolle** durch `<FRAMEWORK_OWNER>`. **Die Zahl stand hier bei „sechs" und war wieder zu klein** – am 2026-09-12 gegen das Verzeichnis nachgezählt statt fortgeschrieben, wie schon bei `CR-2026-020` (76 statt 248) und `CR-2026-024` (fünf statt zehn): **zwölf** Protokolle haben einen Gegenzeichnungsabschnitt mit offenem `<TBD>`, drei sind gegengezeichnet. **Fünf haben überhaupt keinen Abschnitt** – `FW-DS-03`, `FW-KO-01`, `FW-KO-04`, `FW-RE-02`, `FW-ZA-05`; sie können nicht gegengezeichnet werden, ohne dass zuvor jemand den Abschnitt anlegt. `tests/protocols/README.md` führt die Gegenzeichnung nicht unter den Pflichtangaben; ob sie eine sein soll, ist zu entscheiden.
 
-**Neu offen aus den Erhebungen vom 2026-09-12** – drei Anträge, keiner entschieden:
+**Aus den Erhebungen vom 2026-09-12** – drei Anträge, **alle drei entschieden und mit 0.27.0 umgesetzt** (D-40 bis D-43):
 
-- **`CR-2026-040`** – Der Kern schreibt ERH-01 als Aussage über alle Clients; K-28 widerlegt sie für das zweite Pack. Betrifft den Kopfkommentar der Wurzel-Anweisungsdatei und drei Textstellen des Validators; **Prüfung 23 bleibt unverändert**, es ändert sich kein Prüfergebnis.
-- **`CR-2026-041`** – S5 steht bei `claude-code` auf `[NICHT ABBILDBAR]`. `clients/README.md` Abschnitt 4 knüpft daran eine Sperre der Inbetriebnahme, deren Begriff „Kernzusage" nirgends definiert ist (K-29). Damit steht zugleich **wieder eine Einstufung auf `[NICHT ABBILDBAR]`** – der Satz zu D-27 weiter oben beschreibt einen Stand, der seit dem 2026-09-12 nicht mehr gilt.
-- **`CR-2026-042`** – Ein Abwesenheitsnachweis über das Suchwerkzeug ist für Punktdateien keiner. Ergänzt Nummer 7 des Testkatalogs um eine **Anwesenheitsprobe desselben Gegenstandstyps**.
+- ~~**`CR-2026-040`**~~ – **erledigt** (D-40). Der Kern schrieb ERH-01 als Aussage über alle Clients; K-28 widerlegt sie für das zweite Pack. Betrifft den Kopfkommentar der Wurzel-Anweisungsdatei und drei Textstellen des Validators; **Prüfung 23 bleibt unverändert**, es ändert sich kein Prüfergebnis.
+- ~~**`CR-2026-041`**~~ – **erledigt** (D-41, D-42). S5 steht bei `claude-code` auf `[NICHT ABBILDBAR]`. `clients/README.md` Abschnitt 4 knüpft daran eine Sperre der Inbetriebnahme, deren Begriff „Kernzusage" nirgends definiert ist (K-29). Damit steht zugleich **wieder eine Einstufung auf `[NICHT ABBILDBAR]`** – der Satz zu D-27 weiter oben beschreibt einen Stand, der seit dem 2026-09-12 nicht mehr gilt.
+- ~~**`CR-2026-042`**~~ – **erledigt** (D-43). Ein Abwesenheitsnachweis über das Suchwerkzeug ist für Punktdateien keiner. Nummer 7 des Testkatalogs verlangt jetzt eine **Anwesenheitsprobe desselben Gegenstandstyps**.
+
+  **Derselbe Fehler ist am selben Tag eine Ebene tiefer aufgetreten:** Eine Sonde des Wirkungsnachweises setzte ihren Defekt nicht mehr, weil `CR-2026-040` ihren Suchtext geändert hatte – sie meldete „die Prüfung meldet nicht", und richtig gewesen wäre „die Sonde präpariert nicht". `probe-pruefungen.py` bildet seit 0.27.0 vor und nach der Präparation einen Fingerabdruck des Baums und meldet `[nichts praepariert]`, statt die Prüfung zu beschuldigen. Das wirkt für alle Sonden, auch für künftige.
 
 ### Unabhängiges Review vom 2026-09-12
 
@@ -656,7 +663,7 @@ noch nicht festgelegt. **Vor der Aufnahme sind die Voraussetzungen zu klären, n
   Berechtigungsschicht mit Verweigerungsvorrang und (2) einen Hook-Mechanismus vor dem
   Werkzeugaufruf? Fehlt eines von beiden, steht der gesamte B- oder H-Block auf
   `[NICHT ABBILDBAR]` – und nach `clients/README.md` Abschnitt 4 braucht ein solches Pack die
-  Freigabe durch `<SECURITY_CONTACT>`. Diese Klausel ist derzeit Gegenstand von `CR-2026-041`.
+  Freigabe durch `<SECURITY_CONTACT>` – **sofern eine Kernzusage betroffen ist.** Seit D-41 ist der Begriff definiert: B-Block mit `Kern = ja` und `_core_rules_integrity`. Ein fehlender Hook-Mechanismus trifft den H-Block und damit **keine** Kernzusage; eine fehlende Berechtigungsschicht trifft B1 bis B6 und damit **alle sechs**. Für das geplante Pack heißt das: Frage (1) ist die sperrende, Frage (2) nicht – sie verlangt den benannten Ersatz.
 - **Der Kern ist vorbereitet, die Prüfungen sind es nicht überall.** B02 zeigt, dass die
   Aktivierungsprüfung Pfade **eines** Clients fest verdrahtet. Ein drittes Pack verdreifacht den
   Schaden dieses Befunds; **B02 gehört vor das Pack**, nicht danach.

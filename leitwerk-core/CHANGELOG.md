@@ -2,6 +2,54 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.27.0] - 2026-09-12
+
+**Drei Antraege, ein Thema: Eine Aussage gilt so weit, wie sie gemessen ist - und ein Ausfall wird ersetzt, nicht abgebucht.**
+
+### Behoben
+
+- **Der Kern behauptete einen Befund ueber einen Client fuer alle (`CR-2026-040`, D-40, K-28).** Seit `CR-2026-039` stand in der Wurzel-Anweisungsdatei und an drei Stellen des Validators der Satz, ein Kommentar erreiche die Sitzung nicht (ERH-01). **Fuer das zweite Pack ist er falsch:** Bei `devin-desktop` steht der Kommentar **woertlich** in dem Regelblock, den der Client bildet - die Mitschrift fuehrt ihn samt Kommentarklammern, und die Sitzung gab eine Marke daraus zurueck, ohne eine Datei zu lesen (gemessen am 12.09., K-28).
+
+  Der Satz lautet jetzt „ein Kommentar erreicht **nicht jede** Sitzung". **Die Begruendung von Pruefung 23 wird dadurch belastbarer, nicht schwaecher:** Die alte waere mit einem Client, der Kommentare durchreicht, hinfaellig gewesen - genau so einer ist gemessen worden. Die neue lautet: Was bei dem einen verschwindet und beim anderen mitlaeuft, ist als Ablageort untauglich, denn was gilt, darf nicht vom Werkzeug abhaengen. Der gemessene Befund steht jetzt im Pack des Clients, an dem er gemessen wurde. **Pruefung 23 selbst ist unveraendert; kein Pruefergebnis aendert sich.**
+
+- **Eine Sperrklausel haengte an einem Begriff, den niemand definiert hatte (`CR-2026-041`, D-41).** `clients/README.md` untersagt die Inbetriebnahme eines Packs, das eine **Kernzusage** auf `[NICHT ABBILDBAR]` setzt. Was eine Kernzusage ist, stand nirgends - und mit S5 bei `claude-code` haette die Klausel das erste Mal gegriffen.
+
+  Neu definiert: **Kernzusage** ist jede Zeile des B-Blocks mit `Kern = ja` sowie jede Regel aus `_core_rules_integrity`. Alle uebrigen sind **Faehigkeitszusagen**. Eine Kernzusage sagt zu, dass etwas **verhindert** wird; eine Faehigkeitszusage, dass etwas **moeglich** ist - zum Beispiel, dass man nachsehen kann. Faellt das Erste aus, fehlt eine Schranke; faellt das Zweite aus, fehlt Sicht. Beides ist ernst, nur das Erste sperrt. Die Definition ist keine Erfindung: Beide Packs zaehlen seit jeher „sechs Kernzusagen" und meinen damit B1 bis B6.
+
+### Hinzugefuegt
+
+- **Pruefung 25: Ein Ausfall nennt seinen Ersatz (D-41).** Eine Matrixzeile auf `[NICHT ABBILDBAR]` MUSS in derselben Zeile den Ersatz benennen - oder ausdruecklich festhalten, dass es keinen gibt. **Ein Ausfall, der nur eingetragen und nicht ersetzt wird, ist eine stillschweigende Verschlechterung.** Die Pruefung meldete beim ersten Lauf zwei echte Zeilen: S5 bei `claude-code` (Ersatz beschlossen, aber nicht in der Zeile) und X2 bei `devin-desktop` (kein Ersatz, und das war nicht gesagt). Beide sind ergaenzt.
+
+- **`install.py --list-skills` (D-42).** Gibt je Skill Name, Herkunft (Kern, Pack, Projekt), Aufrufbarkeit und Pfad aus. Es ist der Ersatz fuer eine Zusage, die `claude-code` nicht einloest: Dort gibt es kein Aufzaehlungskommando, und die Sitzung antwortete auf die Frage nach der Herkunft woertlich „Herkunft unbekannt - fuer alle 84". Aufzaehlbarkeit ist das einzige Mittel, das einen unbemerkten Skill ueberhaupt bemerkt (`AP2-DD-16`, K-24).
+
+  **Die Ausgabe nennt ihre eigene Grenze** - nicht nur die Dokumentation: Skills aus Ablagen ausserhalb des Projektverzeichnisses sieht auch das Framework nicht, also genau die, um die es geht. Eine Teilauskunft, die das verschweigt, waere der Befundtyp dieses Projekts.
+
+### Geaendert
+
+- **Ein Werkzeugergebnis ist kein Abwesenheitsnachweis (`CR-2026-042`, D-43, ERH-12).** Nummer 7 des Testkatalogs verlangt jetzt, dass die Abwesenheit mit einem Mittel geprueft wird, dessen Trefferbild fuer den geprueften Gegenstand belegt ist - **samt Anwesenheitsprobe desselben Gegenstandstyps**. Anlass: Zwei Suchmuster meldeten `No files found` fuer eine Datei, die im Verzeichnis lag. **Kein stiller Abbruch** - das Werkzeug hat gearbeitet und ein falsches Ergebnis geliefert; eine Positivkontrolle an einer Datei ohne fuehrenden Punkt haette nichts gezeigt.
+
+- **`probe-pruefungen.py` prueft, ob eine Sonde ueberhaupt etwas praepariert hat.** Derselbe Fehler ist am selben Tag eine Ebene tiefer aufgetreten: Die Sonde zu Pruefung 23 fand ihren Suchtext nicht mehr, weil `CR-2026-040` ihn geaendert hatte. `str.replace` tat nichts, der Lauf blieb sauber, und die Sonde meldete „die Pruefung meldet nicht" - richtig gewesen waere „die Sonde praepariert nicht". Das Skript bildet jetzt vor und nach der Praeparation einen Fingerabdruck des Baums und meldet `[nichts praepariert]` samt Grund. **Das wirkt fuer alle Sonden, auch fuer kuenftige.**
+
+- **Veraltete Zaehlungen im Pack `claude-code` berichtigt.** Der Satz „keine Einstufung steht mehr auf `[NICHT ABBILDBAR]`" stand seit 0.24.0 an drei Stellen und galt seit der Erhebung vom 12.09. nicht mehr; die Zusammenfassungstabelle fuehrte S5 noch als „ohne Einstufung", und der Belegstand nannte zwei VERIFY-Marker, wo einer steht. D-27 wird dadurch nicht aufgehoben: Der Satz beschrieb einen **Stand**, keinen Beschluss.
+
+### Nachweise
+
+- **Pruefung 25 und `--list-skills` sind nach D-23 belegt** (`leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.27.0.md`): fuenf Sonden und Gegenproben, darunter die Gegenprobe an der Stelle, an der Pruefung 25 zu breit haette werden koennen - dieselbe Zeichenkette steht im selben Dokument einmal als Einstufung und einmal als Beschriftung einer Zaehlzeile.
+- **Die Praeparationspruefung ist selbst belegt:** Eine Testfassung mit absichtlich totem Suchtext meldet `[nichts praepariert]` und nennt den Grund.
+- **`CR-2026-040` sagt zu, dass sich kein Pruefergebnis aendert** - nachgewiesen: Validator vor und nach der Aenderung 0 Fehler, 0 Warnungen; Sonde und Gegenprobe zu Pruefung 23 unveraendert bestanden.
+
+### Migrationshinweise fuer Overlays
+
+- **Keine.** Keine Regel und keine Einstufung aendert sich; Pruefung 23 bleibt im Zuschnitt unveraendert.
+- Ein Projekt, das ein eigenes Client Pack fuehrt, prueft seine Matrixzeilen auf `[NICHT ABBILDBAR]`: Pruefung 25 verlangt dort den benannten Ersatz.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 25 ist eine Wortpruefung.** Sie erzwingt, dass jemand die Frage nach dem Ersatz beantwortet hat, nicht dass die Antwort taugt. Sie faengt das Vergessen, nicht die Absicht.
+- **`--list-skills` misst die Installation, nicht die Sitzung.** Ob der Client zusaetzliche Skills mitfuehrt, sagt das Kommando nicht und kann es nicht sagen.
+- **Die Sperre selbst bleibt ungeprueft.** Dass eine Kernzusage auf `[NICHT ABBILDBAR]` die Inbetriebnahme sperrt, ist eine Freigabe durch einen Menschen; kein Skript setzt sie durch.
+- **Elf der zwoelf Review-Befunde stehen offen**, acht davon ungeprueft.
+
 ## [0.26.1] - 2026-09-12
 
 **Ein Patch mit einem einzigen Gegenstand: Die Pruefung, die sensible Angaben finden soll, gab sie aus.**

@@ -645,6 +645,112 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
     return rep
 
 
+def skill_herkunft() -> dict[str, str]:
+    """Welcher Teil des Kerns liefert welchen Skill.
+
+    Grundlage von --list-skills. Der Kern liefert unter framework/skills/, die Rollen- und
+    Technologiepacks unter framework/<art>/<pack>/skills/. Was in einer Installation liegt
+    und in keiner dieser Quellen vorkommt, stammt aus dem Projekt.
+    """
+    herkunft: dict[str, str] = {}
+    kern = os.path.join(HERE, "framework", "skills")
+    if os.path.isdir(kern):
+        for name in sorted(os.listdir(kern)):
+            if os.path.isdir(os.path.join(kern, name)):
+                herkunft[name] = "Kern"
+    for art in ("role-packs", "tech-packs"):
+        basis = os.path.join(HERE, "framework", art)
+        if not os.path.isdir(basis):
+            continue
+        for pack in sorted(os.listdir(basis)):
+            quelle = os.path.join(basis, pack, "skills")
+            if not os.path.isdir(quelle):
+                continue
+            for name in sorted(os.listdir(quelle)):
+                if os.path.isdir(os.path.join(quelle, name)):
+                    herkunft.setdefault(name, f"{art[:-1]} {pack}")
+    return herkunft
+
+
+def list_skills(root: str, man: dict, client: str) -> int:
+    """Zaehlt die Skills dieser Installation auf: Name, Herkunft, Aufrufbarkeit, Pfad.
+
+    Warum das Framework eine Auskunft gibt, die eigentlich der Client geben sollte: Zusage
+    S5 sagt zu, dass die geladenen Skills vollstaendig aufzaehlbar sind, samt Herkunft und
+    Aufrufbarkeit. Bei 'claude-code' ist sie am 2026-09-12 als [NICHT ABBILDBAR] gemessen
+    worden - es gibt kein Aufzaehlungskommando, und die Sitzung erhaelt Skills als Name und
+    Kurzbeschreibung ohne Pfad; auf die Frage nach der Herkunft antwortete sie "Herkunft
+    unbekannt - fuer alle 84".
+
+    Ein Ausfall, der nur eingetragen und nicht ersetzt wird, ist eine stillschweigende
+    Verschlechterung. Aufzaehlbarkeit ist das einzige Mittel, das einen unbemerkten Skill
+    ueberhaupt bemerkt (AP2-DD-16, K-24) - deshalb Ersatz statt Abbuchung (CR-2026-041 E3,
+    D-42).
+
+    GRENZE, und sie steht auch in der Ausgabe: Diese Funktion sieht die Installation, nicht
+    die Sitzung. Skills aus Ablagen ausserhalb des Projektverzeichnisses fuehrt sie nicht -
+    genau die also, die niemand bemerkt. Eine Teilauskunft, die sich fuer eine vollstaendige
+    ausgibt, waere der Befundtyp, gegen den dieses Projekt seine Sonden baut.
+    """
+    ablage = man["skills_dir"]
+    basis = os.path.join(root, *ablage.split("/"))
+    print(f"Skills in {root}")
+    print(f"Client Pack: {client}; Ablage: {ablage}")
+    print()
+    if not os.path.isdir(basis):
+        print(f"Keine Skill-Ablage unter {ablage}.")
+        print("Ist in dieses Wurzelverzeichnis installiert worden?")
+        return 1
+
+    herkunft = skill_herkunft()
+    feld = man.get("skill_frontmatter", {}).get("model_invocation_field")
+    zeilen: list[tuple[str, str, str, str]] = []
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "SKILL.md")
+        if not os.path.isfile(pfad):
+            continue
+        fm = ""
+        try:
+            text = read_text(pfad).replace("\r\n", "\n")
+            if text.startswith("---\n") and "\n---\n" in text:
+                fm = text.split("\n---\n", 1)[0][4:]
+        except OSError:
+            pass
+        if feld and re.search(rf"^{re.escape(feld)}:[ \t]*true\b", fm, re.M):
+            aufruf = "nur Nutzer"
+        elif feld:
+            aufruf = "Nutzer+Modell"
+        else:
+            # Ein Client ohne eigenes Feld traegt die Aussage weiter als triggers-Liste
+            # der Quelle. Dann ist sie dort zu lesen und nicht "unbekannt" (K-18).
+            m = re.search(r"^triggers:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)",
+                          fm + "\n", re.M)
+            ausloeser = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
+            aufruf = ("Nutzer+Modell" if "model" in ausloeser
+                      else "nur Nutzer" if ausloeser else "unbekannt")
+        zeilen.append((name, herkunft.get(name, "Projekt"), aufruf,
+                       f"{ablage}/{name}/SKILL.md"))
+
+    if not zeilen:
+        print("Kein Skill gefunden.")
+    else:
+        b1 = max([len("Name")] + [len(z[0]) for z in zeilen])
+        b2 = max([len("Herkunft")] + [len(z[1]) for z in zeilen])
+        b3 = max([len("Aufrufbar")] + [len(z[2]) for z in zeilen])
+        print(f"{'Name':<{b1}}  {'Herkunft':<{b2}}  {'Aufrufbar':<{b3}}  Pfad")
+        for z in zeilen:
+            print(f"{z[0]:<{b1}}  {z[1]:<{b2}}  {z[2]:<{b3}}  {z[3]}")
+        print()
+        print(f"{len(zeilen)} Skills in dieser Installation.")
+    print()
+    print("GRENZE DIESER AUSKUNFT: Sie fuehrt die Skills dieser Installation. Skills aus")
+    print("Ablagen ausserhalb des Projektverzeichnisses - Benutzerprofil, andere Werkzeuge -")
+    print("sieht auch das Framework nicht; ob der Client sie in die Sitzung mitfuehrt, steht")
+    print("im Client Pack unter S5. Diese Liste ist Ersatz fuer eine fehlende Clientauskunft,")
+    print("kein vollstaendiger Ersatz.")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Installiert die Wurzeldateien des Leitwerk-Frameworks in ein Projekt.")
@@ -660,6 +766,8 @@ def main() -> int:
                     help=f"Client Pack, aus dem installiert wird (Standard: {DEFAULT_CLIENT})")
     ap.add_argument("--list-clients", action="store_true",
                     help="Verfuegbare Client Packs auflisten und beenden")
+    ap.add_argument("--list-skills", action="store_true",
+                    help="Skills dieser Installation auflisten: Name, Herkunft, Aufrufbarkeit, Pfad")
     args = ap.parse_args()
 
     clients = available_clients()
@@ -698,6 +806,9 @@ def main() -> int:
         print("FEHLER: --root zeigt auf leitwerk-core/ selbst. Gemeint ist das "
               "Wurzelverzeichnis des Projekts, also eine Ebene darueber.", file=sys.stderr)
         return 1
+
+    if args.list_skills:
+        return list_skills(root, man, args.client)
 
     mode = "check" if args.check else ("update" if args.update else "install")
     version_file = os.path.join(HERE, "VERSION")

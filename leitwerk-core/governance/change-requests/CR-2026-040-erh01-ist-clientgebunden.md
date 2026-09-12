@@ -108,8 +108,8 @@ und wird durch genau diese Messung **bestätigt**.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD>` |
-| Datum | `<TBD>` |
+| Entscheidung | **Angenommen, alle fünf Fragen wie vorgelegt.** E1 korrigieren statt streichen; E2 Prüfung 23 im Zuschnitt unverändert; E3 der gemessene Satz kommt in das Pack `devin-desktop`; E4 die strengere Lesart bleibt, neu begründet; E5 der `claude-code`-Abschnitt zu K-18 bleibt unberührt |
+| Datum | 2026-09-12 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD>` |
-| Umsetzung | `<TBD>` |
+| Auflagen | **Kein Prüfergebnis darf sich ändern.** Nachgewiesen: Validator vor und nach der Änderung 0 Fehler, 0 Warnungen; Sonde und Gegenprobe zu Prüfung 23 unverändert bestanden. Die Sonde zu Prüfung 23 hat dabei ihren Suchtext verloren und musste nachgezogen werden – der Vorfall steht in D-43 |
+| Umsetzung | umgesetzt mit `0.27.0` |

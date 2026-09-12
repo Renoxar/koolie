@@ -55,10 +55,15 @@ Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine
 | `[TEXTUELL]` | Die Zusage steht als Anweisung im Kontext. Ein Modell kann ihr folgen; erzwungen ist sie nicht. |
 | `[NICHT ABBILDBAR]` | Der Client bietet keinen Mechanismus. Die Zusage entfällt für diesen Client. |
 
+**Kernzusage** im Sinne dieses Abschnitts ist **jede Zeile des B-Blocks mit `Kern = ja`** sowie **jede Regel aus `_core_rules_integrity`** der Berechtigungsdatei. Zusagen der übrigen Blöcke sind **Fähigkeitszusagen**: Ihr Ausfall wird im Pack begründet und im Overlay des aufnehmenden Projekts als bekannte Einschränkung geführt, sperrt die Inbetriebnahme aber nicht.
+
+Die Unterscheidung ist nicht redaktionell. **Eine Kernzusage sagt zu, dass etwas verhindert wird; eine Fähigkeitszusage sagt zu, dass etwas möglich ist** – zum Beispiel, dass man nachsehen kann. Fällt das Erste aus, fehlt eine Schranke. Fällt das Zweite aus, fehlt Sicht. Beides ist ernst, nur das Erste sperrt (`CR-2026-041`, D-41).
+
 **Verbindliche Folgen:**
 
 - Eine Kernzusage aus `_core_rules_integrity` in der Berechtigungsdatei, die ein Client nicht `[TECHNISCH]` abbildet, MUSS im Client Pack begründet und im Overlay des aufnehmenden Projekts als dokumentierte Ausnahme geführt werden (`project-overlay/exceptions/EXCEPTIONS.md`).
 - Ein Client Pack, das eine Kernzusage auf `[NICHT ABBILDBAR]` setzt, DARF nicht ohne Freigabe durch `<SECURITY_CONTACT>` in Betrieb genommen werden.
+- Eine **Fähigkeitszusage** auf `[NICHT ABBILDBAR]` MUSS in derselben Zeile den Ersatz benennen – oder ausdrücklich festhalten, dass es keinen gibt. Ein Ausfall, der nur eingetragen und nicht ersetzt wird, ist eine stillschweigende Verschlechterung. Prüfung 25 meldet eine Zeile, die das unterlässt.
 - Die Einstufung `[TECHNISCH]` MUSS gegen eine reale Installation belegt sein. Bis dahin trägt die Zeile den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
 
 Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.md`) sind davon ausgenommen: Sie beschreiben Aufgaben, die nicht delegiert werden dürfen, und sind ihrer Natur nach organisatorisch. Kein Client setzt sie technisch durch; sie sind bei jedem Client `[TEXTUELL]`.

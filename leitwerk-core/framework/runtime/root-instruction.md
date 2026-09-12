@@ -3,7 +3,8 @@
 <!-- Herkunft, nicht Anweisung: Framework Core, Ebene 1. Version: siehe leitwerk-core/VERSION.
      Owner: <FRAMEWORK_OWNER>. Diese Datei ist projektneutral; projektspezifische Werte stehen in
      project-overlay/OVERLAY.md und werden über <RULES_DIR>/20-project-overlay.md geladen.
-     Ein Kommentar erreicht die Sitzung nicht (ERH-01) - was gilt, steht im Fließtext, Abschnitt 2. -->
+     Was gilt, steht im Fließtext, Abschnitt 2 - ein Kommentar erreicht nicht jede Sitzung
+     (ERH-01, K-28). -->
 
 <!-- RUNTIME_IMPORTS -->
 
