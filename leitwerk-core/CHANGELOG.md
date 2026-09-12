@@ -2,6 +2,43 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.26.1] - 2026-09-12
+
+**Ein Patch mit einem einzigen Gegenstand: Die Pruefung, die sensible Angaben finden soll, gab sie aus.**
+
+Befund **B03** des unabhaengigen Reviews vom 2026-09-12, P1. Pruefung 6 des Validators meldete E-Mail-Adressen, IP-Adressen, interne Hostnamen, URLs samt Parametern und gesperrte Begriffe **mitsamt dem gefundenen Wert**. Damit trug jeder Schutzlauf genau die Angaben weiter, die er finden soll - in ein Terminal, ein Protokoll, eine Agentensitzung.
+
+Der Befund ist kein Verstoss gegen eine fremde Anforderung, sondern gegen die **eigene Regel**: Die Wurzel-Anweisungsdatei verlangt in Abschnitt 11 von jeder Sitzung, bei einem Fund „nur die Fundstelle" zu nennen, und `FW-DS-01` des Testkatalogs fuehrt „Zitat, Weiterverarbeitung" ausdruecklich als unzulaessiges Verhalten. Das Pruefwerkzeug tat, was es der Sitzung verbietet.
+
+Am schaerfsten beim gesperrten Begriff: Die Begriffsliste ist von der Inhaltspruefung **ausgenommen**, weil dort reale Projekt-, Kunden- und Behoerdennamen stehen - und die Diagnose schrieb den Namen dann doch in die Ausgabe. Vorgefuehrt hat sich der Befund selbst: Am 12.09. meldete der Validator den synthetischen Kontakt aus dem Pruefprotokoll des Reviews im Klartext.
+
+### Behoben
+
+- **Pruefung 6 nennt die Fundstelle, nicht den Fund (`CR-2026-043`, D-39, B03).** Jede Diagnose gibt Pfad, Zeile, Spalte und eine neutrale Kennung je Kategorie aus: `FW-CONTENT-EMAIL`, `-IP`, `-HOST`, `-URL`, `-TERM`, `-SECRET`. Der gefundene Wert erscheint in keiner Ausgabe. **Spalte statt nur Zeile**, damit zwei Treffer derselben Zeile unterscheidbar bleiben - sonst faellt der zweite als scheinbares Duplikat nicht auf.
+
+- **Die Secret-Diagnose bekommt die Fundstelle, die ihr fehlte.** Sie nannte von Anfang an nur die Kategorie und war damit das Vorbild der uebrigen - aber sie nannte nur die Datei, nicht die Stelle.
+
+- **Zwei Fehlerpfade trugen fremden Inhalt weiter.** Der Mermaid-Pfad des Validators gab 300 Zeichen der Fehlerausgabe des externen Renderers aus; darin steht in aller Regel der Quelltext des Diagrammblocks. Der Schutz-Hook gab ein ungueltiges Zusatzmuster mitsamt seinem Wert aus; projektspezifische Pfadmuster tragen Projekt-, Kunden- und Hostnamen - dieselbe Datenart wie die Sperrbegriffe. Beide melden jetzt Ort und Nummer statt Inhalt.
+
+### Nachweise
+
+- **Sieben neue Sonden in `probe-pruefungen.py`, je eine Kategorie, mit doppelter Bedingung:** Der Befund wird gemeldet **und** der Markerwert steht nirgends in der Ausgabe. Die zweite Bedingung ist die eigentliche - die erste haette die alte Fassung ebenfalls bestanden.
+
+- **Der Lauf, der den Nachweis traegt, ist der gegen die Vorfassung.** Bedingung 2 ist ein Abwesenheitsnachweis; er belegt sich nicht selbst. Dieselben Sonden gegen 0.26.0: **sieben von sieben fallen.** Gegen 0.26.1: alle bestehen. Die Gegenprobe besteht in beiden Faellen - die Pruefung ist nicht breiter geworden. Protokoll: `leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.26.1.md`.
+
+- **Die Sonde schwaerzt ihre eigene Fehlerausgabe.** Zeigte sie bei einer Abweichung die Validatorausgabe ungekuerzt, stuende dort der Wert, dessen Weitertragen sie beanstandet - derselbe Fehler eine Ebene hoeher.
+
+### Migrationshinweise fuer Overlays
+
+- **Keine.** Es aendert sich, was eine Diagnose sagt, nicht, was sie findet. Kein Pruefergebnis kippt; die Zahl der Fehler und Warnungen bleibt gleich.
+- Wer Validatorausgaben maschinell auswertet, liest die Fundstelle jetzt als `pfad:zeile:spalte` und die Kategorie als Kennung statt als Fliesstext.
+
+### Bekannte Einschraenkungen
+
+- **Der Mermaid-Fehlerpfad ist geaendert, aber unbelegt.** Sein Nachweis verlangt einen fehlschlagenden Lauf des externen Renderers; dieser fehlt in der Umgebung. Nach D-23 ein offener Nachweis, kein erledigter.
+- **`FW-DS-01` bleibt offen.** Der Sitzungstest prueft, ob das Modell einen Fund nur ueber die Fundstelle meldet. Dieses Release prueft das Werkzeug. Dass beide dieselbe Regel tragen, war der Anlass - eingeloest ist die eine Haelfte.
+- **Elf der zwoelf Review-Befunde stehen offen.** Der Arbeitsplan mit sechs Paketen steht in `leitwerk-core/docs/ROADMAP.md`; acht Befunde sind noch nicht gegengeprueft.
+
 ## [0.26.0] - 2026-09-11
 
 **Elf entschiedene Aenderungsantraege in einem Release.** Das ist der ungewoehnliche Teil: Seit dem 11.09. lagen elf Antraege entschieden und keiner umgesetzt vor - ein Zustand, in dem dieses Projekt sonst nie ist. Fuenf Decision Records (D-34 bis D-38) trugen deshalb ausdruecklich `Umsetzung offen, Ziel 0.26.0`; sie tragen jetzt `umgesetzt mit 0.26.0`.

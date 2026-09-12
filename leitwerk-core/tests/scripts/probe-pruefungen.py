@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 18 bis 24 (Release 0.26.0).
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 18 bis 24 (Release 0.26.0)
+und fuer Pruefung 6 (Release 0.26.1, Befund B03).
 
 Aufruf (im Wurzelverzeichnis des Repositoriums):
     python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD]
@@ -224,6 +225,144 @@ def _echte_regel(root: str) -> None:
 
 gegenprobe("24", "Regeltext nach Nummernschema bleibt unbeanstandet", _echte_regel,
            "kein Regeltext")
+
+# --- 6 (B03, D-39): Die Inhaltspruefung meldet die Fundstelle, nicht den Wert -----
+#
+# Diese Sonden pruefen **zwei** Bedingungen statt einer. Die erste - der Befund wird
+# gemeldet - haette auch die alte Fassung bestanden: Sie meldete ja, und zwar mitsamt dem
+# gefundenen Wert. Die zweite ist die eigentliche und der Grund dieses Blocks: Der
+# Markerwert darf in der gesamten Ausgabe des Laufs nicht vorkommen.
+#
+# Die Marker sind bewusst eindeutig gewaehlt, damit ihr Fehlen etwas bedeutet. Ein Marker,
+# der auch sonst im Repositorium vorkommen koennte, wuerde die zweite Bedingung entwerten -
+# man wuesste nicht, ob er aus der Sonde stammt oder von woanders.
+#
+# Nicht abgedeckt: der Mermaid-Fehlerpfad. Er verlangt einen fehlschlagenden Lauf des
+# externen Renderers; `mmdc` ist in dieser Umgebung nicht vorhanden. Die Stelle ist
+# geaendert, aber unbelegt - das ist nach D-23 ein offener Punkt, kein erledigter.
+
+B03_ZIEL = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
+B03_MAIL = "b03messmarke@sondenlauf-b03.test"
+B03_IP = "10.203.44.91"
+B03_HOST = "sondenlauf-b03.internal"
+B03_URL = "https://sondenlauf-b03.example.net/b03"
+B03_TERM = "Sondenlauf-B03-Sperrbegriff"
+B03_SECRET = "AKIAB03MESSMARKE0000"
+
+
+def _b03_anhaengen(*zeilen: str):
+    """Haengt Text an eine gepruefte Datei der Kopie - der Ort ist beliebig, der Wert nicht."""
+    def tun(root: str) -> None:
+        pfad = P(root, B03_ZIEL)
+        schreib(pfad, lies(pfad) + "\r\n" + "\r\n".join(zeilen) + "\r\n")
+    return tun
+
+
+def _b03_term(root: str) -> None:
+    """Sperrbegriff: Er muss in die Liste **und** in eine gepruefte Datei.
+
+    Die schaerfste der sechs Kategorien. forbidden-terms.txt ist von der Inhaltspruefung
+    ausgenommen, weil dort reale Namen stehen - und die Diagnose schrieb den Namen dann
+    doch in die Ausgabe.
+    """
+    liste = P(root, "project-overlay", "forbidden-terms.txt")
+    schreib(liste, lies(liste).rstrip("\r\n") + "\r\n" + B03_TERM + "\r\n")
+    _b03_anhaengen(f"Sondenzeile: {B03_TERM} steht hier absichtlich.")(root)
+
+
+def sonde_ohne_wert(nummer: str, was: str, praeparieren, erwartet: str, marker: str) -> None:
+    """Sonde mit doppelter Bedingung: gemeldet **und** der Wert nicht in der Ausgabe.
+
+    Die Ausgabe wird bei einer Abweichung nur **bereinigt** gezeigt. Andernfalls truege die
+    Fehlermeldung dieser Sonde den Wert weiter, den die Sonde gerade als weitergetragen
+    beanstandet - derselbe Fehler eine Ebene hoeher.
+    """
+    root = kopie()
+    try:
+        praeparieren(root)
+        ausgabe = lauf(root)
+        gemeldet = erwartet in ausgabe
+        verschwiegen = marker not in ausgabe
+        melde("SONDE", nummer, gemeldet and verschwiegen, was)
+        if not gemeldet:
+            bereinigt = ausgabe.replace(marker, "<Marker entfernt>")
+            print("        Befund nicht gemeldet. Ausgabe:",
+                  " | ".join(bereinigt.splitlines()[:6]))
+        if not verschwiegen:
+            print(f"        Der Markerwert steht in der Ausgabe - das ist B03 selbst. "
+                  f"Erwartete Kennung: {erwartet}")
+    finally:
+        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+sonde_ohne_wert("6", "E-Mail-Adresse: gemeldet, Wert nicht ausgegeben",
+                _b03_anhaengen(f"Sondenzeile: {B03_MAIL}"),
+                "FW-CONTENT-EMAIL", B03_MAIL)
+
+sonde_ohne_wert("6", "IP-Adresse: gemeldet, Wert nicht ausgegeben",
+                _b03_anhaengen(f"Sondenzeile: {B03_IP}"),
+                "FW-CONTENT-IP", B03_IP)
+
+sonde_ohne_wert("6", "Interner Hostname: gemeldet, Wert nicht ausgegeben",
+                _b03_anhaengen(f"Sondenzeile: {B03_HOST}"),
+                "FW-CONTENT-HOST", B03_HOST)
+
+sonde_ohne_wert("6", "URL ausserhalb der Allowlist: gemeldet, Wert nicht ausgegeben",
+                _b03_anhaengen(f"Sondenzeile: {B03_URL}"),
+                "FW-CONTENT-URL", B03_URL)
+
+sonde_ohne_wert("6", "Gesperrter Begriff: gemeldet, Begriff nicht ausgegeben",
+                _b03_term, "FW-CONTENT-TERM", B03_TERM)
+
+sonde_ohne_wert("6", "Secret-Muster: gemeldet mit Fundstelle, Wert nicht ausgegeben",
+                _b03_anhaengen(f"Sondenzeile: {B03_SECRET}"),
+                "FW-CONTENT-SECRET", B03_SECRET)
+
+
+def _b03_erlaubte_faelle(root: str) -> None:
+    """Die Gegenprobe: dieselben Kategorien in ihrer erlaubten Gestalt.
+
+    Ohne sie belegt der Block nur, dass die Pruefung meldet - nicht, dass sie das Richtige
+    meldet. Eine Pruefung, die jede Adresse beanstandet, besteht alle sechs Sonden oben.
+    """
+    _b03_anhaengen(
+        "Gegenprobe: kontakt@example.com ist eine Dokumentationsadresse.",
+        "Gegenprobe: 203.0.113.7 stammt aus dem Dokumentationsbereich.",
+        "Gegenprobe: https://docs.devin.ai/ steht auf der Allowlist.",
+    )(root)
+
+
+gegenprobe("6", "Dokumentationsadresse, Dokumentations-IP und Allowlist-URL bleiben unbeanstandet",
+           _b03_erlaubte_faelle, "FW-CONTENT-")
+
+
+def sonde_hook_zusatzmuster() -> None:
+    """Dieselbe Regel im ausgelieferten Hook - ohne Validatorlauf, weil keiner noetig ist.
+
+    Ein ungueltiges Zusatzmuster wurde bis 0.26.0 mitsamt seinem Wert nach stderr
+    geschrieben. Projektspezifische Pfadmuster tragen Projekt-, Kunden- und Hostnamen.
+    """
+    marker = "b03hookmarke.internal"
+    umgebung = dict(os.environ, FW_HOOK_EXTRA_PATH_PATTERNS=marker + "/[")
+    p = subprocess.run(
+        [sys.executable, os.path.join(QUELLE, "leitwerk-core", "tests", "scripts",
+                                      "hook-check-secrets.py")],
+        input='{"tool_name": "Read", "tool_input": {"file_path": "beispiel.txt"}}',
+        capture_output=True, text=True, env=umgebung)
+    ausgabe = (p.stdout or "") + (p.stderr or "")
+    gemeldet = "Ungueltiges Zusatzmuster an Position 1" in ausgabe
+    verschwiegen = marker not in ausgabe
+    melde("SONDE", "6h", gemeldet and verschwiegen,
+          "Hook: ungueltiges Zusatzmuster gemeldet, Wert nicht ausgegeben")
+    if not gemeldet:
+        print("        Meldung fehlt. Ausgabe:",
+              " | ".join(ausgabe.replace(marker, "<Marker entfernt>").splitlines()[:4]))
+    if not verschwiegen:
+        print("        Der Markerwert steht in der Ausgabe - das ist B03 im Hook.")
+
+
+sonde_hook_zusatzmuster()
+
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
