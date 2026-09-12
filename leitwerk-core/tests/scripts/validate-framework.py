@@ -2121,6 +2121,64 @@ def check_ausfall_mit_ersatz(root: str) -> None:
                 f"Ersatz oder haelt fest, dass es keinen gibt (D-41)")
 
 
+# Pruefung 26: Eine erklaerte Werkzeugabwesenheit muss belegt und folgerichtig sein.
+#
+# Seit CR-2026-047 darf ein Pack im Feld hook_tools_absent erklaeren, dass sein Client
+# eine Werkzeugklasse gar nicht kennt; die Abbildung laesst den Hook-Matcher dann ohne
+# diese Klasse durchlaufen, statt abzubrechen. Das ist noetig - ein Client ohne eigenes
+# Suchwerkzeug kann keines abbilden - und es ist zugleich ein Schlupfloch: Wer 'write'
+# dort eintraege, naehme das schreibende Werkzeug aus der Durchsetzung, und nichts
+# meldete es.
+#
+# Diese Pruefung schliesst es an zwei Stellen:
+#   1. Die Abwesenheit muss folgerichtig sein - ein Verb, das hier steht, muss auch in
+#      permission_tools leer sein. Ein Client, fuer den die Berechtigungsschicht ein
+#      Werkzeug dieser Klasse kennt, hat eines.
+#   2. Die Abwesenheit muss erklaert sein - ein nicht leerer Begleitsatz. Dieselbe
+#      Begruendung wie bei Pruefung 25: Ein Ausfall, den jemand verantwortet, ist etwas
+#      anderes als einer, der eingetragen wurde.
+#
+# GRENZE: Die Pruefung belegt nicht, dass der Client das Werkzeug wirklich nicht hat -
+# das kann nur eine Erhebung. Sie belegt, dass die beiden Felder, die es behaupten,
+# einander nicht widersprechen und dass jemand den Satz dazu geschrieben hat.
+def check_werkzeugabwesenheit(root: str) -> None:
+    """Pruefung 26 (D-47): hook_tools_absent ist folgerichtig und erklaert."""
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        try:
+            man = json.loads(read(pfad))
+        except ValueError:
+            continue
+        abwesend = man.get("hook_tools_absent") or []
+        if not abwesend:
+            continue
+        if not isinstance(abwesend, list):
+            err(f"{rel}: hook_tools_absent ist keine Liste")
+            continue
+        notiz = str(man.get("_hook_tools_absent_note") or "").strip()
+        if not notiz:
+            err(f"{rel}: hook_tools_absent nennt {sorted(abwesend)}, aber "
+                f"_hook_tools_absent_note fehlt oder ist leer. Eine Werkzeugklasse aus "
+                f"der Durchsetzung zu nehmen, ist eine Aussage ueber den Client - sie "
+                f"gehoert begruendet, nicht bloss eingetragen (D-47)")
+        werkzeuge = man.get("permission_tools") or {}
+        for verb in sorted(abwesend):
+            if werkzeuge.get(verb):
+                err(f"{rel}: hook_tools_absent erklaert das Verb '{verb}' fuer abwesend, "
+                    f"permission_tools nennt dafuer aber {werkzeuge[verb]}. Beides "
+                    f"zugleich geht nicht: Kennt die Berechtigungsschicht ein Werkzeug "
+                    f"dieser Klasse, hat der Client eines, und der Hook muss es "
+                    f"erreichen (D-47)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -2162,6 +2220,7 @@ def main() -> int:
     check_normative_kommentare(root, man)
     check_regelablage_sauber(root)
     check_ausfall_mit_ersatz(root)
+    check_werkzeugabwesenheit(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.mermaid:

@@ -241,6 +241,14 @@ def _hook_matcher(verben: list[str], man: dict) -> str:
     if abbildung is None:
         raise AbbildungsFehler(
             f"{man.get('client', '?')}/manifest.json: Feld hook_tools fehlt")
+    # Ein Pack darf eine Werkzeugklasse nicht dadurch aus der Durchsetzung nehmen, dass
+    # es sie leer laesst - deshalb ist eine leere Liste ein Fehler. Fuehrt der Client
+    # aber tatsaechlich kein Werkzeug dieser Art, muss es einen Weg geben, das zu sagen:
+    # hook_tools_absent erklaert die Abwesenheit ausdruecklich. Der Unterschied ist der
+    # zwischen "nicht abgebildet" und "gibt es nicht", und er muss deklariert werden,
+    # nicht aus einer leeren Liste erraten (CR-2026-047 E3, D-47). Pruefung 26 prueft,
+    # dass eine so erklaerte Abwesenheit auch in permission_tools steht.
+    erklaert_abwesend = set(man.get("hook_tools_absent") or [])
     namen: list[str] = []
     for verb in verben:
         if verb not in abbildung:
@@ -248,9 +256,12 @@ def _hook_matcher(verben: list[str], man: dict) -> str:
                 f"{man.get('client', '?')}/manifest.json: hook_tools kennt das "
                 f"Werkzeugverb '{verb}' nicht")
         if not abbildung[verb]:
+            if verb in erklaert_abwesend:
+                continue
             raise AbbildungsFehler(
                 f"{man.get('client', '?')}: kein Hook-Werkzeug fuer '{verb}' - der Hook "
-                f"wuerde fuer diese Werkzeugklasse nicht ausloesen")
+                f"wuerde fuer diese Werkzeugklasse nicht ausloesen. Fuehrt der Client "
+                f"kein solches Werkzeug, gehoert das Verb in hook_tools_absent")
         for name in abbildung[verb]:
             if name not in namen:
                 namen.append(name)

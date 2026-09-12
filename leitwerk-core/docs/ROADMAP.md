@@ -3,16 +3,59 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.29.0 (2026-09-12)
+## Stand nach Release 0.30.0 (2026-09-12)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.30.0 gebracht hat
+
+**Vier Zusagen versprachen mehr, als die Mechanismen leisten – und eine Suche erreichte den
+Schutz-Hook gar nicht.**
+
+Zwei Befunde des externen Reviews, beide gegengeprüft und **gemessen statt gelesen**: vierzehn
+Läufe gegen den ausgelieferten Hook, davon drei Positivkontrollen, keine Abweichung vom Bericht
+(`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`).
+
+- **Die Zusagen B3, B4, B5 und B8 nennen ihre Reichweite je Zugriffskanal** – direktes Lesen,
+  direktes Schreiben, Suche, Shell, Unterprozess. `[TECHNISCH]` gilt nur noch dort, wo es
+  gemessen ist; für Shell und Unterprozess tragen B4, B5 und B8 **`[TEXTUELL]`**. Die bereits
+  gemessenen Sperren sind ausdrücklich anerkannt, nicht nur die Lücken benannt (D-47).
+- **Der Suchkanal ist geschlossen** – über den Schutz-Hook, nicht über die Berechtigungsdatei.
+  Er war auf **beiden** Schichten unbewacht, und eine Regel trägt dort nicht: Dieser Client
+  wertet für `Grep` und `Glob` keine Pfadregeln aus (`AP2-CC-02`). **Damit ist D-30 auch für
+  das Suchwerkzeug eingelöst** – acht Releases nach der Entscheidung und zwei Werkzeuge nach
+  `AP2-DD-11`.
+- **Der Hook begründete seine Lücke mit einer Sperre, die es nicht gibt.** Sein Kommentar nannte
+  die deny-Regel der Berechtigungsdatei als Träger des Shell-Schreibwegs; diese führt für `exec`
+  21 Verweigerungen, sämtlich Befehlsverbote, und keine einzige Pfadregel. **Zwei Schichten, die
+  aufeinander zeigen, und keine trägt** – der bekannte Befundtyp in neuer Bauform.
+- **Alle fünf Betriebsmodi nennen ihre Umsetzung unter derselben Überschrift**, mit Belegklasse
+  je Mechanismus (D-48). Die Pfadgrenze von M4 und M5 gilt **normativ**: Der Hook kennt den
+  Modus nicht und entschied innerhalb und außerhalb des Scopes gleich. **M3 hatte die richtige
+  Form bereits** – die vier übrigen sind darauf nachgezogen, nicht umgekehrt.
+- **Prüfung 26** bewacht die neue Deklaration `hook_tools_absent`: Ein Client ohne Suchwerkzeug
+  darf das erklären, aber nicht dadurch eine Werkzeugklasse aus der Durchsetzung nehmen.
+- **Das Abnahmetor hing an der Umgebung, aus der es gestartet wurde** (D-49). Mit
+  `PYTHONIOENCODING=utf-8` – also genau nach dem eigenen Arbeitswissen – wurde der Sondenlauf
+  rot, ohne die Variable grün. Die Lehre war seit 0.27.0 gezogen, aber nur in der
+  Nachbarfunktion. **Die Abnahme verlangt den Lauf künftig in beiden Umgebungen.**
+
+**55 Sonden und Gegenproben bestehen gegen 0.30.0 in beiden Umgebungen; die vier neuen fallen
+gegen 0.29.0** (`tests/protocols/2026-09-12-wirkungsnachweise-0.30.0.md`).
+
+**Offen geblieben und ausdrücklich so ausgewiesen:** Für Shell und Unterprozess gibt es keine
+technische Pfaddurchsetzung – sie braucht eine Isolationsschicht des Betriebssystems, deren
+Reichweite auf dieser Plattform unerhoben ist (`CR-2026-047` E5). Die Modusgrenze von M4/M5
+bleibt Modellverhalten, bis B06 die Pfadauswertung liefert (`CR-2026-048` E1). Und belegt ist
+die **Erzeugung** der Hook-Konfiguration mit den Suchwerkzeugen, nicht ihr **Auslösen** – das
+gehört in den nächsten AP2-Lauf.
 
 ### Was 0.5.0 bis 0.26.0 gebracht haben
 
@@ -573,7 +616,7 @@ Review **B03** nachgewiesen hat; der Validator meldet ihn als Fehler und **gibt 
 Klartext aus**, also genau das, was B03 beanstandet. Im Repositorium ließe das jeden
 Validatorlauf rot werden – und über `probe-pruefungen.py` jede Gegenprobe mit ihm.
 
-Vier davon sind am Tag des Eingangs gegengeprüft:
+Sechs davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am selben Tag nachgezogen**:
 
 | Befund | Prüfung dieser Sitzung |
 |---|---|
@@ -581,8 +624,17 @@ Vier davon sind am Tag des Eingangs gegengeprüft:
 | **B02** – `--strict-overlay` prüft fest verdrahtete Pfade **eines** Clients | **Im Code bestätigt:** `check_strict_overlay(root)` liest `.devin/rules/…` und bekommt das erkannte Manifest nicht übergeben. Für das zweite Pack prüft die Aktivierungsprüfung damit nichts |
 | **B03** – Der Inhaltsvalidator gibt gefundene sensible Werte aus | **Im Code bestätigt und unbeabsichtigt vorgeführt:** Der Validatorlauf dieser Sitzung schrieb den synthetischen Kontakt aus dem Prüfprotokoll des Reviews in das Terminal. Der Befund demonstriert sich an seinem eigenen Bericht |
 | **B10** – `--update` ohne `--client` fällt auf das Standardpack zurück | **Im Code bestätigt:** `--client` trägt einen Vorgabewert, der Leitfaden empfiehlt den Aufruf ohne das Argument |
+| **B04** – Die Reichweite der Datei- und Netzwerksperren ist weiter beschrieben, als sie reicht | **Gemessen und bestätigt**, damit über den Belegstand des Reviews hinaus: `tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, vierzehn Läufe mit drei Positivkontrollen, **keine Abweichung**. Für Shell, Unterprozess und Suche gilt keine der Zusagen B3, B4, B5, B8 technisch. **Drei eigene Feststellungen dazu:** Der Hook begründet seine Lücke mit einer deny-Regel, die die Berechtigungsdatei für `exec` nicht enthält (21 Verweigerungen, sämtlich Befehlsverbote, keine einzige Pfadregel); der Suchkanal ist nicht bloß unbewacht, sondern derzeit **nicht bewachbar** – eine `search`-Verweigerung bricht die Abbildung bei beiden Packs ab, weil `permission_tools.search` leer ist, was **D-30 berührt**; und der `permissions_note` des Packs `claude-code` beschreibt eine `search`-Abbildung, die das Manifest nicht mehr trägt |
+| **B05** – Die technischen M4/M5-Pfadgrenzen fehlen im ausgelieferten Hook | **Gemessen und bestätigt** (ebenda). Der Hook entscheidet **gleich**, ob innerhalb oder außerhalb des zugesagten Scopes geschrieben wird, und liest ein mitgeführtes `mode`-Feld nicht. **Eigene Feststellung:** Es sind nicht zwei Modi, sondern **drei von fünf** – M1 nennt denselben Mechanismus, den `install.py` still verwirft (B01), M2 nennt eine Wirkung statt eines Mechanismus, und M3, der Modus mit Zugriff auf Produktivcode, nennt seine Umsetzung als einziger nach Belegklassen – **er ist das Vorbild, nicht der Ausreißer**; die vier übrigen sind darauf nachgezogen |
 
-Die übrigen acht sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+Die übrigen sechs sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+
+**Aus der Gegenprüfung von B04/B05 sind drei Anträge hervorgegangen, alle drei entschieden
+und mit 0.30.0 umgesetzt:** `CR-2026-047` (Zusagen je Zugriffskanal, D-47), `CR-2026-048` (die
+Betriebsmodi nennen eine Durchsetzung, die es nicht gibt, D-48) und `CR-2026-049` (der
+Sondenlauf hing von der Kodierung der aufrufenden Umgebung ab, D-49). **Die tragende Frage ist
+entschieden:** Zugesagt wird je Kanal, was gemessen ist; der Suchkanal wird geschlossen, Shell
+und Unterprozess werden ehrlich ausgewiesen statt technisch behauptet.
 
 #### Arbeitsplan für alle zwölf Befunde
 
@@ -593,7 +645,7 @@ sind jeweils begründet. Jeder Schritt braucht seinen Antrag. **Paket 1 ist ents
 |---|---|---|---|
 | **1 – Zuerst, weil billig und weil es bei jedem Lauf leckt** – **erledigt mit 0.26.1** | **B03** | Der Validator schrieb gefundene E-Mail-Adressen, IP-Adressen, Hostnamen und Sperrbegriffe im Klartext in seine Ausgabe. **Jeder Prüflauf konnte damit genau die Angaben verbreiten, die er finden soll** – in eine Sitzung, ein Protokoll, ein Terminal. Prüfung 6 meldet jetzt Pfad, Zeile, Spalte und eine neutrale Kennung; dasselbe gilt für zwei Fehlerpfade, die fremden Inhalt weitertrugen. **Nachgewiesen:** sieben Sonden, die gegen 0.26.0 fallen und gegen 0.26.1 bestehen (`CR-2026-043`, D-39, `leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.26.1.md`). **Offen geblieben:** der Mermaid-Fehlerpfad ist geändert, aber unbelegt – der externe Renderer fehlt in der Umgebung | keine |
 | **2 – Vor einem dritten Client Pack** – **erledigt mit 0.28.0** | **B02**, B10 | **B02 verdreifacht seinen Schaden mit jedem Pack:** Die Aktivierungsprüfung liest fest verdrahtete Pfade **eines** Clients und bekommt das erkannte Manifest nicht übergeben. B10 ist derselbe Fehlertyp im Installer – `--update` ohne `--client` fiel auf das Standardpack zurück und legte in einem fremden Projekt eine zweite Laufzeitschicht an. **Beide gemessen und behoben** (`CR-2026-044`, `CR-2026-045`, D-44, D-45): Die Aktivierungsprüfung bekommt das Manifest, die Installation erkennt das installierte Pack. Dazu zwei Befunde aus derselben Messung – der Overlay-Status wurde als Präfix geprüft, und ein fehlender sicherheitsrelevanter Abschnitt galt als unauffällig. **Offen geblieben:** der Abgleich zwischen Quell-Overlay und Laufzeitfassung (`CR-2026-044` E4) | keine; beide sind lokale Korrekturen |
-| **3 – Aussagen an den Belegstand angleichen** | **B01**, B04, B05, B12 | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
+| **3 – Aussagen an den Belegstand angleichen** – **B04 und B05 erledigt mit 0.30.0**; offen: B01, B12 | **B01**, ~~B04~~, ~~B05~~, B12 | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
 | **4 – Regelkonflikte, die nur der Mensch entscheiden kann** | **B09**, B07 | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`.** Ohne sie ist hier nichts umsetzbar |
 | **5 – Abläufe** | **B08**, B11 | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) |
 | **6 – Technische Härtung** | **B06**, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3) | Pakete 3 und 4 |

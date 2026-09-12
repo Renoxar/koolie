@@ -72,9 +72,18 @@ PROTECTED_PATH_PATTERNS = SECRET_PATH_PATTERNS + STRUCTURE_PATH_PATTERNS
 # Das Kernverzeichnis als Ganzes. Es steht bewusst in einer zweiten Liste: Die Muster
 # oben gelten auch fuer 'exec', und ein Befehl, der lediglich einen Kernpfad nennt -
 # der Validator, install.py --check, ein git diff - muss weiterhin laufen koennen. Fuer
-# schreibende Werkzeuge gilt das Verbot vollstaendig; bei exec traegt die deny-Regel der
-# Berechtigungsdatei. Die Liste ist damit rein additiv: Sie verschaerft, ohne eine
-# bisher blockierte Operation freizugeben.
+# schreibende Werkzeuge gilt das Verbot vollstaendig. Die Liste ist damit rein additiv:
+# Sie verschaerft, ohne eine bisher blockierte Operation freizugeben.
+#
+# WAS SIE NICHT LEISTET, und das stand hier bis 0.29.0 falsch: Ein Shell-Befehl, der in
+# das Kernverzeichnis schreibt, wird von dieser Liste nicht erfasst - und auch nicht von
+# der Berechtigungsdatei, auf die der Kommentar dafuer verwies. Diese fuehrt fuer 'exec'
+# ausschliesslich Befehlsverbote und keine einzige Pfadregel. Gemessen am 2026-09-12
+# (B04, Laeufe B04-1 bis B04-3): "sed -i ... <kern>/VERSION" passiert den Hook. Was den
+# Shell-Schreibweg aufhaelt, ist die Regelschicht - also Modellverhalten, [TEXTUELL].
+# Die Fachmatrizen beider Packs weisen das bei B4 und B5 je Zugriffskanal aus
+# (CR-2026-047, D-47); eine technische Durchsetzung braucht eine Isolationsschicht des
+# Betriebssystems und ist unerhoben.
 #
 # Der Name des Kernverzeichnisses ist keine Eigenschaft eines Clients, sondern dieser
 # Installation (<CORE_DIR>, docs/PLACEHOLDER_REGISTRY.md). Dieses Skript liegt unter
@@ -103,10 +112,21 @@ BASIS_EXEC_TOOLS = ("exec",)
 # mit Exit 0 durch. Beobachtet in AP2, als ein blockiertes "cat .env" den Agenten dazu
 # brachte, dieselbe Datei mit dem Lesewerkzeug zu oeffnen (AP2-DD-11, D-33).
 BASIS_READ_TOOLS = ("read",)
+# Suchende Werkzeuge werden wie lesende an den Secret-Pfaden gemessen. Sie standen bis
+# 0.29.0 in keiner Liste und in keinem hook_tools-Eintrag: Eine Suche ueber einen
+# Secret-Pfad erreichte den Hook nicht einmal. Gemessen am 2026-09-12 (B04,
+# tests/protocols/2026-09-12-B04-B05-gegenpruefung.md, Lauf B04-5); dieselbe Luecke wie
+# AP2-DD-11, ein Werkzeug weiter, und derselbe Anspruch aus D-30.
+#
+# Eine Berechtigungsregel traegt hier nicht: Bei claude-code werten die Suchwerkzeuge
+# keine Pfadregeln aus (AP2-CC-02), eine solche Regel waere angenommen und nie
+# konsultiert. Der Hook ist fuer diesen Kanal die einzige technische Schranke
+# (CR-2026-047 E3, D-47).
+BASIS_SEARCH_TOOLS = ("search",)
 
 
 def _werkzeugnamen() -> tuple:
-    """(write-Namen, exec-Namen, read-Namen) aus den Manifesten aller Packs, klein geschrieben.
+    """(write-, exec-, read-, search-Namen) aus den Manifesten aller Packs, klein geschrieben.
 
     Faellt auf die Basisnamen zurueck, wenn kein Manifest lesbar ist: Ein Hook, der
     wegen einer fehlenden Datei gar nichts mehr blockiert, waere die schlechtere Lage.
@@ -114,12 +134,14 @@ def _werkzeugnamen() -> tuple:
     schreiben = set(BASIS_WRITE_TOOLS)
     ausfuehren = set(BASIS_EXEC_TOOLS)
     lesen = set(BASIS_READ_TOOLS)
+    suchen = set(BASIS_SEARCH_TOOLS)
     kern = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     packs = os.path.join(kern, "clients")
     try:
         eintraege = sorted(os.listdir(packs))
     except OSError:
-        return tuple(sorted(schreiben)), tuple(sorted(ausfuehren)), tuple(sorted(lesen))
+        return (tuple(sorted(schreiben)), tuple(sorted(ausfuehren)),
+                tuple(sorted(lesen)), tuple(sorted(suchen)))
     for name in eintraege:
         pfad = os.path.join(packs, name, "manifest.json")
         if not os.path.isfile(pfad):
@@ -129,14 +151,16 @@ def _werkzeugnamen() -> tuple:
                 abbildung = (json.load(fh) or {}).get("hook_tools") or {}
         except (OSError, ValueError):
             continue
-        for verb, ziel in (("write", schreiben), ("exec", ausfuehren), ("read", lesen)):
+        for verb, ziel in (("write", schreiben), ("exec", ausfuehren),
+                           ("read", lesen), ("search", suchen)):
             for werkzeug in abbildung.get(verb) or []:
                 if isinstance(werkzeug, str) and werkzeug.strip():
                     ziel.add(werkzeug.strip().lower())
-    return tuple(sorted(schreiben)), tuple(sorted(ausfuehren)), tuple(sorted(lesen))
+    return (tuple(sorted(schreiben)), tuple(sorted(ausfuehren)),
+            tuple(sorted(lesen)), tuple(sorted(suchen)))
 
 
-WRITE_TOOLS, EXEC_TOOLS, READ_TOOLS = _werkzeugnamen()
+WRITE_TOOLS, EXEC_TOOLS, READ_TOOLS, SEARCH_TOOLS = _werkzeugnamen()
 
 # Ein Shell-Befehl ist keine Pfadangabe: In "cat .env" steht der Pfad mitten im String,
 # und die Pfadmuster verlangen einen Zeilenanfang oder ein Trennzeichen davor. Fuer
@@ -231,7 +255,7 @@ def main() -> None:
     # Schreib-, Ausfuehrungs- und Leseoperationen auf geschuetzte Pfade blockieren.
     # WRITE_TOOLS steht auch hier, damit kein schreibendes Werkzeug an dieser Liste
     # vorbeilaeuft - 'notebookedit' tat das bisher.
-    if tool_name in WRITE_TOOLS + EXEC_TOOLS + READ_TOOLS or not tool_name:
+    if tool_name in WRITE_TOOLS + EXEC_TOOLS + READ_TOOLS + SEARCH_TOOLS or not tool_name:
         # Bei einem ausfuehrenden Werkzeug steht der Pfad mitten im Befehl; die
         # Pfadmuster verlangen davor einen Zeilenanfang oder ein Trennzeichen. Die
         # Eingabe wird deshalb zusaetzlich tokenisiert (AP2-CC-15).
@@ -242,11 +266,12 @@ def main() -> None:
         schreibend = tool_name in WRITE_TOOLS or not tool_name
         if tool_name in EXEC_TOOLS or not tool_name:
             zu_pruefen += list(shell_tokens(strings))
-        # Zwei Schutzziele, zwei Listen (D-30): Ein ausfuehrendes oder lesendes Werkzeug
-        # wird an den Secret-Pfaden gemessen, nicht an den Strukturpfaden - ein Befehl
-        # darf den Kern lesen, ein Secret nie. Fuer schreibende Werkzeuge gelten beide
-        # Listen. Ohne die Trennung blockierte ein 'git diff' auf einen Kernpfad oder
-        # das Lesen einer Regeldatei, also Operationen, die das Framework voraussetzt.
+        # Zwei Schutzziele, zwei Listen (D-30): Ein ausfuehrendes, lesendes oder
+        # suchendes Werkzeug wird an den Secret-Pfaden gemessen, nicht an den
+        # Strukturpfaden - ein Befehl darf den Kern lesen, ein Secret nie. Fuer
+        # schreibende Werkzeuge gelten beide Listen. Ohne die Trennung blockierte ein
+        # 'git diff' auf einen Kernpfad oder das Lesen einer Regeldatei, also
+        # Operationen, die das Framework voraussetzt.
         muster = PROTECTED_PATH_PATTERNS if schreibend else SECRET_PATH_PATTERNS
         for s in zu_pruefen:
             for pattern in muster:

@@ -25,6 +25,8 @@ Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schri
 
 Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. Ein Moduswechsel erfordert eine ausdrückliche Anweisung und wird im Ergebnisbericht vermerkt.
 
+**Die Schreibrechte der Spalte gelten normativ, nicht technisch durchgesetzt.** Kein Mechanismus des Frameworks kennt den Betriebsmodus: Der Schutz-Hook entscheidet innerhalb und außerhalb des Modus-Scopes gleich (gemessen am 2026-09-12, `CR-2026-048`). Technisch durchgesetzt sind allein die Sperren auf Secret- und Kernpfade – sie gelten in jedem Modus. Wer eine Modusgrenze braucht, verlässt sich auf diese Regel und auf die Prüfpflicht des Modus.
+
 ## Kontrollstufen (Maximumprinzip)
 
 - **niedrig:** alle Modi; Selbstreview und bestehende Quality Gates.
