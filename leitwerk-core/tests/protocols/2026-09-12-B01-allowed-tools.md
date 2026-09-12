@@ -3,7 +3,7 @@
 | Feld | Wert |
 |---|---|
 | Gegenstand | Zeile **S3** der Fähigkeitsmatrix `claude-code`: „Werkzeugbeschränkung je Skill", eingestuft `[TECHNISCH]`, Mechanismus `allowed-tools` |
-| Anlass | Befund **B01** des unabhängigen Reviews vom 2026-09-12 (`review/2026-09-12-leitwerk-review.md`), Priorität P1 – dort aus der Herstellerdokumentation abgeleitet, **nicht gemessen** |
+| Anlass | Befund **B01** des unabhängigen Reviews vom 2026-09-12 – der Bericht liegt außerhalb des Repositoriums, siehe `docs/ROADMAP.md`, Abschnitt zum Review. Priorität P1; dort aus der Herstellerdokumentation abgeleitet, **nicht gemessen** |
 | Datum | 2026-09-12 |
 | Framework-Version | 0.26.0 |
 | Geprüfte Clientversion | **Claude Code 2.1.268** (Modell Opus 5) |

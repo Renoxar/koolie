@@ -8,7 +8,7 @@
 | Framework-Version | 0.26.0 |
 | Geprüfte Clientversion | **Claude Code 2.1.268** (Modell Opus 5) |
 | Umgebung | Windows 11; Installation in einem Arbeitsbereichsverzeichnis, darunter ein Unterprojekt mit eigenen Dateien |
-| Ergebnis | **Nein, nicht ohne Verlust.** Die **textuelle** Schicht wirkt nach unten, die **technische** nicht. Beide Durchsetzungslinien fallen aus |
+| Ergebnis | **Es kommt auf den Startort der Sitzung an – und nur darauf.** Startet sie im Repositorium, wirkt allein die **textuelle** Schicht; beide Durchsetzungslinien fallen still aus (Abschnitt 3). Startet sie in der **Wurzel**, tragen beide Schichten über beliebig viele Repositorien hinweg, ohne Zutun (Abschnitt 7) |
 
 > **Die Frage ist nicht dokumentarisch zu beantworten.** Sie entscheidet, ob die Zusagen des
 > B-Blocks und des H-Blocks – alles, was `[TECHNISCH]` trägt – in einer solchen Anordnung überhaupt
@@ -97,6 +97,54 @@ für wirksam.
 | `docs/ADOPTION_GUIDE.md` | Der Leitfaden beschreibt die Installation in **ein** Repositorium. Der Mehrprojektfall braucht einen eigenen, gemessenen Abschnitt statt einer Tabellenzeile |
 | Fähigkeitsmatrix, B- und H-Block | Die Zusagen gelten unter einer bisher unausgesprochenen Bedingung: **Die Sitzung startet im Installationsverzeichnis.** Das gehört in die Vorbemerkung, neben die Betriebsmodus-Abhängigkeit aus D-35 |
 | Prüfung 12 / Installationsprüfung | Nichts meldet eine Sitzung außerhalb des Installationsverzeichnisses. Ob der meldende Hook das könnte, ist offen – er lief in diesem Aufbau gerade nicht |
+
+## 7. Nachtrag desselben Tages – der tragfähige Aufbau
+
+Die Gegenprobe aus Abschnitt 4 ist gefahren worden. **Sie fällt positiv aus, und einfacher als
+erwartet.**
+
+**Frage:** Trägt der Aufbau, wenn die Sitzung in der **Wurzel** startet statt im Repositorium?
+
+**Antwort: Ja, vollständig – und `--add-dir` wird dafür nicht gebraucht.**
+
+Aufbau wie oben, diesmal mit **zwei** Repositorien nebeneinander, je einer Positivkontrolle und
+je einem Köder. Regeltexte wieder entfernt, damit die Engine misst und nicht das Modell.
+
+| Lauf | Sitzungsverzeichnis | `--add-dir` | Positivkontrollen | `.env` je Repositorium | Hook |
+|---|---|---|---|---|---|
+| A | Wurzel | beide Repositorien | **beide gelesen** | **beide blockiert** | **lief** |
+| B | Wurzel | **keines** | **beide gelesen** | **blockiert** | **lief** |
+
+Wörtlich in beiden Läufen: `File is in a directory that is denied by your permission settings.`
+
+**Lauf B ist das eigentliche Ergebnis.** Ein Verzeichnis **unterhalb** des Sitzungsverzeichnisses
+ist ohnehin erreichbar; `--add-dir` ändert daran nichts. Der Schalter ist für Verzeichnisse
+gedacht, die **außerhalb** liegen – für diesen Aufbau ist er überflüssig.
+
+**Beide Linien tragen.** Die Berechtigungsregeln griffen in beiden Repositorien, und der Hook
+lief: Die Aufzeichnung führt die Lesezugriffe, und die Sitzung meldete von sich aus den
+Overlay-Status – also hat auch der meldende Hook beim Sitzungsstart ausgelöst. In beiden Läufen
+fehlen die **blockierten** Zugriffe in der Aufzeichnung; das deckt sich mit ERH-15 (ein von der
+ersten Linie abgewiesener Lesezugriff erreicht den Hook nicht).
+
+### Die Regel, die daraus folgt
+
+**Entscheidend ist allein, wo die Sitzung startet – nicht, wie viele Repositorien darunter liegen.**
+
+| Aufbau | Textuelle Schicht | Technische Schicht |
+|---|---|---|
+| Installation in der Wurzel, **Sitzung in der Wurzel** | wirkt | **wirkt** |
+| Installation in der Wurzel, **Sitzung im Repositorium** | wirkt | **fällt aus** |
+
+Der Mehrprojektaufbau ist damit **tragfähig** und braucht keine Sonderbehandlung im Framework –
+er braucht **eine Bedingung, die bisher nirgends steht**. Ein Projekt, das sie nicht kennt, tut
+das Naheliegende: Es öffnet das Repositorium, an dem es arbeitet. Genau dann fällt der Schutz aus,
+und zwar still.
+
+**Das ändert den Zuschnitt der Folgen aus Abschnitt 5:** Nicht die Overlay-Vorlage ist die
+wichtigste Stelle, sondern die **Vorbemerkung des B-Blocks** – dort steht bereits, unter welcher
+Bedingung `[TECHNISCH]` gilt (Betriebsmodus, D-35). Der Startort der Sitzung ist die zweite
+solche Bedingung und gehört daneben.
 
 ## 6. Gegenzeichnung
 
