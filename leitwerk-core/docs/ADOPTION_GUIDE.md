@@ -69,7 +69,14 @@ bleibt unberührt (P10, Baum 6).
 
    Das Skript legt die Wurzel-Anweisungsdatei, ihre `.example`-Vorlage für nutzerlokale
    Ergänzungen, die Laufzeitschicht und – sofern noch nicht vorhanden – `project-overlay/`
-   an. Bestehende Projektdateien werden nie überschrieben.
+   an. **Die Saatdateien – Berechtigungsdatei und Overlay – werden nie überschrieben**, auch
+   bei `--update` nicht.
+
+   **Belegt das Projekt einen Pfad des Frameworks schon, bricht die Erstinstallation ab** und
+   nennt die betroffenen Dateien (D-46). Der wahrscheinliche Fall ist die
+   Wurzel-Anweisungsdatei: Ihr Name ist die Konvention des Clients, nicht die Erfindung des
+   Frameworks – ein Projekt, das bereits mit diesem Client arbeitet, führt sie meistens. Wie
+   der vorhandene Inhalt übernommen wird, steht in Schritt 3a.
 
    **Vor der Wahl des Client Packs** die Fähigkeitsmatrix des Kandidaten lesen
    (`leitwerk-core/clients/<client>/CLIENT_PACK.md`): Sie weist aus, welche Zusagen
@@ -80,6 +87,27 @@ bleibt unberührt (P10, Baum 6).
    die Wurzel-Anweisungsdatei, die Laufzeitschicht und `project-overlay/` ausgeschlossen,
    weil sie im Framework-Repository Erzeugnisse sind. Im Projekt gehören sie in die
    Versionierung.
+
+3a. **Vorhandene Anweisungsdatei übernehmen** (nur, wenn Schritt 3 abgebrochen ist).
+
+   Das Framework beansprucht die Wurzel-Anweisungsdatei für Ebene 1. Ihr bisheriger Inhalt
+   geht nicht verloren, er wechselt die Ebene:
+
+   | Bisheriger Inhalt | Neuer Ort |
+   |---|---|
+   | Projektwissen – Stack, Befehle, Architektur, Konventionen | `project-overlay/OVERLAY.md`, in den passenden Abschnitt |
+   | Projektspezifische **Regeln** an den Agenten | eine eigene Regeldatei `2N-overlay-<name>.md` in der Regelablage (Ebene 4) |
+   | Persönliche Gewohnheiten einzelner Personen | die `.example`-Vorlage für nutzerlokale Ergänzungen, nicht das Repositorium |
+   | Abschnitte, die ein **anderes Werkzeug** erzeugt und pflegt | siehe den Hinweis unten |
+
+   Erst danach die alte Datei entfernen und Schritt 3 wiederholen.
+
+   > **Führt das Projekt bereits ein anderes Agenten-Framework**, das dieselbe Datei erzeugt
+   > oder in Abschnitten pflegt, ist die Übernahme **kein Kopiervorgang, sondern eine
+   > Entscheidung**: Zwei Regelwerke, die beide Ebene 1 beanspruchen, widersprechen einander
+   > früher oder später, und das erzeugende Werkzeug schreibt seine Abschnitte beim nächsten
+   > Lauf zurück. Dieser Fall ist im Framework **nicht gelöst** (K-31); er gehört vor die
+   > Übernahme geklärt, nicht danach.
 
 4. **Overlay ausfüllen:** `project-overlay/OVERLAY.md` vollständig; Laufzeitfassung
    `20-project-overlay.md` in der Regelablage synchron halten; Werte in der

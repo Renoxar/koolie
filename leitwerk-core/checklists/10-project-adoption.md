@@ -27,6 +27,10 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 ### Technische Integration
 
 - [ ] **MUSS** Framework-Release in das Projekt-Repository integriert (Wurzel-Anweisungsdatei, Laufzeitschicht, `leitwerk-core/framework/`, `templates/`, `leitwerk-core/checklists/`, `leitwerk-core/decision-trees/`, `leitwerk-core/prompts/`, `leitwerk-core/onboarding/`, `tests/`); Framework-Version **und gewähltes Client Pack** im Overlay notiert.
+- [ ] **MUSS** Belegte Pfade vor der Erstinstallation geklärt: Bricht `install.py` ab, ist der
+      vorhandene Inhalt nach `ADOPTION_GUIDE.md` Schritt 3a übernommen – nicht gelöscht und
+      nicht überschrieben. Führt das Projekt ein anderes Agenten-Framework, ist die
+      Zuständigkeit für die Wurzel-Anweisungsdatei ausdrücklich entschieden (K-31).
 - [ ] **MUSS** Core-Dateien unverändert (Abgleich gegen das Release-Archiv; Änderungsbedarf läuft als Änderungsantrag an den Framework Owner, nie als lokale Änderung).
 - [ ] **MUSS** `project-overlay/OVERLAY.md` vollständig ausgefüllt; sicherheitsrelevante Abschnitte 4, 5, 6, 13, 14, 15 ohne offene `<TBD>`.
 - [ ] **MUSS** `20-project-overlay.md` in der Regelablage synchron zur Overlay-Datei befüllt (bei Clients mit Zeichenlimit unter 6.000 Zeichen).

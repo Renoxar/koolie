@@ -779,6 +779,43 @@ def installierte_clients(root: str) -> list[str]:
     return treffer
 
 
+def kollisionen(root: str, template: str, man: dict) -> list[str]:
+    """Vorhandene Dateien, die das Framework beansprucht und die von seiner Fassung abweichen.
+
+    Bei einer **Erstinstallation** ist jede davon eine Datei des Projekts: Das Framework hat
+    in dieses Verzeichnis noch nie geschrieben. Bis 0.28.0 wurden sie kommentarlos
+    ueberschrieben - in der Zusammenfassung ausgewiesen als "1 aktualisiert", ein Wort, das
+    nach Pflege klingt und hier Verlust bedeutet.
+
+    Der wahrscheinliche Fall ist die Wurzel-Anweisungsdatei. Ihr Name ist keine Erfindung
+    des Frameworks, sondern die Konvention des Clients - deshalb belegt ein Projekt ihn
+    oft schon. Gemessen am 2026-09-12 im Trockenlauf gegen ein reales Projekt: Der erste
+    Befehl des Uebernahmeleitfadens haette eine versionierte Datei von 34 Kilobyte ersetzt
+    (CR-2026-046, D-46).
+
+    Unterschieden wird am **Modus**, nicht an der Herkunft der Datei: Eine Erkennung ueber
+    den Kopfkommentar waere feiner und wuerde bei .example- und JSON-Artefakten versagen,
+    die keinen tragen. Fuer `--update` bleibt das Ueberschreiben richtig - dort ist das
+    Pack bereits installiert, und genau dafuer ist der Modus da.
+    """
+    out: list[str] = []
+    for rel in core_relpaths(template, man):
+        dst = os.path.join(root, rel)
+        if os.path.exists(dst) and not filecmp.cmp(os.path.join(template, rel), dst,
+                                                   shallow=False):
+            out.append(rel.replace(os.sep, "/"))
+    for src_rel, dst_rel in framework_skill_files(man):
+        dst = os.path.join(root, dst_rel)
+        if os.path.exists(dst) and not rendered_matches(os.path.join(HERE, src_rel), dst, man):
+            out.append(dst_rel)
+    for src_rel, dst_rel in shared_files(man, "shared_core"):
+        dst = os.path.join(root, *dst_rel.split("/"))
+        if os.path.exists(dst) and not rendered_matches(
+                os.path.join(HERE, *src_rel.split("/")), dst, man):
+            out.append(dst_rel)
+    return sorted(set(out))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Installiert die Wurzeldateien des Leitwerk-Frameworks in ein Projekt.")
@@ -860,6 +897,28 @@ def main() -> int:
         return list_skills(root, man, args.client)
 
     mode = "check" if args.check else ("update" if args.update else "install")
+
+    if mode == "install":
+        # Vor dem ersten Schreibvorgang, nicht waehrenddessen: Ein Abbruch nach der
+        # Haelfte der Dateien waere schlimmer als keiner.
+        belegt = kollisionen(root, template, man)
+        if belegt:
+            print(f"FEHLER: In {root} liegen bereits Dateien, die das Framework "
+                  f"beansprucht:", file=sys.stderr)
+            for rel in belegt:
+                print(f"  {rel}", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Eine Erstinstallation wuerde sie ueberschreiben. Das Framework hat in "
+                  "dieses\nVerzeichnis noch nie geschrieben - diese Dateien gehoeren also "
+                  "dem Projekt.", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Stammen sie aus einer frueheren Installation: --update verwenden.",
+                  file=sys.stderr)
+            print("Sonst den Inhalt vorher uebernehmen - Projektwissen nach "
+                  "project-overlay/OVERLAY.md,\nprojektspezifische Regeln in eine Regeldatei "
+                  "2N-overlay-<name>.md. Danach die\nDatei entfernen und erneut aufrufen "
+                  "(leitwerk-core/docs/ADOPTION_GUIDE.md, Abschnitt 2).", file=sys.stderr)
+            return 1
     version_file = os.path.join(HERE, "VERSION")
     version = open(version_file, encoding="utf-8").read().strip() if os.path.exists(version_file) else "unbekannt"
 

@@ -2,7 +2,8 @@
 """Wirkungsnachweis nach D-23 fuer die Pruefungen 18 bis 24 (Release 0.26.0)
 fuer Pruefung 6 (Release 0.26.1, Befund B03), fuer Pruefung 25 samt
 install.py --list-skills (Release 0.27.0) und fuer die Aktivierungspruefung samt
-Clientwahl der Installation (Release 0.28.0, Befunde B02 und B10).
+Clientwahl der Installation (Release 0.28.0, Befunde B02 und B10) und fuer den
+Schutz vorhandener Projektdateien bei der Erstinstallation (Release 0.29.0).
 
 Aufruf (im Wurzelverzeichnis des Repositoriums):
     python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD]
@@ -622,6 +623,63 @@ def sonden_clientwahl() -> None:
 
 
 sonden_clientwahl()
+
+
+# --- D-46: Die Erstinstallation ueberschreibt keine Projektdatei -----------------
+#
+# Die Sonde braucht weder Repositoriumskopie noch Installation, sondern ein leeres
+# Verzeichnis mit **einer** fremden Datei darin. Das ist der Fall, den ein aufnehmendes
+# Projekt mitbringt - und bis 0.28.0 verlor es sie beim ersten Befehl des Leitfadens.
+#
+# Doppelte Bedingung, und die zweite ist die eigentliche: Ein Abbruch, der erst nach dem
+# Schreiben kommt, ist keiner.
+
+def sonden_erstinstallation() -> None:
+    """Wirkungsnachweis fuer den Schutz der Projektdateien (CR-2026-046, D-46)."""
+    ziel = tempfile.mkdtemp(prefix="lw-erst-")
+    werkzeug = os.path.join(QUELLE, "leitwerk-core", "install.py")
+    man = json.loads(lies(os.path.join(QUELLE, "leitwerk-core", "clients", "claude-code",
+                                       "manifest.json")))
+    wurzeldatei = man["root_instruction_file"]
+    try:
+        # --- Sonde: der Name ist belegt, der Inhalt gehoert dem Projekt ----------
+        projekt = os.path.join(ziel, "belegt")
+        os.makedirs(projekt)
+        eigen = os.path.join(projekt, wurzeldatei)
+        inhalt = ("# Projektwissen\r\n\r\nDiese Datei gehoert dem Projekt und darf bei einer\r\n"
+                  "Erstinstallation nicht verlorengehen.\r\n")
+        schreib(eigen, inhalt)
+
+        p = subprocess.run([sys.executable, werkzeug, "--client", "claude-code",
+                            "--root", projekt],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        abgebrochen = p.returncode == 1
+        unberuehrt = lies(eigen) == inhalt
+        nichts_geschrieben = not os.path.isdir(os.path.join(projekt, man["runtime_dir"]))
+        melde("SONDE", "D46", abgebrochen and unberuehrt and nichts_geschrieben,
+              "Erstinstallation bricht ab, Projektdatei und Verzeichnis unberuehrt")
+        if not unberuehrt:
+            print("        Die Projektdatei wurde veraendert - das ist der Befund selbst.")
+        elif not (abgebrochen and nichts_geschrieben):
+            print("        Ausgabe:", " | ".join(
+                ((p.stdout or "") + (p.stderr or "")).splitlines()[:6]))
+
+        # --- Gegenprobe: ein freies Verzeichnis laeuft durch ---------------------
+        # Ohne sie belegt die Sonde nur, dass etwas abbricht - nicht, dass die
+        # Erstinstallation ueberhaupt noch funktioniert.
+        leer = os.path.join(ziel, "leer")
+        os.makedirs(leer)
+        q = subprocess.run([sys.executable, werkzeug, "--client", "claude-code",
+                            "--root", leer],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace")
+        melde("GEGENPROBE", "D46",
+              q.returncode == 0 and os.path.isfile(os.path.join(leer, wurzeldatei)),
+              "Erstinstallation in ein freies Verzeichnis laeuft durch")
+    finally:
+        shutil.rmtree(ziel, ignore_errors=True)
+
+
+sonden_erstinstallation()
 
 
 print()
