@@ -540,12 +540,18 @@ und bleibt beim Release-Prozess.
 
 **Erledigt – elf entschiedene Anträge sind umgesetzt (0.26.0).** `CR-2026-027`, `-028`, `-031` bis `-039`; D-34 bis D-38 tragen statt `Umsetzung offen` nun `umgesetzt mit 0.26.0`. **Offen bleibt daraus:**
 
-- **K-28** – Entfernt auch `devin-desktop` HTML-Kommentare, bevor es einen Regeltext einspeist? Nach der Umsetzung von `CR-2026-039` zu erheben; bis dahin gilt die strengere Lesart für beide Packs.
-- **H3 ist unbeobachtet.** Der Nachweis braucht eine Sitzung mit Aufzeichnung. Solange er fehlt, bleibt die Meldung der Quellen beim Sitzungsstart zurückgestellt (`CR-2026-031` E5) – eine zweite Zusage auf einem unbelegten Mechanismus ist genau die Konstruktion, die `AP2-DD-10` acht Releases lang trug.
-- **Bypass-Lauf für `claude-code`** (`CR-2026-033` E5), im Protokoll als Testnachweis auszuweisen.
-- **Einmalige Durchsicht der Altprotokolle** auf ungedeckte Abwesenheitsnachweise (`CR-2026-034` E4) – als Review, nicht als Testfall.
-- **Gegenzeichnung sämtlicher Protokolle** durch `<FRAMEWORK_OWNER>`; es sind inzwischen sechs.
-- **S5 bei `claude-code` erheben** und den Vorrang der nutzerglobalen Konfiguration bei diesem Pack messen – bei `devin-desktop` ist er belegt (K-27), hier nicht.
+- ~~**K-28**~~ – **erhoben am 2026-09-12** (`tests/protocols/2026-09-12-erhebungen-K28-S5-B9-bypass.md`): **nein**, `devin-desktop` reicht HTML-Kommentare wörtlich in den Regelblock durch. `ERH-01` betrifft damit einen Client, nicht beide; die Maßnahme aus `CR-2026-039` bleibt richtig, ihre Begründung im Kern ist an vier Stellen zu eng gefasst (`CR-2026-040`).
+- ~~**Bypass-Lauf für `claude-code`**~~ – **gefahren am 2026-09-12** (ebenda, Abschnitt 2.4; Auflage E5 zu `CR-2026-033` erfüllt), drei Läufe mit Kontrolllauf, im Protokoll als Testnachweis ausgewiesen. Ergebnis: **Beide Linien halten**, wo sie beim anderen Pack nacheinander fallen.
+- ~~**S5 bei `claude-code`**~~ und ~~**Vorrang der nutzerglobalen Konfiguration**~~ – **beide erhoben am 2026-09-12** (ebenda, Abschnitte 2.2 und 2.3). Fremde Skill-Ablagen: keine. Aufzählbarkeit samt Herkunft: **nicht eingelöst**, die Zeile steht jetzt auf `[NICHT ABBILDBAR]` – die Rechtsfolge daraus liegt als `CR-2026-041` vor (K-29). B9: **bestätigt und gemessen**, entgegengesetzt zum anderen Pack.
+- **H3 ist unbeobachtet.** Der Nachweis braucht eine Sitzung mit Aufzeichnung. Solange er fehlt, bleibt die Meldung der Quellen beim Sitzungsstart zurückgestellt (`CR-2026-031` E5) – eine zweite Zusage auf einem unbelegten Mechanismus ist genau die Konstruktion, die `AP2-DD-10` acht Releases lang trug. **Der Aufzeichnungs-Hook für `claude-code` ist am 2026-09-12 gebaut und gelaufen**; das Eingabeschema ist damit gemessen (ERH-14), H3 selbst aber weiterhin nicht.
+- **Einmalige Durchsicht der Altprotokolle** auf ungedeckte Abwesenheitsnachweise (`CR-2026-034` E4) – als Review, nicht als Testfall. **Zweites Kriterium seit dem 2026-09-12:** ein Abwesenheitsnachweis, der auf einem Suchwerkzeug beruht, ist für Punktdateien keiner (ERH-12, `CR-2026-042`).
+- **Gegenzeichnung sämtlicher Protokolle** durch `<FRAMEWORK_OWNER>`. **Die Zahl stand hier bei „sechs" und war wieder zu klein** – am 2026-09-12 gegen das Verzeichnis nachgezählt statt fortgeschrieben, wie schon bei `CR-2026-020` (76 statt 248) und `CR-2026-024` (fünf statt zehn): **zwölf** Protokolle haben einen Gegenzeichnungsabschnitt mit offenem `<TBD>`, drei sind gegengezeichnet. **Fünf haben überhaupt keinen Abschnitt** – `FW-DS-03`, `FW-KO-01`, `FW-KO-04`, `FW-RE-02`, `FW-ZA-05`; sie können nicht gegengezeichnet werden, ohne dass zuvor jemand den Abschnitt anlegt. `tests/protocols/README.md` führt die Gegenzeichnung nicht unter den Pflichtangaben; ob sie eine sein soll, ist zu entscheiden.
+
+**Neu offen aus den Erhebungen vom 2026-09-12** – drei Anträge, keiner entschieden:
+
+- **`CR-2026-040`** – Der Kern schreibt ERH-01 als Aussage über alle Clients; K-28 widerlegt sie für das zweite Pack. Betrifft den Kopfkommentar der Wurzel-Anweisungsdatei und drei Textstellen des Validators; **Prüfung 23 bleibt unverändert**, es ändert sich kein Prüfergebnis.
+- **`CR-2026-041`** – S5 steht bei `claude-code` auf `[NICHT ABBILDBAR]`. `clients/README.md` Abschnitt 4 knüpft daran eine Sperre der Inbetriebnahme, deren Begriff „Kernzusage" nirgends definiert ist (K-29). Damit steht zugleich **wieder eine Einstufung auf `[NICHT ABBILDBAR]`** – der Satz zu D-27 weiter oben beschreibt einen Stand, der seit dem 2026-09-12 nicht mehr gilt.
+- **`CR-2026-042`** – Ein Abwesenheitsnachweis über das Suchwerkzeug ist für Punktdateien keiner. Ergänzt Nummer 7 des Testkatalogs um eine **Anwesenheitsprobe desselben Gegenstandstyps**.
 
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
