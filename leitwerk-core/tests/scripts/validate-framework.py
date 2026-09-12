@@ -2179,6 +2179,62 @@ def check_werkzeugabwesenheit(root: str) -> None:
                     f"erreichen (D-47)")
 
 
+# Pruefung 27: Ein verworfenes Zusagenfeld eines Skills nennt seinen Ersatz.
+#
+# Dieselbe Bauform wie Pruefung 26, eine Ebene weiter: Ein Pack darf ein Frontmatter-Feld
+# verwerfen, das sein Client nicht kennt - aber nicht eines, das eine Zusage traegt, ohne
+# zu sagen, was an seine Stelle tritt.
+#
+# Zwei Faelle gab es dafuer schon: 'triggers' verfiel beim Rendern, bis AP2-CC-01 es fand
+# und eine Abbildung bekam (model_invocation_field). 'permissions' verfiel bis 0.30.0 auf
+# genau dieselbe Weise - im Manifest unter drop_fields deklariert, in der Wirkung
+# unbemerkt, und dabei trug es das 'deny: edit, exec' von zwoelf Skills (B01, D-50).
+#
+# install.py bricht seit 0.31.0 ab, wenn das passiert. Diese Pruefung findet denselben
+# Fehler **ohne** Installation - im Repositorium, wo ein neues Pack entsteht.
+#
+# GRENZE: Eine Anwesenheitspruefung auf den Begleitsatz. Ob der genannte Ersatz taugt,
+# kann kein Skript beurteilen - wie bei Pruefung 25 wird erzwungen, dass jemand die Frage
+# gestellt und beantwortet hat.
+ZUSAGENFELDER_ERSATZ = {
+    "permissions": "skill_permissions_ersatz",
+    "triggers": "model_invocation_field",
+}
+
+
+def check_zusagenfelder(root: str) -> None:
+    """Pruefung 27 (D-50): Kein verworfenes Zusagenfeld ohne benannten Ersatz."""
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        try:
+            man = json.loads(read(pfad))
+        except ValueError:
+            continue
+        fmt = (man.get("skill_frontmatter") or {})
+        entfallend = set(fmt.get("drop_fields") or [])
+        if fmt.get("tools_format") == "csv":
+            entfallend.add("allowed-tools")
+        for feld, ersatzfeld in sorted(ZUSAGENFELDER_ERSATZ.items()):
+            if feld not in entfallend:
+                continue
+            if str(fmt.get(ersatzfeld) or "").strip():
+                continue
+            err(f"{rel}: Das Skill-Frontmatter-Feld '{feld}' traegt eine Zusage und steht "
+                f"in skill_frontmatter.drop_fields - es entfaellt damit ersatzlos. Das Pack "
+                f"MUSS in skill_frontmatter.{ersatzfeld} benennen, was an seine Stelle "
+                f"tritt, oder festhalten, dass es keinen Ersatz gibt und was stattdessen "
+                f"traegt. Ein folgenlos verworfenes Feld ist der Befund AP2-CC-01, und bei "
+                f"'permissions' war es B01 (D-18, D-50)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -2221,6 +2277,7 @@ def main() -> int:
     check_regelablage_sauber(root)
     check_ausfall_mit_ersatz(root)
     check_werkzeugabwesenheit(root)
+    check_zusagenfelder(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.mermaid:

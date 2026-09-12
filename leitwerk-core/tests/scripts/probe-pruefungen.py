@@ -773,6 +773,78 @@ def sonden_suchkanal() -> None:
 sonden_suchkanal()
 
 
+# --- Pruefung 27 und der Installationsabbruch (CR-2026-050, D-50) -----------------
+#
+# Zwei Schichten, zwei Sonden: Der Validator findet das verworfene Zusagenfeld im
+# Repositorium, install.py bricht bei der Installation ab. Die zweite ist die
+# wirksamere - sie steht zwischen dem Befund und einer ausgelieferten Installation.
+
+def _ersatz_entfernen(root: str) -> None:
+    pfad = _manifest_pfad(root, "claude-code")
+    man = json.loads(lies(pfad))
+    man["skill_frontmatter"].pop("skill_permissions_ersatz", None)
+    schreib(pfad, json.dumps(man, ensure_ascii=False, indent=2) + "\r\n")
+
+
+def _ersatz_leeren(root: str) -> None:
+    # Ein leerer Begleitsatz ist kein Begleitsatz - dieselbe Strenge wie bei Pruefung 26.
+    pfad = _manifest_pfad(root, "claude-code")
+    man = json.loads(lies(pfad))
+    man["skill_frontmatter"]["skill_permissions_ersatz"] = "   "
+    schreib(pfad, json.dumps(man, ensure_ascii=False, indent=2) + "\r\n")
+
+
+sonde("27", "Verworfenes Zusagenfeld ohne benannten Ersatz wird gemeldet",
+      _ersatz_entfernen, "traegt eine Zusage und steht in skill_frontmatter.drop_fields")
+sonde("27", "Leerer Ersatzsatz gilt nicht als benannter Ersatz",
+      _ersatz_leeren, "traegt eine Zusage und steht in skill_frontmatter.drop_fields")
+gegenprobe("27", "Der ausgelieferte Ersatzsatz bleibt unbeanstandet",
+           None, "traegt eine Zusage und steht in skill_frontmatter.drop_fields")
+
+
+def sonden_zusagenfeld_installation() -> None:
+    """install.py bricht ab, statt eine Zusage folgenlos zu verwerfen.
+
+    Der Validator meldet denselben Fehler im Repositorium; diese Sonde misst die Stelle,
+    an der es zaehlt - den Schreibvorgang in ein Projekt. Die Gegenprobe belegt, dass die
+    Installation mit benanntem Ersatz weiterhin durchlaeuft; ohne sie stuende nur fest,
+    dass irgendetwas abbricht.
+    """
+    ziel = tempfile.mkdtemp(prefix="lw-b01-")
+    try:
+        quelle = os.path.join(ziel, "quelle")
+        shutil.copytree(QUELLE, quelle, ignore=shutil.ignore_patterns(".git"))
+        werkzeug = os.path.join(quelle, "leitwerk-core", "install.py")
+
+        frei = os.path.join(ziel, "mit-ersatz")
+        os.makedirs(frei)
+        p = unterprozess([sys.executable, werkzeug, "--client", "claude-code",
+                          "--root", frei])
+        melde("GEGENPROBE", "B01", p.returncode == 0,
+              "Installation mit benanntem Ersatz laeuft durch")
+        if p.returncode != 0:
+            print("        Ausgabe:", " | ".join(
+                ((p.stdout or "") + (p.stderr or "")).splitlines()[:4]))
+
+        _ersatz_entfernen(quelle)
+        ohne = os.path.join(ziel, "ohne-ersatz")
+        os.makedirs(ohne)
+        q = unterprozess([sys.executable, werkzeug, "--client", "claude-code",
+                          "--root", ohne])
+        aus = (q.stdout or "") + (q.stderr or "")
+        gemeldet = "traegt eine Zusage und steht in drop_fields" in aus
+        melde("SONDE", "B01", q.returncode != 0 and gemeldet,
+              "Installation bricht ab, wenn das Zusagenfeld ersatzlos entfiele")
+        if not (q.returncode != 0 and gemeldet):
+            print("        Exit:", q.returncode, "| Ausgabe:",
+                  " | ".join(aus.splitlines()[:4]))
+    finally:
+        shutil.rmtree(ziel, ignore_errors=True)
+
+
+sonden_zusagenfeld_installation()
+
+
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
       else f"{fehler} Abweichung(en)")

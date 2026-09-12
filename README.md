@@ -48,7 +48,7 @@ Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet
 │   │   ├── README.md                    #     Zweck, Fähigkeitsmatrix, Erstellung
 │   │   └── <client>/                    #     je Client:
 │   │       ├── CLIENT_PACK.md           #       Pfadabbildung + Durchsetzungstiefe
-│   │       └── root-template/           #       Quelle für AGENTS.md, .devin/, project-overlay/
+│   │       └── root-template/           #       nur noch die README der Laufzeitschicht
 │   ├── framework/                       #   kanonischer, werkzeugneutraler Kern
 │   │   ├── core/                        #     FW-CORE-00…10
 │   │   ├── role-packs/                  #     Ebene 6
@@ -93,9 +93,11 @@ python leitwerk-core/tests/scripts/validate-framework.py --strict-overlay
 
 | | wird bei `--update` überschrieben | bleibt unberührt |
 |---|---|---|
-| Kern | Wurzel-Anweisungsdatei, Regelablage `00-`, `10-`, `15-`, Skill-Ablage `fw-*`, Agentenprofile, Hook-Konfiguration, die `*-TEMPLATE`-Vorlagen | – |
+| Kern | Wurzel-Anweisungsdatei, Regelablage `00-`, `10-`, `15-`, Skill-Ablage `fw-*`, Agentenprofile, die `*-TEMPLATE`-Vorlagen | – |
 | Aktivierte Packs | ihre kopierten Bestandteile (Regelablage `30-`, `40-` und Skill-Ablage `role-*`, `tech-*`), sofern das Pack im Kern liegt | – |
-| Projekt | – | Berechtigungsdatei, Regelablage `20-`, `2N-`, Skill-Ablage `prj-*`, `project-overlay/**`, projekteigene Packs |
+| Projekt | – | Berechtigungsdatei **samt Hook-Konfiguration**, Regelablage `20-`, `2N-`, Skill-Ablage `prj-*`, `project-overlay/**`, projekteigene Packs |
+
+> **Die Hook-Konfiguration wird von `--update` NICHT erneuert.** Bei beiden Packs steht sie in der Berechtigungsdatei, und die gehört dem Projekt: Sie wird nur bei der Erstinstallation angelegt. Das ist eine bewusste Eigentumsentscheidung – es heißt aber, dass eine Änderung an den Hooks eines Releases **von Hand nachzutragen** ist. Der jeweilige `CHANGELOG.md`-Eintrag nennt solche Fälle unter „Migrationshinweise"; zuletzt betraf es 0.30.0 (die Suchwerkzeuge im Schutz-Hook).
 
 Weitere Aufrufe:
 
@@ -109,13 +111,26 @@ Der ausführliche Weg mit allen Voraussetzungen, Freigaben und der Aktivierungsr
 
 ## Arbeiten an diesem Repository
 
-In **diesem** Repository sind die Wurzel-Anweisungsdatei, die Laufzeitschicht und `project-overlay/` **Erzeugnisse** und deshalb nicht versioniert (siehe `.gitignore`). Quelle der Wahrheit ist das `root-template/` des jeweiligen Client Packs, standardmäßig `leitwerk-core/clients/devin-desktop/root-template/`. Nach dem Klonen also einmal:
+In **diesem** Repository sind die Wurzel-Anweisungsdatei, die Laufzeitschicht und `project-overlay/` **Erzeugnisse** und deshalb nicht versioniert (siehe `.gitignore`). Nach dem Klonen also einmal:
 
 ```bash
 python leitwerk-core/install.py
 ```
 
-Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei. **Änderungen am Kern gehören in das `root-template/` des Client Packs**, nicht in die erzeugte Laufzeitschicht im Wurzelverzeichnis – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
+Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei.
+
+**Wo eine Änderung hingehört** – die gemeinsamen Quellen liegen seit `CR-2026-010` **im Kern**, nicht mehr im Client Pack:
+
+| Was geändert werden soll | Quelle |
+|---|---|
+| Wurzel-Anweisungsdatei, Regeltexte, Berechtigungen, Hook-Konfiguration, Agentenprofile | `leitwerk-core/framework/runtime/` |
+| Skills | `leitwerk-core/framework/skills/` |
+| Overlay-Vorlage, Regelvorlagen | `leitwerk-core/templates/` |
+| Normativer Kern (FW-CORE-00…10) | `leitwerk-core/framework/core/` |
+| Pfad-, Werkzeug- und Hook-Abbildung eines Clients | `leitwerk-core/clients/<client>/manifest.json` |
+| Fähigkeitsmatrix eines Clients | `leitwerk-core/clients/<client>/CLIENT_PACK.md` |
+
+Das `root-template/` eines Packs enthält **nur noch die README der Laufzeitschicht**; `seed_paths` ist in beiden Manifesten leer, die gesamte Saat kommt aus dem Kern. **Niemals in die erzeugte Laufzeitschicht im Wurzelverzeichnis schreiben** – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
 
 Welcher Client verwendet wird, entscheidet `--client`; `python leitwerk-core/install.py --list-clients` zeigt die verfügbaren. Welche Zusagen des Frameworks ein Client **technisch durchsetzt** und welche nur als Anweisung im Kontext stehen, steht in der Fähigkeitsmatrix seines Client Packs (`leitwerk-core/clients/README.md`).
 

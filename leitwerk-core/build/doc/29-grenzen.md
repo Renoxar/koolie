@@ -2,6 +2,22 @@
 
 ## 29.1 Bekannte Grenzen dieser Erstfassung
 
+> **Dieser Abschnitt beschreibt den Stand der Erstfassung vom 2026-09-01 und wird nicht
+> fortgeschrieben.** Er bleibt als Zeitdokument erhalten; mehrere Aussagen darin gelten
+> **nicht mehr**. Der aktuelle Stand steht in `leitwerk-core/docs/ROADMAP.md`, Abschnitt
+> „Stand nach Release <aktuell>", und im `CHANGELOG.md`. Die drei wichtigsten Änderungen:
+>
+> - **Die Installationsvalidierung ist erfolgt.** AP2 ist für **beide** Client Packs gegen
+>   reale Installationen gefahren (2026-09-10 und 2026-09-11); die Protokolle liegen unter
+>   `leitwerk-core/tests/protocols/`.
+> - **Der Schutz-Hook läuft nicht mehr fail-open.** Seit 0.24.0 blockiert er eine Eingabe,
+>   die er nicht lesen kann, sofern das Client Pack das Eingabeschema als bestätigt führt
+>   (`hook_fail_closed`, D-31). Beide Manifeste führen es.
+> - **Die dynamischen Tests stehen nicht mehr sämtlich auf `offen`.** Mehrere sind
+>   gefahren und protokolliert; welche, sagt `leitwerk-core/tests/TEST_CATALOG.md`.
+>
+> Berichtigt mit `CR-2026-051` (Befund **B12** des unabhängigen Reviews vom 2026-09-12).
+
 **Keine Installationsvalidierung.** Kein Mechanismus wurde bislang in einer Zielinstallation vom Assistenten Desktop ausgeführt. Die Referenzimplementierung beruht auf der offiziellen Dokumentation (Quellen in Anhang 31.3) und ist entsprechend gekennzeichnet; die Validierung ist als frühes Arbeitspaket AP2 mit Protokollpflicht eingeplant. Bis dahin gilt insbesondere: Der Schutz-Hook läuft fail-open (dokumentierte Entscheidung im Skript), die Berechtigungsvorlage ist gegen das dokumentierte, nicht gegen das real beobachtete Schema geschrieben, und alle dynamischen Tests des Testkatalogs stehen auf `offen`.
 
 **Produktdynamik.** Devin Desktop entwickelt sich schnell (Rebranding Juni 2026, seither mehrere Releases). Aussagen mit Belegstatus `[DOK]` sind Momentaufnahmen des recherchierten Stands; die Governance begegnet dem mit Produktbeobachtung, Aktualitätstests (Klasse AK) und Hotfix-Pfad – ersetzt aber nicht die Prüfung vor der Einführung.

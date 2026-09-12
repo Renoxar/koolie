@@ -202,6 +202,55 @@ def seed_relpaths(template: str, man: dict) -> list[str]:
 resolve_placeholders = clientmap.resolve_placeholders
 
 
+# Frontmatter-Felder eines Skills, die eine Zusage tragen. Sie duerfen beim Rendern
+# nicht einfach entfallen: Wer sie verwirft, verwirft eine Schutzaussage, und genau
+# dieser Befundtyp zieht sich durch dieses Projekt - AP2-CC-01 fuer 'triggers', B01 fuer
+# 'permissions'. Ein Pack darf ein solches Feld nur dann in drop_fields fuehren, wenn es
+# den Ersatz benennt: entweder als Abbildung auf ein eigenes Feld oder als
+# ausdruecklichen Begleitsatz, dass es keinen gibt und was stattdessen traegt.
+#
+# 'triggers' hat seit AP2-CC-01 eine Abbildung (model_invocation_field). 'permissions'
+# hatte keine. Gemessen am 2026-09-12: 'allowed-tools' ist bei claude-code eine
+# Vorabfreigabe und keine Beschraenkung (B01,
+# tests/protocols/2026-09-12-B01-allowed-tools.md) - und das Feld 'permissions', das die
+# Beschraenkung wirklich trug, stand in drop_fields. Die Zusage fiel damit doppelt aus,
+# und beides war fuer sich genommen dokumentiert. Der Ersatz ist die globale
+# Berechtigungsschicht samt Schutz-Hook; das ist weniger als eine Beschraenkung je Skill,
+# und es gehoert hingeschrieben statt verschwiegen (CR-2026-050, D-50).
+#
+# Die Bauform ist dieselbe wie bei hook_tools_absent aus 0.30.0: Eine Abwesenheit wird
+# deklariert, nie erraten.
+ZUSAGENTRAGENDE_SKILLFELDER = {
+    "permissions": "skill_permissions_ersatz",
+    "triggers": "model_invocation_field",
+}
+
+
+def _zusagenfelder_pruefen(fm: str, fmt: dict, man: dict) -> None:
+    """Bricht ab, wenn ein zusagentragendes Feld ohne benannten Ersatz entfiele.
+
+    Geprueft wird nur, was die Quelle wirklich fuehrt: Ein Pack, dessen Skills das Feld
+    gar nicht tragen, wird nicht zur Erklaerung von etwas gezwungen, das es nicht gibt.
+    """
+    entfallend = set(fmt.get("drop_fields", []))
+    if fmt.get("tools_format") == "csv":
+        entfallend.add("allowed-tools")
+    for feld, ersatzfeld in sorted(ZUSAGENTRAGENDE_SKILLFELDER.items()):
+        if feld not in entfallend:
+            continue
+        if not re.search(rf"^{feld}:", fm, re.M):
+            continue
+        if str(fmt.get(ersatzfeld) or "").strip():
+            continue
+        raise clientmap.AbbildungsFehler(
+            f"{man.get('client', '?')}: Das Skill-Frontmatter-Feld '{feld}' traegt eine "
+            f"Zusage und steht in drop_fields - es entfiele ersatzlos. Das Pack MUSS in "
+            f"skill_frontmatter.{ersatzfeld} benennen, was an seine Stelle tritt, oder "
+            f"ausdruecklich festhalten, dass es keinen Ersatz gibt und was stattdessen "
+            f"traegt (D-18, D-50). Ein folgenloses Verwerfen ist der Befund AP2-CC-01"
+        )
+
+
 def render_skill_frontmatter(text: str, man: dict) -> str:
     """Bringt das Frontmatter eines Skills in die Form, die dieser Client erwartet.
 
@@ -215,12 +264,20 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
     in das Feld dieses Clients uebersetzt. Ohne diese Abbildung verfiel die Zusage S4 beim
     Rendern - der Validator erzwang `triggers: [user]` in der Quelle, und die installierte
     Fassung trug nichts davon (AP2-CC-01, D-26).
+
+    Seit 0.31.0 gilt das fuer **jedes** zusagentragende Feld: Steht es in drop_fields und
+    fuehrt die Quelle es, muss das Pack den Ersatz benennen - sonst scheitert die
+    Installation. Das Feld `permissions` fiel bis dahin genau so weg, wie `triggers` es
+    vor AP2-CC-01 tat: im Manifest deklariert, in der Wirkung unbemerkt (B01, D-50).
     """
     fmt = man.get("skill_frontmatter", {})
     if not text.startswith("---\n") or "\n---\n" not in text:
         return text
     kopf, rumpf = text.split("\n---\n", 1)
     fm = kopf[4:].rstrip("\n") + "\n"
+
+    # Vor jeder Umformung: Was entfiele hier, ohne dass ein Ersatz benannt ist?
+    _zusagenfelder_pruefen(fm, fmt, man)
 
     # Vor dem Verwerfen lesen: die Quelle nennt triggers als Liste.
     feld = fmt.get("model_invocation_field")
