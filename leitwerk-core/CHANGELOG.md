@@ -2,6 +2,51 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.28.0] - 2026-09-12
+
+**Zwei Werkzeuge, die einen Client nicht sahen - und dabei genau das taten, wogegen sie schuetzen sollten.**
+
+Paket 2 des Review-Arbeitsplans: B02 und B10, beide **gemessen** statt nur im Code gelesen. Beide gehoerten vor ein drittes Client Pack, weil ihr Schaden sich mit jedem Pack vervielfacht.
+
+### Behoben
+
+- **Die Aktivierungspruefung las fest verdrahtete Pfade eines Clients (`CR-2026-044`, D-44, B02).** `--strict-overlay` prueft, ob ein Projekt aktivierungsreif ist. Sie bekam das erkannte Manifest **nicht** uebergeben und las `.devin/rules/20-project-overlay.md` und `.devin/config.json`. In einer `claude-code`-Installation gibt es beides nicht; sie fand nichts, uebersprang alles und meldete null zusaetzliche Fehler.
+
+  **Gemessen** an zwei frischen Installationen mit demselben Defekt: `devin-desktop` 10 → 9 → 10, `claude-code` 7 → 7 → 7. Die Clienterkennung steht seit der Umstellung auf mehrere Packs **in derselben Datei** - sie wurde nur nicht benutzt. Nach der Korrektur verhalten sich beide Packs identisch.
+
+- **Der Overlay-Status wurde als Praefix geprueft.** Damit bestand `aktivierung-ausstehend` die Aktivierungspruefung - ein Wert, der woertlich sagt, dass die Aktivierung aussteht, liess den Fehler sogar **verschwinden**, der vorher stand. Wer ihn eintrug, machte die Pruefung stiller. Es gilt jetzt genau `aktiv`.
+
+- **Ein fehlender sicherheitsrelevanter Abschnitt galt als unauffaellig.** Die Pruefung suchte nur in vorhandenen Abschnitten nach offenen Werten; fehlte der Abschnitt, fand sie nichts. **Ein Overlay ohne Abschnitt 13 stand damit besser da als eines mit einem offenen Wert darin** - die Pruefung auf den Kopf gestellt. Die Existenz wird jetzt geprueft.
+
+- **Der dokumentierte Aktualisierungsaufruf legte eine zweite Laufzeitschicht an (`CR-2026-045`, D-45, B10).** `--client` trug einen Vorgabewert, und `docs/ADOPTION_GUIDE.md` empfahl `install.py --update` woertlich ohne ihn. **Gemessen** an einer frischen `claude-code`-Installation: `Client: devin-desktop`, **60 angelegt, 0 aktualisiert**. Eine vollstaendige zweite Laufzeitschicht mit eigener Berechtigungsdatei - und die Installation, die aktualisiert werden sollte, blieb unberuehrt. **Der Aufruf tat nicht zu viel, er tat das Falsche.**
+
+  `install.py` erkennt das installierte Pack jetzt an seiner Laufzeitschicht - dieselbe Regel wie im Validator. Ein widersprechendes `--client` bricht ab und nennt beide Packs samt Weg; der Vorgabewert gilt nur noch fuer die Erstinstallation.
+
+### Nachweise
+
+- **Die Sonden arbeiten erstmals auf einer Installation, nicht auf einer Kopie des Repositoriums.** Genau deshalb blieben beide Befunde so lange unbemerkt: Eine Sonde, die nur im Repositorium laeuft, kann sie nicht finden.
+- **Dieselben Faelle laufen je Pack** - das ist der Kern von B02 und das Abnahmekriterium des Reviews. Ein Defekt, der nur in einer von zwei Installationen gemeldet wird, faellt sonst niemandem auf.
+- **Gegen die Vorfassung 0.27.0 fallen acht Sonden, gegen 0.28.0 keine.** Die zwei, die auch alt bestehen, sind genau die Faelle, die die alte Fassung zufaellig traf: die Berechtigungsdatei des fest verdrahteten Packs und die Aktualisierung desselben Packs, das der Vorgabewert war. Protokoll: `leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.28.0.md`.
+
+### Geaendert
+
+- **Die Aktivierungspruefung laeuft mit ausdruecklichem UTF-8.** Beim ersten Sondenlauf fielen zwei Sonden, obwohl die Korrektur sass: Der Unterprozess schrieb in der Konsolenkodierung, der Diagnosetext mit Umlaut kam veraendert zurueck. **Die zugehoerige Gegenprobe bestand das klaglos** - sie prueft auf *nicht enthalten*, und ein Text, der nie auftreten kann, ist immer nicht enthalten. Bemerkt hat es nur ihr Sondenpaar.
+- **`docs/ADOPTION_GUIDE.md` Abschnitt 3** nennt die Erkennung und sagt, was bei ihrem Fehlschlag zu tun ist - ohne `--client` zu verlangen.
+
+### Migrationshinweise fuer Overlays
+
+- **Zwei Verschaerfungen koennen bestehende Overlays durchfallen lassen**, beide nur bei `--strict-overlay`:
+  - Der Overlay-Status muss woertlich `aktiv` lauten. Ein Wert wie `aktiv seit 2026-03` gilt nicht mehr als aktiv.
+  - Die sicherheitsrelevanten Abschnitte 4, 5, 6, 13, 14 und 15 muessen **vorhanden** sein. Ein Overlay, dem einer fehlt, wird jetzt gemeldet.
+- **Der Aktualisierungsaufruf aendert sich nicht**, er trifft nur das richtige Pack. Wer bisher `--client` mitgab, kann ihn weglassen. Wer eine Doppelinstallation hat, bekommt einen Abbruch mit Hinweis - das Aufraeumen bleibt Handarbeit.
+
+### Bekannte Einschraenkungen
+
+- **Der Abgleich zwischen Quell-Overlay und Laufzeitfassung fehlt weiterhin** (`CR-2026-044` E4, ausdruecklich offen gelassen): Die Laufzeitfassung kann von der Quelle abweichen, ohne dass es jemand merkt. Welche Felder gleich sein muessen, ist nirgends festgelegt - das ist der Grund, warum es ein eigener Gegenstand bleibt.
+- **Die Erkennung ist an zwei Packs gemessen.** Ein drittes bringt eine dritte Laufzeitschicht; die Sonden sind darauf vorbereitet, gemessen ist es nicht.
+- **Geprueft ist die Aktivierungsreife, nicht die Aktivierung.** Dass ein Overlay `aktiv` sagt, heisst nicht, dass der Client seine Regeln laedt.
+- **Neun der zwoelf Review-Befunde stehen offen**, sechs davon ungeprueft.
+
 ## [0.27.0] - 2026-09-12
 
 **Drei Antraege, ein Thema: Eine Aussage gilt so weit, wie sie gemessen ist - und ein Ausfall wird ersetzt, nicht abgebucht.**

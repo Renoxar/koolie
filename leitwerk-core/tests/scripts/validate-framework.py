@@ -1104,30 +1104,65 @@ def check_artefakt_versionen(root: str) -> None:
                 f"unterscheidet keine zwei Zeitpunkte (D-25, FW-VN-01)")
 
 
-def check_strict_overlay(root: str) -> None:
-    runtime = os.path.join(root, ".devin", "rules", "20-project-overlay.md")
+# Abschnitte des Overlays, die ueber die Aktivierungsreife entscheiden. Sie muessen da
+# sein und sie muessen ausgefuellt sein - das eine ohne das andere ist keine Pruefung.
+SICHERHEITSABSCHNITTE = ("## 4.", "## 5.", "## 6.", "## 13.", "## 14.", "## 15.")
+
+
+def check_strict_overlay(root: str, man: dict) -> None:
+    """Aktivierungsreife des Projekts (--strict-overlay) - clientneutral.
+
+    Bis 0.27.0 las diese Funktion zwei fest verdrahtete Pfade **eines** Clients und bekam
+    das erkannte Manifest nicht uebergeben. In einer Installation des anderen Packs fand
+    sie nichts, uebersprang alles und meldete null zusaetzliche Fehler.
+
+    Gemessen am 2026-09-12 an zwei frischen Installationen mit demselben Defekt: Beim
+    einen Pack aenderte sich die Fehlerzahl, beim anderen nicht (B02, D-44). Die
+    Clienterkennung steht seit der Umstellung auf mehrere Packs in derselben Datei; sie
+    wurde hier nur nicht benutzt.
+
+    Zwei Befunde derselben Funktion sind dabei mit erledigt, beide aus der Messung:
+
+    * **Der Status wurde als Praefix geprueft.** Damit bestand 'aktivierung-ausstehend'
+      die Aktivierungspruefung - ein Wert, der woertlich sagt, dass die Aktivierung
+      aussteht, liess den Fehler verschwinden, der vorher stand. Wer ihn eintrug, machte
+      die Pruefung stiller. Jetzt gilt genau 'aktiv'.
+    * **Ein fehlender sicherheitsrelevanter Abschnitt wurde akzeptiert.** Die Pruefung
+      suchte nur in vorhandenen Abschnitten nach offenen Werten; fehlte der Abschnitt,
+      fand sie nichts. Ein Overlay ohne Abschnitt 13 stand damit besser da als eines mit
+      einem offenen Wert darin - die Pruefung auf den Kopf gestellt.
+
+    GRENZE: Geprueft wird die Aktivierungs**reife**, nicht die Aktivierung. Dass ein
+    Overlay 'aktiv' sagt, heisst nicht, dass der Client seine Regeln laedt.
+    """
+    runtime = os.path.join(root, *man["pack_runtime_dir"].split("/"), "20-project-overlay.md")
     overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
     for path in (runtime, overlay):
         if not os.path.exists(path):
             continue
         text = read(path)
-        rel = os.path.relpath(path, root)
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
         angaben = _overlay_status_angaben(text)
         if not angaben:
             err(f"{rel}: keine Angabe zum Overlay-Status gefunden (strict-overlay)")
         for wert in angaben:
-            if not wert.lower().startswith("aktiv"):
+            # Aufzaehlung statt Praefix: 'aktivierung-ausstehend' ist keine Aktivierung.
+            if wert.strip().strip("`*").strip().lower() != "aktiv":
                 err(f"{rel}: Overlay-Status ist nicht 'aktiv', sondern '{wert}' (strict-overlay)")
         if path == runtime and TBD_RE.search(text):
             err(f"{rel}: enthält offene <TBD>-Werte (strict-overlay)")
         if path == overlay:
-            for sec in ("## 4.", "## 5.", "## 6.", "## 13.", "## 14.", "## 15."):
+            for sec in SICHERHEITSABSCHNITTE:
                 m = re.search(rf"{re.escape(sec)}.*?(?=\n## |\Z)", text, re.S)
-                if m and TBD_RE.search(m.group(0)):
+                if not m:
+                    err(f"{rel}: sicherheitsrelevanter Abschnitt {sec} fehlt (strict-overlay)")
+                elif TBD_RE.search(m.group(0)):
                     err(f"{rel}: Abschnitt {sec} enthält offene <TBD>-Werte (sicherheitsrelevant, strict-overlay)")
-    cfg = os.path.join(root, ".devin", "config.json")
-    if os.path.exists(cfg) and "<TBD" in read(cfg) or (os.path.exists(cfg) and PLACEHOLDER_RE.search(read(cfg))):
-        err(".devin/config.json: enthält noch Platzhalter (strict-overlay)")
+    rechte = os.path.join(root, *man["permissions_file"].split("/"))
+    if os.path.exists(rechte):
+        inhalt = read(rechte)
+        if TBD_RE.search(inhalt) or PLACEHOLDER_RE.search(inhalt):
+            err(f"{man['permissions_file']}: enthält noch Platzhalter (strict-overlay)")
 
 
 # Pruefung 14: Der werkzeugneutrale Kern nennt keinen Client als Akteur.
@@ -2128,7 +2163,7 @@ def main() -> int:
     check_regelablage_sauber(root)
     check_ausfall_mit_ersatz(root)
     if args.strict_overlay:
-        check_strict_overlay(root)
+        check_strict_overlay(root, man)
     if args.mermaid:
         check_mermaid(root)
 
