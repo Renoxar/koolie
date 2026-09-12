@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.4 |
+| Version | 0.1.5 |
 
 ## 1. Standardarbeitsablauf (normativ)
 
@@ -56,7 +56,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Mensch prüft Befunde stichprobenartig an den angegebenen Fundstellen; unbelegte Aussagen gelten als unbestätigt |
 | Abbruchkriterien | Zugriff auf K3-Inhalte erforderlich; Fundstellen nicht auffindbar; Frage erfordert Informationen außerhalb des Repositorys, die nicht freigegeben sind |
 | Erwartete Ausgabe | Strukturierter Analysebericht: Fragestellung, untersuchte Bereiche, Befunde mit Fundstellen, offene Punkte, ausdrückliche Kennzeichnung von Vermutungen |
-| Umsetzung im Werkzeug | **Die Modusgrenze gilt normativ; technisch durchgesetzt ist sie nicht.** Kennt der KI-Client einen eigenen Nur-Lese-Modus oder ein rein lesendes Agentenprofil, ist dieser Weg vorzuziehen – welcher das ist, steht in der Fähigkeitsmatrix seines Client Packs (S3, A1) `[DOK]` je Pack. **Die Skill-`permissions` tragen sie nicht:** `allowed-tools` ist bei mindestens einem Pack keine Werkzeugbeschränkung, sondern eine Vorabfreigabe, und das Feld `permissions` wird bei der Installation verworfen – gemessen am 2026-09-12 (`tests/protocols/2026-09-12-B01-allowed-tools.md`, B01) `[KONZ]`. Unabhängig vom Modus wirken die Sperren auf Secret- und Kernpfade `[DOK]` |
+| Umsetzung im Werkzeug | **Die Modusgrenze gilt normativ; technisch durchgesetzt ist sie nicht.** Kennt der KI-Client einen eigenen Nur-Lese-Modus oder ein rein lesendes Agentenprofil, ist dieser Weg vorzuziehen – welcher das ist, steht in der Fähigkeitsmatrix seines Client Packs (S3, A1) `[DOK]` je Pack. **Die Skill-`permissions` tragen sie nicht:** `allowed-tools` ist bei mindestens einem Pack keine Werkzeugbeschränkung, sondern eine Vorabfreigabe, und das Feld `permissions` kennt dieser Client für Skills nicht – gemessen am 2026-09-12 (`tests/protocols/2026-09-12-B01-allowed-tools.md`, B01) `[KONZ]`. **Seit 0.31.0 benennt jedes Pack, was an die Stelle eines so verworfenen Feldes tritt**, und die Installation bricht ab, wenn es das nicht tut (`CR-2026-050`, D-50); der Ersatz steht in der Fähigkeitsmatrix bei S3. Unabhängig vom Modus wirken die Sperren auf Secret- und Kernpfade `[DOK]` |
 
 #### M2 Guided Planning
 
@@ -95,7 +95,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Mensch prüft, ob Tests das fachliche Verhalten und nicht die Implementierung zementieren; prüft synthetische Testdaten; prüft Aussagekraft fehlschlagender Tests |
 | Abbruchkriterien | Test erfordert Änderung am Produktivcode (dann Wechsel nach M2/M3 durch den Menschen); Testinfrastruktur nicht verfügbar; Testdaten nur aus Echtdaten ableitbar |
 | Erwartete Ausgabe | Testdateien, Testprotokoll (Befehl, Ergebnis, Dauer), Liste nicht abgedeckter Fälle, Bewertung der Aussagekraft |
-| Umsetzung im Werkzeug | **Die Beschränkung auf `<TEST_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Der Schutz-Hook kennt weder den Betriebsmodus noch eine Liste erlaubter Schreibpfade und entscheidet innerhalb und außerhalb des Scopes gleich – gemessen am 2026-09-12 (`leitwerk-core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Die Skill-`permissions` tragen sie ebenfalls nicht (B01, siehe M1). Getragen wird sie von der Regelschicht und der Prüfpflicht dieses Modus; unabhängig davon wirken die Sperren auf Secret- und Kernpfade `[DOK]` |
+| Umsetzung im Werkzeug | **Die Beschränkung auf `<TEST_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Der Schutz-Hook kennt weder den Betriebsmodus noch eine Liste erlaubter Schreibpfade und entscheidet innerhalb und außerhalb des Scopes gleich – gemessen am 2026-09-12 (`leitwerk-core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Die Skill-`permissions` tragen sie ebenfalls nicht (B01, siehe M1); welcher Mechanismus stattdessen trägt, steht seit 0.31.0 bei S3 des jeweiligen Packs. Getragen wird sie von der Regelschicht und der Prüfpflicht dieses Modus; unabhängig davon wirken die Sperren auf Secret- und Kernpfade `[DOK]` |
 
 #### M5 Documentation Support
 
@@ -108,7 +108,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 | Prüfpflichten | Fachliche Prüfung durch eine Person mit Domänenwissen; Prüfung auf vertrauliche Inhalte vor Ablage in `<DOCUMENTATION_PLATFORM>` |
 | Abbruchkriterien | Dokumentierter Sachverhalt aus dem Code nicht belegbar; Widerspruch zwischen Code und bestehender Dokumentation, der eine fachliche Entscheidung erfordert |
 | Erwartete Ausgabe | Geänderte Dokumentationsdateien, Änderungsübersicht, Liste belegter Quellen, Liste offener fachlicher Klärungen |
-| Umsetzung im Werkzeug | **Die Beschränkung auf `<DOC_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Eine Beschränkung auf `<DOC_PATHS>` unter Ausschluss aller übrigen Pfade ist über Skill-`permissions` nicht ausdrückbar (`<DOC_PATHS>` ist Teilmenge von `<ALLOWED_PATHS>`, und `deny` gewinnt gegen `allow`) `[DOK]`, und das Feld `permissions` wird bei der Installation ohnehin verworfen (B01). Der Schutz-Hook trägt sie nicht – er kennt den Modus nicht (`leitwerk-core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Getragen wird sie von der Regelschicht und der fachlichen Prüfpflicht dieses Modus |
+| Umsetzung im Werkzeug | **Die Beschränkung auf `<DOC_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Eine Beschränkung auf `<DOC_PATHS>` unter Ausschluss aller übrigen Pfade ist über Skill-`permissions` nicht ausdrückbar (`<DOC_PATHS>` ist Teilmenge von `<ALLOWED_PATHS>`, und `deny` gewinnt gegen `allow`) `[DOK]`, und das Feld `permissions` kennt der eine Client für Skills ohnehin nicht (B01) – was an seine Stelle tritt, benennt seit 0.31.0 die Zeile S3 seiner Fähigkeitsmatrix. Der Schutz-Hook trägt sie nicht – er kennt den Modus nicht (`leitwerk-core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Getragen wird sie von der Regelschicht und der fachlichen Prüfpflicht dieses Modus |
 
 ## 3. Querschnittsregeln für alle Modi (normativ)
 

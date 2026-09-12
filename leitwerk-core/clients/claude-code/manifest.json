@@ -58,7 +58,8 @@
     "drop_fields": [
       "permissions",
       "triggers"
-    ]
+    ],
+    "skill_permissions_ersatz": "Kein Ersatz je Skill - und das ist die Aussage, nicht eine Luecke. Gemessen am 2026-09-12 (B01, tests/protocols/2026-09-12-B01-allowed-tools.md): 'allowed-tools' ist bei diesem Client eine Vorabfreigabe fuer den aufrufenden Turn, keine Beschraenkung - ein Skill mit 'allowed-tools: Read, Grep, Glob' konnte schreiben. Das Feld 'permissions' der Quelle kennt dieser Client fuer Skills nicht; es steht deshalb in drop_fields. An seine Stelle tritt die GLOBALE Berechtigungsschicht samt Schutz-Hook - sie wirkt unabhaengig vom Skill und hielt am 2026-09-12 auch im untersagten Betriebsmodus. Das ist weniger als eine Beschraenkung je Skill: Ein Analyseskill kann schreiben, soweit die globalen Regeln es zulassen. Die Herstellerdokumentation nennt 'disallowed-tools' als gesonderten Mechanismus; er ist NICHT erhoben und wird deshalb hier nicht zugesagt (CR-2026-050, D-50)."
   },
   "shared_core": [
     {

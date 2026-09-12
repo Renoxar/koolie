@@ -2,6 +2,75 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.31.0] - 2026-09-12
+
+**Paket 3 ist fertig: Die Aussagen stimmen jetzt mit dem ueberein, was gemessen ist.**
+
+Die letzten beiden Befunde des Pakets - B01 und B12. Der erste ist der aelteste gemessene
+Befund des Reviews und betraf eine Zusage, die zweifach ausfiel; der zweite fuehrte jeden
+neuen Mitwirkenden an einen Ordner mit einer README darin.
+
+### Behoben
+
+- **Ein zusagentragendes Frontmatter-Feld verschwindet nicht mehr beim Rendern** (B01,
+  `CR-2026-050`, D-50). Zwoelf Quellskills fuehren `permissions: {deny: [edit, exec]}`;
+  das Manifest von `claude-code` verwarf das Feld. Das Verwerfen war deklariert und fuer
+  sich genommen richtig - der Client kennt das Feld fuer Skills nicht (K-18). Unbenannt
+  blieb die **Folge**: dass damit eine Zusage verschwand. **Seit 0.31.0 bricht die
+  Installation ab**, wenn ein Pack `permissions` oder `triggers` verwirft, ohne den Ersatz
+  zu benennen. Genau so verfiel `triggers` bis `AP2-CC-01` - nur bekam es danach eine
+  Abbildung und `permissions` keine.
+- **Die Quellenkarte fuehrt nicht mehr an einen leeren Ordner** (B12, `CR-2026-051`,
+  D-51). `git ls-files` findet unter `clients/*/root-template/` zwei Dateien, je eine
+  README - die `README.md` nannte das Verzeichnis als „Quelle der Wahrheit“. Sie fuehrt
+  jetzt je Artefaktart die Quelle als Tabelle.
+- **Die Update-Tabelle verspricht keine Hook-Aktualisierung mehr, die nicht stattfindet.**
+  Bei beiden Packs steht die Hook-Konfiguration in der Berechtigungsdatei, und die gehoert
+  dem Projekt. Eine Hook-Aenderung eines Releases ist **von Hand nachzutragen** - das steht
+  jetzt da, mit dem konkreten Fall: 0.30.0 hat die Suchwerkzeuge aufgenommen.
+
+### Geaendert
+
+- **S3 steht bei `claude-code` auf `[NICHT ABBILDBAR]`**, mit benanntem Ersatz nach
+  Pruefung 25: die **globale** Berechtigungsschicht samt Schutz-Hook. Sie wirkt unabhaengig
+  vom Skill - und ist **weniger** als eine Beschraenkung je Skill. Das steht in derselben
+  Zeile, denn ein Ersatzsatz, der seine Schwaeche verschweigt, waere derselbe Befundtyp
+  eine Ebene hoeher.
+- **S3 steht bei `devin-desktop` auf `[TEXTUELL]`.** Dort ueberleben beide Felder das
+  Rendern - das ist nachgeprueft. Ob der Client sie auswertet, ist es nicht.
+- **Kapitel 29 des Hauptdokuments traegt einen datierten Vorspann.** Es sagte weiterhin,
+  kein Mechanismus sei je in einer Installation ausgefuehrt worden und der Schutz-Hook
+  laufe fail-open. Der Bestandstext bleibt unveraendert - ein Zeitdokument, das man
+  nachtraeglich glaettet, ist keines mehr.
+
+### Neu
+
+- **Pruefung 27:** Ein verworfenes Zusagenfeld nennt seinen Ersatz. Sie findet denselben
+  Fehler wie der Installationsabbruch, aber **ohne** Installation - im Repositorium, wo ein
+  neues Pack entsteht. Zwei Sonden, eine Gegenprobe.
+- Eine Sonde und eine Gegenprobe fuer den Installationsabbruch selbst.
+
+### Bekannte Einschraenkungen
+
+- **`disallowed-tools` ist nicht erhoben.** Die Herstellerdokumentation nennt es als
+  gesonderten Mechanismus fuer eine echte Werkzeugbeschraenkung; er wird deshalb **nicht**
+  zugesagt und traegt einen VERIFY-Marker.
+- **Die Wirkung der Skill-`permissions` bei `devin-desktop` ist unerhoben.** Belegt ist,
+  dass die Felder die installierte Fassung erreichen.
+- **Veraenderliche Statusangaben stehen weiterhin an mehreren Stellen** (`CR-2026-051` E3).
+- Der Rueckstand einer eingebetteten Hook-Konfiguration wird beschrieben, nicht geprueft -
+  das setzt den Abgleich zwischen Quell-Overlay und Laufzeitfassung voraus
+  (`CR-2026-044` E4, seit 0.28.0 offen).
+
+### Migrationshinweise
+
+- **Ein eigenes Client Pack, das `permissions` oder `triggers` in
+  `skill_frontmatter.drop_fields` fuehrt, muss den Ersatz benennen** -
+  `skill_permissions_ersatz` beziehungsweise `model_invocation_field`. Sonst bricht die
+  Installation ab. Beide ausgelieferten Packs sind angepasst.
+- Der Hinweis aus 0.30.0 gilt weiter: Bestehende Installationen brauchen ein `--update`,
+  **und die Hook-Konfiguration ist dabei von Hand nachzutragen** (siehe oben).
+
 ## [0.30.0] - 2026-09-12
 
 **Vier Zusagen versprachen mehr, als die Mechanismen leisten - und eine Suche erreichte den Schutz-Hook gar nicht.**

@@ -26,10 +26,14 @@ konfigurierbar `[DOK]`:
 Die tatsächlichen Pfade unterscheiden sich je Client; sie stehen in
 `leitwerk-core/docs/RUNTIME_GLOSSARY.md` und im `CLIENT_PACK.md` des gewählten Packs.
 
-Deshalb bringt der Kern diese Bestandteile im `root-template/` des jeweiligen Client Packs
-mit (`leitwerk-core/clients/<client>/root-template/`) und
-`leitwerk-core/install.py` legt sie an ihrem Platz an. Welcher Client gilt, entscheidet
-`--client`; `--list-clients` zeigt die verfügbaren.
+Deshalb liegen diese Bestandteile **im Kern** – `leitwerk-core/framework/runtime/`,
+`leitwerk-core/framework/skills/` und `leitwerk-core/templates/` –, und
+`leitwerk-core/install.py` legt sie in der Form des gewählten Clients an ihrem Platz an.
+Welcher Client gilt, entscheidet `--client`; `--list-clients` zeigt die verfügbaren.
+
+> Das `root-template/` eines Client Packs enthält seit `CR-2026-010` **nur noch die README
+> der Laufzeitschicht**; `seed_paths` ist in beiden Manifesten leer. Wer eine gemeinsame
+> Quelle ändern will, ändert sie im Kern, nicht im Pack.
 
 **Projektspezifisch sind ausschließlich:**
 
@@ -225,8 +229,9 @@ Entfernen der Laufzeitschicht, wenn gewünscht. Das Verzeichnis
 **Werkzeugwechsel:** Die kanonische Ebene `leitwerk-core/framework/` bleibt unverändert —
 sie ist werkzeugneutral. Ein anderer KI-Client wird als **Client Pack** unter
 `leitwerk-core/clients/<client>/` angelegt: eine `CLIENT_PACK.md` mit Pfadabbildung und
-Fähigkeitsmatrix sowie ein `root-template/` mit den Wurzelartefakten in der Form dieses Clients
-(`leitwerk-core/clients/README.md`).
+Fähigkeitsmatrix und ein `manifest.json` mit der maschinenlesbaren Abbildung. **Die
+Wurzelartefakte kommen aus dem Kern**, nicht aus dem Pack (`leitwerk-core/clients/README.md`,
+Abschnitt 5).
 
 Vor dem Wechsel ist die **Fähigkeitsmatrix** des Zielclients auszuwerten: Sie weist je Zusage
 aus, ob der Client sie technisch erzwingt oder ob sie nur noch als Anweisung im Kontext steht.

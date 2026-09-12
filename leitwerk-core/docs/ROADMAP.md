@@ -3,16 +3,53 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.30.0 (2026-09-12)
+## Stand nach Release 0.31.0 (2026-09-12)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.31.0 gebracht hat – Paket 3 ist abgeschlossen
+
+**Alle vier Befunde des Pakets sind erledigt.** Die Aussagen des Frameworks stimmen jetzt mit
+dem überein, was gemessen ist – das war der Zweck des Pakets.
+
+- **Ein zusagentragendes Frontmatter-Feld verschwindet nicht mehr beim Rendern** (B01, D-50).
+  Zwölf Quellskills führen `permissions: {deny: [edit, exec]}`; das Manifest von `claude-code`
+  verwarf das Feld. **Das Verwerfen war deklariert und für sich genommen richtig** – der Client
+  kennt das Feld für Skills nicht (K-18). Unbenannt blieb die **Folge**: dass damit eine Zusage
+  verschwand. Genau so verfiel `triggers` bis `AP2-CC-01` – nur bekam es danach eine Abbildung
+  und `permissions` keine. Seit 0.31.0 bricht die Installation ab, wenn der Ersatz fehlt, und
+  **Prüfung 27** findet denselben Fehler im Repositorium.
+- **S3 ist in beiden Packs berichtigt:** `[NICHT ABBILDBAR]` bei `claude-code` mit benanntem
+  Ersatz – der **globalen** Berechtigungsschicht, die ausdrücklich als **schwächer** ausgewiesen
+  ist –, `[TEXTUELL]` bei `devin-desktop`, wo das Durchreichen der Felder belegt ist und ihre
+  Wirkung nicht.
+- **Die Quellenkarte führt nicht mehr an einen leeren Ordner** (B12, D-51). `git ls-files`
+  findet unter `clients/*/root-template/` **zwei** Dateien, je eine README – die `README.md`
+  nannte das Verzeichnis als Quelle der Wahrheit für Kernänderungen.
+- **Die Update-Tabelle verspricht keine Hook-Aktualisierung mehr, die nicht stattfindet.** Die
+  Hook-Konfiguration steht bei beiden Packs in der Berechtigungsdatei, und die gehört dem
+  Projekt. **Eine Hook-Änderung eines Releases ist von Hand nachzutragen** – der erste Fall ist
+  0.30.0 mit den Suchwerkzeugen, und der erste Betroffene ist der Pilot.
+- **Kapitel 29 des Hauptdokuments trägt einen datierten Vorspann.** Es sagte weiterhin, kein
+  Mechanismus sei je in einer Installation ausgeführt worden und der Schutz-Hook laufe
+  fail-open. Der Bestandstext bleibt unverändert – ein Zeitdokument, das man nachträglich
+  glättet, ist keines mehr.
+
+**60 Sonden und Gegenproben bestehen gegen 0.31.0 in beiden Kodierungsumgebungen**
+(`tests/protocols/2026-09-12-wirkungsnachweise-0.31.0.md`).
+
+**Offen geblieben und ausdrücklich so ausgewiesen:** `disallowed-tools` ist nicht erhoben und
+wird deshalb nicht zugesagt; die Wirkung der Skill-`permissions` bei `devin-desktop` ebenso.
+Veränderliche Statusangaben stehen weiterhin an mehreren Stellen (`CR-2026-051` E3), und der
+Rückstand einer eingebetteten Hook-Konfiguration wird beschrieben, nicht geprüft – das setzt den
+Abgleich zwischen Quell-Overlay und Laufzeitfassung voraus (`CR-2026-044` E4).
 
 ### Was 0.30.0 gebracht hat
 
@@ -620,7 +657,7 @@ Sechs davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am se
 
 | Befund | Prüfung dieser Sitzung |
 |---|---|
-| **B01** – `allowed-tools` ist keine Werkzeugbeschränkung | **Gemessen und bestätigt**, damit über den Belegstand des Reviews hinaus (dort aus der Herstellerdokumentation abgeleitet): `tests/protocols/2026-09-12-B01-allowed-tools.md`. **S3 ist widerlegt.** Dazu ein zweiter, eigenständiger Befund: `install.py` verwirft das Feld `permissions` der Quellskills **still** – neun Skills tragen dort `deny: [edit, exec]`, die installierte Fassung trägt nichts davon. Dasselbe Muster wie `AP2-CC-01`, ein Feld weiter |
+| **B01** – `allowed-tools` ist keine Werkzeugbeschränkung – **erledigt mit 0.31.0** | **Gemessen und bestätigt**, damit über den Belegstand des Reviews hinaus (dort aus der Herstellerdokumentation abgeleitet): `tests/protocols/2026-09-12-B01-allowed-tools.md`. **S3 ist widerlegt.** Dazu ein zweiter, eigenständiger Befund: `install.py` verwirft das Feld `permissions` der Quellskills **still** – neun Skills tragen dort `deny: [edit, exec]`, die installierte Fassung trägt nichts davon. Dasselbe Muster wie `AP2-CC-01`, ein Feld weiter |
 | **B02** – `--strict-overlay` prüft fest verdrahtete Pfade **eines** Clients | **Im Code bestätigt:** `check_strict_overlay(root)` liest `.devin/rules/…` und bekommt das erkannte Manifest nicht übergeben. Für das zweite Pack prüft die Aktivierungsprüfung damit nichts |
 | **B03** – Der Inhaltsvalidator gibt gefundene sensible Werte aus | **Im Code bestätigt und unbeabsichtigt vorgeführt:** Der Validatorlauf dieser Sitzung schrieb den synthetischen Kontakt aus dem Prüfprotokoll des Reviews in das Terminal. Der Befund demonstriert sich an seinem eigenen Bericht |
 | **B10** – `--update` ohne `--client` fällt auf das Standardpack zurück | **Im Code bestätigt:** `--client` trägt einen Vorgabewert, der Leitfaden empfiehlt den Aufruf ohne das Argument |
@@ -645,7 +682,7 @@ sind jeweils begründet. Jeder Schritt braucht seinen Antrag. **Paket 1 ist ents
 |---|---|---|---|
 | **1 – Zuerst, weil billig und weil es bei jedem Lauf leckt** – **erledigt mit 0.26.1** | **B03** | Der Validator schrieb gefundene E-Mail-Adressen, IP-Adressen, Hostnamen und Sperrbegriffe im Klartext in seine Ausgabe. **Jeder Prüflauf konnte damit genau die Angaben verbreiten, die er finden soll** – in eine Sitzung, ein Protokoll, ein Terminal. Prüfung 6 meldet jetzt Pfad, Zeile, Spalte und eine neutrale Kennung; dasselbe gilt für zwei Fehlerpfade, die fremden Inhalt weitertrugen. **Nachgewiesen:** sieben Sonden, die gegen 0.26.0 fallen und gegen 0.26.1 bestehen (`CR-2026-043`, D-39, `leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.26.1.md`). **Offen geblieben:** der Mermaid-Fehlerpfad ist geändert, aber unbelegt – der externe Renderer fehlt in der Umgebung | keine |
 | **2 – Vor einem dritten Client Pack** – **erledigt mit 0.28.0** | **B02**, B10 | **B02 verdreifacht seinen Schaden mit jedem Pack:** Die Aktivierungsprüfung liest fest verdrahtete Pfade **eines** Clients und bekommt das erkannte Manifest nicht übergeben. B10 ist derselbe Fehlertyp im Installer – `--update` ohne `--client` fiel auf das Standardpack zurück und legte in einem fremden Projekt eine zweite Laufzeitschicht an. **Beide gemessen und behoben** (`CR-2026-044`, `CR-2026-045`, D-44, D-45): Die Aktivierungsprüfung bekommt das Manifest, die Installation erkennt das installierte Pack. Dazu zwei Befunde aus derselben Messung – der Overlay-Status wurde als Präfix geprüft, und ein fehlender sicherheitsrelevanter Abschnitt galt als unauffällig. **Offen geblieben:** der Abgleich zwischen Quell-Overlay und Laufzeitfassung (`CR-2026-044` E4) | keine; beide sind lokale Korrekturen |
-| **3 – Aussagen an den Belegstand angleichen** – **B04 und B05 erledigt mit 0.30.0**; offen: B01, B12 | **B01**, ~~B04~~, ~~B05~~, B12 | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
+| **3 – Aussagen an den Belegstand angleichen** – **vollständig erledigt** (B03 0.26.1, B02/B10 0.28.0, B04/B05 0.30.0, B01/B12 0.31.0) | ~~**B01**~~, ~~B04~~, ~~B05~~, ~~B12~~ | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
 | **4 – Regelkonflikte, die nur der Mensch entscheiden kann** | **B09**, B07 | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`.** Ohne sie ist hier nichts umsetzbar |
 | **5 – Abläufe** | **B08**, B11 | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) |
 | **6 – Technische Härtung** | **B06**, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3) | Pakete 3 und 4 |

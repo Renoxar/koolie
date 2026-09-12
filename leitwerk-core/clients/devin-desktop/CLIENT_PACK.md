@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.5.0 |
+| Version | 0.6.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -79,7 +79,7 @@ darf nicht davon abhängen, mit welchem Werkzeug gearbeitet wird.
 |---|---|---|---|---|
 | S1 | Versionierte Skills im Repository | `.devin/skills/<name>/SKILL.md` mit Frontmatter | `[TECHNISCH]` | `[DOK]` |
 | S2 | Gezielter Aufruf | Aufruf über den Skill-Namen mit vorangestelltem Schrägstrich | `[TECHNISCH]` | `[DOK]` |
-| S3 | Werkzeugbeschränkung je Skill | Frontmatter `allowed-tools`, `permissions` | `[TECHNISCH]` | Wirkung additiver Skill-Permissions `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` |
+| S3 | Werkzeugbeschränkung je Skill | Frontmatter `allowed-tools`, `permissions`. **Beide Felder erreichen die installierte Fassung unverändert** – dieses Pack führt sie nicht in `drop_fields`, anders als das andere | `[TEXTUELL]` | **Das Durchreichen ist belegt, die Wirkung nicht.** Dass die Felder in der installierten Datei stehen, ist am Rendern nachgeprüft (2026-09-12); ob der Client sie auswertet, ist es nicht: Wirkung additiver Skill-Permissions `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>`. **Die Einstufung ist deshalb von `[TECHNISCH]` auf `[TEXTUELL]` berichtigt** – beim anderen Pack hat dieselbe Frage, gemessen, die Zusage widerlegt (B01, `CR-2026-050`, D-50). Eine Erhebung an einer Installation steht aus |
 | S4 | Schreibende Skills nur benutzergetriggert | Frontmatter `triggers` – Framework-Konvention, statisch geprüft durch `leitwerk-core/tests/scripts/validate-framework.py` | `[TEXTUELL]` | `[EMPF]`; die Laufzeitwirkung ist Modellverhalten. **Reichweite:** Die Zusage gilt für die Skill-Ablage, die das Framework schreibt. Skills aus Ablagen außerhalb des Repositoriums unterliegen diesen Konventionen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken (`AP2-DD-16`, `CR-2026-032`) |
 | S5 | Die geladenen Skills sind vollständig aufzählbar, samt Herkunft und Aufrufbarkeit | `devin skills list --json` führt je Skill `provider`, `base_dir` und `triggers`; `devin skills paths` nennt die Suchpfade | `[TEXTUELL]` | **Beobachtet – mit demselben Vorbehalt wie R5.** Am 2026-09-11 führte die Liste 81 Skills, davon 67 aus `~\.claude\skills\` mit `[user,model]` (`AP2-DD-16`, K-24). `devin skills paths` nennt diese Ablage jedoch **nicht** (ERH-03): Die Aufzählung der Skills ist vollständig, die der Pfade nicht. Aufzählbarkeit ist zudem keine Kontrolle – die Liste entsteht nur, wenn ein Mensch das Kommando ausführt. **Zweiter Befund am 2026-09-12 (ERH-17):** Der Block `<available_skills>`, den der Client in den Sitzungskontext stellt, **nennt je Skill den vollen Quellpfad** – die Auskunft existiert also, nur nicht in dem Kommando, das sie verspricht. Als Ersatz für die fehlende Pfadangabe von `devin skills paths` steht daneben `install.py --list-skills` (`CR-2026-041` E3), das den Teil aufzählt, für den das Framework einstehen kann |
 
