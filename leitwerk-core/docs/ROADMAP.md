@@ -553,6 +553,71 @@ und bleibt beim Release-Prozess.
 - **`CR-2026-041`** – S5 steht bei `claude-code` auf `[NICHT ABBILDBAR]`. `clients/README.md` Abschnitt 4 knüpft daran eine Sperre der Inbetriebnahme, deren Begriff „Kernzusage" nirgends definiert ist (K-29). Damit steht zugleich **wieder eine Einstufung auf `[NICHT ABBILDBAR]`** – der Satz zu D-27 weiter oben beschreibt einen Stand, der seit dem 2026-09-12 nicht mehr gilt.
 - **`CR-2026-042`** – Ein Abwesenheitsnachweis über das Suchwerkzeug ist für Punktdateien keiner. Ergänzt Nummer 7 des Testkatalogs um eine **Anwesenheitsprobe desselben Gegenstandstyps**.
 
+### Unabhängiges Review vom 2026-09-12
+
+Ein externes Review (`review/2026-09-12-leitwerk-review.md`) hat zwölf Befunde **B01 bis B12**
+vorgelegt, fünf davon P1, mit Lösungswegen je Befund. **Es ist kein Antrag und keine
+Entscheidung** – die Befunde durchlaufen den regulären Prozess.
+
+Vier davon sind am Tag des Eingangs gegengeprüft:
+
+| Befund | Prüfung dieser Sitzung |
+|---|---|
+| **B01** – `allowed-tools` ist keine Werkzeugbeschränkung | **Gemessen und bestätigt**, damit über den Belegstand des Reviews hinaus (dort aus der Herstellerdokumentation abgeleitet): `tests/protocols/2026-09-12-B01-allowed-tools.md`. **S3 ist widerlegt.** Dazu ein zweiter, eigenständiger Befund: `install.py` verwirft das Feld `permissions` der Quellskills **still** – neun Skills tragen dort `deny: [edit, exec]`, die installierte Fassung trägt nichts davon. Dasselbe Muster wie `AP2-CC-01`, ein Feld weiter |
+| **B02** – `--strict-overlay` prüft fest verdrahtete Pfade **eines** Clients | **Im Code bestätigt:** `check_strict_overlay(root)` liest `.devin/rules/…` und bekommt das erkannte Manifest nicht übergeben. Für das zweite Pack prüft die Aktivierungsprüfung damit nichts |
+| **B03** – Der Inhaltsvalidator gibt gefundene sensible Werte aus | **Im Code bestätigt und unbeabsichtigt vorgeführt:** Der Validatorlauf dieser Sitzung schrieb den synthetischen Kontakt aus dem Prüfprotokoll des Reviews in das Terminal. Der Befund demonstriert sich an seinem eigenen Bericht |
+| **B10** – `--update` ohne `--client` fällt auf das Standardpack zurück | **Im Code bestätigt:** `--client` trägt einen Vorgabewert, der Leitfaden empfiehlt den Aufruf ohne das Argument |
+
+Die übrigen acht sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet. Die
+Reihenfolge aus Abschnitt 6 des Reviews ist eine Empfehlung, kein beschlossener Plan.
+
+> **Das Review nennt einen Punkt, den dieses Projekt selbst erlebt:** Die Prüfung eines frischen
+> Auscheckstands verlangt Rechte, die das inaktive Overlay nicht erteilt (B07). Das Review musste
+> dafür den Auftrag als Berechtigung behandeln und weist es aus. Eine Sitzung dieses Projekts
+> steht bei jeder Selbstanwendung vor derselben Lage.
+
+### Mehrere Repositorien unter einem Arbeitsbereich
+
+**Gemessen am 2026-09-12** (`tests/protocols/2026-09-12-mehrprojekt-arbeitsbereich.md`): Eine
+Installation **über** mehreren Repositorien trägt nicht. Die Wurzel-Anweisungsdatei und die
+Regelablage wirken aus der Elternebene nach unten – **die Berechtigungsdatei und die Hooks nicht.**
+Startet die Sitzung in einem Unterverzeichnis, fallen **beide** Durchsetzungslinien aus, und zwar
+**still**: Der Agent sieht seine Regeln vollständig und verhält sich regelkonform.
+
+Folgen, noch nicht als Antrag gefasst:
+
+- Der Ausfüllhinweis in `templates/project-overlay/OVERLAY.md` Abschnitt 3 stellt „je Repository
+  ein Overlay **oder** ein Abschnitt je Repository" als gleichwertig dar. Das ist zu berichtigen.
+- Die Zusagen des B- und H-Blocks gelten unter einer bisher unausgesprochenen Bedingung:
+  **Die Sitzung startet im Installationsverzeichnis.** Das gehört in die Vorbemerkung, neben die
+  Betriebsmodus-Abhängigkeit aus D-35.
+- **Ungemessen und die naheliegende Gegenprobe:** eine Sitzung, die in der Wurzel startet und die
+  Repositorien über `--add-dir` einbezieht.
+
+### Geplant: Client Pack `openai-codex`
+
+Ein drittes Client Pack ist vorgesehen (Projektentscheidung vom 2026-09-12); ein Ziel-Release ist
+noch nicht festgelegt. **Vor der Aufnahme sind die Voraussetzungen zu klären, nicht danach:**
+
+- **Die Reihenfolge steht in `clients/README.md` Abschnitt 5** – neun Schritte, davon vier
+  Erhebungen. Ein Pack entsteht nicht durch Kopieren der Vorlage, sondern durch Messen.
+- **Der teuerste Teil ist AP2**, der Lauf gegen eine reale Installation. Bei `claude-code` kamen
+  dabei neun Befunde heraus, bei `devin-desktop` siebzehn – jeweils in einer Sitzung. Mit
+  demselben Aufwand ist zu rechnen.
+- **Zwei Fragen entscheiden die Eignung vorab.** Kennt der Client (1) eine durchsetzende
+  Berechtigungsschicht mit Verweigerungsvorrang und (2) einen Hook-Mechanismus vor dem
+  Werkzeugaufruf? Fehlt eines von beiden, steht der gesamte B- oder H-Block auf
+  `[NICHT ABBILDBAR]` – und nach `clients/README.md` Abschnitt 4 braucht ein solches Pack die
+  Freigabe durch `<SECURITY_CONTACT>`. Diese Klausel ist derzeit Gegenstand von `CR-2026-041`.
+- **Der Kern ist vorbereitet, die Prüfungen sind es nicht überall.** B02 zeigt, dass die
+  Aktivierungsprüfung Pfade **eines** Clients fest verdrahtet. Ein drittes Pack verdreifacht den
+  Schaden dieses Befunds; **B02 gehört vor das Pack**, nicht danach.
+- **Die Erhebungen des 2026-09-11/12 sind für das neue Pack zu wiederholen, nicht zu übernehmen.**
+  Drei Fragen sind bei den beiden vorhandenen Packs **entgegengesetzt** ausgefallen – fremde
+  Skill-Ablagen (S5 gegen `AP2-DD-16`), Vorrang der Benutzerkonfiguration (B9 gegen ERH-11) und
+  das Verhalten im untersagten Modus. Eine Übertragung wäre genau der Fehler, den `CR-2026-040`
+  gerade behebt.
+
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
 fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
