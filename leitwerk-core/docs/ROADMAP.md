@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.28.0 (2026-09-12)
+## Stand nach Release 0.29.0 (2026-09-12)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.

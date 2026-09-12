@@ -2,6 +2,54 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.29.0] - 2026-09-12
+
+**Der erste Befehl des Uebernahmeleitfadens haette eine Projektdatei geloescht.**
+
+Gefunden bei der Vorbereitung der ersten echten Inbetriebnahme - im Trockenlauf, vor dem ersten Schreibvorgang. Ohne ihn waere der Befund erst aufgefallen, nachdem die Datei weg war.
+
+### Behoben
+
+- **Die Erstinstallation ueberschreibt keine Datei des Projekts mehr (`CR-2026-046`, D-46).** Fuer jeden Core-Pfad galt: existiert und weicht ab → ueberschreiben, in `install` wie in `update`. Ob die Datei je vom Framework stammte, prueft niemand.
+
+  **Gemessen** im Trockenlauf gegen ein reales Projekt: `Core aktualisiert (1): CLAUDE.md` - eine versionierte Anweisungsdatei von 34 Kilobyte, seit Monaten gepflegt, ausgewiesen als „1 aktualisiert". Ein Wort, das nach Pflege klingt und hier Verlust bedeutet.
+
+  **Der Name der Wurzel-Anweisungsdatei ist die Konvention des Clients**, nicht die Erfindung des Frameworks - ein Projekt, das bereits mit diesem Client arbeitet, fuehrt sie meistens. Genau der Fall, den eine Uebernahme antrifft.
+
+  `install.py` bricht im Modus `install` jetzt **vor dem ersten Schreibvorgang** ab, nennt die betroffenen Dateien und den Weg. Fuer `--update` bleibt das Ueberschreiben richtig - dort ist das Pack bereits installiert.
+
+- **Der Leitfaden sagte das Gegenteil.** `docs/ADOPTION_GUIDE.md` versprach woertlich „Bestehende Projektdateien werden nie ueberschrieben". Der Satz gilt fuer die Saatdateien - Berechtigungsdatei und Overlay - und galt fuer die Wurzel-Anweisungsdatei nicht. Er ist richtiggestellt.
+
+### Hinzugefuegt
+
+- **Uebernahmeweg als Schritt 3a im Leitfaden.** Ein Abbruch ohne Weg ist eine Sackgasse. Der neue Schritt sagt, wohin der vorhandene Inhalt gehoert: Projektwissen ins Overlay, projektspezifische Regeln in eine Regeldatei `2N-overlay-<name>.md`, persoenliche Gewohnheiten in die nutzerlokale Vorlage.
+- **Ein Pruefpunkt in `10-project-adoption.md`**: Belegte Pfade sind vor der Erstinstallation geklaert.
+
+### Offen ausgewiesen statt verschwiegen
+
+- **K-31: ein Projekt, das bereits ein anderes Agenten-Framework fuehrt.** Aufgefallen am selben Tag: Das zuerst vorgesehene Pilotrepositorium fuehrte eine Anweisungsdatei, deren Abschnitte ein anderes Werkzeug **erzeugt** und als „nicht von Hand aendern" kennzeichnet - samt eigener Verfahrensregel, die direkte Aenderungen ausserhalb seines Ablaufs untersagt.
+
+  **Der Konflikt ist nicht der Dateiname, sondern die Zustaendigkeit.** Ein einmaliger Umzug des Inhalts hilft nicht: Beim naechsten Lauf schreibt das andere Werkzeug seine Abschnitte zurueck, und zwei Regelwerke beanspruchen Ebene 1. Die Prioritaetshierarchie kennt dafuer keinen Platz. Der Leitfaden nennt den Fall jetzt ausdruecklich als **ungeloest**.
+
+- **K-30: mehrere Client Packs in einem Repositorium.** Heute schliesst `install.py` das aus (D-45). Ob das eine Eigenschaft der Sache ist oder nur der heutigen Umsetzung, ist offen - der schwierige Teil ist nicht die Technik, sondern dass ein solches Projekt **zwei verschiedene Durchsetzungstiefen zugleich** haette und die Zusage des Frameworks die schwaechere von beiden waere.
+
+### Nachweise
+
+- **Sonde mit drei Bedingungen:** Abbruch, Projektdatei byte-gleich, Laufzeitschicht nicht angelegt. Die dritte ist die eigentliche - ein Abbruch nach der Haelfte der Dateien waere schlimmer als keiner.
+- **Gegenprobe:** Die Erstinstallation in ein freies Verzeichnis laeuft unveraendert durch. Eine Fassung, die immer abbricht, bestuende jede Sonde darueber.
+- Gegen 0.28.0 faellt die Sonde, gegen 0.29.0 besteht sie. Protokoll: `leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.29.0.md`.
+
+### Migrationshinweise fuer Overlays
+
+- **Keine fuer bestehende Installationen.** `--update` ist unveraendert.
+- **Fuer eine Neuaufnahme:** Bricht `install.py` ab, ist das kein Fehler des Werkzeugs, sondern der Hinweis, dass das Projekt einen beanspruchten Pfad belegt. Schritt 3a des Leitfadens sagt, was zu tun ist.
+
+### Bekannte Einschraenkungen
+
+- **Der Schutz bewahrt vor Verlust, nicht vor Arbeit.** Das Framework beansprucht die Wurzel-Anweisungsdatei weiterhin; den Inhalt umziehen muss ein Mensch.
+- **Gemessen ist `claude-code`.** Der Mechanismus ist clientneutral, der Nachweis nicht.
+- **Acht der zwoelf Review-Befunde stehen offen**, sechs davon ungeprueft. Als Naechstes Paket 3: B01 ist gemessen und sofort umsetzbar, B04 und B05 sind die Zusagen, auf die man sich bei echten Daten nicht verlassen sollte, solange sie weiter beschrieben sind, als sie reichen.
+
 ## [0.28.0] - 2026-09-12
 
 **Zwei Werkzeuge, die einen Client nicht sahen - und dabei genau das taten, wogegen sie schuetzen sollten.**
