@@ -205,6 +205,33 @@ LINK_EXCEPTIONS = (
 LINK_EXCEPTION_BASENAMES = ("CLIENT_PACK.md",)
 
 
+def fundstelle(rel: str, text: str, pos: int) -> str:
+    """Pfad, Zeile und Spalte eines Treffers - **ohne den Treffer selbst**.
+
+    Die Diagnosen der Inhaltspruefung nannten bis 0.26.1 den gefundenen Wert im
+    Klartext: die E-Mail-Adresse, die IP, den internen Hostnamen, die vollstaendige
+    URL samt Parametern - und den gesperrten Begriff. Damit trug ein Schutzlauf genau
+    die Angaben weiter, die er finden soll: in ein Terminal, ein Protokoll, eine
+    Agentensitzung.
+
+    Am schaerfsten beim Sperrbegriff. Die Liste in project-overlay/forbidden-terms.txt
+    enthaelt reale Projekt-, Kunden- und Behoerdennamen; die Pruefung nimmt diese Datei
+    deshalb ausdruecklich von der eigenen Inhaltspruefung aus - und schrieb den Namen
+    dann in die Fehlermeldung. Die eine Zeichenkette, die in keiner Ausgabe des
+    Frameworks stehen darf, stand dort durch die Pruefung, die sie verhindern soll.
+
+    Die Secret-Diagnose derselben Funktion machte es von Anfang an richtig: Kategorie
+    ohne Wert - aber ohne Position. Diese Funktion zieht die uebrigen nach und traegt
+    die Fundstelle dort nach, wo sie fehlte (B03, D-39).
+
+    Spalte statt nur Zeile, damit zwei Treffer derselben Zeile unterscheidbar bleiben -
+    sonst faellt der zweite als scheinbares Duplikat nicht auf.
+    """
+    zeile = text.count(chr(10), 0, pos) + 1
+    spalte = pos - (text.rfind(chr(10), 0, pos) + 1) + 1
+    return f"{rel}:{zeile}:{spalte}"
+
+
 def err(msg: str) -> None:
     ERRORS.append(msg)
 
@@ -707,22 +734,25 @@ def check_content(root: str) -> None:
             continue
         text = read(path)
         for label, pat in SECRET_PATTERNS:
-            if pat.search(text):
-                err(f"{rel}: Secret-Muster ({label})")
+            m = pat.search(text)
+            if m:
+                err(f"{fundstelle(rel, text, m.start())}: FW-CONTENT-SECRET: "
+                    f"Secret-Muster ({label})")
         for m in EMAIL_RE.finditer(text):
             if not m.group(0).lower().endswith(("example.com", "example.org", "example.invalid")):
-                err(f"{rel}: E-Mail-Adresse gefunden ({m.group(0)})")
+                err(f"{fundstelle(rel, text, m.start())}: FW-CONTENT-EMAIL: E-Mail-Adresse")
         for m in IP_RE.finditer(text):
             if not m.group(0).startswith(("0.", "127.", "192.0.2.", "198.51.100.", "203.0.113.")):
-                err(f"{rel}: IP-Adresse gefunden ({m.group(0)})")
+                err(f"{fundstelle(rel, text, m.start())}: FW-CONTENT-IP: IP-Adresse")
         for m in INTERNAL_HOST_RE.finditer(text):
-            err(f"{rel}: interner Hostname gefunden ({m.group(0)})")
+            err(f"{fundstelle(rel, text, m.start())}: FW-CONTENT-HOST: interner Hostname")
         for m in URL_RE.finditer(text):
             if not any(host in m.group(0) for host in URL_ALLOWLIST):
-                warn(f"{rel}: URL außerhalb der Allowlist: {m.group(0)}")
+                warn(f"{fundstelle(rel, text, m.start())}: FW-CONTENT-URL: URL außerhalb der Allowlist")
         for term in forbidden_terms:
-            if re.search(rf"(?i)\b{re.escape(term)}\b", text):
-                err(f"{rel}: gesperrter Begriff '{term}'")
+            m = re.search(rf"(?i)\b{re.escape(term)}\b", text)
+            if m:
+                err(f"{fundstelle(rel, text, m.start())}: FW-CONTENT-TERM: gesperrter Begriff")
         if FENCE4_RE.search(text) and rel.startswith(
                 (".devin/", ".claude/", "project-overlay/") +
                 tuple(f"{KERN}/{d}/" for d in ("framework", "prompts", "checklists", "decision-trees",
@@ -1982,7 +2012,13 @@ def check_mermaid(root: str) -> None:
                     fh.write(block)
                 res = subprocess.run([mmdc, "-i", src, "-o", out, "-q"], capture_output=True, text=True)
                 if res.returncode != 0:
-                    err(f"{os.path.relpath(path, root)}: Mermaid-Block {i} ungültig: {res.stderr.strip()[:300]}")
+                    # Die Fehlerausgabe des Renderers zitiert den Quelltext des Blocks. Sie
+                    # hier auszugeben traegt Diagramminhalt in Terminal und Protokoll - genau
+                    # der Fehler, den B03 fuer die Inhaltsdiagnosen beanstandet (D-39). Der
+                    # Block bleibt ueber Datei und Nummer auffindbar; wer die Meldung des
+                    # Renderers braucht, ruft ihn von Hand auf.
+                    err(f"{os.path.relpath(path, root)}: Mermaid-Block {i} ungültig "
+                        f"(Renderer-Exitcode {res.returncode}; Fehlerausgabe nicht wiedergegeben)")
 
 
 def main() -> int:

@@ -157,11 +157,16 @@ PROTECTED_WRITE_PATH_PATTERNS = [
 
 # Zusätzliche projektspezifische Muster können über die Umgebungsvariable
 # FW_HOOK_EXTRA_PATH_PATTERNS (durch ';' getrennte reguläre Ausdrücke) ergänzt werden.
-for extra in filter(None, os.environ.get("FW_HOOK_EXTRA_PATH_PATTERNS", "").split(";")):
+for _nr, extra in enumerate(
+        filter(None, os.environ.get("FW_HOOK_EXTRA_PATH_PATTERNS", "").split(";")), 1):
     try:
         PROTECTED_PATH_PATTERNS.append(re.compile(extra))
     except re.error:
-        print(f"[fw-hook] Ungueltiges Zusatzmuster ignoriert: {extra!r}", file=sys.stderr)
+        # Der Wert wird nicht wiedergegeben: Projektspezifische Pfadmuster tragen Projekt-,
+        # Kunden- und Hostnamen - dieselbe Datenart wie die Sperrbegriffe (B03, D-39). Die
+        # Position macht das Muster in der Umgebungsvariablen auffindbar.
+        print(f"[fw-hook] Ungueltiges Zusatzmuster an Position {_nr} ignoriert "
+              f"(Wert nicht wiedergegeben).", file=sys.stderr)
 
 
 def iter_strings(obj):
