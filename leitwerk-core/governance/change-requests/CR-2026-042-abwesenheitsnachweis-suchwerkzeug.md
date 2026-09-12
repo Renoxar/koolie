@@ -95,8 +95,8 @@ sei nicht vorhanden. Gemerkt hat es nur, wer wusste, dass er die Datei selbst an
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD>` |
-| Datum | `<TBD>` |
+| Entscheidung | **Angenommen, alle vier Fragen wie vorgelegt.** E1 in Testkatalog **und** Client Pack, mit verschiedener Reichweite; E2 die Anwesenheitsprobe desselben Gegenstandstyps wird verlangt; E3 keine Validatorprüfung – es gibt nichts zu lesen; E4 die Altprotokolle werden im selben Zug wie `CR-2026-034` E4 durchgesehen |
+| Datum | 2026-09-12 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD>` |
-| Umsetzung | `<TBD>` |
+| Auflagen | Die Durchsicht der Altprotokolle nach `CR-2026-034` E4 führt künftig **zwei** Kriterien und steht weiterhin aus. Im Wirkungsnachweis selbst ist die Regel bereits angewandt: `probe-pruefungen.py` prüft seit 0.27.0 vor jedem Sondenlauf, ob die Sonde den Baum überhaupt verändert hat |
+| Umsetzung | umgesetzt mit `0.27.0` |

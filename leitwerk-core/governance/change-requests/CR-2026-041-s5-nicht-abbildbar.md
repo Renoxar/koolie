@@ -121,8 +121,8 @@ nicht bloß abbuchen – siehe E3.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD>` |
-| Datum | `<TBD>` |
+| Entscheidung | **Angenommen, alle fünf Fragen wie vorgelegt.** E1 `[NICHT ABBILDBAR]` bei S5 sperrt die Inbetriebnahme **nicht**; der Begriff „Kernzusage" wird definiert statt im Einzelfall ausgelegt. E2 die Definition steht im Kern. E3 der Ausfall wird ersetzt: `install.py --list-skills`. E4 S5 bei `devin-desktop` wird um ERH-17 nachgezogen. E5 D-27 wird fortgeschrieben, nicht aufgehoben |
+| Datum | 2026-09-12 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD>` |
-| Umsetzung | `<TBD>` |
+| Auflagen | **Die Lockerung gilt nur zusammen mit dem Ersatz.** Eine Fähigkeitszusage auf `[NICHT ABBILDBAR]` MUSS den Ersatz benennen oder festhalten, dass es keinen gibt; **Prüfung 25** setzt das durch und ist nach D-23 mit Sonde und Gegenprobe belegt. Beim ersten Lauf meldete sie **zwei** Zeilen ohne benannten Ersatz (S5 und X2) – die Lücke, gegen die sie gebaut ist, war bereits da. Die Ausgabe von `--list-skills` MUSS ihre eigene Grenze nennen; auch das ist als Sonde belegt |
+| Umsetzung | umgesetzt mit `0.27.0` |

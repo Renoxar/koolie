@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Wirkungsnachweis nach D-23 fuer die Pruefungen 18 bis 24 (Release 0.26.0)
-und fuer Pruefung 6 (Release 0.26.1, Befund B03).
+fuer Pruefung 6 (Release 0.26.1, Befund B03) und fuer Pruefung 25 samt
+install.py --list-skills (Release 0.27.0, CR-2026-041).
 
 Aufruf (im Wurzelverzeichnis des Repositoriums):
     python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD]
@@ -26,6 +27,7 @@ Was dieses Skript **nicht** leistet: Es belegt, dass die Pruefungen wirken, nich
 ihre Gegenstaende richtig sind. Die Grenze jeder einzelnen Pruefung steht in deren
 Kopfkommentar in validate-framework.py.
 """
+import hashlib
 import io
 import os
 import re
@@ -44,6 +46,26 @@ def kopie() -> str:
     shutil.copytree(QUELLE, os.path.join(ziel, "repo"),
                     ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
     return os.path.join(ziel, "repo")
+
+
+def baumhash(root: str) -> str:
+    """Fingerabdruck des Baums - er entscheidet, ob eine Sonde etwas gesetzt hat.
+
+    Ohne ihn ist ein Suchtext, der nicht mehr passt, von einer Pruefung, die nicht
+    meldet, nicht zu unterscheiden: Beides sieht aus wie eine gescheiterte Sonde.
+    """
+    h = hashlib.sha256()
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d != "__pycache__")
+        for fn in sorted(filenames):
+            pfad = os.path.join(dirpath, fn)
+            h.update(os.path.relpath(pfad, root).encode("utf-8", "replace"))
+            try:
+                with open(pfad, "rb") as fh:
+                    h.update(fh.read())
+            except OSError:
+                pass
+    return h.hexdigest()
 
 
 def lauf(root: str) -> str:
@@ -70,7 +92,13 @@ def melde(art: str, nummer: str, ok: bool, was: str) -> None:
 def sonde(nummer: str, was: str, praeparieren, erwartet: str) -> None:
     root = kopie()
     try:
+        vorher = baumhash(root)
         praeparieren(root)
+        if baumhash(root) == vorher:
+            melde("SONDE", nummer, False, was + "  [nichts praepariert]")
+            print("        Der Baum ist unveraendert - vermutlich passt der Suchtext "
+                  "der Sonde nicht mehr. Gemessen wuerde sonst die Sonde, nicht die Pruefung.")
+            return
         ausgabe = lauf(root)
         melde("SONDE", nummer, erwartet in ausgabe, was)
         if erwartet not in ausgabe:
@@ -83,7 +111,11 @@ def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
     root = kopie()
     try:
         if praeparieren:
+            vorher = baumhash(root)
             praeparieren(root)
+            if baumhash(root) == vorher:
+                melde("GEGENPROBE", nummer, False, was + "  [nichts praepariert]")
+                return
         ausgabe = lauf(root)
         ok = verboten not in ausgabe and "0 Fehler" in ausgabe
         melde("GEGENPROBE", nummer, ok, was)
@@ -193,9 +225,9 @@ gegenprobe("22", "Pack ohne import_control laeuft durch", None, "Importsteuerung
 sonde("23", "Normativer Satz im Kopfkommentar der Wurzel-Anweisungsdatei",
       lambda r: schreib(P(r, "leitwerk-core/framework/runtime/root-instruction.md".replace("/", os.sep)),
                         lies(P(r, "leitwerk-core/framework/runtime/root-instruction.md".replace("/", os.sep)))
-                        .replace("Ein Kommentar erreicht die Sitzung nicht",
+                        .replace("Was gilt, steht im Fließtext",
                                  "Diese Datei darf nur über den Änderungsprozess geändert werden. "
-                                 "Ein Kommentar erreicht die Sitzung nicht", 1)),
+                                 "Was gilt, steht im Fließtext", 1)),
       "steht in einem HTML-Kommentar")
 
 sonde("23", "Normatives MUSS im Kommentar einer installierten Regeldatei",
@@ -279,7 +311,11 @@ def sonde_ohne_wert(nummer: str, was: str, praeparieren, erwartet: str, marker: 
     """
     root = kopie()
     try:
+        vorher = baumhash(root)
         praeparieren(root)
+        if baumhash(root) == vorher:
+            melde("SONDE", nummer, False, was + "  [nichts praepariert]")
+            return
         ausgabe = lauf(root)
         gemeldet = erwartet in ausgabe
         verschwiegen = marker not in ausgabe
@@ -362,6 +398,72 @@ def sonde_hook_zusatzmuster() -> None:
 
 
 sonde_hook_zusatzmuster()
+
+
+# --- 25 (D-41): Ein Ausfall ohne benannten Ersatz -------------------------------
+#
+# Die Sonde nimmt der S5-Zeile das Wort, auf das die Pruefung sieht. Das ist die ganze
+# Bauart der Pruefung - sie kann nicht beurteilen, ob ein Ersatz taugt, nur dass jemand
+# die Frage beantwortet hat.
+
+def _b40_ersatz_entfernen(root: str) -> None:
+    pfad = P(root, "leitwerk-core/clients/claude-code/CLIENT_PACK.md".replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace("Ersatz", "Behelf"))
+
+
+sonde("25", "Zeile auf [NICHT ABBILDBAR] ohne benannten Ersatz",
+      _b40_ersatz_entfernen, "Zeile S5 steht auf [NICHT ABBILDBAR]")
+
+# Die Zusammenfassungstabelle desselben Dokuments fuehrt dieselbe Klasse als
+# Zeilenbeschriftung und nennt keinen Ersatz. Eine Pruefung, die jede Zeile mit der Klasse
+# meldet, beanstandet sie - und besteht die Sonde darueber trotzdem.
+gegenprobe("25", "Klassenzeile der Zusammenfassungstabelle bleibt unbeanstandet",
+           None, "steht auf [NICHT ABBILDBAR]")
+
+
+# --- E3 (D-42): install.py --list-skills -----------------------------------------
+#
+# Kein Validatorlauf: Der Gegenstand ist ein Kommando, kein Artefakt. Gemessen wird an
+# seiner Ausgabe.
+
+def sonde_list_skills() -> None:
+    """Wirkungsnachweis fuer den Ersatz, den D-42 an die Stelle der Clientauskunft setzt.
+
+    Drei Bedingungen, und die dritte ist die, an der dieses Projekt seine Befunde findet:
+    Eine Teilauskunft, die ihre Grenze nicht nennt, verspricht mehr, als sie leistet.
+    """
+    root = kopie()
+    try:
+        ablage = P(root, ".devin", "skills")
+        # Sonde: ein Skill, den keine Kernquelle liefert - Herkunft muss 'Projekt' sein.
+        os.makedirs(os.path.join(ablage, "sonde-d41-projektskill"), exist_ok=True)
+        schreib(os.path.join(ablage, "sonde-d41-projektskill", "SKILL.md"),
+                "---\r\nname: sonde-d41-projektskill\r\ntriggers:\r\n  - user\r\n---\r\n")
+        # Gegenprobe: ein Verzeichnis ohne SKILL.md ist kein Skill.
+        os.makedirs(os.path.join(ablage, "sonde-d41-kein-skill"), exist_ok=True)
+
+        p = subprocess.run([sys.executable, os.path.join(root, "leitwerk-core", "install.py"),
+                            "--client", "devin-desktop", "--root", root, "--list-skills"],
+                           capture_output=True, text=True)
+        ausgabe = (p.stdout or "") + (p.stderr or "")
+
+        gefuehrt = "sonde-d41-projektskill" in ausgabe
+        herkunft = bool(re.search(r"sonde-d41-projektskill\s+Projekt\s+nur Nutzer", ausgabe))
+        melde("SONDE", "D41", gefuehrt and herkunft,
+              "Skill ohne Kernquelle: gefuehrt, Herkunft 'Projekt', Aufrufbarkeit gelesen")
+        if not (gefuehrt and herkunft):
+            print("        Ausgabe:", " | ".join(ausgabe.splitlines()[:8]))
+
+        melde("GEGENPROBE", "D41", "sonde-d41-kein-skill" not in ausgabe,
+              "Verzeichnis ohne SKILL.md wird nicht als Skill gefuehrt")
+
+        melde("SONDE", "D41", "kein vollstaendiger Ersatz" in ausgabe,
+              "Die Auskunft nennt ihre eigene Grenze in der Ausgabe")
+    finally:
+        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+sonde_list_skills()
 
 
 print()
