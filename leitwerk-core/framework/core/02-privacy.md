@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.3 |
+| Version | 0.1.4 |
 
 ## 1. Ausgangslage (normativ)
 
@@ -25,12 +25,14 @@
 
 ### 2.1 Immer K3 (normativ)
 
+Die folgenden Kategorien sind **unbedingt** ausgeschlossen. Eine Freigabe nach Abschnitt 2.2 oder Abschnitt 4 gilt ausschließlich für Inhalte **außerhalb** dieser Kategorien; keine tiefere Ebene, kein Overlay und kein Ausnahmeprozess kann sie freigeben (`leitwerk-core/governance/PRIORITY_HIERARCHY.md`, Regel 2.4). Lässt sich der ausgeschlossene Bestandteil vollständig entfernen oder ersetzen, wird die **bereinigte Ableitung als eigener Inhalt neu eingestuft** (Entscheidungsbaum `leitwerk-core/decision-trees/01-context-allowed.md`, Schritt 1); das Ursprungsdokument bleibt ausgeschlossen (D-52).
+
 - Secrets, Zugangsdaten, Tokens, private Schlüssel, Zertifikate mit privatem Schlüssel, Verbindungszeichenfolgen mit Anmeldedaten, `.env`-Dateien mit Werten, Keystores
 - personenbezogene Echtdaten (Namen, Kontaktdaten, Kennnummern, Gesundheits-, Finanz- oder sonstige Daten realer Personen), auch in Testdaten, Fixtures, Datenbank-Dumps, Logs oder Screenshots
 - Produktionsdaten und Produktionsdatenbankauszüge
 - nicht freigegebene Kunden-, Behörden- oder Vertragsdokumente
 - Sicherheitskonfigurationen mit Schutzwirkung (Firewall-Regeln, Berechtigungsmatrizen realer Systeme, Schwachstellenberichte)
-- interne Adressen, Hostnamen, Netzpläne, Mandanten- und Umgebungskennungen, sofern nicht im Overlay ausdrücklich als K1 eingestuft
+- interne Adressen, Hostnamen, Netzpläne, Mandanten- und Umgebungskennungen
 - Inhalte, die durch Vertraulichkeitsvereinbarungen oder Einstufung der Organisation als vertraulich oder höher gekennzeichnet sind
 - Inhalte aus anderen Projekten oder Mandanten
 
@@ -39,7 +41,7 @@
 1. Die Einstufung erfolgt durch den Menschen vor der Bereitstellung (Entscheidungsbaum `leitwerk-core/decision-trees/01-context-allowed.md`).
 2. Enthält ein Inhalt Bestandteile unterschiedlicher Klassen, gilt die höchste Klasse für den gesamten Inhalt, bis die höher eingestuften Bestandteile entfernt oder ersetzt sind.
 3. Das Project Overlay legt im Manifest (`project-overlay/overlay-manifest.yaml`) für jeden eingebundenen Dokumenttyp die Klasse fest. Fehlt eine Einstufung, gilt K3.
-4. Das Overlay DARF eine Klasse verschärfen (K1 → K2), aber NICHT lockern, es sei denn, die Datenschutz- und Vertragsprüfung (Abschnitt 1.2) erlaubt dies ausdrücklich und die Lockerung ist im Decision Log dokumentiert.
+4. Das Overlay DARF eine Klasse verschärfen (K1 → K2), aber NICHT lockern, es sei denn, die Datenschutz- und Vertragsprüfung (Abschnitt 1.2) erlaubt dies ausdrücklich und die Lockerung ist im Decision Log dokumentiert. **Eine Kategorie aus Abschnitt 2.1 DARF auf keinem Weg gelockert werden** – nicht durch das Overlay, nicht durch die Datenschutz- und Vertragsprüfung, nicht durch einen Eintrag im Decision Log und nicht durch den Ausnahmeprozess. Änderbar ist die Liste allein über den Änderungsprozess des Frameworks, also auf ihrer eigenen Ebene (D-52).
 
 ## 3. Bereitstellungsregeln (normativ)
 

@@ -845,6 +845,177 @@ def sonden_zusagenfeld_installation() -> None:
 sonden_zusagenfeld_installation()
 
 
+# --- 28: Lesesperre gegen Schreibsperre (B07, D-55) ------------------------------
+# Drei Sonden, weil die Pruefung drei Wege hat, falsch zu sein: Sie kann den Fehler in
+# der Quelle uebersehen, ihn in der Installation uebersehen - und sie kann ihre eigene
+# Deklaration nicht mehr finden und dadurch leise bestehen. Die Gegenprobe ist hier die
+# wichtigere Haelfte: Beide Traeger erklaeren im Fliesstext, dass die Strukturpfade
+# gerade NICHT in <EXCLUDED_PATHS> gehoeren, und nennen dabei beides in einer Zeile. Eine
+# Pruefung, die jede Nennung meldet, wuerde den richtigen Text beanstanden.
+VORLAGE_28 = "leitwerk-core/templates/project-overlay/OVERLAY.md"
+REGEL_28 = "leitwerk-core/framework/runtime/rules/20-project-overlay.md"
+
+
+def _p(root, rel):
+    return P(root, rel.replace("/", os.sep))
+
+
+def _strukturpfad_in_ausschluss(root: str) -> None:
+    pfad = _p(root, VORLAGE_28)
+    text = lies(pfad)
+    alt = "| Ausgeschlossene Pfade (weder lesen noch \u00e4ndern) | `<EXCLUDED_PATHS>` |"
+    schreib(pfad, text.replace(
+        alt, alt + " `<RUNTIME_DIR>/`,", 1))
+
+
+def _strukturpfad_in_laufzeitregel(root: str) -> None:
+    pfad = _p(root, REGEL_28)
+    text = lies(pfad)
+    alt = "- Ausgeschlossene Pfade, weder lesen noch \u00e4ndern (`<EXCLUDED_PATHS>`):"
+    schreib(pfad, text.replace(alt, alt + " `<ROOT_INSTRUCTION_FILE>`,", 1))
+
+
+def _beschriftung_verlieren(root: str) -> None:
+    pfad = _p(root, REGEL_28)
+    text = lies(pfad)
+    schreib(pfad, text.replace(
+        "- Ausgeschlossene Pfade, weder lesen noch \u00e4ndern (`<EXCLUDED_PATHS>`):",
+        "- Gesperrte Verzeichnisse (`<EXCLUDED_PATHS>`):", 1))
+
+
+def _hinweis_ohne_deklaration(root: str) -> None:
+    """Gegenprobe: dieselben Angaben im Fliesstext, aber keine Deklaration."""
+    pfad = _p(root, REGEL_28)
+    text = lies(pfad)
+    schreib(pfad, text.replace(
+        "## Freigegebene Befehle",
+        "Hinweis: `<RUNTIME_DIR>/`, `<ROOT_INSTRUCTION_FILE>` und `project-overlay/` "
+        "geh\u00f6ren nicht in `<EXCLUDED_PATHS>` - ihr Schreibschutz ist kein "
+        "Leseverbot.\r\n\r\n## Freigegebene Befehle", 1))
+
+
+sonde("28a", "Strukturpfad in der <EXCLUDED_PATHS>-Zeile der Overlay-Vorlage",
+      _strukturpfad_in_ausschluss, "Die Deklaration von <EXCLUDED_PATHS> nennt")
+
+sonde("28b", "Strukturpfad in der <EXCLUDED_PATHS>-Zeile der Laufzeitregel",
+      _strukturpfad_in_laufzeitregel, "Die Deklaration von <EXCLUDED_PATHS> nennt")
+
+sonde("28c", "Verlorene Beschriftung - die Pruefung darf nicht leise bestehen",
+      _beschriftung_verlieren, "keine Zeile ist als Deklaration erkennbar")
+
+gegenprobe("28", "Dieselben Pfade im Fliesstext, ausdruecklich ausgeschlossen",
+           _hinweis_ohne_deklaration, "Die Deklaration von <EXCLUDED_PATHS> nennt")
+
+
+# --- 29: K3-Kategorien in Kurz- und Langform (B09, D-52) ------------------------
+# Zwei Fehlerbilder, beide vorgekommen: eine fehlende Kategorie in der Kurzform - sie
+# fuehrte bis 0.31.0 nur sechs von acht - und eine Bedingung an einer Kategorie, die
+# unbedingt gilt. Dazu die dritte Sonde auf den verlorenen Anker, aus demselben Grund
+# wie bei 28c.
+KURZFORM_29 = "leitwerk-core/framework/runtime/root-instruction.md"
+LANGFORM_29 = "leitwerk-core/framework/core/02-privacy.md"
+
+
+def _kategorie_entfernen(root: str) -> None:
+    pfad = _p(root, KURZFORM_29)
+    text = lies(pfad)
+    schreib(pfad, text.replace(
+        "Sicherheitskonfigurationen mit Schutzwirkung, interne Adressen",
+        "interne Adressen", 1))
+
+
+def _bedingung_einfuegen(root: str) -> None:
+    pfad = _p(root, LANGFORM_29)
+    text = lies(pfad)
+    schreib(pfad, text.replace(
+        "- interne Adressen, Hostnamen, Netzpl\u00e4ne, Mandanten- und Umgebungskennungen",
+        "- interne Adressen, Hostnamen, Netzpl\u00e4ne, Mandanten- und Umgebungskennungen, "
+        "sofern nicht im Overlay ausdr\u00fccklich als K1 eingestuft", 1))
+
+
+def _anker_verlieren(root: str) -> None:
+    pfad = _p(root, KURZFORM_29)
+    text = lies(pfad)
+    schreib(pfad, text.replace("- Immer K3, ausnahmslos", "- Stets K3, ausnahmslos", 1))
+
+
+def _kurzform_umformulieren(root: str) -> None:
+    """Gegenprobe: kuerzer formuliert, aber keine Kategorie weniger."""
+    pfad = _p(root, KURZFORM_29)
+    text = lies(pfad)
+    schreib(pfad, text.replace(
+        "Sicherheitskonfigurationen mit Schutzwirkung, interne Adressen",
+        "Sicherheitskonfigurationen, interne Adressen", 1))
+
+
+sonde("29a", "Fehlende K3-Kategorie in der Kurzform",
+      _kategorie_entfernen, "nennt die Kategorie 'Sicherheitskonfigurationen' nicht")
+
+sonde("29b", "Bedingung an einer unbedingten K3-Kategorie",
+      _bedingung_einfuegen, "traegt eine Bedingung")
+
+sonde("29c", "Verlorener Anker der K3-Liste",
+      _anker_verlieren, "ist nicht mehr auffindbar")
+
+gegenprobe("29", "Kuerzere Formulierung derselben acht Kategorien",
+           _kurzform_umformulieren, "nennt die Kategorie")
+
+
+# --- 30: Vollstaendigkeit der Grenzfalltabelle (B07, B09) -----------------------
+# Die Tabelle ist das Abnahmekriterium des Reviews. Drei Wege, sie unbemerkt zu
+# entwerten: eine Zeile verschwindet, eine Spalte bleibt leer, eine Entscheidung ist
+# durch keinen Grenzfall gedeckt.
+EDGE_30 = "leitwerk-core/tests/EDGE_CASES.md"
+
+
+def _grenzfall_loeschen(root: str) -> None:
+    pfad = _p(root, EDGE_30)
+    zeilen = lies(pfad).split("\r\n")
+    behalten = [z for z in zeilen if not z.startswith("| G-07 |")]
+    schreib(pfad, "\r\n".join(behalten))
+
+
+def _spalte_leeren(root: str) -> None:
+    pfad = _p(root, EDGE_30)
+    text = lies(pfad)
+    start = text.index("| G-05 |")
+    ende = text.index("\r\n", start)
+    zeile = text[start:ende]
+    zellen = zeile.split(" | ")
+    zellen[4] = ""
+    schreib(pfad, text[:start] + " | ".join(zellen) + text[ende:])
+
+
+def _entscheidung_entkoppeln(root: str) -> None:
+    pfad = _p(root, EDGE_30)
+    schreib(pfad, lies(pfad).replace("(D-53)", "(siehe Antrag)"))
+
+
+def _grenzfall_ergaenzen(root: str) -> None:
+    """Gegenprobe: eine weitere Zeile samt mitgezaehlter Anzahl."""
+    pfad = _p(root, EDGE_30)
+    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 12 |",
+                              "| Anzahl der Grenzf\u00e4lle | 13 |", 1)
+    marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
+    neu = ("\r\n| G-13 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
+           "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
+    schreib(pfad, text.replace(marke, neu + marke, 1))
+
+
+sonde("30a", "Geloeschte Grenzfallzeile gegen die Anzahl im Steckbrief",
+      _grenzfall_loeschen, "Grenzfallzeilen, der Steckbrief nennt")
+
+sonde("30b", "Leere Spalte in einem Grenzfall",
+      _spalte_leeren, "ist leer")
+
+sonde("30c", "Entscheidung ohne deckenden Grenzfall",
+      _entscheidung_entkoppeln, "Keine Grenzfallzeile verweist auf D-53")
+
+gegenprobe("30", "Zusaetzlicher Grenzfall mit mitgezaehlter Anzahl",
+           _grenzfall_ergaenzen, "Grenzfallzeilen")
+
+
+
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
       else f"{fehler} Abweichung(en)")

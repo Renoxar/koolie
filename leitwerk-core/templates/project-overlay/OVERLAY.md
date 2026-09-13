@@ -68,12 +68,14 @@ Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten E
 | Erlaubte Pfade (Lesen und Ändern in M3) | `<ALLOWED_PATHS>` | `<TBD: z. B. src/**, test/**, docs/**>` | Glob-Muster; alles Übrige ist nicht erlaubt |
 | Testpfade (Ändern in M4) | `<TEST_PATHS>` | `<TBD>` | Teilmenge der erlaubten Pfade |
 | Dokumentationspfade (Ändern in M5) | `<DOC_PATHS>` | `<TBD>` | Teilmenge der erlaubten Pfade |
-| Ausgeschlossene Pfade (weder lesen noch ändern) | `<EXCLUDED_PATHS>` | `<TBD: z. B. deploy/**, infra/**, config/prod/**, **/fixtures/real/**>` | zusätzlich zu den festen Framework-Ausschlüssen (Secrets, `<RUNTIME_DIR>/`, `<ROOT_INSTRUCTION_FILE>`, `project-overlay/`, `leitwerk-core/framework/`) |
-| Nur-Lese-Pfade (Lesen erlaubt, Ändern nie) | `<READ_ONLY_PATHS>` | `<TBD: z. B. api-contracts/**, db/migrations/**>` | Schnittstellenverträge, Migrationen, generierter Code |
+| Ausgeschlossene Pfade (weder lesen noch ändern) | `<EXCLUDED_PATHS>` | `<TBD: z. B. deploy/**, infra/**, config/prod/**, **/fixtures/real/**>` | **Vertraulichkeitsschutz.** Zusätzlich zum festen Framework-Ausschluss der Secret-Dateien. Die Strukturpfade des Frameworks gehören **nicht** hierher – sie sind schreibgeschützt, nicht lesegesperrt (nächste Zeile, D-55) |
+| Nur-Lese-Pfade (Lesen erlaubt, Ändern nie) | `<READ_ONLY_PATHS>` | `<TBD: z. B. api-contracts/**, db/migrations/**>` | **Integritätsschutz.** Schnittstellenverträge, Migrationen, generierter Code; zusätzlich immer die Strukturpfade des Frameworks: `<ROOT_INSTRUCTION_FILE>`, `<RUNTIME_DIR>/`, `<CORE_DIR>/`, `project-overlay/`. Sie MÜSSEN lesbar bleiben – der KI-Client lädt sie als Anweisungsquelle |
 | CI/CD-Konfiguration | `<CI_CONFIG_PATHS>` | `<TBD: z. B. .gitlab-ci.yml, .github/workflows/**, Jenkinsfile>` | wird in `<PERMISSIONS_FILE>` als `Write`-deny eingetragen |
 | Quality-Gate-Konfiguration | `<QUALITY_GATE_CONFIG_PATHS>` | `<TBD: z. B. Linter-, Coverage-, Analyse-Konfigurationsdateien>` | `Write`-deny |
 
 Diese Werte werden in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overlay.md` übernommen. Bei Widerspruch gilt die restriktivere Angabe.
+
+> **Eine Lesesperre und eine Schreibsperre sind zwei verschiedene Dinge.** `<EXCLUDED_PATHS>` wird in der Berechtigungsdatei zu einer `read`- **und** einer `write`-Verweigerung; die Strukturpfade des Frameworks stehen dort ausschließlich als `write`-Verweigerung, bei `read allow **`. Wer sie in `<EXCLUDED_PATHS>` einträgt, erzeugt eine Lesesperre auf die eigenen Regeldateien – und der KI-Client kann dann die Anweisungen nicht mehr laden, die er befolgen soll. **Prüfung 28 des Validators findet diesen Fall.** Ein Schreibschutz ist kein Leseverbot (D-55).
 
 ## 5. Build-Befehle
 

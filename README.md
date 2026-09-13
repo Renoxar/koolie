@@ -119,6 +119,8 @@ python leitwerk-core/install.py
 
 Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei.
 
+> **Die so erzeugte Laufzeitschicht ist hier ein Prüfgegenstand, keine Schranke.** Wie in diesem Repositorium gearbeitet, gelesen und geändert wird, steht in `leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md` – dem Entwicklungsprofil des Quellrepositoriums. Es ist der zweite Einsatzkontext des Frameworks neben der Anwendung eines Releases in einem Projekt, und es ist ausdrücklich abgegrenzt: Es liegt unter `governance/` und wird in kein Zielprojekt installiert (D-56).
+
 **Wo eine Änderung hingehört** – die gemeinsamen Quellen liegen seit `CR-2026-010` **im Kern**, nicht mehr im Client Pack:
 
 | Was geändert werden soll | Quelle |

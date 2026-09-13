@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-003` |
 | Name | `fw-change-analyze` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -40,7 +40,7 @@ triggers:
 
 1. Preflight-Check (`leitwerk-core/checklists/01-preflight.md`) begonnen; Modus M1 benannt; eine vorläufige Kontrollstufe ist durch den Menschen geschätzt (die Analyse liefert einen Vorschlag zur Bestätigung oder Korrektur).
 2. Die Aufgabenbeschreibung ist bereinigt (K2 gemäß `leitwerk-core/framework/core/02-privacy.md` Abschnitt 3.3 und 3.4): Titel, technische Beschreibung, Akzeptanzkriterien – ohne Kommentarverläufe, Anhänge, Personen, Kunden, Adressen oder Kennungen.
-3. Der betroffene Bereich liegt in `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`. Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys zulässig.
+3. Der betroffene Bereich liegt in `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`. Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys und im Quellrepositorium des Frameworks selbst zulässig (`leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md`).
 
 **Benötigte Eingaben:**
 
