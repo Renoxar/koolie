@@ -510,6 +510,134 @@ def check_config(root: str, man: dict) -> None:
                 err(f"{rt}/{name} enthält Schlüsselwörter für Zugangsdaten – gehören in eine nicht versionierte Datei oder einen Tresor")
 
 
+# ---------------------------------------------------------------------------
+# 37: Die drei Koerbe der Berechtigungsdatei gegen die Kernquelle
+# ---------------------------------------------------------------------------
+#
+# Anlass ist eine Messung vom 2026-09-13 (CR-2026-061, D-77): Die erzeugte Datei traegt
+# 65 Regeln, geprueft waren dreizehn. Ein Projekt konnte 41 deny-Regeln loeschen, den
+# ask-Korb leeren und eine allow-Zeile ergaenzen, ohne dass ein Lauf davon Notiz nahm -
+# und install.py --update fasst die Datei nie an, --check nennt sie nicht einmal.
+#
+# Die Pruefung ist das Verschaerfungsprinzip, mechanisch angewandt
+# (PRIORITY_HIERARCHY.md Regel 2.1), in zwei Saetzen:
+#   Fehlt eine erzeugte Regel, ist es ein Fehler - in jedem Korb.
+#   Steht eine Regel zu viel, entscheidet der Korb: in deny zulaessig (Verschaerfung),
+#   in ask und allow ein Fehler (Ausweitung) - abzueglich der Platzhalterschlitze.
+PROJEKTPLATZHALTER = re.compile(r"<[A-Z][A-Z0-9_]*>")
+
+
+def soll_korbregeln(root: str, man: dict) -> dict | None:
+    """Die drei Koerbe in der Schreibweise dieses Clients, aus der Kernquelle.
+
+    Dieselbe Quelle wie soll_kernregeln, nur ohne die Einschraenkung auf 'core': true.
+    Fehlt das Abbildungsmodul, unterbleibt die Pruefung - check_config hat dafuer bereits
+    gewarnt, und eine zweite Warnung ueber dieselbe Tatsache waere Laerm.
+    """
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return None
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        return None
+    # Sonde auf den verlorenen Anker (seit 0.32.0): Diese Pruefung findet ihren
+    # Gegenstand ueber einen Funktionsnamen. Geht er bei einem Umbau verloren, bestuende
+    # sie leise - deshalb meldet sie sein Fehlen selbst.
+    if not hasattr(clientmap, "basket_rules"):
+        err(f"{KERN}/clientmap.py: Funktion 'basket_rules(' fehlt – Prüfung 37 hat ihren "
+            f"Gegenstand verloren und würde sonst leise bestehen")
+        return None
+    try:
+        quelle = json.loads(clientmap.load_source(kern, "permissions.json"))
+        return {korb: clientmap.basket_rules(quelle, man, korb)
+                for korb in ("deny", "ask", "allow")}
+    except (OSError, ValueError) as exc:
+        err(f"Kernquelle der Berechtigungen nicht auswertbar: {exc}")
+        return None
+
+
+def check_berechtigungskoerbe(root: str, man: dict) -> None:
+    """Pruefung 37: Was die Kernquelle erzeugt, steht in der installierten Datei.
+
+    Warum nicht einfach _core_rules_integrity auf alle Regeln erweitern: Das faengt die
+    geloeschte und die verengte Regel, aber weder die ergaenzte allow-Zeile noch den
+    geleerten ask-Korb. Die Liste sagt, was fehlen darf - nicht, was zuviel sein darf.
+
+    Ein Platzhalterschlitz (Bash(<TEST_COMMAND>) und die drei Pfadschlitze) ist der
+    einzige Teil dieser Datei, der dem Projekt gehoert. Er darf gefuellt sein, gefuellt
+    zaehlt er gegen den Ueberschuss - und er darf das Praefixzeichen des Clients nicht
+    tragen: clientmap._befehl haengt es an einen offenen Projektplatzhalter bewusst nicht
+    an, weil der Overlay Owner dort den vollstaendigen Befehl eintraegt. Von Hand
+    nachgetragen macht es aus der Freigabe eines Befehls die Freigabe einer
+    Befehlsfamilie - am Piloten am 2026-09-13 so vorgefunden.
+    """
+    rel = man["permissions_file"]
+    path = os.path.join(root, *rel.split("/"))
+    if not os.path.exists(path):
+        return
+    try:
+        cfg = json.loads(read(path))
+    except json.JSONDecodeError:
+        return  # check_config hat das bereits gemeldet
+    soll = soll_korbregeln(root, man)
+    if soll is None:
+        return
+    if not any(soll.values()):
+        err(f"{KERN}/framework/runtime/permissions.json: die Abbildung erzeugt für das "
+            f"Client Pack {man.get('client', '?')} keine einzige Regel – Prüfung 37 hätte "
+            f"nichts zu vergleichen und bestünde leise")
+        return
+
+    perms = cfg.get("permissions", {})
+    exec_werkzeuge = tuple(man.get("permission_tools", {}).get("exec", ()))
+    praefixzeichen = (man.get("permission_exec_suffix", ":*")
+                      if man.get("permission_exec_match") == "prefix" else None)
+
+    for korb in ("deny", "ask", "allow"):
+        ist = [r for r in perms.get(korb, []) if isinstance(r, str)]
+        pflicht = [r for r in soll[korb] if not PROJEKTPLATZHALTER.search(r)]
+        schlitze = [r for r in soll[korb] if PROJEKTPLATZHALTER.search(r)]
+        for regel in pflicht:
+            if regel not in ist:
+                err(f"{rel}: die Kernquelle erzeugt für den {korb}-Korb die Regel "
+                    f"'{regel}'; dort steht sie nicht. Eine fehlende Regel ist eine "
+                    f"Lockerung, gleich in welchem Korb – Änderungen an der Regelmenge "
+                    f"laufen über einen Änderungsantrag (V10, D-77)")
+        if korb == "deny":
+            # Eine zusaetzliche deny-Regel ist eine Verschaerfung und deshalb zulaessig.
+            continue
+        offen = [s for s in schlitze if s not in ist]
+        zusatz = [r for r in ist if r not in pflicht and r not in schlitze]
+        if len(zusatz) > len(offen):
+            err(f"{rel}: der {korb}-Korb führt {len(zusatz)} Regel(n), die die Kernquelle "
+                f"nicht erzeugt, bei {len(offen)} gefüllten Platzhalterschlitz(en): "
+                f"{', '.join(zusatz)}. Eine zusätzliche Freigabe ist eine Ausweitung und "
+                f"nicht Sache des Overlays; ein weiterer freigegebener Befehl gehört in "
+                f"Abschnitt 6 des Overlays und damit in die Regelschicht (D-76)")
+        if not praefixzeichen or len(zusatz) > len(offen):
+            # Kein Praefixzeichen: Dieser Client sperrt Befehle woertlich.
+            # Ueberschuss groesser als die offenen Schlitze: Dann ist nicht entschieden,
+            # welche Zeile ein gefuellter Schlitz ist und welche eine hinzugefuegte
+            # Freigabe - und eine Meldung, die "gefuellter Platzhalterschlitz" sagt, wo
+            # keiner ist, sagt etwas anderes als der Fall hergibt. Die Meldung darueber
+            # benennt den Ueberschuss bereits richtig.
+            continue
+        for regel in zusatz:
+            teile = regel.split("(", 1)
+            if len(teile) != 2 or teile[0] not in exec_werkzeuge:
+                continue
+            inhalt = teile[1][:-1] if teile[1].endswith(")") else teile[1]
+            if inhalt.endswith(praefixzeichen):
+                err(f"{rel}: '{regel}' im {korb}-Korb trägt das Präfixzeichen "
+                    f"'{praefixzeichen}'. Die Abbildung hängt es an einen gefüllten "
+                    f"Projektplatzhalter bewusst nicht an – von Hand nachgetragen macht "
+                    f"es aus der Freigabe eines Befehls die Freigabe einer "
+                    f"Befehlsfamilie (D-77)")
+
+
 KERNREGEL_PRAEFIXE = ("00-", "10-", "15-", "20-")
 
 
@@ -3340,6 +3468,7 @@ def main() -> int:
     man = detect_client(root)
     check_required(root, man)
     check_config(root, man)
+    check_berechtigungskoerbe(root, man)
     check_rules(root, man)
     check_skills(root, man)
     check_runtime_placeholders(root, man)

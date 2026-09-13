@@ -145,6 +145,21 @@ def _korb_rendern(quelle: dict, man: dict, korb: str) -> list[str]:
     return raus
 
 
+def basket_rules(quelle: dict, man: dict, korb: str) -> list[str]:
+    """Die Regeln eines Korbes in der Schreibweise dieses Clients.
+
+    Dieselbe Bauart wie core_rules, nur ohne die Einschraenkung auf 'core': true. Der
+    Validator haelt die installierte Datei damit gegen die Kernquelle (Pruefung 37,
+    CR-2026-061, D-77): Was hier erzeugt wird, muss dort stehen; was dort zusaetzlich
+    steht, ist nur im deny-Korb zulaessig - dort ist es eine Verschaerfung, in ask und
+    allow eine Ausweitung.
+
+    Oeffentlich und nicht _korb_rendern, weil eine Pruefung, die auf eine private
+    Funktion greift, beim naechsten Umbau still ausfaellt.
+    """
+    return _korb_rendern(quelle, man, korb)
+
+
 def core_rules(quelle: dict, man: dict) -> list[str]:
     """Die Kernzusagen B1 bis B6 in der Schreibweise dieses Clients."""
     raus: list[str] = []
@@ -179,8 +194,8 @@ def _kommentar(man: dict, mit_hooks: bool) -> str:
     kern = core_dir_name(man)
     pack = man.get("client", "?")
     teile = [
-        f"Berechtigungsvorlage des Frameworks (Ebene 3 + Overlay-Erweiterungen), erzeugt "
-        f"fuer das Client Pack {pack}.",
+        f"Berechtigungsvorlage des Frameworks (Ebene 3), erzeugt fuer das Client "
+        f"Pack {pack}.",
         f"Regelmenge: {kern}/framework/runtime/permissions.json. Abbildung auf die "
         f"Werkzeuge dieses Clients: {kern}/clients/{pack}/manifest.json. Inhaltliche "
         f"Aenderungen gehoeren dorthin und laufen als Aenderungsantrag.",
@@ -196,6 +211,13 @@ def _kommentar(man: dict, mit_hooks: bool) -> str:
         "Die unter _core_rules_integrity aufgefuehrten Regeln duerfen vom Projekt nicht "
         f"entfernt werden; {kern}/tests/scripts/validate-framework.py prueft sie gegen "
         "die Kernquelle.")
+    teile.append(
+        "Derselbe Lauf haelt alle drei Koerbe gegen die Kernquelle: Was dort erzeugt "
+        "wird, muss hier stehen. Eine zusaetzliche Regel ist nur unter 'deny' zulaessig "
+        "- dort ist sie eine Verschaerfung; unter 'ask' und 'allow' waere sie eine "
+        "Ausweitung und ist ein Fehler. Ein zusaetzlicher freigegebener Befehl gehoert "
+        "deshalb nicht hierher, sondern in Abschnitt 6 des Overlays und damit in die "
+        "Regelschicht.")
     if import_control(man) is not None:
         teile.append(
             "Die Importsteuerung schaltet Regel- und Skillquellen fremder "

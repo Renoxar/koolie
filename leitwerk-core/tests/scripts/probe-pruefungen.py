@@ -1831,6 +1831,183 @@ def selbstprobe_kennung() -> None:
 buendel(selbstprobe_kennung)
 
 
+# --- 37: Die drei Koerbe der Berechtigungsdatei gegen die Kernquelle (D-77) --------
+#
+# GEGEN EINE ECHTE INSTALLATION, aus demselben Grund wie bei Pruefung 33: Der Gegenstand
+# ist eine installierte Datei, nicht ein Text des Repositoriums. Eine Sonde auf einer
+# Kopie des Repositoriums traefe die Testinstallation des Packs devin-desktop und damit
+# nur eine der beiden Abbildungen - und der Praefixteil der Pruefung hat dort seinen
+# Gegenstand gar nicht (permission_exec_match: literal).
+#
+# Anlass sind zwoelf Messungen vom 2026-09-13 (CR-2026-061): Acht Eingriffe in die Datei
+# liefen gegen 0.38.0 ohne eine einzige Meldung durch, darunter das Loeschen ALLER 41
+# Nicht-Kernregeln des deny-Korbs.
+#
+# Die erste Gegenprobe ist hier die wichtigere Haelfte, und zwar in zwei Zuschnitten:
+# im Auslieferungszustand mit offenen Platzhaltern und mit ordentlich gefuellten. Eine
+# Pruefung, die jede gefuellte Datei beanstandet, bestuende jede Sonde.
+def _p37(root: str) -> str:
+    return os.path.join(root, ".claude", "settings.json")
+
+
+def _37_korb(daten: dict, korb: str) -> list:
+    return daten.setdefault("permissions", {}).setdefault(korb, [])
+
+
+def _37_weg(daten: dict, korb: str, regel: str) -> None:
+    """Eine Regel entfernen - sie muss vorher dastehen."""
+    regeln = _37_korb(daten, korb)
+    if regel not in regeln:
+        raise Praeparationsfehler(
+            "settings.json: %r steht nicht im %s-Korb; die Sonde hat ihren Gegenstand "
+            "verloren" % (regel, korb))
+    regeln.remove(regel)
+
+
+def _37_dazu(daten: dict, korb: str, regel: str) -> None:
+    """Eine Regel ergaenzen - sie darf vorher nicht dastehen, sonst misst die Sonde nichts."""
+    regeln = _37_korb(daten, korb)
+    if regel in regeln:
+        raise Praeparationsfehler(
+            "settings.json: %r steht bereits im %s-Korb; die Sonde praepariert nichts"
+            % (regel, korb))
+    regeln.append(regel)
+
+
+def _37_statt(daten: dict, korb: str, alt: str, neu: str) -> None:
+    regeln = _37_korb(daten, korb)
+    if alt not in regeln:
+        raise Praeparationsfehler(
+            "settings.json: %r steht nicht im %s-Korb; die Sonde hat ihren Gegenstand "
+            "verloren" % (alt, korb))
+    regeln[regeln.index(alt)] = neu
+
+
+def _37_schreiben(root: str, *aenderungen) -> None:
+    """Die Eingriffe anwenden und die Datei schreiben.
+
+    Der Praeparationswaechter sitzt in den Eingriffen selbst (_37_weg, _37_dazu,
+    _37_statt): Sie pruefen ihren Gegenstand, statt ihn vorauszusetzen. Ein Textvergleich
+    vorher/nachher taugte hier nicht - json.dumps normalisiert die Datei ohnehin, und der
+    Waechter meldete dann immer "veraendert" (D-74).
+    """
+    pfad = _p37(root)
+    daten = json.loads(lies(pfad))
+    for aenderung in aenderungen:
+        aenderung(daten)
+    schreib(pfad, json.dumps(daten, indent=2, ensure_ascii=False) + "\n")
+
+
+MELDUNG_FEHLT = "die Kernquelle erzeugt f\u00fcr den"
+MELDUNG_ZUVIEL = "die die Kernquelle nicht erzeugt"
+MELDUNG_PRAEFIX = "tr\u00e4gt das Pr\u00e4fixzeichen"
+
+
+def sonden_berechtigungskoerbe() -> None:
+    """Wirkungsnachweis zu Pruefung 37 (CR-2026-061, D-76 und D-77)."""
+    root = installation("claude-code")
+    try:
+        pfad = _p37(root)
+        ausgang = lies(pfad)
+        # README.md ist Pflichtpfad; ohne sie meldet jeder Lauf zwei Fehler, die mit
+        # dieser Pruefung nichts zu tun haben.
+        schreib(os.path.join(root, "README.md"), "# Sondenprojekt\r\n")
+
+        # --- Gegenprobe 37a: der Auslieferungszustand bleibt unbeanstandet ----------
+        aus = validator_ausgabe(root)
+        ok = (MELDUNG_FEHLT not in aus and MELDUNG_ZUVIEL not in aus
+              and MELDUNG_PRAEFIX not in aus)
+        melde("GEGENPROBE", "37a", ok,
+              "Auslieferungszustand mit offenen Platzhaltern - ein Schlitz ist ein Schlitz")
+        if not ok:
+            print("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "settings.json" in z)[:400])
+
+        # --- Gegenprobe 37b: ordentlich gefuellte Platzhalter bleiben unbeanstandet -
+        # Ohne sie stuende nur fest, dass die Pruefung irgendetwas meldet - und eine
+        # Pruefung, die jede gefuellte Datei beanstandet, bestuende jede Sonde.
+        _37_schreiben(root,
+                      lambda d: _37_statt(d, "ask", "Bash(<BUILD_COMMAND>)",
+                                          "Bash(mvn -B clean package)"),
+                      lambda d: _37_statt(d, "ask", "Bash(<TEST_COMMAND>)",
+                                          "Bash(mvn -B test)"),
+                      lambda d: _37_statt(d, "ask", "Bash(<LINT_COMMAND>)",
+                                          "Bash(mvn -B verify)"))
+        aus = validator_ausgabe(root)
+        ok = (MELDUNG_FEHLT not in aus and MELDUNG_ZUVIEL not in aus
+              and MELDUNG_PRAEFIX not in aus)
+        melde("GEGENPROBE", "37b", ok,
+              "Drei gefuellte Befehlsschlitze ohne Praefixzeichen - der Normalfall")
+        if not ok:
+            print("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "settings.json" in z)[:400])
+        schreib(pfad, ausgang)
+
+        # --- 37a: eine NICHT-Kernregel aus deny geloescht ---------------------------
+        # 41 der 54 deny-Regeln standen bis 0.38.0 ausserhalb jeder Pruefung.
+        _37_schreiben(root, lambda d: _37_weg(d, "deny", "Bash(curl:*)"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37a", MELDUNG_FEHLT in aus,
+              "Geloeschte Nicht-Kernregel im deny-Korb - bis 0.38.0 stumm")
+        schreib(pfad, ausgang)
+
+        # --- 37b: eine Nicht-Kernregel VERENGT --------------------------------------
+        # Die stillste Form: Sie sieht aus wie eine Regel und sperrt weniger.
+        _37_schreiben(root, lambda d: _37_statt(d, "deny", "Bash(kubectl:*)",
+                                                "Bash(kubectl delete:*)"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37b", MELDUNG_FEHLT in aus,
+              "Verengte Nicht-Kernregel - kubectl apply liefe wieder")
+        schreib(pfad, ausgang)
+
+        # --- 37c: eine Zeile im ask-Korb ergaenzt -----------------------------------
+        # Der Fall CR-OTP-G-001: Die Zeile erklaert einen Befehl fuer freigegeben.
+        _37_schreiben(root, lambda d: _37_dazu(
+            d, "ask", "Bash(docker run --rm --network none:*)"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37c", MELDUNG_ZUVIEL in aus,
+              "Ergaenzte ask-Zeile - der Antrag CR-OTP-G-001 des Piloten")
+        schreib(pfad, ausgang)
+
+        # --- 37d: eine Zeile im allow-Korb ergaenzt ---------------------------------
+        _37_schreiben(root, lambda d: _37_dazu(d, "allow", "Bash(docker run:*)"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37d", MELDUNG_ZUVIEL in aus,
+              "Ergaenzte allow-Zeile - kein Abrufwerkzeug, nicht auf der Verbotsliste")
+        schreib(pfad, ausgang)
+
+        # --- 37e: der ask-Korb geleert ----------------------------------------------
+        _37_schreiben(root, lambda d: d["permissions"].__setitem__("ask", []))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37e", MELDUNG_FEHLT in aus,
+              "Geleerter ask-Korb - Edit(**) und mcp__* verschwinden mit")
+        schreib(pfad, ausgang)
+
+        # --- 37f: ein Befehlsschlitz mit Praefixzeichen gefuellt --------------------
+        # Am Piloten am 2026-09-13 so vorgefunden: Bash(mvn -B test:*).
+        _37_schreiben(root, lambda d: _37_statt(d, "ask", "Bash(<TEST_COMMAND>)",
+                                                "Bash(mvn -B test:*)"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37f", MELDUNG_PRAEFIX in aus,
+              "Befehlsschlitz mit Praefixzeichen gefuellt - der Fall des Piloten")
+        schreib(pfad, ausgang)
+
+        # --- 37g: der verlorene Anker ----------------------------------------------
+        cm = os.path.join(root, "leitwerk-core", "clientmap.py")
+        quelle = lies(cm)
+        schreib(cm, ersetzt(quelle, ("def basket_rules(", "def korb_regeln("),
+                            quelle="clientmap.py"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37g", "'basket_rules(' fehlt" in aus,
+              "Verlorener Anker - die Pruefung meldet ihr Fehlen selbst")
+        schreib(cm, quelle)
+    finally:
+        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+buendel(sonden_berechtigungskoerbe)
+
+
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
       else f"{fehler} Abweichung(en)")

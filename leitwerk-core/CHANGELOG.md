@@ -2,6 +2,103 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.39.0] - 2026-09-13
+
+**Die Berechtigungsdatei wird nachgezaehlt.** Sie traegt 65 Regeln; geprueft waren
+**dreizehn**. Ein Projekt konnte die uebrigen loeschen, verengen oder um eigene
+Freigaben ergaenzen, ohne dass ein Lauf davon Notiz nahm - und `install.py --update`
+fasst die Datei nie an. Beide Luecken hat der Pilot sichtbar gemacht; beide sind
+gegengeprueft (`tests/protocols/2026-09-13-gegenpruefung-berechtigungsdatei.md`, zwoelf
+Messungen an einer frischen Installation), **und beide sind groesser als der Befund, der
+sie ausgeloest hat.**
+
+### Neu
+
+- **Pruefung 37** (`CR-2026-061`, D-77): Die drei Koerbe der installierten
+  Berechtigungsdatei werden gegen die aus der Kernquelle **erzeugte** Regelmenge
+  gehalten. Zwei Saetze, keine Ausnahmen: **Fehlt eine erzeugte Regel, ist es ein
+  Fehler** - in jedem Korb. **Steht eine Regel zu viel, entscheidet der Korb:** in
+  `deny` zulaessig (Verschaerfung), in `ask` und `allow` ein Fehler (Ausweitung),
+  abzueglich der Platzhalterschlitze, die das Projekt gefuellt hat.
+- **Der gefuellte Befehlsschlitz darf das Praefixzeichen des Clients nicht tragen.**
+  `clientmap._befehl` haengt es an einen offenen Projektplatzhalter ausdruecklich nicht
+  an; von Hand nachgetragen macht es aus der Freigabe eines Befehls die Freigabe einer
+  Befehlsfamilie. Am Piloten am 2026-09-13 so vorgefunden (`Bash(mvn -B test:*)`).
+- **`clientmap.basket_rules(quelle, man, korb)`** ist oeffentlich - dieselbe Bauart wie
+  `core_rules`. Eine Pruefung, die auf eine private Funktion greift, faellt beim
+  naechsten Umbau still aus.
+- **Sieben Sonden und zwei Gegenproben** zu Pruefung 37, gegen eine frische
+  `claude-code`-Installation. Die zweite Gegenprobe ist die wichtigere: drei ordentlich
+  gefuellte Befehlsschlitze bleiben unbeanstandet.
+
+### Behoben
+
+- **Der Kommentarkopf jeder erzeugten Berechtigungsdatei nannte sie "Ebene 3 +
+  Overlay-Erweiterungen".** Es gibt keine Overlay-Erweiterung dieser Datei, und die
+  Wendung bezeichnet im Repositorium sonst die Regeldateien `2N-*`. Der Kopf sagt jetzt
+  "Ebene 3" und nennt, was Pruefung 37 leistet.
+- **`templates/project-overlay/OVERLAY.md` Abschnitt 6 forderte vier Eintraege an, fuer
+  die es keinen Weg gibt.** Die Spalte hiess "Freigabestufe in `<PERMISSIONS_FILE>`" und
+  stand bei allen sechs Zeilen auf `ask`; zwei davon erreichen die Datei, vier nicht.
+  Sie heisst jetzt "Wirkungsort" und sagt je Zeile die Wahrheit; ein Absatz darunter
+  erklaert den Unterschied.
+- **`framework/core/03-security.md` erlaubte dem Overlay, die Freigabestufe auf `allow`
+  zu setzen** - drei Zeilen ueber dem Satz, dass Aenderungen an der Regelmenge
+  ausschliesslich ueber einen Aenderungsantrag laufen (V10). **Dieselbe Bauform wie
+  B11**, dort mit 0.32.0 behoben und eine Zeile hoeher stehen geblieben. Der Zusatz
+  entfaellt; ein neuer Absatz sagt, was dem Projekt an dieser Datei gehoert.
+
+### Entschieden, nicht geaendert
+
+- **Ein Overlay erweitert die Berechtigungsdatei nicht** (D-76, E1). Der Kanal fuer
+  weitere freigegebene Befehle ist die **Regelschicht** - Abschnitt 6 des Overlays,
+  Abschnitt 3.2 des Arbeitsmodells und die Wurzel-Anweisungsdatei -, und dieser Kanal
+  war die ganze Zeit richtig beschrieben. **Der Preis:** Ein Projekt mit mehr als drei
+  Befehlen sieht sie in der Berechtigungsdatei nicht. **Der Grund gegen eine
+  Erweiterungsschicht ist mechanisch:** Die Datei steht in `shared_seed` und wird nach
+  der Erstinstallation nie wieder geschrieben; eine nur beim Installieren gelesene
+  Quelle waere eine Zusage, die beim ersten Releasewechsel bricht.
+- **Die MCP-Zeile bleibt unberuehrt.** Ihre "Freigaben je Server im Overlay" sehen aus
+  wie der behobene Befund und sind es nicht: Sie laufen ueber `<MCP_FILE>` und lassen
+  die Stufe `ask` unveraendert. Entlastungsbefund der Gegenpruefung, Abschnitt 3.4.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 37 faengt gegen den unmittelbaren Vorstand nichts**, weil die erzeugte
+  Datei per Konstruktion zu sich selbst passt. **Ihr Gegenbeweis ist eine Konstruktion
+  und kein Abzaehlen** - neun Eingriffe, gegen 0.38.0 saemtlich stumm.
+- **Der Praefixteil wirkt bei `devin-desktop` nicht.** Dieser Client sperrt Befehle
+  woertlich (`permission_exec_match: literal`); ein Praefixzeichen gibt es dort nicht.
+- **Sie prueft die Form, nicht den Sinn.** Ein Platzhalterschlitz, der mit einem
+  unsinnigen oder gar nicht vorhandenen Befehl gefuellt ist, besteht sie - der Abgleich
+  mit dem Overlaytext ist nicht ihr Gegenstand.
+- **Ein Projekt, das eine `allow`-Regel absichtlich streicht, bekommt jetzt einen
+  Fehler** fuer eine Verschaerfung. Das ist gewollt (`03-security.md` Abschnitt 4 sagt
+  normativ zu, dass die Regel dasteht), aber es ist ein Preis: Die Pruefung ist an
+  dieser Stelle strenger als das Prinzip, auf das sie sich beruft.
+- **Kein Lauf gegen einen Client.** Gemessen ist der Validator, nicht die Wirkung der
+  Datei in einer Sitzung.
+- **Der Kopfkommentar des Validators listet die Pruefungen 32 bis 37 nicht.** Er endet
+  bei 31; die Luecke ist aelter als dieses Release und hier nur benannt.
+
+### Migrationshinweis
+
+**Ein Projekt, das seine Berechtigungsdatei von Hand veraendert hat, bekommt beim ersten
+Lauf gegen 0.39.0 Fehler - und zwar genau fuer diese Aenderungen.** Der Weg zurueck ist
+kein Zurueckschreiben der Datei, sondern die Frage, ob die Abweichung gewollt war:
+
+- **Eine fehlende Regel** wird ergaenzt, so wie die Kernquelle sie erzeugt. Die
+  Fehlermeldung nennt den Wortlaut.
+- **Eine zusaetzliche Zeile in `ask` oder `allow`** gehoert nicht in diese Datei. Ein
+  weiterer freigegebener Befehl wird in Abschnitt 6 des Overlays eingetragen; eine
+  Lockerung der Regelmenge selbst laeuft als Aenderungsantrag (V10).
+- **Ein Befehlsschlitz mit `:*`** wird auf den vollstaendigen Befehl zurueckgesetzt.
+  Wer wirklich eine Befehlsfamilie freigeben will, weist sie in einem Aenderungsantrag
+  nach.
+
+`install.py --update` aendert an dieser Datei weiterhin nichts; das bleibt richtig, weil
+sie Projektwerte traegt.
+
 ## [0.38.0] - 2026-09-13
 
 **Der stumme Bruch wird laut.** Zwei Punkte standen seit mehreren Releases im
