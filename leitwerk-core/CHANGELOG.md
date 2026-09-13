@@ -2,6 +2,113 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.32.0] - 2026-09-13
+
+**Paket 4 ist entschieden und umgesetzt: die Regelkonflikte, die nur ein Mensch
+entscheiden konnte.**
+
+Die beiden Befunde dieses Pakets sind keine Fehler in einem Mechanismus, sondern
+Widersprueche zwischen Texten, die alle normativ sind. Das Review hat sie ausdruecklich
+nicht entschieden - zu Recht. Entschieden hat sie `<FRAMEWORK_OWNER>` in `CR-2026-052` und
+`CR-2026-053`; **die Gegenpruefung hat vorher fuenf eigene Feststellungen dazugelegt**, und zwei
+davon sind schwerer als das, was der Bericht nennt.
+
+### Behoben
+
+- **Die K3-Kategorien sind unbedingt** (B09, `CR-2026-052`, D-52). Drei Texte gaben drei
+  Antworten: die Wurzel-Anweisungsdatei „immer K3", die Langform „ausser das Overlay stuft
+  als K1 ein", die Prioritaetshierarchie „ebenenfest". Es war **keine Pattsituation** -
+  acht weitere Stellen fuehrten die Liste bereits ohne Bedingung. Die Bedingung entfaellt;
+  eine Freigabe gilt nur fuer Inhalte **ausserhalb** der acht Kategorien, und der offene Weg
+  ist die bereinigte Ableitung.
+- **Die Kurzform war zwei Kategorien zu kurz.** Abschnitt 2.1 fuehrt acht, die
+  Wurzel-Anweisungsdatei nannte sechs: **Sicherheitskonfigurationen mit Schutzwirkung** und
+  **Inhalte anderer Projekte oder Mandanten** fehlten - in genau der Fassung, die in jede
+  Sitzung laedt. Das hat das Review nicht gefunden.
+- **V6 erfasst den Betrieb, nicht die Anwendungslogik** (B09, D-53). Die
+  Wurzel-Anweisungsdatei liess Umsetzung nach Freigabe zu, V6 nannte dieselben Gegenstaende
+  nicht delegierbar. Aufgeloest nach dem **Wirkungsweg**: Authentifizierungslogik im
+  Quellcode ist Kontrollstufe hoch und nach deren Freigaben umsetzbar; tatsaechliche
+  Berechtigungen und Betriebskonfigurationen bleiben absolut ausgeschlossen -
+  **einschliesslich Sicherheitskonfiguration als Code**, denn ihr Inhalt *ist* die
+  Berechtigung.
+- **Die Parallelitaetsregel war nicht erfuellbar** (B09, D-54). R12 stufte jede
+  Parallelsitzung als hoch ein, das Arbeitsmodell erlaubte sie nur bei Kontrollstufe
+  niedrig - und die Kontrollstufe ist der hoechste Treffer ueber alle dreizehn Faktoren.
+  **Die Schnittmenge war leer**, derselbe zirkulaere Befundtyp wie B08. R12 unterscheidet
+  jetzt nach **Schreibziel und Aufsicht**; das Arbeitsmodell nennt Voraussetzungen statt
+  einer Kontrollstufe. Erweiterte Permission-Modi bleiben hoch - das ist gemessen (D-35).
+- **Ein Schreibschutz ist kein Leseverbot** (B07, `CR-2026-053`, D-55). Die Overlay-Vorlage
+  und die Laufzeitregel fuehrten Regelablage, Wurzel-Anweisungsdatei, Overlay und Kern unter
+  „weder lesen noch aendern" - die Quellen, die der KI-Client laden **soll**. **Der Befund
+  ist schwerer als beschrieben:** `<EXCLUDED_PATHS>` ist der Platzhalter, der in die
+  `read`-Verweigerung eingesetzt wird. Ein Projekt, das die Vorlage woertlich ausfuellt,
+  sperrt den Lesezugriff auf seine eigenen Regeldateien. Beide technischen Schichten
+  trennen die Schutzziele seit D-30 korrekt - falsch war allein der Text.
+- **`<CORE_DIR>/` steht jetzt in der Verbotsliste der Wurzel-Anweisungsdatei.** Die
+  Berechtigungsdatei sperrt den Pfad fuer schreibende Werkzeuge seit D-22; der Text sagte es
+  nicht. Der Mechanismus schuetzte mehr, als angekuendigt war.
+
+### Neu
+
+- **`governance/FRAMEWORK_DEV_PROFILE.md`** - das Entwicklungsprofil des
+  Quellrepositoriums (B07, D-56). Zwei Einsatzkontexte, Geltung aus dem Inhalt des
+  Repositoriums statt aus einem Verzeichnisnamen, Inhalt ist K0 und damit ohne Overlay
+  lesbar, Berichtspfad `tests/protocols/`, Aenderungen nur ueber den Aenderungsprozess.
+  **Es hebt keinen Schreibschutz auf** und benennt ausdruecklich, worauf die Selbstanwendung
+  heute beruht: den Shell-Kanal, den der Hook nicht erfasst.
+- **`tests/EDGE_CASES.md`** - zwoelf Grenzfaelle mit Entscheidung, Betriebsmodus,
+  Kontrollstufe, Rollen und Fundstelle. Das Abnahmekriterium des Reviews, prueffaehig
+  gemacht.
+- **Pruefung 28:** Ein Strukturpfad des Frameworks in der Deklaration von
+  `<EXCLUDED_PATHS>`. Geprueft werden Vorlage, Laufzeitregel, ausgefuelltes Overlay und
+  installierte Regelablage - und die Pruefung meldet auch, wenn die **Beschriftung** der
+  Deklaration verloren geht, weil sie sonst leise bestuende.
+- **Pruefung 29:** Dieselben acht K3-Kategorien in fuenf Fassungen, und keine mit
+  Bedingung. Sie haette beide K3-Befunde dieses Releases von selbst gefunden.
+- **Pruefung 30:** Vollstaendigkeit der Grenzfalltabelle - Zeilenzahl gegen die Angabe im
+  Steckbrief, jede Spalte gefuellt, jede Entscheidung durch mindestens einen Grenzfall
+  gedeckt.
+- **Sechs Sonden und zwei Gegenproben** fuer die drei Pruefungen, darunter je eine Sonde auf
+  den **verlorenen Anker**: Eine Konsistenzpruefung, die ihren Suchtext verliert, besteht
+  leise.
+- **Die fuenf Analyseskills** nennen neben dem Uebungsrepositorium das Quellrepositorium
+  des Frameworks: `fw-repo-analyze`, `fw-code-explain`, `fw-change-analyze`,
+  `fw-error-analyze`, `fw-review-support`.
+- **Der Kopfkommentar des Validators fuehrt wieder alle Pruefungen.** 26 und 27 fehlten
+  dort seit 0.30.0 und 0.31.0 - die Selbstbeschreibung des Werkzeugs war zwei Pruefungen
+  hinterher.
+
+### Bekannte Einschraenkungen
+
+- **Fuer die Abgrenzung zu V6 und fuer R12 gibt es keine maschinelle Pruefung.** Ein Skript
+  kann eine Einstufung nicht beurteilen. Dort tragen die Grenzfaelle und `FW-KO-05` - ein
+  Sitzungstest, und er steht auf `offen`.
+- **Die Selbstanwendung im Quellrepositorium bleibt unvollstaendig** und stuetzt sich auf
+  eine gemessene Luecke im Shell-Kanal (B04). Schliesst Paket 6 sie, braucht die
+  Entwicklung dieses Frameworks einen ausdruecklich entschiedenen Weg - **Klaerungspunkt
+  K-32**.
+- **`<READ_ONLY_PATHS>` wird nicht in die Berechtigungsdatei abgebildet.** Die Kategorie ist
+  textuell; der Schreibschutz der Strukturpfade kommt weiterhin aus den festen
+  `write`-deny-Regeln, nicht aus dem Overlay.
+- Die Einschraenkungen aus 0.31.0 gelten weiter: `disallowed-tools` ist nicht erhoben, die
+  Wirkung der Skill-`permissions` bei `devin-desktop` ebenso, und veraenderliche
+  Statusangaben stehen an mehreren Stellen.
+
+### Migrationshinweise
+
+- **Ein Overlay, das interne Adressen, Hostnamen oder Umgebungskennungen als K1 fuehrt,
+  ist mit 0.32.0 ungueltig.** Diese Kategorie ist unbedingt K3. Der offene Weg ist die
+  bereinigte Ableitung: Platzhalter statt Kennung, das Original bleibt ausgeschlossen.
+- **Die Abbildung des Organisationsschemas verliert den K2-Pfad fuer die Stufe
+  „vertraulich".** Sie ist Kategorie 7 aus Abschnitt 2.1 und damit unbedingt.
+- **Jedes bestehende Overlay muss seine `<EXCLUDED_PATHS>`-Liste durchsehen:** Strukturpfade
+  des Frameworks gehoeren nach `<READ_ONLY_PATHS>`. Pruefung 28 findet den Fall beim
+  naechsten Validatorlauf. **`--update` erneuert die Berechtigungsdatei nicht** - eine
+  bereits erzeugte `read`-Verweigerung ist von Hand zu berichtigen.
+- Der Hinweis aus 0.30.0 und 0.31.0 gilt weiter: Bestehende Installationen brauchen ein
+  `--update`, und die Hook-Konfiguration ist dabei von Hand nachzutragen.
+
 ## [0.31.0] - 2026-09-12
 
 **Paket 3 ist fertig: Die Aussagen stimmen jetzt mit dem ueberein, was gemessen ist.**

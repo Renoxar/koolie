@@ -3,16 +3,75 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.6` |
+| Version | `0.1.7` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.31.0 (2026-09-12)
+## Stand nach Release 0.32.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.32.0 gebracht hat – Paket 4 ist abgeschlossen
+
+**Beide Befunde des Pakets sind entschieden und umgesetzt.** Es waren die einzigen, die das
+Review ausdrücklich nicht entschieden hat – zu Recht, denn es sind fachliche Festlegungen. Die
+Entscheidungen stehen in `CR-2026-052` Abschnitt 6 und `CR-2026-053` Abschnitt 6; **die
+Gegenprüfung davor hat fünf eigene Feststellungen ergeben**, und zwei verschieben den Befund.
+
+- **Die K3-Kategorien sind unbedingt** (B09, D-52). Drei Texte gaben drei Antworten, und die
+  Prioritätshierarchie erklärte K3 gleichzeitig für ebenenfest. **Es war keine Pattsituation:**
+  Acht weitere Stellen führten die Liste bereits ohne Bedingung – die Bedingung stand an einer
+  einzigen, der kanonischen Langform. Sie entfällt; der offene Weg ist die bereinigte Ableitung,
+  die die Wurzel-Anweisungsdatei ohnehin verlangt.
+- **Die Kurzform war zwei Kategorien zu kurz.** Abschnitt 2.1 führt acht, die
+  Wurzel-Anweisungsdatei nannte sechs – es fehlten Sicherheitskonfigurationen mit Schutzwirkung
+  und Inhalte anderer Projekte oder Mandanten. **In genau der Fassung, die in jede Sitzung lädt.**
+  Das hat das Review nicht gefunden, und **Prüfung 29** hätte es gefunden, bevor jemand hinsah.
+- **V6 erfasst den Betrieb, nicht die Anwendungslogik** (B09, D-53). Der Widerspruch war nur
+  teilweise einer: Die Kontrollstufentabelle desselben Moduls sieht Controlled Modification bei
+  Stufe hoch ausdrücklich vor, R3 und R10 stufen sicherheitsrelevante Codeänderungen dorthin ein.
+  Die beiden Sätze redeten über zwei Gegenstände, und keiner sagte es. Kriterium jetzt: Wirkt die
+  Änderung über Build, Review und Quality Gates, oder **ist** die geänderte Datei die Berechtigung
+  eines laufenden Systems? **Sicherheitskonfiguration als Code gehört zum Betrieb.**
+- **Die Parallelitätsregel war nicht erfüllbar** (B09, D-54). R12 stufte jede Parallelsitzung als
+  hoch ein, das Arbeitsmodell erlaubte sie nur bei Kontrollstufe niedrig – und die Kontrollstufe
+  ist der höchste Treffer über alle dreizehn Faktoren. **Die Schnittmenge war leer**, derselbe
+  zirkuläre Befundtyp wie B08. R12 unterscheidet jetzt nach Schreibziel und Aufsicht; erweiterte
+  Permission-Modi bleiben hoch, weil das gemessen ist (D-35). **Der Vorschlag des Reviews hätte den
+  Widerspruch nicht aufgelöst** – er lässt R12 unangetastet, und damit machte ein rein lesender
+  Subagent jede Analyse zu einer Aufgabe der Stufe hoch.
+- **Ein Schreibschutz ist kein Leseverbot** (B07, D-55). Beide technischen Schichten trennen
+  Vertraulichkeit und Integrität seit D-30 korrekt – falsch war allein der Text. **Und er wirkt
+  zurück:** `<EXCLUDED_PATHS>` ist der Platzhalter der `read`-Verweigerung. Ein Projekt, das die
+  Vorlage wörtlich ausfüllt, sperrt den Lesezugriff auf seine eigenen Regeldateien. Die
+  Strukturpfade stehen jetzt in `<READ_ONLY_PATHS>`, und `<CORE_DIR>/` steht in der Verbotsliste
+  der Wurzel-Anweisungsdatei – dort fehlte es, obwohl die Berechtigungsdatei den Pfad seit D-22
+  sperrt.
+- **Das Quellrepositorium ist ein eigener Einsatzkontext** (B07, D-56) –
+  `governance/FRAMEWORK_DEV_PROFILE.md`. Als Dokument, nicht als Schalter: Der Schreibschutz auf
+  `<CORE_DIR>/**` bleibt. Was das Profil ausdrücklich benennt, ist die Lage, auf der die
+  Selbstanwendung heute beruht – der Shell-Kanal, den der Hook nicht erfasst (B04). **Ein
+  abschwächender Schalter wäre in jeder Installation ausgeliefert** und damit genau die Bauform,
+  aus der in diesem Projekt die Befunde entstehen.
+- **Zwölf Grenzfälle** in `tests/EDGE_CASES.md`, je mit Entscheidung, Betriebsmodus,
+  Kontrollstufe, Rollen und Fundstelle – das Abnahmekriterium des Reviews, prüffähig gemacht.
+  Geprüft auf Vollständigkeit von **Prüfung 30**, auf Auslegung von `FW-KO-05` in einer Sitzung.
+
+**72 Sonden und Gegenproben bestehen gegen 0.32.0 in beiden Kodierungsumgebungen. Der neue
+Prüfsatz meldet gegen 0.31.0 acht Fundstellen – und das sind genau die Befunde dieses Releases**
+(`tests/protocols/2026-09-13-wirkungsnachweise-0.32.0.md`,
+`tests/protocols/2026-09-13-B07-B09-gegenpruefung.md`).
+
+**Offen geblieben und ausdrücklich so ausgewiesen:** Für die V6-Abgrenzung und für R12 gibt es
+keine maschinelle Prüfung – ein Skript beurteilt keine Einstufung; dort trägt die Grenzfalltabelle
+und `FW-KO-05`, und dieser Test steht auf `offen`. Die Selbstanwendung im Quellrepositorium bleibt
+unvollständig und stützt sich auf eine gemessene Lücke; schließt Paket 6 sie, braucht die
+Entwicklung dieses Frameworks einen ausdrücklich entschiedenen Weg (**K-32**). Und
+`<READ_ONLY_PATHS>` wird nicht in die Berechtigungsdatei abgebildet – die Kategorie ist textuell,
+der Schreibschutz der Strukturpfade kommt weiterhin aus den festen `write`-deny-Regeln.
 
 ### Was 0.31.0 gebracht hat – Paket 3 ist abgeschlossen
 
@@ -653,7 +712,7 @@ Review **B03** nachgewiesen hat; der Validator meldet ihn als Fehler und **gibt 
 Klartext aus**, also genau das, was B03 beanstandet. Im Repositorium ließe das jeden
 Validatorlauf rot werden – und über `probe-pruefungen.py` jede Gegenprobe mit ihm.
 
-Sechs davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am selben Tag nachgezogen**:
+Acht davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am selben Tag nachgezogen**, **B07 und B09 am 2026-09-13**:
 
 | Befund | Prüfung dieser Sitzung |
 |---|---|
@@ -663,8 +722,10 @@ Sechs davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am se
 | **B10** – `--update` ohne `--client` fällt auf das Standardpack zurück | **Im Code bestätigt:** `--client` trägt einen Vorgabewert, der Leitfaden empfiehlt den Aufruf ohne das Argument |
 | **B04** – Die Reichweite der Datei- und Netzwerksperren ist weiter beschrieben, als sie reicht | **Gemessen und bestätigt**, damit über den Belegstand des Reviews hinaus: `tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, vierzehn Läufe mit drei Positivkontrollen, **keine Abweichung**. Für Shell, Unterprozess und Suche gilt keine der Zusagen B3, B4, B5, B8 technisch. **Drei eigene Feststellungen dazu:** Der Hook begründet seine Lücke mit einer deny-Regel, die die Berechtigungsdatei für `exec` nicht enthält (21 Verweigerungen, sämtlich Befehlsverbote, keine einzige Pfadregel); der Suchkanal ist nicht bloß unbewacht, sondern derzeit **nicht bewachbar** – eine `search`-Verweigerung bricht die Abbildung bei beiden Packs ab, weil `permission_tools.search` leer ist, was **D-30 berührt**; und der `permissions_note` des Packs `claude-code` beschreibt eine `search`-Abbildung, die das Manifest nicht mehr trägt |
 | **B05** – Die technischen M4/M5-Pfadgrenzen fehlen im ausgelieferten Hook | **Gemessen und bestätigt** (ebenda). Der Hook entscheidet **gleich**, ob innerhalb oder außerhalb des zugesagten Scopes geschrieben wird, und liest ein mitgeführtes `mode`-Feld nicht. **Eigene Feststellung:** Es sind nicht zwei Modi, sondern **drei von fünf** – M1 nennt denselben Mechanismus, den `install.py` still verwirft (B01), M2 nennt eine Wirkung statt eines Mechanismus, und M3, der Modus mit Zugriff auf Produktivcode, nennt seine Umsetzung als einziger nach Belegklassen – **er ist das Vorbild, nicht der Ausreißer**; die vier übrigen sind darauf nachgezogen |
+| **B09** – Mehrere normative Regeln widersprechen sich – **erledigt mit 0.32.0** | **Im Text gegengeprüft und in einem Punkt verschärft** (`tests/protocols/2026-09-13-B07-B09-gegenpruefung.md`): alle drei Konflikte bestätigt. **Zwei eigene Feststellungen:** Es war keine Pattsituation – acht weitere Stellen führten die K3-Liste bereits ohne Bedingung, die Bedingung stand an einer einzigen. Und die Kurzform war **zwei Kategorien zu kurz**, in der Fassung, die in jede Sitzung lädt. **Die Parallelitätsregel war nicht erfüllbar:** R12 hoch gegen Kontrollstufe niedrig bei "höchster Treffer" – leere Schnittmenge, derselbe zirkuläre Befundtyp wie B08. Berichtigt: drei von vier Zeilenangaben zur Wurzel-Anweisungsdatei stimmen nicht |
+| **B07** – Arbeitsregeln blockieren benötigte Regelquellen – **erledigt mit 0.32.0** | **Im Code und im Text gegengeprüft und erheblich verschärft** (ebenda). Beide technischen Schichten trennen Vertraulichkeit und Integrität seit D-30 korrekt; falsch war allein der Text. **Eigene Feststellung: Der Textfehler wirkt zurück** – `<EXCLUDED_PATHS>` ist der Platzhalter der `read`-Verweigerung, ein Projekt erzeugt damit eine Lesesperre auf seine eigenen Regeldateien. **Nebenbefund:** `<CORE_DIR>/**` war in der Berechtigungsdatei schreibgesperrt, aber nicht in der Verbotsliste der Wurzel-Anweisungsdatei – der Mechanismus schützte mehr, als der Text sagte. Und der Satz zur Overlay-Vorbedingung stand in **fünf** Skills, nicht in einem |
 
-Die übrigen sechs sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+Die übrigen vier – **B06, B08, B11** und der Rest von B04/B05 – sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
 
 **Aus der Gegenprüfung von B04/B05 sind drei Anträge hervorgegangen, alle drei entschieden
 und mit 0.30.0 umgesetzt:** `CR-2026-047` (Zusagen je Zugriffskanal, D-47), `CR-2026-048` (die
@@ -683,7 +744,7 @@ sind jeweils begründet. Jeder Schritt braucht seinen Antrag. **Paket 1 ist ents
 | **1 – Zuerst, weil billig und weil es bei jedem Lauf leckt** – **erledigt mit 0.26.1** | **B03** | Der Validator schrieb gefundene E-Mail-Adressen, IP-Adressen, Hostnamen und Sperrbegriffe im Klartext in seine Ausgabe. **Jeder Prüflauf konnte damit genau die Angaben verbreiten, die er finden soll** – in eine Sitzung, ein Protokoll, ein Terminal. Prüfung 6 meldet jetzt Pfad, Zeile, Spalte und eine neutrale Kennung; dasselbe gilt für zwei Fehlerpfade, die fremden Inhalt weitertrugen. **Nachgewiesen:** sieben Sonden, die gegen 0.26.0 fallen und gegen 0.26.1 bestehen (`CR-2026-043`, D-39, `leitwerk-core/tests/protocols/2026-09-12-wirkungsnachweise-0.26.1.md`). **Offen geblieben:** der Mermaid-Fehlerpfad ist geändert, aber unbelegt – der externe Renderer fehlt in der Umgebung | keine |
 | **2 – Vor einem dritten Client Pack** – **erledigt mit 0.28.0** | **B02**, B10 | **B02 verdreifacht seinen Schaden mit jedem Pack:** Die Aktivierungsprüfung liest fest verdrahtete Pfade **eines** Clients und bekommt das erkannte Manifest nicht übergeben. B10 ist derselbe Fehlertyp im Installer – `--update` ohne `--client` fiel auf das Standardpack zurück und legte in einem fremden Projekt eine zweite Laufzeitschicht an. **Beide gemessen und behoben** (`CR-2026-044`, `CR-2026-045`, D-44, D-45): Die Aktivierungsprüfung bekommt das Manifest, die Installation erkennt das installierte Pack. Dazu zwei Befunde aus derselben Messung – der Overlay-Status wurde als Präfix geprüft, und ein fehlender sicherheitsrelevanter Abschnitt galt als unauffällig. **Offen geblieben:** der Abgleich zwischen Quell-Overlay und Laufzeitfassung (`CR-2026-044` E4) | keine; beide sind lokale Korrekturen |
 | **3 – Aussagen an den Belegstand angleichen** – **vollständig erledigt** (B03 0.26.1, B02/B10 0.28.0, B04/B05 0.30.0, B01/B12 0.31.0) | ~~**B01**~~, ~~B04~~, ~~B05~~, ~~B12~~ | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
-| **4 – Regelkonflikte, die nur der Mensch entscheiden kann** | **B09**, B07 | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`.** Ohne sie ist hier nichts umsetzbar |
+| **4 – Regelkonflikte, die nur der Mensch entscheiden kann** – **erledigt mit 0.32.0** (`CR-2026-052`, `CR-2026-053`, D-52 bis D-56) | ~~**B09**~~, ~~B07~~ | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`** – am 2026-09-13 getroffen, alle elf Ermessensfragen wie vorgelegt |
 | **5 – Abläufe** | **B08**, B11 | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) |
 | **6 – Technische Härtung** | **B06**, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3) | Pakete 3 und 4 |
 

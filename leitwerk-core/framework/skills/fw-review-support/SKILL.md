@@ -34,7 +34,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-010` |
 | Name | `fw-review-support` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis (mit freigegebenen lesenden Git-Befehlen) |
@@ -56,7 +56,7 @@ triggers:
 
 1. Preflight-Check (`leitwerk-core/checklists/01-preflight.md`) durchgeführt; Modus M1 benannt; Kontrollstufe der zugrunde liegenden Änderung mit auslösendem Faktor bekannt – sie bestimmt die Mindesttiefe nach `leitwerk-core/framework/core/07-review-rules.md` Abschnitt 3 (niedrig: RV1, RV2, RV5, RV9, RV10; mittel und hoch: RV1–RV12).
 2. Der Änderungssatz liegt lokal vor (Arbeitskopie, Index oder lokaler Branch gegenüber `<DEFAULT_BRANCH>`). Geprüft werden nur Dateien in `<ALLOWED_PATHS>` und `<READ_ONLY_PATHS>`; Dateien in `<EXCLUDED_PATHS>` werden nicht gelesen, sondern nur als Bestandteil des Änderungssatzes gemeldet.
-3. Die lesenden Git-Befehle `git status`, `git diff`, `git log` und `git show` sind freigegeben (`<PERMISSIONS_FILE>`, Standard `allow`). Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys zulässig.
+3. Die lesenden Git-Befehle `git status`, `git diff`, `git log` und `git show` sind freigegeben (`<PERMISSIONS_FILE>`, Standard `allow`). Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys und im Quellrepositorium des Frameworks selbst zulässig (`leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md`).
 4. Ab Kontrollstufe mittel liegt der bestätigte Plan oder die bereinigte Aufgabenbeschreibung für den Scope-Abgleich vor; fehlt er, wird RV1 als `<TBD: Scope-Referenz>` ausgewiesen.
 
 **Benötigte Eingaben:**

@@ -62,8 +62,19 @@ Prüft (statisch, ohne laufenden KI-Client):
      der Regeltexte folgt; erklaerender Text steht in der Laufzeit-README eine Ebene hoeher
  25. Ausfall mit Ersatz (D-41): Eine Matrixzeile eines Client Packs auf [NICHT ABBILDBAR]
      benennt den Ersatz - oder haelt ausdruecklich fest, dass es keinen gibt
+ 26. Werkzeugabwesenheit (D-47): Eine erklaerte Abwesenheit in hook_tools_absent ist
+     belegt und folgerichtig - sie darf keine Werkzeugklasse aus der Durchsetzung nehmen
+ 27. Zusagenfelder (D-50): Verwirft ein Pack das Skill-Frontmatter-Feld permissions oder
+     triggers, benennt es den Ersatz - ein zusagentragendes Feld entfaellt nicht ersatzlos
+ 28. Lesesperre gegen Schreibsperre (D-55, B07): Die Deklaration von <EXCLUDED_PATHS>
+     nennt keinen Strukturpfad des Frameworks. Diese Pfade sind schreibgeschuetzt, nicht
+     lesegesperrt - als Ausschluss erzeugen sie eine Lesesperre auf die eigenen Regeln
+ 29. K3-Kategorien (D-52, B09): Kurzform, Langform, Laufzeitregel, Entscheidungsbaum und
+     Checkliste fuehren dieselben acht Kategorien, und keine traegt eine Bedingung
+ 30. Grenzfaelle (B07, B09): Die Grenzfalltabelle ist vollstaendig, jede Spalte gefuellt,
+     jede entschiedene Auslegungsfrage durch mindestens einen Grenzfall gedeckt
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 24 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 30 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -2235,6 +2246,209 @@ def check_zusagenfelder(root: str) -> None:
                 f"'permissions' war es B01 (D-18, D-50)")
 
 
+# Pruefung 28: Ein Strukturpfad des Frameworks gehoert nicht in <EXCLUDED_PATHS>.
+#
+# Zwei Schutzziele, zwei Kategorien - der Schutz-Hook unterscheidet sie seit D-30 und die
+# Berechtigungsdatei ebenfalls: <EXCLUDED_PATHS> wird dort zu einer 'read'- UND einer
+# 'write'-Verweigerung, die Strukturpfade stehen ausschliesslich als 'write'-Verweigerung
+# bei 'read allow **'. Die Overlay-Vorlage und die Laufzeitregel fuehrten sie bis 0.31.0
+# unter "weder lesen noch aendern" - genau die Pfade, die der KI-Client als
+# Anweisungsquelle laden soll (B07). Wer die Vorlage woertlich ausfuellt, erzeugt damit
+# eine Lesesperre auf die eigenen Regeldateien. Diese Pruefung findet den Fall im
+# Repositorium, also bevor eine Installation entsteht (D-55).
+STRUKTURPFAD_MARKER = (
+    "<RUNTIME_DIR>", "<ROOT_INSTRUCTION_FILE>", "<CORE_DIR>", "<RULES_DIR>",
+    "project-overlay/", "framework/", "AGENTS.md", "CLAUDE.md", ".devin/", ".claude/",
+)
+
+# Die Beschriftung der Deklarationszeile - in der Overlay-Vorlage eine Tabellenzeile, in
+# der Laufzeitregel ein Listeneintrag. Beide beginnen mit derselben Bezeichnung.
+DEKLARATION_RE = re.compile(r"^\s*(?:\|\s*|-\s+)Ausgeschlossene Pfade")
+
+
+def _excluded_paths_traeger(root: str, man: dict) -> list[str]:
+    """Dateien, die <EXCLUDED_PATHS> deklarieren - Quelle und Installation."""
+    kandidaten = [
+        os.path.join(KERN, "templates", "project-overlay", "OVERLAY.md"),
+        os.path.join(KERN, "framework", "runtime", "rules", "20-project-overlay.md"),
+        os.path.join("project-overlay", "OVERLAY.md"),
+    ]
+    runtime_dir = (man or {}).get("runtime_dir")
+    if runtime_dir:
+        kandidaten.append(os.path.join(runtime_dir.replace("/", os.sep), "rules",
+                                       "20-project-overlay.md"))
+    treffer = []
+    for rel in kandidaten:
+        pfad = os.path.join(root, rel)
+        if os.path.isfile(pfad) and pfad not in treffer:
+            treffer.append(pfad)
+    return treffer
+
+
+def check_excluded_paths(root: str, man: dict) -> None:
+    """Pruefung 28 (D-55): Ein Schreibschutz ist kein Leseverbot.
+
+    Geprueft wird die **Deklarationszeile** von <EXCLUDED_PATHS>: Sie darf keinen
+    Strukturpfad des Frameworks nennen. Der Nachweis ist eine Textpruefung - dass die
+    Berechtigungsdatei die beiden Kategorien trennt, prueft Pruefung 2.
+
+    Nur die Deklaration, nicht jede Nennung: Beide Traeger erklaeren im Fliesstext
+    ausdruecklich, dass die Strukturpfade **nicht** hierher gehoeren, und diese Saetze
+    nennen beides in einer Zeile. Eine Pruefung, die jede Nennung meldet, wuerde genau
+    den richtigen Text beanstanden. Erkannt wird die Deklaration an ihrer Beschriftung
+    (DEKLARATION_RE) - und weil eine verlorene Beschriftung eine Pruefung erzeugt, die
+    leise besteht, ist auch ihr Fehlen ein Fehler (D-23).
+    """
+    for pfad in _excluded_paths_traeger(root, man):
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        zeilen = read(pfad).splitlines()
+        deklarationen = [(i, z) for i, z in enumerate(zeilen, 1)
+                         if "<EXCLUDED_PATHS>" in z and DEKLARATION_RE.match(z)]
+        if not deklarationen and any("<EXCLUDED_PATHS>" in z for z in zeilen):
+            err(f"{rel}: nennt <EXCLUDED_PATHS>, aber keine Zeile ist als Deklaration "
+                f"erkennbar (Beschriftung 'Ausgeschlossene Pfade'). Pruefung 28 prueft "
+                f"damit nichts und bestuende leise - die Beschriftung ist Teil des "
+                f"Nachweises (D-23, D-55)")
+        for i, zeile in deklarationen:
+            gefunden = [m for m in STRUKTURPFAD_MARKER if m in zeile]
+            if not gefunden:
+                continue
+            err(f"{rel}:{i}: Die Deklaration von <EXCLUDED_PATHS> nennt "
+                f"{', '.join(gefunden)}. <EXCLUDED_PATHS> wird in der Berechtigungsdatei zu "
+                f"einer 'read'- UND einer 'write'-Verweigerung; die Strukturpfade des "
+                f"Frameworks sind integritaetsgeschuetzt, nicht vertraulich - sie gehoeren "
+                f"in <READ_ONLY_PATHS>. Ein Projekt, das dieser Zeile folgt, sperrt den "
+                f"Lesezugriff auf seine eigenen Regeldateien; der KI-Client kann die "
+                f"Anweisungen dann nicht laden, die er befolgen soll (B07, D-55)")
+
+
+# Pruefung 29: Kurzform und Langform fuehren dieselben K3-Kategorien, unbedingt.
+#
+# Die Kategorien aus Abschnitt 2.1 sind ebenenfest (D-52). Zwei Fehlerbilder sind moeglich
+# und beide sind vorgekommen: eine Kategorie fehlt in einer Fassung - die Kurzform, die in
+# jede Sitzung laedt, fuehrte bis 0.31.0 nur sechs von acht -, oder eine Kategorie traegt
+# eine Bedingung, wie die interne Adresse, die "sofern nicht im Overlay als K1 eingestuft"
+# ausgenommen war. Beides prueft diese Funktion an denselben fuenf Traegern.
+K3_KATEGORIEN = (
+    ("Secrets und Zugangsdaten", r"Secret|Zugangsdaten"),
+    ("personenbezogene Echtdaten", r"personenbezogene Echtdaten"),
+    ("Produktionsdaten", r"Produktionsdaten"),
+    ("Kunden- und Behördendokumente", r"Behörden"),
+    ("Sicherheitskonfigurationen", r"Sicherheitskonfiguration"),
+    ("interne Adressen und Umgebungskennungen", r"interne[nr]? Adressen"),
+    ("als vertraulich eingestufte Inhalte", r"vertraulich"),
+    ("Inhalte anderer Projekte", r"anderer Projekte|anderen Projekten|Fremdprojekte"),
+)
+
+# Eine Bedingung in einer unbedingten Liste. "es sei denn" stand in Abschnitt 2.2.
+K3_BEDINGUNG_RE = re.compile(
+    r"sofern nicht|sofern es nicht|es sei denn|außer wenn|soweit nicht|sofern kein", re.I)
+
+# Je Traeger: Pfad, Startanker, Endanker (None = bis Zeilenende des Startankers).
+K3_TRAEGER = (
+    (KERN + "/framework/core/02-privacy.md", "### 2.1 Immer K3", "### 2.2"),
+    (KERN + "/framework/runtime/root-instruction.md", "- Immer K3", None),
+    (KERN + "/framework/runtime/rules/10-privacy-security.md", "| K3 |", None),
+    (KERN + "/decision-trees/01-context-allowed.md", "1. **K3-Prüfung:**", "\n2. "),
+    (KERN + "/checklists/02-privacy-context.md", "K3-Kategorien geprüft", None),
+)
+
+
+def check_k3_kategorien(root: str) -> None:
+    """Pruefung 29 (D-52): Dieselbe K3-Liste in jeder Fassung, ohne Bedingung.
+
+    Belegt Uebereinstimmung der Kategorien, nicht die Gleichheit der Formulierungen - eine
+    Kurzform darf kuerzer sein, aber keine Kategorie weglassen und keine an eine Bedingung
+    binden. Was die Pruefung nicht leistet: Sie sieht nicht, ob ein KI-Client die Liste
+    auch anwendet. Das ist FW-KO-05 und laeuft als Sitzung (leitwerk-core/tests/EDGE_CASES.md).
+    """
+    for rel, start, ende in K3_TRAEGER:
+        pfad = os.path.join(root, rel.replace("/", os.sep))
+        if not os.path.isfile(pfad):
+            err(f"{rel}: fehlt - diese Datei fuehrt die K3-Kategorien und wird gegen die "
+                f"uebrigen Fassungen geprueft (D-52)")
+            continue
+        text = read(pfad).replace("\r\n", "\n")
+        pos = text.find(start)
+        if pos < 0:
+            err(f"{rel}: Der Anker '{start}' ist nicht mehr auffindbar. Ohne ihn prueft "
+                f"diese Pruefung nichts - sie wuerde leise bestehen (D-23)")
+            continue
+        if ende:
+            bis = text.find(ende, pos + len(start))
+            bereich = text[pos:bis if bis > 0 else len(text)]
+        else:
+            bis = text.find("\n", pos)
+            bereich = text[pos:bis if bis > 0 else len(text)]
+        for name, muster in K3_KATEGORIEN:
+            if not re.search(muster, bereich):
+                err(f"{rel}: Die K3-Liste nennt die Kategorie '{name}' nicht. Alle acht "
+                    f"Kategorien aus Abschnitt 2.1 von "
+                    f"{KERN}/framework/core/02-privacy.md gelten in jeder Fassung; eine "
+                    f"Kurzform darf kuerzer formulieren, aber keine Kategorie weglassen "
+                    f"(D-52)")
+        m = K3_BEDINGUNG_RE.search(bereich)
+        if m:
+            err(f"{rel}: Die K3-Liste traegt eine Bedingung ('{m.group(0)}'). Die "
+                f"Kategorien sind unbedingt und ebenenfest - kein Overlay, keine "
+                f"Datenschutzpruefung und kein Ausnahmeprozess kann sie freigeben "
+                f"(governance/PRIORITY_HIERARCHY.md Regel 2.4, D-52)")
+
+
+# Pruefung 30: Die Grenzfalltabelle ist vollstaendig und deckt jede Entscheidung ab.
+#
+# Das Abnahmekriterium des Reviews zu B07 und B09 verlangt Beispiele mit erwarteter
+# Entscheidung. Eine Tabelle, in der eine Spalte leer bleibt oder eine Entscheidung
+# unbelegt ist, sieht aus wie ein Nachweis und ist keiner. Die Anzahl steht im Steckbrief
+# und wird nachgezaehlt: In diesem Projekt war eine Zahl schon oefter zu klein.
+GRENZFALL_DATEI = KERN + "/tests/EDGE_CASES.md"
+GRENZFALL_SPALTEN = 7
+GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56")
+
+
+def check_grenzfaelle(root: str) -> None:
+    """Pruefung 30: Vollstaendigkeit der Grenzfalltabelle (CR-2026-052, CR-2026-053)."""
+    pfad = os.path.join(root, GRENZFALL_DATEI.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        err(f"{GRENZFALL_DATEI}: fehlt. Die entschiedenen Regelkonflikte brauchen ihre "
+            f"Grenzfaelle als Referenz - das ist das Abnahmekriterium des Reviews zu B07 "
+            f"und B09")
+        return
+    text = read(pfad)
+    m = re.search(r"\|\s*Anzahl der Grenzfälle\s*\|\s*(\d+)\s*\|", text)
+    if not m:
+        err(f"{GRENZFALL_DATEI}: Der Steckbrief nennt keine Anzahl der Grenzfaelle. Ohne "
+            f"sie faellt eine geloeschte Zeile nicht auf")
+        return
+    erwartet = int(m.group(1))
+    zeilen = [z for z in text.splitlines() if re.match(r"\|\s*G-\d+\s*\|", z)]
+    if len(zeilen) != erwartet:
+        err(f"{GRENZFALL_DATEI}: {len(zeilen)} Grenzfallzeilen, der Steckbrief nennt "
+            f"{erwartet}. Eine Zahl, die nicht stimmt, ist kein Nachweis")
+    for zeile in zeilen:
+        zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+        kennung = zellen[0] if zellen else "?"
+        if len(zellen) != GRENZFALL_SPALTEN:
+            err(f"{GRENZFALL_DATEI}: Grenzfall {kennung} hat {len(zellen)} Spalten statt "
+                f"{GRENZFALL_SPALTEN} (Nr., Grenzfall, Entscheidung, Betriebsmodus, "
+                f"Kontrollstufe, Rollen, Fundstelle)")
+            continue
+        for nr, zelle in enumerate(zellen, 1):
+            if not zelle or zelle in ("-", "–"):
+                err(f"{GRENZFALL_DATEI}: Grenzfall {kennung}, Spalte {nr} ist leer. Jede "
+                    f"Spalte ist Teil der Einstufung; eine leere Spalte laesst offen, was "
+                    f"gilt")
+            if TBD_RE.search(zelle):
+                err(f"{GRENZFALL_DATEI}: Grenzfall {kennung}, Spalte {nr} traegt einen "
+                    f"offenen <TBD>-Wert. Ein Grenzfall ohne Entscheidung ist keiner")
+    for d in GRENZFALL_ENTSCHEIDUNGEN:
+        if not any(d in z for z in zeilen):
+            err(f"{GRENZFALL_DATEI}: Keine Grenzfallzeile verweist auf {d}. Jede "
+                f"entschiedene Auslegungsfrage braucht mindestens einen Grenzfall, sonst "
+                f"ist das Abnahmekriterium des Reviews nicht eingeloest")
+
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -2278,6 +2492,9 @@ def main() -> int:
     check_ausfall_mit_ersatz(root)
     check_werkzeugabwesenheit(root)
     check_zusagenfelder(root)
+    check_excluded_paths(root, man)
+    check_k3_kategorien(root)
+    check_grenzfaelle(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.mermaid:

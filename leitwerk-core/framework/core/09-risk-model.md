@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 
 > **Abgrenzung:** Diese Klassifizierung dient der operativen Steuerung des KI-Einsatzes. Sie ist keine rechtliche Klassifizierung und ersetzt keine Bewertung nach Datenschutz-, IT-Sicherheits- oder KI-regulatorischen Vorgaben der Organisation.
 
@@ -35,10 +35,12 @@
 | R9 | Einführung externer Abhängigkeiten | keine | Aktualisierung einer bestehenden Abhängigkeit (Patch/Minor) | neue Abhängigkeit oder Major-Update (Checkliste `leitwerk-core/checklists/07-new-dependency.md`) |
 | R10 | Änderung von Authentifizierung oder Autorisierung | keine | keine (jede Berührung ist mindestens hoch) | jede Änderung |
 | R11 | Änderung von Datenmodellen oder Schnittstellen | keine | interne, abwärtskompatible Erweiterung | Schema-Änderung, Vertragsbruch einer Schnittstelle, Migration |
-| R12 | Automatisierungsgrad der KI-Nutzung | einzelne, überwachte Sitzung im Modus Normal | mehrere Schritte in einer Sitzung mit sitzungsweiten Freigaben | Hintergrund-Subagenten, Parallelsitzungen oder erweiterte Permission-Modi |
+| R12 | Automatisierungsgrad der KI-Nutzung | einzelne, überwachte Sitzung im Modus Normal; oder mehrere rein lesende Sitzungen beziehungsweise Subagenten (M1, M2) unter einer aufsichtführenden Person | mehrere Schritte in einer Sitzung mit sitzungsweiten Freigaben; oder parallele schreibende Sitzungen auf disjunkten Schreibzielen | erweiterte Permission-Modi; parallele Sitzungen auf gemeinsamen Schreibzielen; Hintergrund-Subagenten in M3 |
 | R13 | Mögliche Fehlerfolgen | lokal begrenzt, sofort erkennbar | Funktionsstörung in Test oder Produktion, erkennbar durch Monitoring | Datenverlust, Sicherheitsvorfall, Verstoß gegen rechtliche Vorgaben, Reputationsschaden |
 
 `<CHANGE_SIZE_THRESHOLD>` und die Liste kritischer Komponenten werden im Project Overlay festgelegt (`<TBD: Schwellenwert für Änderungsumfang>`).
+
+**Zu R12 (normativ).** Die Spalten unterscheiden nach **Schreibziel und Aufsicht**, nicht nach der Zahl der Sitzungen: rein lesende Parallelarbeit unter Aufsicht niedrig, schreibende Parallelarbeit auf getrennten Zielen mittel, gemeinsame Schreibziele hoch. Bis 0.31.0 stufte R12 **jede** Parallelsitzung als hoch ein, während das Arbeitsmodell sie nur für Aufgaben der Kontrollstufe **niedrig** erlaubte (`leitwerk-core/framework/core/05-working-model.md`, Abschnitt 3.1) – die Schnittmenge war leer, und damit war die Regel nicht erfüllbar (D-54). Erweiterte Permission-Modi bleiben **hoch**: Dass die erste Schutzlinie dort ausfällt, ist gemessen (D-35), und diese Einstufung wird nicht gelockert.
 
 ## 3. Kontrollstufen (normativ)
 
@@ -68,6 +70,8 @@ Folgende Aufgaben und Entscheidungen DÜRFEN NICHT an den KI-Client delegiert we
 | V10 | Änderung der Framework-Regeln, des Project Overlays oder der Berechtigungsdatei | Vorschläge als Änderungsantrag (`leitwerk-core/governance/CHANGE_REQUEST_TEMPLATE.md`) |
 | V11 | Kommunikation nach außen (Kunden, Behörden, Öffentlichkeit) im Namen des Projekts | Entwürfe für interne Verwendung |
 | V12 | Löschen von Branches, Historie, Daten oder Artefakten außerhalb des Arbeitsbereichs | keine |
+
+**Abgrenzung zu V6 (normativ).** V6 erfasst den **Betrieb**: tatsächliche Berechtigungen sowie Betriebs-, Infrastruktur- und Sicherheitskonfigurationen – auch dann, wenn sie als Code im Repositorium liegen (Infrastrukturbeschreibungen, Berechtigungs- und Richtliniendateien, die Berechtigungsdatei dieses Frameworks), denn ihr Inhalt **ist** die Berechtigung. V6 erfasst **nicht** die lokale Anwendungslogik mit Sicherheitsbezug: Authentifizierungs- und Autorisierungsprüfungen im Quellcode, Verwendung kryptografischer Bibliotheken, Sitzungsverwaltung. Diese ist über R3 und R10 Kontrollstufe **hoch** und nach deren Freigaben umsetzbar – dokumentierte Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>`, Umsetzung mit begleitender Person. **Die Frage im Zweifel:** Wirkt die Änderung über Build, Review und Quality Gates des Projekts, oder ist die geänderte Datei selbst die Berechtigung eines laufenden Systems? Im zweiten Fall gilt V6. Greift daneben ein anderes Delegationsverbot – V4 für Schlüsselmaterial, V10 für die Framework-Regeln und die Berechtigungsdatei –, bleibt es unberührt (D-53).
 
 Das Project Overlay KANN die Liste erweitern (`project-overlay/OVERLAY.md`, Abschnitt „Ausgeschlossene Aufgaben"). Es DARF sie NICHT verkürzen.
 

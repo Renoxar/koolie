@@ -20,7 +20,8 @@ trigger: always_on
 ## Arbeitsbereich
 
 - Erlaubte Pfade (`<ALLOWED_PATHS>`): `<TBD: Liste, zum Beispiel src/**, test/**, docs/**>`
-- Ausgeschlossene Pfade (`<EXCLUDED_PATHS>`): `<TBD: Liste, zum Beispiel deploy/**, infra/**, config/prod/**>` – zusätzlich immer: Secret-Dateien, `<RUNTIME_DIR>/`, `<ROOT_INSTRUCTION_FILE>`, `project-overlay/`
+- Ausgeschlossene Pfade, weder lesen noch ändern (`<EXCLUDED_PATHS>`): `<TBD: Liste, zum Beispiel deploy/**, infra/**, config/prod/**>` – zusätzlich immer Secret-Dateien
+- Nur lesbar, nie ändern (`<READ_ONLY_PATHS>`): `<TBD: Liste, zum Beispiel api-contracts/**, db/migrations/**>` – zusätzlich immer: `<ROOT_INSTRUCTION_FILE>`, `<RUNTIME_DIR>/`, `<CORE_DIR>/`, `project-overlay/`. Ihr Schreibschutz ist kein Leseverbot: Du liest sie als Anweisungsquelle
 - Testpfade (`<TEST_PATHS>`): `<TBD>` · Dokumentationspfade (`<DOC_PATHS>`): `<TBD>`
 - Als kritisch eingestufte Komponenten (Änderungen mindestens Kontrollstufe hoch): `<TBD: Liste>`
 

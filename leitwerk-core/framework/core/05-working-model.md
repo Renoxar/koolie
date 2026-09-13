@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.5 |
+| Version | 0.1.6 |
 
 ## 1. Standardarbeitsablauf (normativ)
 
@@ -116,7 +116,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerha
 
 1. Eine Sitzung bearbeitet eine Aufgabe. Neue Aufgaben MÜSSEN in neuen Sitzungen begonnen werden (Least Context, Nachvollziehbarkeit).
 2. Sitzungsweite Freigaben („für diese Sitzung erlauben") SOLLEN nur für die im Overlay freigegebenen Test- und Build-Befehle erteilt werden. Projektweite oder globale Freigaben `[DOK]` DÜRFEN NICHT durch einzelne Entwicklerinnen oder Entwickler erteilt werden; sie erfordern einen Änderungsantrag an die Berechtigungsdatei.
-3. Parallel laufende Agentensitzungen (Agent Command Center) `[DOK]` SOLLEN nur für voneinander unabhängige Aufgaben der Kontrollstufe niedrig verwendet werden; sie DÜRFEN NICHT auf denselben Dateien arbeiten.
+3. Parallel laufende Agentensitzungen `[DOK]` sind an **Voraussetzungen** gebunden, nicht an eine Kontrollstufe der Aufgabe: Die Aufgaben MÜSSEN voneinander unabhängig sein, die Schreibziele disjunkt – sie DÜRFEN NICHT auf denselben Dateien arbeiten –, eine Person MUSS die Aufsicht führen, und jede Sitzung MUSS ihre eigene Aufgabe und ihren eigenen Ergebnisbericht haben. Die Einstufung dieser Arbeitsweise leistet R12 (`leitwerk-core/framework/core/09-risk-model.md`, Abschnitt 2): rein lesende Parallelarbeit unter Aufsicht niedrig, schreibende auf getrennten Zielen mittel, gemeinsame Schreibziele hoch und damit ausgeschlossen. Jede parallel bearbeitete Aufgabe bleibt an die Betriebsmodi **ihrer eigenen** Kontrollstufe gebunden (D-54).
 4. Hintergrund-Subagenten DÜRFEN NICHT für Modus M3 verwendet werden. Für M1 KANN ein rein lesendes Agentenprofil genutzt werden, sofern der KI-Client eines kennt (Fähigkeitsmatrix des Client Packs, A1).
 
 ### 3.2 Befehlsausführung

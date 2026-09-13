@@ -9,7 +9,7 @@
 |---|---|---|
 | `<TBD: z. B. „öffentlich">` | K0 | `<TBD>` |
 | `<TBD: z. B. „intern">` | K1 oder K2 | `<TBD: Kriterien, wann intern eingestufte Inhalte als K1 gelten dürfen>` |
-| `<TBD: z. B. „vertraulich">` | K3 (Lockerung auf K2 nur, wenn die Datenschutz- und Vertragsprüfung dies ausdrücklich erlaubt; Dokumentation im Decision Log) | `<TBD>` |
+| `<TBD: z. B. „vertraulich">` | K3 (unbedingt – Abschnitt 2.1 Nr. 7 von `leitwerk-core/framework/core/02-privacy.md`; eine Lockerung ist auf keinem Weg vorgesehen, D-52) | `<TBD: welche bereinigten Ableitungen zulässig sind; sie werden als eigener Inhalt neu eingestuft>` |
 | `<TBD: z. B. „streng vertraulich">` | K3 (keine Lockerung) | – |
 | personenbezogene Daten gemäß Richtlinie `<TBD: Referenz>` | K3 (Echtdaten); synthetische Testdaten K1 | `<TBD>` |
 

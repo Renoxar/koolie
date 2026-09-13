@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-008` |
 | Name | `fw-error-analyze` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -41,7 +41,7 @@ triggers:
 
 1. Preflight-Check (`leitwerk-core/checklists/01-preflight.md`) ist durchgeführt; Modus M1 ist benannt; eine vorläufige Kontrollstufe ist durch den Menschen geschätzt.
 2. Der Fehlerbericht ist bereinigt (K2 gemäß `leitwerk-core/framework/core/02-privacy.md` Abschnitt 3.3 und 3.5; `leitwerk-core/checklists/02-privacy-context.md`): keine personenbezogenen Daten, Hostnamen, internen Adressen, Mandanten-, Umgebungs-, Sitzungs- oder Benutzerkennungen, Tokens oder Secrets; Stacktrace auf Projekt-Frames und unmittelbar beteiligte Bibliotheksframes reduziert; Fallbeschreibung abstrahiert (Rollen statt Personen, synthetische Eingabewerte).
-3. Der betroffene Bereich liegt in `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`. Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys zulässig.
+3. Der betroffene Bereich liegt in `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`. Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys und im Quellrepositorium des Frameworks selbst zulässig (`leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md`).
 
 **Benötigte Eingaben:**
 

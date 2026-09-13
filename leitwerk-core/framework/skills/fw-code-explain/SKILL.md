@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-002` |
 | Name | `fw-code-explain` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -40,7 +40,7 @@ triggers:
 **Vorbedingungen (MUSS):**
 
 1. Preflight-Check (`leitwerk-core/checklists/01-preflight.md`) durchgeführt; Modus M1 benannt.
-2. Die Code-Einheit liegt in `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`. Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys zulässig.
+2. Die Code-Einheit liegt in `<ALLOWED_PATHS>` oder `<READ_ONLY_PATHS>`. Ohne Overlay (Status `inaktiv`) ist der Skill nur auf Übungsrepositorys und im Quellrepositorium des Frameworks selbst zulässig (`leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md`).
 
 **Benötigte Eingaben:**
 
