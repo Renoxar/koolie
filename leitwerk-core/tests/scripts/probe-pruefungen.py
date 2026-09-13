@@ -2007,6 +2007,126 @@ def sonden_berechtigungskoerbe() -> None:
 
 buendel(sonden_berechtigungskoerbe)
 
+# --- 38: Eine Quelle, ein Vokabular, eine Richtung (CR-2026-062, D-78 bis D-80) ----
+#
+# Auf einer Kopie des Repositoriums, nicht gegen eine Installation: Der Gegenstand von
+# Pruefung 38 sind die Manifeste und die Quellen des Kerns, nicht eine erzeugte Datei.
+# Das ist der Unterschied zu den Pruefungen 33 und 37.
+#
+# Acht Sonden, zwei Gegenproben. Die Sonden 38f und 38g treffen die beiden Stellen, an
+# denen der Fall bis 0.39.0 STILL war: in allowed-tools wurde das unbekannte Verb
+# woertlich als Werkzeugname durchgereicht, in permissions.deny fiel es lautlos aus.
+MANIFEST_CC_38 = "leitwerk-core/clients/claude-code/manifest.json"
+MANIFEST_DD_38 = "leitwerk-core/clients/devin-desktop/manifest.json"
+SKILL_38 = "leitwerk-core/framework/skills/fw-plan/SKILL.md"
+CLIENTMAP_38 = "leitwerk-core/clientmap.py"
+
+
+def _38_json(root: str, rel: str, wandler) -> None:
+    """Ein Manifest ueber das JSON praeparieren, nicht ueber den Text.
+
+    Die beiden tool_names-Bloecke eines Manifests sind ZEICHENGLEICH; ein Textanker
+    traefe den falschen. Dieselbe Begruendung wie bei Sonde 35a.
+    """
+    pfad = P(root, rel.replace("/", os.sep))
+    daten = json.loads(lies(pfad))
+    wandler(daten)
+    schreib(pfad, json.dumps(daten, ensure_ascii=False, indent=2) + "\r\n")
+
+
+def _38_deklaration_weg(root: str) -> None:
+    _38_json(root, MANIFEST_DD_38,
+             lambda d: d["skill_frontmatter"].pop("tool_names_unmapped"))
+
+
+def _38_notiz_weg(root: str) -> None:
+    _38_json(root, MANIFEST_DD_38,
+             lambda d: d["agent_frontmatter"].pop("_tool_names_unmapped_note"))
+
+
+def _38_beides_zugleich(root: str) -> None:
+    _38_json(root, MANIFEST_CC_38,
+             lambda d: d["skill_frontmatter"].__setitem__("tool_names_unmapped", ["grep"]))
+
+
+def _38_fremder_schluessel(root: str) -> None:
+    """Ein Verb der Durchsetzungsschicht in der Abbildung der Quelle."""
+    _38_json(root, MANIFEST_CC_38,
+             lambda d: d["agent_frontmatter"]["tool_names"].__setitem__("search", ["Grep"]))
+
+
+def _38_richtung_verdreht(root: str) -> None:
+    """Die Sperrliste wird enger als die Vorabfreigabe - der gefaehrliche Fall."""
+    _38_json(root, MANIFEST_CC_38,
+             lambda d: d["hook_tools"].__setitem__("write", ["Edit", "NotebookEdit"]))
+
+
+def _38_quelle_allowed(root: str) -> None:
+    ersetze(P(root, SKILL_38.replace("/", os.sep)),
+            ("allowed-tools:\r\n  - read\r\n", "allowed-tools:\r\n  - search\r\n"))
+
+
+def _38_quelle_deny(root: str) -> None:
+    ersetze(P(root, SKILL_38.replace("/", os.sep)),
+            ("  deny:\r\n    - edit\r\n", "  deny:\r\n    - write\r\n"))
+
+
+def _38_anker_weg(root: str) -> None:
+    """Der Fall, in dem die Pruefung leise bestuende: Das Vokabular verliert seinen Namen."""
+    ersetze(P(root, CLIENTMAP_38.replace("/", os.sep)),
+            ("FRONTMATTER_VERBEN = (", "FRONTMATTER_VERBEN_ALT = ("))
+
+
+def _38_quellen_weg(root: str) -> None:
+    """Der zweite Anker: ohne Quelldateien prueft der vierte Gegenstand nichts."""
+    for rel in ("leitwerk-core/framework/skills",
+                "leitwerk-core/framework/role-packs",
+                "leitwerk-core/framework/runtime/agents"):
+        shutil.rmtree(P(root, rel.replace("/", os.sep)), ignore_errors=True)
+
+
+def _38_engere_vorabfreigabe(root: str) -> None:
+    """Die ZULAESSIGE Richtung: die Vorabfreigabe wird enger als die Sperre."""
+    _38_json(root, MANIFEST_CC_38,
+             lambda d: d["skill_frontmatter"]["tool_names"].__setitem__("edit", ["Edit"]))
+
+
+sonde("38a", "Ein Verb weder abgebildet noch erklaert - der Stand bis 0.39.0",
+      _38_deklaration_weg, "kennt das Werkzeugverb 'read' nicht, und tool_names_unmapped")
+
+sonde("38b", "Erklaerte Nichtabbildung ohne Begruendung - eine Behauptung",
+      _38_notiz_weg, "'_tool_names_unmapped_note' fehlt")
+
+sonde("38c", "Abgebildet und zugleich fuer nicht abgebildet erklaert",
+      _38_beides_zugleich, "Beides zugleich geht nicht")
+
+sonde("38d", "Ein Verb der Durchsetzungsschicht in der Abbildung der Quelle",
+      _38_fremder_schluessel, "kein Verb des Frontmatter-Vokabulars")
+
+sonde("38e", "Die Sperrliste wird enger als die Vorabfreigabe - der gefaehrliche Fall",
+      _38_richtung_verdreht, "enger als die Vorabfreigabe")
+
+sonde("38f", "Eine Quelle nennt in allowed-tools ein fremdes Verb - bis 0.39.0 wurde "
+      "es woertlich als Werkzeugname durchgereicht",
+      _38_quelle_allowed, "allowed-tools nennt das Verb 'search'")
+
+sonde("38g", "Eine Quelle nennt in permissions.deny ein fremdes Verb - bis 0.39.0 "
+      "fiel die Sperre lautlos aus",
+      _38_quelle_deny, "permissions.deny nennt das Verb 'write'")
+
+sonde("38h", "Verlorener Anker - das Vokabular verliert seinen Namen",
+      _38_anker_weg, "Pruefung 38 hat ihren Anker verloren")
+
+sonde("38i", "Verlorener Anker - keine Quelle mit Frontmatter mehr",
+      _38_quellen_weg, "keine Quelle mit Frontmatter gefunden")
+
+gegenprobe("38a", "Die unveraenderten Packs bleiben unbeanstandet - eines bildet ab, "
+           "eines erklaert", None, "Vokabular")
+
+gegenprobe("38b", "Eine Vorabfreigabe, die ENGER ist als die Sperre, bleibt "
+           "unbeanstandet - die zulaessige Richtung",
+           _38_engere_vorabfreigabe, "enger als die Vorabfreigabe")
+
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

@@ -81,6 +81,28 @@ Prüft (statisch, ohne laufenden KI-Client):
  31. Durchsetzungstiefe (D-60): Die Summen der Fachmatrix eines Client Packs sind aus ihr
      ausgerechnet - Zeilenzahl und Anzahl je Einstufung. Eine Zeile zaehlt bei ihrer
      schwaechsten Einstufung; eine Kanalgrenze ist keine technische Durchsetzung (D-47)
+ 32. Hook-Eingabeschema (D-62, B06): Der Schutz-Hook wird mit dem VOLLSTAENDIGEN
+     Umschlag jedes aufgezeichneten Schemas aufgerufen, nicht mit selbst gebauter
+     Eingabe - und er darf an einem Feld des Umschlags nicht haengenbleiben
+ 33. Werkzeugsperre je Skill (D-64 bis D-66): Die erzeugte Fassung bildet
+     permissions.deny ab, und kein Eintrag traegt ein Argumentmuster - ein solcher
+     wirkt gemessen LAUTLOS gar nicht
+ 34. Startwerkzeug fuer Unteragenten (D-70): Ein Pack nennt es in agent_start_tools
+     oder erklaert seine Abwesenheit ausdruecklich; wer Zeile A1 ohne offenen
+     VERIFY-Marker zusagt, muss nennen statt erklaeren
+ 35. Agentenprofil ohne Startwerkzeug (D-73): Weder agent_frontmatter.tool_names
+     bildet eines ab, noch nennt ein ausgeliefertes Profil eines. Eine Verankerung -
+     sie faengt heute nichts
+ 36. Zellen des Decision Logs (D-75): Jede Tabellenzeile fuehrt so viele Zellen wie
+     der Kopf ihrer Tabelle; ein maskierter Strich zaehlt als Inhalt
+ 37. Berechtigungskoerbe (D-77): Die drei Koerbe der installierten Datei werden gegen
+     die aus der Kernquelle erzeugte Regelmenge gehalten. Fehlen ist immer ein Fehler,
+     Ueberzaehliges nur in ask und allow; ein gefuellter Befehlsschlitz traegt das
+     Praefixzeichen des Clients nicht
+ 38. Werkzeugabbildung des Frontmatters (D-78 bis D-80): Jedes Verb des
+     Frontmatter-Vokabulars ist je Pack abgebildet oder ausdruecklich als nicht
+     abgebildet erklaert; die Sperrliste hook_tools ist fuer kein Verbpaar enger als
+     die Vorabfreigabe tool_names; keine Quelle nennt ein Verb ausserhalb des Vokabulars
 
 Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 30 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
@@ -2961,8 +2983,14 @@ def check_hook_eingabeschema(root: str, man: dict) -> None:
 # WAS SIE NICHT LEISTET: Sie misst am erzeugten Text, nicht am Client. Dass
 # disallowed-tools wirklich sperrt, belegt die Erhebung
 # (tests/protocols/2026-09-13-erhebung-disallowed-tools.md), nicht der Validator.
-DENY_VERB_EIMER_33 = {"edit": "write", "write": "write", "exec": "exec",
-                      "read": "read", "search": "search"}
+#
+# SEIT 0.40.0 fuehrt sie dasselbe Vokabular wie die Quelle (D-79): read, grep, glob,
+# edit, exec. Bis dahin fuehrte sie 'write' und 'search' - zwei Verben der
+# Durchsetzungsschicht - und kannte 'grep' und 'glob' nicht, obwohl jede der vierzehn
+# Quellen sie im Nachbarfeld desselben Frontmatters nennt. Sie teilte damit genau die
+# Luecke, die sie haette fangen sollen.
+DENY_VERB_EIMER_33 = {"read": "read", "grep": "search", "glob": "search",
+                      "edit": "write", "exec": "exec"}
 
 
 def _deny_eintraege(fm_text: str) -> list[str]:
@@ -2996,7 +3024,11 @@ def check_skill_deny_abbildung(root: str, man: dict) -> None:
     # mehr gibt - und bestuende dabei leise (D-23).
     inst = os.path.join(root, KERN, "install.py")
     quelle = read(inst) if os.path.isfile(inst) else ""
-    for anker in ("def deny_abbilden(", "DENY_VERB_EIMER"):
+    # Der zweite Anker hiess bis 0.39.0 DENY_VERB_EIMER und lag in install.py; seit
+    # 0.40.0 steht die Bruecke in clientmap (D-78). Der Ankerwechsel ist nachgezogen
+    # worden, weil der Sondenlauf ihn gemeldet hat - der Validatorlauf des Repositoriums
+    # konnte es nicht, weil Pruefung 33 dort gar nicht laeuft (B02).
+    for anker in ("def deny_abbilden(", "clientmap.VERB_BRUECKE"):
         if anker not in quelle:
             err(f"{KERN}/install.py: '{anker}' fehlt. Pruefung 33 misst die Abbildung von "
                 f"permissions.deny auf {deny_feld}; ohne sie prueft sie einen Aufbau, den "
@@ -3447,6 +3479,202 @@ def check_decision_log_zellen(root: str) -> None:
             f"bestuende leise (D-23)")
 
 
+# Pruefung 38: Eine Quelle, ein Vokabular - und die Sperrliste ist nie enger als die
+# Vorabfreigabe (CR-2026-062, D-78 bis D-80).
+#
+# ANLASS. Ein Manifest fuehrt VIER Werkzeugabbildungen, nicht zwei: skill_frontmatter.
+# tool_names, agent_frontmatter.tool_names, hook_tools und permission_tools - dazu
+# agent_start_tools daneben. Drei Vokabulare stossen darin aufeinander: das der Quelle
+# (read, grep, glob, edit, exec), das des Hooks (read, search, exec, write) und das der
+# Berechtigungsdatei (read, search, write, exec, fetch, mcp).
+#
+# Gemessen am 2026-09-13 (tests/protocols/2026-09-13-gegenpruefung-werkzeugabbildung.md):
+# DREI der vier Abbildungen brechen ab, wenn ihnen ein Verb fehlt - die vierte reichte
+# es woertlich durch, und sie kommt zweimal vor. Eine geleerte tool_names-Abbildung
+# lieferte 'tools: read, grep, glob' im Agentenprofil fw-reviewer, also drei Namen, die
+# dieser Client nicht kennt (M16); ein 'permissions.deny: glob' erzeugte lautlos keine
+# Sperre, und der Validator meldete 0 Fehler (M6).
+#
+# VIER GEGENSTAENDE:
+#   1. Der verlorene Anker. Fehlen clientmap.FRONTMATTER_VERBEN oder VERB_BRUECKE,
+#      meldet diese Pruefung das selbst - sonst bestuende sie leise (D-23).
+#   2. Die Deklaration je Pack. Jedes Verb des Vokabulars ist in tool_names abgebildet
+#      ODER in tool_names_unmapped erklaert, samt nicht leerer _tool_names_unmapped_note;
+#      beides zugleich ist ein Widerspruch, ein Schluessel ausserhalb des Vokabulars ein
+#      Schreibfehler. Bauform wie Pruefung 26 (hook_tools_absent, D-47) und Pruefung 34.
+#   3. Die RICHTUNG zwischen Vorabfreigabe und Sperre. Fuer jedes Verbpaar der Bruecke
+#      muss hook_tools mindestens so weit sein wie tool_names. Heute ist es das bei allen
+#      fuenf; die Abweichung, die es gibt, geht in die zulaessige Richtung
+#      (tool_names.edit fuehrt Edit und Write, hook_tools.write zusaetzlich NotebookEdit).
+#      Umgekehrt waere sie eine Luecke: Ein Skill, der 'edit' vorab freigibt und 'edit'
+#      sperrt, bekaeme ein Werkzeug freigegeben, das die Sperre nicht erfasst.
+#   4. Die Quellen. Kein ausgeliefertes SKILL.md und kein Agentenprofil nennt in
+#      allowed-tools oder permissions.deny ein Verb ausserhalb des Vokabulars.
+#
+# WAS SIE HEUTE FAENGT: bei den beiden Packs nichts - sie sind in Ordnung, seit
+# devin-desktop seine fuenf nicht abgebildeten Verben deklariert. Gegenstand 3 ist eine
+# VERANKERUNG wie Pruefung 35 und 36; Gegenstand 2 faengt gegen 0.39.0 zehn Fundstellen,
+# Gegenstand 4 keine. Das steht so im Wirkungsnachweis und ist kein Abzaehlen von
+# Befunden, sondern eines von Deklarationen.
+#
+# WAS SIE NICHT LEISTET: Sie belegt nicht, dass die Werkzeugnamen eines Packs RICHTIG
+# sind - das kann nur eine Erhebung, und fuer devin-desktop steht sie aus. Sie belegt,
+# dass jedes Verb des Vokabulars eine Antwort hat und dass die beiden Listen nicht in
+# die gefaehrliche Richtung auseinanderlaufen.
+FRONTMATTER_BLOECKE = ("skill_frontmatter", "agent_frontmatter")
+
+
+def _frontmatter_verben(text: str) -> tuple[list[str], list[str]]:
+    """Die groben Verben aus allowed-tools und permissions.deny eines Frontmatters."""
+    fm = text.replace("\r\n", "\n")
+    if not fm.startswith("---\n") or "\n---\n" not in fm:
+        return [], []
+    fm = fm.split("\n---\n", 1)[0][4:] + "\n"
+    m = re.search(r"^allowed-tools:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
+    erlaubt = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
+    verboten: list[str] = []
+    m = re.search(r"^permissions:[ \t]*\n((?:[ \t]+\S.*\n)+)", fm, re.M)
+    if m:
+        m2 = re.search(r"^([ \t]+)deny:[ \t]*\n((?:[ \t]+-[ \t]+.*\n)+)", m.group(1), re.M)
+        if m2:
+            verboten = [z.strip().lstrip("-").strip() for z in m2.group(2).splitlines()
+                        if z.strip() and "(" not in z]
+    return erlaubt, verboten
+
+
+def _quelldateien(root: str) -> list[tuple[str, str]]:
+    """Die ausgelieferten Quellen mit Frontmatter-Verben: Skills und Agentenprofile."""
+    out: list[tuple[str, str]] = []
+    basis = os.path.join(root, KERN, "framework")
+    for wurzel, verzeichnisse, dateien in os.walk(basis):
+        verzeichnisse[:] = sorted(d for d in verzeichnisse if d != "__pycache__")
+        for datei in sorted(dateien):
+            if datei != "SKILL.md" and not wurzel.endswith(os.sep + "agents"):
+                continue
+            if not datei.endswith(".md"):
+                continue
+            pfad = os.path.join(wurzel, datei)
+            out.append((os.path.relpath(pfad, root).replace(os.sep, "/"), read(pfad)))
+    return out
+
+
+def check_werkzeugabbildung(root: str) -> None:
+    """Pruefung 38 (D-78 bis D-80): eine Quelle, ein Vokabular, eine Richtung."""
+    kern = os.path.join(root, KERN)
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        warn(f"{KERN}/clientmap.py nicht gefunden - Pruefung 38 laeuft nicht")
+        return
+    # Die Sonde auf den verlorenen Anker (seit 0.32.0): Diese Pruefung findet ihren
+    # Gegenstand ueber zwei Namen des Moduls. Verschwinden sie, bestuende sie leise.
+    fehlend = [n for n in ("FRONTMATTER_VERBEN", "VERB_BRUECKE")
+               if not getattr(clientmap, n, None)]
+    if fehlend:
+        err(f"{KERN}/clientmap.py: {', '.join(fehlend)} fehlt - Pruefung 38 hat ihren "
+            f"Anker verloren und wuerde leise bestehen (D-23, D-78)")
+        return
+    vokabular = tuple(clientmap.FRONTMATTER_VERBEN)
+    bruecke = dict(clientmap.VERB_BRUECKE)
+
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    gesehen = 0
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        try:
+            man = json.loads(read(pfad))
+        except ValueError:
+            continue
+        gesehen += 1
+        hook = man.get("hook_tools") or {}
+        for block in FRONTMATTER_BLOECKE:
+            fmt = man.get(block)
+            if fmt is None:
+                err(f"{rel}: Block '{block}' fehlt - ohne ihn ist nicht entschieden, "
+                    f"welche Werkzeugnamen die installierte Fassung traegt (D-78)")
+                continue
+            abbildung = fmt.get("tool_names")
+            if not isinstance(abbildung, dict):
+                err(f"{rel}: {block}.tool_names fehlt oder ist kein Objekt")
+                continue
+            erklaert = fmt.get("tool_names_unmapped") or []
+            if not isinstance(erklaert, list):
+                err(f"{rel}: {block}.tool_names_unmapped ist keine Liste")
+                erklaert = []
+            if erklaert and not str(fmt.get("_tool_names_unmapped_note") or "").strip():
+                err(f"{rel}: {block}.tool_names_unmapped nennt {sorted(erklaert)}, aber "
+                    f"'_tool_names_unmapped_note' fehlt oder ist leer. Ein Verb nicht "
+                    f"abzubilden ist eine Aussage ueber den Client oder ueber den "
+                    f"Belegstand - sie gehoert begruendet, nicht bloss eingetragen "
+                    f"(D-78, Bauform wie hook_tools_absent nach D-47)")
+            for schluessel in sorted(abbildung):
+                if schluessel not in vokabular:
+                    err(f"{rel}: {block}.tool_names bildet '{schluessel}' ab - kein "
+                        f"Verb des Frontmatter-Vokabulars {list(vokabular)}. Eine "
+                        f"Quelle des Kerns kann es nicht schreiben, die Abbildung "
+                        f"laeuft also ins Leere (D-78)")
+            for verb in vokabular:
+                hat = verb in abbildung
+                erklaert_hier = verb in erklaert
+                if hat and erklaert_hier:
+                    err(f"{rel}: {block} bildet das Verb '{verb}' ab UND erklaert es "
+                        f"zugleich fuer nicht abgebildet. Beides zugleich geht nicht - "
+                        f"eine der beiden Aussagen ist falsch (D-78)")
+                elif not hat and not erklaert_hier:
+                    err(f"{rel}: {block}.tool_names kennt das Werkzeugverb '{verb}' "
+                        f"nicht, und tool_names_unmapped erklaert die Abwesenheit "
+                        f"nicht. Bis 0.39.0 wurde das Verb dann WOERTLICH als "
+                        f"Werkzeugname durchgereicht; eine Luecke allein ist keine "
+                        f"Aussage (D-78)")
+
+            # Gegenstand 3: Die Sperrliste darf nicht enger sein als die Vorabfreigabe.
+            for verb in sorted(abbildung):
+                ziel = bruecke.get(verb)
+                if ziel is None or ziel not in hook:
+                    continue
+                vorab = {str(x) for x in (abbildung.get(verb) or [])}
+                sperre = {str(x) for x in (hook.get(ziel) or [])}
+                zuviel = sorted(vorab - sperre)
+                if zuviel:
+                    err(f"{rel}: {block}.tool_names['{verb}'] gibt {zuviel} vorab "
+                        f"frei, hook_tools['{ziel}'] fuehrt sie nicht. Die Sperrliste "
+                        f"ist damit enger als die Vorabfreigabe: Ein Skill, der "
+                        f"'{verb}' freigibt und '{verb}' sperrt, bekaeme ein Werkzeug "
+                        f"freigegeben, das die Sperre nicht erfasst. Die umgekehrte "
+                        f"Abweichung ist zulaessig (D-80)")
+    if not gesehen:
+        err(f"{KERN}/clients: kein Manifest gefunden. Pruefung 38 misst die "
+            f"Werkzeugabbildungen der Packs; ohne sie prueft sie nichts und bestuende "
+            f"leise (D-23)")
+
+    # Gegenstand 4: die Quellen selbst.
+    quellen = _quelldateien(root)
+    if not quellen:
+        err(f"{KERN}/framework: keine Quelle mit Frontmatter gefunden. Pruefung 38 "
+            f"misst die Verben der ausgelieferten Skills und Agentenprofile; ohne sie "
+            f"prueft der vierte Gegenstand nichts und bestuende leise (D-23)")
+        return
+    for rel, text in quellen:
+        erlaubt, verboten = _frontmatter_verben(text)
+        for feld, verben in (("allowed-tools", erlaubt), ("permissions.deny", verboten)):
+            for verb in verben:
+                if verb not in vokabular:
+                    err(f"{rel}: {feld} nennt das Verb '{verb}' - das Vokabular des "
+                        f"Frontmatters kennt nur {list(vokabular)}. In allowed-tools "
+                        f"wurde es bis 0.39.0 woertlich als Werkzeugname "
+                        f"durchgereicht, in permissions.deny fiel es lautlos aus "
+                        f"(D-78, D-79)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -3501,6 +3729,7 @@ def main() -> int:
     check_agent_startwerkzeug(root)
     check_agent_profil_ohne_start(root)
     check_decision_log_zellen(root)
+    check_werkzeugabbildung(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

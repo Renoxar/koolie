@@ -2,6 +2,112 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.40.0] - 2026-09-13
+
+**Eine Quelle, ein Vokabular.** Ein Manifest fuehrt **vier** Werkzeugabbildungen, nicht
+zwei - und drei davon brechen ab, wenn ihnen ein Verb fehlt. Die vierte reichte es
+woertlich durch, und sie kommt zweimal vor: einmal fuer die Vorabfreigabe eines Skills,
+einmal fuer das rein lesende Reviewprofil. Gegengeprueft
+(`tests/protocols/2026-09-13-gegenpruefung-werkzeugabbildung.md`, zwanzig Messungen mit
+sieben Kontrolllaeufen, `CR-2026-062`). **Der Kandidat, der seit fuenf Releases in der
+Uebergabe stand, bestaetigt sich - und seine vorgeschlagene Behebung war die falsche.**
+
+### Neu
+
+- **Ein deklariertes Vokabular an einer Stelle** (D-78): `clientmap.FRONTMATTER_VERBEN`
+  nennt die fuenf Verben, die ein Skill oder Agentenprofil des Kerns schreiben darf;
+  `clientmap.VERB_BRUECKE` bildet sie auf das Vokabular der Durchsetzung ab
+  (`grep`/`glob` -> `search`, `edit` -> `write`). `DENY_VERB_EIMER` in `install.py`
+  entfaellt - dieselbe Bruecke stand dort in einer zweiten, unvollstaendigen Fassung.
+- **`clientmap.frontmatter_werkzeuge(man, block, verb)`** ist der einzige Weg von einem
+  Verb zu Werkzeugnamen. Drei Ausgaenge, keiner davon still: abgebildet, in
+  `tool_names_unmapped` **deklariert**, oder `AbbildungsFehler`. Bauform wie
+  `hook_tools_absent` nach D-47.
+- **Pruefung 38** (D-78 bis D-80) mit vier Gegenstaenden: der verlorene Anker; die
+  Deklaration je Pack (jedes Verb abgebildet oder erklaert, nie beides, kein Schluessel
+  ausserhalb des Vokabulars, nicht leere `_tool_names_unmapped_note`); die **Richtung**
+  zwischen Vorabfreigabe und Sperre; die Verben der ausgelieferten Quellen.
+- **Neun Sonden und zwei Gegenproben** zu Pruefung 38. Die zweite Gegenprobe ist die
+  wichtigere: Eine Vorabfreigabe, die **enger** ist als die Sperre, bleibt
+  unbeanstandet - das ist die zulaessige Richtung und heute der Fall.
+- **Der Kopfkommentar des Validators listet die Pruefungen 32 bis 38.** Er endete bei
+  31, seit fuenf Releases (Kandidat 4 der Uebergabe, `CR-2026-062` E7).
+
+### Behoben
+
+- **Ein unbekanntes Verb in `allowed-tools` wurde woertlich als Werkzeugname
+  durchgereicht.** Gemessen: Aus `allowed-tools: banane` wurde in der installierten
+  Fassung der Werkzeugname `banane`; mit geleerten `tool_names`-Bloecken lief die
+  Installation durch und lieferte `fw-reviewer` mit `tools: read, grep, glob` aus - drei
+  Namen, die dieser Client nicht fuehrt. Damit stellte die Abbildung stillschweigend den
+  Fall her, den Zeile **A1** desselben Packs als nicht gemessen ausweist.
+- **Ein unbekanntes Verb in `permissions.deny` fiel lautlos ganz aus** (D-79). Gemessen:
+  `deny: [glob, grep]` erzeugte **keine** Werkzeugsperre, und der Validator meldete 0
+  Fehler. `grep` und `glob` sind dabei die **meistgenannten** Verben des Vokabulars -
+  vierzehn Fundstellen je, im Nachbarfeld desselben Frontmatters. Sie bilden jetzt auf
+  `hook_tools.search` ab.
+- **`devin-desktop` deklariert seine fuenf nicht abgebildeten Verben** in beiden
+  Bloecken, samt `_tool_names_unmapped_note`. Die Notiz haelt fest, dass die
+  Werkzeugnamen dieses Clients **unerhoben** sind - Zeile S3 sagt das seit 0.7.0 selbst.
+- **Die eigene Verbtabelle der Pruefung 33 teilte die Luecke, die sie fangen sollte.**
+  Sie fuehrte `write` und `search` - zwei Verben der Durchsetzungsschicht - und kannte
+  `grep` und `glob` nicht. Sie bleibt bewusst eine EIGENE Tabelle (sonst teilte sie jeden
+  Fehler der Abbildung), fuehrt aber jetzt dasselbe Vokabular. **Ihr Anker zeigt auf den
+  neuen Ort der Bruecke** - gefunden hat das der Sondenlauf, nicht der Validatorlauf des
+  Repositoriums: Pruefung 33 laeuft dort gar nicht (Befund B02).
+
+### Entschieden, nicht geaendert
+
+- **Die beiden Listen werden nicht inhaltlich vereinheitlicht** (D-80, E1). Gemessen ist
+  die Sperrliste bei allen fuenf Verbpaaren mindestens so weit wie die Vorabfreigabe -
+  und das ist die Richtung, die man will. **`tool_names` auf `hook_tools` zu heben waere
+  eine Ausweitung der Vorabfreigabe**, die Gegenrichtung eine Luecke in einer Sperre.
+  Vereinheitlicht wird deshalb die **Bruecke** und die Disziplin, nicht der Inhalt. Die
+  Vertagung seit 0.35.0 war richtig begruendet und ist damit ueberholt.
+- **Der Widerspruch bei `devin-desktop` wird festgehalten, nicht behoben** (E6). Dasselbe
+  Manifest erklaert unter `hook_tools_absent`, dieser Client fuehre kein eigenes
+  Suchwerkzeug - und jede installierte Skilldatei traegt `grep` und `glob` als
+  Werkzeugnamen. Welche Seite falsch ist, entscheidet eine Erhebung; eine Behebung waere
+  eine Vermutung.
+
+### Bekannte Einschraenkungen
+
+- **Die erzeugten Dateien aendern sich nicht, Byte fuer Byte** - fuer beide Packs
+  gemessen. Das ist der Beleg dafuer, dass hier eine Disziplin eingezogen wird und keine
+  Zusage verschoben; es heisst aber auch: **Pruefung 38 faengt bei den beiden Packs
+  heute nichts.**
+- **Gegenstand 3 (die Richtung) ist eine Verankerung, keine Behebung** - wie Pruefung 35
+  und 36. Ihr Wert haengt allein an ihren Sonden.
+- **Der Gegenbeweis hat zwei Zuschnitte, und beide gehoeren genannt.** Wie ausgeliefert
+  meldet Pruefung 38 gegen 0.39.0 **eine** Fundstelle: den verlorenen Anker, weil
+  `clientmap.py` dort das Vokabular noch nicht fuehrt. Mit neutralisiertem Anker sind es
+  **zehn** - und das sind Deklarationsluecken, keine Fehlfunktionen.
+- **Ob `Grep, Glob` in `disallowed-tools` wirklich wirken, ist nicht gemessen.** Die
+  Abbildung erzeugt ab jetzt etwas, dessen Wirkung offen ist - weniger belegt als bei
+  `Write, Edit` (D-64) und mehr als das bisherige Nichts.
+- **Pruefung 38 zaehlt Deklarationen, nicht Richtigkeit.** Ein Pack, das fuenf falsche
+  Werkzeugnamen sauber deklariert, besteht sie. Die Werkzeugnamen von `devin-desktop`
+  bleiben unerhoben.
+- **Kein Lauf gegen einen Client.** Dass ein nicht existierender Werkzeugname keine
+  Wirkung hat, ist Erwartung, nicht Messung.
+
+### Migrationshinweis
+
+**Ein Projekt mit eigenen `prj-*`-Skills kann ab 0.40.0 einen Installationsabbruch
+bekommen, wo bisher nichts geschah.** Betroffen sind zwei Faelle, und beide waren vorher
+stille Fehlschlaege:
+
+- **Ein Verb ausserhalb des Vokabulars in `allowed-tools`** (`search`, `write`, `fetch`,
+  `mcp` oder ein Schreibfehler). Es wurde bisher woertlich als Werkzeugname
+  durchgereicht. Richtig sind `read`, `grep`, `glob`, `edit`, `exec`.
+- **Ein Verb ausserhalb des Vokabulars in `permissions.deny`.** Die Verben `write` und
+  `search` waren dort bis 0.39.0 zulaessig und sind es nicht mehr - `edit` und die
+  beiden Suchverben treten an ihre Stelle. Ein solcher Eintrag erzeugte bisher entweder
+  eine Sperre unter einem fremden Namen oder gar nichts.
+
+**Ein eigenes Client Pack braucht `tool_names_unmapped` fuer jedes Verb, das es nicht
+abbildet**, samt `_tool_names_unmapped_note`; Pruefung 38 meldet das Fehlen.
+
 ## [0.39.0] - 2026-09-13
 
 **Die Berechtigungsdatei wird nachgezaehlt.** Sie traegt 65 Regeln; geprueft waren
