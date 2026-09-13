@@ -1000,12 +1000,23 @@ def _entscheidung_entkoppeln(root: str) -> None:
 
 
 def _grenzfall_ergaenzen(root: str) -> None:
-    """Gegenprobe: eine weitere Zeile samt mitgezaehlter Anzahl."""
+    """Gegenprobe: eine weitere Zeile samt mitgezaehlter Anzahl.
+
+    ZWEIMAL an einem neuen Grenzfall gebrochen, zuletzt mit 0.36.0 an G-18: Die
+    Anzahl war woertlich verankert (17 -> 18), und die synthetische Kennung war
+    G-18 - dieselbe, die dieses Release wirklich vergeben hat. Beide Fallen sind
+    in der Uebergabe benannt gewesen, und beide sind trotzdem zugeschnappt.
+
+    Die Kennung ist seither G-99 und kollidiert mit keinem echten Fall. Die Anzahl
+    bleibt woertlich: Ob eine Gegenprobe ihre Summen ABLEITEN soll, ist eine
+    Ermessensfrage und nicht entschieden - eine abgeleitete Summe verdoppelt
+    womoeglich nur die Rechenweise der Pruefung, statt sie zu belegen.
+    """
     pfad = _p(root, EDGE_30)
-    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 17 |",
-                              "| Anzahl der Grenzf\u00e4lle | 18 |", 1)
+    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 18 |",
+                              "| Anzahl der Grenzf\u00e4lle | 19 |", 1)
     marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
-    neu = ("\r\n| G-18 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
+    neu = ("\r\n| G-99 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
            "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
     schreib(pfad, text.replace(marke, neu + marke, 1))
 
@@ -1164,6 +1175,7 @@ sonden_kandidatenpruefung()
 # Gegenprobe ist die wichtigere: Eine zusaetzliche Matrixzeile samt nachgezogener Summe
 # darf nicht auffallen, sonst waere die Pruefung eine Bremse statt einer Pruefung.
 PACK_31 = "leitwerk-core/clients/claude-code/CLIENT_PACK.md"
+UEBERSICHT_31 = "leitwerk-core/clients/README.md"
 
 
 def _summe_verfaelschen(root: str) -> None:
@@ -1206,6 +1218,11 @@ def _zeile_mit_summe(root: str) -> None:
                  ("| 0 von 31 |", "| 0 von 32 |")):
         t = t.replace(a, b, 1)
     schreib(pfad, t)
+    # Seit 0.36.0 rechnet Pruefung 31 dieselbe Zahl auch in der Uebersicht der Ablage nach
+    # (D-71). Eine Gegenprobe, die nur das Pack nachzieht, faellt seither an der zweiten
+    # Stelle - und genau das ist der Zweck der Erweiterung.
+    u = P(root, UEBERSICHT_31.replace("/", os.sep))
+    schreib(u, lies(u).replace("| entwurf | 22 von 31 |", "| entwurf | 23 von 32 |", 1))
 
 
 sonde("31a", "Verfaelschte Anzahl je Einstufung in der Zusammenfassung",
@@ -1220,7 +1237,27 @@ sonde("31c", "Fehlende Zusammenfassung - die Pruefung darf nicht leise bestehen"
 sonde("31d", "Matrixzeile ohne Einstufung",
       _zeile_ohne_einstufung, "ohne Einstufung: Z9")
 
-gegenprobe("31", "Zusaetzliche Matrixzeile samt nachgezogener Summe",
+def _uebersicht_verfaelschen(root: str) -> None:
+    pfad = P(root, UEBERSICHT_31.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace("| entwurf | 22 von 31 |",
+                                     "| entwurf | 25 von 29 |", 1))
+
+
+def _uebersichtszeile_entfernen(root: str) -> None:
+    pfad = P(root, UEBERSICHT_31.replace("/", os.sep))
+    t = lies(pfad)
+    i = t.index("| `claude-code` | `CP-CC` |")
+    ende = t.index("\r\n", i) + 2
+    schreib(pfad, t[:i] + t[ende:])
+
+
+sonde("31e", "Ueberholte Zahl in der Uebersicht der Ablage - der Stand bis 0.35.0",
+      _uebersicht_verfaelschen, "technisch durchgesetzte Zeilen; aus der Faehigkeitsmatrix")
+
+sonde("31f", "Pack ohne Zeile in der Uebersicht", _uebersichtszeile_entfernen,
+      "kein Eintrag fuer das Client Pack 'claude-code'")
+
+gegenprobe("31", "Zusaetzliche Matrixzeile samt nachgezogener Summe an BEIDEN Stellen",
            _zeile_mit_summe, "gezaehlt sind")
 
 
@@ -1306,6 +1343,26 @@ sonde("32e", "Secret-Muster wieder schreibungssensitiv - nur re.I faengt die nic
 sonde("32f", "Verlorener Anker - die Pruefung darf nicht leise bestehen",
       _anker_verlieren, "'def ereignis_lesen(' fehlt")
 
+def _unteragent_ausnehmen(root: str) -> None:
+    """Ein Rueckfall, den nur der Unteragenten-Umschlag faengt (CR-2026-058 E3).
+
+    Simuliert die naheliegende Regression: Jemand nimmt Aufrufe aus einem Unteragenten
+    von der Pruefung aus - etwa weil sie "schon oben geprueft" seien. Keine der uebrigen
+    sechs Sonden zu 32 sieht das: Ohne agent_type im Umschlag greift die Ausnahme nicht,
+    und der Hook verhaelt sich in jedem anderen Fall unveraendert.
+    """
+    pfad = P(root, "leitwerk-core/tests/scripts/hook-check-secrets.py".replace("/", os.sep))
+    t = lies(pfad)
+    marke = "    tool_name = payload.get(\"tool_name\")"
+    i = t.index(marke)
+    schreib(pfad, t[:i] + "    if payload.get(\"agent_type\"):\r\n"
+            "        return \"read\", {}, PROJEKTWURZEL\r\n" + t[i:])
+
+
+sonde("32g", "Unteragenten-Umschlag von der Pruefung ausgenommen - ein Rueckfall, den "
+      "keine der uebrigen Sonden sieht",
+      _unteragent_ausnehmen, "Operation aus einem Unteragenten anders als erwartet")
+
 gegenprobe("32", "Zusaetzliches Pfadfeld im Manifest ist eine zulaessige Verschaerfung",
            _zusaetzliches_pfadfeld, "Befund B06")
 
@@ -1386,6 +1443,82 @@ def sonden_skill_deny() -> None:
 
 sonden_skill_deny()
 
+
+
+# --- 34: Das Startwerkzeug fuer Unteragenten ist genannt oder erklaert (D-70) -----
+#
+# Anlass ist ein gemessener Befund vom 2026-09-13: Ein Skill kann einen Unteragenten
+# starten, die Skill-Sperre reicht in ihn hinein - und das Startwerkzeug stand in keiner
+# Werkzeugliste eines Manifests. Bauform der Deklaration wie hook_tools_absent (D-47).
+#
+# Die letzte Sonde ist die interessanteste: Sie belegt die Verschaerfung, die diese
+# Pruefung bei ihrem ERSTEN Lauf selbst gelernt hat. Ohne den Vorbehalt fiel
+# devin-desktop durch, obwohl es ehrlich ist - seine Zeile A1 traegt einen offenen
+# VERIFY-Marker, und die Praeambel des Packs sagt, die Einstufung nenne die VORGESEHENE
+# Tiefe. Die Einstufung allein sagt nicht, ob eine Zusage schon gilt.
+MANIFEST_CC_34 = "leitwerk-core/clients/claude-code/manifest.json"
+MANIFEST_DD_34 = "leitwerk-core/clients/devin-desktop/manifest.json"
+PACK_DD_34 = "leitwerk-core/clients/devin-desktop/CLIENT_PACK.md"
+
+
+def _34_feld_entfernen(root: str) -> None:
+    pfad = P(root, MANIFEST_CC_34.replace("/", os.sep))
+    t = lies(pfad)
+    i = t.index('  "agent_start_tools": ["Agent", "Task"],')
+    ende = t.index("\r\n", i) + 2
+    schreib(pfad, t[:i] + t[ende:])
+
+
+def _34_leer_ohne_erklaerung(root: str) -> None:
+    pfad = P(root, MANIFEST_CC_34.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace('"agent_start_tools": ["Agent", "Task"],',
+                                     '"agent_start_tools": [],', 1))
+
+
+def _34_erklaerung_ohne_notiz(root: str) -> None:
+    pfad = P(root, MANIFEST_DD_34.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace('"_agent_start_tools_absent_note"',
+                                     '"_agent_start_tools_absent_hinweis"', 1))
+
+
+def _34_beides_zugleich(root: str) -> None:
+    pfad = P(root, MANIFEST_CC_34.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace(
+        '"agent_start_tools": ["Agent", "Task"],',
+        '"agent_start_tools": ["Agent", "Task"],\r\n'
+        '  "agent_start_tools_absent": ["unerhoben"],\r\n'
+        '  "_agent_start_tools_absent_note": "Sonde.",', 1))
+
+
+def _34_a1_ohne_vorbehalt(root: str) -> None:
+    """devin-desktop sagt A1 ohne VERIFY-Marker zu, kann das Werkzeug aber nicht nennen."""
+    pfad = P(root, PACK_DD_34.replace("/", os.sep))
+    t = lies(pfad)
+    i = t.index("| A1 |")
+    ende = t.index("\r\n", i)
+    # Den Vorbehalt generisch entfernen, nicht woertlich: Pruefung 14 meldet jeden
+    # Clientnamen, auch in einer Sonde - und der Marker traegt ihn.
+    zeile = re.sub(r"<VERIFY[^>]*>", "(Sonde: Vorbehalt entfernt)", t[i:ende])
+    schreib(pfad, t[:i] + zeile + t[ende:])
+
+
+sonde("34a", "Manifest ohne Feld agent_start_tools - ein Kanal ohne Deklaration",
+      _34_feld_entfernen, "Feld 'agent_start_tools' fehlt")
+
+sonde("34b", "Leere Liste ohne erklaerte Abwesenheit - unerhoben oder abwesend?",
+      _34_leer_ohne_erklaerung, "ohne dass 'agent_start_tools_absent' die Abwesenheit")
+
+sonde("34c", "Erklaerte Abwesenheit ohne Begruendung - eine Behauptung",
+      _34_erklaerung_ohne_notiz, "'_agent_start_tools_absent_note' fehlt")
+
+sonde("34d", "Genannt und zugleich fuer abwesend erklaert - zwei Aussagen, eine falsch",
+      _34_beides_zugleich, "Beides zugleich geht nicht")
+
+sonde("34e", "Zeile A1 ohne Vorbehalt zugesagt, Startwerkzeug aber nur erklaert",
+      _34_a1_ohne_vorbehalt, "Wer Unteragenten zusagt, nennt das Werkzeug")
+
+gegenprobe("34", "Die unveraenderten Packs bleiben unbeanstandet - eines nennt, eines "
+           "erklaert mit offenem Vorbehalt", None, "agent_start_tools")
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

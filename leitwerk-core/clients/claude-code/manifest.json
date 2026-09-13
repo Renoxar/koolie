@@ -161,6 +161,8 @@
       ]
     }
   },
+  "agent_start_tools": ["Agent", "Task"],
+  "_agent_start_tools_note": "Das Werkzeug, mit dem ein Skill oder der Hauptagent einen Unteragenten startet (CR-2026-058, D-70). Gemessen am 2026-09-13 (tests/protocols/2026-09-13-erhebung-unteragent.md): BEIDE Schreibweisen wirken in disallowed-tools - der Start wurde jeweils abgewiesen, kein stiller Ausfall wie bei den Argumentmustern nach D-66. Die Kanaele nennen das Werkzeug allerdings verschieden, in derselben Sitzung und fuer denselben abgewiesenen Aufruf: Der Hook-Umschlag fuehrt tool_name Agent, permission_denials im JSON-Ergebnis fuehrt Task. Wer eine Abbildung oder eine Pruefung an den Namen haengt, muss wissen, welcher Kanal welchen fuehrt - deshalb stehen hier beide. Das Feld steht bewusst NEBEN hook_tools und permission_tools und nicht darin: Ein Unteragentenstart ist keines der vier Verben (read, search, exec, write), und die Aufrufe des Unteragenten SELBST laufen ohnehin unter ihren eigenen Werkzeugnamen durch den Hook - gemessen, einschliesslich Blockade, auch mit dem benannten Matcher, den clientmap.py erzeugt (D-69).",
   "permission_tools": {
     "read": [
       "Read"
