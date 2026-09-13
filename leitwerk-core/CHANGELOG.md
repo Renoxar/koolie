@@ -2,6 +2,68 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.38.0] - 2026-09-13
+
+**Der stumme Bruch wird laut.** Zwei Punkte standen seit mehreren Releases im
+Repositorium und waren nicht umgesetzt: die viermal aufgetretene Ermessensfrage, ob eine
+Gegenprobe ihre Summen ableiten soll, und der Pruefvorschlag aus dem 0.35.0-Protokoll zu
+den Zellen des Decision Logs. Beide sind gegengeprueft
+(`tests/protocols/2026-09-13-gegenpruefung-stumme-brueche.md`), **und die Gegenpruefung
+hat einen dritten Punkt gefunden, den keiner von beiden nennt.**
+
+### Neu
+
+- **Praeparationswaechter im Sondenskript** (`CR-2026-060`, D-74). `ersetzt()` prueft
+  jede Ersetzung einzeln auf ihre erwartete Trefferzahl und bricht ab, **ohne zu
+  schreiben**; `zeile_nach()` verlangt einen eindeutigen Anker; `frei()` prueft eine
+  synthetische Kennung vorab auf Kollision. `sonde()`, `gegenprobe()` und
+  `sonde_ohne_wert()` melden den Abbruch als `[Praeparation gebrochen]`; die neun
+  Buendelfunktionen laufen ueber `buendel()`, das denselben Abbruch meldet.
+  **Sieben Selbstproben belegen den Waechter**, statt ihn zu behaupten.
+- **Pruefung 36**: Jede Tabellenzeile in `governance/DECISION_LOG.md` fuehrt so viele
+  Zellen wie der Kopf ihrer Tabelle (D-75). **Sie faengt heute nichts** - eine
+  Verankerung, keine Behebung. **Ihr Gegenbeweis ist aber ein Abzaehlen und keine
+  Konstruktion:** gegen 0.34.0 vier Fundstellen, gegen 0.32.0 und 0.33.0 je eine.
+- **Eine gemeinsame Zellenzerlegung im Validator** (`tabellenzellen()`), verwendet an
+  allen vier Stellen, die bisher eigenhaendig zerlegten.
+
+### Behoben
+
+- **Pruefung 30 beanstandete einen GFM-korrekten Text.** Sie zerlegte mit `.split("|")`
+  und zaehlte einen **maskierten** Strich als Spaltentrenner; eine Grenzfallzeile mit
+  einem Codespan wie `Edit\|Write\|NotebookEdit` - der Schreibweise, die D-69 seit
+  0.36.0 traegt - meldete sie als neunspaltig, obwohl sie siebenspaltig rendert. Der
+  Fehlalarm war latent: Keine Grenzfallzeile trug bisher einen maskierten Strich.
+- **Die Gegenproben 30 und 31 konnten halb praeparieren.** `baumhash` belegt bei *n*
+  Ersetzungen "mindestens eine hat gegriffen", nie "alle" - gemessen fiel die
+  Gegenprobe 30 danach mit einer Meldung, die aussah, als haette sie einen echten
+  Fehler im Repositorium gefunden.
+
+### Entschieden, nicht geaendert
+
+- **Die Summen der Gegenproben bleiben woertlich verankert** (D-74, E1). Eine
+  abgeleitete Summe rechnet nach derselben Regel wie die Pruefung; rechnet die Pruefung
+  falsch, besteht die Gegenprobe trotzdem. **Der Preis bleibt:** Jede neue Matrixzeile
+  und jeder neue Grenzfall bricht die Verankerung weiterhin. Neu ist, dass der Bruch
+  sich als solcher meldet, mit dem Suchtext, der nicht mehr passt.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 36 faengt heute nichts**, und kein Gegenbeweis gegen den unmittelbaren
+  Vorstand kann das aendern. Ihr Gegenbeweis laeuft gegen 0.34.0.
+- **Sie prueft die Anzahl, nicht den Inhalt.** Eine Zeile, in der Begruendung und
+  Alternativen vertauscht sind, besteht sie.
+- **Der Praeparationswaechter deckt den Suchtext, nicht die Absicht.** Eine Ersetzung,
+  die trifft und das Falsche tut, findet er nicht.
+- **Drei der vier umgestellten Zerlegungsstellen aendern ihr Verhalten heute nicht.**
+  Der Umbau ist dort Vorsorge.
+- **Kein Lauf gegen einen Client.** Dieses Release aendert ausschliesslich Pruefwerkzeuge.
+
+### Migrationshinweis
+
+Keiner. Weder Laufzeitfassungen noch Berechtigungsdatei noch Overlay sind betroffen;
+keine Einstufung, keine Summe und keine Zusage aendert sich.
+
 ## [0.37.0] - 2026-09-13
 
 **Die drei Luecken aus 0.36.0 sind geschlossen - und alle drei zugunsten der Durchsetzung.**
