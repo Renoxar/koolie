@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
-| Version | 0.2.0 |
+| Version | 0.2.1 |
 
 ## 1. Schutzziele (normativ)
 
@@ -51,10 +51,14 @@ Die ausgelieferte Berechtigungsdatei setzt die Politik um (`[DOK]` für den Mech
 | Schreiben auf Quality-Gate- und Pipeline-Konfiguration | `Write(<CI_CONFIG_PATHS>)`, `Write(<QUALITY_GATE_CONFIG_PATHS>)` | deny |
 | Freigegebene Projektbefehle | `Exec(<TEST_COMMAND>)`, `Exec(<BUILD_COMMAND>)`, `Exec(<LINT_COMMAND>)` | ask (KANN im Overlay für Stufe niedrig auf allow gesetzt werden) |
 | Fernwirkende und destruktive Befehle | `Exec(git push)`, `Exec(git merge)`, `Exec(git rebase)`, `Exec(git reset --hard)`, `Exec(git tag)`, `Exec(rm -rf)`, `Exec(sudo)`, `Exec(curl)`, `Exec(wget)`, Paketveröffentlichung, Deployment-Befehle | deny |
-| Netzwerkzugriff | `Fetch(*)` | deny; Ausnahmen je Domain im Overlay |
+| Netzwerkzugriff | Abrufwerkzeuge vollständig (`Fetch(*)` beziehungsweise die Werkzeugnamen des Client Packs) | deny, **ohne Ausnahme je Domain** – siehe unten |
 | MCP-Werkzeuge | `mcp__*` | ask; Freigaben je Server im Overlay |
 
 Regeln aus höheren Ebenen (Organisation) haben Vorrang, `deny` gewinnt immer `[DOK]`. Änderungen an der Regelmenge erfolgen ausschließlich über Änderungsantrag (V10).
+
+**Das Netzverbot kennt keine Ausnahme je Domain (normativ).** Bis 0.32.0 stand hier „deny; Ausnahmen je Domain im Overlay", und an vier weiteren Stellen stand dasselbe. **Das war nicht umsetzbar, und die Begründung steht drei Zeilen darüber:** `deny` gewinnt immer. Eine zusätzliche `allow`-Regel für eine Domain hebt ein bestehendes `Fetch(*)`-Verbot nicht auf – genau das Argument, das der nächste Absatz für das Kernverzeichnis ausbuchstabiert. Bei einem Client, dessen Abbildung für die Abrufwerkzeuge nur den bloßen Werkzeugnamen kennt, ist eine Domain-Angabe zudem **überhaupt nicht ausdrückbar**; die Fähigkeitsmatrix jedes Client Packs sagt in Zeile **B10**, wie es dort steht (B11, D-59).
+
+**Der einzige dokumentierte Weg zu externem Abruf** ist deshalb kein Zusatz, sondern ein **Ersatz**: Die Verbotsregel selbst wird über einen Änderungsantrag (V10) durch eine nachgewiesen gleichwertige Beschränkung auf die freigegebene Zielmenge ersetzt. Das ist eine Entscheidung des Frameworks, nicht des Overlays – ein Overlay darf ein bestehendes Verbot nicht aufheben (Verschärfungsprinzip, `leitwerk-core/governance/PRIORITY_HIERARCHY.md` Regel 2.1). Bis ein solcher Ersatz entschieden, gebaut und **gemessen** ist, gilt: kein externer Abruf. Freigegebene Dokumentation wird lokal bereitgestellt.
 
 Das Schreibverbot auf das Kernverzeichnis gilt **ohne Ausnahme für einzelne Unterverzeichnisse**. Der Grund ist mechanisch: In der Berechtigungsdatei gewinnt `deny` immer, und keine der abgebildeten Clientformen kennt ein Ausnahmemuster innerhalb eines Verbots. Ein Schutz „des Kerns bis auf ein Verzeichnis" wäre also nicht ausdrückbar, sondern nur als engeres Verbot – und genau das hatte die Skripte des Kerns ungeschützt gelassen. Wo ein Projekt innerhalb des Kernverzeichnisses schreiben müsste, ist entweder der Ablageort falsch gewählt (Projektartefakte gehören in das Project Overlay) oder es liegt ein Fall für den Ausnahmeprozess vor (`leitwerk-core/governance/EXCEPTION_PROCESS.md`).
 

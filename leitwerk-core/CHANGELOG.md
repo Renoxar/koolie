@@ -2,6 +2,107 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.33.0] - 2026-09-13
+
+**Paket 5 ist abgeschlossen: zwei Ablaeufe, die einander im Weg standen.**
+
+B08 und B11 sind die letzten Befunde vor der technischen Haertung. Beide sind
+gegengeprueft, beide bestaetigt - und in beiden Faellen hat die Gegenpruefung **mehr
+gefunden als der Bericht**: einen dritten Defekt im Status-Hook und zwei eigene Befunde in
+der Abbildung des Netzverbots.
+
+### Behoben
+
+- **Die Aktivierung verlangte einen Lauf, der Aktivitaet voraussetzt** (B08,
+  `CR-2026-054`, D-57). Der Uebernahmeleitfaden fuhr `--strict-overlay` in Schritt 7 und
+  setzte den Status erst in Schritt 9 auf `aktiv`; die Checkliste trug denselben Lauf als
+  MUSS und galt "vor dem Setzen auf aktiv". **Der dokumentierte Ablauf war nicht ohne
+  Regelbruch begehbar.** Neu ist `--check-overlay-ready`: dieselbe Inhaltspruefung, aber
+  mit einem Status, der noch **nicht** `aktiv` sein darf. `--strict-overlay` bleibt
+  unveraendert die Pruefung des aktiven Zustands.
+- **Der Name der gesuchten Pruefung stand schon da.** Leitfaden und Docstring nannten den
+  Lauf "Pruefung der Aktivierungsreife", die Umsetzung verlangte den fertigen Zustand. Es
+  fehlte kein Begriff, es fehlte die Pruefung dazu.
+- **Der Status-Hook trug drei Defekte, nicht zwei** (B08, D-58). Er verglich als
+  **Praefix** - `aktivierung-ausstehend` galt damit als aktiv, genau der Wert, den D-44 im
+  Validator ausgeschlossen hat; sein Suchmuster verlangte einen Doppelpunkt und traf die
+  Steckbriefzeile nie; und er brach beim ersten Treffer ab, sodass eine aktive
+  Laufzeitregel gegen ein inaktives Quell-Overlay gewann. **Der Praefixvergleich stand
+  nicht im Bericht** - er ist derselbe Defekt, dieselbe Lehre, eine Funktion weiter.
+- **Eine Statusauswertung fuer beide Werkzeuge.** `tests/scripts/overlay_status.py` traegt
+  sie; Validator und Hook importieren sie, der Hook importiert **nicht** den Validator. Ein
+  Widerspruch wird als `widerspruechlich` gemeldet, nicht als `inaktiv` - die Folge ist
+  dieselbe, der Grund nicht.
+- **Die Domain-Ausnahme ist zurueckgezogen** (B11, `CR-2026-055`, D-59). Fuenf Stellen im
+  Kern versprachen "Ausnahmen je Domain im Overlay", und **die Widerlegung stand fuenf
+  Zeilen unter der Zusage**: `deny` gewinnt immer - dasselbe Argument, das der naechste
+  Absatz fuer das Kernverzeichnis ausbuchstabiert. Der einzige dokumentierte Weg ist jetzt
+  **Ersatz statt Zusatz**: Die Verbotsregel wird per Aenderungsantrag durch eine
+  nachgewiesen gleichwertige Beschraenkung ersetzt; ein Overlay darf das nicht.
+- **Bei einem Pack war die Zusage nicht ausdrueckbar.** `permission_tools_bare` verwirft
+  das Muster; die erzeugte Datei traegt `WebFetch` und `WebSearch` **ohne Argument** - das
+  ganze Werkzeug. Das Verwerfen war deklariert und richtig; unbenannt blieb die **Folge**.
+  Dasselbe Muster wie B01, ein Mechanismus weiter.
+- **Der Validator entschied dieselbe Absicht je Pack verschieden.** `Fetch(domain:...)`
+  lief durch, `WebFetch(domain:...)` fiel - eine Nebenwirkung fest verdrahteter
+  Werkzeugnamen. Das Verbot kommt jetzt aus dem Manifest, wie bei B02 und B10.
+- **Die Zusammenfassung der Durchsetzungstiefe ueberzeichnete sie** (D-60). Sie fuehrte
+  "25 von 29" technische Zeilen, gezaehlt sind **20 von 30**: S3 stand seit 0.31.0 auf
+  `[NICHT ABBILDBAR]`, ohne dass die Summen nachzogen, und die vier Zeilen mit einer
+  Kanalgrenze zaehlten als technisch, obwohl D-47 sie je Kanal ausweist. **Der Satz "alle
+  sechs Kernzusagen sind technisch abgebildet" war seit 0.30.0 zu weit gefasst** - drei
+  davon gelten nur fuer den direkten Zugriff.
+
+### Neu
+
+- **`tests/scripts/overlay_status.py`** - die gemeinsame Statusauswertung, ohne
+  Abhaengigkeit ausser `re`.
+- **Pruefung 9a (`--check-overlay-ready`):** Aktivierungsreife eines Kandidaten. Alle
+  Pflichtwerte gefuellt, Statusangaben untereinander gleich und noch nicht `aktiv`.
+- **Pruefung 31:** Die Summen der Fachmatrix werden aus ihr ausgerechnet, nach einer
+  benannten Zaehlregel - eine Zeile zaehlt bei ihrer **schwaechsten** Einstufung. Die
+  Summen sind **dreimal** gedriftet und dreimal von Hand berichtigt worden. Gegen 0.32.0
+  meldet sie fuenf Fundstellen in den unveraenderten Packs.
+- **Zeile B10 in beiden Fachmatrizen:** ob externer Abruf auf freigegebene Domains
+  beschraenkbar ist. `[NICHT ABBILDBAR]` bei `claude-code` mit benanntem Ersatz - dem
+  vollstaendigen Verbot, das **strenger** ist als die zurueckgezogene Zusage -,
+  `[TEXTUELL]` bei `devin-desktop` mit VERIFY-Marker.
+- **Grenzfall G-13:** Das Overlay fuehrt eine freigegebene Domain. Er gehoert zu D-59 und
+  wird von Pruefung 30 mitgefuehrt.
+- **18 Sonden und 7 Gegenproben** dazu: Kandidatenpruefung, Status-Hook und Fetch-Allow
+  **je Pack** (je 3+1, 3+1 und 1+1), dazu 4+1 fuer Pruefung 31. B02 war nicht, dass eine
+  Pruefung falsch prueft, sondern dass sie einen Client **nicht sieht** - deshalb je Pack.
+
+### Bekannte Einschraenkungen
+
+- **Kein Domain-Profil.** Das Zwei-Profil-Modell des Reviews gehoert in Paket 6, wo die
+  Netz- und Isolationsarbeit liegt: URL-Normalisierung, Hostvergleich ohne
+  Teilzeichenfolgen, Weiterleitungspruefung - und ein Nachweis, der ohne echte
+  Netzwerkisolation nichts belegt.
+- **Abrufverb und Websuche sind weiter zusammengelegt.** Ohne zugesagte Domain-Steuerung
+  aendert die Trennung an den erzeugten Regeln nichts; wer das Profil baut, loest sie
+  zuerst auf. Fuer eine Websuche gibt es ueberhaupt kein Domain-Ziel.
+- **Der Abgleich des gesamten Inhalts zwischen Quell-Overlay und Laufzeitfassung bleibt
+  offen** (`CR-2026-044` E4). Geprueft wird der **Status** an allen Stellen, nicht jedes
+  Feld.
+- **Pruefung 31 prueft die Arithmetik, nicht die Einstufung.** Eine Matrix, in der jede
+  Zeile falsch eingestuft ist, besteht sie.
+- Die Einschraenkungen aus 0.32.0 gelten weiter: keine maschinelle Pruefung fuer die
+  V6-Abgrenzung und fuer R12, K-32 offen, `<READ_ONLY_PATHS>` nicht in die
+  Berechtigungsdatei abgebildet.
+
+### Migrationshinweise
+
+- **Der Uebernahmeablauf hat sich geaendert.** Checkliste und Leitfaden fahren
+  `--check-overlay-ready` **vor** der Aktivierung und `--strict-overlay` **danach**. Eine
+  Projekt-CI, die `--strict-overlay` gegen ein bereits aktives Overlay fuehrt, bleibt
+  unveraendert richtig.
+- **Ein Overlay, das freigegebene externe Domains fuehrt, verliert seine Grundlage** - sie
+  hat nie gewirkt. Der Eintrag gehoert auf "keine"; wer externen Abruf braucht, stellt
+  einen Aenderungsantrag zur Ersetzung der Verbotsregel.
+- **Ein eigenes Client Pack** braucht jetzt eine Zeile **B10** in seiner Fachmatrix und
+  Summen, die Pruefung 31 nachrechnet.
+
 ## [0.32.0] - 2026-09-13
 
 **Paket 4 ist entschieden und umgesetzt: die Regelkonflikte, die nur ein Mensch

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-10` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | bei Übernahme des Frameworks in ein neues Projekt, vor dem Setzen des Overlay-Status auf `aktiv` |
@@ -38,7 +38,16 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 - [ ] **MUSS** `project-overlay/overlay-manifest.yaml` gepflegt; eingebundene Dokumente bereinigt und freigegeben; nicht registrierte Dokumente gelten als K3.
 - [ ] **MUSS** Benötigte Role Packs und Technology Packs aktiviert (Laufzeitfassungen `30-*`, `40-*` erstellt); nicht benötigte nicht geladen.
 - [ ] **MUSS** `project-overlay/forbidden-terms.txt` projektlokal mit den realen Namen des Projekts befüllt (Datei verbleibt projektlokal).
-- [ ] **MUSS** `python3 leitwerk-core/tests/scripts/validate-framework.py --strict-overlay` läuft ohne Fehler.
+- [ ] **MUSS** `python3 leitwerk-core/tests/scripts/validate-framework.py
+      --check-overlay-ready` läuft ohne Fehler. **Das ist die Kandidatenprüfung**: Sie
+      erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist, und prüft alles
+      übrige auf Vollständigkeit. Bis 0.32.0 stand hier `--strict-overlay` – ein Lauf,
+      der `aktiv` verlangte und damit voraussetzte, was diese Checkliste herstellen
+      soll (B08, D-57).
+- [ ] **MUSS** Nach dem Setzen des Status auf `aktiv`:
+      `python3 leitwerk-core/tests/scripts/validate-framework.py --strict-overlay`
+      läuft ohne Fehler. Erst danach beginnt der erste Agentenlauf mit
+      Schreibrechten.
 
 ### Organisation im Projekt
 

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-02` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
 | Wann | im Preflight-Check und erneut vor jeder zusätzlichen Kontextbereitstellung in der Sitzung |
@@ -36,7 +36,8 @@ Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) 
 ### Testdaten, Werkzeuge, geteilter Kontext
 
 - [ ] **MUSS** Testdaten sind synthetisch und als solche erkennbar; keine Ableitung aus Echt- oder Produktionsdaten.
-- [ ] **MUSS** Keine Websuche und kein Abruf externer Seiten ohne domainbezogene Freigabe im Overlay.
+- [ ] **MUSS** Keine Websuche und kein Abruf externer Seiten. Eine Freigabe je Domain
+      gibt es nicht (D-59); benötigte externe Quellen werden lokal bereitgestellt.
 - [ ] **MUSS** MCP-Werkzeuge nur, wenn der Server im Overlay (Abschnitt 13) freigegeben ist; MCP-Bestätigungen bleiben auf `ask`.
 - [ ] **MUSS** Geteilter Kontext (Spaces, parallele Sitzungen) enthält nur Inhalte, die für alle beteiligten Aufgaben freigegeben sind.
 - [ ] **SOLL** Nutzerlokale Überschreibungen erweitern keine Kontextfreigaben.

@@ -3,7 +3,8 @@
 validate-framework.py – Strukturelle Validierung des Frameworks und eines Project Overlays.
 
 Aufruf (im Wurzelverzeichnis des Repositorys):
-    python3 leitwerk-core/tests/scripts/validate-framework.py [--strict-overlay] [--mermaid] [--root PFAD]
+    python3 leitwerk-core/tests/scripts/validate-framework.py [--strict-overlay]
+        [--check-overlay-ready] [--mermaid] [--root PFAD]
 
 Prüft (statisch, ohne laufenden KI-Client):
   1. Pflichtdateien und -verzeichnisse
@@ -20,8 +21,12 @@ Prüft (statisch, ohne laufenden KI-Client):
      (project-overlay/forbidden-terms.txt)
   7. Platzhalter: nur registrierte Platzhalter (leitwerk-core/docs/PLACEHOLDER_REGISTRY.md)
   8. Overlay-Manifest: Kopfschlüssel, Pflichtfelder je Dokumenteintrag, Aufzählungswerte
-  9. --strict-overlay: keine offenen <TBD> in sicherheitsrelevanten Overlay-Feldern; Status
-     aktiv an *jeder* Stelle, an der das Overlay ihn erklärt (Steckbrief und Aktivierung)
+  9. --strict-overlay: der **aktive** Zustand - keine offenen <TBD> in
+     sicherheitsrelevanten Overlay-Feldern; Status aktiv an *jeder* Stelle, an der das
+     Overlay ihn erklärt (Steckbrief und Aktivierung)
+ 9a. --check-overlay-ready: die **Aktivierungsreife eines Kandidaten** - derselbe Inhalt,
+     aber der Status ist noch nicht aktiv und an allen Stellen gleich. Ohne diese Pruefung
+     verlangte der dokumentierte Ablauf, was er herstellen sollte (B08, D-57)
  10. --mermaid: Syntaxprüfung aller Mermaid-Blöcke mit mmdc (falls installiert)
  11. Codeblöcke mit vier oder mehr Backticks (brechen die Dokumentassemblierung) –
      einschließlich der Quellen unter <CORE_DIR>/build/doc, aus denen sie entsteht
@@ -73,6 +78,9 @@ Prüft (statisch, ohne laufenden KI-Client):
      Checkliste fuehren dieselben acht Kategorien, und keine traegt eine Bedingung
  30. Grenzfaelle (B07, B09): Die Grenzfalltabelle ist vollstaendig, jede Spalte gefuellt,
      jede entschiedene Auslegungsfrage durch mindestens einen Grenzfall gedeckt
+ 31. Durchsetzungstiefe (D-60): Die Summen der Fachmatrix eines Client Packs sind aus ihr
+     ausgerechnet - Zeilenzahl und Anzahl je Einstufung. Eine Zeile zaehlt bei ihrer
+     schwaechsten Einstufung; eine Kanalgrenze ist keine technische Durchsetzung (D-47)
 
 Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 30 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
@@ -101,6 +109,13 @@ try:
     import yaml  # type: ignore
 except ImportError:  # pragma: no cover
     yaml = None
+
+# Die Auswertung des Overlay-Status liegt seit 0.33.0 in einem eigenen Modul, weil der
+# Status-Hook sie ebenso braucht und sie dort anders umgesetzt war (B08, D-58). Der Hook
+# importiert dieses Modul; er importiert nicht dieses Skript.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from overlay_status import (  # noqa: E402
+    AKTIV, INAKTIV, UNBEKANNT, WIDERSPRUECHLICH, auswerten, status_angaben)
 
 # Name des Kernverzeichnisses. Er steht hier einmal statt an drei Stellen im Skript.
 KERN = "leitwerk-core"
@@ -426,14 +441,31 @@ def check_config(root: str, man: dict) -> None:
             f"(laut Kernquelle vorgesehen): {rule}")
         if rule not in deny:
             err(f"{rel}: Kernregel fehlt in deny: {rule}")
-    # Nie erlaubt, unabhaengig vom Client: Push, Merge, Rechteausweitung, Loeschen,
-    # Netzzugriff. Die Werkzeugnamen unterscheiden sich je Client, die Absicht nicht.
-    verboten = ("Exec(git push", "Exec(sudo", "Exec(rm -rf", "Fetch(*",
-                "Bash(git push", "Bash(git merge", "Bash(sudo", "Bash(rm",
-                "WebFetch", "WebSearch")
+    # Nie erlaubt, unabhaengig vom Client: Push, Merge, Rechteausweitung, Loeschen.
+    # Die Werkzeugnamen unterscheiden sich je Client, die Absicht nicht.
+    verboten = ("Exec(git push", "Exec(sudo", "Exec(rm -rf",
+                "Bash(git push", "Bash(git merge", "Bash(sudo", "Bash(rm")
     for rule in allow:
         if rule.startswith(verboten):
             err(f"{rel}: unzulässige allow-Regel: {rule}")
+    # Abrufwerkzeuge: aus dem Manifest, nicht aus einer Namensliste. Bis 0.32.0 standen
+    # hier "Fetch(*", "WebFetch" und "WebSearch" fest verdrahtet - und das war
+    # asymmetrisch: 'Fetch(domain:...)' lief durch, 'WebFetch(domain:...)' fiel, dieselbe
+    # Absicht bei zwei Packs verschieden entschieden. Nach D-59 gibt es keine
+    # Domain-Ausnahme; damit ist **jede** allow-Regel auf ein Abrufverb unzulaessig, und
+    # der dokumentierte Weg ist, das globale Verbot per Aenderungsantrag zu ersetzen
+    # (B11, V10).
+    abrufwerkzeuge = tuple(man.get("permission_tools", {}).get("fetch", ()))
+    for rule in allow:
+        if not isinstance(rule, str):
+            continue
+        name = rule.split("(", 1)[0].strip()
+        if abrufwerkzeuge and name in abrufwerkzeuge:
+            err(f"{rel}: unzulässige allow-Regel auf ein Abrufwerkzeug: {rule}. Das "
+                f"generelle Netzverbot kennt keine Ausnahme je Domain - `deny` gewinnt "
+                f"immer, eine zusätzliche allow-Regel hebt es nicht auf. Wer externen "
+                f"Abruf braucht, ersetzt die Verbotsregel über einen Änderungsantrag "
+                f"(V10) und weist die Ersatzbeschränkung nach (B11, D-59)")
     # Weitere JSON-Dateien der Laufzeitschicht auf Gueltigkeit pruefen.
     rt = man["runtime_dir"]
     for name in os.listdir(os.path.join(root, *rt.split("/"))) if os.path.isdir(os.path.join(root, *rt.split("/"))) else []:
@@ -1056,21 +1088,9 @@ def check_versions(root: str, man: dict) -> None:
             f"(docs/ADOPTION_GUIDE.md, Abschnitt Aktualisierung)")
 
 
-def _overlay_status_angaben(text: str) -> list[str]:
-    """Alle Stellen, an denen eine Overlay-Datei ihren Status *erklaert*.
-
-    Der Status steht zweimal: als Zeile im Steckbrief und als Aussage im
-    Aktivierungsabschnitt. Geprueft wurde frueher nur die zweite Form - der Steckbrief
-    konnte `inaktiv` sagen, ohne dass es auffiel. Erfasst werden deshalb beide
-    Schreibweisen, aber nur am Zeilenanfang: Eine Erwaehnung im Fliesstext oder in einem
-    Ausnahmeregister ist keine Erklaerung.
-    """
-    werte = []
-    for m in re.finditer(r"^\|\s*Overlay-Status\s*\|\s*`?([^`|]+)", text, re.M):
-        werte.append(m.group(1).strip())
-    for m in re.finditer(r"^-?\s*Overlay-Status:\s*`?([^`\n]+)", text, re.M):
-        werte.append(m.group(1).strip())
-    return werte
+# Der Status steht zweimal: als Zeile im Steckbrief und als Aussage im
+# Aktivierungsabschnitt. Beide Schreibweisen liest overlay_status.status_angaben; sie
+# stand bis 0.32.0 hier und im Status-Hook getrennt, mit verschiedenem Verhalten (B08).
 
 
 # Steckbriefzeile eines versionierten Artefakts - genau zwei Spalten. Die Verankerung
@@ -1121,7 +1141,16 @@ SICHERHEITSABSCHNITTE = ("## 4.", "## 5.", "## 6.", "## 13.", "## 14.", "## 15."
 
 
 def check_strict_overlay(root: str, man: dict) -> None:
-    """Aktivierungsreife des Projekts (--strict-overlay) - clientneutral.
+    """Der **aktive** Zustand des Projekts (--strict-overlay) - clientneutral.
+
+    Diese Funktion hiess bis 0.32.0 im Docstring und im Uebernahmeleitfaden "Pruefung der
+    Aktivierungsreife" und verlangte dabei den Status 'aktiv'. Das war der Kern von B08:
+    Der Leitfaden fuhr sie in Schritt 7 und setzte 'aktiv' erst in Schritt 9, die
+    Uebernahmecheckliste trug sie als MUSS und galt "vor dem Setzen auf aktiv" - eine
+    Voraussetzung, die sich selbst verlangte. Die Reifepruefung heisst seit 0.33.0
+    --check-overlay-ready und ist eine eigene Funktion (D-57). Diese hier prueft den
+    fertigen Zustand und bleibt dafuer unveraendert; sie hat mit dem
+    Aktualisierungsablauf einen zweiten, funktionierenden Aufrufer.
 
     Bis 0.27.0 las diese Funktion zwei fest verdrahtete Pfade **eines** Clients und bekam
     das erkannte Manifest nicht uebergeben. In einer Installation des anderen Packs fand
@@ -1153,13 +1182,17 @@ def check_strict_overlay(root: str, man: dict) -> None:
             continue
         text = read(path)
         rel = os.path.relpath(path, root).replace(os.sep, "/")
-        angaben = _overlay_status_angaben(text)
-        if not angaben:
-            err(f"{rel}: keine Angabe zum Overlay-Status gefunden (strict-overlay)")
-        for wert in angaben:
-            # Aufzaehlung statt Praefix: 'aktivierung-ausstehend' ist keine Aktivierung.
-            if wert.strip().strip("`*").strip().lower() != "aktiv":
-                err(f"{rel}: Overlay-Status ist nicht 'aktiv', sondern '{wert}' (strict-overlay)")
+        angaben = status_angaben(text)
+        status, grund = auswerten(angaben)
+        if status != AKTIV:
+            # Der **Rohwert** gehoert in die Meldung, nicht nur die Auswertung: Der Fall,
+            # der D-44 ausgeloest hat, war der Wert 'aktivierung-ausstehend' - er sagt
+            # woertlich, dass die Aktivierung aussteht, und genau das soll lesbar sein.
+            # Die Sonde zu D-44 hat diesen Verlust beim Umbau auf overlay_status.py
+            # gefangen; ohne sie waere die Meldung stiller geworden.
+            roh = ", ".join("'%s'" % a.strip() for a in angaben) or "keine Angabe"
+            err(f"{rel}: Overlay-Status ist nicht '{AKTIV}', sondern {roh} "
+                f"(ausgewertet als '{status}': {grund}) (strict-overlay)")
         if path == runtime and TBD_RE.search(text):
             err(f"{rel}: enthält offene <TBD>-Werte (strict-overlay)")
         if path == overlay:
@@ -1174,6 +1207,85 @@ def check_strict_overlay(root: str, man: dict) -> None:
         inhalt = read(rechte)
         if TBD_RE.search(inhalt) or PLACEHOLDER_RE.search(inhalt):
             err(f"{man['permissions_file']}: enthält noch Platzhalter (strict-overlay)")
+
+
+def check_overlay_ready(root: str, man: dict) -> None:
+    """Aktivierungsreife eines Kandidaten (--check-overlay-ready) - clientneutral.
+
+    Die Pruefung, die B08 gefehlt hat: Sie prueft alles, was --strict-overlay prueft,
+    **ausser** dem Status - und beim Status erwartet sie das Gegenteil, naemlich einen
+    Kandidaten, der noch nicht aktiv ist. Damit ist der dokumentierte Ablauf ohne
+    Regelbruch begehbar: erst vollstaendig ausfuellen und pruefen, dann durch einen
+    Menschen aktivieren, dann mit --strict-overlay nachpruefen (D-57).
+
+    Warum sie einen aktiven Kandidaten als Fehler meldet und nicht durchlaesst: Sonst
+    waere sie die schwaechere Variante von --strict-overlay und wuerde als deren Ersatz
+    benutzt. Eine Pruefung, die zwei Zustaende gleich behandelt, unterscheidet keine zwei
+    Zustaende.
+
+    Die Statusangaben MUESSEN untereinander uebereinstimmen. Ein Kandidat, der in der
+    Laufzeitfassung 'aktiv' und im Quell-Overlay 'inaktiv' erklaert, ist kein Kandidat,
+    sondern eine Drift - derselbe Fall, den der Status-Hook bis 0.32.0 zugunsten der
+    ersten gelesenen Datei entschied.
+
+    GRENZE: Geprueft wird die Vollstaendigkeit der Konfiguration. Die **fachliche**
+    Freigabe kann kein Skript erteilen; die Uebernahmecheckliste bleibt der Nachweis
+    (FW-CL-10). Und dass ein Overlay vollstaendig ist, heisst nicht, dass seine Werte
+    richtig sind.
+    """
+    runtime = os.path.join(root, *man["pack_runtime_dir"].split("/"), "20-project-overlay.md")
+    overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
+    vorhanden = [p for p in (runtime, overlay) if os.path.exists(p)]
+    if not vorhanden:
+        err("check-overlay-ready: weder die Laufzeitfassung des Overlays noch "
+            "project-overlay/OVERLAY.md ist vorhanden - es gibt keinen Kandidaten")
+        return
+
+    alle_angaben = []
+    for path in vorhanden:
+        text = read(path)
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        angaben = status_angaben(text)
+        alle_angaben.extend(angaben)
+        if not angaben:
+            err(f"{rel}: keine Angabe zum Overlay-Status gefunden (check-overlay-ready)")
+        # Offene Werte: in der Laufzeitfassung ueberall, im Overlay in den
+        # sicherheitsrelevanten Abschnitten. Dieselbe Aufteilung wie --strict-overlay;
+        # ein Kandidat unterscheidet sich vom aktiven Overlay im Status, nicht im Inhalt.
+        if path == runtime and TBD_RE.search(text):
+            err(f"{rel}: enthält offene <TBD>-Werte (check-overlay-ready)")
+        if path == overlay:
+            for sec in SICHERHEITSABSCHNITTE:
+                m = re.search(rf"{re.escape(sec)}.*?(?=\n## |\Z)", text, re.S)
+                if not m:
+                    err(f"{rel}: sicherheitsrelevanter Abschnitt {sec} fehlt "
+                        f"(check-overlay-ready)")
+                elif TBD_RE.search(m.group(0)):
+                    err(f"{rel}: Abschnitt {sec} enthält offene <TBD>-Werte "
+                        f"(sicherheitsrelevant, check-overlay-ready)")
+
+    status, grund = auswerten(alle_angaben)
+    if status == AKTIV:
+        err(f"check-overlay-ready: Der Overlay-Status ist bereits '{AKTIV}'. Diese "
+            f"Pruefung gilt fuer einen Kandidaten **vor** der Aktivierung; fuer den "
+            f"aktiven Zustand ist --strict-overlay zustaendig (D-57)")
+    elif status == WIDERSPRUECHLICH:
+        err(f"check-overlay-ready: {grund}. Ein Kandidat erklaert seinen Status an allen "
+            f"Stellen gleich; abweichende Angaben sind eine Drift, kein Kandidat")
+    elif status == UNBEKANNT:
+        err(f"check-overlay-ready: Overlay-Status nicht ausgefuellt ({grund}). Erwartet "
+            f"wird '{INAKTIV}' - ein Kandidat sagt, dass er noch nicht aktiv ist, statt "
+            f"die Angabe offen zu lassen")
+
+    rechte = os.path.join(root, *man["permissions_file"].split("/"))
+    if os.path.exists(rechte):
+        inhalt = read(rechte)
+        if TBD_RE.search(inhalt) or PLACEHOLDER_RE.search(inhalt):
+            err(f"{man['permissions_file']}: enthält noch Platzhalter "
+                f"(check-overlay-ready)")
+    else:
+        err(f"{man['permissions_file']}: fehlt - ohne Berechtigungsdatei ist kein "
+            f"Kandidat vollstaendig (check-overlay-ready)")
 
 
 # Pruefung 14: Der werkzeugneutrale Kern nennt keinen Client als Akteur.
@@ -2403,7 +2515,7 @@ def check_k3_kategorien(root: str) -> None:
 # und wird nachgezaehlt: In diesem Projekt war eine Zahl schon oefter zu klein.
 GRENZFALL_DATEI = KERN + "/tests/EDGE_CASES.md"
 GRENZFALL_SPALTEN = 7
-GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56")
+GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56", "D-59")
 
 
 def check_grenzfaelle(root: str) -> None:
@@ -2449,10 +2561,101 @@ def check_grenzfaelle(root: str) -> None:
 
 
 
+# Pruefung 31: Die Zusammenfassung der Durchsetzungstiefe stimmt mit der Matrix.
+#
+# Die Summen sind dreimal gedriftet, und jedes Mal von Hand berichtigt worden: mit 0.26.0
+# fuehrte ein Pack "von 26", waehrend die Matrix 29 Zeilen trug (A2, M4, M5 kamen mit
+# CR-2026-025 hinzu); mit 0.31.0 wanderte S3 auf [NICHT ABBILDBAR], ohne dass die
+# Zusammenfassung es nachzog; und die vier Zeilen mit einer Kanalgrenze zaehlten weiter als
+# technisch, obwohl D-47 sie je Kanal ausweist - die Tabelle ueberzeichnete die
+# Durchsetzungstiefe damit um vier Zeilen und ihre Ueberschrift um drei Kernzusagen (B11,
+# D-60). Eine Zahl, die dreimal von Hand stimmen musste, gehoert ausgerechnet.
+#
+# ZAEHLREGEL, identisch zu der im Pack: Eine Zeile zaehlt bei ihrer SCHWAECHSTEN
+# Einstufung. [NICHT ABBILDBAR] vor [TEXTUELL] vor [TECHNISCH]. Eine Zeile ohne jede
+# Einstufung ist ein Fehler - sie sagt nichts zu.
+#
+# WAS DIESE PRUEFUNG NICHT LEISTET: Sie prueft die Arithmetik, nicht die Einstufung. Ob
+# eine Zeile richtig eingestuft ist, kann kein Skript beurteilen; das leistet die Erhebung
+# an einer Installation (AP2). Eine Matrix, in der jede Zeile falsch eingestuft ist,
+# besteht diese Pruefung.
+MATRIXZEILE_RE = re.compile(r"^\|\s*([A-Z]\d+)\s*\|")
+EINSTUFUNGEN = ("[NICHT ABBILDBAR]", "[TEXTUELL]", "[TECHNISCH]")
+SUMMENZEILE_RE = re.compile(
+    r"^\|\s*\*{0,2}`\[([A-Z ]+)\]`\*{0,2}\s*\|\s*\*{0,2}(\d+)\s+von\s+(\d+)", re.M)
+
+
+def check_durchsetzungstiefe(root: str) -> None:
+    """Pruefung 31 (D-60): Die Summen der Fachmatrix sind aus ihr ausgerechnet."""
+    cdir = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(cdir):
+        return
+    for pack in sorted(os.listdir(cdir)):
+        # Die Vorlage fuer ein neues Pack traegt ueberall <TBD> statt einer Einstufung -
+        # sie hat nichts zu summieren. Ausgenommen wird sie ueber die
+        # Unterstrich-Konvention der Ablage, nicht ueber ihren Namen: Ein zweites
+        # Vorlagenverzeichnis wuerde sonst durchfallen, und eine Ausnahme je Name waere
+        # eine gepflegte Liste (dieselbe Begruendung wie bei Pruefung 14).
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(cdir, pack, "CLIENT_PACK.md")
+        if not os.path.isfile(pfad):
+            continue
+        rel = f"{KERN}/clients/{pack}/CLIENT_PACK.md"
+        text = read(pfad).replace("\r\n", "\n")
+        marke = text.find("## 3. Zusammenfassung")
+        if marke < 0:
+            err(f"{rel}: kein Abschnitt '## 3. Zusammenfassung der Durchsetzungstiefe'. "
+                f"Ohne ihn prueft Pruefung 31 nichts und bestuende leise (D-23)")
+            continue
+
+        gezaehlt = {k: [] for k in EINSTUFUNGEN}
+        ohne = []
+        for zeile in text[:marke].split("\n"):
+            m = MATRIXZEILE_RE.match(zeile)
+            if not m:
+                continue
+            for k in EINSTUFUNGEN:          # schwaechste zuerst
+                if k in zeile:
+                    gezaehlt[k].append(m.group(1))
+                    break
+            else:
+                ohne.append(m.group(1))
+        summe = sum(len(v) for v in gezaehlt.values()) + len(ohne)
+        if ohne:
+            err(f"{rel}: Matrixzeile(n) ohne Einstufung: {', '.join(ohne)}. Eine Zeile "
+                f"ohne Einstufung sagt nichts zu und zaehlt in keiner Klasse")
+        if not summe:
+            err(f"{rel}: keine Matrixzeile gefunden. Der Anker dieser Pruefung ist die "
+                f"Zeilenform '| <Kennung> |'; ohne sie prueft sie nichts (D-23)")
+            continue
+
+        gefunden = SUMMENZEILE_RE.findall(text[marke:])
+        if not gefunden:
+            err(f"{rel}: Die Zusammenfassung fuehrt keine Zeile der Form "
+                f"'| `[KLASSE]` | N von M |'. Ohne sie ist die Summe nicht pruefbar")
+            continue
+        for klasse, anzahl, gesamt in gefunden:
+            k = "[%s]" % klasse.strip()
+            if k not in gezaehlt:
+                continue
+            if int(gesamt) != summe:
+                err(f"{rel}: Die Zusammenfassung nennt fuer {k} eine Gesamtzahl von "
+                    f"{gesamt} Matrixzeilen; gezaehlt sind {summe}. Die Summen sind "
+                    f"dreimal gedriftet, deshalb werden sie ausgerechnet (D-60)")
+            if int(anzahl) != len(gezaehlt[k]):
+                err(f"{rel}: Die Zusammenfassung nennt {anzahl} Zeile(n) als {k}; "
+                    f"gezaehlt sind {len(gezaehlt[k])} ({', '.join(gezaehlt[k]) or 'keine'}). "
+                    f"Zaehlregel: eine Zeile zaehlt bei ihrer schwaechsten Einstufung, "
+                    f"weil eine Kanalgrenze keine technische Durchsetzung ist (D-47, D-60)")
+
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
     ap.add_argument("--strict-overlay", action="store_true")
+    ap.add_argument("--check-overlay-ready", action="store_true")
     ap.add_argument("--mermaid", action="store_true")
     args = ap.parse_args()
     root = os.path.abspath(args.root)
@@ -2495,8 +2698,11 @@ def main() -> int:
     check_excluded_paths(root, man)
     check_k3_kategorien(root)
     check_grenzfaelle(root)
+    check_durchsetzungstiefe(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
+    if args.check_overlay_ready:
+        check_overlay_ready(root, man)
     if args.mermaid:
         check_mermaid(root)
 
