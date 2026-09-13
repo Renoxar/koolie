@@ -226,13 +226,16 @@ ZUSAGENTRAGENDE_SKILLFELDER = {
 }
 
 
-# Verben, die die Quelle in permissions.deny nennt, und der Eimer in hook_tools, aus dem
-# die Werkzeugnamen dieses Clients kommen. NICHT aus skill_frontmatter.tool_names: Das
-# fuehrt fuer 'edit' nur Edit und Write, hook_tools.write fuehrt zusaetzlich NotebookEdit.
-# Fuer eine Vorabfreigabe ist der Unterschied harmlos, fuer eine SPERRE ist er eine
-# Luecke - und eine Luecke in der Liste ist ausnutzbar (CR-2026-057 E2, D-28).
-DENY_VERB_EIMER = {"edit": "write", "write": "write", "exec": "exec",
-                   "read": "read", "search": "search"}
+# Welchen Eimer in hook_tools ein Verb der Quelle trifft, sagt clientmap.VERB_BRUECKE.
+# Die Werkzeugnamen kommen aus hook_tools und NICHT aus skill_frontmatter.tool_names:
+# Das fuehrt fuer 'edit' nur Edit und Write, hook_tools.write fuehrt zusaetzlich
+# NotebookEdit. Fuer eine Vorabfreigabe ist der Unterschied harmlos, fuer eine SPERRE
+# ist er eine Luecke - und eine Luecke in der Liste ist ausnutzbar (CR-2026-057 E2,
+# D-28). Seit 0.40.0 steht die Bruecke an EINER Stelle: Bis dahin fuehrte sie hier
+# 'edit', 'write', 'exec', 'read' und 'search' - drei Verben des Vokabulars der Quelle
+# und zwei der Durchsetzungsschicht - und kannte 'grep' und 'glob' NICHT, obwohl jede
+# der vierzehn Quellen sie im Nachbarfeld desselben Frontmatters fuehrt. Ein
+# 'deny: glob' erzeugte deshalb lautlos keine Sperre (D-78, D-79).
 
 
 def _deny_der_quelle(fm: str) -> list[str]:
@@ -266,15 +269,28 @@ def deny_abbilden(fm: str, man: dict) -> list[str]:
         strenger als gemeint und machte die allow-Eintraege derselben Skills wirkungslos.
         Die Nicht-Abbildung ist im Manifest deklariert, nicht verschwiegen
         (skill_deny_unmapped, CR-2026-057 E3; Bauart wie hook_tools_absent, D-47).
+
+    Ein Verb AUSSERHALB des Vokabulars bricht seit 0.40.0 ab, statt lautlos
+    auszufallen (D-79). Bis dahin kannte die Bruecke 'grep' und 'glob' nicht - die
+    beiden meistgenannten Verben des Vokabulars, vierzehn Fundstellen je im
+    Nachbarfeld desselben Frontmatters -, und ein 'deny: glob' erzeugte gar keine
+    Sperre: keine Verweigerung, keine Meldung, der Validator 0 Fehler. Gemessen am
+    2026-09-13 (tests/protocols/2026-09-13-gegenpruefung-werkzeugabbildung.md, M6).
     """
     eimer = man.get("hook_tools") or {}
     ziel: list[str] = []
     for eintrag in _deny_der_quelle(fm):
         if "(" in eintrag:
             continue  # befehlsgenau - nicht ausdrueckbar, siehe Docstring
-        name = DENY_VERB_EIMER.get(eintrag.strip().lower())
-        if not name:
-            continue
+        verb = eintrag.strip().lower()
+        if verb not in clientmap.VERB_BRUECKE:
+            raise clientmap.AbbildungsFehler(
+                f"{man.get('client', '?')}: permissions.deny nennt das Verb "
+                f"'{verb}', das Vokabular des Frontmatters kennt nur "
+                f"{list(clientmap.FRONTMATTER_VERBEN)}. Bis 0.39.0 fiel ein solcher "
+                f"Eintrag LAUTLOS aus: Der Skill trug eine Sperre im Quelltext und "
+                f"keine in der installierten Fassung (D-79)")
+        name = clientmap.VERB_BRUECKE[verb]
         for w in eimer.get(name, []):
             if w not in ziel:
                 ziel.append(w)
@@ -346,15 +362,19 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
         ausloeser = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
         nur_nutzer = bool(ausloeser) and "model" not in ausloeser
 
+    m = re.search(r"^allowed-tools:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
+    werkzeuge = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
+    # Die Verben werden in BEIDEN Zweigen geprueft, umgeschrieben nur im einen. Ein
+    # Pack mit tools_format: list laesst das Feld unberuehrt - aber ein Schreibfehler
+    # im Frontmatter ist auch dort einer, und er soll beim Installieren auffallen und
+    # nicht im uebernehmenden Projekt (D-78).
+    ziel: list[str] = []
+    for w in werkzeuge:
+        for y in clientmap.frontmatter_werkzeuge(man, "skill_frontmatter", w):
+            if y not in ziel:
+                ziel.append(y)
+
     if fmt.get("tools_format") == "csv":
-        m = re.search(r"^allowed-tools:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
-        werkzeuge = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
-        abbildung = fmt.get("tool_names", {})
-        ziel: list[str] = []
-        for w in werkzeuge:
-            for y in abbildung.get(w, [w]):
-                if y not in ziel:
-                    ziel.append(y)
         for f in ["allowed-tools"] + list(fmt.get("drop_fields", [])):
             fm = re.sub(rf"^{f}:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
         if ziel:
@@ -522,10 +542,9 @@ def render_agent(text: str, man: dict) -> str:
     fm = kopf[4:].rstrip("\n") + "\n"
     m = re.search(r"^allowed-tools:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
     werkzeuge = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
-    abbildung = fmt.get("tool_names", {})
     ziel: list[str] = []
     for w in werkzeuge:
-        for y in abbildung.get(w, [w]):
+        for y in clientmap.frontmatter_werkzeuge(man, "agent_frontmatter", w):
             if y not in ziel:
                 ziel.append(y)
     fm = re.sub(r"^allowed-tools:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)

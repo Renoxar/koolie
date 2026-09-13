@@ -24,6 +24,9 @@ Zusicherungen, statt sie nur zu behaupten:
      ist eine Verschaerfung und keine Luecke.
   3. Bei allow ist jede Verbreiterung unzulaessig: dort muessen beide Formen
      uebereinstimmen.
+  4. Ein Werkzeugverb des Frontmatters, das ein Pack weder abbildet noch ausdruecklich
+     als nicht abgebildet deklariert, ist ein Fehler. Bis 0.39.0 wurde es woertlich
+     durchgereicht und fiel in permissions.deny lautlos aus (D-78).
 
 _core_rules_integrity.deny_must_contain wird aus denselben Quellregeln erzeugt
 (Kennzeichnung "core": true). Der Validator vergleicht die installierte Datei damit -
@@ -66,6 +69,83 @@ def resolve_placeholders(text: str, man: dict) -> str:
 
 def core_dir_name(man: dict) -> str:
     return man.get("runtime_placeholders", {}).get("<CORE_DIR>", "leitwerk-core")
+
+# ---------------------------------------------------------------------------
+# Werkzeugverben des Frontmatters
+# ---------------------------------------------------------------------------
+
+# Das Vokabular, das ein Skill oder ein Agentenprofil des Kerns in seinem Frontmatter
+# schreiben darf - in allowed-tools wie in permissions.deny. Es steht hier und nicht in
+# install.py, weil drei Stellen es brauchen: die Abbildung beim Installieren, die
+# Abbildung von permissions.deny auf die Werkzeugsperre je Skill (D-65) und Pruefung 38.
+#
+# WARUM ES UEBERHAUPT EINES BRAUCHT. Bis 0.39.0 hatte die Quelle kein deklariertes
+# Vokabular, und der unbekannte Fall war an beiden Stellen STILL - gemessen am
+# 2026-09-13 (tests/protocols/2026-09-13-gegenpruefung-werkzeugabbildung.md):
+#   * allowed-tools: ein Verb ohne Abbildung wurde WOERTLICH durchgereicht. Aus
+#     'allowed-tools: banane' wurde in der installierten Fassung der Werkzeugname
+#     'banane'; aus einer geleerten Abbildung wurde 'tools: read, grep, glob' im
+#     Agentenprofil fw-reviewer - drei Namen, die dieser Client nicht kennt (M16).
+#   * permissions.deny: dasselbe Verb fiel lautlos ganz aus. 'deny: glob' erzeugte
+#     keine Werkzeugsperre, und der Validator meldete 0 Fehler (M6).
+# Die drei uebrigen Werkzeugabbildungen desselben Manifests - hook_tools,
+# permission_tools und der Hook-Matcher - brechen im selben Fall ab (M17 bis M19).
+# Diese eine war die unbewachte, und sie kommt zweimal vor.
+FRONTMATTER_VERBEN = ("read", "grep", "glob", "edit", "exec")
+
+# Die Bruecke zwischen dem Vokabular der Quelle und dem der Durchsetzungsschichten
+# (hook_tools, permission_tools, framework/runtime/*.json). Die beiden Vokabulare sind
+# getrennt gewachsen und nicht deckungsgleich: Die Quelle trennt das Suchen in 'grep'
+# und 'glob', die Durchsetzung fasst beides als 'search'; die Quelle sagt 'edit', die
+# Durchsetzung 'write'.
+#
+# DIE BRUECKE WIRD BEWACHT, NICHT AUFGELOEST (D-78). Die beiden Listen gleichzuziehen
+# hiesse, eine der Seiten zu aendern - und die Vorabfreigabe auf die Sperrliste zu heben
+# waere eine AUSWEITUNG: Aus 'allowed-tools: Edit, Write' wuerde 'Edit, Write,
+# NotebookEdit'. Verlangt wird deshalb allein die RICHTUNG: Die Sperrliste darf fuer
+# kein Verbpaar enger sein als die Vorabfreigabe. Heute ist sie es bei keinem
+# (gemessen, M4); Pruefung 38 haelt es fest.
+VERB_BRUECKE = {"read": "read", "grep": "search", "glob": "search",
+                "edit": "write", "exec": "exec"}
+
+
+def frontmatter_werkzeuge(man: dict, block: str, verb: str) -> list[str]:
+    """Die Werkzeugnamen dieses Clients fuer ein Verb aus dem Frontmatter der Quelle.
+
+    `block` ist "skill_frontmatter" oder "agent_frontmatter" - die beiden Stellen, an
+    denen dasselbe Vokabular abgebildet wird.
+
+    Drei Ausgaenge, und keiner davon ist still:
+
+      * in tool_names abgebildet -> die Werkzeugnamen dieses Clients;
+      * in tool_names_unmapped deklariert -> das Verb unveraendert. Ein Client, dessen
+        Frontmatter die Verben selbst als Werkzeugnamen fuehrt - oder fuer den das
+        unerhoben ist -, sagt das ausdruecklich. Bauform wie hook_tools_absent nach
+        D-47: Eine Abwesenheit wird erklaert, nie aus einer Luecke erraten;
+      * weder noch -> AbbildungsFehler.
+
+    Der dritte Ausgang ist die Aenderung gegenueber 0.39.0. Dort reichte derselbe Fall
+    das Verb woertlich durch, und niemand erfuhr davon.
+    """
+    if verb not in FRONTMATTER_VERBEN:
+        raise AbbildungsFehler(
+            f"{man.get('client', '?')}: Das Werkzeugverb '{verb}' gehoert nicht zum "
+            f"Vokabular des Frontmatters {list(FRONTMATTER_VERBEN)}. Ein Skill oder "
+            f"Agentenprofil des Kerns nennt nur diese Verben - alles andere ist ein "
+            f"Schreibfehler oder ein Verb der Durchsetzungsschicht, das hier nicht "
+            f"hingehoert (D-78)")
+    fmt = man.get(block) or {}
+    abbildung = fmt.get("tool_names") or {}
+    if verb in abbildung:
+        return list(abbildung[verb])
+    if verb in (fmt.get("tool_names_unmapped") or []):
+        return [verb]
+    raise AbbildungsFehler(
+        f"{man.get('client', '?')}/manifest.json: {block}.tool_names kennt das "
+        f"Werkzeugverb '{verb}' nicht. Fuehrt dieser Client die Werkzeugnamen des "
+        f"Frontmatters unveraendert - oder sind sie unerhoben -, gehoert das Verb in "
+        f"{block}.tool_names_unmapped samt _tool_names_unmapped_note; eine Luecke "
+        f"allein ist keine Aussage (D-78, Bauform wie hook_tools_absent nach D-47)")
 
 
 # ---------------------------------------------------------------------------

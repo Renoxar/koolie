@@ -35,6 +35,8 @@
   "skill_frontmatter": {
     "tools_format": "list",
     "tool_names": {},
+    "tool_names_unmapped": ["read", "grep", "glob", "edit", "exec"],
+    "_tool_names_unmapped_note": "UNERHOBEN, nicht abwesend (CR-2026-062, D-78). Dieses Pack bildet die Werkzeugnamen des Frontmatters nicht ab: tools_format ist 'list', die Quellform bleibt stehen, und die installierte Fassung traegt die Verben read, grep, glob, edit und exec unveraendert als Werkzeugnamen. Wie dieser Client seine Frontmatter-Werkzeuge WIRKLICH nennt, ist nicht gemessen - Zeile S3 dieses Packs sagt es ausdruecklich: 'Das Durchreichen ist belegt, die Wirkung nicht.' Die Deklaration ist deshalb eine Aussage ueber den Belegstand, nicht ueber den Client, und sie haelt zugleich einen gemessenen WIDERSPRUCH fest: Dasselbe Manifest erklaert unter hook_tools_absent, dieser Client fuehre kein eigenes Suchwerkzeug - und reicht in jeder installierten Skilldatei 'grep' und 'glob' als Werkzeugnamen durch. Beides kann nicht stimmen; welche Seite falsch ist, entscheidet eine Erhebung und nicht dieser Eintrag (CR-2026-062, Befund 5).",
     "drop_fields": []
   },
   "shared_core": [
@@ -94,7 +96,9 @@
   "agent_frontmatter": {
     "tools_field": "allowed-tools",
     "tools_format": "list",
-    "tool_names": {}
+    "tool_names": {},
+    "tool_names_unmapped": ["read", "grep", "glob", "edit", "exec"],
+    "_tool_names_unmapped_note": "Wie skill_frontmatter.tool_names_unmapped - dieselbe Abwesenheit an der zweiten Stelle, an der dasselbe Vokabular abgebildet wird. Das Agentenprofil fw-reviewer traegt danach 'allowed-tools: read, grep, glob'; ob dieser Client damit die Zusage A1 einloest, ist unerhoben (CR-2026-062, D-78)."
   },
   "agent_start_tools": [],
   "agent_start_tools_absent": ["unerhoben"],

@@ -9,10 +9,65 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.39.0 (2026-09-13)
+## Stand nach Release 0.40.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.40.0 gebracht hat – eine Quelle, ein Vokabular
+
+**Kandidat 1 der Übergabe ist erledigt** – der älteste offene Posten, seit 0.35.0 vertagt.
+Gegengeprüft (`tests/protocols/2026-09-13-gegenpruefung-werkzeugabbildung.md`, zwanzig
+Messungen mit sieben Kontrollläufen, `CR-2026-062`, D-78 bis D-80). **Der Befund bestätigt
+sich – und die vorgeschlagene Behebung war die falsche.**
+
+| Frage | Ergebnis |
+|---|---|
+| Sind es zwei Listen für dieselbe Sache? | **Es sind vier.** `skill_frontmatter.tool_names`, `agent_frontmatter.tool_names`, `hook_tools`, `permission_tools` – dazu `DENY_VERB_EIMER` in `install.py` als fünfte, unvollständige Fassung der Brücke |
+| Sollen sie inhaltlich vereinheitlicht werden? | **Nein.** Die Sperrliste ist bei allen fünf Verbpaaren mindestens so weit wie die Vorabfreigabe – die **zulässige** Richtung. `tool_names` zu heben wäre eine Ausweitung, `hook_tools` zu kürzen eine Lücke in einer Sperre |
+| *Nicht gesucht:* Was passiert bei einem unbekannten Verb? | **Drei der vier Abbildungen brechen ab. Die vierte reichte es wörtlich durch** – und sie kommt zweimal vor |
+| *Nicht gesucht:* Und in `permissions.deny`? | **Lautlos gar nichts.** `deny: [glob, grep]` erzeugte keine Sperre, Validator 0 Fehler – und die Nichtabbildung war nirgends deklariert |
+
+**Die Messung, auf die es ankommt:** Mit geleerten `tool_names`-Blöcken läuft die
+Installation durch und liefert `fw-reviewer` mit `tools: read, grep, glob` aus – drei Namen,
+die dieser Client nicht führt. **Damit stellt die Abbildung stillschweigend genau den Fall
+her, den Zeile A1 desselben Packs als nicht gemessen ausweist** („ein Profil, dessen
+`tools`-Liste sich zu keinem Werkzeug auflöst").
+
+**Die Zahl, die den Befund trägt: vierzehn.** So oft nennen die ausgelieferten Quellen
+`grep` und `glob` in `allowed-tools` – die **meistgenannten** Verben des Vokabulars, und
+genau die beiden, die die Sperrabbildung nicht kannte.
+
+**Vereinheitlicht wird die Brücke, nicht der Inhalt** (D-78, D-80): `clientmap`
+führt `FRONTMATTER_VERBEN` und `VERB_BRUECKE` an einer Stelle,
+`frontmatter_werkzeuge()` ist der einzige Weg von einem Verb zu Werkzeugnamen, und ein Pack,
+das ein Verb nicht abbildet, erklärt das in `tool_names_unmapped` – die Bauform von
+`hook_tools_absent` (D-47) und `agent_start_tools_absent` (D-70). **Prüfung 38** hält
+Deklaration, Richtung und die Verben der Quellen fest. Der Kopfkommentar des Validators
+listet jetzt 32 bis 38 (Kandidat 4).
+
+**Offen und ausdrücklich so ausgewiesen:** Die erzeugten Dateien ändern sich **nicht**, Byte
+für Byte – deshalb fängt Prüfung 38 bei den beiden Packs heute nichts, und Gegenstand 3 ist
+eine **Verankerung** wie Prüfung 35 und 36. Der Gegenbeweis hat **zwei** Zuschnitte: wie
+ausgeliefert eine Fundstelle (der verlorene Anker), mit neutralisiertem Anker zehn – und das
+sind Deklarationslücken, keine Fehlfunktionen. Ob `Grep, Glob` in `disallowed-tools`
+wirklich wirken, ist **nicht gemessen**.
+
+> **Der Sondenlauf hat einen Fehler dieser Umsetzung gefangen.** Prüfung 33 hielt einen
+> Anker auf `DENY_VERB_EIMER` in `install.py`; dieses Release hat die Konstante nach
+> `clientmap.VERB_BRUECKE` verschoben. **Der Validatorlauf gegen das Repositorium blieb
+> dabei 0/0** – Prüfung 33 hängt an `skill_deny_field`, und die lokale Testinstallation ist
+> `devin-desktop`; sie läuft dort **gar nicht**. Das ist **Befund B02, an der eigenen
+> Änderung ein zweites Mal eingetreten**, und die Lehre daraus ist: **Ein grüner Repo-Lauf
+> ersetzt den Sondenlauf nicht.** Nachgezogen sind der Anker **und** die eigene Verbtabelle
+> der Prüfung – sie führte `write` und `search` und kannte `grep` und `glob` nicht, teilte
+> also genau die Lücke, die sie hätte fangen sollen.
+
+> **Ein Widerspruch bleibt stehen, und zwar mit Absicht.** `devin-desktop` erklärt unter
+> `hook_tools_absent`, dieser Client führe kein eigenes Suchwerkzeug – und jede installierte
+> Skilldatei trägt `grep` und `glob` als Werkzeugnamen. **Beides kann nicht stimmen.** Welche
+> Seite falsch ist, entscheidet eine Erhebung an diesem Client; eine Behebung wäre eine
+> Vermutung. Er steht jetzt in der `_tool_names_unmapped_note` des Manifests.
 
 ### Was 0.39.0 gebracht hat – die Berechtigungsdatei wird nachgezählt
 
@@ -238,7 +293,11 @@ die richtige Entscheidung bei dem Belegstand, und sie ist jetzt überholt.**
 **Nebenbefunde, beim Anfassen gefunden:** `skill_frontmatter.tool_names` und `hook_tools`
 sind **zwei Listen für dieselbe Sache** und auseinandergelaufen – `tool_names.edit` führt
 kein `NotebookEdit`. Für eine Vorabfreigabe harmlos, **für eine Sperre eine Lücke**; die
-neue Abbildung nimmt deshalb `hook_tools`, die Vereinheitlichung ist vertagt. Und **vier
+neue Abbildung nimmt deshalb `hook_tools`, die Vereinheitlichung ist vertagt.
+**Erledigt mit 0.40.0** (`CR-2026-062`, D-78 bis D-80) – und die Gegenprüfung hat den
+Befund umgestellt: Es sind **vier** Listen, die genannte Abweichung geht in die
+**zulässige** Richtung, und vereinheitlicht wird die Brücke statt des Inhalts.
+ Und **vier
 Zeilen des Decision Logs waren zerrissen** – drei mit fünf Zellen statt sechs (mit 0.34.0
 entstanden), eine mit acht (ein unmaskiertes `||` in einem Codespan). Gezählt hat das
 bisher nichts.
