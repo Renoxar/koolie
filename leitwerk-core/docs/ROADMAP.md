@@ -3,16 +3,75 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.7` |
+| Version | `0.1.8` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.32.0 (2026-09-13)
+## Stand nach Release 0.33.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.33.0 gebracht hat – Paket 5 ist abgeschlossen
+
+**Zwei Abläufe, die einander im Weg standen.** B08 und B11 sind die letzten Befunde vor der
+technischen Härtung. Beide gegengeprüft, beide bestätigt – und in beiden Fällen hat die
+Gegenprüfung **mehr gefunden als der Bericht**.
+
+- **Die Aktivierung verlangte, was sie herstellen sollte** (B08, D-57). Der Leitfaden fuhr
+  `--strict-overlay` in Schritt 7 und setzte den Status erst in Schritt 9 auf `aktiv`; die
+  Checkliste trug denselben Lauf als MUSS und galt „vor dem Setzen auf aktiv". **Der
+  dokumentierte Ablauf war nicht ohne Regelbruch begehbar.** Neu ist `--check-overlay-ready`,
+  die Prüfung eines Kandidaten; `--strict-overlay` bleibt unverändert die des aktiven Zustands.
+- **Der Name der gesuchten Prüfung stand schon da.** Leitfaden und Docstring nannten den Lauf
+  „Prüfung der Aktivierungsreife", die Umsetzung verlangte den fertigen Zustand. **Es fehlte
+  kein Begriff, es fehlte die Prüfung dazu** – das hat den Zuschnitt des Antrags verschoben.
+- **Der Status-Hook trug drei Defekte, nicht zwei** (B08, D-58). Der dritte stand nicht im
+  Bericht und ist der schwerste: Er verglich als **Präfix**, sodass `aktivierung-ausstehend` als
+  aktiv galt – **wörtlich derselbe Defekt, den D-44 im Validator behoben hat.** Die Lehre war in
+  einer Funktion gezogen und nicht zur Nachbarin getragen, wie bei D-49. Seit 0.33.0 tragen
+  beide Werkzeuge **eine** Auswertung (`tests/scripts/overlay_status.py`), und ein Widerspruch
+  wird als `widerspruechlich` gemeldet statt als `inaktiv`.
+- **Die Domain-Ausnahme ist zurückgezogen** (B11, D-59). Fünf Stellen im Kern versprachen
+  „Ausnahmen je Domain im Overlay" – und **die Widerlegung stand fünf Zeilen unter der Zusage**:
+  `deny` gewinnt immer, dasselbe Argument, das der nächste Absatz für das Kernverzeichnis
+  ausbuchstabiert. Der Weg zu externem Abruf ist **Ersatz statt Zusatz**: die Verbotsregel per
+  Änderungsantrag ersetzen, nicht ergänzen.
+- **Bei einem Pack war die Zusage nicht ausdrückbar**, und **keine Fähigkeitsmatrix führte eine
+  Zeile dazu.** `permission_tools_bare` verwirft das Muster; die erzeugte Datei trägt `WebFetch`
+  und `WebSearch` ohne Argument – das ganze Werkzeug. Dasselbe Muster wie B01: Das Verwerfen war
+  deklariert und richtig, unbenannt blieb die **Folge**. Zeile **B10** sagt es jetzt je Pack.
+- **Der Validator entschied dieselbe Absicht je Pack verschieden.** `Fetch(domain:…)` lief
+  durch, `WebFetch(domain:…)` fiel – eine Nebenwirkung fest verdrahteter Werkzeugnamen, derselbe
+  Fehlertyp wie B02 und B10. Das Verbot kommt jetzt aus dem Manifest.
+- **Die Zusammenfassung der Durchsetzungstiefe überzeichnete sie** (D-60). Sie führte „25 von
+  29" technische Zeilen, gezählt sind **20 von 30**: S3 stand seit 0.31.0 auf `[NICHT
+  ABBILDBAR]`, ohne dass die Summen nachzogen, und vier Zeilen mit Kanalgrenze zählten als
+  technisch, obwohl D-47 sie je Kanal ausweist. **Der Satz „alle sechs Kernzusagen sind
+  technisch abgebildet" war seit 0.30.0 zu weit gefasst.** Es ist der **dritte** Drift dieser
+  Summen – deshalb rechnet **Prüfung 31** sie jetzt aus.
+
+**97 Sonden und Gegenproben bestehen gegen 0.33.0 in beiden Kodierungsumgebungen. Der neue
+Prüfsatz meldet gegen 0.32.0 sechs Fundstellen** – fünf davon Prüfung 31 in den
+unveränderten Packs, die sechste Prüfung 30, weil die Grenzfalltabelle des Vorstands die
+neue Entscheidung noch nicht kennt
+(`tests/protocols/2026-09-13-wirkungsnachweise-0.33.0.md`,
+`tests/protocols/2026-09-13-B08-B11-gegenpruefung.md`).
+
+**Eine Sonde hat die eigene Umsetzung gefangen.** Beim Umbau auf die gemeinsame Auswertung
+verlor die Fehlermeldung von `--strict-overlay` den **Rohwert** des Status und nannte nur noch
+die Auswertung. Die Sonde zu D-44 fiel sofort – sie sucht wörtlich nach
+`aktivierung-ausstehend`, dem Wert, der den Befund damals ausgelöst hat. **Ohne sie wäre die
+Meldung stiller geworden**, und niemand hätte es gemerkt.
+
+**Offen geblieben und ausdrücklich so ausgewiesen:** Kein Domain-Profil – das Zwei-Profil-Modell
+gehört nach Paket 6, wo die Netz- und Isolationsarbeit liegt, und es ist ohne echte
+Netzwerkisolation nicht messbar. Abrufverb und Websuche bleiben zusammengelegt; für eine
+Websuche gibt es überhaupt kein Domain-Ziel. Der Abgleich des gesamten Inhalts zwischen
+Quell-Overlay und Laufzeitfassung bleibt offen (`CR-2026-044` E4) – geprüft wird der **Status**
+an allen Stellen, nicht jedes Feld. Und Prüfung 31 prüft die Arithmetik, nicht die Einstufung.
 
 ### Was 0.32.0 gebracht hat – Paket 4 ist abgeschlossen
 
@@ -712,7 +771,7 @@ Review **B03** nachgewiesen hat; der Validator meldet ihn als Fehler und **gibt 
 Klartext aus**, also genau das, was B03 beanstandet. Im Repositorium ließe das jeden
 Validatorlauf rot werden – und über `probe-pruefungen.py` jede Gegenprobe mit ihm.
 
-Acht davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am selben Tag nachgezogen**, **B07 und B09 am 2026-09-13**:
+Elf der zwölf sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am selben Tag nachgezogen**, **B07 und B09 sowie B08 und B11 am 2026-09-13**:
 
 | Befund | Prüfung dieser Sitzung |
 |---|---|
@@ -724,8 +783,10 @@ Acht davon sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am sel
 | **B05** – Die technischen M4/M5-Pfadgrenzen fehlen im ausgelieferten Hook | **Gemessen und bestätigt** (ebenda). Der Hook entscheidet **gleich**, ob innerhalb oder außerhalb des zugesagten Scopes geschrieben wird, und liest ein mitgeführtes `mode`-Feld nicht. **Eigene Feststellung:** Es sind nicht zwei Modi, sondern **drei von fünf** – M1 nennt denselben Mechanismus, den `install.py` still verwirft (B01), M2 nennt eine Wirkung statt eines Mechanismus, und M3, der Modus mit Zugriff auf Produktivcode, nennt seine Umsetzung als einziger nach Belegklassen – **er ist das Vorbild, nicht der Ausreißer**; die vier übrigen sind darauf nachgezogen |
 | **B09** – Mehrere normative Regeln widersprechen sich – **erledigt mit 0.32.0** | **Im Text gegengeprüft und in einem Punkt verschärft** (`tests/protocols/2026-09-13-B07-B09-gegenpruefung.md`): alle drei Konflikte bestätigt. **Zwei eigene Feststellungen:** Es war keine Pattsituation – acht weitere Stellen führten die K3-Liste bereits ohne Bedingung, die Bedingung stand an einer einzigen. Und die Kurzform war **zwei Kategorien zu kurz**, in der Fassung, die in jede Sitzung lädt. **Die Parallelitätsregel war nicht erfüllbar:** R12 hoch gegen Kontrollstufe niedrig bei "höchster Treffer" – leere Schnittmenge, derselbe zirkuläre Befundtyp wie B08. Berichtigt: drei von vier Zeilenangaben zur Wurzel-Anweisungsdatei stimmen nicht |
 | **B07** – Arbeitsregeln blockieren benötigte Regelquellen – **erledigt mit 0.32.0** | **Im Code und im Text gegengeprüft und erheblich verschärft** (ebenda). Beide technischen Schichten trennen Vertraulichkeit und Integrität seit D-30 korrekt; falsch war allein der Text. **Eigene Feststellung: Der Textfehler wirkt zurück** – `<EXCLUDED_PATHS>` ist der Platzhalter der `read`-Verweigerung, ein Projekt erzeugt damit eine Lesesperre auf seine eigenen Regeldateien. **Nebenbefund:** `<CORE_DIR>/**` war in der Berechtigungsdatei schreibgesperrt, aber nicht in der Verbotsliste der Wurzel-Anweisungsdatei – der Mechanismus schützte mehr, als der Text sagte. Und der Satz zur Overlay-Vorbedingung stand in **fünf** Skills, nicht in einem |
+| **B08** – Aktivierung verlangt bereits Aktivität – **erledigt mit 0.33.0** | **Im Code gegengeprüft und um einen Defekt erweitert** (`tests/protocols/2026-09-13-B08-B11-gegenpruefung.md`): Die Zirkularität ist dreifach verankert – Leitfaden Schritt 7 gegen Schritt 9, die Checkliste mit „Wann" und ihrem MUSS-Punkt, die Overlay-Vorlage mit beidem. **Zwei eigene Feststellungen:** Der Name der fehlenden Prüfung stand längst in Leitfaden und Docstring („Aktivierungsreife"), während die Umsetzung den fertigen Zustand verlangte. Und der Status-Hook trug **drei** Defekte statt zwei – der dritte, ein Präfixvergleich, ist wörtlich derselbe, den D-44 im Validator behoben hat |
+| **B11** – Domain-Ausnahmen liegen nicht über dem globalen Deny – **erledigt mit 0.33.0** | **Im Code und an einer frischen Installation gegengeprüft** (ebenda). **Drei eigene Feststellungen:** Die Widerlegung stand **fünf Zeilen unter der Zusage** – „`deny` gewinnt immer", und drei Zeilen weiter dasselbe Argument für das Kernverzeichnis. Die Zusage stand an **fünf** Stellen und hatte **keine Zeile in einer Fähigkeitsmatrix** – dieselbe Bauform wie der Suchkanal aus 0.30.0. Und bei `claude-code` ist sie **nicht ausdrückbar**: `permission_tools_bare` verwirft das Muster, die erzeugte Datei trägt die ganzen Werkzeuge. Dazu entschied der Validator dieselbe Absicht je Pack verschieden |
 
-Die übrigen vier – **B06, B08, B11** und der Rest von B04/B05 – sind **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+Offen bleibt **B06** und der Rest von B04/B05 – **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
 
 **Aus der Gegenprüfung von B04/B05 sind drei Anträge hervorgegangen, alle drei entschieden
 und mit 0.30.0 umgesetzt:** `CR-2026-047` (Zusagen je Zugriffskanal, D-47), `CR-2026-048` (die
@@ -745,7 +806,7 @@ sind jeweils begründet. Jeder Schritt braucht seinen Antrag. **Paket 1 ist ents
 | **2 – Vor einem dritten Client Pack** – **erledigt mit 0.28.0** | **B02**, B10 | **B02 verdreifacht seinen Schaden mit jedem Pack:** Die Aktivierungsprüfung liest fest verdrahtete Pfade **eines** Clients und bekommt das erkannte Manifest nicht übergeben. B10 ist derselbe Fehlertyp im Installer – `--update` ohne `--client` fiel auf das Standardpack zurück und legte in einem fremden Projekt eine zweite Laufzeitschicht an. **Beide gemessen und behoben** (`CR-2026-044`, `CR-2026-045`, D-44, D-45): Die Aktivierungsprüfung bekommt das Manifest, die Installation erkennt das installierte Pack. Dazu zwei Befunde aus derselben Messung – der Overlay-Status wurde als Präfix geprüft, und ein fehlender sicherheitsrelevanter Abschnitt galt als unauffällig. **Offen geblieben:** der Abgleich zwischen Quell-Overlay und Laufzeitfassung (`CR-2026-044` E4) | keine; beide sind lokale Korrekturen |
 | **3 – Aussagen an den Belegstand angleichen** – **vollständig erledigt** (B03 0.26.1, B02/B10 0.28.0, B04/B05 0.30.0, B01/B12 0.31.0) | ~~**B01**~~, ~~B04~~, ~~B05~~, ~~B12~~ | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
 | **4 – Regelkonflikte, die nur der Mensch entscheiden kann** – **erledigt mit 0.32.0** (`CR-2026-052`, `CR-2026-053`, D-52 bis D-56) | ~~**B09**~~, ~~B07~~ | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`** – am 2026-09-13 getroffen, alle elf Ermessensfragen wie vorgelegt |
-| **5 – Abläufe** | **B08**, B11 | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) |
+| **5 – Abläufe** – **erledigt mit 0.33.0** (`CR-2026-054`, `CR-2026-055`, D-57 bis D-60) | ~~**B08**~~, ~~B11~~ | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) – **erfüllt seit 0.28.0**; die Auswertung liegt seit 0.33.0 in einem gemeinsamen Modul |
 | **6 – Technische Härtung** | **B06**, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3) | Pakete 3 und 4 |
 
 **Drei Abweichungen von der Reihenfolge des Reviews, jeweils mit Grund:**

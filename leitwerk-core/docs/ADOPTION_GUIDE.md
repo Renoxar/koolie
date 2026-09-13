@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.3` |
+| Version | `0.4.4` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `leitwerk-core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -138,11 +138,15 @@ bleibt unberührt (P10, Baum 6).
 7. **Validieren und testen:**
 
    ```bash
-   python leitwerk-core/tests/scripts/validate-framework.py --strict-overlay
+   python leitwerk-core/tests/scripts/validate-framework.py --check-overlay-ready
    python leitwerk-core/install.py --check
    ```
 
-   Der erste Lauf prüft Struktur, Inhalte und Aktivierungsreife des Overlays. Der zweite
+   Der erste Lauf prüft Struktur, Inhalte und die **Aktivierungsreife eines Kandidaten**:
+   Er erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist. Bis 0.32.0 stand hier
+   `--strict-overlay` – ein Lauf, der `aktiv` verlangte, obwohl Schritt 9 den Status erst
+   danach setzt. Der dokumentierte Ablauf war damit nicht ohne Regelbruch begehbar
+   (B08, D-57). Der zweite
    prüft, ob eine Core-Datei lokal verändert wurde — das wäre eine Bearbeitung an der
    falschen Stelle. Anschließend die Basistests des Testkatalogs auf dem Übungsrepository
    ausführen und das Übungsrepository für das Onboarding erzeugen
@@ -151,8 +155,11 @@ bleibt unberührt (P10, Baum 6).
 8. **Organisation im Projekt:** Rollen zuordnen (außerhalb des Repos), Eskalationskanäle,
    Ablageorte für Berichte und Pläne, Feedbackkanal.
 
-9. **Overlay aktivieren:** Checkliste 10 abschließen, Overlay-Status `aktiv`, Meldung an den Framework
-   Owner (Bestandsliste).
+9. **Overlay aktivieren:** Checkliste 10 abschließen, Overlay-Status `aktiv` an **jeder**
+   Stelle, an der das Overlay ihn erklärt, dann
+   `validate-framework.py --strict-overlay` als Nachprüfung des aktiven Zustands; Meldung
+   an den Framework Owner (Bestandsliste). **Erst danach** beginnt der erste Agentenlauf
+   mit Schreibrechten.
 
 10. **Menschen befähigen:** Onboarding vor produktiver Nutzung; Pilotparameter setzen, wenn das
    Projekt als Pilot läuft.

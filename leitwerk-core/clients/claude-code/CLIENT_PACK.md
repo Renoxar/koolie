@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.11.0 |
+| Version | 0.12.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -114,6 +114,7 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 | B7 | Schreiboperationen fragen zurück | – | `ask` auf `Edit(**)` | `[TECHNISCH]` | `[DOK]` |
 | B8 | Netzwerkzugriff standardmäßig unterbunden | – | Verweigerung der Abrufwerkzeuge sowie der Befehle `curl`, `wget`, `ssh` und `scp`. **Je Kanal:** die Abrufwerkzeuge **wirken** (`deny` auf das Abrufverb); der Shell-Kanal **nur für diese vier Programme** – jedes andere netzfähige Programm (`python`, `node`, `git`, Bordmittel der Shell, ein eigenes Skript) ist nicht erfasst. **Die Liste wird bewusst nicht verlängert:** Jedes ergänzte Programm suggeriert eine Vollständigkeit, die ein Befehlsmuster nicht herstellen kann | `[TECHNISCH]` für die Abrufwerkzeuge; **`[TEXTUELL]` für den Shell-Kanal** | `[DOK]`. **Reichweite je Kanal gemessen am 2026-09-12** (`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B04) (Lauf B04-6). Wer eine vollständige Netzsperre braucht, betreibt den Agenten ohne automatische Befehlsausführung |
 | B9 | Nutzerlokale Konfiguration kann nur verschärfen | – | `.claude/settings.local.json` rangiert **über** der Projektdatei, kann eine dort gesetzte Verweigerung aber nicht aufheben: „If a tool is denied at any level, no other level can allow it." Ergänzend greifen `deny`- und `ask`-Regeln sofort, `allow`-Regeln erst nach dem Vertrauen in den Ordner | `[TECHNISCH]` für die Verweigerungen; `[TEXTUELL]` für den Rest | [DOK] `docs/en/permissions, docs/en/settings` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`); **beobachtet am 2026-09-12** (`tests/protocols/2026-09-12-erhebungen-K28-S5-B9-bypass.md`), fünf Läufe gegen die **nutzerglobale** Datei `~/.claude/settings.json`, jeder mit Positivkontrolle: Projekt `deny` gegen Benutzer `allow` – nicht gelesen; Projekt `allow` gegen Benutzer `deny` – nicht gelesen; **ohne jede Verweigerung gelesen** (Kontrolllauf, ohne den die anderen nichts bedeuten). Ebenso wirkungslos blieb ein nutzerglobales `defaultMode: bypassPermissions`, mit und ohne projektseitiges `defaultMode`. **Die Zusage bestätigt sich – und das ist bemerkenswert, weil dieselbe Frage beim anderen Pack das Gegenteil ergab** (`ERH-11`, K-27: dort setzt sich die Benutzerkonfiguration in beide Richtungen durch). Gemessen sind die Mechaniken `deny` und `defaultMode`; für Verschärfungen anderer Art gilt die Aussage nicht |
+| B10 | Externer Abruf auf freigegebene Domains beschränkbar | – | **Keiner.** Die Abbildung führt die Abrufwerkzeuge in `permission_tools_bare`: Ein Muster wird verworfen, die erzeugte Regel lautet `WebFetch` und `WebSearch` **ohne Argument** – das ganze Werkzeug, nicht ein Ziel. Eine Domain-Angabe ist damit nicht ausdrückbar. **Ersatz:** das vollständige Verbot, das dadurch entsteht und als Verbot `[TECHNISCH]` wirkt (B8) – es ist **strenger** als die Zusage, nicht schwächer, und deshalb kein Schutzverlust. Für eine Websuche gibt es überhaupt kein Domain-Ziel; auch ein künftiger Mechanismus könnte sie nicht abdecken (Paket 6) | `[NICHT ABBILDBAR]` | `[DOK]` für die Abbildung (`permission_tools_bare` im Manifest, erzeugte Datei nachgeprüft am 2026-09-13). Seit 0.33.0 sagt der Kern diese Beschränkung nicht mehr zu (B11, D-59) |
 
 ### H – Hooks
 
@@ -146,14 +147,18 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 
 ## 3. Zusammenfassung der Durchsetzungstiefe
 
+> **Zählregel (normativ für diese Tabelle):** Eine Zeile zählt bei ihrer **schwächsten** Einstufung. Trägt sie zwei Angaben je Zugriffskanal – `[TECHNISCH]` für direktes Lesen und Schreiben, `[TEXTUELL]` für Shell und Unterprozess –, zählt sie als `[TEXTUELL]`. Das folgt D-47: Zugesagt wird je Kanal, was gemessen ist; eine Zeile, deren Zusage in einem Kanal nur als Anweisung trägt, ist nicht technisch durchgesetzt. **Bis 0.32.0 zählte dieselbe Tabelle solche Zeilen als `[TECHNISCH]`** und überzeichnete die Durchsetzungstiefe damit um vier Zeilen. Prüfung 31 rechnet die Summen seit 0.33.0 aus der Matrix nach.
+
 | Klasse | Anzahl | davon Kernzusagen | Stand vor AP2 |
 |---|---|---|---|
-| `[TECHNISCH]` | 25 von 29 | 6 von 6 | 20 |
-| `[TEXTUELL]` | 3 von 29 (R5, R6 und B9 für den Teil jenseits der Verweigerungen) | 0 | 2 |
-| `[NICHT ABBILDBAR]` | **1 von 29** (S5) | 0 | 4 |
-| ohne Einstufung | 0 von 29 | 0 | – |
+| `[TECHNISCH]` | 20 von 30 | 3 von 6 (B1, B2, B6) | 20 |
+| `[TEXTUELL]` | 7 von 30 (R5, R6, B9; dazu B3, B4, B5, B8 – je Kanal teils technisch) | 3 von 6 (B3, B4, B5 – Shell und Unterprozess) | 2 |
+| `[NICHT ABBILDBAR]` | **3 von 30** (S3, S5, B10) | 0 | 4 |
+| ohne Einstufung | 0 von 30 | 0 | – |
 
-**Der entscheidende Befund:** Alle sechs Kernzusagen sind technisch abgebildet. Die vier Zeilen, die bis `CR-2026-017` auf `[NICHT ABBILDBAR]` standen (R2, R3, R4, S4), waren sämtlich Unterschätzungen des Clients: `.claude/rules/` mit `paths:` bildet R2 und R3 ab, ein Zeichenlimit ist dokumentiert (R4), und `disable-model-invocation` trägt S4 (`CR-2026-016`).
+**Die Summen waren zwei Releases hinterher.** Die Tabelle führte bis 0.32.0 „25 von 29" und nannte als einzige nicht abbildbare Zeile S5 – S3 steht seit 0.31.0 ebenfalls dort (`CR-2026-050`), und B10 kam mit 0.33.0 hinzu. Die Spalte „Stand vor AP2" bezieht sich auf den damaligen, kleineren Zeilensatz und wird nicht fortgeschrieben.
+
+**Der entscheidende Befund, und er ist seit D-47 kleiner als er klang:** Alle sechs Kernzusagen sind abgebildet – **drei davon technisch in jedem Kanal** (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess tragen sie die Regelschicht. Der Satz „alle sechs Kernzusagen sind technisch abgebildet" stand hier bis 0.32.0 und war ab 0.30.0 zu weit gefasst: Die Zeilen selbst wiesen die Kanalgrenze längst aus, die Zusammenfassung nicht. Die vier Zeilen, die bis `CR-2026-017` auf `[NICHT ABBILDBAR]` standen (R2, R3, R4, S4), waren sämtlich Unterschätzungen des Clients: `.claude/rules/` mit `paths:` bildet R2 und R3 ab, ein Zeichenlimit ist dokumentiert (R4), und `disable-model-invocation` trägt S4 (`CR-2026-016`).
 
 **Seit dem 2026-09-12 steht wieder eine Zeile dort: S5.** Der Satz „keine Einstufung steht mehr auf `[NICHT ABBILDBAR]" hat von 0.24.0 bis 0.26.1 in diesem Pack gestanden und beschrieb ab der Erhebung einen Stand, der nicht mehr galt. Anders als die vier von damals ist S5 **keine Unterschätzung, sondern eine Messung**: Es gibt kein Aufzählungskommando. Betroffen ist **keine Kernzusage** (D-41); der Ersatz steht in der Zeile.
 

@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.6.0 |
+| Version | 0.7.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -98,6 +98,7 @@ darf nicht davon abhängen, mit welchem Werkzeug gearbeitet wird.
 | B7 | Schreiboperationen fragen zurück | – | Rückfrageregel auf alle Schreiboperationen | `[TECHNISCH]` | `[DOK]` |
 | B8 | Netzwerkzugriff standardmäßig unterbunden | – | Verweigerungsregeln auf das Abrufwerkzeug sowie auf die Befehle `curl`, `wget`, `ssh` und `scp`. **Je Kanal:** das Abrufwerkzeug **wirkt**; der Shell-Kanal **nur für diese vier Programme** – jedes andere netzfähige Programm ist nicht erfasst, und die Liste wird bewusst nicht verlängert | `[TECHNISCH]` für das Abrufwerkzeug; **`[TEXTUELL]` für den Shell-Kanal** | wie B3. **Reichweite je Kanal**: Der Befund B04 ist am Schutz-Hook gemessen (`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`); der Hook ist bei beiden Packs derselbe, die Berechtigungsschicht nicht (Lauf B04-6) |
 | B9 | Nutzerlokale Konfiguration kann nur verschärfen | – | `.devin/config.local.json` und die Benutzerkonfiguration `%APPDATA%\devin\config.json` – **Framework-Regel, keine Produkteigenschaft** | `[TEXTUELL]` | `[EMPF]`. **Der Marker ist aufgelöst, und zwar zum Schlechteren: Der Client verhindert eine Lockerung nicht.** Gemessen am 2026-09-11 in beiden Richtungen (K-27, ERH-11): Der Wert der Benutzerkonfiguration setzt sich gegen den projektseitigen durch – auch dann, wenn der projektseitige der strengere ist. Eine projektseitige Verschärfung ist damit ein Standard, den jede Arbeitsstation still aufheben kann, wirksam dort, wo die Benutzerkonfiguration schweigt (der Normalfall). Bei `claude-code` ist die Lage anders, und das ist seit dem 2026-09-12 **gemessen und nicht mehr nur dokumentiert** (`tests/protocols/2026-09-12-erhebungen-K28-S5-B9-bypass.md`, Abschnitt 2.3): Dort setzt sich eine Verweigerung von jeder Ebene durch – die Benutzerkonfiguration kann verschärfen, nicht lockern, und auch ein nutzerglobales `defaultMode: bypassPermissions` blieb wirkungslos. **Dieselbe Frage, zwei Clients, entgegengesetzte Antworten** |
+| B10 | Externer Abruf auf freigegebene Domains beschränkbar | – | **Nicht erhoben.** Die Abbildung führt `Fetch` nicht in `permission_tools_bare`, ein Muster überlebt also das Rendern – `Fetch(domain:...)` entstünde als Regel. **Ob der Client eine Domain-Angabe auswertet, ist unbelegt**, und ob sie gegen das bestehende `Fetch(*)`-Verbot wirken könnte, ist mechanisch verneint: `deny` gewinnt. Der Weg zu externem Abruf ist deshalb der Ersatz der Verbotsregel, nicht ihre Ergänzung | `[TEXTUELL]` | `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`. Seit 0.33.0 sagt der Kern diese Beschränkung nicht mehr zu (B11, D-59) |
 
 ### H – Hooks
 
@@ -135,11 +136,13 @@ darf nicht davon abhängen, mit welchem Werkzeug gearbeitet wird.
 
 ## 3. Zusammenfassung der Durchsetzungstiefe
 
+> **Zählregel (normativ für diese Tabelle):** Eine Zeile zählt bei ihrer **schwächsten** Einstufung. Trägt sie zwei Angaben je Zugriffskanal – `[TECHNISCH]` für direktes Lesen und Schreiben, `[TEXTUELL]` für Shell und Unterprozess –, zählt sie als `[TEXTUELL]`. Das folgt D-47: Zugesagt wird je Kanal, was gemessen ist; eine Zeile, deren Zusage in einem Kanal nur als Anweisung trägt, ist nicht technisch durchgesetzt. **Bis 0.32.0 zählte dieselbe Tabelle solche Zeilen als `[TECHNISCH]`** und überzeichnete die Durchsetzungstiefe damit um vier Zeilen. Prüfung 31 rechnet die Summen seit 0.33.0 aus der Matrix nach.
+
 | Klasse | Anzahl | davon Kernzusagen |
 |---|---|---|
-| `[TECHNISCH]` | 24 von 34 | 6 von 6 |
-| `[TEXTUELL]` | 9 von 34 | 0 |
-| `[NICHT ABBILDBAR]` | 1 von 34 | 0 |
+| `[TECHNISCH]` | 19 von 35 | 3 von 6 (B1, B2, B6) |
+| `[TEXTUELL]` | 15 von 35 | 3 von 6 (B3, B4, B5 – Shell und Unterprozess) |
+| `[NICHT ABBILDBAR]` | 1 von 35 | 0 |
 
 **Die Zeilenzahl ist mit 0.26.0 nachgezählt worden – sie stimmte vorher nicht.** Die Zusammenfassung führte „von 26", während die Matrix 29 Zeilen trug: A2, M4 und M5 kamen mit `CR-2026-025` hinzu, ohne dass die Summen nachgezogen wurden. Derselbe Befundtyp, den dieses Projekt sonst an seinen Zusagen findet, hier an seiner eigenen Buchführung. Fünf Zeilen sind mit 0.26.0 dazugekommen (R5, R6, S5, M6, M7).
 

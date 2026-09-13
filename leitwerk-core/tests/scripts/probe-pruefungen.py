@@ -994,10 +994,10 @@ def _entscheidung_entkoppeln(root: str) -> None:
 def _grenzfall_ergaenzen(root: str) -> None:
     """Gegenprobe: eine weitere Zeile samt mitgezaehlter Anzahl."""
     pfad = _p(root, EDGE_30)
-    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 12 |",
-                              "| Anzahl der Grenzf\u00e4lle | 13 |", 1)
+    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 13 |",
+                              "| Anzahl der Grenzf\u00e4lle | 14 |", 1)
     marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
-    neu = ("\r\n| G-13 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
+    neu = ("\r\n| G-14 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
            "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
     schreib(pfad, text.replace(marke, neu + marke, 1))
 
@@ -1013,6 +1013,207 @@ sonde("30c", "Entscheidung ohne deckenden Grenzfall",
 
 gegenprobe("30", "Zusaetzlicher Grenzfall mit mitgezaehlter Anzahl",
            _grenzfall_ergaenzen, "Grenzfallzeilen")
+
+
+
+# --- Kandidatenpruefung, Status-Hook und Fetch-Allow (B08, B11) -------------------
+#
+# Je Pack eine eigene Installation, wie bei der Aktivierungspruefung: B02 war nicht, dass
+# eine Pruefung falsch prueft, sondern dass sie einen Client gar nicht sieht. Das faellt
+# nur auf, wenn derselbe Fall in jeder Installation laeuft.
+#
+# Die Gegenproben sind hier die wichtigere Haelfte. Bei der Kandidatenpruefung belegt sie,
+# dass ein vollstaendiger, noch nicht aktiver Kandidat **durchlaeuft** - ohne sie stuende
+# nur fest, dass irgendetwas gemeldet wird, und eine Pruefung, die alles meldet, besteht
+# jede Sonde.
+
+
+def ready_ausgabe(root: str) -> str:
+    """Ausgabe der Kandidatenpruefung (--check-overlay-ready)."""
+    p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                      "--root", root, "--check-overlay-ready"])
+    return (p.stdout or "") + (p.stderr or "")
+
+
+def hook_ausgabe(root: str, regelablage: str) -> str:
+    """Ausgabe des Status-Hooks - er blockiert nie, er informiert."""
+    p = unterprozess([sys.executable,
+                      os.path.join(root, "leitwerk-core", "tests", "scripts",
+                                   "hook-overlay-status.py"),
+                      root, regelablage])
+    return (p.stdout or "") + (p.stderr or "")
+
+
+def _kandidat_herstellen(regel: str, overlay: str, rechte: str) -> None:
+    """Ein vollstaendig ausgefuellter Kandidat: keine offenen Werte, Status 'inaktiv'."""
+    for pfad in (regel, overlay, rechte):
+        schreib(pfad, SO_PLATZHALTER.sub("gesetzt", lies(pfad)))
+    for pfad in (regel, overlay):
+        _so_status(pfad, "inaktiv")
+
+
+def sonden_kandidatenpruefung() -> None:
+    """Wirkungsnachweis der Kandidatenpruefung und des Status-Hooks (B08, D-57, D-58)."""
+    for pack in ("claude-code", "devin-desktop"):
+        root = installation(pack)
+        try:
+            man = json.loads(lies(os.path.join(QUELLE, "leitwerk-core", "clients", pack,
+                                               "manifest.json")))
+            regelablage = man["pack_runtime_dir"]
+            regel = os.path.join(root, *regelablage.split("/"), "20-project-overlay.md")
+            overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
+            rechte = os.path.join(root, *man["permissions_file"].split("/"))
+
+            # --- Gegenprobe: der vollstaendige, noch nicht aktive Kandidat laeuft durch
+            _kandidat_herstellen(regel, overlay, rechte)
+            aus = ready_ausgabe(root)
+            ok = "check-overlay-ready" not in aus and "(check-overlay-ready)" not in aus
+            melde("GEGENPROBE", "CR", ok,
+                  f"Vollstaendiger Kandidat mit Status 'inaktiv' laeuft durch ({pack})")
+            if not ok:
+                print("        Ausgabe:", " | ".join(
+                    z for z in aus.splitlines() if "check-overlay-ready" in z)[:400])
+
+            # --- Sonde: ein bereits aktiver Kandidat ist keiner
+            for pfad in (regel, overlay):
+                _so_status(pfad, "aktiv")
+            aus = ready_ausgabe(root)
+            melde("SONDE", "CR", "ist bereits 'aktiv'" in aus,
+                  f"Bereits aktives Overlay wird von der Kandidatenpruefung gemeldet ({pack})")
+
+            # --- Sonde: Drift zwischen den beiden Traegern
+            _so_status(overlay, "inaktiv")
+            aus = ready_ausgabe(root)
+            melde("SONDE", "CR", "widersprechen sich" in aus,
+                  f"Abweichende Statusangaben werden gemeldet ({pack})")
+
+            # --- Sonde: der Status ist ueberhaupt nicht ausgefuellt
+            for pfad in (regel, overlay):
+                _so_status(pfad, "<TBD: aktiv | inaktiv>")
+            aus = ready_ausgabe(root)
+            melde("SONDE", "CR", "nicht ausgefuellt" in aus,
+                  f"Offener Statuswert wird gemeldet ({pack})")
+
+            # --- Status-Hook: dieselben drei Faelle, dasselbe Ergebnis ---------------
+            # Der Hook hatte bis 0.32.0 drei Defekte, und jeder einzelne haette die
+            # Meldung 'aktiv' erzeugt, wo sie falsch ist.
+            for pfad in (regel, overlay):
+                _so_status(pfad, "aktiv")
+            aus = hook_ausgabe(root, regelablage)
+            melde("GEGENPROBE", "HS", "Overlay-Status: aktiv" in aus and "Modus M1" not in aus,
+                  f"Hook meldet 'aktiv' ohne M1-Hinweis, wenn alle Angaben aktiv sind ({pack})")
+
+            _so_status(regel, "aktivierung-ausstehend")
+            aus = hook_ausgabe(root, regelablage)
+            melde("SONDE", "HS", "Overlay-Status: widerspruechlich" in aus,
+                  f"'aktivierung-ausstehend' gilt dem Hook nicht als aktiv ({pack})")
+
+            _so_status(regel, "inaktiv")
+            aus = hook_ausgabe(root, regelablage)
+            melde("SONDE", "HS", "Overlay-Status: widerspruechlich" in aus,
+                  f"Hook meldet die Drift statt der ersten gelesenen Datei ({pack})")
+
+            # Nur die Steckbriefzeile, kein Listeneintrag: Das Suchmuster des Hooks
+            # verlangte bis 0.32.0 einen Doppelpunkt und traf die Tabelle nie.
+            for pfad in (regel, overlay):
+                _so_status(pfad, "inaktiv")
+            t = lies(overlay)
+            schreib(overlay, re.sub(r"^-\s*Overlay-Status:.*$", "", t, flags=re.M))
+            os.remove(regel)
+            aus = hook_ausgabe(root, regelablage)
+            melde("SONDE", "HS", "Overlay-Status: inaktiv" in aus,
+                  f"Hook liest den Status auch aus der Steckbriefzeile ({pack})")
+
+            # --- Fetch-Allow: aus dem Manifest, nicht aus einer Namensliste ---------
+            # Bis 0.32.0 standen die Werkzeugnamen fest verdrahtet, und das war
+            # asymmetrisch: 'Fetch(domain:...)' lief durch, 'WebFetch(domain:...)' fiel.
+            werkzeug = man["permission_tools"]["fetch"][0]
+            inhalt = lies(rechte)
+            schreib(rechte, inhalt.replace(
+                '"allow": [', '"allow": [\r\n      "%s(domain:docs.example.invalid)",'
+                % werkzeug, 1))
+            p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                              "--root", root])
+            aus = (p.stdout or "") + (p.stderr or "")
+            melde("SONDE", "FA", "allow-Regel auf ein Abrufwerkzeug" in aus,
+                  f"Domain-Allow auf das Abrufwerkzeug wird gemeldet ({pack}: {werkzeug})")
+
+            schreib(rechte, inhalt)
+            p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                              "--root", root])
+            aus = (p.stdout or "") + (p.stderr or "")
+            melde("GEGENPROBE", "FA", "allow-Regel auf ein Abrufwerkzeug" not in aus,
+                  f"Die ausgelieferte Regelmenge bleibt unbeanstandet ({pack})")
+        finally:
+            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+sonden_kandidatenpruefung()
+
+
+# --- 31: Die Summen der Fachmatrix sind ausgerechnet (D-60) ----------------------
+# Dreimal von Hand berichtigt, dreimal wieder gedriftet - deshalb ausgerechnet. Die
+# Gegenprobe ist die wichtigere: Eine zusaetzliche Matrixzeile samt nachgezogener Summe
+# darf nicht auffallen, sonst waere die Pruefung eine Bremse statt einer Pruefung.
+PACK_31 = "leitwerk-core/clients/claude-code/CLIENT_PACK.md"
+
+
+def _summe_verfaelschen(root: str) -> None:
+    pfad = P(root, PACK_31.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 20 von 30 |",
+                                     "| `[TECHNISCH]` | 21 von 30 |", 1))
+
+
+def _gesamtzahl_verfaelschen(root: str) -> None:
+    pfad = P(root, PACK_31.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace("| 20 von 30 |", "| 20 von 31 |", 1))
+
+
+def _zusammenfassung_entfernen(root: str) -> None:
+    pfad = P(root, PACK_31.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace("## 3. Zusammenfassung",
+                                     "## 3. Uebersicht", 1))
+
+
+def _zeile_ohne_einstufung(root: str) -> None:
+    pfad = P(root, PACK_31.replace("/", os.sep))
+    t = lies(pfad)
+    marke = "| X2 |"
+    i = t.index(marke)
+    ende = t.index("\r\n", i)
+    schreib(pfad, t[:ende] + "\r\n| Z9 | Sonde ohne Einstufung | - | - | - | - |" + t[ende:])
+
+
+def _zeile_mit_summe(root: str) -> None:
+    """Gegenprobe: eine zusaetzliche Zeile samt nachgezogenen Summen."""
+    pfad = P(root, PACK_31.replace("/", os.sep))
+    t = lies(pfad)
+    marke = "| X2 |"
+    i = t.index(marke)
+    ende = t.index("\r\n", i)
+    t = (t[:ende] + "\r\n| Z9 | Sonde mit Einstufung | - | - | `[TECHNISCH]` | `[DOK]` |"
+         + t[ende:])
+    t = t.replace("| `[TECHNISCH]` | 20 von 30 |", "| `[TECHNISCH]` | 21 von 31 |", 1)
+    for a, b in (("| 7 von 30 (", "| 7 von 31 ("), ("| **3 von 30** (", "| **3 von 31** ("),
+                 ("| 0 von 30 |", "| 0 von 31 |")):
+        t = t.replace(a, b, 1)
+    schreib(pfad, t)
+
+
+sonde("31a", "Verfaelschte Anzahl je Einstufung in der Zusammenfassung",
+      _summe_verfaelschen, "Zeile(n) als [TECHNISCH]; gezaehlt sind")
+
+sonde("31b", "Verfaelschte Gesamtzahl der Matrixzeilen",
+      _gesamtzahl_verfaelschen, "Matrixzeilen; gezaehlt sind")
+
+sonde("31c", "Fehlende Zusammenfassung - die Pruefung darf nicht leise bestehen",
+      _zusammenfassung_entfernen, "kein Abschnitt '## 3. Zusammenfassung")
+
+sonde("31d", "Matrixzeile ohne Einstufung",
+      _zeile_ohne_einstufung, "ohne Einstufung: Z9")
+
+gegenprobe("31", "Zusaetzliche Matrixzeile samt nachgezogener Summe",
+           _zeile_mit_summe, "gezaehlt sind")
 
 
 

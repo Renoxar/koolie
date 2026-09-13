@@ -171,7 +171,7 @@ Zusätzlich zur projektweiten Definition of Done (`<TBD: Pfad>`) gilt `leitwerk-
 | Logauszüge, Stacktraces | K2 | je Aufgabe | bereinigt (keine personenbezogenen Daten, Hostnamen, Kennungen) |
 | Testdaten | K1 nur synthetisch | pauschal für synthetische Daten | Echtdaten nie |
 | Freigegebene MCP-Server | – | `<TBD: Liste mit Zweck und Berechtigungsumfang oder „keine">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask |
-| Freigegebene externe Domains (Fetch) | K0 | `<TBD: Liste oder „keine">` | `Fetch(domain:...)`-Regeln in `<PERMISSIONS_FILE>` |
+| Freigegebene externe Domains (Fetch) | K0 | **„keine"** | **Eine Freigabe je Domain ist nicht vorgesehen** (D-59): `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar. Das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar |
 | Cloud-Sessions / CLI / ACP-Fremdagenten | – | `<TBD: nicht freigegeben / freigegeben mit Auflagen>` | Standard: nicht freigegeben (D-10) |
 
 ## 14. Ausgeschlossene Daten (projektspezifische Ergänzung zu K3)
@@ -266,4 +266,10 @@ Projektspezifisches Wissen wird ausschließlich über diesen Mechanismus eingebu
 
 ## 21. Aktivierung
 
-Der Status wird erst auf `aktiv` gesetzt, wenn `leitwerk-core/checklists/10-project-adoption.md` vollständig abgearbeitet ist und `python3 leitwerk-core/tests/scripts/validate-framework.py --strict-overlay` ohne Befund durchläuft.
+Die Reihenfolge ist bindend, und sie war bis 0.32.0 zirkulär – die Aktivierung verlangte einen Lauf, der bereits Aktivität voraussetzte (B08, D-57):
+
+1. **Ausfüllen.** Alle Pflichtwerte setzen, den Overlay-Status auf `inaktiv` – an **jeder** Stelle, an der das Overlay ihn erklärt (Steckbrief und dieser Abschnitt).
+2. **Kandidat prüfen:** `python3 leitwerk-core/tests/scripts/validate-framework.py --check-overlay-ready` ohne Befund. Diese Prüfung erwartet einen Status, der **noch nicht** `aktiv` ist.
+3. **Checkliste abschließen:** `leitwerk-core/checklists/10-project-adoption.md` vollständig, einschließlich der fachlichen Freigaben. Ein Skript kann sie nicht erteilen.
+4. **Aktivieren.** Der Mensch setzt den Status auf `aktiv` – an jeder Stelle.
+5. **Nachprüfen:** `python3 leitwerk-core/tests/scripts/validate-framework.py --strict-overlay` ohne Befund. Erst danach beginnt der erste Agentenlauf mit Schreibrechten.
