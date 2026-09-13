@@ -9,10 +9,74 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.35.0 (2026-09-13)
+## Stand nach Release 0.36.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.36.0 gebracht hat – der Unteragent ist erhoben, und er ist kein Umgehungsweg
+
+**Drei Fragen an denselben Mechanismus, alle drei länger benannt als beantwortet.** Die erste
+stand dreimal im Repositorium – im Protokoll zu `CR-2026-057`, hier, und in der Übergabe:
+„Ob die Entfernung auch für einen Unteragenten gilt, den der Skill startet, ist nicht
+gemessen. **Für M1 wäre genau das die nächste Frage.**" Sie ist es jetzt, zusammen mit zwei
+weiteren, die beim Aufbau derselben Messumgebung nichts extra kosteten.
+
+Zwölf Läufe, davon **sechs Kontroll- und Entlastungsläufe**
+(`tests/protocols/2026-09-13-erhebung-unteragent.md`). **Alle drei Befunde fallen zugunsten
+der Durchsetzung aus** – das Release holt Belege nach und schließt eine Deklarationslücke, es
+behebt keine Fehlfunktion.
+
+- **Die Skill-Sperre reicht in den Unteragenten** (D-67). Ein Unteragent mit einem Profil
+  **ohne** eigenes `tools`-Feld hatte `Write` und `Edit` nicht im Vorrat; der Kontrolllauf
+  mit demselben Skill ohne das Feld schrieb. **Grenze 2 aus D-64 reicht allerdings mit:** Mit
+  gesperrtem `Write, Edit` schrieb der Unteragent über `Bash`. Die Sperre reicht also eine
+  Ebene tiefer – dort aber genau so weit wie oben.
+- **Zeile A1 stand seit 0.7.0 auf `[TECHNISCH]` mit reinem `[DOK]`-Beleg** (D-68). Jetzt
+  gemessen, und der Mechanismus ist derselbe wie bei S3: **eine Entfernung aus dem
+  Werkzeugvorrat, keine Verweigerung** – `permission_denials` blieb leer. Der Teilsatz zum
+  Startabbruch bei leerer Werkzeugliste ist nicht gemessen und bleibt ausdrücklich `[DOK]`.
+- **Der Schutz-Hook erfasst den Unteragenten und blockiert ihn** (D-69) – **auch mit dem
+  benannten Matcher, den `clientmap.py` erzeugt**. Der Rekorder allein hätte nur belegt, dass
+  der Hook *aufgerufen* wird; das ist nicht dasselbe wie *entscheidet*, und genau diese
+  Unterscheidung fehlt hier für 0.30.0 an anderer Stelle noch.
+- **Das Startwerkzeug stand in keiner Werkzeugliste eines Manifests** (D-70). Neues Feld
+  `agent_start_tools` mit Prüfung 34, Bauform wie `hook_tools_absent` nach D-47. Gemessen ist
+  auch, dass **beide Schreibweisen** (`Agent`, `Task`) in der Sperre wirken – kein stiller
+  Ausfall wie bei den Argumentmustern. Die Kanäle nennen es allerdings verschieden: Der
+  Hook-Umschlag führt `Agent`, `permission_denials` führt `Task`.
+- **„Keine Hintergrund-Subagenten für M3" ist technisch nicht abbildbar** und weist das jetzt
+  aus. Sperrbar ist nur das Startwerkzeug **ganz**; „nur im Hintergrund" ist ein Argument.
+
+**Die B06-Berichtigung hat sich zum ersten Mal bewährt.** Der Umschlag des Unteragenten führt
+mit `agent_id` und `agent_type` zwei Felder, die kein aufgezeichnetes Schema kannte. Ein Hook,
+der wie bis 0.33.0 alle Zeichenketten des Ereignisses durchsucht, hätte sie mitgeprüft; seit
+0.34.0 wird ausschließlich `tool_input` geprüft. **Eine additive Erweiterung des Clients
+erreicht die Entscheidung nicht mehr** – das war der Zweck, und dies ist der erste Fall.
+
+**Nebenbefund beim Nachzählen, nicht gesucht:** Prüfung 31 rechnet die Summen **im Pack** seit
+0.33.0 nach – dieselben Zahlen standen daneben ein zweites Mal, ungerechnet, und waren
+gedriftet. `clients/README.md` führte für `claude-code` „25 von 29", **während das Pack selbst
+einen Absatz darüber trägt, dass genau diese Zahl mit 0.33.0 auf 22 von 31 berichtigt wurde.**
+Insgesamt **sieben überholte Angaben** (D-71); die `[TECHNISCH]`-Zahl wird künftig auch dort
+nachgerechnet, die VERIFY-Zahl entfällt an der zweiten Stelle, weil ihre Grenze zur Hälfte
+Ermessen ist.
+
+**Und eine methodische Lehre, die über dieses Release hinausgeht.** In Lauf V-M griff der
+Unteragent von sich aus zu `PowerShell` – einem Werkzeug, das in dieser Umgebung ohnehin nicht
+schreiben kann. Der Lauf sah aus wie „die Sperre schließt auch den Shell-Weg". Lauf V-E zeigt
+den `Bash`-Weg offen, Lauf V-PK dieselbe Verweigerung **ohne jede Sperre**. **Wer V-M allein
+ausgewertet hätte, hätte einen Positivbefund geschrieben, den zwei Läufe desselben Tages
+widerlegen.** Die Sonde muss das Werkzeug vorschreiben – sonst misst man die Wahl des Agenten
+mit, und die ist kein Mechanismus. Verwandt mit der Lehre aus B06, aber nicht dieselbe: Dort
+war die **Eingabe** falsch, hier der **Weg**, und den hat nicht die Prüfung gewählt, sondern
+ihr Gegenstand.
+
+**Offen und ausdrücklich so ausgewiesen:** Hintergrund-Unteragenten und zwei Ebenen tief sind
+**nicht gemessen**; das Zusammenspiel von Profilfeld und Skill-Sperre ebenso wenig; und es gab
+**keinen Lauf mit dem Schutz-Hook des Frameworks in einer vollständigen Installation** –
+gemessen ist ein synthetischer Sperr-Hook in der erzeugten Form. `devin-desktop` bleibt
+unerhoben, und die leere Liste sagt das jetzt ausdrücklich.
 
 ### Was 0.35.0 gebracht hat – eine Zusage, die zurückkommt
 

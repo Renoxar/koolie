@@ -2,6 +2,97 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.36.0] - 2026-09-13
+
+**Der Unteragent ist erhoben - und er ist kein Umgehungsweg.**
+
+Drei Fragen an denselben Mechanismus, alle drei laenger benannt als beantwortet: Gilt die
+Werkzeugsperre eines Skills auch fuer einen Unteragenten, den er startet? Beschraenkt das
+Profilfeld `tools` technisch - eine Zusage, die seit **0.7.0** auf reiner
+Herstellerdokumentation stand? Und erfasst der Schutz-Hook die Aufrufe eines Unteragenten,
+oder ist der ein Weg an ihm vorbei? Zwoelf Laeufe, davon **sechs Kontroll- und
+Entlastungslaeufe** (`tests/protocols/2026-09-13-erhebung-unteragent.md`).
+
+**Alle drei Befunde fallen zugunsten der Durchsetzung aus.** Das Release holt Belege nach
+und schliesst eine Deklarationsluecke; es behebt keine Fehlfunktion.
+
+### Neu
+
+- **Zeile S3 des Packs `claude-code` traegt ihre Reichweite** (`CR-2026-058`, D-67). Ein
+  Skill mit `disallowed-tools: Write, Edit` startete einen Unteragenten, dessen Profil
+  **kein** eigenes `tools`-Feld traegt - `Write` und `Edit` fehlten trotzdem in dessen
+  Vorrat; derselbe Skill ohne das Feld schrieb. **Die Aufzaehlungsgrenze reicht allerdings
+  mit:** Mit gesperrtem `Write, Edit` schrieb der Unteragent ueber `Bash`.
+- **Zeile A1 steht nicht mehr auf reinem `[DOK]`-Beleg** (D-68). Ein Profil mit
+  `tools: Read, Grep, Glob` hatte kein Schreibwerkzeug, und `permission_denials` blieb
+  **leer**: Es ist eine **Entfernung aus dem Werkzeugvorrat**, keine Verweigerung, die man
+  gegen eine Freigabe abwaegt - derselbe Mechanismus wie bei S3. Der Teilsatz zum
+  Startabbruch bei leerer Werkzeugliste ist **nicht** gemessen und bleibt ausdruecklich
+  `[DOK]`.
+- **Zeile H2 traegt die Reichweite des Hooks** (D-69). Ein PreToolUse-Hook mit Exit 2
+  blockierte den Schreibversuch eines Unteragenten - **auch mit dem benannten Matcher
+  `Edit|Write|NotebookEdit`, den `clientmap.py` erzeugt**. Ohne diesen Lauf waere nur das
+  Sternchen gemessen, und das erzeugt das Framework nirgends. Die Gegenprobe im selben
+  Aufbau liess ein anderes Ziel durch.
+- **Neues Manifestfeld `agent_start_tools`** (D-70). Das Werkzeug, mit dem ein Unteragent
+  startet, stand in **keiner** Werkzeugliste - nicht in `hook_tools`, nicht in
+  `permission_tools`, nicht in `agent_frontmatter.tool_names`. Bei `claude-code` sind beide
+  Schreibweisen gemessen (`Agent` und `Task` sperren beide); `devin-desktop` erklaert die
+  Abwesenheit mit **"unerhoben"**, nicht mit "gibt es nicht".
+- **Pruefung 34** verlangt je Pack Nennung oder erklaerte Abwesenheit - Bauform wie
+  `hook_tools_absent` nach D-47. Ein Pack, das A1 **ohne offenen VERIFY-Marker** auf
+  `[TECHNISCH]` stellt, muss nennen statt erklaeren. Fuenf Sonden und eine Gegenprobe.
+- **Ein Grenzfall** (G-18): Ein "nur lesender" Skill startet einen Unteragenten.
+
+### Behoben
+
+- **Pruefung 32 sagte, sie messe "mit dem vollstaendigen Umschlag beider aufgezeichneter
+  Schemata".** Es sind drei: Ein Aufruf aus einem Unteragenten fuehrt zusaetzlich
+  `agent_id` und `agent_type`. Die Pruefung bekommt einen fuenften Gegenstand und eine
+  Sonde. **Das ist keine Risikobehauptung** - keines der beiden Felder traegt einen Pfad;
+  der Grund ist, dass eine Pruefung ihre benannte Grundlage nicht ueberholt tragen darf.
+- **Sieben ueberholte Angaben in Uebersichten, die nichts nachrechnet** (D-71). Die
+  Uebersicht `clients/README.md` fuehrte fuer `claude-code` **"25 von 29"** - waehrend das
+  Pack selbst einen Absatz darueber traegt, dass genau diese Zahl mit 0.33.0 auf 22 von 31
+  berichtigt wurde. **Die Berichtigung hatte die zweite Stelle nicht erreicht.** Bei
+  `devin-desktop`: "24 von 34" statt 20 von 36. Dazu drei ueberholte VERIFY-Angaben - der
+  Belegstand des Packs `devin-desktop` zaehlte B10 nicht mit, obwohl es seinen Marker seit
+  0.33.0 traegt - und zwei ueberholte Saetze zum Belegstand. **Pruefung 31 rechnet die
+  `[TECHNISCH]`-Zahl kuenftig auch in der Uebersicht nach.**
+- **Die Regel "keine Hintergrund-Subagenten fuer M3" weist ihre Nichtabbildbarkeit aus.**
+  Sperrbar ist nur das Startwerkzeug **ganz**; "nur im Hintergrund" ist ein Argument
+  (`run_in_background`), und ein Argumentmuster wirkt nach D-66 lautlos gar nicht. Die
+  Regel bleibt - neu ist, dass es dasteht.
+- **M1 im Arbeitsmodell nennt beides:** dass innerhalb des Turns keine zweite Ebene
+  entsteht, die die Sperre nicht kennt, und dass das rein lesende Agentenprofil der
+  belastbarere Weg ist - es haengt am Profil, nicht am Turn.
+
+### Migrationshinweise
+
+- **Ein eigenes Client Pack braucht `agent_start_tools`** oder eine erklaerte Abwesenheit
+  samt Notiz; sonst meldet Pruefung 34 einen Fehler. Der Eintrag in `clients/README.md`
+  muss die `[TECHNISCH]`-Zahl der eigenen Matrix fuehren - Pruefung 31 rechnet sie nach.
+- **Kein `install.py --update` noetig.** Weder erzeugte Artefakte noch die
+  Berechtigungsdatei aendern sich; das Release betrifft Belege, Deklarationen und
+  Pruefungen.
+
+### Bekannte Einschraenkungen
+
+- **Hintergrund-Unteragenten sind nicht gemessen.** Alle zwoelf Laeufe fuhren mit
+  `run_in_background: False`.
+- **Zwei Ebenen tief ist nicht gemessen.** Ob ein Unteragent, der selbst einen startet, die
+  Sperre weiterreicht, ist Erwartung.
+- **Das Zusammenspiel von Profilfeld und Skill-Sperre ist nicht gemessen.** Beide einzeln
+  ja; welche Liste gewinnt, wenn sie sich widersprechen, ist offen.
+- **Kein Lauf mit dem Schutz-Hook des Frameworks in einer vollstaendigen Installation.**
+  Gemessen ist ein synthetischer Sperr-Hook in der erzeugten Form.
+- **`devin-desktop` ist unerhoben**, und die leere Liste sagt das ausdruecklich.
+- **Eine methodische Lehre, die ueber dieses Release hinausgeht:** In Lauf V-M griff der
+  Unteragent von sich aus zu einem Werkzeug, das in dieser Umgebung ohnehin nicht schreiben
+  kann - der Lauf sah aus wie "die Sperre schliesst auch den Shell-Weg". Zwei Laeufe
+  desselben Tages widerlegen das. **Die Sonde muss das Werkzeug vorschreiben**, sonst misst
+  man die Wahl des Agenten mit.
+
 ## [0.35.0] - 2026-09-13
 
 **S3 ist zurueckgewonnen - und die Zusage traegt drei Grenzen, weil sie gemessen sind.**

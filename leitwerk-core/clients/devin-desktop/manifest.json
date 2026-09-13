@@ -96,6 +96,9 @@
     "tools_format": "list",
     "tool_names": {}
   },
+  "agent_start_tools": [],
+  "agent_start_tools_absent": ["unerhoben"],
+  "_agent_start_tools_absent_note": "UNERHOBEN, nicht abwesend (CR-2026-058, D-70). Dieses Pack fuehrt Subagenten als Vorschaufunktion des Clients (Quelle QD-14); mit welchem Werkzeugnamen ein Skill einen Unteragenten startet und ob dieser Name in einer Werkzeugsperre wirkt, ist fuer diesen Client NICHT gemessen. Die Erhebung vom 2026-09-13 betrifft ausschliesslich claude-code und uebertraegt sich nicht. Die leere Liste ist deshalb KEINE Aussage ueber den Client, sondern ueber den Belegstand - dieselbe Unterscheidung wie bei hook_tools_absent nach D-47. Zeile A1 dieses Packs traegt entsprechend weiter einen offenen VERIFY-Marker.",
   "permission_tools": {
     "read": [
       "Read"

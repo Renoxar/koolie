@@ -2502,7 +2502,7 @@ def check_k3_kategorien(root: str) -> None:
 GRENZFALL_DATEI = KERN + "/tests/EDGE_CASES.md"
 GRENZFALL_SPALTEN = 7
 GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56", "D-59",
-                            "D-61", "D-63", "D-64", "D-66")
+                            "D-61", "D-63", "D-64", "D-66", "D-67")
 
 
 def check_grenzfaelle(root: str) -> None:
@@ -2560,12 +2560,15 @@ def check_grenzfaelle(root: str) -> None:
 #
 # DAS IST DIE LEHRE, UND SIE GEHOERT HIERHER: Eine Pruefung, die ihren Gegenstand mit
 # selbst gebauter Eingabe aufruft, misst die selbst gebaute Eingabe. Diese Pruefung ruft
-# den Hook deshalb mit dem VOLLSTAENDIGEN Umschlag beider aufgezeichneter Schemata auf.
+# den Hook deshalb mit dem VOLLSTAENDIGEN Umschlag JEDES aufgezeichneten Schemas auf. Bis
+# 0.35.0 stand hier "beider" - es sind seit dem 2026-09-13 drei, weil ein Aufruf aus einem
+# Unteragenten zwei zusaetzliche Felder fuehrt (CR-2026-058, Befund 5).
 #
-# Vier Gegenstaende, je Pack, jeder an der Wirkung gemessen und nicht am Vergleich zweier
+# Fuenf Gegenstaende, je Pack, jeder an der Wirkung gemessen und nicht am Vergleich zweier
 # Listen:
 #   1. Ereignisschema       - was kein Ereignis ist, blockiert mit --fail-closed (D-61).
 #   2. Umschlag             - ein Nebenfeld darf die Entscheidung NICHT aendern (D-62).
+#  2b. Unteragenten-Umschlag - agent_id und agent_type aendern sie ebenso wenig.
 #   3. Unbekanntes Werkzeug - wird nach der strengsten Liste gemessen (CR-2026-056 E2).
 #   4. Pfadidentitaet       - Varianten derselben Datei entscheiden gleich (D-63).
 #
@@ -2584,6 +2587,18 @@ HOOK_UMSCHLAEGE = {
     "devin-desktop": {"session_id": "s", "prompt_id": "p", "hook_event_name": "PreToolUse",
                       "tool_use_id": "t"},
 }
+
+# Der DRITTE aufgezeichnete Umschlag (CR-2026-058 E3, Erhebung vom 2026-09-13): Ein
+# Werkzeugaufruf aus einem UNTERAGENTEN traegt zusaetzlich agent_id und agent_type. Bis
+# 0.35.0 sagte der Kopfkommentar dieser Pruefung, sie messe "mit dem vollstaendigen
+# Umschlag beider aufgezeichneter Schemata" - es sind drei.
+#
+# WARUM DAS HIER STEHT, und warum nicht mehr behauptet wird als gemessen ist: Weder
+# agent_id noch agent_type traegt einen Pfad; heute faengt dieser Fall nichts. Der Grund
+# ist ein anderer - eine Pruefung, die ihre Grundlage benennt, darf sie nicht ueberholt
+# tragen. Und der Grundsatz aus D-62 gilt hier woertlich: Ein zusaetzliches Umschlagfeld
+# ist kein Pruefmaterial. Genau daran ist B06 gescheitert, mit transcript_path.
+HOOK_UMSCHLAG_UNTERAGENT = {"agent_id": "a1cae648c0189377c", "agent_type": "fw-reviewer"}
 KEIN_EREIGNIS = ("", "   ", "[]", "null", '"x"', "42", '{"tool_input": {}}',
                  '{"tool_name": "", "tool_input": {}}', '{"tool_name": "Write"}',
                  '{"tool_name": "Write", "tool_input": "x"}')
@@ -2692,6 +2707,27 @@ def check_hook_eingabeschema(root: str, man: dict) -> None:
                 f"Schreiboperation im vollen Umschlag dieses Clients (Exit {mit}). Bis "
                 f"0.33.0 war das der Normalfall des Packs claude-code - jeder "
                 f"Schreibzugriff scheiterte an einem Nebenfeld (D-62, Befund B06)")
+
+        # 2b. Der Unteragenten-Umschlag ist ein Umschlag wie jeder andere: Dieselbe
+        # Operation MUSS gleich entscheiden, ob sie aus dem Hauptagenten oder aus einem
+        # Unteragenten kommt - bei der harmlosen wie bei der geschuetzten Operation. Die
+        # zweite Haelfte ist die wichtigere: Eine Pruefung, die nur den harmlosen Fall
+        # misst, bestuende auch dann, wenn der Hook mit diesen Feldern gar nichts mehr
+        # entscheidet (CR-2026-058 E3).
+        for name, eingabe, erwartet in (
+                ("harmlos", {"file_path": "src/app.py", "content": "x"}, 0),
+                ("geschuetzt", {"file_path": f"{KERN}/VERSION", "content": "9"}, 2)):
+            voll = dict(umschlag)
+            voll.update(HOOK_UMSCHLAG_UNTERAGENT)
+            voll.update({"tool_name": werkzeug, "tool_input": eingabe})
+            aus_unteragent = _hook_lauf(interpreter, skript, json.dumps(voll))
+            if aus_unteragent != erwartet:
+                err(f"{pack}/manifest.json: Der Schutz-Hook entscheidet eine {name}e "
+                    f"Operation aus einem Unteragenten anders als erwartet "
+                    f"(Exit {aus_unteragent}, erwartet {erwartet}). agent_id und "
+                    f"agent_type sind Umschlagfelder wie transcript_path - kein "
+                    f"Pruefmaterial und kein Grund, die Pruefung zu ueberspringen "
+                    f"(D-62, CR-2026-058 E3)")
 
         # 3. Ein unbekanntes Werkzeug gilt als die strengste Operation, nicht als keine.
         if _hook_lauf(interpreter, skript, ereignis(
@@ -2969,6 +3005,140 @@ def check_durchsetzungstiefe(root: str) -> None:
                     f"Zaehlregel: eine Zeile zaehlt bei ihrer schwaechsten Einstufung, "
                     f"weil eine Kanalgrenze keine technische Durchsetzung ist (D-47, D-60)")
 
+        # DIESELBE ZAHL STEHT EIN ZWEITES MAL, in der Uebersicht der Ablage - und dort
+        # rechnete sie bis 0.35.0 niemand nach. Ergebnis: 'claude-code' fuehrte dort
+        # "25 von 29", waehrend das Pack selbst einen Absatz darueber traegt, dass diese
+        # Zahl mit 0.33.0 auf 22 von 31 berichtigt wurde; 'devin-desktop' fuehrte
+        # "24 von 34" statt 20 von 36. Die Berichtigung hatte die zweite Stelle nicht
+        # erreicht (CR-2026-058 E7, D-71).
+        _uebersicht_pruefen(root, pack, len(gezaehlt["[TECHNISCH]"]), summe)
+
+
+UEBERSICHT_DATEI = KERN + "/clients/README.md"
+
+
+def _uebersicht_pruefen(root: str, pack: str, technisch: int, summe: int) -> None:
+    """Die Zeile dieses Packs in clients/README.md fuehrt dieselbe Zahl (D-71)."""
+    pfad = os.path.join(root, UEBERSICHT_DATEI.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        err(f"{UEBERSICHT_DATEI}: fehlt. Die Uebersicht der Ablage fuehrt je Pack die "
+            f"Zahl der technisch durchgesetzten Zeilen und wird gegen die Matrix "
+            f"gerechnet (D-71)")
+        return
+    text = read(pfad).replace("\r\n", "\n")
+    treffer = None
+    for zeile in text.split("\n"):
+        if not zeile.startswith("| `%s`" % pack):
+            continue
+        zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+        treffer = zellen
+        break
+    if treffer is None:
+        err(f"{UEBERSICHT_DATEI}: kein Eintrag fuer das Client Pack '{pack}'. Jedes Pack "
+            f"der Ablage gehoert in die Uebersicht (Abschnitt 5, Schritt 8)")
+        return
+    zahl = next((z for z in treffer if re.fullmatch(r"\d+ von \d+", z)), None)
+    if zahl is None:
+        err(f"{UEBERSICHT_DATEI}: Die Zeile fuer '{pack}' fuehrt keine Zelle der Form "
+            f"'N von M'. Ohne sie prueft diese Haelfte nichts und bestuende leise (D-23)")
+        return
+    soll = "%d von %d" % (technisch, summe)
+    if zahl != soll:
+        err(f"{UEBERSICHT_DATEI}: Die Uebersicht nennt fuer '{pack}' '{zahl}' technisch "
+            f"durchgesetzte Zeilen; aus der Faehigkeitsmatrix gezaehlt sind '{soll}'. "
+            f"Eine Zahl mit eindeutiger Grenze gehoert ausgerechnet, nicht an zweiter "
+            f"Stelle gepflegt - hier ist sie zweimal gedriftet (D-71, CR-2026-058 E7)")
+
+
+# Pruefung 34: Das Startwerkzeug fuer Unteragenten ist genannt oder seine Abwesenheit
+# erklaert (CR-2026-058 E2, D-70).
+#
+# Bauform wie Pruefung 26 (hook_tools_absent, D-47), eine Ebene weiter. Der Anlass ist ein
+# gemessener Befund: Ein Skill kann einen Unteragenten starten, und das Startwerkzeug stand
+# in KEINER Werkzeugliste eines Manifests - nicht in hook_tools, nicht in permission_tools,
+# nicht in agent_frontmatter.tool_names. Ein Kanal ohne Deklaration ist genau das, was D-47
+# abgestellt hat.
+#
+# Bei claude-code ist gemessen, dass beide Schreibweisen (Agent, Task) in disallowed-tools
+# wirken; bei devin-desktop ist NICHTS gemessen, und die leere Liste sagt deshalb etwas
+# ueber den Belegstand, nicht ueber den Client.
+#
+# EINE ERKLAERUNG REICHT NICHT, WENN DAS PACK A1 OHNE VORBEHALT ZUSAGT: Zeile A1
+# verspricht ein rein lesendes Reviewprofil. Ein Pack, das diese Zeile auf [TECHNISCH]
+# stellt UND keinen offenen VERIFY-Marker mehr darauf fuehrt, behauptet, dass es
+# Unteragenten gibt und dass ihre Werkzeuge beschraenkbar sind - dann ist "kennt kein
+# Startwerkzeug" kein zulaessiger Stand.
+#
+# DER VORBEHALT GEHOERT DAZU, und das hat diese Pruefung bei ihrem ersten Lauf selbst
+# gezeigt: Ohne ihn fiel devin-desktop durch. Dessen Zeile A1 steht auf [TECHNISCH], aber
+# die Praeambel des Packs sagt ausdruecklich, die Spalte nenne die VORGESEHENE
+# Durchsetzungstiefe, und die Zeile traegt einen offenen VERIFY-Marker auf genau die
+# Profilwirkung. Die Einstufung allein sagt also nicht, ob eine Zusage schon gilt - das
+# sagt der Marker. Eine Pruefung, die beides verwechselt, meldet einen Fehler, wo das Pack
+# ehrlich ist (CR-2026-058, Wirkungsnachweis).
+#
+# WAS DIESE PRUEFUNG NICHT LEISTET: Sie prueft die Deklaration, nicht ihre Richtigkeit. Ob
+# der genannte Name beim Client wirklich sperrt, belegt allein eine Erhebung.
+def check_agent_startwerkzeug(root: str) -> None:
+    """Pruefung 34 (D-70): agent_start_tools ist genannt oder erklaert."""
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        try:
+            man = json.loads(read(pfad))
+        except ValueError:
+            continue
+        namen = man.get("agent_start_tools")
+        if namen is None:
+            err(f"{rel}: Feld 'agent_start_tools' fehlt. Ein Skill kann einen Unteragenten "
+                f"starten; mit welchem Werkzeug, gehoert deklariert - und wenn es "
+                f"unbekannt oder unerhoben ist, gehoert das ausdruecklich dorthin statt "
+                f"verschwiegen (D-70, Bauform wie hook_tools_absent nach D-47)")
+            continue
+        if not isinstance(namen, list):
+            err(f"{rel}: 'agent_start_tools' ist keine Liste")
+            continue
+        gefuellt = [n for n in namen if isinstance(n, str) and n.strip()]
+        abwesend = man.get("agent_start_tools_absent") or []
+        notiz = str(man.get("_agent_start_tools_absent_note") or "").strip()
+        if gefuellt:
+            if abwesend:
+                err(f"{rel}: 'agent_start_tools' nennt {gefuellt} und "
+                    f"'agent_start_tools_absent' erklaert zugleich eine Abwesenheit. "
+                    f"Beides zugleich geht nicht (D-70)")
+            continue
+        if not abwesend:
+            err(f"{rel}: 'agent_start_tools' ist leer, ohne dass "
+                f"'agent_start_tools_absent' die Abwesenheit erklaert. Eine leere Liste "
+                f"allein sagt nicht, ob der Client kein solches Werkzeug kennt oder ob es "
+                f"nur nicht erhoben ist - genau diese Unterscheidung ist der Zweck des "
+                f"Feldes (D-70, D-47)")
+            continue
+        if not notiz:
+            err(f"{rel}: 'agent_start_tools_absent' nennt {sorted(abwesend)}, aber "
+                f"'_agent_start_tools_absent_note' fehlt oder ist leer. Eine erklaerte "
+                f"Abwesenheit ohne Begruendung ist eine Behauptung (D-70, D-47)")
+        # Wer A1 auf [TECHNISCH] stellt, sagt zu, dass es Unteragenten gibt und dass ihre
+        # Werkzeuge beschraenkbar sind. Dann ist eine Erklaerung kein zulaessiger Stand.
+        pack_md = os.path.join(basis, pack, "CLIENT_PACK.md")
+        if not os.path.isfile(pack_md):
+            continue
+        for zeile in read(pack_md).replace("\r\n", "\n").split("\n"):
+            if (re.match(r"^\|\s*A1\s*\|", zeile) and "[TECHNISCH]" in zeile
+                    and "<VERIFY" not in zeile):
+                err(f"{rel}: Zeile A1 des Packs steht auf [TECHNISCH] - das Pack sagt ein "
+                    f"rein lesendes Unteragentenprofil technisch zu -, aber "
+                    f"'agent_start_tools' ist leer und nur erklaert. Wer Unteragenten "
+                    f"zusagt, nennt das Werkzeug, mit dem sie starten (D-70)")
+                break
+
 
 
 def main() -> int:
@@ -3021,6 +3191,7 @@ def main() -> int:
     check_durchsetzungstiefe(root)
     check_hook_eingabeschema(root, man)
     check_skill_deny_abbildung(root, man)
+    check_agent_startwerkzeug(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
