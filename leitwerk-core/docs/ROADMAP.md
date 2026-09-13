@@ -9,10 +9,65 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.38.0 (2026-09-13)
+## Stand nach Release 0.39.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.39.0 gebracht hat – die Berechtigungsdatei wird nachgezählt
+
+**Zwei Framework-Lücken hat der Pilot sichtbar gemacht, und sie sind zusammen der dritte
+Ablehnungsgrund von `CR-OTP-G-001`** („Es gibt keine geprüfte Änderungsschicht für diese
+Datei"). Beide sind gegengeprüft
+(`tests/protocols/2026-09-13-gegenpruefung-berechtigungsdatei.md`, zwölf Messungen an einer
+frischen Installation, davon zwei Gegenproben) – **und beide sind erheblich größer als der
+Befund, der sie ausgelöst hat.**
+
+| Befund | Wie er hieß | Was gemessen dabei herauskam |
+|---|---|---|
+| Der `ask`-Korb wird von nichts geprüft | Kandidat 2 | **Der ganze Rest der Datei wird von nichts geprüft.** 13 von 65 Regeln kannte der Validator; **41 der 54 deny-Regeln** ließen sich löschen, ohne dass ein Lauf etwas meldete |
+| Ein Overlay kann keinen zusätzlichen Befehl freigeben | Kandidat 1 | **Bestätigt – und drei Texte behaupteten das Gegenteil**, darunter die Tabelle, an der ein Overlay Owner arbeitet |
+
+**Die Zahl, die den Befund trägt: dreizehn von fünfundsechzig.** Das war der geprüfte Anteil.
+Gemessen liefen acht Eingriffe ohne eine einzige Meldung durch – eine ergänzte `ask`-Zeile
+(genau die, die `CR-OTP-G-001` wollte), eine ergänzte `allow`-Zeile, eine gelöschte
+Nicht-Kernregel, **alle 41** auf einmal, eine verengte Regel (`Bash(kubectl:*)` →
+`Bash(kubectl delete:*)`, `kubectl apply` liefe wieder), ein geleerter `ask`-Korb und ein
+Befehlsschlitz, der mit dem Präfixzeichen gefüllt ist. **Der letzte Fall steht am Piloten**:
+`Bash(mvn -B test:*)` statt `Bash(mvn -B test)`.
+
+**Prüfung 37 ist das Verschärfungsprinzip, mechanisch angewandt** (D-77), in zwei Sätzen:
+Fehlt eine erzeugte Regel, ist es ein Fehler – in jedem Korb. Steht eine Regel zu viel,
+entscheidet der Korb: in `deny` zulässig, in `ask` und `allow` ein Fehler.
+
+**Die Ermessensfrage ist gegen die Erweiterung entschieden** (D-76). Der Grund ist nicht
+Prinzipienstrenge, sondern Mechanik: Die Berechtigungsdatei steht in `shared_seed` und wird
+nach der Erstinstallation **nie wieder geschrieben**; eine Erweiterungsquelle, die nur beim
+Installieren gelesen würde, wäre eine Zusage, die beim ersten Releasewechsel bricht. **Und
+der Kanal für weitere Befehle existiert ohnehin** – Abschnitt 6 des Overlays bindet den
+KI-Client über das Arbeitsmodell und die Wurzel-Anweisungsdatei. Diese beiden Sätze waren
+die ganze Zeit richtig formuliert; falsch war allein die Behauptung, der Befehl stehe
+danach in der Berechtigungsdatei.
+
+> **Der dritte Text ist der schwerste, und er ist nicht gesucht worden.**
+> `framework/core/03-security.md` erlaubte dem Overlay in seiner **normativen**
+> Berechtigungstabelle, die Stufe eines Projektbefehls auf `allow` zu setzen – **drei Zeilen
+> über dem Satz, dass Änderungen an der Regelmenge ausschließlich über einen Änderungsantrag
+> laufen (V10).** Das ist dieselbe Bauform wie B11, zwei Zeilen tiefer, mit 0.32.0 behoben –
+> und die Zeile darüber ist stehen geblieben.
+
+**Ein Entlastungsbefund gehört dazu:** Die MCP-Zeile derselben Tabelle sieht aus wie derselbe
+Fehler („ask; Freigaben je Server im Overlay") und ist in Ordnung – die Freigabe läuft über
+`<MCP_FILE>` und lässt die Stufe unverändert. **Wer den Befund behebt, darf sie nicht
+mitnehmen.**
+
+**Offen und ausdrücklich so ausgewiesen:** Prüfung 37 fängt gegen den unmittelbaren Vorstand
+nichts, weil die erzeugte Datei per Konstruktion zu sich selbst passt – **ihr Gegenbeweis ist
+eine Konstruktion und kein Abzählen**, anders als bei Prüfung 36. Der Präfixteil wirkt bei
+`devin-desktop` nicht (dort sind Befehlsverbote wörtlich). Sie prüft die Form, nicht den Sinn.
+Ein Projekt, das eine `allow`-Regel absichtlich streicht, bekommt jetzt einen Fehler für eine
+Verschärfung – gewollt, aber ein Preis. Und **der Pilot bekommt beim nächsten Heben einen
+Fehler**; das ist der Zweck der Prüfung und kein Nebenschaden.
 
 ### Was 0.38.0 gebracht hat – der stumme Bruch wird laut
 

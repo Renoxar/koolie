@@ -87,16 +87,18 @@ Diese Werte werden in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overla
 
 ## 6. Test-, Prüf- und weitere freigegebene Befehle
 
-| Zweck | Platzhalter | Befehl | Freigegeben für Modus | Freigabestufe in `<PERMISSIONS_FILE>` |
+| Zweck | Platzhalter | Befehl | Freigegeben für Modus | Wirkungsort |
 |---|---|---|---|---|
-| Alle Unit-Tests | `<TEST_COMMAND>` | `<TBD>` | M3, M4 | ask (KANN für Stufe niedrig auf allow gesetzt werden – Entscheidung: `<TBD>`) |
-| Einzelner Test / Testklasse | – | `<TBD: Befehlsmuster mit Platzhalter für Testname>` | M3, M4 | ask |
-| Integrations-/Komponententests | – | `<TBD oder „nur in CI">` | `<TBD>` | ask |
-| Linting / Formatprüfung | `<LINT_COMMAND>` | `<TBD>` | M3, M4, M5 | ask |
-| Statische Codeanalyse (lokal) | – | `<TBD oder „nur in CI">` | M3 | ask |
-| Weitere freigegebene Befehle | – | `<TBD: Liste oder „keine">` | `<TBD>` | ask |
+| Alle Unit-Tests | `<TEST_COMMAND>` | `<TBD>` | M3, M4 | `<PERMISSIONS_FILE>`, Korb ask – und Regelschicht |
+| Einzelner Test / Testklasse | – | `<TBD: Befehlsmuster mit Platzhalter für Testname>` | M3, M4 | **nur Regelschicht** |
+| Integrations-/Komponententests | – | `<TBD oder „nur in CI">` | `<TBD>` | **nur Regelschicht** |
+| Linting / Formatprüfung | `<LINT_COMMAND>` | `<TBD>` | M3, M4, M5 | `<PERMISSIONS_FILE>`, Korb ask – und Regelschicht |
+| Statische Codeanalyse (lokal) | – | `<TBD oder „nur in CI">` | M3 | **nur Regelschicht** |
+| Weitere freigegebene Befehle | – | `<TBD: Liste oder „keine">` | `<TBD>` | **nur Regelschicht** |
 
 Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (Push, Merge, Deployment, Veröffentlichung) werden hier nie gelistet.
+
+**Zum Wirkungsort (D-76).** Die Berechtigungsdatei hat für Befehle genau drei Platzhalter – `<BUILD_COMMAND>` aus Abschnitt 5 sowie `<TEST_COMMAND>` und `<LINT_COMMAND>` aus dieser Tabelle. **Einen vierten Eintrag kann ein Overlay dort nicht erzeugen, und das ist so gewollt:** Die Datei wird bei der Erstinstallation aus der Kernregelmenge erzeugt und danach nie wieder geschrieben; eine Erweiterungsquelle, die nur bei der Installation gelesen würde, wäre eine Zusage, die beim ersten Releasewechsel bricht. Alle übrigen Zeilen dieser Tabelle wirken deshalb über die **Regelschicht**: `leitwerk-core/framework/core/05-working-model.md` Abschnitt 3.2 und die Wurzel-Anweisungsdatei binden den KI-Client daran, nur hier gelistete Befehle auszuführen. Das ist eine Anweisung und keine technische Schranke – die Tabelle sagt es, damit niemand mehr erwartet. Ein Eintrag von Hand in `<PERMISSIONS_FILE>` ist **kein** Ersatz: Prüfung 37 des Validators meldet ihn als Ausweitung.
 
 ## 7. Qualitätsprüfungen (Quality Gates)
 
