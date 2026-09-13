@@ -2,6 +2,95 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.34.0] - 2026-09-13
+
+**Paket 6 beginnt mit dem Befund, der die Richtung umdreht.**
+
+B06 ist der letzte der zwoelf Reviewbefunde. Er ist gegengeprueft, bestaetigt - und in
+jedem einzelnen Teil groesser als berichtet. Dazu ein Befund der **Gegenrichtung**, den
+das Review nicht nennt und der schwerer wiegt als alles, was es nennt: **Der Schutz-Hook
+blockierte beim Pack `claude-code` jeden Schreibzugriff.**
+
+Beide Symptome haben dieselbe Ursache. Der Hook nannte sich "bewusst schema-agnostisch"
+und durchsuchte alle Zeichenketten des Ereignisses. Weil er kein Ereignis pruefte, nahm er
+jede JSON-Struktur an - er liess zu viel durch. Weil er alle Zeichenketten durchsuchte,
+pruefte er auch Felder, die nicht zur Operation gehoeren - er blockierte zu viel.
+
+### Behoben
+
+- **Der Hook blockierte bei `claude-code` jeden Schreibzugriff** (B06, `CR-2026-056`,
+  D-62). Dieser Client fuehrt in jedem Ereignis `transcript_path`, und der liegt unter
+  `~/.claude/projects/` - also im Strukturmuster der Laufzeitschicht. Fuer schreibende
+  Werkzeuge galt es, und damit blockierte jedes `Edit`, `Write` und `NotebookEdit`,
+  unabhaengig vom Ziel. **Am Client nachgemessen**, in einer Umgebung ohne Regeltexte und
+  mit Kontrolllauf ohne Hook. `cwd` ist derselbe Fall, wenn die Sitzung im Kernverzeichnis
+  startet. Geprueft wird jetzt `tool_input`; `cwd` ist Aufloesungsbasis und nie
+  Pruefmaterial.
+- **`--fail-closed` fing genau einen Fall ab: den Syntaxfehler** (D-61). Leere Eingabe,
+  Weissraum, `[]`, `null`, eine Zeichenkette und eine Zahl liefen durch - **sechs Formen,
+  das Review nennt zwei**. Der Hook kennt jetzt ein Ereignisschema und mit "unpruefbar"
+  einen dritten Ausgang neben "sauber" und "gefunden".
+- **Ein unbekannter Werkzeugname uebersprang beide Pfadbloecke.** Er gilt jetzt als
+  unbekannte Operation und wird nach der strengsten Liste gemessen. Blockiert wird er
+  nicht: Das haenge die Zusage daran, dass der Client seinen Matcher einhaelt (D-31).
+- **Der Rueckfall fuer die unbekannte Operation war die einzige Stelle ohne Kernschutz.**
+  Der Kommentar daneben nahm ausdruecklich fuer sich in Anspruch, "die strengere Liste" zu
+  sein; das Kernverzeichnis haengte an einer anderen Bedingung. Jetzt stimmt der Satz.
+- **Sieben von neun Musterfamilien waren schreibungssensitiv, zwei nicht** (D-63). Das war
+  keine Entscheidung fuer POSIX-Semantik, sondern eine Ungleichbehandlung in derselben
+  Datei. Alle Pfadmuster laufen jetzt mit `re.I`.
+- **Fuenf bzw. sechs Pfadvarianten trafen dieselbe Datei und wurden verschieden
+  entschieden** (D-63) - Grossschreibung, 8.3-Kurzname, Junction, Punkt und Leerzeichen am
+  Ende, `::$DATA`. Jede vorab mit `os.path.samefile` belegt. Deklarierte Pfadfelder werden
+  jetzt aufgeloest und in aufgeloester Form noch einmal gegen die Muster gehalten.
+- **Abschnitt 5 beider Packs behauptete seit 0.25.0 fail-open**, waehrend Zeile H2
+  derselben Dokumente fail-closed fuehrte und das Manifest `true` traegt. Neun Releases,
+  drei Aussagen, zwei Packs. Beim Einfuegen der Zeile H4 aufgefallen (`CR-2026-056` E9).
+- **Zwei Prosazahlen der Fachmatrizen waren ueberholt** - "8 der 34 Zeilen" und "24 von 34
+  Zeilen". Pruefung 31 rechnet die Tabelle nach, nicht den Fliesstext; das ist ihre
+  benannte Grenze und bleibt es.
+
+### Neu
+
+- **Pruefung 32** misst Eingabeschema, Umschlag, unbekanntes Werkzeug und Pfadidentitaet -
+  **mit dem vollstaendigen Umschlag beider aufgezeichneter Schemata.** Genau daran ist der
+  Befund vorbeigekommen: Pruefung 16 ruft den Hook ohne Umschlag auf und konnte ihn nicht
+  sehen. Sechs Sonden und eine Gegenprobe. **Gegen den Vorstand 0.33.0 meldet sie
+  zuerst ihren eigenen Anker:** Der alte Hook kennt die drei Stufen nicht, und dann
+  misst sie nicht weiter, statt leise zu bestehen - der Validator nennt dort drei
+  Fehler, zwei davon aus Pruefung 30. Neutralisiert man den Ankertest, damit sie
+  durchmisst, sind es **17 Fundstellen**: zehn Eingabeformen, vier bei `claude-code`,
+  drei bei `devin-desktop`. **Behauptet waren 15** - nachgezaehlt beim
+  Wirkungsnachweis, wie die Zahlen dieses Projekts es regelmaessig noetig haben.
+- **`hook_path_fields`** im Manifest jedes Packs: die Felder von `tool_input`, die einen
+  Pfad tragen. Wie `hook_tools` ueber alle Packs vereinigt (D-28).
+- **Zeile H4** in beiden Fachmatrizen, mit der Zeitluecke als benannter Grenze.
+- **Zwei Grenzfaelle** (G-14, G-15): die Schreibungsunempfindlichkeit auf POSIX und ein
+  Client, der ein anderes Eingabeschema sendet.
+
+### Migrationshinweise
+
+- **Ein Projekt mit dem Pack `claude-code` braucht dieses Release, um ueberhaupt schreiben
+  zu koennen.** Der Fehler steht seit 0.7.0; er faellt erst auf, wenn ein Agent das erste
+  Mal schreiben will. Der Weg ist `install.py --update` - der Hook liegt im Kern und wird
+  ueber ein Release ausgetauscht. **Das gilt auch fuer den laufenden Piloten.**
+- **Die Hook-Konfiguration aendert sich nicht.** Matcher und Kommando bleiben, wie sie
+  sind; eine bestehende Berechtigungsdatei muss dafuer nicht angefasst werden.
+- **Eine Installation, die `FW_HOOK_EXTRA_PATH_PATTERNS` fuehrt**, bekommt ihre Muster
+  jetzt mit `re.I` uebersetzt. Das ist eine Verschaerfung; ein Muster, das bewusst auf
+  Schreibweise setzte, wirkt weiter, aber breiter.
+
+### Bekannte Einschraenkungen
+
+- **Die Zeitluecke zwischen Pruefung und Zugriff bleibt.** Ein Hook kann eine
+  zwischenzeitlich umgebogene Verknuepfung nicht ausschliessen. Zeile H4 nennt es.
+- **Der Shell-Schreibweg bleibt offen.** Ausfuehrende Werkzeuge werden weiter nur an den
+  Secret-Pfaden gemessen (D-30, D-47). **K-32 bleibt damit offen.**
+- **Symbolische Verknuepfungen unter Linux und macOS sind nicht gemessen.** Junctions
+  unter NTFS sind es.
+- **Pruefung 32 misst am Hook, nicht am Client.** Die Messung am Client steht im
+  Protokoll, nicht im Validator.
+
 ## [0.33.0] - 2026-09-13
 
 **Paket 5 ist abgeschlossen: zwei Ablaeufe, die einander im Weg standen.**

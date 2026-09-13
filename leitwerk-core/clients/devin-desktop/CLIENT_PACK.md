@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-DD` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.7.0 |
+| Version | 0.8.0 |
 | Status | entwurf |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Devin Desktop (Devin Local) |
@@ -107,6 +107,7 @@ darf nicht davon abhängen, mit welchem Werkzeug gearbeitet wird.
 | H1 | Prüfung vor Werkzeugausführung | `hooks.PreToolUse` in `.devin/config.json`; Matcher auf lesende, schreibende und ausführende Werkzeuge | `[TECHNISCH]` | **beobachtet** (AP2, `tests/protocols/2026-09-11-AP2-devin-desktop.md`) – bis 0.24.0 wirkungslos, weil die Konfiguration in einer Datei stand, die der Client nicht liest |
 | H2 | Prüfung kann **blockieren** | Exit-Code 2 des Hook-Befehls bricht die Operation ab. Seit 0.25.0 **fail-closed** (`hook_fail_closed: true`): Das Eingabeschema ist gegen eine Installation belegt, damit ist die Bedingung aus D-31 erfüllt | `[TECHNISCH]` | **beobachtet**: Ein Lesezugriff auf eine Secret-Datei wurde blockiert – in einer Umgebung ohne Regeltexte und bei ausgeschalteter Berechtigungsschranke, dort kann nichts als Anweisung gewirkt haben |
 | H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py`, seit 0.25.0 in `.devin/config.json` | `[TECHNISCH]` | `[DOK]` Mechanismus; **die Meldung selbst ist nicht beobachtet**. Der Agent nannte den Overlay-Status zwar, konnte ihn aber aus den Regeltexten haben – bis 0.24.0 lief der Hook ohnehin nicht (AP2-DD-10) |
+| H4 | Eingabeschema und Pfadidentität des Schutz-Hooks | Wie beim Pack `claude-code`: Ereignisprüfung, **unprüfbar** als eigener Ausgang (blockiert, weil dieses Pack `hook_fail_closed: true` führt), Prüfung der Operation statt des Umschlags, Pfadidentität über den aufgelösten Pfad, alle Pfadmuster ohne Rücksicht auf Groß-/Kleinschreibung. **Grenze:** Ein Hook prüft **vor** dem Zugriff; eine zwischenzeitlich umgebogene Verknüpfung kann er nicht ausschließen (`CR-2026-047` E5) | `[TECHNISCH]`, mit benannter Zeitlücke | **Gemessen am 2026-09-13** (`tests/protocols/2026-09-13-B06-gegenpruefung.md`, Befund **B06**): Die fünf Hook-Aufzeichnungen dieses Packs führen `hook_event_name`, `prompt_id`, `session_id`, `tool_input`, `tool_name`, `tool_use_id` – **kein** `transcript_path` und **kein** `cwd`. Der Fehlblockade-Befund des anderen Packs tritt hier deshalb nicht auf; **das ist eine Eigenschaft dieses Schemas, keine des Hooks** |
 
 ### A – Agentenprofile
 
@@ -140,13 +141,13 @@ darf nicht davon abhängen, mit welchem Werkzeug gearbeitet wird.
 
 | Klasse | Anzahl | davon Kernzusagen |
 |---|---|---|
-| `[TECHNISCH]` | 19 von 35 | 3 von 6 (B1, B2, B6) |
-| `[TEXTUELL]` | 15 von 35 | 3 von 6 (B3, B4, B5 – Shell und Unterprozess) |
-| `[NICHT ABBILDBAR]` | 1 von 35 | 0 |
+| `[TECHNISCH]` | 20 von 36 | 3 von 6 (B1, B2, B6) |
+| `[TEXTUELL]` | 15 von 36 | 3 von 6 (B3, B4, B5 – Shell und Unterprozess) |
+| `[NICHT ABBILDBAR]` | 1 von 36 | 0 |
 
 **Die Zeilenzahl ist mit 0.26.0 nachgezählt worden – sie stimmte vorher nicht.** Die Zusammenfassung führte „von 26", während die Matrix 29 Zeilen trug: A2, M4 und M5 kamen mit `CR-2026-025` hinzu, ohne dass die Summen nachgezogen wurden. Derselbe Befundtyp, den dieses Projekt sonst an seinen Zusagen findet, hier an seiner eigenen Buchführung. Fünf Zeilen sind mit 0.26.0 dazugekommen (R5, R6, S5, M6, M7).
 
-**Belegstand:** **8 der 34 Zeilen** tragen einen offenen VERIFY-Marker – S3, B3, A1 und X2 unmittelbar, B4, B5, B6 und B8 über den Verweis „wie B3". Keine Einstufung ist gegen eine Installation geprüft; **beobachtet** sind H1, H2 (AP2) sowie R5, R6 und S5 (Erhebungen vom 2026-09-11), und drei Marker sind mit diesem Release aufgelöst worden: R4 und B9 zum Schlechteren (die Messung widerlegt die Zusage), M2 durch den richtigen Mechanismus.
+**Belegstand:** **8 der 36 Zeilen** tragen einen offenen VERIFY-Marker – S3, B3, A1 und X2 unmittelbar, B4, B5, B6 und B8 über den Verweis „wie B3". Keine Einstufung ist gegen eine Installation geprüft; **beobachtet** sind H1, H2 (AP2) sowie R5, R6 und S5 (Erhebungen vom 2026-09-11), und drei Marker sind mit diesem Release aufgelöst worden: R4 und B9 zum Schlechteren (die Messung widerlegt die Zusage), M2 durch den richtigen Mechanismus.
 
 ## 4. Kernzusagen ohne technische Durchsetzung
 
@@ -156,7 +157,7 @@ Ergibt die Prüfung, dass eine der sechs Zusagen nicht technisch durchgesetzt wi
 
 ## 5. Bekannte Abweichungen im Verhalten
 
-- **Der Schutz-Hook blockiert nicht.** `hook-check-secrets.py` läuft bei diesem Pack fail-open: Eine Werkzeugeingabe, die der Hook nicht als JSON lesen kann, läuft weiter. Die Umstellung auf fail-closed setzt die Klärung des Eingabeschemas voraus (V3), und AP2 steht für dieses Pack aus. Bis dahin ist H2 eine Absichtserklärung, keine Schranke – die technische Durchsetzung von B3 ruht damit allein auf den Verweigerungsregeln der Berechtigungsdatei.
+- **Der Schutz-Hook läuft fail-closed – und das stand hier bis 0.33.0 falsch.** Dieser Absatz behauptete neun Releases lang das Gegenteil („Der Schutz-Hook blockiert nicht … läuft bei diesem Pack fail-open … Bis dahin ist H2 eine Absichtserklärung, keine Schranke") und nannte dazu einen Manifestwert, den es nicht gibt (`hook_fail_closed: false`). Beides ist seit **0.25.0** überholt: Das Manifest führt `true`, und Zeile H2 derselben Tabelle sagt es. **Die Zusammenfassung widersprach ihrer eigenen Matrix** – dieselbe Bauform wie die überzeichneten Summen aus 0.33.0, nur mit umgekehrtem Vorzeichen: Hier sagte der Fließtext **weniger** zu, als der Mechanismus leistet. Aufgefallen beim Einfügen der Zeile H4 (`CR-2026-056` E9, Befund B06).
 
   **Seit 0.24.0 ist das eine ausgewiesene Abweichung, kein gemeinsamer Stand.** Das Manifest führt `hook_fail_closed: false`, das Pack `claude-code` führt `true` – dort ist das Schema gegen eine Installation bestätigt. Prüfung 17 hält beide Zusagen an ihrer Wirkung fest. Mit dem Abschluss von AP2 für dieses Pack ist der Wert auf `true` zu setzen; fail-closed bei unbekanntem Schema wäre keine Härtung, sondern eine Sitzung, die bei jedem Werkzeugaufruf blockiert (D-31).
 - **Der nicht-interaktive Lauf bricht still ab.** Braucht ein Lauf eine Rückfrage, endet er gelegentlich **ohne jede Ausgabe mit Erfolgscode** (`AP2-DD-13`, am 2026-09-11 erneut aufgetreten: ERH-05). Ein leeres Ergebnis ist damit nicht unbedingt ein leeres Ergebnis. **Folge für die in Abschnitt 6 vorgeschriebene Prüfung:** Jeder Nachweislauf bekommt `--export <pfad>` mit – die Mitschrift führt alle Schritte, auch wenn stdout leer bleibt –, und jeder Nachweis aus dem Ausbleiben einer Wirkung trägt eine Positivkontrolle im selben Lauf (Testkatalog Nr. 7).
@@ -217,3 +218,4 @@ Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums betreffen g
 | 0.3.2 | 2026-09-11 | **Fail-open ausgewiesen statt vorausgesetzt (`CR-2026-026`, D-31).** Das Manifest führt `hook_fail_closed: false`; der Schutz-Hook dieses Packs lässt eine nicht lesbare Eingabe weiter durch, weil das Eingabeschema unbestätigt ist (V3). Prüfung 17 hält die Zusage an ihrer Wirkung fest. Das Pack `claude-code` führt seit diesem Release `true` – die Abweichung steht jetzt in der Matrix, statt aus dem Fehlen einer Angabe zu folgen | `<FRAMEWORK_OWNER>` |
 | 0.4.0 | 2026-09-11 | **Fünf Zusagen mehr, drei VERIFY-Marker aufgelöst – zwei davon zum Schlechteren.** Neu: R5 und S5 (Aufzählbarkeit der Regelquellen und Skills, beobachtet, mit dem Vorbehalt aus ERH-02/ERH-03), R6 (Importsteuerung, `CR-2026-038`/D-37), M6 und M7 (die beiden Modi, die D-05 regelt und die Matrix nicht führte, `CR-2026-028`). Aufgelöst: **R4** – für diesen Client ist kein Zeichenlimit dokumentiert, die Zahlen bleiben als Vorgabe des Frameworks (`CR-2026-027`); **B9** – die Benutzerkonfiguration hebt eine projektseitige Verschärfung auf, gemessen in beide Richtungen (ERH-11); **M2** – eine Modus-Sperre ist nicht dokumentiert, wirksam ist die Wirkungsbegrenzung der Organisationsebene. Neuer Abschnitt 7 mit den Anweisungs- und Konfigurationsquellen außerhalb des Projekts. **Die Zeilenzahl der Zusammenfassung ist nachgezählt worden: Sie führte „von 26", während die Matrix 29 Zeilen trug** | `<FRAMEWORK_OWNER>` |
 | 0.3.3 | 2026-09-11 | **Die Hooks liegen in der Berechtigungsdatei (`CR-2026-029`, D-32) und der Schutz-Hook läuft fail-closed (`CR-2026-026`, D-31).** AP2 hat gezeigt, dass aus `.devin/hooks.v1.json` kein Hook ausgeführt wird – H1 bis H3 waren wirkungslos. Mit dem belegten Eingabeschema ist auch die Bedingung für fail-closed erfüllt. H1 und H2 sind jetzt **beobachtet**, nicht nur dokumentiert; H3 bleibt unbeobachtet. Der Matcher deckt zusätzlich das Lesewerkzeug ab (`CR-2026-030`, D-33) | `<FRAMEWORK_OWNER>` |
+| 0.8.0 | 2026-09-13 | **Neue Zeile H4 und eine Berichtigung, die neun Releases überfällig war (`CR-2026-056`, D-61 bis D-63, Befund B06).** H4 trägt Eingabeschema, Pfadidentität und die Zeitlücke des Schutz-Hooks. Der Fehlblockade-Befund des Packs `claude-code` tritt hier nicht auf – die fünf Hook-Aufzeichnungen dieses Packs führen **kein** `transcript_path` und **kein** `cwd`; das ist eine Eigenschaft des Schemas, keine des Hooks. Abschnitt 5 behauptete seit 0.25.0 fail-open und einen Manifestwert `false`, während Zeile H2 derselben Tabelle das Gegenteil sagte | `<FRAMEWORK_OWNER>` |

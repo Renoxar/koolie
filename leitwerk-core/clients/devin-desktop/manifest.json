@@ -121,6 +121,8 @@
   "permission_exec_match": "literal",
   "permissions_extra": {},
   "permissions_note": "Dieser Client kennt kein eigenes Suchwerkzeug; die allow-Regel fuer Suchen entfaellt und faellt damit auf den strengeren Standard zurueck.",
+  "hook_path_fields": ["file_path", "path"],
+  "_hook_path_fields_note": "Wie beim Pack claude-code, an der eigenen Aufzeichnung belegt: Die Hook-Eingaben dieses Clients fuehren tool_input mit file_path. path steht daneben, weil ein zusaetzlich erkanntes Feld eine Verschaerfung ist und die Aufloesung sonst an einer Namensvariante vorbeilaeuft (CR-2026-056 E6).",
   "hook_tools": {"read": ["read"], "search": [], "exec": ["exec"], "write": ["edit", "write"]},
   "hook_tools_absent": ["search"],
   "_hook_tools_absent_note": "Dieser Client fuehrt kein eigenes Suchwerkzeug - dieselbe Feststellung wie in der Verbtabelle des Packs, wo die search-allow-Regel deshalb entfaellt. Die Abwesenheit wird ausdruecklich erklaert, weil eine leere Liste allein ein Abbildungsfehler ist: Ein Pack soll eine Werkzeugklasse nicht dadurch aus der Durchsetzung nehmen koennen, dass es sie weglaesst. Der Validator prueft deshalb, dass ein hier genanntes Verb auch in permission_tools leer ist (CR-2026-047 E3, D-47).",
