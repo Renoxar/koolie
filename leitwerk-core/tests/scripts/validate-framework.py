@@ -698,8 +698,12 @@ def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str],
 
             erlaubt = ("name", "description", "argument-hint", "allowed-tools", "permissions",
                        "triggers", "model", "subagent", "agent")
+            # Die beiden abgebildeten Felder heissen je Client anders und stehen deshalb
+            # nicht in der Liste, sondern kommen aus dem Manifest: die Modellwahl-Sperre
+            # (AP2-CC-01) und seit 0.35.0 die Werkzeugsperre je Skill (D-64).
+            deny_feld = fmt.get("skill_deny_field")
             for key in fm:
-                if key not in erlaubt and key != sperre:
+                if key not in erlaubt and key != sperre and key != deny_feld:
                     warn(f"{rel}/SKILL.md: Frontmatter-Feld '{key}' ist nicht dokumentiert")
         for key in SKILL_META_KEYS:
             if not re.search(rf"^\|\s*{re.escape(key)}\s*\|", body, re.M):
@@ -2498,7 +2502,7 @@ def check_k3_kategorien(root: str) -> None:
 GRENZFALL_DATEI = KERN + "/tests/EDGE_CASES.md"
 GRENZFALL_SPALTEN = 7
 GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56", "D-59",
-                            "D-61", "D-63")
+                            "D-61", "D-63", "D-64", "D-66")
 
 
 def check_grenzfaelle(root: str) -> None:
@@ -2747,6 +2751,136 @@ def check_hook_eingabeschema(root: str, man: dict) -> None:
                 f"nur so anfaengt wie das Kernverzeichnis. Ein Verzeichnis mit aehnlichem "
                 f"Namensanfang ist kein Kind des geschuetzten (CR-2026-056 E5)")
 
+
+# Pruefung 33: Die Abbildung von permissions.deny auf die Werkzeugsperre des Clients
+# (Befund B01 in seiner Nachfolge, CR-2026-057, D-64 bis D-66).
+#
+# WARUM SIE DIE ERZEUGTE FASSUNG MISST UND NICHT DIE QUELLE: Genau daran ist B01
+# vorbeigekommen. Zwoelf Quellskills fuehrten `permissions: deny: [edit, exec]`, das Feld
+# stand in drop_fields, und keine installierte Fassung trug etwas davon - die Quelle sagte
+# mehr, als die Installation hielt, und beides war fuer sich dokumentiert.
+#
+# WARUM SIE IHRE ERWARTUNG SELBST AUSRECHNET: Sie koennte deny_abbilden() aus install.py
+# importieren. Dann pruefte sie aber nur noch, DASS der Installer gelaufen ist, nicht dass
+# er richtig abbildet - sie teilte jeden Fehler der Abbildung. Die Verbtabelle steht
+# deshalb bewusst ein zweites Mal hier. Laufen die beiden auseinander, faellt diese
+# Pruefung; das ist der Zweck, nicht ein Versehen.
+#
+# WAS SIE NICHT LEISTET: Sie misst am erzeugten Text, nicht am Client. Dass
+# disallowed-tools wirklich sperrt, belegt die Erhebung
+# (tests/protocols/2026-09-13-erhebung-disallowed-tools.md), nicht der Validator.
+DENY_VERB_EIMER_33 = {"edit": "write", "write": "write", "exec": "exec",
+                      "read": "read", "search": "search"}
+
+
+def _deny_eintraege(fm_text: str) -> list[str]:
+    """Die Eintraege unter permissions.deny einer Quelldatei, in ihrer Reihenfolge."""
+    m = re.search(r"^permissions:[ \t]*\n((?:[ \t]+\S.*\n)+)", fm_text, re.M)
+    if not m:
+        return []
+    m2 = re.search(r"^([ \t]+)deny:[ \t]*\n((?:[ \t]+-[ \t]+.*\n)+)", m.group(1), re.M)
+    if not m2:
+        return []
+    return [z.strip().lstrip("-").strip() for z in m2.group(2).splitlines() if z.strip()]
+
+
+def _werkzeugliste(wert) -> list[str]:
+    """Ein Frontmatter-Werkzeugfeld als Liste - die Quelle notiert es als Liste, die
+    erzeugte Fassung je nach Client als kommagetrennte Zeichenkette (AP2-CC-09)."""
+    if isinstance(wert, str):
+        return [x for x in re.split(r"[,\s]+", wert) if x]
+    return [str(x) for x in (wert or [])]
+
+
+def check_skill_deny_abbildung(root: str, man: dict) -> None:
+    """Pruefung 33: permissions.deny wird abgebildet, und zwar ohne stille Schranken."""
+    fmt = (man or {}).get("skill_frontmatter", {})
+    deny_feld = fmt.get("skill_deny_field")
+    if not deny_feld:
+        return  # Ein Pack, das permissions nicht verwirft, braucht keine Abbildung
+
+    # Die Sonde auf den verlorenen Anker: Diese Pruefung misst eine Abbildung, die in
+    # install.py liegt. Verschwindet sie, prueft die Pruefung einen Aufbau, den es nicht
+    # mehr gibt - und bestuende dabei leise (D-23).
+    inst = os.path.join(root, KERN, "install.py")
+    quelle = read(inst) if os.path.isfile(inst) else ""
+    for anker in ("def deny_abbilden(", "DENY_VERB_EIMER"):
+        if anker not in quelle:
+            err(f"{KERN}/install.py: '{anker}' fehlt. Pruefung 33 misst die Abbildung von "
+                f"permissions.deny auf {deny_feld}; ohne sie prueft sie einen Aufbau, den "
+                f"es nicht mehr gibt, und bestuende leise (D-23, CR-2026-057)")
+            return
+
+    # Was bewusst NICHT abgebildet wird, MUSS deklariert sein - nie erraten (D-47).
+    if not str(fmt.get("skill_deny_unmapped") or "").strip():
+        err(f"{man.get('client', '?')}/manifest.json: skill_frontmatter.skill_deny_field "
+            f"ist gesetzt, aber skill_deny_unmapped fehlt. Befehlsgenaue Verbote der Form "
+            f"Exec(git push) sind bei diesem Client nicht ausdrueckbar; was nicht "
+            f"abgebildet wird, wird deklariert und nicht verschwiegen (D-47, "
+            f"CR-2026-057 E3)")
+
+    eimer = man.get("hook_tools") or {}
+    qdir = os.path.join(root, KERN, "framework", "skills")
+    idir = os.path.join(root, *man["skills_dir"].split("/"))
+    if not os.path.isdir(qdir) or not os.path.isdir(idir):
+        return
+
+    for name in sorted(os.listdir(qdir)):
+        qpfad = os.path.join(qdir, name, "SKILL.md")
+        ipfad = os.path.join(idir, name, "SKILL.md")
+        if not os.path.isfile(qpfad) or not os.path.isfile(ipfad):
+            continue
+        qtext = read(qpfad)
+        qkopf = qtext.split("\n---\n", 1)[0][4:] if qtext.startswith("---\n") else ""
+        eintraege = _deny_eintraege(qkopf + "\n")
+
+        # Erwartung, unabhaengig ausgerechnet: grobe Verben ueber hook_tools, alles mit
+        # Klammer bleibt draussen (CR-2026-057 E3).
+        erwartet: list[str] = []
+        unabbildbar = [e for e in eintraege if "(" in e]
+        for e in eintraege:
+            if "(" in e:
+                continue
+            k = DENY_VERB_EIMER_33.get(e.strip().lower())
+            for w in eimer.get(k, []) if k else []:
+                if w not in erwartet:
+                    erwartet.append(w)
+
+        ifm, _ = parse_frontmatter(read(ipfad))
+        ist = _werkzeugliste((ifm or {}).get(deny_feld))
+        rel = f"{man['skills_dir']}/{name}/SKILL.md"
+
+        if set(ist) != set(erwartet):
+            err(f"{rel}: {deny_feld} traegt {ist or '[]'}; aus permissions.deny der Quelle "
+                f"ergibt sich {erwartet or '[]'}. Die Quelle sagt sonst mehr, als die "
+                f"Installation haelt - genau das war Befund B01 (D-65, CR-2026-057)")
+
+        # Ein Eintrag mit Klammer wirkt gemessen LAUTLOS gar nicht: Er blockiert nichts und
+        # meldet nichts. Er darf in keiner erzeugten Fassung stehen (D-66, E5).
+        for w in ist:
+            if "(" in w or ")" in w:
+                err(f"{rel}: {deny_feld} enthaelt das Argumentmuster '{w}'. Gemessen am "
+                    f"2026-09-13 laesst ein solcher Eintrag den Befehl lautlos durchlaufen "
+                    f"- wer ihn schreibt, hat gar keine Schranke, nicht bloss eine "
+                    f"groebere. Nur der blosse Werkzeugname sperrt (D-66)")
+
+        # Ein Werkzeug in beiden Listen ist ein Widerspruch. Gemessen gewinnt die Sperre -
+        # aber ein Skill, der ein Werkzeug zugleich vorabfreigibt und entfernt, sagt zwei
+        # Dinge, und eines davon ist falsch.
+        doppelt = sorted(set(ist) & set(_werkzeugliste((ifm or {}).get("allowed-tools"))))
+        if doppelt:
+            err(f"{rel}: {', '.join(doppelt)} steht zugleich in allowed-tools und in "
+                f"{deny_feld}. Gemessen gewinnt die Sperre; die Vorabfreigabe daneben ist "
+                f"eine Aussage, die nicht stimmt (CR-2026-057)")
+
+        # Traegt die Quelle unabbildbare Eintraege, MUSS das Pack sie deklariert haben -
+        # oben schon geprueft; hier bleibt der Hinweis, dass es diesen Skill betrifft.
+        if unabbildbar and not str(fmt.get("skill_deny_unmapped") or "").strip():
+            err(f"{rel}: die Quelle nennt {len(unabbildbar)} befehlsgenaue(s) Verbot(e), "
+                f"die dieser Client nicht ausdruecken kann, und das Pack deklariert es "
+                f"nicht (D-47)")
+
+
 # Pruefung 31: Die Zusammenfassung der Durchsetzungstiefe stimmt mit der Matrix.
 #
 # Die Summen sind dreimal gedriftet, und jedes Mal von Hand berichtigt worden: mit 0.26.0
@@ -2886,6 +3020,7 @@ def main() -> int:
     check_grenzfaelle(root)
     check_durchsetzungstiefe(root)
     check_hook_eingabeschema(root, man)
+    check_skill_deny_abbildung(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
