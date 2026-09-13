@@ -3,10 +3,10 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-EDGE` |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Anzahl der Grenzfälle | 18 |
+| Anzahl der Grenzfälle | 19 |
 | Entstehung | Abnahmekriterium zu den Befunden **B07** und **B09** des unabhängigen Reviews vom 2026-09-12 (`CR-2026-052`, `CR-2026-053`) |
 | Geprüft durch | Prüfung 30 des Validators (Vollständigkeit der Tabelle), `FW-KO-05` des Testkatalogs (Auslegung durch eine zweite Rolle) |
 
@@ -45,6 +45,7 @@ Alle Pfade sind relativ zum Wurzelverzeichnis des Repositoriums.
 | G-16 | Ein Skill ist als „nur lesend" ausgewiesen; nach seinem Lauf schickt die Person in derselben Sitzung eine weitere Nachricht und verlangt eine Änderung | **zulässig – die Schranke des Skills gilt dafür nicht mehr.** `disallowed-tools` entfernt das Werkzeug nur für den **aufrufenden Turn**; mit der nächsten Nachricht ist es zurück. Gemessen am 2026-09-13. Ein „nur lesender" Skill ist nur *während seines Turns* nur lesend – **das ist keine Betriebsart**, und wer M1 braucht, braucht die globale Berechtigungsschicht | M1 endet mit dem Turn; danach gilt der Modus der Sitzung | jede | keine zusätzliche Freigabe; der Betriebsmodus der Sitzung entscheidet, nicht der zuletzt gelaufene Skill | `leitwerk-core/framework/core/05-working-model.md` Abschnitt zu M1; Zeile S3 der Fachmatrix `claude-code` (D-64) |
 | G-17 | Ein Skill soll einen **einzelnen Befehl** verbieten, etwa `git push`, und sein Verbot in der Werkzeugsperre des Clients ausdrücken | **nicht ausdrückbar – und der Versuch ist schlimmer als der Verzicht.** Ein Eintrag mit Argumentmuster wird angenommen und wirkt **lautlos gar nicht**; gemessen am 2026-09-13 lief der verbotene Befehl ohne Verweigerung durch. Der Weg ist die globale Berechtigungsschicht, nicht die Skill-Sperre. Prüfung 33 weist ein solches Muster in einer erzeugten Fassung ab | keiner für den Skill – das Verbot trägt die Berechtigungsschicht | jede | `<FRAMEWORK_OWNER>` über einen Änderungsantrag, falls der Hersteller die Form später unterstützt | `leitwerk-core/tests/scripts/validate-framework.py` Prüfung 33; `leitwerk-core/clients/claude-code/manifest.json` `skill_deny_unmapped` (D-66) |
 | G-18 | Ein Skill ist als „nur lesend" ausgewiesen und startet für eine Teilaufgabe einen **Unteragenten**, dessen Profil keine eigene Werkzeugbeschränkung trägt | **die Schranke gilt weiter – der Unteragent ist kein Umgehungsweg.** Die Entfernung aus dem Werkzeugvorrat wirkt für den ganzen Turn, und der Unteragent läuft innerhalb dieses Turns; gemessen am 2026-09-13 mit Kontrolllauf. **Aber sie reicht dort genau so weit wie oben:** Ist `exec` nicht gesperrt, schreibt der Unteragent über die Shell. Und der Schutz-Hook erfasst seine Aufrufe ebenfalls | derselbe wie für den Skill – der Unteragent erweitert ihn nicht | jede | keine zusätzliche Freigabe; wer den Shell-Weg ausschließen will, sperrt `exec` mit, im Skill wie im Profil | `leitwerk-core/clients/claude-code/CLIENT_PACK.md` Zeilen S3, A1 und H2; `leitwerk-core/tests/protocols/2026-09-13-erhebung-unteragent.md` (D-67, D-69) |
+| G-19 | Ein Unteragentenprofil nennt ein Werkzeug ausdrücklich in `tools`, der Skill, der den Unteragenten startet, sperrt dasselbe Werkzeug | **gesperrt – die restriktivere Liste gewinnt.** Eine Erlaubnis holt ein entferntes Werkzeug nicht zurück, gleich ob sie in der Berechtigungsdatei steht oder im Agentenprofil; gemessen am 2026-09-13 mit Kontrolllauf. **Man kann die Liste nur enger machen, nie weiter** – das gilt auch im Hintergrund und mindestens zwei Ebenen tief | der engere der beiden – der des Skills, solange er der engere ist | jede | keine zusätzliche Freigabe; wer dem Unteragenten mehr geben will, darf es im Skill nicht sperren | `leitwerk-core/clients/claude-code/CLIENT_PACK.md` Zeilen S3 und A1; `leitwerk-core/tests/protocols/2026-09-13-erhebung-unteragent-tiefe.md` (D-72) |
 
 ## 3. Was diese Tabelle nicht leistet
 

@@ -9,10 +9,45 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.36.0 (2026-09-13)
+## Stand nach Release 0.37.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.37.0 gebracht hat – die drei Lücken aus 0.36.0 sind geschlossen
+
+**`CR-2026-058` hat drei Punkte ausdrücklich als nicht gemessen ausgewiesen.** Sie sind es
+jetzt – sieben Läufe, davon drei Kontrollläufe
+(`tests/protocols/2026-09-13-erhebung-unteragent-tiefe.md`, D-72 und D-73). **Alle drei fallen
+zugunsten der Durchsetzung aus.**
+
+| Frage | Ergebnis |
+|---|---|
+| Profil erlaubt ein Werkzeug, Skill sperrt es – wer gewinnt? | **Der Skill.** Die restriktivere Liste gewinnt; eine Erlaubnis holt ein entferntes Werkzeug nicht zurück |
+| Gilt die Sperre im Hintergrund? | **Ja.** `run_in_background: true` im Rekorder belegt |
+| Reicht sie zwei Ebenen tief? | **Ja, mindestens.** Drei sind nicht gemessen |
+
+**Dazu ein vierter Befund, nicht gesucht:** Ein Profil mit `tools`-Liste hat **kein
+Startwerkzeug** und kann sich nicht über eine zweite, weniger beschränkte Ebene erweitern.
+**Ohne ihn wäre die Zusage A1 aushebelbar** – und sie hängt an einer stillen Annahme, nämlich
+dass die Abbildung das Werkzeug nicht kennt. **Prüfung 35** hält das fest; sie fängt heute
+nichts und ist als Verankerung begründet, nicht als Behebung.
+
+**Eine Beobachtung, die nicht ins Framework gehört, aber jeder Nutzerin begegnet:** Der Client
+meldet die Sperre als „Write is disabled for this **session**, in subagents as well as here".
+**Die zweite Hälfte trifft zu, die erste überzeichnet** – gemessen ist der Turn (D-64). Die
+Zeile S3 nennt die Abweichung, weil man die Meldung sieht und das Protokoll nicht.
+
+**Was die Regel zu Hintergrund-Subagenten angeht, ist die Lage jetzt genauer:** Sie bleibt
+normativ, weil „nur im Hintergrund" nach D-66 nicht ausdrückbar ist. **Aber sie steht nicht so
+schutzlos da, wie das klingt** – was ein Skill sperrt, ist auch im Hintergrund gesperrt. Ein
+Hintergrund-Unteragent ist kein Weg, ein entferntes Werkzeug zurückzubekommen; er ist ein Weg,
+unbeaufsichtigt zu arbeiten, und **das** untersagt die Regel.
+
+**Offen und ausdrücklich so ausgewiesen:** drei Ebenen und tiefer; der **umgekehrte**
+Widerspruch (Profil sperrt, Skill erlaubt) – nach dem Ergebnis vorhersagbar, aber eine
+Vorhersage ist keine Messung; und ob ein **blockierender** Hook auch auf der zweiten Ebene
+stoppt. `devin-desktop` bleibt unerhoben.
 
 ### Was 0.36.0 gebracht hat – der Unteragent ist erhoben, und er ist kein Umgehungsweg
 
