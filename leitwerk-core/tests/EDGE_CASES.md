@@ -6,7 +6,7 @@
 | Version | `0.1.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Anzahl der Grenzfälle | 13 |
+| Anzahl der Grenzfälle | 15 |
 | Entstehung | Abnahmekriterium zu den Befunden **B07** und **B09** des unabhängigen Reviews vom 2026-09-12 (`CR-2026-052`, `CR-2026-053`) |
 | Geprüft durch | Prüfung 30 des Validators (Vollständigkeit der Tabelle), `FW-KO-05` des Testkatalogs (Auslegung durch eine zweite Rolle) |
 
@@ -40,6 +40,8 @@ Alle Pfade sind relativ zum Wurzelverzeichnis des Repositoriums.
 | G-11 | Ein KI-Client soll im Quellrepositorium des Frameworks ohne aktives Overlay eine Analyse liefern und sie als Protokoll ablegen | **zulässig.** Der Inhalt ist K0; das Entwicklungsprofil nennt `leitwerk-core/tests/protocols/` als Berichtspfad | M1 für die Analyse, M5 für das Protokoll | niedrig | keine zusätzliche Freigabe; Ergebnis bleibt Entwurf bis zur menschlichen Prüfung | `leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md` Abschnitte 3 und 4 (D-56) |
 | G-12 | Ein schreibendes Werkzeug soll eine Datei unter `<CORE_DIR>/` ändern – auch im Quellrepositorium des Frameworks | **blockiert.** Der Schreibschutz bleibt; das Entwicklungsprofil hebt ihn nicht auf. Der Weg ist der Änderungsantrag (V10) | keiner für das Werkzeug | jede | `<FRAMEWORK_OWNER>` entscheidet den Antrag; der Mensch führt Freigabe und Merge aus | `leitwerk-core/framework/runtime/permissions.json` (`write`-deny); `leitwerk-core/tests/scripts/hook-check-secrets.py`; `leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md` Abschnitt 5 (D-56) |
 | G-13 | Das Overlay führt eine freigegebene externe Domain und erwartet, dass der Abruf dorthin gelingt | **unwirksam.** Das generelle Netzverbot kennt keine Ausnahme je Domain: `deny` gewinnt, eine zusätzliche `allow`-Regel hebt es nicht auf, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist die Angabe nicht ausdrückbar. Der Eintrag gehört auf „keine" | keiner – es gibt keinen Abruf | jede | `<FRAMEWORK_OWNER>` über einen Änderungsantrag zur **Ersetzung** der Verbotsregel; das Overlay darf sie nicht aufheben | `leitwerk-core/framework/core/03-security.md` Abschnitt 4; Zeile B10 beider Fachmatrizen (D-59) |
+| G-14 | Ein Projekt auf einem Dateisystem, das Groß-/Kleinschreibung unterscheidet, führt neben `AGENTS.md` eine eigene `agents.md` und will sie ändern | **blockiert.** Alle Pfadmuster des Schutz-Hooks sind schreibungsunempfindlich; er liegt einmal im Kern und wird von allen Packs auf allen Plattformen geteilt. Das ist hier eine Verschärfung und keine Fehlentscheidung – auf Windows bezeichnen beide Namen dieselbe Datei | keiner für das Werkzeug | jede | `<FRAMEWORK_OWNER>` über einen Änderungsantrag; einen Schalter gibt es bewusst nicht, er wäre ein Hebel für den Agenten | `leitwerk-core/tests/scripts/hook-check-secrets.py`; Zeile H4 beider Fachmatrizen (D-63) |
+| G-15 | Ein KI-Client sendet dem Schutz-Hook eine Eingabe, die nicht dem Ereignisschema entspricht – etwa nach einer Produktänderung | **blockiert, wo das Pack fail-closed führt** (beide gegenwärtigen Packs). Die Operation gilt als unprüfbar, nicht als sauber. Die Meldung nennt Ursache und Weg | keiner, solange das Schema abweicht | jede | Fundstelle melden, Schema gegen die Clientdokumentation prüfen, `<FRAMEWORK_OWNER>` entscheidet den Änderungsantrag | `leitwerk-core/tests/scripts/hook-check-secrets.py`; Prüfung 32 (D-61) |
 
 ## 3. Was diese Tabelle nicht leistet
 

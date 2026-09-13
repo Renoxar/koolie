@@ -994,10 +994,10 @@ def _entscheidung_entkoppeln(root: str) -> None:
 def _grenzfall_ergaenzen(root: str) -> None:
     """Gegenprobe: eine weitere Zeile samt mitgezaehlter Anzahl."""
     pfad = _p(root, EDGE_30)
-    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 13 |",
-                              "| Anzahl der Grenzf\u00e4lle | 14 |", 1)
+    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 15 |",
+                              "| Anzahl der Grenzf\u00e4lle | 16 |", 1)
     marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
-    neu = ("\r\n| G-14 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
+    neu = ("\r\n| G-16 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
            "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
     schreib(pfad, text.replace(marke, neu + marke, 1))
 
@@ -1160,13 +1160,13 @@ PACK_31 = "leitwerk-core/clients/claude-code/CLIENT_PACK.md"
 
 def _summe_verfaelschen(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 20 von 30 |",
-                                     "| `[TECHNISCH]` | 21 von 30 |", 1))
+    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 21 von 31 |",
+                                     "| `[TECHNISCH]` | 22 von 31 |", 1))
 
 
 def _gesamtzahl_verfaelschen(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| 20 von 30 |", "| 20 von 31 |", 1))
+    schreib(pfad, lies(pfad).replace("| 21 von 31 |", "| 21 von 32 |", 1))
 
 
 def _zusammenfassung_entfernen(root: str) -> None:
@@ -1193,9 +1193,9 @@ def _zeile_mit_summe(root: str) -> None:
     ende = t.index("\r\n", i)
     t = (t[:ende] + "\r\n| Z9 | Sonde mit Einstufung | - | - | `[TECHNISCH]` | `[DOK]` |"
          + t[ende:])
-    t = t.replace("| `[TECHNISCH]` | 20 von 30 |", "| `[TECHNISCH]` | 21 von 31 |", 1)
-    for a, b in (("| 7 von 30 (", "| 7 von 31 ("), ("| **3 von 30** (", "| **3 von 31** ("),
-                 ("| 0 von 30 |", "| 0 von 31 |")):
+    t = t.replace("| `[TECHNISCH]` | 21 von 31 |", "| `[TECHNISCH]` | 22 von 32 |", 1)
+    for a, b in (("| 7 von 31 (", "| 7 von 32 ("), ("| **3 von 31** (", "| **3 von 32** ("),
+                 ("| 0 von 31 |", "| 0 von 32 |")):
         t = t.replace(a, b, 1)
     schreib(pfad, t)
 
@@ -1216,6 +1216,90 @@ gegenprobe("31", "Zusaetzliche Matrixzeile samt nachgezogener Summe",
            _zeile_mit_summe, "gezaehlt sind")
 
 
+
+# --- 32: Eingabeschema und Pfadidentitaet des Schutz-Hooks (B06, CR-2026-056) -----
+#
+# Sechs Sonden, weil der Hook seit 0.34.0 sechs voneinander unabhaengige Mechanismen
+# traegt. Jede bricht genau EINEN, und keine bricht ihn ueber den naheliegenden Fall:
+# Bei LEITWERK-CORE/VERSION decken die Aufloesung und re.I einander gegenseitig zu -
+# faellt einer von beiden aus, bestuende die Pruefung, und die Sonde zeigte nichts.
+# 32a und 32e treffen deshalb je einen Fall, den nur ein Mechanismus faengt.
+HOOK_32 = "leitwerk-core/tests/scripts/hook-check-secrets.py"
+
+
+def _hook32(root: str) -> str:
+    return P(root, HOOK_32.replace("/", os.sep))
+
+
+def _tausche(root: str, alt: str, neu: str) -> None:
+    """Eine Ersetzung im Hook der Kopie. Trifft der Suchtext nicht, bleibt der Baum
+    unveraendert - und sonde() meldet genau das, statt die Pruefung zu messen."""
+    pfad = _hook32(root)
+    schreib(pfad, lies(pfad).replace(alt, neu, 1))
+
+
+def _ohne_aufloesung(root: str) -> None:
+    """Die Pfadaufloesung liefert nichts - die Muster sehen nur noch den Rohtext."""
+    _tausche(root, "    voll, nur_secret = [], []", "    return [], []")
+
+
+def _ohne_ereignispruefung(root: str) -> None:
+    """Eine leere Eingabe gilt wieder als harmloses Ereignis - der Stand bis 0.33.0."""
+    _tausche(root, '        raise Unpruefbar("leere Eingabe")',
+             '        raw = \'{"tool_name": "x", "tool_input": {}}\'')
+
+
+def _umschlag_im_pruefmaterial(root: str) -> None:
+    """Der Umschlag wandert zurueck ins Pruefmaterial - der Stand bis 0.33.0."""
+    _tausche(root, "    return tool_name.strip().lower(), tool_input, basis",
+             "    return tool_name.strip().lower(), dict(payload, **tool_input), basis")
+
+
+def _unbekanntes_werkzeug_lax(root: str) -> None:
+    """Eine unbekannte Operation gilt wieder als lesend statt als die strengste."""
+    _tausche(root, '    schreibend = verb in ("write", "unbekannt")',
+             '    schreibend = verb == "write"')
+
+
+def _ohne_schreibweise(root: str) -> None:
+    """Das Secret-Muster fuer .env wird wieder schreibungssensitiv."""
+    _tausche(root, r'\.env(\.|$)", re.I', r'\.env(\.|$)"')
+
+
+def _anker_verlieren(root: str) -> None:
+    """Der Suchtext, ueber den Pruefung 32 ihren Gegenstand findet, geht verloren."""
+    pfad = _hook32(root)
+    schreib(pfad, lies(pfad).replace("ereignis_lesen(", "ereignis_pruefen("))
+
+
+def _zusaetzliches_pfadfeld(root: str) -> None:
+    """Gegenprobe: ein weiteres Pfadfeld im Manifest - eine zulaessige Verschaerfung."""
+    for pack in ("claude-code", "devin-desktop"):
+        pfad = P(root, ("leitwerk-core/clients/%s/manifest.json" % pack).replace("/", os.sep))
+        schreib(pfad, lies(pfad).replace('"hook_path_fields": ["file_path"',
+                                         '"hook_path_fields": ["zielpfad", "file_path"', 1))
+
+
+sonde("32a", "Pfadaufloesung aus - nur sie faengt einen Pfad, der den Kern nicht nennt",
+      _ohne_aufloesung, "ohne es zu nennen")
+
+sonde("32b", "Ereignispruefung aus - eine leere Eingabe gilt wieder als Ereignis",
+      _ohne_ereignispruefung, "ist kein Werkzeugereignis")
+
+sonde("32c", "Umschlag zurueck im Pruefmaterial - der Stand bis 0.33.0",
+      _umschlag_im_pruefmaterial, "je nachdem ob der Umschlag")
+
+sonde("32d", "Unbekannte Operation gilt wieder als lesend",
+      _unbekanntes_werkzeug_lax, "unbekanntes Werkzeug in das Kernverzeichnis")
+
+sonde("32e", "Secret-Muster wieder schreibungssensitiv - nur re.I faengt die nicht "
+      "vorhandene Datei", _ohne_schreibweise, "wenn die Datei nicht existiert")
+
+sonde("32f", "Verlorener Anker - die Pruefung darf nicht leise bestehen",
+      _anker_verlieren, "'def ereignis_lesen(' fehlt")
+
+gegenprobe("32", "Zusaetzliches Pfadfeld im Manifest ist eine zulaessige Verschaerfung",
+           _zusaetzliches_pfadfeld, "Befund B06")
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

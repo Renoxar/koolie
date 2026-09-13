@@ -1495,16 +1495,7 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
     skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
     if not os.path.isfile(skript):
         return
-    interpreter = None
-    for kandidat in ("python3", "python", "py"):
-        try:
-            lauf = subprocess.run([kandidat, "-c", "import sys; sys.stdout.write('%s')" % HOOK_SONDE],
-                                  capture_output=True, text=True, timeout=15)
-            if lauf.returncode == 0 and HOOK_SONDE in (lauf.stdout or ""):
-                interpreter = kandidat
-                break
-        except (OSError, subprocess.SubprocessError):
-            continue
+    interpreter = _hook_interpreter()
     if interpreter is None:
         return  # Pruefung 15 meldet diesen Fall bereits
     # Alle Packs, nicht nur das installierte: Der Hook liegt einmal im Kern und wird
@@ -1616,16 +1607,7 @@ def check_hook_fail_closed(root: str, man: dict) -> None:
     skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
     if not os.path.isfile(skript):
         return
-    interpreter = None
-    for kandidat in ("python3", "python", "py"):
-        try:
-            lauf = subprocess.run([kandidat, "-c", "import sys; sys.stdout.write('%s')" % HOOK_SONDE],
-                                  capture_output=True, text=True, timeout=15)
-            if lauf.returncode == 0 and HOOK_SONDE in (lauf.stdout or ""):
-                interpreter = kandidat
-                break
-        except (OSError, subprocess.SubprocessError):
-            continue
+    interpreter = _hook_interpreter()
     if interpreter is None:
         return  # Pruefung 15 meldet diesen Fall bereits
 
@@ -2515,7 +2497,8 @@ def check_k3_kategorien(root: str) -> None:
 # und wird nachgezaehlt: In diesem Projekt war eine Zahl schon oefter zu klein.
 GRENZFALL_DATEI = KERN + "/tests/EDGE_CASES.md"
 GRENZFALL_SPALTEN = 7
-GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56", "D-59")
+GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56", "D-59",
+                            "D-61", "D-63")
 
 
 def check_grenzfaelle(root: str) -> None:
@@ -2560,6 +2543,209 @@ def check_grenzfaelle(root: str) -> None:
                 f"ist das Abnahmekriterium des Reviews nicht eingeloest")
 
 
+
+# Pruefung 32: Eingabeschema und Pfadidentitaet des Schutz-Hooks (B06, CR-2026-056).
+#
+# Pruefung 16 belegt, dass der Hook jeden abgebildeten WERKZEUGNAMEN erkennt. Sie ruft ihn
+# dafuer mit {"tool_name": ..., "tool_input": ...} auf - OHNE Umschlag. Genau daran ist der
+# schwerste Teil von B06 vorbeigekommen: Der Client claude-code fuehrt in jedem Ereignis
+# transcript_path, der unter ~/.claude/projects/ liegt und damit das Strukturmuster der
+# Laufzeitschicht trifft. Bis 0.33.0 blockierte der Hook deshalb JEDEN Schreibzugriff
+# dieses Packs, unabhaengig vom Ziel - am Client nachgemessen, mit Kontrolllauf
+# (tests/protocols/2026-09-13-B06-gegenpruefung.md).
+#
+# DAS IST DIE LEHRE, UND SIE GEHOERT HIERHER: Eine Pruefung, die ihren Gegenstand mit
+# selbst gebauter Eingabe aufruft, misst die selbst gebaute Eingabe. Diese Pruefung ruft
+# den Hook deshalb mit dem VOLLSTAENDIGEN Umschlag beider aufgezeichneter Schemata auf.
+#
+# Vier Gegenstaende, je Pack, jeder an der Wirkung gemessen und nicht am Vergleich zweier
+# Listen:
+#   1. Ereignisschema       - was kein Ereignis ist, blockiert mit --fail-closed (D-61).
+#   2. Umschlag             - ein Nebenfeld darf die Entscheidung NICHT aendern (D-62).
+#   3. Unbekanntes Werkzeug - wird nach der strengsten Liste gemessen (CR-2026-056 E2).
+#   4. Pfadidentitaet       - Varianten derselben Datei entscheiden gleich (D-63).
+#
+# WAS DIESE PRUEFUNG NICHT LEISTET: Sie misst am Hook, nicht am Client. Dass ein Client
+# den Matcher einhaelt und genau dieses Schema sendet, belegt nur eine Sitzung (AP2). Und
+# sie misst die Pfadvarianten dieser Plattform: Der 8.3-Kurzname und die Junction sind
+# unter NTFS gepruefte Faelle, symbolische Verknuepfungen unter POSIX sind es nicht - sie
+# brauchen eine Datei im Dateisystem und gehoeren deshalb in die Sonde, nicht hierher.
+HOOK_UMSCHLAEGE = {
+    # Aufgezeichnet, nicht angenommen: die Felder stammen aus den AP2-Mitschriften beider
+    # Packs (leitwerk-erhebungen-2026-09-12 bzw. lw-tech). Der Unterschied ist der Punkt:
+    # Nur eines der beiden Schemata fuehrt transcript_path und cwd.
+    "claude-code": {"session_id": "s", "transcript_path": "/home/u/.claude/projects/p/s.jsonl",
+                    "cwd": "/projekt", "permission_mode": "default",
+                    "hook_event_name": "PreToolUse", "tool_use_id": "t"},
+    "devin-desktop": {"session_id": "s", "prompt_id": "p", "hook_event_name": "PreToolUse",
+                      "tool_use_id": "t"},
+}
+KEIN_EREIGNIS = ("", "   ", "[]", "null", '"x"', "42", '{"tool_input": {}}',
+                 '{"tool_name": "", "tool_input": {}}', '{"tool_name": "Write"}',
+                 '{"tool_name": "Write", "tool_input": "x"}')
+
+
+def _hook_interpreter() -> str | None:
+    """Der erste Interpretername, der auf dieser Maschine wirklich Python startet."""
+    for kandidat in ("python3", "python", "py"):
+        try:
+            lauf = subprocess.run([kandidat, "-c", "import sys; sys.stdout.write('%s')" % HOOK_SONDE],
+                                  capture_output=True, text=True, timeout=15)
+            if lauf.returncode == 0 and HOOK_SONDE in (lauf.stdout or ""):
+                return kandidat
+        except (OSError, subprocess.SubprocessError):
+            continue
+    return None
+
+
+def _hook_lauf(interpreter: str, skript: str, eingabe: str) -> int:
+    """Ruft den Schutz-Hook mit --fail-closed auf und liefert den Exit-Code."""
+    try:
+        lauf = subprocess.run([interpreter, skript, "--fail-closed"], input=eingabe,
+                              capture_output=True, text=True, timeout=20,
+                              env={k: v for k, v in os.environ.items()
+                                   if k != "FW_HOOK_FAIL_CLOSED"})
+    except (OSError, subprocess.SubprocessError):
+        return -1
+    return lauf.returncode
+
+
+def check_hook_eingabeschema(root: str, man: dict) -> None:
+    """Pruefung 32 (D-61 bis D-63): Ereignisschema, Umschlag und Pfadidentitaet."""
+    skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
+    if not os.path.isfile(skript):
+        return
+    interpreter = _hook_interpreter()
+    if interpreter is None:
+        return  # Pruefung 15 meldet diesen Fall bereits
+
+    # Die Sonde auf den verlorenen Anker: Diese Pruefung misst die drei Stufen des Hooks.
+    # Verschwinden sie, prueft sie einen Aufbau, den es nicht mehr gibt - und bestuende
+    # dabei leise. Sie meldet ihr Fehlen deshalb selbst (D-23).
+    quelle = read(skript)
+    for anker in ("def ereignis_lesen(", "class Unpruefbar", "def aufloesen("):
+        if anker not in quelle:
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: '{anker}' fehlt. Pruefung 32 "
+                f"misst Eingabeschema und Pfadidentitaet des Hooks; ohne diese Stufen "
+                f"prueft sie einen Aufbau, den es nicht mehr gibt, und bestuende leise "
+                f"(D-23, CR-2026-056)")
+            return
+
+    # 1. Ereignisschema. Mit --fail-closed MUSS jede Nicht-Ereignisform blockieren.
+    for eingabe in KEIN_EREIGNIS:
+        if _hook_lauf(interpreter, skript, eingabe) != 2:
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: Die Eingabe "
+                f"{eingabe!r} ist kein Werkzeugereignis, wird mit --fail-closed aber "
+                f"nicht blockiert. 'Nichts gefunden' und 'nicht gesucht' duerfen nicht "
+                f"denselben Exit-Code haben (D-61, Befund B06)")
+    # Gegenprobe: Ein vollstaendiges, harmloses Ereignis mit zusaetzlichen unbekannten
+    # Feldern MUSS durchlaufen. Ohne sie bestuende ein Hook, der einfach alles blockiert -
+    # und eine additive Erweiterung des Clients wuerde ihn ausfallen lassen.
+    harmlos = {"tool_name": "read", "tool_input": {"file_path": "src/app.py"},
+               "ein_neues_feld_das_kein_pack_kennt": {"tief": ["x"]}}
+    if _hook_lauf(interpreter, skript, json.dumps(harmlos)) != 0:
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: Ein harmloses Ereignis mit "
+            f"zusaetzlichen unbekannten Feldern wird blockiert. Eine additive Erweiterung "
+            f"des Clients darf den Hook nicht ausfallen lassen (CR-2026-056 E1)")
+
+    cdir = os.path.join(root, KERN, "clients")
+    for pack in sorted(os.listdir(cdir)) if os.path.isdir(cdir) else []:
+        if pack.startswith("_"):
+            continue
+        mf = os.path.join(cdir, pack, "manifest.json")
+        if not os.path.isfile(mf):
+            continue
+        try:
+            daten = json.loads(read(mf)) or {}
+        except json.JSONDecodeError:
+            continue
+        schreibwerkzeuge = [w for w in ((daten.get("hook_tools") or {}).get("write") or [])
+                            if isinstance(w, str) and w.strip()]
+        if not schreibwerkzeuge:
+            continue
+        werkzeug = schreibwerkzeuge[0]
+        umschlag = HOOK_UMSCHLAEGE.get(daten.get("client") or pack, {})
+
+        def ereignis(name: str, eingabe: dict) -> str:
+            voll = dict(umschlag)
+            voll.update({"tool_name": name, "tool_input": eingabe})
+            return json.dumps(voll)
+
+        # 2. Der Umschlag darf die Entscheidung nicht aendern: zweimal dasselbe
+        # tool_input, einmal nackt und einmal im vollen Umschlag des Clients.
+        harmlose_eingabe = {"file_path": "src/app.py", "content": "x"}
+        ohne = _hook_lauf(interpreter, skript, json.dumps(
+            {"tool_name": werkzeug, "tool_input": harmlose_eingabe}))
+        mit = _hook_lauf(interpreter, skript, ereignis(werkzeug, harmlose_eingabe))
+        if ohne != mit:
+            err(f"{pack}/manifest.json: Der Schutz-Hook entscheidet dieselbe Operation "
+                f"verschieden, je nachdem ob der Umschlag des Clients mitgeschickt wird "
+                f"(ohne: Exit {ohne}, mit: Exit {mit}). Geprueft wird die Operation, "
+                f"nicht der Umschlag - ein Nebenfeld wie transcript_path oder cwd ist "
+                f"kein Ziel (D-62, Befund B06)")
+        elif mit != 0:
+            err(f"{pack}/manifest.json: Der Schutz-Hook blockiert eine harmlose "
+                f"Schreiboperation im vollen Umschlag dieses Clients (Exit {mit}). Bis "
+                f"0.33.0 war das der Normalfall des Packs claude-code - jeder "
+                f"Schreibzugriff scheiterte an einem Nebenfeld (D-62, Befund B06)")
+
+        # 3. Ein unbekanntes Werkzeug gilt als die strengste Operation, nicht als keine.
+        if _hook_lauf(interpreter, skript, ereignis(
+                "EinWerkzeugDasKeinPackKennt",
+                {"file_path": f"{KERN}/VERSION", "content": "9"})) != 2:
+            err(f"{pack}/manifest.json: Der Schutz-Hook laesst ein unbekanntes Werkzeug "
+                f"in das Kernverzeichnis schreiben. Eine unbekannte Operation gilt als "
+                f"die strengste, nicht als gar keine (CR-2026-056 E2, Befund B06)")
+
+        # 4. Pfadidentitaet: Varianten, die dieselbe Datei bezeichnen, entscheiden gleich.
+        for variante in (KERN.upper() + "/VERSION", "./" + KERN + "/VERSION",
+                         KERN + "/tests/../VERSION", KERN + "\\VERSION"):
+            if _hook_lauf(interpreter, skript, ereignis(
+                    werkzeug, {"file_path": variante, "content": "9"})) != 2:
+                err(f"{pack}/manifest.json: Der Schutz-Hook entscheidet die Pfadvariante "
+                    f"'{variante}' anders als die Standardschreibweise, obwohl beide "
+                    f"dieselbe Datei bezeichnen. Geprueft wird die Pfadidentitaet, nicht "
+                    f"die Zeichenkette (D-63, Befund B06)")
+        # Zwei Faelle, die je nur EIN Mechanismus faengt. Die Schreibvariante oben
+        # faengt beides - re.I am Rohtext und die Aufloesung, die die Schreibweise
+        # kanonisiert. Faellt einer der beiden aus, bestuende die Pruefung trotzdem, und
+        # keine Sonde koennte es zeigen. Diese zwei trennen sie:
+        #
+        #   a) Nur die AUFLOESUNG: ein relativer Pfad, der den Kern nicht nennt. Bis
+        #      0.33.0 blockierte er, weil cwd damals Pruefmaterial war - genau der
+        #      Fehler, den D-62 abstellt. Jetzt traegt ihn allein die Aufloesung.
+        nur_aufloesung = dict(umschlag)
+        nur_aufloesung.update({
+            "cwd": os.path.join(root, KERN, "tests"),
+            "tool_name": werkzeug,
+            "tool_input": {"file_path": "../VERSION", "content": "9"}})
+        if _hook_lauf(interpreter, skript, json.dumps(nur_aufloesung)) != 2:
+            err(f"{pack}/manifest.json: Ein relativer Pfad aus dem Kern heraus erreicht "
+                f"das Kernverzeichnis, ohne es zu nennen, und wird nicht blockiert. Die "
+                f"Pfadaufloesung gegen cwd traegt diesen Fall allein - die Muster sehen "
+                f"nur '../VERSION' (D-63, CR-2026-056 E5)")
+        #   b) Nur re.I: eine Secret-Datei, die es NICHT gibt. realpath kann eine nicht
+        #      vorhandene Datei nicht kanonisieren, die Schreibweise bleibt also stehen.
+        lesewerkzeuge = [w for w in ((daten.get("hook_tools") or {}).get("read") or [])
+                         if isinstance(w, str) and w.strip()]
+        if lesewerkzeuge:
+            nur_schreibweise = dict(umschlag)
+            nur_schreibweise.update({
+                "tool_name": lesewerkzeuge[0],
+                "tool_input": {"file_path": "gibt-es-nicht/.ENV"}})
+            if _hook_lauf(interpreter, skript, json.dumps(nur_schreibweise)) != 2:
+                err(f"{pack}/manifest.json: Der Schutz-Hook laesst einen Secret-Pfad in "
+                    f"abweichender Schreibweise durch, wenn die Datei nicht existiert. "
+                    f"Eine nicht vorhandene Datei kann die Aufloesung nicht "
+                    f"kanonisieren; hier traegt allein re.I (D-63)")
+
+        # Gegenprobe: Ein Verzeichnis, das nur so ANFAENGT wie der Kern, ist kein Kind
+        # von ihm. Ohne sie bestuende eine Praefixpruefung, die jeden Nachbarn sperrt.
+        if _hook_lauf(interpreter, skript, ereignis(
+                werkzeug, {"file_path": KERN + "-notizen/x.txt", "content": "x"})) != 0:
+            err(f"{pack}/manifest.json: Der Schutz-Hook blockiert ein Verzeichnis, das "
+                f"nur so anfaengt wie das Kernverzeichnis. Ein Verzeichnis mit aehnlichem "
+                f"Namensanfang ist kein Kind des geschuetzten (CR-2026-056 E5)")
 
 # Pruefung 31: Die Zusammenfassung der Durchsetzungstiefe stimmt mit der Matrix.
 #
@@ -2699,6 +2885,7 @@ def main() -> int:
     check_k3_kategorien(root)
     check_grenzfaelle(root)
     check_durchsetzungstiefe(root)
+    check_hook_eingabeschema(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

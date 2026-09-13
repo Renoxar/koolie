@@ -9,10 +9,67 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.33.0 (2026-09-13)
+## Stand nach Release 0.34.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.34.0 gebracht hat – Paket 6 hat begonnen, und der Befund dreht die Richtung um
+
+**B06 war der letzte der zwölf Reviewbefunde.** Er bestätigt sich in allen vier Teilen, und in
+jedem einzelnen war die Zählung des Berichts zu klein. Dazu ein Befund der **Gegenrichtung**,
+den das Review nicht nennt und der schwerer wiegt als alles, was es nennt.
+
+**Beide Symptome haben dieselbe Ursache**, und sie stand als Absicht im Kopfkommentar: „bewusst
+schema-agnostisch – es durchsucht alle Zeichenketten". Weil der Hook kein Ereignis prüfte, nahm
+er jede JSON-Struktur an. Weil er alle Zeichenketten durchsuchte, prüfte er auch Felder, die
+nicht zur Operation gehören.
+
+- **Der Hook blockierte bei `claude-code` jeden Schreibzugriff** (D-62). Dieser Client führt in
+  jedem Ereignis `transcript_path`, und der liegt unter `~/.claude/projects/` – im Strukturmuster
+  der Laufzeitschicht. Damit blockierte jedes `Edit`, `Write` und `NotebookEdit`, **unabhängig
+  vom Ziel**. Am Client nachgemessen: ohne Regeltexte blockiert der Hook eine harmlose
+  Schreibprobe, im Kontrolllauf ohne Hook entsteht die Datei. `cwd` ist derselbe Fall, wenn die
+  Sitzung im Kernverzeichnis startet. **Es ist kein Feld, es ist eine Gattung** – deshalb keine
+  Ausnahmeliste, sondern die Prüfung der Operation statt des Umschlags.
+- **Warum es niemandem auffiel, ist die eigentliche Lehre.** Prüfung 16 ruft den Hook mit selbst
+  gebauter Eingabe auf, **ohne Umschlag**, und konnte den Fehler nicht sehen. Die
+  AP2-Aufzeichnung belegt das Schema, hat den Schutz-Hook aber nie ausgeführt – sie stammt von
+  einem anderen Hook, der nichts entscheidet. Und der Pilot hat auf seinem Branch nie geschrieben.
+  **Eine Messung mit selbst gebauter Eingabe ist keine Messung mit der Eingabe des Clients.**
+- **`--fail-closed` fing genau einen Fall ab: den Syntaxfehler** (D-61). Leere Eingabe, Weißraum,
+  `[]`, `null`, eine Zeichenkette, eine Zahl – **sechs Formen, das Review nennt zwei.** Der Hook
+  kennt jetzt „unprüfbar" als eigenen Ausgang: nicht „nichts gefunden", sondern „nicht gesucht".
+- **Der Rückfall für die unbekannte Operation war die einzige Stelle ohne Kernschutz.** Der
+  Kommentar daneben nahm ausdrücklich für sich in Anspruch, „die strengere Liste" zu sein.
+  Genau der Befundtyp dieses Projekts, diesmal in einem Kommentar.
+- **Sieben von neun Musterfamilien waren schreibungssensitiv, zwei nicht** (D-63). Das ist der
+  Beleg, dass es keine Entscheidung war: Wäre es POSIX-Semantik, stünden die zwei nicht da.
+- **Fünf bzw. sechs Pfadvarianten trafen dieselbe Datei und wurden verschieden entschieden** –
+  Großschreibung, 8.3-Kurzname, Junction, Punkt und Leerzeichen am Ende, `::$DATA`. **Jede vorab
+  mit `os.path.samefile` belegt.** Kurzname, Anhänge und Datenstrom nennt das Review nicht.
+- **Abschnitt 5 beider Packs behauptete seit 0.25.0 fail-open**, während Zeile H2 derselben
+  Dokumente fail-closed führte. **Neun Releases, drei Aussagen, zwei Packs** – die
+  Zusammenfassung widersprach ihrer eigenen Tabelle, diesmal mit umgekehrtem Vorzeichen: Der
+  Fließtext sagte **weniger** zu, als der Mechanismus leistet.
+
+**Prüfung 32 misst jetzt mit dem vollständigen Umschlag beider aufgezeichneter Schemata.** Sechs
+Sonden und eine Gegenprobe. **Gegen den Vorstand meldet sie zuerst ihren eigenen Anker** – der
+alte Hook kennt die drei Stufen nicht, und dann misst sie nicht weiter, statt leise zu
+bestehen. Neutralisiert man den Ankertest, damit sie durchmisst, sind es **17 Fundstellen**:
+zehn Eingabeformen, vier bei `claude-code`, drei bei `devin-desktop`. **Der erste Entwurf dieses
+Abschnitts nannte 15** – gefunden hat es der Wirkungsnachweis, nicht die Prüfung. Zwei ihrer
+Fälle treffen je genau einen Mechanismus – bei der naheliegenden Schreibvariante decken
+Auflösung und `re.I` einander zu, und eine Sonde könnte den Ausfall eines der beiden nicht
+zeigen.
+
+**Offen geblieben und ausdrücklich so ausgewiesen:** Die **Zeitlücke** zwischen Prüfung und
+Zugriff bleibt – ein Hook kann eine zwischenzeitlich umgebogene Verknüpfung nicht ausschließen;
+Zeile H4 nennt es. Der **Shell-Schreibweg** bleibt offen (D-30, D-47), und damit bleibt **K-32
+offen**: Der Selbstanwendungsweg über die Shell wird hier nicht geschlossen. Symbolische
+Verknüpfungen unter Linux und macOS sind **nicht gemessen**. Und **Prüfung 31 erreicht keine
+Prosazahl** – zwei überholte Angaben in den Fachmatrizen sind bei dieser Arbeit von Hand
+gefunden worden, nicht von ihr.
 
 ### Was 0.33.0 gebracht hat – Paket 5 ist abgeschlossen
 
@@ -785,8 +842,9 @@ Elf der zwölf sind gegengeprüft – vier am Tag des Eingangs, **B04 und B05 am
 | **B07** – Arbeitsregeln blockieren benötigte Regelquellen – **erledigt mit 0.32.0** | **Im Code und im Text gegengeprüft und erheblich verschärft** (ebenda). Beide technischen Schichten trennen Vertraulichkeit und Integrität seit D-30 korrekt; falsch war allein der Text. **Eigene Feststellung: Der Textfehler wirkt zurück** – `<EXCLUDED_PATHS>` ist der Platzhalter der `read`-Verweigerung, ein Projekt erzeugt damit eine Lesesperre auf seine eigenen Regeldateien. **Nebenbefund:** `<CORE_DIR>/**` war in der Berechtigungsdatei schreibgesperrt, aber nicht in der Verbotsliste der Wurzel-Anweisungsdatei – der Mechanismus schützte mehr, als der Text sagte. Und der Satz zur Overlay-Vorbedingung stand in **fünf** Skills, nicht in einem |
 | **B08** – Aktivierung verlangt bereits Aktivität – **erledigt mit 0.33.0** | **Im Code gegengeprüft und um einen Defekt erweitert** (`tests/protocols/2026-09-13-B08-B11-gegenpruefung.md`): Die Zirkularität ist dreifach verankert – Leitfaden Schritt 7 gegen Schritt 9, die Checkliste mit „Wann" und ihrem MUSS-Punkt, die Overlay-Vorlage mit beidem. **Zwei eigene Feststellungen:** Der Name der fehlenden Prüfung stand längst in Leitfaden und Docstring („Aktivierungsreife"), während die Umsetzung den fertigen Zustand verlangte. Und der Status-Hook trug **drei** Defekte statt zwei – der dritte, ein Präfixvergleich, ist wörtlich derselbe, den D-44 im Validator behoben hat |
 | **B11** – Domain-Ausnahmen liegen nicht über dem globalen Deny – **erledigt mit 0.33.0** | **Im Code und an einer frischen Installation gegengeprüft** (ebenda). **Drei eigene Feststellungen:** Die Widerlegung stand **fünf Zeilen unter der Zusage** – „`deny` gewinnt immer", und drei Zeilen weiter dasselbe Argument für das Kernverzeichnis. Die Zusage stand an **fünf** Stellen und hatte **keine Zeile in einer Fähigkeitsmatrix** – dieselbe Bauform wie der Suchkanal aus 0.30.0. Und bei `claude-code` ist sie **nicht ausdrückbar**: `permission_tools_bare` verwirft das Muster, die erzeugte Datei trägt die ganzen Werkzeuge. Dazu entschied der Validator dieselbe Absicht je Pack verschieden |
+| **B06** – Eingabeschema und Pfadauswertung des Hooks – **erledigt mit 0.34.0** | **In vier Messreihen gegengeprüft und um den Befund der Gegenrichtung erweitert** (`tests/protocols/2026-09-13-B06-gegenpruefung.md`): 41 synthetische Eingaben, die 20 aufgezeichneten Hook-Eingaben beider Packs, Pfadvarianten am echten Dateisystem mit `os.path.samefile` als Vorprüfung, und zwei Clientsitzungen mit Kontrolllauf. **In jedem Teil war die Zählung des Berichts zu klein:** sechs Nicht-Ereignisformen statt zwei, sieben schreibungssensitive Musterfamilien statt einer, fünf bzw. sechs Pfadvarianten statt zweier Bauformen. **Sieben eigene Feststellungen**, davon zwei, die den Zuschnitt geändert haben: Der Hook **blockierte bei `claude-code` jeden Schreibzugriff**, weil `transcript_path` als Prüfmaterial mitlief – das Review beschreibt B06 durchgehend als „lässt durch"; und der Rückfall für die unbekannte Operation war die einzige Stelle ohne Kernschutz, während der Kommentar daneben ihn zur strengeren erklärte. **Die fünf Zeilenangaben des Berichts treffen in 0.33.0 keine der gemeinten Stellen** |
 
-Offen bleibt **B06** und der Rest von B04/B05 – **nicht gegengeprüft** und deshalb weder bestätigt noch entkräftet.
+**Alle zwölf sind gegengeprüft und erledigt.** Offen bleibt allein der Rest von B04/B05 – die technische Durchsetzung für Shell und Unterprozess, die eine Isolationsschicht des Betriebssystems braucht und unerhoben ist.
 
 **Aus der Gegenprüfung von B04/B05 sind drei Anträge hervorgegangen, alle drei entschieden
 und mit 0.30.0 umgesetzt:** `CR-2026-047` (Zusagen je Zugriffskanal, D-47), `CR-2026-048` (die
@@ -807,7 +865,7 @@ sind jeweils begründet. Jeder Schritt braucht seinen Antrag. **Paket 1 ist ents
 | **3 – Aussagen an den Belegstand angleichen** – **vollständig erledigt** (B03 0.26.1, B02/B10 0.28.0, B04/B05 0.30.0, B01/B12 0.31.0) | ~~**B01**~~, ~~B04~~, ~~B05~~, ~~B12~~ | Vier Zusagen versprechen mehr, als die Mechanismen leisten. **B01 ist gemessen** und sofort umsetzbar. B04 (Reichweite der Datei- und Netzwerksperren je Zugriffskanal) und B05 (M4/M5-Pfadgrenzen) sind **Textkorrekturen mit anschließender offener Frage** – der ehrliche Ausweis ist billig, die technische Durchsetzung nicht. B12 ist reine Dokumentationspflege | B01: keine. B04/B05: die Entscheidung, welche Kanäle überhaupt zugesagt werden |
 | **4 – Regelkonflikte, die nur der Mensch entscheiden kann** – **erledigt mit 0.32.0** (`CR-2026-052`, `CR-2026-053`, D-52 bis D-56) | ~~**B09**~~, ~~B07~~ | B09 sind drei Widersprüche zwischen Wurzel-Anweisung, Langform und Hierarchie (K3-Einstufung, Sicherheitskonfiguration, Parallelität). **Das Review entscheidet sie ausdrücklich nicht** – zu Recht, es sind fachliche Festlegungen. B07 hängt daran: Der Einstieg in ein frisches Repositorium verlangt Rechte, die das inaktive Overlay nicht erteilt | **Entscheidung des `<FRAMEWORK_OWNER>`** – am 2026-09-13 getroffen, alle elf Ermessensfragen wie vorgelegt |
 | **5 – Abläufe** – **erledigt mit 0.33.0** (`CR-2026-054`, `CR-2026-055`, D-57 bis D-60) | ~~**B08**~~, ~~B11~~ | B08: Die Aktivierung verlangt eine Prüfung, die bereits Aktivität voraussetzt – zirkulär. B11: Das generelle Fetch-Verbot und die zugesagten Domain-Ausnahmen schließen einander aus, weil `deny` vor `allow` geht | B02 (gemeinsame Statusauswertung) – **erfüllt seit 0.28.0**; die Auswertung liegt seit 0.33.0 in einem gemeinsamen Modul |
-| **6 – Technische Härtung** | **B06**, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3) | Pakete 3 und 4 |
+| **6 – Technische Härtung** – **B06 erledigt mit 0.34.0** (`CR-2026-056`, D-61 bis D-63) | ~~**B06**~~, dann offene Teile von B04/B05 | B06 (Eingabeschema und Pfadidentität des Hooks) ist die Grundlage für jede echte Pfaddurchsetzung. **Bewusst zuletzt:** Die Härtung eines Hooks, der die falsche Zusage trägt, verbessert nichts – erst muss die Zusage stimmen (Paket 3). **Die Gegenprüfung hat die Reihenfolge nachträglich gerechtfertigt und zugleich ihren Preis gezeigt:** Der Hook trug seit 0.7.0 eine Fehlblockade, die das Pack `claude-code` für jeden Schreibzugriff sperrte. Sie stand nicht im Bericht. **Offen bleiben** die Isolationsschicht, das Sitzungsobjekt für M4/M5, `disallowed-tools`, K-32 und das Domain-Profil | Pakete 3 und 4 |
 
 **Drei Abweichungen von der Reihenfolge des Reviews, jeweils mit Grund:**
 
