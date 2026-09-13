@@ -2,6 +2,65 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.37.0] - 2026-09-13
+
+**Die drei Luecken aus 0.36.0 sind geschlossen - und alle drei zugunsten der Durchsetzung.**
+
+`CR-2026-058` hat drei Punkte ausdruecklich als **nicht gemessen** ausgewiesen; die Roadmap
+nannte den ersten "die billigste Anschlussmessung". Sieben Laeufe, davon drei Kontrolllaeufe
+(`tests/protocols/2026-09-13-erhebung-unteragent-tiefe.md`).
+
+### Neu
+
+- **Bei Widerspruch gewinnt die restriktivere Liste** (`CR-2026-059`, D-72). Ein
+  Unteragentenprofil mit `tools: Read, Grep, Glob, Write` bekam `Write` unter einem Skill
+  mit `disallowed-tools: Write, Edit` **nicht**; ohne das Feld schrieb derselbe Unteragent.
+  Dieselbe Semantik, die D-64 gegenueber der `allow`-Liste gemessen hat: **Eine Erlaubnis
+  holt ein entferntes Werkzeug nicht zurueck.** Man kann die Liste nur enger machen.
+- **Die Sperre gilt im Hintergrund.** `run_in_background: true` im Rekorder belegt, Werkzeug
+  gesperrt, Kontrolllauf schrieb. **Das war die plausibelste Vermutung fuer eine Luecke** -
+  ein Hintergrundlauf ist vom aufrufenden Turn entkoppelt, und die Sperre gilt fuer den Turn.
+- **Sie reicht mindestens zwei Ebenen tief.** Der Start der zweiten Ebene gelang, das Werkzeug
+  fehlte auch dort. "Mindestens zwei" ist woertlich gemeint: drei sind nicht gemessen.
+- **Ein Profil mit `tools`-Liste kann sich nicht selbst erweitern** (D-73). Es hat **kein
+  Startwerkzeug** - genau die Form, die `fw-reviewer` nach der Abbildung traegt. Ohne diesen
+  Befund waere die Zusage A1 ueber eine zweite, weniger beschraenkte Ebene aushebelbar.
+- **Pruefung 35** haelt fest, dass das so bleibt: weder bildet `agent_frontmatter.tool_names`
+  ein Startwerkzeug ab, noch nennt ein ausgeliefertes Profil eines. **Sie faengt heute
+  nichts** - eine Verankerung, keine Behebung, und im Nachweis so begruendet.
+- **Ein Grenzfall** (G-19): Profil erlaubt, Skill sperrt.
+
+### Behoben
+
+- **Zeile S3 fuehrte zwei "nicht gemessen"-Punkte, die gemessen sind.** Hintergrund und zweite
+  Ebene stehen jetzt als Messung da.
+- **Die Regel zu Hintergrund-Subagenten stand schutzloser da, als sie ist.** Sie bleibt
+  normativ - "nur im Hintergrund" ist nach D-66 nicht ausdrueckbar -, **aber was ein Skill
+  sperrt, ist auch im Hintergrund gesperrt.** Ein Hintergrund-Unteragent ist kein Weg, ein
+  entferntes Werkzeug zurueckzubekommen; er ist ein Weg, unbeaufsichtigt zu arbeiten, und
+  **das** untersagt die Regel.
+- **Der Wortlaut des Clients ueberzeichnet seine eigene Reichweite** und steht jetzt bei S3:
+  Er meldet "Write is disabled for this *session*, in subagents as well as here". Die zweite
+  Haelfte trifft zu, die erste nicht - gemessen ist der **Turn** (D-64). Es ist ein Zitat,
+  kein Belegsatz des Frameworks.
+
+### Migrationshinweise
+
+- **Kein `install.py --update` noetig.** Weder erzeugte Artefakte noch die Berechtigungsdatei
+  aendern sich.
+- **Ein eigenes Client Pack, das `agent_start_tools` fuehrt**, darf diese Namen weder in
+  `agent_frontmatter.tool_names` abbilden noch in einem Agentenprofil nennen - Pruefung 35.
+
+### Bekannte Einschraenkungen
+
+- **Drei Ebenen und tiefer sind nicht gemessen.**
+- **Der umgekehrte Widerspruch** (Profil sperrt, Skill erlaubt) ist nicht gemessen. Nach dem
+  Ergebnis vorhersagbar - eine Vorhersage ist keine Messung.
+- **Ob ein blockierender Hook auch auf der zweiten Ebene stoppt**, ist nicht gefahren; fuer
+  die erste Ebene ist es gemessen (D-69).
+- **Pruefung 35 faengt heute nichts.** Die Abbildung kennt gar kein Startwerkzeug.
+- **`devin-desktop` bleibt unerhoben.**
+
 ## [0.36.0] - 2026-09-13
 
 **Der Unteragent ist erhoben - und er ist kein Umgehungsweg.**

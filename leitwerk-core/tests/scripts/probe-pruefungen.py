@@ -1013,8 +1013,8 @@ def _grenzfall_ergaenzen(root: str) -> None:
     womoeglich nur die Rechenweise der Pruefung, statt sie zu belegen.
     """
     pfad = _p(root, EDGE_30)
-    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 18 |",
-                              "| Anzahl der Grenzf\u00e4lle | 19 |", 1)
+    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 19 |",
+                              "| Anzahl der Grenzf\u00e4lle | 20 |", 1)
     marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
     neu = ("\r\n| G-99 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
            "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
@@ -1519,6 +1519,55 @@ sonde("34e", "Zeile A1 ohne Vorbehalt zugesagt, Startwerkzeug aber nur erklaert"
 
 gegenprobe("34", "Die unveraenderten Packs bleiben unbeanstandet - eines nennt, eines "
            "erklaert mit offenem Vorbehalt", None, "agent_start_tools")
+
+
+# --- 35: Ein Agentenprofil bekommt kein Startwerkzeug (D-73) ---------------------
+#
+# Diese Pruefung faengt heute nichts: agent_frontmatter.tool_names kennt gar kein
+# Startwerkzeug. Sie ist eine Verankerung - und genau deshalb braucht sie ihre Sonden
+# dringender als andere. Ohne sie liesse sich nicht zeigen, DASS sie etwas faengt,
+# sobald es den Fall gibt. Gemessen ist der Befund dahinter am 2026-09-13, Lauf
+# STARTLOS: Ein Profil mit tools: Read, Grep, Glob kann keine zweite Ebene oeffnen.
+MANIFEST_CC_35 = "leitwerk-core/clients/claude-code/manifest.json"
+PROFIL_35 = "leitwerk-core/framework/runtime/agents/fw-reviewer.md"
+
+
+def _35_abbildung_erweitern(root: str) -> None:
+    """Der Fall, der die Zusage lautlos fallen liesse: tool_names lernt es.
+
+    Praepariert wird ueber das JSON, nicht ueber den Text: skill_frontmatter und
+    agent_frontmatter fuehren ZEICHENGLEICHE tool_names-Bloecke, und ein Textanker
+    traefe den falschen. Pruefung 35 liest nur den zweiten."""
+    pfad = P(root, MANIFEST_CC_35.replace(chr(47), os.sep))
+    daten = json.loads(lies(pfad))
+    daten['agent_frontmatter']['tool_names']['delegate'] = ['Agent']
+    schreib(pfad, json.dumps(daten, ensure_ascii=False, indent=2))
+
+
+def _35_profil_erweitern(root: str) -> None:
+    """Der Fall an der Abbildung vorbei: das Profil nennt es selbst."""
+    pfad = P(root, PROFIL_35.replace("/", os.sep))
+    schreib(pfad, lies(pfad).replace("  - glob", "  - glob\r\n  - agent", 1))
+
+
+def _35_ablage_entfernen(root: str) -> None:
+    """Die Sonde auf den verlorenen Anker: ohne Ablage darf sie nicht leise bestehen."""
+    shutil.rmtree(P(root, "leitwerk-core/framework/runtime/agents".replace("/", os.sep)))
+
+
+sonde("35a", "Die Abbildung lernt ein Startwerkzeug - der Fall, der die Zusage "
+      "lautlos fallen liesse",
+      _35_abbildung_erweitern, "ein Werkzeug, mit dem ein Unteragent GESTARTET")
+
+sonde("35b", "Das Agentenprofil nennt ein Startwerkzeug selbst - an der Abbildung "
+      "vorbei",
+      _35_profil_erweitern, "Das Frontmatter nennt 'agent'")
+
+sonde("35c", "Verlorener Anker - die Agentenablage fehlt",
+      _35_ablage_entfernen, "Pruefung 35 misst die Agentenprofile des Kerns")
+
+gegenprobe("35", "Die unveraenderte Ablage bleibt unbeanstandet", None,
+           "GESTARTET wird")
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

@@ -2502,7 +2502,7 @@ def check_k3_kategorien(root: str) -> None:
 GRENZFALL_DATEI = KERN + "/tests/EDGE_CASES.md"
 GRENZFALL_SPALTEN = 7
 GRENZFALL_ENTSCHEIDUNGEN = ("D-52", "D-53", "D-54", "D-55", "D-56", "D-59",
-                            "D-61", "D-63", "D-64", "D-66", "D-67")
+                            "D-61", "D-63", "D-64", "D-66", "D-67", "D-72")
 
 
 def check_grenzfaelle(root: str) -> None:
@@ -3141,6 +3141,94 @@ def check_agent_startwerkzeug(root: str) -> None:
 
 
 
+# Pruefung 35: Ein Agentenprofil bekommt kein Startwerkzeug (CR-2026-059 E1, D-73).
+#
+# Gemessen am 2026-09-13 (tests/protocols/2026-09-13-erhebung-unteragent-tiefe.md,
+# Lauf STARTLOS): Ein Profil mit tools: Read, Grep, Glob - genau die Form, die
+# fw-reviewer nach der Abbildung traegt - hat KEIN Startwerkzeug und konnte deshalb
+# keinen weiteren Unteragenten starten, dessen Profil weniger beschraenkt waere. Ohne
+# diesen Befund waere die Zusage A1 ueber eine zweite Ebene aushebelbar.
+#
+# WAS DIESE PRUEFUNG IST UND WAS NICHT: Sie faengt heute NICHTS. Die Abbildung
+# agent_frontmatter.tool_names kennt gar kein Startwerkzeug, also kann keine erzeugte
+# tools-Liste eines enthalten. Sie ist eine VERANKERUNG, keine Behebung - dieselbe
+# Bauart wie der fuenfte Gegenstand der Pruefung 32, und sie wird mit derselben
+# Ehrlichkeit begruendet: Erweitert jemand tool_names um ein Startwerkzeug, faellt die
+# Zusage LAUTLOS, und niemand prueft es. Danach faengt diese Pruefung es.
+#
+# Geprueft wird an ZWEI Stellen, weil eine allein zu wenig waere:
+#   1. Die ABBILDUNG - tool_names darf keinen Namen aus agent_start_tools fuehren.
+#   2. Die QUELLE - kein ausgeliefertes Agentenprofil nennt eines direkt. Diese Haelfte
+#      faengt den Fall, dass jemand am Profil vorbei an der Abbildung schreibt.
+def check_agent_profil_ohne_start(root: str) -> None:
+    """Pruefung 35 (D-73): Kein Agentenprofil bekommt ein Startwerkzeug."""
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    alle_start = set()
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        try:
+            man = json.loads(read(pfad))
+        except ValueError:
+            continue
+        start = {n.strip().lower() for n in (man.get("agent_start_tools") or [])
+                 if isinstance(n, str) and n.strip()}
+        if not start:
+            continue  # ob das zulaessig ist, entscheidet Pruefung 34
+        alle_start |= start
+
+        # 1. Die Abbildung darf kein Startwerkzeug fuehren.
+        abbildung = (man.get("agent_frontmatter") or {}).get("tool_names") or {}
+        for verb, namen in sorted(abbildung.items()):
+            for name in (namen if isinstance(namen, list) else []):
+                if isinstance(name, str) and name.strip().lower() in start:
+                    err(f"{rel}: agent_frontmatter.tool_names bildet das Verb "
+                        f"'{verb}' auf '{name}' ab - ein Werkzeug, mit dem ein "
+                        f"Unteragent GESTARTET wird (agent_start_tools). Ein "
+                        f"Agentenprofil, das es bekommt, kann eine zweite, weniger "
+                        f"beschraenkte Ebene oeffnen; die Zusage A1 waere damit "
+                        f"aushebelbar (D-73, CR-2026-059)")
+
+    # 2. Kein ausgeliefertes Agentenprofil nennt ein Startwerkzeug direkt.
+    #
+    # Diese Haelfte laeuft EINMAL ueber die Ablage des Kerns, nicht je Pack: Die Profile
+    # sind geteilt (shared_core), die Startwerkzeuge sind es nicht. Geprueft wird gegen
+    # die VEREINIGUNG aller Packs - ein Name, der bei einem Pack startet, gehoert in kein
+    # Profil, weil dasselbe Profil auch dort ausgeliefert wird.
+    if not alle_start:
+        return
+    adir = os.path.join(root, KERN, "framework", "runtime", "agents")
+    if not os.path.isdir(adir):
+        err(f"{KERN}/framework/runtime/agents: fehlt. Pruefung 35 misst die "
+            f"Agentenprofile des Kerns; ohne die Ablage prueft sie nichts und "
+            f"bestuende leise (D-23)")
+        return
+    for datei in sorted(os.listdir(adir)):
+        if not datei.endswith(".md"):
+            continue
+        rel = KERN + "/framework/runtime/agents/" + datei
+        roh = read(os.path.join(adir, datei)).replace("\r\n", "\n")
+        teile = roh.split("---")
+        if len(teile) < 3:
+            err(f"{rel}: kein Frontmatter zwischen zwei '---'. Ohne es prueft "
+                f"Pruefung 35 nichts und bestuende leise (D-23)")
+            continue
+        for name in sorted(alle_start):
+            muster = r"(?<![A-Za-z])%s(?![A-Za-z])" % re.escape(name.lower())
+            if re.search(muster, teile[1].lower()):
+                err(f"{rel}: Das Frontmatter nennt '{name}' - ein Werkzeug, mit dem "
+                    f"ein Unteragent GESTARTET wird (agent_start_tools). Ein Profil, "
+                    f"das es bekommt, kann eine zweite, weniger beschraenkte Ebene "
+                    f"oeffnen, und die Zusage A1 waere aushebelbar (D-73, "
+                    f"CR-2026-059)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -3192,6 +3280,7 @@ def main() -> int:
     check_hook_eingabeschema(root, man)
     check_skill_deny_abbildung(root, man)
     check_agent_startwerkzeug(root)
+    check_agent_profil_ohne_start(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
