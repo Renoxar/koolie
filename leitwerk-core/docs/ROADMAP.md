@@ -9,10 +9,49 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.34.0 (2026-09-13)
+## Stand nach Release 0.35.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.35.0 gebracht hat – eine Zusage, die zurückkommt
+
+**S3 stand seit 0.31.0 auf `[NICHT ABBILDBAR]`** – zu Recht, denn `allowed-tools` ist
+gemessen keine Beschränkung (B01). `disallowed-tools` nannte die Dokumentation daneben,
+erhoben war es nicht, und D-50 hat es deshalb ausdrücklich **nicht** zugesagt. **Das war
+die richtige Entscheidung bei dem Belegstand, und sie ist jetzt überholt.**
+
+- **Gemessen am 2026-09-13**, neun Läufe mit Kontrolllauf, Positivkontrolle und
+  Rekorder-Hook: Ein Skill mit `disallowed-tools: Write, Edit` **konnte nicht schreiben –
+  obwohl `Write` in der `allow`-Liste stand.** Es schlägt eine ausdrückliche Freigabe und
+  ist damit genau das, was `allowed-tools` nicht ist. **S3 steht auf `[TECHNISCH]`** (D-64).
+- **Drei Grenzen, alle gemessen, alle benannt.** Die Sperre gilt nur für den
+  **aufrufenden Turn**; sie ist **aufzählend** – mit gesperrtem `Write, Edit` schrieb der
+  Skill über `Bash`; und sie kennt **keine Argumentmuster**.
+- **Der dritte Fund ist der schwerste und wieder die Bauform dieses Projekts:** Ein
+  Eintrag mit Klammer wirkt **lautlos gar nicht** – keine Verweigerung, keine Meldung. Wer
+  `Bash(git push:*)` schreibt, hat **gar keine** Schranke (D-66). Betroffen sind fünf
+  Quellskills, ungleich: drei ohne jede Schranke, zwei mit einer teilweisen.
+- **M1 trägt die Turngrenze jetzt im Arbeitsmodell.** Ein „nur lesender" Skill ist nur
+  *während seines Turns* nur lesend – **keine Betriebsart**.
+- **Prüfung 33 misst die erzeugte Fassung, nicht die Quelle**, und läuft gegen eine
+  frische `claude-code`-Installation. Beides ist Lehre aus früheren Befunden: aus **B01**,
+  wo die Quelle mehr sagte als die Installation hielt, und aus **B02**, wo eine Prüfung
+  einen Client gar nicht sah – die Testinstallation im Repositorium ist `devin-desktop`
+  und führt die Abbildung nicht.
+
+**Nebenbefunde, beim Anfassen gefunden:** `skill_frontmatter.tool_names` und `hook_tools`
+sind **zwei Listen für dieselbe Sache** und auseinandergelaufen – `tool_names.edit` führt
+kein `NotebookEdit`. Für eine Vorabfreigabe harmlos, **für eine Sperre eine Lücke**; die
+neue Abbildung nimmt deshalb `hook_tools`, die Vereinheitlichung ist vertagt. Und **vier
+Zeilen des Decision Logs waren zerrissen** – drei mit fünf Zellen statt sechs (mit 0.34.0
+entstanden), eine mit acht (ein unmaskiertes `||` in einem Codespan). Gezählt hat das
+bisher nichts.
+
+**Offen und ausdrücklich so ausgewiesen:** `devin-desktop` ist **unerhoben**; das
+Agentenprofil (`tools`/`disallowedTools`) ebenfalls; ob die Sperre auch für einen
+Unteragenten gilt, den ein Skill startet, ist **nicht gemessen** – **für M1 wäre das die
+nächste Frage**.
 
 ### Was 0.34.0 gebracht hat – Paket 6 hat begonnen, und der Befund dreht die Richtung um
 

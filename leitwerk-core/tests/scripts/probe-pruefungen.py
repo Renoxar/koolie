@@ -537,6 +537,14 @@ def strict_ausgabe(root: str) -> str:
     return (p.stdout or "") + (p.stderr or "")
 
 
+
+def validator_ausgabe(root: str) -> str:
+    """Ausgabe eines gewoehnlichen Validatorlaufs gegen eine Installation."""
+    p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                      "--root", root])
+    return (p.stdout or "") + (p.stderr or "")
+
+
 def _so_status(pfad: str, wert: str) -> None:
     t = lies(pfad)
     for muster, ersatz in SO_STATUSFORMEN:
@@ -994,10 +1002,10 @@ def _entscheidung_entkoppeln(root: str) -> None:
 def _grenzfall_ergaenzen(root: str) -> None:
     """Gegenprobe: eine weitere Zeile samt mitgezaehlter Anzahl."""
     pfad = _p(root, EDGE_30)
-    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 15 |",
-                              "| Anzahl der Grenzf\u00e4lle | 16 |", 1)
+    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 17 |",
+                              "| Anzahl der Grenzf\u00e4lle | 18 |", 1)
     marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
-    neu = ("\r\n| G-16 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
+    neu = ("\r\n| G-18 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
            "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
     schreib(pfad, text.replace(marke, neu + marke, 1))
 
@@ -1160,13 +1168,13 @@ PACK_31 = "leitwerk-core/clients/claude-code/CLIENT_PACK.md"
 
 def _summe_verfaelschen(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 21 von 31 |",
-                                     "| `[TECHNISCH]` | 22 von 31 |", 1))
+    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 22 von 31 |",
+                                     "| `[TECHNISCH]` | 23 von 31 |", 1))
 
 
 def _gesamtzahl_verfaelschen(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| 21 von 31 |", "| 21 von 32 |", 1))
+    schreib(pfad, lies(pfad).replace("| 22 von 31 |", "| 22 von 32 |", 1))
 
 
 def _zusammenfassung_entfernen(root: str) -> None:
@@ -1193,8 +1201,8 @@ def _zeile_mit_summe(root: str) -> None:
     ende = t.index("\r\n", i)
     t = (t[:ende] + "\r\n| Z9 | Sonde mit Einstufung | - | - | `[TECHNISCH]` | `[DOK]` |"
          + t[ende:])
-    t = t.replace("| `[TECHNISCH]` | 21 von 31 |", "| `[TECHNISCH]` | 22 von 32 |", 1)
-    for a, b in (("| 7 von 31 (", "| 7 von 32 ("), ("| **3 von 31** (", "| **3 von 32** ("),
+    t = t.replace("| `[TECHNISCH]` | 22 von 31 |", "| `[TECHNISCH]` | 23 von 32 |", 1)
+    for a, b in (("| 7 von 31 (", "| 7 von 32 ("), ("| **2 von 31** (", "| **2 von 32** ("),
                  ("| 0 von 31 |", "| 0 von 32 |")):
         t = t.replace(a, b, 1)
     schreib(pfad, t)
@@ -1300,6 +1308,84 @@ sonde("32f", "Verlorener Anker - die Pruefung darf nicht leise bestehen",
 
 gegenprobe("32", "Zusaetzliches Pfadfeld im Manifest ist eine zulaessige Verschaerfung",
            _zusaetzliches_pfadfeld, "Befund B06")
+
+
+# --- 33: Die Abbildung von permissions.deny auf die Werkzeugsperre (CR-2026-057) -----
+#
+# GEGEN EINE ECHTE INSTALLATION, und das ist hier nicht Zierrat: Pruefung 33 laeuft nur
+# fuer ein Pack, dessen Manifest skill_deny_field fuehrt. Die Testinstallation im
+# Repositorium ist 'devin-desktop' und fuehrt es nicht - die Pruefung wird im Repo-Lauf
+# also GAR NICHT ausgefuehrt. Genau das war Befund B02: nicht, dass eine Pruefung falsch
+# prueft, sondern dass sie einen Client nicht sieht.
+#
+# Fuenf Sonden und eine Gegenprobe. Jede Sonde bricht genau einen Mechanismus.
+def _p33(root: str, name: str) -> str:
+    return os.path.join(root, ".claude", "skills", name, "SKILL.md")
+
+
+def sonden_skill_deny() -> None:
+    """Wirkungsnachweis der Abbildung und ihrer Grenzen (D-64 bis D-66)."""
+    root = installation("claude-code")
+    try:
+        plan = _p33(root, "fw-plan")
+        ausgang = lies(plan)
+
+        # --- Gegenprobe: die unveraenderte Installation laeuft durch ----------------
+        # Sie ist hier die wichtigere Haelfte. Ohne sie stuende nur fest, dass Pruefung 33
+        # irgendetwas meldet - und eine Pruefung, die jede Installation beanstandet,
+        # bestuende jede Sonde.
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "33", "disallowed-tools" not in aus,
+              "Die unveraenderte claude-code-Installation bleibt unbeanstandet")
+        if "disallowed-tools" in aus:
+            print("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "disallowed-tools" in z)[:400])
+
+        # --- 33a: die Sperre fehlt ganz - der Stand bis 0.34.0 ----------------------
+        schreib(plan, ausgang.replace(
+            "disallowed-tools: Edit, Write, NotebookEdit, Bash\n", "", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "33a", "aus permissions.deny der Quelle ergibt sich" in aus,
+              "Fehlende Werkzeugsperre - der Stand, den B01 beschrieb")
+
+        # --- 33b: die Sperre ist unvollstaendig - eine Luecke ist ausnutzbar --------
+        schreib(plan, ausgang.replace(
+            "disallowed-tools: Edit, Write, NotebookEdit, Bash",
+            "disallowed-tools: Edit, Write", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "33b", "aus permissions.deny der Quelle ergibt sich" in aus,
+              "Unvollstaendige Sperre - mit gesperrtem Write, Edit schrieb der Skill ueber Bash")
+
+        # --- 33c: ein Argumentmuster - gemessen wirkungslos, und zwar lautlos -------
+        schreib(plan, ausgang.replace(
+            "disallowed-tools: Edit, Write, NotebookEdit, Bash",
+            "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*)", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "33c", "Argumentmuster" in aus,
+              "Argumentmuster in der Sperre - es sieht aus wie eine Regel und ist keine")
+
+        # --- 33d: ein Werkzeug in beiden Listen - zwei Aussagen, eine davon falsch --
+        schreib(plan, ausgang.replace("allowed-tools: Read, Grep, Glob",
+                                      "allowed-tools: Read, Grep, Glob, Bash", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "33d", "steht zugleich in allowed-tools" in aus,
+              "Werkzeug zugleich vorabfreigegeben und gesperrt")
+        schreib(plan, ausgang)
+
+        # --- 33e: der verlorene Anker - die Pruefung darf nicht leise bestehen ------
+        inst = os.path.join(root, "leitwerk-core", "install.py")
+        quelle = lies(inst)
+        schreib(inst, quelle.replace("def deny_abbilden(", "def deny_uebersetzen(", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "33e", "'def deny_abbilden(' fehlt" in aus,
+              "Verlorener Anker - die Pruefung meldet ihr Fehlen selbst")
+        schreib(inst, quelle)
+    finally:
+        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+sonden_skill_deny()
+
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

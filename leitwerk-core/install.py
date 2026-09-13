@@ -226,6 +226,61 @@ ZUSAGENTRAGENDE_SKILLFELDER = {
 }
 
 
+# Verben, die die Quelle in permissions.deny nennt, und der Eimer in hook_tools, aus dem
+# die Werkzeugnamen dieses Clients kommen. NICHT aus skill_frontmatter.tool_names: Das
+# fuehrt fuer 'edit' nur Edit und Write, hook_tools.write fuehrt zusaetzlich NotebookEdit.
+# Fuer eine Vorabfreigabe ist der Unterschied harmlos, fuer eine SPERRE ist er eine
+# Luecke - und eine Luecke in der Liste ist ausnutzbar (CR-2026-057 E2, D-28).
+DENY_VERB_EIMER = {"edit": "write", "write": "write", "exec": "exec",
+                   "read": "read", "search": "search"}
+
+
+def _deny_der_quelle(fm: str) -> list[str]:
+    """Die Eintraege unter permissions.deny, in der Reihenfolge der Quelle.
+
+    Gelesen wird nur der deny-Block unterhalb von permissions. Der allow-Block bleibt
+    ungelesen und wird nicht abgebildet: 'allowed-tools' ist bei den Clients dieses
+    Projekts eine Vorabfreigabe und keine Zusage (B01, CR-2026-057 E4).
+    """
+    m = re.search(r"^permissions:[ \t]*\n((?:[ \t]+\S.*\n)+)", fm, re.M)
+    if not m:
+        return []
+    block = m.group(1)
+    m2 = re.search(r"^([ \t]+)deny:[ \t]*\n((?:[ \t]+-[ \t]+.*\n)+)", block, re.M)
+    if not m2:
+        return []
+    return [z.strip().lstrip("-").strip() for z in m2.group(2).splitlines() if z.strip()]
+
+
+def deny_abbilden(fm: str, man: dict) -> list[str]:
+    """Die Werkzeugnamen, die dieser Client fuer permissions.deny sperren kann.
+
+    Zwei Bauformen stehen in der Quelle, und nur eine ist abbildbar:
+
+      - GROBE VERBEN ('edit', 'exec') werden ueber hook_tools auf Werkzeugnamen
+        abgebildet. Sieben der zwoelf Quellskills tragen ausschliesslich diese Form.
+      - BEFEHLSGENAUE EINTRAEGE ('Exec(git push)') werden NICHT abgebildet. Gemessen am
+        2026-09-13: Ein disallowed-tools-Eintrag mit Klammer laesst den Befehl LAUTLOS
+        durchlaufen - keine Verweigerung, keine Fehlermeldung. Wer ihn schreibt, hat gar
+        keine Schranke, nicht bloss eine groebere. Das ganze Werkzeug zu sperren waere
+        strenger als gemeint und machte die allow-Eintraege derselben Skills wirkungslos.
+        Die Nicht-Abbildung ist im Manifest deklariert, nicht verschwiegen
+        (skill_deny_unmapped, CR-2026-057 E3; Bauart wie hook_tools_absent, D-47).
+    """
+    eimer = man.get("hook_tools") or {}
+    ziel: list[str] = []
+    for eintrag in _deny_der_quelle(fm):
+        if "(" in eintrag:
+            continue  # befehlsgenau - nicht ausdrueckbar, siehe Docstring
+        name = DENY_VERB_EIMER.get(eintrag.strip().lower())
+        if not name:
+            continue
+        for w in eimer.get(name, []):
+            if w not in ziel:
+                ziel.append(w)
+    return ziel
+
+
 def _zusagenfelder_pruefen(fm: str, fmt: dict, man: dict) -> None:
     """Bricht ab, wenn ein zusagentragendes Feld ohne benannten Ersatz entfiele.
 
@@ -280,6 +335,10 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
     _zusagenfelder_pruefen(fm, fmt, man)
 
     # Vor dem Verwerfen lesen: die Quelle nennt triggers als Liste.
+    # Dasselbe gilt seit 0.35.0 fuer permissions.deny - auch das ist ein zusagentragendes
+    # Feld, und auch es stand bis dahin in drop_fields ohne Abbildung (CR-2026-057, D-65).
+    deny_feld = fmt.get("skill_deny_field")
+    verbotene = deny_abbilden(fm, man) if deny_feld else []
     feld = fmt.get("model_invocation_field")
     nur_nutzer = False
     if feld:
@@ -306,6 +365,9 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
 
     if nur_nutzer:
         fm = fm.rstrip("\n") + f"\n{feld}: true\n"
+
+    if verbotene:
+        fm = fm.rstrip("\n") + f"\n{deny_feld}: {', '.join(verbotene)}\n"
 
     return "---\n" + fm + "---\n" + rumpf
 

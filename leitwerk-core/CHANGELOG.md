@@ -2,6 +2,76 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.35.0] - 2026-09-13
+
+**S3 ist zurueckgewonnen - und die Zusage traegt drei Grenzen, weil sie gemessen sind.**
+
+`disallowed-tools` stand seit 0.31.0 als offener Punkt: Die Herstellerdokumentation nennt
+es, erhoben war es nicht, und deshalb hat D-50 es ausdruecklich **nicht** zugesagt. Jetzt
+ist es erhoben - neun Laeufe mit Kontrolllauf, Positivkontrolle und Rekorder-Hook
+(`tests/protocols/2026-09-13-erhebung-disallowed-tools.md`).
+
+### Neu
+
+- **Zeile S3 des Packs `claude-code` steht auf `[TECHNISCH]`** statt auf nicht abbildbar
+  (`CR-2026-057`, D-64). Ein Skill mit `disallowed-tools: Write, Edit` **konnte nicht
+  schreiben - obwohl `Write` in der `allow`-Liste stand**; derselbe Skill ohne das Feld
+  konnte es. **Es schlaegt also eine ausdrueckliche Freigabe** und ist genau das, was
+  `allowed-tools` nach B01 nicht ist.
+- **`permissions.deny` der Quelle wird abgebildet** (D-65). Die groben Verben `edit` und
+  `exec` gehen ueber `hook_tools` auf `Edit, Write, NotebookEdit` und `Bash`. Sieben der
+  zwoelf Skills sind damit vollstaendig abgedeckt, zwei teilweise, drei gar nicht - die
+  Aufteilung ist an der **erzeugten** Fassung nachgezaehlt und im Pack namentlich benannt.
+- **Pruefung 33** misst die Abbildung an der erzeugten Fassung, nicht an der Quelle.
+  Genau daran ist B01 vorbeigekommen: Zwoelf Quellskills fuehrten ein Verbot, das Feld
+  stand in `drop_fields`, und keine installierte Fassung trug etwas davon. Fuenf Sonden
+  und eine Gegenprobe, **gegen eine frische `claude-code`-Installation** - die
+  Testinstallation im Repositorium ist `devin-desktop` und fuehrt die Abbildung nicht, die
+  Pruefung liefe dort gar nicht (Befund B02).
+- **Zwei Grenzfaelle** (G-16, G-17): die Turngrenze und das wirkungslose Argumentmuster.
+
+### Behoben
+
+- **Ein Argumentmuster in der Werkzeugsperre wirkt lautlos gar nicht** (D-66).
+  `disallowed-tools: Bash(echo verboten:*)` - und ebenso die Schreibweise mit Leerzeichen -
+  liess den verbotenen Befehl durchlaufen, **ohne Verweigerung und ohne Fehlermeldung**;
+  derselbe Skill mit `disallowed-tools: Bash` wies beide Befehle ab. **Wer ein
+  Argumentmuster schreibt, hat gar keine Schranke, nicht bloss eine groebere.** Pruefung 33
+  weist es ab.
+- **M1 im Arbeitsmodell nennt die Turngrenze.** Der Modus stuetzte sich auf die
+  Skill-Beschraenkung; die gilt nur fuer den aufrufenden Turn. Ein "nur lesender" Skill ist
+  nur waehrend seines Turns nur lesend - **das ist keine Betriebsart**.
+- **`disallowed-tools` stand nicht in der Liste dokumentierter Frontmatter-Felder.** Die
+  erzeugte Fassung erzeugte dadurch neun Warnungen. Wie bei der Modellwahl-Sperre kommt der
+  Feldname jetzt aus dem Manifest.
+- **Drei Zeilen des Decision Logs hatten fuenf Zellen statt sechs** (D-61 bis D-63, mit
+  0.34.0 entstanden), **eine achte** (D-29, ein unmaskiertes `||` in einem Codespan). In
+  der gerenderten Tabelle stand dadurch die Herkunft unter "Begruendung" und das Datum
+  unter "Alternativen". Gezaehlt hat das bisher nichts - beim Eintragen von D-64 aufgefallen.
+
+### Migrationshinweise
+
+- **Ein bestehendes Projekt braucht `install.py --update`**, damit die Skills die Sperre
+  bekommen. Die Berechtigungsdatei aendert sich **nicht**.
+- **Skills, die ein Projekt selbst mitbringt**, bekommen die Abbildung ebenso, wenn ihre
+  Quelle `permissions.deny` mit den groben Verben fuehrt. Wer dort ein Argumentmuster
+  notiert hat, bekommt es **nicht** uebernommen - und Pruefung 33 sagt es.
+
+### Bekannte Einschraenkungen
+
+- **Die Schranke gilt nur fuer den aufrufenden Turn.** Gemessen, in der Zeile, im
+  Arbeitsmodell und in der Grenzfalltabelle benannt.
+- **Befehlsgenaue Verbote sind nicht ausdrueckbar.** Drei Skills bekommen deshalb keine
+  Schranke je Skill, zwei nur eine teilweise; fuer sie traegt die globale
+  Berechtigungsschicht.
+- **`devin-desktop` ist unveraendert.** Die Wirkung der Skill-`permissions` ist dort weiter
+  unerhoben; das Pack verwirft das Feld gar nicht erst.
+- **Pruefung 33 misst am erzeugten Text, nicht am Client.** Dass `disallowed-tools`
+  wirklich sperrt, belegt die Erhebung, nicht der Validator.
+- **`skill_frontmatter.tool_names` und `hook_tools` bleiben zwei Listen** fuer dieselbe
+  Sache und sind auseinandergelaufen (`tool_names.edit` ohne `NotebookEdit`). Die neue
+  Abbildung nimmt `hook_tools`; die Vereinheitlichung ist **vertagt**, nicht vergessen.
+
 ## [0.34.0] - 2026-09-13
 
 **Paket 6 beginnt mit dem Befund, der die Richtung umdreht.**
