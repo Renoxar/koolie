@@ -113,6 +113,103 @@ def schreib(pfad: str, text: str) -> None:
     io.open(pfad, "w", encoding="utf-8", newline="").write(text)
 
 
+class Praeparationsfehler(Exception):
+    """Ein Suchtext einer Praeparation trifft nicht (mehr) - CR-2026-060, D-74.
+
+    Der Unterschied zu einem gewoehnlichen Fehlschlag ist die Zurechnung: Hier hat die
+    SONDE ihren Gegenstand verloren, nicht die Pruefung ihre Wirkung. Beides sah bis
+    0.37.0 gleich aus, und bei einer mehrteiligen Praeparation sah es sogar aus wie ein
+    echter Befund im Repositorium.
+    """
+
+
+def ersetzt(text: str, *paare, quelle: str = "") -> str:
+    """Textersetzungen mit geprueften Trefferzahlen - jede einzeln.
+
+    Ein Paar ist (alt, neu) oder (alt, neu, anzahl); die Voreinstellung ist genau ein
+    Treffer. Weicht die tatsaechliche Zahl ab, wird NICHTS ersetzt und der Aufruf
+    scheitert mit dem Suchtext, der nicht mehr passt.
+
+    WARUM DAS NOETIG IST: baumhash() ist ein Alles-oder-nichts-Waechter. Bei n
+    Ersetzungen belegt er "mindestens eine hat gegriffen", nie "alle". Am 2026-09-13
+    wurde das gemessen: Auf einem Baum mit einem zwanzigsten Grenzfall traf die erste
+    Ersetzung der Gegenprobe 30 nicht, die zweite schon - der Baum aenderte sich, die
+    Gegenprobe lief und fiel mit "21 Grenzfallzeilen, der Steckbrief nennt 20". Wer das
+    liest, sucht den Fehler in EDGE_CASES.md. Dort ist keiner.
+
+    WAS SIE NICHT LEISTET: Sie deckt den Suchtext, nicht die Absicht. Eine Ersetzung,
+    die trifft und das Falsche tut, findet sie nicht.
+    """
+    for paar in paare:
+        alt, neu = paar[0], paar[1]
+        anzahl = paar[2] if len(paar) > 2 else 1
+        tatsaechlich = text.count(alt)
+        if tatsaechlich != anzahl:
+            raise Praeparationsfehler(
+                "%sSuchtext trifft %dx statt %dx: %r"
+                % (quelle + ": " if quelle else "", tatsaechlich, anzahl, alt[:70]))
+        text = text.replace(alt, neu, anzahl)
+    return text
+
+
+def ersetze(pfad: str, *paare) -> None:
+    """ersetzt() auf einer Datei - lesen, alle Paare pruefen, dann erst schreiben."""
+    schreib(pfad, ersetzt(lies(pfad), *paare, quelle=os.path.basename(pfad)))
+
+
+def zeile_nach(pfad: str, anker: str, neu: str) -> None:
+    """Eine Zeile hinter die eine Zeile einfuegen, die mit `anker` beginnt.
+
+    Der Anker muss genau einmal am Zeilenanfang stehen; sonst ist nicht entschieden,
+    wohin eingefuegt wuerde, und die Praeparation scheitert statt zu raten.
+    """
+    zeilen = lies(pfad).split("\r\n")
+    treffer = [i for i, z in enumerate(zeilen) if z.startswith(anker)]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "%s: Anker %r steht %dx am Zeilenanfang, erwartet genau einmal"
+            % (os.path.basename(pfad), anker, len(treffer)))
+    zeilen.insert(treffer[0] + 1, neu)
+    schreib(pfad, "\r\n".join(zeilen))
+
+
+def frei(pfad: str, *kennungen: str) -> None:
+    """Eine synthetische Kennung darf im Zieldokument noch nicht vergeben sein.
+
+    Am 2026-09-13 trug die Gegenprobe 30 als synthetische Kennung ausgerechnet G-18 -
+    dieselbe, die 0.36.0 wirklich vergeben hat. Die Falle stand in der Uebergabe
+    benannt, und sie ist trotzdem zugeschnappt; eine benannte Falle, in die man zweimal
+    tritt, gehoert in den Code (CR-2026-060 E3).
+
+    Der Waechter prueft Abwesenheit, nicht Eignung: Er ist genau so klug wie die
+    Kennung, die man ihm gibt.
+    """
+    text = lies(pfad)
+    for kennung in kennungen:
+        if kennung in text:
+            raise Praeparationsfehler(
+                "%s: Die synthetische Kennung %r ist dort bereits vergeben. Eine "
+                "Gegenprobe, die eine echte Kennung doppelt, misst nicht mehr ihren "
+                "Fall - eine neue synthetische Kennung waehlen"
+                % (os.path.basename(pfad), kennung))
+
+
+def buendel(fn) -> None:
+    """Eine Funktion, die mehrere Sonden in EINER Installation faehrt.
+
+    Diese Funktionen melden selbst ueber melde() und haben deshalb keinen
+    baumhash-Waechter - neun Funktionen mit 35 Meldestellen. Faellt eine ihrer
+    Praeparationen aus, bricht das Buendel hier ab: laut, mit dem Suchtext, und ohne
+    dass der Rest als bestanden erscheint (CR-2026-060 E2).
+    """
+    try:
+        fn()
+    except Praeparationsfehler as exc:
+        melde("BUENDEL", "-", False, fn.__name__ + "  [Praeparation gebrochen]")
+        print("        " + str(exc))
+        print("        Gemessen wurde nichts - der Rest des Buendels ist nicht gelaufen.")
+
+
 def melde(art: str, nummer: str, ok: bool, was: str) -> None:
     global fehler
     if not ok:
@@ -124,7 +221,12 @@ def sonde(nummer: str, was: str, praeparieren, erwartet: str) -> None:
     root = kopie()
     try:
         vorher = baumhash(root)
-        praeparieren(root)
+        try:
+            praeparieren(root)
+        except Praeparationsfehler as exc:
+            melde("SONDE", nummer, False, was + "  [Praeparation gebrochen]")
+            print("        " + str(exc))
+            return
         if baumhash(root) == vorher:
             melde("SONDE", nummer, False, was + "  [nichts praepariert]")
             print("        Der Baum ist unveraendert - vermutlich passt der Suchtext "
@@ -143,7 +245,13 @@ def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
     try:
         if praeparieren:
             vorher = baumhash(root)
-            praeparieren(root)
+            try:
+                praeparieren(root)
+            except Praeparationsfehler as exc:
+                melde("GEGENPROBE", nummer, False,
+                      was + "  [Praeparation gebrochen]")
+                print("        " + str(exc))
+                return
             if baumhash(root) == vorher:
                 melde("GEGENPROBE", nummer, False, was + "  [nichts praepariert]")
                 return
@@ -343,7 +451,12 @@ def sonde_ohne_wert(nummer: str, was: str, praeparieren, erwartet: str, marker: 
     root = kopie()
     try:
         vorher = baumhash(root)
-        praeparieren(root)
+        try:
+            praeparieren(root)
+        except Praeparationsfehler as exc:
+            melde("SONDE", nummer, False, was + "  [Praeparation gebrochen]")
+            print("        " + str(exc))
+            return
         if baumhash(root) == vorher:
             melde("SONDE", nummer, False, was + "  [nichts praepariert]")
             return
@@ -428,7 +541,7 @@ def sonde_hook_zusatzmuster() -> None:
         print("        Der Markerwert steht in der Ausgabe - das ist B03 im Hook.")
 
 
-sonde_hook_zusatzmuster()
+buendel(sonde_hook_zusatzmuster)
 
 
 # --- 25 (D-41): Ein Ausfall ohne benannten Ersatz -------------------------------
@@ -493,7 +606,7 @@ def sonde_list_skills() -> None:
         shutil.rmtree(os.path.dirname(root), ignore_errors=True)
 
 
-sonde_list_skills()
+buendel(sonde_list_skills)
 
 
 # --- strict-overlay (D-44): Aktivierungspruefung, dieselben Faelle je Pack --------
@@ -586,8 +699,9 @@ def sonden_aktivierungspruefung() -> None:
             melde("GEGENPROBE", "SO", "enthält noch Platzhalter" not in aus,
                   f"Bereinigte Berechtigungsdatei bleibt unbeanstandet ({pack})")
 
-            schreib(rechte, lies(rechte).replace(
-                '"permissions"', '"_sonde": "<TBD: offen>",\r\n  "permissions"', 1))
+            ersetze(rechte,
+                    ('"permissions"',
+                     '"_sonde": "<TBD: offen>",\r\n  "permissions"'))
             aus = strict_ausgabe(root)
             melde("SONDE", "SO", "enthält noch Platzhalter" in aus,
                   f"Platzhalter in der Berechtigungsdatei wird gemeldet ({pack})")
@@ -606,7 +720,7 @@ def sonden_aktivierungspruefung() -> None:
             shutil.rmtree(os.path.dirname(root), ignore_errors=True)
 
 
-sonden_aktivierungspruefung()
+buendel(sonden_aktivierungspruefung)
 
 
 # --- B10 (D-45): Die Aktualisierung trifft das installierte Pack -----------------
@@ -646,7 +760,7 @@ def sonden_clientwahl() -> None:
             shutil.rmtree(os.path.dirname(root), ignore_errors=True)
 
 
-sonden_clientwahl()
+buendel(sonden_clientwahl)
 
 
 # --- D-46: Die Erstinstallation ueberschreibt keine Projektdatei -----------------
@@ -701,7 +815,7 @@ def sonden_erstinstallation() -> None:
         shutil.rmtree(ziel, ignore_errors=True)
 
 
-sonden_erstinstallation()
+buendel(sonden_erstinstallation)
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
@@ -778,7 +892,7 @@ def sonden_suchkanal() -> None:
           "Suche im Kernverzeichnis bleibt moeglich - lesen darf der Agent ihn")
 
 
-sonden_suchkanal()
+buendel(sonden_suchkanal)
 
 
 # --- Pruefung 27 und der Installationsabbruch (CR-2026-050, D-50) -----------------
@@ -850,7 +964,7 @@ def sonden_zusagenfeld_installation() -> None:
         shutil.rmtree(ziel, ignore_errors=True)
 
 
-sonden_zusagenfeld_installation()
+buendel(sonden_zusagenfeld_installation)
 
 
 # --- 28: Lesesperre gegen Schreibsperre (B07, D-55) ------------------------------
@@ -1013,12 +1127,13 @@ def _grenzfall_ergaenzen(root: str) -> None:
     womoeglich nur die Rechenweise der Pruefung, statt sie zu belegen.
     """
     pfad = _p(root, EDGE_30)
-    text = lies(pfad).replace("| Anzahl der Grenzf\u00e4lle | 19 |",
-                              "| Anzahl der Grenzf\u00e4lle | 20 |", 1)
-    marke = "\r\n\r\n## 3. Was diese Tabelle nicht leistet"
-    neu = ("\r\n| G-99 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
-           "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
-    schreib(pfad, text.replace(marke, neu + marke, 1))
+    frei(pfad, "G-99")
+    ersetze(pfad, ("| Anzahl der Grenzf\u00e4lle | 19 |",
+                   "| Anzahl der Grenzf\u00e4lle | 20 |"))
+    zeile_nach(
+        pfad, "| G-19 |",
+        "| G-99 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
+        "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
 
 
 sonde("30a", "Geloeschte Grenzfallzeile gegen die Anzahl im Steckbrief",
@@ -1148,9 +1263,11 @@ def sonden_kandidatenpruefung() -> None:
             # asymmetrisch: 'Fetch(domain:...)' lief durch, 'WebFetch(domain:...)' fiel.
             werkzeug = man["permission_tools"]["fetch"][0]
             inhalt = lies(rechte)
-            schreib(rechte, inhalt.replace(
-                '"allow": [', '"allow": [\r\n      "%s(domain:docs.example.invalid)",'
-                % werkzeug, 1))
+            schreib(rechte, ersetzt(
+                inhalt,
+                ('"allow": [', '"allow": [\r\n      "%s(domain:docs.example.invalid)",'
+                 % werkzeug),
+                quelle=os.path.basename(rechte)))
             p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
                               "--root", root])
             aus = (p.stdout or "") + (p.stderr or "")
@@ -1167,7 +1284,7 @@ def sonden_kandidatenpruefung() -> None:
             shutil.rmtree(os.path.dirname(root), ignore_errors=True)
 
 
-sonden_kandidatenpruefung()
+buendel(sonden_kandidatenpruefung)
 
 
 # --- 31: Die Summen der Fachmatrix sind ausgerechnet (D-60) ----------------------
@@ -1207,22 +1324,19 @@ def _zeile_ohne_einstufung(root: str) -> None:
 def _zeile_mit_summe(root: str) -> None:
     """Gegenprobe: eine zusaetzliche Zeile samt nachgezogenen Summen."""
     pfad = P(root, PACK_31.replace("/", os.sep))
-    t = lies(pfad)
-    marke = "| X2 |"
-    i = t.index(marke)
-    ende = t.index("\r\n", i)
-    t = (t[:ende] + "\r\n| Z9 | Sonde mit Einstufung | - | - | `[TECHNISCH]` | `[DOK]` |"
-         + t[ende:])
-    t = t.replace("| `[TECHNISCH]` | 22 von 31 |", "| `[TECHNISCH]` | 23 von 32 |", 1)
-    for a, b in (("| 7 von 31 (", "| 7 von 32 ("), ("| **2 von 31** (", "| **2 von 32** ("),
-                 ("| 0 von 31 |", "| 0 von 32 |")):
-        t = t.replace(a, b, 1)
-    schreib(pfad, t)
+    frei(pfad, "| Z9 |")
+    zeile_nach(pfad, "| X2 |",
+               "| Z9 | Sonde mit Einstufung | - | - | `[TECHNISCH]` | `[DOK]` |")
+    ersetze(pfad,
+            ("| `[TECHNISCH]` | 22 von 31 |", "| `[TECHNISCH]` | 23 von 32 |"),
+            ("| 7 von 31 (", "| 7 von 32 ("),
+            ("| **2 von 31** (", "| **2 von 32** ("),
+            ("| 0 von 31 |", "| 0 von 32 |"))
     # Seit 0.36.0 rechnet Pruefung 31 dieselbe Zahl auch in der Uebersicht der Ablage nach
     # (D-71). Eine Gegenprobe, die nur das Pack nachzieht, faellt seither an der zweiten
     # Stelle - und genau das ist der Zweck der Erweiterung.
     u = P(root, UEBERSICHT_31.replace("/", os.sep))
-    schreib(u, lies(u).replace("| entwurf | 22 von 31 |", "| entwurf | 23 von 32 |", 1))
+    ersetze(u, ("| entwurf | 22 von 31 |", "| entwurf | 23 von 32 |"))
 
 
 sonde("31a", "Verfaelschte Anzahl je Einstufung in der Zusammenfassung",
@@ -1321,8 +1435,8 @@ def _zusaetzliches_pfadfeld(root: str) -> None:
     """Gegenprobe: ein weiteres Pfadfeld im Manifest - eine zulaessige Verschaerfung."""
     for pack in ("claude-code", "devin-desktop"):
         pfad = P(root, ("leitwerk-core/clients/%s/manifest.json" % pack).replace("/", os.sep))
-        schreib(pfad, lies(pfad).replace('"hook_path_fields": ["file_path"',
-                                         '"hook_path_fields": ["zielpfad", "file_path"', 1))
+        ersetze(pfad, ('"hook_path_fields": ["file_path"',
+                       '"hook_path_fields": ["zielpfad", "file_path"'))
 
 
 sonde("32a", "Pfadaufloesung aus - nur sie faengt einen Pfad, der den Kern nicht nennt",
@@ -1399,31 +1513,40 @@ def sonden_skill_deny() -> None:
                 z for z in aus.splitlines() if "disallowed-tools" in z)[:400])
 
         # --- 33a: die Sperre fehlt ganz - der Stand bis 0.34.0 ----------------------
-        schreib(plan, ausgang.replace(
-            "disallowed-tools: Edit, Write, NotebookEdit, Bash\n", "", 1))
+        schreib(plan, ersetzt(
+            ausgang,
+            ("disallowed-tools: Edit, Write, NotebookEdit, Bash\n", ""),
+            quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33a", "aus permissions.deny der Quelle ergibt sich" in aus,
               "Fehlende Werkzeugsperre - der Stand, den B01 beschrieb")
 
         # --- 33b: die Sperre ist unvollstaendig - eine Luecke ist ausnutzbar --------
-        schreib(plan, ausgang.replace(
-            "disallowed-tools: Edit, Write, NotebookEdit, Bash",
-            "disallowed-tools: Edit, Write", 1))
+        schreib(plan, ersetzt(
+            ausgang,
+            ("disallowed-tools: Edit, Write, NotebookEdit, Bash",
+             "disallowed-tools: Edit, Write"),
+            quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33b", "aus permissions.deny der Quelle ergibt sich" in aus,
               "Unvollstaendige Sperre - mit gesperrtem Write, Edit schrieb der Skill ueber Bash")
 
         # --- 33c: ein Argumentmuster - gemessen wirkungslos, und zwar lautlos -------
-        schreib(plan, ausgang.replace(
-            "disallowed-tools: Edit, Write, NotebookEdit, Bash",
-            "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*)", 1))
+        schreib(plan, ersetzt(
+            ausgang,
+            ("disallowed-tools: Edit, Write, NotebookEdit, Bash",
+             "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*)"),
+            quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33c", "Argumentmuster" in aus,
               "Argumentmuster in der Sperre - es sieht aus wie eine Regel und ist keine")
 
         # --- 33d: ein Werkzeug in beiden Listen - zwei Aussagen, eine davon falsch --
-        schreib(plan, ausgang.replace("allowed-tools: Read, Grep, Glob",
-                                      "allowed-tools: Read, Grep, Glob, Bash", 1))
+        schreib(plan, ersetzt(
+            ausgang,
+            ("allowed-tools: Read, Grep, Glob",
+             "allowed-tools: Read, Grep, Glob, Bash"),
+            quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33d", "steht zugleich in allowed-tools" in aus,
               "Werkzeug zugleich vorabfreigegeben und gesperrt")
@@ -1432,7 +1555,9 @@ def sonden_skill_deny() -> None:
         # --- 33e: der verlorene Anker - die Pruefung darf nicht leise bestehen ------
         inst = os.path.join(root, "leitwerk-core", "install.py")
         quelle = lies(inst)
-        schreib(inst, quelle.replace("def deny_abbilden(", "def deny_uebersetzen(", 1))
+        schreib(inst, ersetzt(quelle,
+                              ("def deny_abbilden(", "def deny_uebersetzen("),
+                              quelle="install.py"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33e", "'def deny_abbilden(' fehlt" in aus,
               "Verlorener Anker - die Pruefung meldet ihr Fehlen selbst")
@@ -1441,7 +1566,7 @@ def sonden_skill_deny() -> None:
         shutil.rmtree(os.path.dirname(root), ignore_errors=True)
 
 
-sonden_skill_deny()
+buendel(sonden_skill_deny)
 
 
 
@@ -1568,6 +1693,143 @@ sonde("35c", "Verlorener Anker - die Agentenablage fehlt",
 
 gegenprobe("35", "Die unveraenderte Ablage bleibt unbeanstandet", None,
            "GESTARTET wird")
+
+# --- 36: Die Tabellen des Decision Logs sind nicht zerrissen (D-75) --------------
+#
+# Anlass: vier zerrissene Zeilen in 0.34.0, eine davon seit 0.10.x. Gefunden hat sie
+# jedes Mal ein Mensch beim Eintragen einer anderen.
+#
+# Die Gegenprobe ist hier die wichtigere Haelfte, und zwar aus einem gemessenen Grund:
+# Eine naive Zaehlung mit .split("|") meldet D-29 und D-69 als achtspaltig, obwohl beide
+# ihren Strich korrekt maskieren und sechsspaltig rendern. Ohne diese Gegenprobe waere
+# Pruefung 36 mit zwei Fehlalarmen auf richtigem Text entstanden - und Pruefung 30 haette
+# ihren eigenen, latenten Fehlalarm behalten (CR-2026-060 1.3).
+DECISION_LOG_36 = "leitwerk-core/governance/DECISION_LOG.md"
+
+
+def _dl36(root: str) -> str:
+    return P(root, DECISION_LOG_36.replace("/", os.sep))
+
+
+def _36_zelle_entfernen(root: str) -> None:
+    """Eine Zeile verliert ihre letzte Zelle - der Fall D-61 bis D-63 aus 0.34.0."""
+    pfad = _dl36(root)
+    zeilen = lies(pfad).split("\r\n")
+    treffer = [i for i, z in enumerate(zeilen) if z.startswith("| D-40 |")]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "DECISION_LOG.md: Anker '| D-40 |' steht %dx, erwartet genau einmal"
+            % len(treffer))
+    z = zeilen[treffer[0]].rstrip().rstrip("|").rstrip()
+    zeilen[treffer[0]] = z[:z.rindex("|")] + "|"
+    schreib(pfad, "\r\n".join(zeilen))
+
+
+def _36_strich_unmaskiert(root: str) -> None:
+    """Ein unmaskierter Strich in einem Codespan - der Fall D-29 aus 0.10.x."""
+    ersetze(_dl36(root),
+            ("| D-40 | **Ein Befund \u00fcber einen Client ist keine Aussage "
+             "\u00fcber alle.**",
+             "| D-40 | **Ein Befund \u00fcber einen Client ist keine Aussage "
+             "\u00fcber alle.** Matcher `a|b`."))
+
+
+def _36_anker_verlieren(root: str) -> None:
+    """Keine Tabellenzeile mehr - die Pruefung darf nicht leise bestehen."""
+    pfad = _dl36(root)
+    zeilen = [z for z in lies(pfad).split("\r\n") if not z.startswith("|")]
+    schreib(pfad, "\r\n".join(zeilen))
+
+
+def _36_strich_maskiert(root: str) -> None:
+    """Gegenprobe: derselbe Strich, korrekt maskiert - so, wie D-69 ihn seit 0.36.0
+    traegt. Eine Zaehlung ohne diese Unterscheidung beanstandet den richtigen Text."""
+    ersetze(_dl36(root),
+            ("| D-40 | **Ein Befund \u00fcber einen Client ist keine Aussage "
+             "\u00fcber alle.**",
+             "| D-40 | **Ein Befund \u00fcber einen Client ist keine Aussage "
+             "\u00fcber alle.** Matcher `a\\|b`."))
+
+
+sonde("36a", "Zeile mit fehlender Zelle - der Fall D-61 bis D-63 aus 0.34.0",
+      _36_zelle_entfernen, "Zellen, der Kopf ihrer Tabelle")
+
+sonde("36b", "Unmaskierter Strich in einer Zelle - der Fall D-29 seit 0.10.x",
+      _36_strich_unmaskiert, "Zellen, der Kopf ihrer Tabelle")
+
+sonde("36c", "Verlorener Anker - keine Tabellenzeile mehr",
+      _36_anker_verlieren, "keine Tabellenzeile gefunden")
+
+gegenprobe("36", "Maskierter Strich bleibt unbeanstandet - die Schreibweise von D-69",
+           _36_strich_maskiert, "Kopf ihrer Tabelle")
+
+
+# --- Selbstprobe: der Praeparationswaechter selbst (CR-2026-060, D-74) ----------
+#
+# Ohne sie waere der Waechter die erste ungepruefte Zusage dieses Skripts - und ein
+# Waechter, der still ausfaellt, ist genau der Befundtyp, gegen den er gebaut ist.
+# Er laeuft ohne Kopie und ohne Validator: Sein Gegenstand ist reine Textarithmetik.
+def selbstprobe_waechter() -> None:
+    """Der Waechter meldet sich, wenn ein Suchtext nicht genau so oft trifft."""
+    faelle = [
+        ("W1", "Suchtext trifft gar nicht",
+         lambda: ersetzt("abc", ("xyz", "1")), True),
+        ("W2", "Suchtext trifft oefter als erwartet",
+         lambda: ersetzt("aa", ("a", "b")), True),
+        ("W3", "Suchtext trifft genau so oft wie erwartet",
+         lambda: ersetzt("aa", ("a", "b", 2)), False),
+        ("W4", "Die ZWEITE Ersetzung trifft nicht - der Fall der halben Praeparation",
+         lambda: ersetzt("ab", ("a", "x"), ("zzz", "y")), True),
+    ]
+    for nummer, was, aufruf, erwartet_fehler in faelle:
+        try:
+            aufruf()
+            geworfen = False
+        except Praeparationsfehler:
+            geworfen = True
+        melde("SELBSTPROBE", nummer, geworfen == erwartet_fehler, was)
+
+    # W5: Der Waechter darf nichts geschrieben haben, wenn er abbricht. ersetzt()
+    # arbeitet auf einem Text und gibt ihn erst am Ende zurueck - das ist die Zusage,
+    # und sie wird hier gepruft, nicht behauptet.
+    try:
+        ersetzt("ab", ("a", "x"), ("zzz", "y"))
+        ergebnis = "durchgelaufen"
+    except Praeparationsfehler as exc:
+        ergebnis = str(exc)
+    melde("SELBSTPROBE", "W5", "zzz" in ergebnis and "trifft 0x" in ergebnis,
+          "Die Meldung nennt den Suchtext, der nicht mehr passt")
+
+
+buendel(selbstprobe_waechter)
+
+
+def selbstprobe_kennung() -> None:
+    """Der Kennungswaechter - er ist genau so klug wie die Kennung, die man ihm gibt."""
+    root = kopie()
+    try:
+        pfad = _p(root, EDGE_30)
+        try:
+            frei(pfad, "G-99")
+            frei_ok = True
+        except Praeparationsfehler:
+            frei_ok = False
+        melde("SELBSTPROBE", "K1", frei_ok,
+              "G-99 ist im Repositorium nicht vergeben - die Gegenprobe 30 darf sie nutzen")
+
+        try:
+            frei(pfad, "G-01")
+            kollision = False
+        except Praeparationsfehler:
+            kollision = True
+        melde("SELBSTPROBE", "K2", kollision,
+              "Eine vergebene Kennung wird gemeldet - der Fall G-18 vom 2026-09-13")
+    finally:
+        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+buendel(selbstprobe_kennung)
+
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

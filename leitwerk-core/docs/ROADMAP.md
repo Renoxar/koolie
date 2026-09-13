@@ -3,16 +3,57 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.8` |
+| Version | `0.1.9` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.37.0 (2026-09-13)
+## Stand nach Release 0.38.0 (2026-09-13)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.38.0 gebracht hat – der stumme Bruch wird laut
+
+**Zwei Punkte standen seit mehreren Releases im Repositorium und waren nicht umgesetzt.**
+Beide sind gegengeprüft (`tests/protocols/2026-09-13-gegenpruefung-stumme-brueche.md`,
+drei Messungen an Kopien), beide bestätigen sich – **und die Gegenprüfung findet einen
+dritten, den keiner von beiden nennt.**
+
+| Befund | Seit | Ergebnis |
+|---|---|---|
+| Soll eine Gegenprobe ihre Summen **ableiten**? | 0.34.0, **viermal in Folge** aufgetreten | **Nein** (D-74). Eine abgeleitete Summe rechnet nach derselben Regel wie die Prüfung und belegt deshalb weniger |
+| Die **Zellen der Decision-Log-Tabellen** zählt nichts | 0.35.0, zweimal bestätigt | **Prüfung 36** (D-75). Gegen 0.34.0 vier Fundstellen, heute keine |
+| *Nicht gesucht:* Prüfung 30 zählt einen **maskierten** Strich als Spaltentrenner | – | **Behoben.** Sie beanstandete einen GFM-korrekten Text |
+
+**Der eigentliche Befund ist nicht die Ermessensfrage, sondern das, was sie verdeckt
+hat.** `baumhash` belegt bei *n* Ersetzungen „mindestens eine hat gegriffen", nie „alle".
+Gemessen: Auf einem Baum mit einem zwanzigsten Grenzfall traf die erste Ersetzung der
+Gegenprobe 30 nicht, die zweite schon – und die Gegenprobe fiel mit *„21 Grenzfallzeilen,
+der Steckbrief nennt 20"*. **Wer das liest, sucht den Fehler in `EDGE_CASES.md`. Dort ist
+keiner.**
+
+> **Die Trennung, die vier Releases lang gefehlt hat:** *Woher nimmt die Gegenprobe ihre
+> Zielsumme?* ist Ermessen. *Was passiert, wenn ein Suchtext nicht mehr trifft?* ist
+> keines. Der zweite Punkt ist unabhängig vom ersten zu beheben – und ist er behoben,
+> verliert der erste den größten Teil seines Drucks.
+
+**Die Summen bleiben deshalb wörtlich verankert, und der Preis bleibt:** Jede neue
+Matrixzeile bricht sie weiterhin. Neu ist, dass der Bruch eine Zeile Diagnose kostet
+statt einer Fehlersuche im Repositorium.
+
+**Prüfung 36 fängt heute nichts** – dieselbe Lage wie bei Prüfung 35, und sie ist mit
+derselben Ehrlichkeit begründet. **Der Unterschied ist erheblich:** Prüfung 35 fand auch
+im Vorstand nichts, weil ihr Gegenstand dort nicht existiert; Prüfung 36 hätte gegen
+0.34.0 vier Fundstellen gemeldet. **Ihr Gegenbeweis ist ein Abzählen, keine
+Konstruktion.** D-29 stand fünfundzwanzig Releases lang zerrissen und wurde von jedem
+Validatorlauf gesehen.
+
+**Offen und ausdrücklich so ausgewiesen:** Der Wächter deckt den Suchtext, nicht die
+Absicht – eine Ersetzung, die trifft und das Falsche tut, findet er nicht. Prüfung 36
+prüft die Anzahl, nicht den Inhalt. Und drei der vier umgestellten Zerlegungsstellen
+ändern ihr Verhalten heute nicht; der Umbau ist dort Vorsorge.
 
 ### Was 0.37.0 gebracht hat – die drei Lücken aus 0.36.0 sind geschlossen
 

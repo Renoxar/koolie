@@ -191,6 +191,33 @@ TBD_RE = re.compile(r"<TBD[:>]")
 FENCE4_RE = re.compile(r"^`{4,}", re.M)
 MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.S)
 
+# --- Zellen einer Markdown-Tabellenzeile (CR-2026-060, D-75) --------------------
+# GFM trennt Zellen am Strich; ein Strich INNERHALB einer Zelle wird maskiert (\\|)
+# und bleibt Inhalt. Eine Zerlegung, die das nicht kennt, beanstandet einen korrekten
+# Text - gemessen an Pruefung 30, die eine Grenzfallzeile mit maskiertem Strich als
+# neunspaltig meldete, obwohl sie siebenspaltig rendert. D-69 des Decision Logs
+# traegt genau diese Schreibweise seit 0.36.0.
+#
+# Die Zerlegung lag bis 0.37.0 VIERMAL eigenhaendig im Validator. Sie liegt jetzt
+# einmal: vier Gelegenheiten fuer denselben Fehler sind eine.
+ZELLTRENNER_RE = re.compile(r"(?<!\\)\|")
+
+
+def tabellenzellen(zeile: str) -> list:
+    """Die Zellen einer Tabellenzeile, maskierte Striche als Inhalt.
+
+    Erwartet eine Zeile, die mit '|' beginnt; die aeusseren Striche sind Rahmen und
+    zaehlen nicht als Zellen. Fuer eine Zeile ohne Rahmen liefert sie die Felder
+    zwischen den Trennern.
+    """
+    z = zeile.strip()
+    teile = ZELLTRENNER_RE.split(z)
+    if z.startswith("|"):
+        teile = teile[1:]
+    if z.endswith("|") and not z.endswith("\\|") and teile:
+        teile = teile[:-1]
+    return [t.strip() for t in teile]
+
 # --- Querverweisprüfung (FW-KO-04) ---------------------------------------------
 # Markdown-Links: [Text](ziel) und [Text](ziel "Titel"); Bildlinks eingeschlossen.
 MD_LINK_RE = re.compile(r"""!?\[[^\]]*\]\(\s*<?([^)>\s]+)>?(?:\s+["'][^"']*["'])?\s*\)""")
@@ -1683,8 +1710,9 @@ def _check_vorlagen_ohne_hookdatei(root: str) -> None:
                 continue
             rel = os.path.relpath(pfad, root).replace(os.sep, "/")
             for i, zeile in enumerate(read(pfad).splitlines(), 1):
-                erste = zeile.strip().strip("|").split("|")[0].strip("` *") \
-                    if zeile.strip().startswith("|") else ""
+                zellen = tabellenzellen(zeile) \
+                    if zeile.strip().startswith("|") else []
+                erste = zellen[0].strip("` *") if zellen else ""
                 if erste in VERWAISTE_HOOK_DATEIEN or \
                         any(erste.endswith("/" + v) for v in VERWAISTE_HOOK_DATEIEN):
                     err(f"{rel}:{i}: Die Vorlage fuehrt '{erste}' als geliefertes "
@@ -1835,7 +1863,7 @@ def _tabellenzeilen(text: str):
         z = zeile.strip()
         if not z.startswith("|") or re.match(r"^\|[\s:|-]+\|?$", z):
             continue
-        yield [f.strip() for f in z.strip("|").split("|")]
+        yield tabellenzellen(z)
 
 
 def _spalten_je_pack(felder: list[str], packs: list[str]) -> dict[str, int]:
@@ -2525,7 +2553,7 @@ def check_grenzfaelle(root: str) -> None:
         err(f"{GRENZFALL_DATEI}: {len(zeilen)} Grenzfallzeilen, der Steckbrief nennt "
             f"{erwartet}. Eine Zahl, die nicht stimmt, ist kein Nachweis")
     for zeile in zeilen:
-        zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+        zellen = tabellenzellen(zeile)
         kennung = zellen[0] if zellen else "?"
         if len(zellen) != GRENZFALL_SPALTEN:
             err(f"{GRENZFALL_DATEI}: Grenzfall {kennung} hat {len(zellen)} Spalten statt "
@@ -3030,8 +3058,7 @@ def _uebersicht_pruefen(root: str, pack: str, technisch: int, summe: int) -> Non
     for zeile in text.split("\n"):
         if not zeile.startswith("| `%s`" % pack):
             continue
-        zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
-        treffer = zellen
+        treffer = tabellenzellen(zeile)
         break
     if treffer is None:
         err(f"{UEBERSICHT_DATEI}: kein Eintrag fuer das Client Pack '{pack}'. Jedes Pack "
@@ -3229,6 +3256,69 @@ def check_agent_profil_ohne_start(root: str) -> None:
                     f"CR-2026-059)")
 
 
+# Pruefung 36: Jede Tabellenzeile des Decision Logs fuehrt so viele Zellen wie der
+# Kopf ihrer Tabelle (CR-2026-060 E4, D-75).
+#
+# Anlass: Vier zerrissene Zeilen in 0.34.0 - D-61 bis D-63 mit fuenf Zellen statt sechs,
+# D-29 mit acht, dort teilte ein unmaskierter Strich in einem Codespan die Zeile. In der
+# gerenderten Tabelle stand die Herkunft unter "Begruendung", das Datum unter
+# "Alternativen", die Rolle unter "Status". D-29 stand so seit 0.10.x. Gefunden hat die
+# Zeilen jedes Mal ein Mensch beim Eintragen einer anderen.
+#
+# WAS SIE HEUTE FAENGT: nichts. Alle Zeilen sind seit 0.35.0 in Ordnung, von Hand
+# berichtigt. Das ist eine VERANKERUNG, keine Behebung - wie Pruefung 35 und der fuenfte
+# Gegenstand der Pruefung 32. Der Unterschied: Ihr Gegenbeweis ist ein Abzaehlen und
+# keine Konstruktion. Gegen 0.34.0 meldet sie vier Fundstellen, gegen 0.32.0 und 0.33.0
+# je eine.
+#
+# WAS SIE NICHT LEISTET: Sie prueft die Anzahl, nicht den Inhalt. Eine Zeile, in der
+# Begruendung und Alternativen vertauscht sind, besteht sie - dieselbe Grenze, die
+# Pruefung 31 fuer ihre Arithmetik benennt. Und sie prueft nur diese eine Datei: Die
+# uebrigen Tabellen des Repositoriums haben ihre eigenen Pruefungen (30, 31) oder keine.
+DECISION_LOG_DATEI = KERN + "/governance/DECISION_LOG.md"
+
+
+def check_decision_log_zellen(root: str) -> None:
+    """Pruefung 36 (D-75): Die Tabellen des Decision Logs sind nicht zerrissen."""
+    pfad = os.path.join(root, DECISION_LOG_DATEI.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        err(f"{DECISION_LOG_DATEI}: fehlt. Ohne das Decision Log ist keine Entscheidung "
+            f"dieses Frameworks belegt")
+        return
+    zeilen = read(pfad).replace("\r\n", "\n").split("\n")
+    soll = None
+    ueberschrift = "(vor der ersten Ueberschrift)"
+    kopfzeile = 0
+    gesehen = 0
+    for nr, zeile in enumerate(zeilen, 1):
+        z = zeile.strip()
+        if z.startswith("## "):
+            ueberschrift = z[3:].strip()
+            soll = None
+            continue
+        if not z.startswith("|"):
+            # Eine Leerzeile beendet die Tabelle; Fliesstext zwischen zwei Tabellen
+            # darf die Zellenzahl nicht von der einen auf die andere uebertragen.
+            if not z:
+                soll = None
+            continue
+        zellen = tabellenzellen(z)
+        if soll is None:
+            soll = len(zellen)
+            kopfzeile = nr
+            gesehen += 1
+            continue
+        if len(zellen) != soll:
+            err(f"{DECISION_LOG_DATEI}:{nr}: Die Zeile fuehrt {len(zellen)} Zellen, der "
+                f"Kopf ihrer Tabelle ({ueberschrift}, Zeile {kopfzeile}) fuehrt {soll}. "
+                f"Eine zerrissene Zeile rendert die Werte unter den falschen Spalten; "
+                f"ein Strich innerhalb einer Zelle gehoert maskiert (\\|)")
+    if not gesehen:
+        err(f"{DECISION_LOG_DATEI}: keine Tabellenzeile gefunden. Der Anker dieser "
+            f"Pruefung ist die Zeilenform '| ... |'; ohne sie prueft sie nichts und "
+            f"bestuende leise (D-23)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -3281,6 +3371,7 @@ def main() -> int:
     check_skill_deny_abbildung(root, man)
     check_agent_startwerkzeug(root)
     check_agent_profil_ohne_start(root)
+    check_decision_log_zellen(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
