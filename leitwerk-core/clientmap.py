@@ -309,6 +309,13 @@ def _kommentar(man: dict, mit_hooks: bool) -> str:
         "Ausweitung und ist ein Fehler. Ein zusaetzlicher freigegebener Befehl gehoert "
         "deshalb nicht hierher, sondern in Abschnitt 6 des Overlays und damit in die "
         "Regelschicht.")
+    teile.append(
+        "Ein Befehlsschlitz traegt den Befehl, den Abschnitt 5 oder 6 des Overlays fuer "
+        "seinen Platzhalter erklaert - ein anderer Befehl an dieser Stelle ist ein "
+        "Fehler, auch wenn die Zahl der Zeilen stimmt. Bis 0.43.0 stand der Satz "
+        "darueber hier ohne diese Bedingung und versprach zu viel: Ein offener Schlitz "
+        "deckte eine hinzugefuegte Zeile (CR-2026-066, D-90). Ungeprueft bleiben die "
+        "Pfadlisten - ihr Inhalt wird mit keinem Overlaytext verglichen.")
     if import_control(man) is not None:
         teile.append(
             "Die Importsteuerung schaltet Regel- und Skillquellen fremder "

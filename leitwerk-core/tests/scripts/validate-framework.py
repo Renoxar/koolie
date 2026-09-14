@@ -114,8 +114,14 @@ Prüft (statisch, ohne laufenden KI-Client):
  41. Abwesenheitsbeleg (D-88): Eine erklaerte Werkzeugabwesenheit weist sich als
      Enthaltung aus oder belegt sich mit Datum und Fundstelle - eine blosse Behauptung
      nimmt eine Werkzeugklasse aus der Durchsetzung und begruendet es
+ 42. Schlitzinhalte (D-90, D-91): Ein gefuellter Befehlsschlitz der Berechtigungsdatei
+     traegt den Befehl, den Abschnitt 5 oder 6 des Overlays fuer seinen Platzhalter
+     erklaert; ein Schlitz ohne erklaerten Befehl deckt keinen Ueberschuss. Geprueft
+     werden die drei BEFEHLSSCHLITZE, nicht die vier Pfadschlitze des deny-Korbs - die
+     stehen dort, wo Ueberzaehliges ohnehin zulaessig ist, und ihr Vergleich waere n:1.
+     Ohne Overlay enthaelt sie sich; fehlt dort ein Platzhalter, meldet sie es
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 41 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 42 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -562,6 +568,28 @@ def check_config(root: str, man: dict) -> None:
 PROJEKTPLATZHALTER = re.compile(r"<[A-Z][A-Z0-9_]*>")
 
 
+def korb_zerlegung(ist: list, soll_korb: list) -> tuple:
+    """Ein Korb in Pflicht, Schlitze, gefuellte Schlitze und Ueberschuss.
+
+    Die Zerlegung lag bis 0.43.0 in check_berechtigungskoerbe und wurde fuer Pruefung 42
+    ein zweites Mal gebraucht. Sie liegt jetzt einmal: zwei Gelegenheiten fuer denselben
+    Fehler sind eine - dieselbe Begruendung wie bei tabellenzellen() mit 0.37.0.
+
+    pflicht    Regeln ohne Projektplatzhalter; sie muessen dastehen.
+    schlitze   Regeln mit Projektplatzhalter; sie gehoeren dem Projekt.
+    ungefuellt Schlitze, die woertlich in der Datei stehen. Sie sind noch offen.
+    zusatz     Regeln der Datei, die weder Pflicht noch ein offener Schlitz sind - ein
+               gefuellter Schlitz steht hier ebenso wie eine hinzugefuegte Freigabe.
+               WELCHE von beiden, sagt diese Funktion nicht und kann es nicht sagen;
+               das ist der Gegenstand von Pruefung 42.
+    """
+    pflicht = [r for r in soll_korb if not PROJEKTPLATZHALTER.search(r)]
+    schlitze = [r for r in soll_korb if PROJEKTPLATZHALTER.search(r)]
+    ungefuellt = [s for s in schlitze if s in ist]
+    zusatz = [r for r in ist if r not in pflicht and r not in schlitze]
+    return pflicht, schlitze, ungefuellt, zusatz
+
+
 def soll_korbregeln(root: str, man: dict) -> dict | None:
     """Die drei Koerbe in der Schreibweise dieses Clients, aus der Kernquelle.
 
@@ -633,8 +661,7 @@ def check_berechtigungskoerbe(root: str, man: dict) -> None:
 
     for korb in ("deny", "ask", "allow"):
         ist = [r for r in perms.get(korb, []) if isinstance(r, str)]
-        pflicht = [r for r in soll[korb] if not PROJEKTPLATZHALTER.search(r)]
-        schlitze = [r for r in soll[korb] if PROJEKTPLATZHALTER.search(r)]
+        pflicht, schlitze, ungefuellt, zusatz = korb_zerlegung(ist, soll[korb])
         for regel in pflicht:
             if regel not in ist:
                 err(f"{rel}: die Kernquelle erzeugt für den {korb}-Korb die Regel "
@@ -644,8 +671,9 @@ def check_berechtigungskoerbe(root: str, man: dict) -> None:
         if korb == "deny":
             # Eine zusaetzliche deny-Regel ist eine Verschaerfung und deshalb zulaessig.
             continue
-        offen = [s for s in schlitze if s not in ist]
-        zusatz = [r for r in ist if r not in pflicht and r not in schlitze]
+        # Gedeckt wird ein Ueberschuss nur von den Schlitzen, die NICHT mehr
+        # woertlich dastehen - ein woertlich vorhandener Schlitz ist ungefuellt.
+        offen = [s for s in schlitze if s not in ungefuellt]
         if len(zusatz) > len(offen):
             err(f"{rel}: der {korb}-Korb führt {len(zusatz)} Regel(n), die die Kernquelle "
                 f"nicht erzeugt, bei {len(offen)} gefüllten Platzhalterschlitz(en): "
@@ -4133,6 +4161,178 @@ def check_abwesenheitsbeleg(root: str) -> None:
             f"weg, gehört die Prüfung ausgebaut und nicht stillgelegt (D-23, D-88)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 42: Ein gefuellter Schlitz traegt, was das Overlay erklaert
+# ---------------------------------------------------------------------------
+#
+# ANLASS. Gemessen am 2026-09-14
+# (tests/protocols/2026-09-14-gegenpruefung-schlitzdeckung.md, CR-2026-066): Die
+# Kernquelle haelt im ask-Korb DREI Befehlsschlitze bereit. Pruefung 37 vergleicht
+# Mengen und zaehlt den Ueberschuss gegen die Zahl der offenen Schlitze - WELCHER
+# Eintrag WELCHER Schlitz ist, steht dort nicht und kann dort nicht stehen. Gemessen
+# laufen deshalb drei beliebige Befehlsfreigaben durch, darunter eine mit Fernwirkung,
+# und zwar in beiden Packs und auch dann, wenn das Overlay dreimal <TBD> sagt, also gar
+# nichts erklaert. Am Piloten steht der Fall seit dem Heben auf 0.37.0:
+# Bash(mvn -B -q compile) im ask-Korb, waehrend Abschnitt 6 <LINT_COMMAND> als "nicht
+# vorhanden" erklaert.
+#
+# DIE LUECKE WAR ERKLAERT - AN EINER STELLE. CR-2026-061 Abschnitt 4 nimmt genau diesen
+# Fall ausdruecklich aus, und D-76 wie D-77 bleiben genau. DREI ausgelieferte Texte aus
+# DEMSELBEN Commit (34d850e, Release 0.39.0) taten es nicht: der Absatz zum Wirkungsort
+# in templates/project-overlay/OVERLAY.md, der Kommentarkopf JEDER erzeugten
+# Berechtigungsdatei in clientmap._kommentar und framework/core/03-security.md. Alle drei
+# sind mit diesem Release berichtigt. Die Lehre ist die von 0.42.0, eine Ebene tiefer:
+# Eine Enthaltung, die nur in einem Antrag steht, haelt nicht einmal bis zum Ende
+# desselben Patches.
+#
+# WOHER DIE ZUORDNUNG KOMMT (CR-2026-066 E1). Es gibt sie genau einmal, im Overlay:
+# Jeder der drei Platzhalter steht dort in genau EINER Tabellenzeile, und der Wert steht
+# in der Zelle RECHTS DANEBEN - gemessen in allen vier geprueften Overlays, auch im
+# Overlay des Piloten, dessen Abschnitt 6 aus einer aelteren Vorlage stammt und eine
+# andere Spaltenueberschrift fuehrt. docs/PLACEHOLDER_REGISTRY.md weist die Herkunft
+# ohnehin aus (Overlay 5 beziehungsweise Overlay 6); diese Pruefung setzt eine
+# Behauptung durch, die das Register seit jeher macht. Die Zeile wird ueber die
+# PLATZHALTERZELLE gefunden, nie ueber eine Spaltennummer - ein Overlay, das eine Spalte
+# ergaenzt, bricht sie deshalb nicht.
+#
+# WARUM NICHT DIE LAUFZEITFASSUNG (E2). 20-project-overlay.md fuehrt dieselben drei
+# Werte, aber in einer Fliesszeile ohne Schluesselspalte - und der Pilot hat sie bereits
+# umgebaut (zwei Zeilen statt einer, ein zusaetzliches Feld). Eine Pruefung darueber
+# fiele beim ersten echten Projekt an der FORM, nicht an der Sache.
+#
+# WARUM EINE EIGENE NUMMER (E6). Pruefung 37 haengt allein an der Kernquelle und laeuft
+# ohne Overlay; diese hier enthaelt sich ohne Overlay. Zwei Gegenstaende, zwei Nummern -
+# und 37 behaelt ihre Arithmetik, damit ihr Ergebnis nicht von der Anwesenheit eines
+# Nachbardokuments abhaengt. Am Piloten meldet 37 deshalb weiterhin nichts, waehrend 42
+# meldet.
+#
+# GRENZE, UND SIE STEHT HIER UND NICHT NUR IM ANTRAG (E5). Geprueft werden die drei
+# BEFEHLSSCHLITZE. Die vier PFADSCHLITZE (<EXCLUDED_PATHS> zweimal, <CI_CONFIG_PATHS>,
+# <QUALITY_GATE_CONFIG_PATHS>) bleiben ungeprueft: Sie stehen saemtlich im deny-Korb, wo
+# Ueberzaehliges ohnehin zulaessig ist, und ihr Vergleich waere n:1 - eine Liste im
+# Overlay gegen eine Regel in der Datei. Ein zu ENG gefuellter <EXCLUDED_PATHS>-Schlitz
+# ist damit weiterhin eine stille Lockerung. Das ist eine Enthaltung, keine Stille.
+#
+# ZWEITE GRENZE. Diese Pruefung vergleicht Zeichenketten. Ob der erklaerte Befehl
+# fachlich der richtige ist, ob er tut, was Abschnitt 6 von ihm behauptet, und ob ein
+# Client die Regel so auswertet, wie sie gemeint ist, sagt sie nicht.
+OVERLAY_QUELLE = "project-overlay/OVERLAY.md"
+# Werte, die kein Befehl sind. Die Schreibweisen stammen aus der Vorlage und aus dem
+# Overlay des Piloten; der Vergleich laeuft in Kleinschreibung und ohne umschliessende
+# Auszeichnung. Ein Wert mit <TBD faellt ohnehin darunter.
+KEIN_BEFEHL = ("nicht vorhanden", "nicht erforderlich", "keine", "keiner", "keines",
+               "entfaellt", "entfällt", "nur in ci", "-", "–", "—", "")
+
+
+def overlay_befehlswert(text: str, platzhalter: str) -> tuple:
+    """Wie oft nennt eine Tabellenzeile den Platzhalter, und was steht rechts daneben?
+
+    Rueckgabe (anzahl, wert). wert ist None, wenn die Zelle keinen Befehl traegt - ein
+    offener <TBD>-Wert, ein "nicht vorhanden" oder ein Gedankenstrich. Steht in der Zelle
+    ein Abschnitt zwischen Gegenstrichen, gilt dieser als der Wert; so ueberlebt die
+    Auswertung einen erlaeuternden Zusatz hinter dem Befehl.
+    """
+    treffer = []
+    for felder in _tabellenzeilen(text):
+        for i, feld in enumerate(felder):
+            if feld.strip("` *") == platzhalter and i + 1 < len(felder):
+                treffer.append(felder[i + 1])
+    if len(treffer) != 1:
+        return len(treffer), None
+    zelle = treffer[0]
+    ausgezeichnet = re.search(r"`([^`]+)`", zelle)
+    wert = (ausgezeichnet.group(1) if ausgezeichnet else zelle).strip(" *")
+    if "<TBD" in wert or wert.strip().lower() in KEIN_BEFEHL:
+        return 1, None
+    return 1, wert
+
+
+def check_schlitzinhalte(root: str, man: dict) -> None:
+    """Pruefung 42 (D-90, D-91): Der Schlitz traegt den Befehl, den das Overlay erklaert.
+
+    Enthaltung ohne Overlay: Eine Installation ohne project-overlay/OVERLAY.md ist ein
+    zulaessiger Zustand (Kandidatenphase), und eine Pruefung, die ihn beanstandet, waere
+    eine Pruefung ueber die Reihenfolge der Uebernahme. Fehlt dagegen ein PLATZHALTER in
+    einem vorhandenen Overlay, ist das der verlorene Anker und ein Fehler (D-23).
+    """
+    overlay_pfad = os.path.join(root, "project-overlay", "OVERLAY.md")
+    rel = man["permissions_file"]
+    pfad = os.path.join(root, *rel.split("/"))
+    if not os.path.exists(overlay_pfad) or not os.path.exists(pfad):
+        return
+    try:
+        cfg = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return  # check_config hat das bereits gemeldet
+    soll = soll_korbregeln(root, man)
+    if soll is None:
+        return
+    overlay = read(overlay_pfad)
+    perms = cfg.get("permissions", {})
+    exec_werkzeuge = tuple(man.get("permission_tools", {}).get("exec", ()))
+    if not exec_werkzeuge:
+        return  # Ein Pack ohne Befehlswerkzeug hat keine Befehlsschlitze.
+
+    for korb in ("ask", "allow"):
+        ist = [r for r in perms.get(korb, []) if isinstance(r, str)]
+        _, schlitze, _, zusatz = korb_zerlegung(ist, soll[korb])
+        befehlsschlitze = [s for s in schlitze if s.split("(", 1)[0] in exec_werkzeuge]
+        if not befehlsschlitze:
+            continue
+        erklaert: dict = {}
+        ohne_befehl: list = []
+        for schlitz in befehlsschlitze:
+            namen = PROJEKTPLATZHALTER.findall(schlitz)
+            if len(namen) != 1:
+                continue
+            platzhalter = namen[0]
+            anzahl, wert = overlay_befehlswert(overlay, platzhalter)
+            if anzahl == 0:
+                err(f"{OVERLAY_QUELLE}: keine Tabellenzeile nennt {platzhalter} – "
+                    f"Prüfung 42 liest dort den Befehl, den dieser Schlitz der "
+                    f"Berechtigungsdatei tragen darf, und hat ihren Gegenstand verloren. "
+                    f"Der Platzhalter gehört in die Platzhalterspalte von Abschnitt 5 "
+                    f"oder 6, der Befehl in die Zelle rechts daneben (D-91)")
+                continue
+            if anzahl > 1:
+                err(f"{OVERLAY_QUELLE}: {anzahl} Tabellenzeilen nennen {platzhalter}. "
+                    f"Prüfung 42 braucht genau eine – bei mehreren ist nicht "
+                    f"entschieden, welcher Befehl für den Schlitz gilt (D-91)")
+                continue
+            if wert is None:
+                ohne_befehl.append(platzhalter)
+                continue  # Kein erklaerter Befehl: Dieser Schlitz deckt nichts.
+            regel = schlitz.replace(platzhalter, wert)
+            erklaert[regel] = platzhalter
+            if regel in ist:
+                continue
+            if schlitz in ist:
+                err(f"{rel}: das Overlay erklärt für {platzhalter} den Befehl "
+                    f"'{wert}'; der {korb}-Korb trägt aber noch den offenen Schlitz "
+                    f"'{schlitz}'. Entweder wird der Wert dort eingetragen ('{regel}'), "
+                    f"oder Abschnitt 5 beziehungsweise 6 nimmt ihn zurück – zwei "
+                    f"Träger derselben Freigabe dürfen nicht auseinanderlaufen "
+                    f"(D-90)")
+            else:
+                err(f"{rel}: das Overlay erklärt für {platzhalter} den Befehl "
+                    f"'{wert}'; der {korb}-Korb trägt weder '{regel}' noch den offenen "
+                    f"Schlitz '{schlitz}'. Eine erklärte Freigabe, die die Datei nicht "
+                    f"gewährt, ist eine Abweichung – gleich in welche Richtung sie "
+                    f"aufgelöst wird (D-90)")
+        for regel in zusatz:
+            if regel.split("(", 1)[0] not in exec_werkzeuge:
+                continue
+            if regel in erklaert:
+                continue
+            err(f"{rel}: '{regel}' steht im {korb}-Korb, und kein Platzhalter des "
+                f"Overlays erklärt diesen Befehl. Ein Platzhalterschlitz darf gefüllt "
+                f"sein – aber mit dem Wert, den Abschnitt 5 oder 6 für ihn nennt. Ohne "
+                f"erklärten Befehl deckt ein Schlitz keine zusätzliche Freigabe; ohne "
+                f"diesen Satz decken drei offene Schlitze drei beliebige Befehle, gemessen "
+                f"bis hin zu einem mit Fernwirkung (D-90). Ohne erklärten Befehl sind "
+                f"hier: {', '.join(ohne_befehl) if ohne_befehl else 'keiner'}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -4191,6 +4391,7 @@ def main() -> int:
     check_skillfreigabe(root)
     check_pruefregister(root)
     check_abwesenheitsbeleg(root)
+    check_schlitzinhalte(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

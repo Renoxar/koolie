@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 41, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 42, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -2497,6 +2497,247 @@ gegenprobe("41a", "Die unveraenderten Packs bleiben unbeanstandet - eine Enthalt
 gegenprobe("41b", "Eine Enthaltung ohne Datum und ohne Fundstelle bleibt unbeanstandet - "
            "sie ist selbst die Aussage", _41_enthaltung_ohne_beleg,
            "weder als Enthaltung aus noch belegt sie sie")
+
+# --- 42: Ein gefuellter Schlitz traegt, was das Overlay erklaert ----------------------
+#
+# Gegen eine frische INSTALLATION beider Packs, nicht gegen eine Kopie des
+# Repositoriums - der Gegenstand sind zwei installierte Dateien (das Overlay und die
+# Berechtigungsdatei), nicht ein Repositoriumstext. Dieselbe Bauart wie bei den
+# Pruefungen 33 und 37, und aus demselben Grund: Befund B02 trifft jede Pruefung, die
+# an einer Installation haengt.
+#
+# Die Gegenproben sind hier die wichtigere Haelfte, in drei Zuschnitten: der
+# Auslieferungszustand (Overlay dreimal <TBD>, Schlitze woertlich offen), das ordentlich
+# ausgefuellte Projekt (drei erklaerte Befehle, drei passende Regeln) und das Projekt
+# OHNE Lintbefehl, das seinen Schlitz streicht. Eine Pruefung, die einen dieser drei
+# beanstandet, beanstandet jedes echte Projekt.
+#
+# Die Meldungstexte sind umlautfrei gewaehlt, damit sie hier so stehen koennen, wie sie
+# im Validator stehen.
+M42_UNERKLAERT = "und kein Platzhalter des Overlays"
+M42_OFFEN = "aber noch den offenen Schlitz"
+M42_ABWEICHUNG = "ist eine Abweichung"
+M42_ANKER = "keine Tabellenzeile nennt"
+M42_MEHRDEUTIG = "Tabellenzeilen nennen"
+M42_ALLE = (M42_UNERKLAERT, M42_OFFEN, M42_ABWEICHUNG, M42_ANKER, M42_MEHRDEUTIG)
+
+
+def _42_overlay_pfad(root: str) -> str:
+    return os.path.join(root, "project-overlay", "OVERLAY.md")
+
+
+def _42_zeile(root: str, platzhalter: str) -> tuple:
+    """Index und Zeilen des Overlays - der Platzhalter muss in genau einer Zeile stehen."""
+    zeilen = lies(_42_overlay_pfad(root)).splitlines(True)
+    treffer = [i for i, z in enumerate(zeilen)
+               if z.lstrip().startswith("|") and ("`%s`" % platzhalter) in z]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "OVERLAY.md: %s steht in %d Tabellenzeilen, erwartet genau eine - die "
+            "Sonde hat ihren Gegenstand verloren" % (platzhalter, len(treffer)))
+    return treffer[0], zeilen
+
+
+def _42_erklaert(root: str, platzhalter: str, wert: str) -> None:
+    """Den Befehl neben einem Platzhalter setzen - der Wert muss sich aendern."""
+    i, zeilen = _42_zeile(root, platzhalter)
+    roh = zeilen[i]
+    ende = roh[len(roh.rstrip("\r\n")):]
+    felder = roh.rstrip("\r\n").split("|")
+    for k, feld in enumerate(felder):
+        if feld.strip("` *") == platzhalter and k + 1 < len(felder):
+            if felder[k + 1].strip("` *") == wert:
+                raise Praeparationsfehler(
+                    "OVERLAY.md: %s erklaert bereits %r - die Sonde praepariert nichts"
+                    % (platzhalter, wert))
+            felder[k + 1] = " `%s` " % wert
+            break
+    else:
+        raise Praeparationsfehler(
+            "OVERLAY.md: keine Zelle rechts neben %s - die Tabellenform hat sich "
+            "geaendert" % platzhalter)
+    zeilen[i] = "|".join(felder) + ende
+    schreib(_42_overlay_pfad(root), "".join(zeilen))
+
+
+def _42_platzhalter_weg(root: str, platzhalter: str) -> None:
+    """Den Platzhalter aus seiner Zelle nehmen - der verlorene Anker."""
+    i, zeilen = _42_zeile(root, platzhalter)
+    zeilen[i] = zeilen[i].replace("`%s`" % platzhalter, "keiner")
+    schreib(_42_overlay_pfad(root), "".join(zeilen))
+
+
+def _42_zeile_doppeln(root: str, platzhalter: str) -> None:
+    """Die Zeile ein zweites Mal anlegen - zwei Zeilen, zwei moegliche Befehle."""
+    i, zeilen = _42_zeile(root, platzhalter)
+    zeilen.insert(i + 1, zeilen[i])
+    schreib(_42_overlay_pfad(root), "".join(zeilen))
+
+
+def _42_rechte(root: str, rel: str, *aenderungen) -> None:
+    """Die Berechtigungsdatei eines beliebigen Packs praeparieren.
+
+    Die Waechter sitzen in den Eingriffen selbst (_37_weg, _37_dazu, _37_statt), die
+    hier wiederverwendet werden - ein Textvergleich taugte fuer eine JSON-Datei nicht
+    (D-74).
+    """
+    pfad = os.path.join(root, *rel.split("/"))
+    daten = json.loads(lies(pfad))
+    for aenderung in aenderungen:
+        aenderung(daten)
+    schreib(pfad, json.dumps(daten, indent=2, ensure_ascii=False) + "\n")
+
+
+def _42_trifft(root: str, erwartet) -> bool:
+    """Ein Validatorlauf gegen die erwartete Meldung.
+
+    erwartet als Zeichenkette: Die Meldung MUSS vorkommen (Sonde).
+    erwartet als Tupel: KEINE der Meldungen darf vorkommen (Gegenprobe).
+
+    Ohne Ergebniszeile ist der Lauf kein Messwert, sondern ein Abbruch - dann gilt er
+    als nicht bestanden (Arbeitswissen vom 2026-09-14).
+    """
+    aus = validator_ausgabe(root)
+    if "Ergebnis:" not in aus:
+        print("        Kein Messwert: der Lauf hat keine Ergebniszeile geliefert.")
+        return False
+    if isinstance(erwartet, str):
+        if erwartet not in aus:
+            print("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+            return False
+        return True
+    uebrig = [m for m in erwartet if m in aus]
+    if uebrig:
+        print("        Unerwartet gemeldet:", ", ".join(uebrig))
+        print("        Ausgabe:", " | ".join(
+            z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        return False
+    return True
+
+
+def sonden_schlitzinhalte() -> None:
+    """Wirkungsnachweis zu Pruefung 42 (CR-2026-066, D-90 und D-91)."""
+    for pack, rechte, werkzeug in (("claude-code", ".claude/settings.json", "Bash"),
+                                   ("devin-desktop", ".devin/config.json", "Exec")):
+        root = installation(pack)
+        try:
+            pfad_r = os.path.join(root, *rechte.split("/"))
+            pfad_o = _42_overlay_pfad(root)
+            ausgang_r, ausgang_o = lies(pfad_r), lies(pfad_o)
+            schreib(os.path.join(root, "README.md"), "# Sondenprojekt\r\n")
+
+            def zurueck():
+                schreib(pfad_r, ausgang_r)
+                schreib(pfad_o, ausgang_o)
+
+            def sch(name):
+                return "%s(<%s>)" % (werkzeug, name)
+
+            def rg(befehl):
+                return "%s(%s)" % (werkzeug, befehl)
+
+            # --- Gegenprobe 42a: der Auslieferungszustand -----------------------
+            melde("GEGENPROBE", "42a", _42_trifft(root, M42_ALLE),
+                  "Auslieferungszustand: Overlay dreimal <TBD>, drei offene Schlitze "
+                  "(%s)" % pack)
+
+            # --- Gegenprobe 42b: das ordentlich ausgefuellte Projekt ------------
+            for name, befehl in (("BUILD_COMMAND", "mvn -B clean package"),
+                                 ("TEST_COMMAND", "mvn -B test"),
+                                 ("LINT_COMMAND", "mvn -B verify")):
+                _42_erklaert(root, "<%s>" % name, befehl)
+                _42_rechte(root, rechte, lambda d, n=name, b=befehl: _37_statt(
+                    d, "ask", sch(n), rg(b)))
+            melde("GEGENPROBE", "42b", _42_trifft(root, M42_ALLE),
+                  "Drei erklaerte Befehle, drei passende Regeln - der Normalfall "
+                  "(%s)" % pack)
+            zurueck()
+
+            # --- Gegenprobe 42c: kein Lintbefehl, Schlitz gestrichen ------------
+            # Der zulaessige Weg fuer ein Projekt ohne Formatpruefung. Er darf nicht
+            # teurer sein als der unzulaessige.
+            _42_erklaert(root, "<BUILD_COMMAND>", "mvn -B clean package")
+            _42_erklaert(root, "<TEST_COMMAND>", "mvn -B test")
+            _42_erklaert(root, "<LINT_COMMAND>", "nicht vorhanden")
+            _42_rechte(root, rechte,
+                       lambda d: _37_statt(d, "ask", sch("BUILD_COMMAND"),
+                                           rg("mvn -B clean package")),
+                       lambda d: _37_statt(d, "ask", sch("TEST_COMMAND"),
+                                           rg("mvn -B test")),
+                       lambda d: _37_weg(d, "ask", sch("LINT_COMMAND")))
+            melde("GEGENPROBE", "42c", _42_trifft(root, M42_ALLE),
+                  "Kein Lintbefehl, Schlitz gestrichen - der zulaessige Weg "
+                  "(%s)" % pack)
+            zurueck()
+
+            # --- Sonde 42a: der Fall des Piloten --------------------------------
+            # Das Overlay sagt "nicht vorhanden", die Datei gewaehrt einen dritten
+            # Befehl. Pruefung 37 schweigt dazu, weil drei Schlitze drei Zeilen decken.
+            _42_erklaert(root, "<BUILD_COMMAND>", "mvn -B clean package")
+            _42_erklaert(root, "<TEST_COMMAND>", "mvn -B test")
+            _42_erklaert(root, "<LINT_COMMAND>", "nicht vorhanden")
+            _42_rechte(root, rechte,
+                       lambda d: _37_statt(d, "ask", sch("BUILD_COMMAND"),
+                                           rg("mvn -B clean package")),
+                       lambda d: _37_statt(d, "ask", sch("TEST_COMMAND"),
+                                           rg("mvn -B test")),
+                       lambda d: _37_statt(d, "ask", sch("LINT_COMMAND"),
+                                           rg("mvn -B -q compile")))
+            melde("SONDE", "42a", _42_trifft(root, M42_UNERKLAERT),
+                  "Der Fall des Piloten: Overlay sagt 'nicht vorhanden', die Datei "
+                  "gewaehrt einen dritten Befehl (%s)" % pack)
+            zurueck()
+
+            # --- Sonde 42b: das Overlay erklaert gar nichts ---------------------
+            # Der Lauf M10 der Gegenpruefung: drei <TBD> decken drei Freigaben,
+            # darunter eine mit Fernwirkung.
+            _42_rechte(root, rechte,
+                       lambda d: _37_statt(d, "ask", sch("BUILD_COMMAND"),
+                                           rg("mvn -B clean package")),
+                       lambda d: _37_statt(d, "ask", sch("TEST_COMMAND"),
+                                           rg("mvn -B test")),
+                       lambda d: _37_statt(d, "ask", sch("LINT_COMMAND"),
+                                           rg("mvn -B deploy")))
+            melde("SONDE", "42b", _42_trifft(root, M42_UNERKLAERT),
+                  "Overlay erklaert dreimal <TBD>, die Datei gewaehrt drei Befehle - "
+                  "einer davon mit Fernwirkung (%s)" % pack)
+            zurueck()
+
+            # --- Sonde 42c: der Schlitz traegt einen anderen Befehl -------------
+            _42_erklaert(root, "<TEST_COMMAND>", "mvn -B test")
+            _42_rechte(root, rechte, lambda d: _37_statt(
+                d, "ask", sch("TEST_COMMAND"), rg("mvn -B verify")))
+            melde("SONDE", "42c", _42_trifft(root, M42_ABWEICHUNG),
+                  "Gefuellter Schlitz mit fremdem Befehl - der Fall, den Kandidat 2 "
+                  "beschrieb (%s)" % pack)
+            zurueck()
+
+            # --- Sonde 42d: erklaert, aber der Schlitz steht noch offen ---------
+            _42_erklaert(root, "<TEST_COMMAND>", "mvn -B test")
+            melde("SONDE", "42d", _42_trifft(root, M42_OFFEN),
+                  "Das Overlay erklaert einen Befehl, die Datei traegt noch den "
+                  "offenen Schlitz (%s)" % pack)
+            zurueck()
+
+            # --- Sonde 42e: der verlorene Anker ---------------------------------
+            _42_platzhalter_weg(root, "<LINT_COMMAND>")
+            melde("SONDE", "42e", _42_trifft(root, M42_ANKER),
+                  "Verlorener Anker - keine Tabellenzeile nennt den Platzhalter mehr "
+                  "(%s)" % pack)
+            zurueck()
+
+            # --- Sonde 42f: zwei Zeilen fuer denselben Platzhalter --------------
+            _42_zeile_doppeln(root, "<TEST_COMMAND>")
+            melde("SONDE", "42f", _42_trifft(root, M42_MEHRDEUTIG),
+                  "Zwei Tabellenzeilen nennen denselben Platzhalter - welcher Befehl "
+                  "gilt? (%s)" % pack)
+            zurueck()
+        finally:
+            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+buendel(sonden_schlitzinhalte)
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
