@@ -2,6 +2,84 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.43.0] - 2026-09-14
+
+**Zwei Enthaltungen von `devin-desktop` sind erhoben - und eine war keine Enthaltung,
+sondern eine falsche Behauptung.** Der Aenderungsverlauf des Packs sagte seit 0.10.0:
+„Beides kann nicht stimmen; welche Seite falsch ist, entscheidet eine Erhebung." Sie
+liegt vor - **elf Laeufe am Client** in vier Umgebungen, davon zwei Kontrollaeufe, ein
+Entlastungslauf, ein verworfener Lauf und einer mit berichtigtem Messartefakt
+(`tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md`, `CR-2026-065`, D-87 bis D-89).
+**Das erste Release dieses Projekts, das einen Client misst statt eines Mechanismus.**
+
+### Behoben
+
+- **Der Schutz-Hook erreicht die Suchklasse wieder** (D-87). `hook_tools_absent`
+  erklaerte, dieser Client fuehre kein eigenes Suchwerkzeug - er fuehrt **zwei**, `grep`
+  und `find_file_by_name`. Der erzeugte Matcher lautete `read|exec|edit|write`; in einer
+  Umgebung mit nur diesem Hook wurde `read` auf `.env` blockiert (H1) und `grep` auf
+  dieselbe Datei lieferte das Secret **woertlich** (H2). **Das Hook-Skript blockt
+  beides - es wurde nicht gefragt.** Seit diesem Release lautet der Matcher
+  `read|grep|find_file_by_name|exec|edit|write`, und derselbe Aufruf wird abgewiesen
+  (Nachlauf H2n).
+- **`install.py` wendet die Werkzeugabbildung auch in der Listenform an.** Bis 0.42.0 tat
+  das nur der csv-Zweig des Skill-Renderers, waehrend der Agenten-Renderer daneben immer
+  umschrieb: **dieselbe Abbildung desselben Manifests mit zwei Ergebnissen.**
+
+### Gemessen
+
+- **Der Skillaufruf IST bei diesem Client ein Werkzeugaufruf** (D-89, **K-33
+  geschlossen**): Das Werkzeug heisst `skill`, der Skillname steht im Argument `skill`.
+  Eine `deny`-Regel erreicht ihn trotzdem nicht - `Skill(name)` und `skill(name)` laufen
+  beide durch, waehrend `Read(**/.env)` in derselben Datei und denselben Laeufen abweist
+  (Kontrolllauf P1b). **Neu offen als K-34.**
+- **Die Slash-Form wird CLIENTSEITIG expandiert** - im `user`-Schritt der Mitschrift steht
+  der Inhalt der `SKILL.md`, nicht der Befehl. Eine Werkzeugschranke erreicht diesen Weg
+  ohnehin nicht.
+- **Frontmatter-Vokabular und Laufzeitnamen sind ZWEI Namensraeume** (D-88). Der Client
+  nimmt im Frontmatter `read, grep, glob, edit, exec, web_search` an und **verwirft**
+  `find_file_by_name`, `write`, `skill` und einen erfundenen Namen - waehrend seine
+  Laufzeit genau `find_file_by_name` fuehrt. **Ein erster Entwurf dieses Releases hat die
+  beiden verwechselt**, und der Client verwarf den Eintrag lautlos: Die Vorabfreigabe
+  schrumpfte von drei Namen auf zwei, bei 0 Fehlern im Validator. Bei `claude-code` fallen
+  beide Namensraeume zusammen - deshalb war der Unterschied bis 0.42.0 unsichtbar.
+- **Ein zweites Modell ist auf diesem Konto nicht messbar** (`Upgrade to Pro`). Die
+  Aussagen gelten fuer `SWE-1.6 Slow`, elf Laeufe, zeichengleicher Werkzeugbestand.
+
+### Neu
+
+- **Pruefung 41** (D-88): Eine erklaerte Werkzeugabwesenheit weist sich als **Enthaltung**
+  aus oder **belegt** sich mit Datum und Fundstelle. Eine blosse Behauptung ist keines von
+  beidem - und genau so ist der Schutz-Hook um die Suchklasse gekommen. **Pruefung 26 hat
+  sie durchgelassen, weil sie Folgerichtigkeit prueft und nicht Wahrheit.**
+- **Pruefung 38, Gegenstand 3 ist namensraumbewusst.** Ein Pack erklaert einen eigenen
+  Frontmatter-Namensraum in `tool_names_namespace` samt Begruendung; die Richtungsregel
+  von D-80 setzt dann aus. **Was dabei verloren geht, steht im Kopfkommentar.**
+- **Fuenf Sonden und zwei Gegenproben.** Die zweite Gegenprobe ist die wichtigere: Eine
+  **Enthaltung braucht keinen Beleg** - wer das verwechselt, verlangt fuer eine ehrliche
+  Wissensluecke ein Protokoll, das es nicht geben kann.
+
+### Migrationshinweise
+
+- **Bestehende `devin-desktop`-Installationen sind erst nach `install.py --update`
+  geschuetzt.** Die Hook-Konfiguration ist eine Core-Datei und wird dabei ueberschrieben;
+  bis dahin bleibt die Suchklasse aussen vor. **Installationen mit dem Pack
+  `claude-code` sind nicht betroffen.**
+
+### Bekannte Einschraenkungen
+
+- **Der Skillaufruf ist bei `devin-desktop` nicht kontrollierbar** (**K-34**). Zwei
+  Schreibweisen sind geprueft; ob eine dritte wirkt, ist offen. **Ein Fehlen belegt sich
+  nicht selbst.**
+- **Die Richtungsregel von D-80 gilt fuer `devin-desktop` nicht mehr.** Sie ist anders
+  gestellt, nicht beantwortet - ein deklarierter blinder Fleck statt einer falschen
+  Zusage.
+- **Pruefung 41 prueft eine Form, nicht eine Tatsache.** Wer ein Datum und einen
+  Protokollpfad in die Notiz schreibt, besteht sie - auch wenn das Protokoll etwas
+  anderes sagt.
+- **Was `allowed-tools` bei diesem Client bewirkt, bleibt unerhoben** - Zeile S3 sagt es
+  seit 0.7.0, und diese Erhebung hat es nicht geaendert.
+
 ## [0.42.0] - 2026-09-14
 
 **Das Register der Pruefungen wird nachgezaehlt.** Der Kopfkommentar von

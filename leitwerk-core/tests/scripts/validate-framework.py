@@ -111,8 +111,11 @@ Prüft (statisch, ohne laufenden KI-Client):
      bei der hoechsten Nummer, die die beiden Pruefskripte nennen; die Sondenmenge steht
      im Satz darunter, im Kopfsatz von probe-pruefungen.py und in FW-KO-01 in derselben
      ausgerechneten Schreibweise; die Grenzfallanzahl in FW-KO-05 ist die gezaehlte
+ 41. Abwesenheitsbeleg (D-88): Eine erklaerte Werkzeugabwesenheit weist sich als
+     Enthaltung aus oder belegt sich mit Datum und Fundstelle - eine blosse Behauptung
+     nimmt eine Werkzeugklasse aus der Durchsetzung und begruendet es
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 40 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 41 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -3647,6 +3650,27 @@ def check_werkzeugabbildung(root: str) -> None:
                         f"Aussage (D-78)")
 
             # Gegenstand 3: Die Sperrliste darf nicht enger sein als die Vorabfreigabe.
+            #
+            # Die Regel vergleicht zwei Listen und setzt damit voraus, dass sie
+            # DENSELBEN Namensraum fuehren. Bei claude-code tun sie das; bei
+            # devin-desktop nicht, und das ist gemessen (2026-09-14, D-88): Sein
+            # Frontmatter kennt ein eigenes, normalisiertes Vokabular - read,
+            # grep, glob, edit, exec, web_search -, waehrend seine Laufzeit das
+            # glob-foermige Werkzeug find_file_by_name nennt. Ein Vergleich der
+            # beiden Listen meldete dann einen Unterschied, den es nicht gibt.
+            #
+            # Ein Pack sagt das mit tool_names_namespace: 'eigen'. WAS DABEI
+            # VERLOREN GEHT, gehoert gesagt: Fuer ein solches Pack prueft niemand
+            # mehr, ob die Sperre die Vorabfreigabe deckt - die Frage von D-80
+            # bleibt dort offen und ist nur anders gestellt, nicht beantwortet.
+            if str(fmt.get("tool_names_namespace") or "") == "eigen":
+                if not str(fmt.get("_tool_names_note") or "").strip():
+                    err(f"{rel}: {block}.tool_names_namespace ist 'eigen', aber "
+                        f"'_tool_names_note' fehlt oder ist leer. Einen eigenen "
+                        f"Namensraum zu erklaeren nimmt die Richtungsregel von "
+                        f"D-80 ausser Kraft - das gehoert begruendet, nicht "
+                        f"bloss eingetragen (D-88)")
+                continue
             for verb in sorted(abbildung):
                 ziel = bruecke.get(verb)
                 if ziel is None or ziel not in hook:
@@ -4010,6 +4034,105 @@ def check_pruefregister(root: str) -> None:
             f"einen Teil und meldet das Ganze (D-86)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 41: Eine Abwesenheitserklaerung ist Enthaltung oder Beleg
+# ---------------------------------------------------------------------------
+#
+# ANLASS. D-47 wurde gebaut, damit ein Pack eine Werkzeugklasse nicht dadurch aus der
+# Durchsetzung nehmen kann, dass es sie weglaesst: Eine Abwesenheit MUSS erklaert werden.
+# Pruefung 26 erzwingt seither, dass die Erklaerung DA ist und mit permission_tools
+# widerspruchsfrei. Am 2026-09-14 war beides erfuellt und die Erklaerung trotzdem falsch
+# (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065):
+# _hook_tools_absent_note sagte "Dieser Client fuehrt kein eigenes Suchwerkzeug" - und der
+# Client fuehrt zwei, grep und find_file_by_name. Der erzeugte Hook-Matcher kannte die
+# Suchklasse deshalb nicht, und in einer Umgebung mit nur diesem Hook kam derselbe
+# Secret-Wert, den ein read-Aufruf nicht bekam, ueber einen grep-Aufruf woertlich heraus.
+#
+# WAS PRUEFBAR IST. Nicht die Wahrheit einer Aussage - das kann kein Skript. Wohl aber,
+# ob die Aussage sich als das ausweist, was sie ist. Zwei Bauformen sind redlich:
+#   * die ENTHALTUNG - "UNERHOBEN, nicht abwesend" (agent_start_tools_absent seit D-70);
+#   * der BELEG - ein Datum UND eine Fundstelle unter tests/protocols/. Ein
+#     blosses Wort wie "gemessen" genuegt nicht - "nicht gemessen" enthaelt es
+#     auch, und genau diese Falle stand im Entwurf dieser Pruefung.
+# Die dritte Bauform ist die, die hier Schaden angerichtet hat: eine BEHAUPTUNG, die wie
+# eine Feststellung klingt und weder das eine noch das andere trägt.
+#
+# GRENZE. Sie prueft eine FORM, nicht eine Tatsache. Wer ein Datum und einen Protokollpfad
+# in die Note schreibt, besteht sie - auch wenn das Protokoll etwas anderes sagt. Und sie
+# faengt nach 0.43.0 nichts mehr: Beide Packs sind in Ordnung. Ihr Wert haengt an ihren
+# Sonden und daran, dass die naechste Abwesenheitserklaerung nicht mehr unbelegt bleibt.
+ABWESENHEITSFELDER = (
+    ("hook_tools_absent", "_hook_tools_absent_note", None),
+    ("agent_start_tools_absent", "_agent_start_tools_absent_note", None),
+    ("tool_names_unmapped", "_tool_names_unmapped_note", FRONTMATTER_BLOECKE),
+    ("skill_deny_unmapped", "_skill_deny_unmapped_note", ("skill_frontmatter",)),
+)
+ENTHALTUNG = re.compile(r"unerhoben", re.I)
+DATUM = re.compile(r"\b20\d\d-\d\d-\d\d\b")
+FUNDSTELLE = re.compile(r"tests/protocols/")
+
+
+def _abwesenheitserklaerungen(man: dict):
+    """(Feldname, Notizname, Wert, Notiz) je erklaerter Abwesenheit dieses Manifests."""
+    for feld, notiz, bloecke in ABWESENHEITSFELDER:
+        if bloecke is None:
+            wert = man.get(feld)
+            if wert:
+                yield feld, notiz, wert, man.get(notiz)
+            continue
+        for block in bloecke:
+            fmt = man.get(block) or {}
+            wert = fmt.get(feld)
+            if wert:
+                yield f"{block}.{feld}", f"{block}.{notiz}", wert, fmt.get(notiz)
+
+
+def check_abwesenheitsbeleg(root: str) -> None:
+    """Pruefung 41 (D-88): Eine erklaerte Abwesenheit weist sich aus - oder sie belegt sich."""
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    manifeste = 0
+    erklaerungen = 0
+    for pack in sorted(os.listdir(basis)):
+        if pack.startswith("_"):
+            continue
+        pfad = os.path.join(basis, pack, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        try:
+            man = json.loads(read(pfad))
+        except ValueError:
+            continue
+        manifeste += 1
+        for feld, notizname, _wert, notiz in _abwesenheitserklaerungen(man):
+            erklaerungen += 1
+            text = str(notiz or "").strip()
+            if not text:
+                continue  # Die Pruefungen 26 und 38 melden die fehlende Notiz bereits
+            if ENTHALTUNG.search(text):
+                continue
+            if DATUM.search(text) and FUNDSTELLE.search(text):
+                continue
+            err(f"{rel}: {notizname} erklärt eine Abwesenheit, weist sie aber weder als "
+                f"Enthaltung aus noch belegt sie sie. Redlich sind zwei Bauformen: das "
+                f"Wort 'unerhoben' – oder ein Datum zusammen mit einer Fundstelle "
+                f"('tests/protocols/…'). Eine "
+                f"Behauptung ohne beides nimmt eine Werkzeugklasse aus der Durchsetzung "
+                f"und begründet es – genau so ist am 2026-09-14 der Schutz-Hook um die "
+                f"Suchklasse gekommen (D-88)")
+    if not manifeste:
+        err(f"{KERN}/clients: kein Manifest gefunden. Prüfung 41 misst die "
+            f"Abwesenheitserklärungen der Packs; ohne sie prüft sie nichts und bestünde "
+            f"leise (D-23)")
+        return
+    if not erklaerungen:
+        err(f"{KERN}/clients: kein Pack führt noch eine Abwesenheitserklärung. Prüfung "
+            f"41 hat ihren Gegenstand verloren und würde leise bestehen – fällt das Feld "
+            f"weg, gehört die Prüfung ausgebaut und nicht stillgelegt (D-23, D-88)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -4067,6 +4190,7 @@ def main() -> int:
     check_werkzeugabbildung(root)
     check_skillfreigabe(root)
     check_pruefregister(root)
+    check_abwesenheitsbeleg(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

@@ -364,10 +364,14 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
 
     m = re.search(r"^allowed-tools:[ \t]*\n((?:[ \t]+-[ \t]+\S+[ \t]*\n)+)", fm, re.M)
     werkzeuge = [x.strip("- \t") for x in m.group(1).strip().split("\n")] if m else []
-    # Die Verben werden in BEIDEN Zweigen geprueft, umgeschrieben nur im einen. Ein
-    # Pack mit tools_format: list laesst das Feld unberuehrt - aber ein Schreibfehler
-    # im Frontmatter ist auch dort einer, und er soll beim Installieren auffallen und
-    # nicht im uebernehmenden Projekt (D-78).
+    # Die Verben werden in BEIDEN Zweigen geprueft UND in beiden umgeschrieben. Bis
+    # 0.42.0 liess der Listen-Zweig das Feld unberuehrt, waehrend der Agenten-Renderer
+    # daneben immer umschrieb - dieselbe Abbildung desselben Manifests mit zwei
+    # Ergebnissen. Aufgefallen ist es am 2026-09-14, als devin-desktop seine gemessene
+    # Abbildung bekam: Das Agentenprofil trug danach find_file_by_name, die Skilldatei
+    # weiter glob - also weiter einen Namen, den dieser Client nicht fuehrt
+    # (CR-2026-065, D-87). Ein Schreibfehler im Frontmatter faellt weiterhin beim
+    # Installieren auf und nicht erst im uebernehmenden Projekt (D-78).
     ziel: list[str] = []
     for w in werkzeuge:
         for y in clientmap.frontmatter_werkzeuge(man, "skill_frontmatter", w):
@@ -382,6 +386,14 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
     else:
         for f in fmt.get("drop_fields", []):
             fm = re.sub(rf"^{f}:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
+        if ziel:
+            # An Ort und Stelle ersetzen, nicht ans Ende haengen: Bei einer
+            # Abbildung, die die Namen nicht aendert, bleibt die Datei dann
+            # zeichengleich, und der Diff eines Releases zeigt nur, was sich
+            # wirklich geaendert hat.
+            eintraege = "allowed-tools:\n" + "".join(f"  - {y}\n" for y in ziel)
+            fm = re.sub(r"^allowed-tools:[ \t]*\n(?:[ \t]+-[ \t]+\S+[ \t]*\n)+",
+                        lambda _m: eintraege, fm, count=1, flags=re.M)
 
     if nur_nutzer:
         fm = fm.rstrip("\n") + f"\n{feld}: true\n"
