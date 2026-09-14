@@ -2,6 +2,95 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.44.0] - 2026-09-14
+
+**Drei offene Platzhalterschlitze deckten drei beliebige Befehlsfreigaben - und drei
+ausgelieferte Texte bestritten das ohne Einschraenkung.** Kandidat 2 der Uebergabe, der
+einzige mit einer gemessenen Fundstelle. Gegengeprueft mit **zwoelf Laeufen an zwei
+Packs** (vier Kontroll-, zwei Entlastungslaeufe) und **vier Abzaehlungen**
+(`tests/protocols/2026-09-14-gegenpruefung-schlitzdeckung.md`, `CR-2026-066`, D-90 und
+D-91). **Der Befund liegt woanders, als die Uebergabe ihn vermutet hat.**
+
+### Gemessen
+
+- **Die Deckung ist drei, und sie ist beliebig fuellbar.** Pruefung 37 vergleicht Mengen
+  und zaehlt den Ueberschuss gegen die Zahl der offenen Schlitze; WELCHER Eintrag WELCHER
+  Schlitz ist, steht dort nicht und kann dort nicht stehen. Gemessen laufen drei
+  eingetragene Befehlsfreigaben durch - darunter `mvn -B deploy`, ein Befehl mit
+  Fernwirkung, den Abschnitt 3.2 des Arbeitsmodells **in jedem Modus** verbietet.
+  **In beiden Packs, und auch dann, wenn das Overlay dreimal `<TBD>` sagt, also gar
+  nichts erklaert.** Die vierte Zeile faellt - D-76 war richtig.
+- **Am Piloten steht der Fall seit dem Heben auf 0.37.0.** `Bash(mvn -B -q compile)` im
+  `ask`-Korb, waehrend Abschnitt 6 `<LINT_COMMAND>` als „nicht vorhanden" erklaert - und
+  die Laufzeitfassung des Overlays sagt dasselbe. **Zwei von drei Traegern sagen das
+  Richtige, der dritte gewaehrt etwas anderes, und nur der dritte setzt durch.** Das ist
+  zugleich die erste gemessene Fundstelle fuer `CR-2026-044` E4.
+- **Die Luecke war erklaert - an einer Stelle.** `CR-2026-061` Abschnitt 4 nimmt genau
+  diesen Fall ausdruecklich aus, und D-76 wie D-77 bleiben genau. **Drei ausgelieferte
+  Texte aus DEMSELBEN Commit taten es nicht** (`34d850e`, Release 0.39.0). Die Lehre ist
+  die von 0.42.0, eine Ebene tiefer: **Eine Enthaltung, die nur in einem Antrag steht,
+  haelt nicht einmal bis zum Ende desselben Patches.**
+- **Die Zuordnung steht maschinenlesbar da.** In allen vier geprueften Overlays - Vorlage,
+  Pilot, frische Installation, Testinstallation im Repositorium - steht jeder der drei
+  Befehlsplatzhalter in **genau einer** Tabellenzeile, und der Wert steht rechts daneben.
+  `docs/PLACEHOLDER_REGISTRY.md` weist die Herkunft ohnehin aus.
+
+### Neu
+
+- **Pruefung 42** (D-90, D-91): Ein gefuellter Befehlsschlitz der Berechtigungsdatei
+  traegt den Befehl, den Abschnitt 5 oder 6 des Overlays fuer seinen Platzhalter
+  erklaert; ein Schlitz **ohne** erklaerten Befehl deckt keinen Ueberschuss. Gelesen wird
+  ueber die **Platzhalterzelle**, nie ueber eine Spaltennummer. Ohne Overlay enthaelt sie
+  sich; fehlt dort ein Platzhalter, meldet sie den verlorenen Anker.
+- **Zwoelf Sonden und sechs Gegenproben** zu Pruefung 42, gegen frische Installationen
+  **beider** Packs (B02). Die drei Gegenproben je Pack sind die wichtigere Haelfte:
+  Auslieferungszustand, ordentlich ausgefuelltes Projekt und **das Projekt ohne
+  Lintbefehl, das seinen Schlitz streicht** - der zulaessige Weg darf nicht teurer sein
+  als der unzulaessige.
+
+### Behoben
+
+- **Drei uneingeschraenkte Zusagen bekommen ihre Bedingung** (D-90). Der Absatz zum
+  Wirkungsort in `templates/project-overlay/OVERLAY.md`, `framework/core/03-security.md`
+  und - die teuerste der drei - der Kommentarkopf **jeder erzeugten Berechtigungsdatei**
+  in `clientmap.py`. Letzterer steht nicht in einem Dokument zum Nachschlagen, sondern im
+  Kopf genau der Datei, in der jemand die Zeile eintraegt, ueber die er eine Aussage
+  macht.
+- **Die Korbzerlegung liegt jetzt an einer Stelle** (`korb_zerlegung`). Sie wurde fuer
+  Pruefung 42 ein zweites Mal gebraucht; zwei Gelegenheiten fuer denselben Fehler sind
+  eine - dieselbe Begruendung wie bei `tabellenzellen()` mit 0.37.0.
+
+### Migrationshinweise
+
+- **Ein Projekt, dessen Berechtigungsdatei einen Befehl fuehrt, den Abschnitt 5 oder 6
+  nicht fuer seinen Platzhalter erklaert, bekommt ab diesem Release einen Fehler.**
+  Die Aufloesung ist eine Entscheidung des Overlay Owners und keine des Frameworks:
+  entweder die Zeile faellt, oder der Befehl wird im Overlay als Wert des passenden
+  Platzhalters erklaert. **Der Pilot ist genau dieser Fall** - eine Fundstelle,
+  abgezaehlt.
+- **Ein Overlay, das einen der drei Befehlsplatzhalter in keiner Tabellenzeile mehr
+  fuehrt, bekommt die Meldung ueber den verlorenen Anker.** Der Platzhalter gehoert in
+  die Platzhalterspalte von Abschnitt 5 oder 6, der Befehl in die Zelle rechts daneben.
+- **Die Berechtigungsdatei wird nicht nachgezogen.** Sie steht in `shared_seed` und wird
+  nach der Erstinstallation nie wieder geschrieben (D-76) - die Pruefung meldet, sie
+  behebt nicht.
+
+### Bekannte Einschraenkungen
+
+- **Die vier Pfadschlitze bleiben ungeprueft** (**K-35**). `<EXCLUDED_PATHS>` und die
+  beiden Konfigurationslisten stehen im `deny`-Korb, wo Ueberzaehliges ohnehin zulaessig
+  ist; ein zu **eng** gefuellter Schlitz ist dort eine stille Lockerung. Der Vergleich
+  waere n:1 und braucht eine eigene Entscheidung. **Das steht im Kopfkommentar der
+  Pruefung, nicht nur im Antrag** - genau der Fehler, den dieses Release behebt, darf es
+  nicht selbst wiederholen.
+- **Pruefung 42 vergleicht Zeichenketten.** Ob der erklaerte Befehl fachlich der richtige
+  ist und ob ein Client die Regel so auswertet, wie sie gemeint ist, sagt sie nicht.
+- **Im Repositorium selbst faengt sie nichts.** Die Testinstallation hat drei offene
+  Schlitze und ein Overlay, das dreimal `<TBD>` sagt. **Der Gegenbeweis ist ein
+  Abzaehlen an einem echten Projekt** - dem Piloten -, nicht eine Konstruktion.
+- **Der Abgleich zwischen Quell-Overlay und Laufzeitfassung bleibt offen**
+  (`CR-2026-044` E4). Er hat jetzt seine erste gemessene Fundstelle.
+
 ## [0.43.0] - 2026-09-14
 
 **Zwei Enthaltungen von `devin-desktop` sind erhoben - und eine war keine Enthaltung,

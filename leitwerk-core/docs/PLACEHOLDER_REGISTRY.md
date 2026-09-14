@@ -2,6 +2,8 @@
 
 Alle im Framework verwendeten Platzhalter. Neue Platzhalter werden hier registriert, bevor sie verwendet werden (`leitwerk-core/tests/scripts/validate-framework.py` meldet unbekannte Platzhalter als Warnung). Platzhalter werden ausschließlich durch das Project Overlay oder die Organisation befüllt – niemals im Framework Core. Beispiele sind synthetisch.
 
+**Die Spalte „Wird gesetzt in" ist bei drei Platzhaltern durchgesetzt, bei allen übrigen ist sie eine Angabe.** `<BUILD_COMMAND>`, `<TEST_COMMAND>` und `<LINT_COMMAND>` werden von **Prüfung 42** in der hier genannten Overlay-Tabelle gelesen – über die Platzhalterzelle, nicht über eine Spaltennummer – und gegen die installierte Berechtigungsdatei gehalten (D-90, D-91). Bei den übrigen Platzhaltern sagt die Spalte, wo der Wert **hingehört**; dass er dort steht, prüft niemand nach.
+
 ## Vom Arbeitsauftrag vorgegebene Platzhalter
 
 | Platzhalter | Bedeutung | Wird gesetzt in | Beispiel (synthetisch) | Pflicht vor Aktivierung |

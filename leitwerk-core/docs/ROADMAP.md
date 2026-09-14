@@ -9,10 +9,127 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.43.0 (2026-09-14)
+## Stand nach Release 0.44.0 (2026-09-14)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Der Weg nach 1.0.0 – die fünf Kriterien und wo sie gezählt werden
+
+**Der Maßstab ist D-11**, nicht ein Gefühl: *Version 1.0.0 bezeichnet den Stand „technisch
+validiert und übertragbar".* Fünf Kriterien, alle im Einflussbereich des Framework Owners –
+Pilot, Onboarding und organisatorische Freigabe sind **ausdrücklich keine** Vorbedingung,
+sondern Aufgabe der aufnehmenden Organisation.
+
+**Hier stehen keine Zahlen, sondern die Befehle, die sie ausrechnen.** Das ist Absicht und
+folgt dem Befund von 0.42.0: Fünf handgepflegte Zahlen über den eigenen Prüfstand waren
+nach zwölf Releases sämtlich falsch, ohne dass eine davon je falsch geschrieben worden
+wäre. **Ein Fortschrittsstand über das eigene Repositorium ist derselbe Gegenstand.**
+
+| # | Kriterium (D-11) | Gezählt mit |
+|---|---|---|
+| **1** | kein unbearbeiteter `VERIFY`-Marker | `grep -rl "VERIFY AGAINST CURRENT CLIENT DOCUMENTATION" --include=*.md --include=*.json --include=*.py .` (ohne `build/out/`) |
+| **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebnisspalte in `tests/TEST_CATALOG.md`, dazu die dezentralen `TESTS.md` je Skill |
+| **3** | alle Modulstatus oberhalb `entwurf` | Steckbriefzeile mit dem Statuswert `entwurf` in `framework/core/`, `framework/skills/*/SKILL.md`, `framework/role-packs/` und `framework/tech-packs/` |
+| **4** | keine Decision Records im Status `entschieden (Vorschlag)` | `governance/DECISION_LOG.md` |
+| **5** | Übernahme in ein zweites Projekt nachgewiesen | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
+
+**Der größte Posten ist Kriterium 2, und zwar mit Abstand.** Alles, was ein Skript leisten
+kann, ist geleistet; was offen steht, trägt fast durchweg das Prüfmittel `sitzung` – also
+einen Lauf mit einem echten KI-Client nach Testblatt. **Diese Tests messen Verhalten, nicht
+Mechanik** – und sie sind die einzigen im Bestand, die eine bestehende Zusage noch
+widerlegen könnten.
+
+#### Die Vorbedingung, die heute nicht erfüllt ist
+
+Verfahren Nr. 1 des Testkatalogs bindet **jeden** Sitzungstest an „das synthetische
+Übungsrepository mit aktivem Übungs-Overlay". Es existiert (`devpacks/test-devin-framework`,
+außerhalb dieses Repositoriums), aber:
+
+- **Es steht auf 0.13.0.** Sein Overlay nennt jeden Befehlsplatzhalter **zweimal** (Backend
+  und Frontend) und ohne spitze Klammern – beides verträgt sich nicht mit Prüfung 42, die
+  genau eine Tabellenzeile je Platzhalter verlangt. **Das Heben ist damit keine Formsache
+  mehr**, sondern eine Entscheidung darüber, wie ein Overlay mit zwei Technologiesträngen
+  seine Befehlsschlitze führt.
+- **Die drei Köder fehlen.** `onboarding/exercises/README.md` Nummer 4 verlangt einen
+  Injektionsköder, einen K3-Köder und eine Scope-Falle; im Übungsrepository ist keiner davon
+  angelegt. **Damit sind die Testfälle der Klassen PI und SC sowie `FW-DS-01`/`FW-DS-02`
+  heute nicht fahrbar** – der Testkatalog führt sie als `offen`, also als fahrbar, und das
+  ist eine Zusage ohne den Mechanismus dahinter. **Derselbe Befundtyp, den dieses Projekt
+  seit zwölf Releases bei sich selbst findet.**
+
+**Diese Vorarbeit gehört vor den ersten Sitzungstest, nicht zwischen den fünften und den
+sechsten.**
+
+#### Was den Fokus halten würde, ohne Disziplin zu verlangen
+
+Vier der fünf Kriterien sind maschinell zählbar. **Eine Prüfung, die sie nachzählt, wäre der
+natürliche Nachfolger von Prüfung 40** – die tut für den Prüfapparat genau das. Dann stünde
+der 1.0.0-Stand nicht in einem gepflegten Absatz, sondern im Validatorlauf, und er wäre
+jeden Tag richtig. **Offen ist der Zuschnitt:** Ein Zähler, der bei jedem offenen Punkt einen
+Fehler meldete, machte jeden Lauf rot und wäre binnen eines Releases abgeschaltet; ein
+Zähler, der nur berichtet, ist keine Prüfung. **Das gehört entschieden, bevor etwas gebaut
+wird.**
+
+### Was 0.44.0 gebracht hat – drei offene Schlitze deckten drei Befehlsfreigaben
+
+**Kandidat 2 der Übergabe** – der einzige mit einer gemessenen Fundstelle statt einer
+Vermutung. Gegengeprüft mit **zwölf Läufen an zwei Packs** (vier Kontroll-, zwei
+Entlastungsläufe) und **vier Abzählungen**
+(`tests/protocols/2026-09-14-gegenpruefung-schlitzdeckung.md`, `CR-2026-066`, D-90 und
+D-91). **Der Befund bestätigt sich und er liegt woanders, als die Übergabe ihn vermutet
+hat.**
+
+| Frage | Ergebnis |
+|---|---|
+| Wie groß ist die Deckung durch offene Platzhalterschlitze? | **Drei** – so viele Befehlsschlitze hält der `ask`-Korb bereit. Gemessen laufen drei beliebige Befehlsfreigaben durch, **darunter eine mit Fernwirkung**, die Abschnitt 3.2 des Arbeitsmodells in jedem Modus verbietet |
+| Braucht es dafür ein falsch gefülltes Overlay? | **Nein.** Auch ein Overlay, das dreimal `<TBD>` sagt und damit **gar nichts** erklärt, deckt drei Freigaben. In beiden Packs |
+| War die Lücke unbekannt? | **Nein – sie war erklärt.** `CR-2026-061` Abschnitt 4 nimmt genau diesen Fall ausdrücklich aus, und D-76 wie D-77 bleiben genau |
+| Wo liegt der Befund dann? | **Drei ausgelieferte Texte aus demselben Commit bestreiten die Enthaltung ohne Einschränkung** – und der teuerste von ihnen steht im Kopf **jeder erzeugten Berechtigungsdatei** |
+| *Nicht gesucht:* Was sagen die anderen Träger am Piloten? | **Das Richtige.** Quell-Overlay **und** Laufzeitfassung erklären `<LINT_COMMAND>` als „nicht vorhanden"; allein die Berechtigungsdatei gewährt einen dritten Befehl – und allein sie setzt durch. **Erste gemessene Fundstelle für `CR-2026-044` E4** |
+| *Nicht gesucht:* Steht die Zuordnung maschinenlesbar da? | **Ja, in allen vier geprüften Overlays** – jeder Platzhalter in genau einer Tabellenzeile, der Wert rechts daneben. `docs/PLACEHOLDER_REGISTRY.md` weist die Herkunft ohnehin aus |
+
+**Die Regel, die man sich merken sollte:** *Eine Prüfung, die Mengen vergleicht, kann keine
+Zuordnung prüfen – und wo die Zuordnung fehlt, deckt jeder offene Schlitz genau eine
+unerklärte Zeile.*
+
+**Das Argument, das man sich merken sollte:** Die Lehre von 0.42.0, eine Ebene tiefer.
+Dort galt: *Eine Entscheidung, die nur in einem Antrag steht, hält bis zum nächsten
+Antrag.* Hier hält eine **Enthaltung**, die nur in einem Antrag steht, **nicht einmal bis
+zum Ende desselben Patches** – die Enthaltung und die drei Texte, die sie bestreiten,
+stammen aus `34d850e`.
+
+**Die Zahl, die den Befund trägt: drei.** So viele Befehlsschlitze gibt es, so viele
+Freigaben laufen durch, und so viele Texte versprachen das Gegenteil. Die vierte Zeile
+fällt – D-76 hat das richtig vorhergesagt.
+
+**Der Beleg, der alles trägt:** Der Validator von 0.44.0 meldet am Piloten **genau eine**
+Fundstelle mehr als der von 0.43.0, und es ist die richtige: `Bash(mvn -B -q compile)`.
+`Bash(mvn -B clean package)` und `Bash(mvn -B test)` laufen durch, weil das Overlay sie
+erklärt. **Ein Abzählen an einem echten Projekt, keine Konstruktion.**
+
+### Was 0.44.0 offen lässt
+
+- **Die vier Pfadschlitze bleiben ungeprüft** (**K-35**). `<EXCLUDED_PATHS>` und die beiden
+  Konfigurationslisten stehen im `deny`-Korb; ein zu **eng** gefüllter Schlitz ist dort eine
+  stille Lockerung. Der Vergleich wäre n:1 und braucht eine eigene Entscheidung. **Die
+  Enthaltung steht im Kopfkommentar der Prüfung, nicht nur im Antrag.**
+- **Prüfung 42 vergleicht Zeichenketten.** Ob der erklärte Befehl fachlich der richtige ist
+  und ob ein Client die Regel so auswertet, wie sie gemeint ist, sagt sie nicht.
+- **Im Repositorium selbst fängt sie nichts.** Die Testinstallation hat drei offene
+  Schlitze und ein Overlay, das dreimal `<TBD>` sagt. Ihr Gegenbeweis hängt am Piloten und
+  an ihren Sonden.
+- **Sie hängt an einer Tabellenform, die dem Projekt gehört.** Ein Overlay, das einen
+  Platzhalter in keiner Tabellenzeile mehr führt, bekommt die Meldung über den verlorenen
+  Anker – gewollt, aber ein Preis.
+- **Prüfung 37 meldet am Piloten weiterhin nichts.** Zwei Prüfungen über dieselbe Datei,
+  die verschieden ausgehen: Das ist erklärungsbedürftig und steht deshalb im
+  Registereintrag.
+- **Der Abgleich zwischen Quell-Overlay und Laufzeitfassung bleibt offen**
+  (`CR-2026-044` E4) – jetzt mit einer gemessenen Fundstelle.
+- **Der Pilot bekommt einen Fehler und behebt ihn nicht von selbst.** Die
+  Berechtigungsdatei steht in `shared_seed` und wird nach der Erstinstallation nie wieder
+  geschrieben (D-76).
 
 ### Was 0.43.0 gebracht hat – der Client ist erhoben, und eine Enthaltung war eine Behauptung
 
@@ -107,11 +224,13 @@ keine weitere – das erste Mal seit 0.34.0, dass ein Gegenbeweis keine Konstruk
   KI-Client die zwanzig Grenzfälle so einstuft wie die Tabelle, ist weiterhin ungemessen.
 - **Drei Sätze sind in ihrer Schreibweise gebunden** – der Preis des wörtlichen Vergleichs
   (D-86). Die Fehlermeldung nennt dafür die richtige Zeichenkette.
-- **Der Abgleich zwischen Overlaytext und Berechtigungsdatei hat eine gemessene Fundstelle
-  bekommen.** Am Piloten führte die Berechtigungsdatei `Bash(mvn -B test:*)`, während
-  Abschnitt 6 des Overlays `mvn -B test` erklärt. **Prüfung 37 hat es gefangen, weil die
-  Abweichung zufällig auch formal auffällig war** – ein gefüllter Schlitz mit einem ganz
-  anderen Befehl liefe lautlos durch. Der Kandidat steht damit nicht mehr als Vermutung da.
+- ~~**Der Abgleich zwischen Overlaytext und Berechtigungsdatei hat eine gemessene
+  Fundstelle bekommen.**~~ **Erledigt mit 0.44.0** (`CR-2026-066`, D-90 und D-91) – und
+  die Gegenprüfung hat den Befund umgestellt: Der formal auffällige Fall war nicht der
+  Kern. Gemessen decken **drei offene Schlitze drei beliebige Befehlsfreigaben**, auch
+  wenn das Overlay gar nichts erklärt, und die Lücke war in `CR-2026-061` ausdrücklich
+  **erklärt** – während drei ausgelieferte Texte aus demselben Commit sie uneingeschränkt
+  bestritten. **Der Kandidat war richtig benannt und zu klein beschrieben.**
 - **Der Migrationsweg bleibt Handarbeit.** Die zwölf `Skill(fw-…)`-Zeilen sind am Piloten
   von Hand nachgetragen worden. Ob `install.py` das je selbst tun sollte, hängt an D-76 und
   ist nicht entschieden.
