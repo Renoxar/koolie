@@ -212,7 +212,18 @@ def _regel_rendern(regel: dict, man: dict, korb: str) -> list[str]:
                 f"waere eine Lockerung")
         return []
     ohne_muster = set(man.get("permission_tools_bare", []))
-    argument = _befehl(regel, man, korb) if verb == "exec" else _muster(regel["pattern"], man)
+    if verb == "exec":
+        argument = _befehl(regel, man, korb)
+    elif verb == "skill":
+        # Ein Aufrufname, kein Pfad: weder Wurzelpraefix noch Praefixzeichen, und
+        # keine Musterausweitung. Gemessen am 2026-09-14 (D-82): Das Argument wird
+        # woertlich verglichen - Skill(fw-*) laesst den Aufruf von fw-code-explain
+        # NICHT durch. Wer hier ein Muster erzeugte, erzeugte eine Freigabe, die
+        # lautlos nichts freigibt - der Befundtyp von D-66, mit umgekehrtem
+        # Vorzeichen.
+        argument = regel["pattern"]
+    else:
+        argument = _muster(regel["pattern"], man)
     return [name if name in ohne_muster else f"{name}({argument})" for name in ziele]
 
 

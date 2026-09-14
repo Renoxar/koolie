@@ -29,6 +29,8 @@ Jede KI-Aufgabe folgt den vierzehn Schritten. Schritte DÜRFEN NICHT übersprung
 | 13 | Menschliche Prüfung ermöglichen | KI-Client, dann Mensch | Diff, Fundstellen, Testprotokoll, offene Punkte bereitstellen; Review anhand `leitwerk-core/checklists/04-review-ai-code.md` | Skill `fw-review-support` |
 | 14 | Übernahme über den bestehenden Review- und Freigabeprozess | Mensch | Merge Request mit KI-Nutzungsvermerk; reguläre Quality Gates und Review (P5, P6) | `leitwerk-core/checklists/08-merge-request.md`, Skill `fw-mr-description` |
 
+**Die Spalte „Referenz“ nennt bei sechs Schritten einen Skill (5, 7, 8, 10, 13, 14). Wo sie einen nennt, ist er der vorgesehene Weg des Schrittes** – keine Leseempfehlung. Ein anderer Weg ist zulässig, MUSS aber im Ergebnisbericht benannt und begründet werden (Abschnitt 3.6). **Ein abgewiesener Skill-Aufruf ist keine Verwendung:** Wer die `SKILL.md` ersatzweise liest und ihren Ablauf von Hand nacharbeitet, arbeitet ohne die Werkzeugbeschränkung des Skills. Gemessen am 2026-09-14 `[MESS]` (`leitwerk-core/tests/protocols/2026-09-14-erhebung-skillaufruf.md`, D-83): In zwei von zwei nachgearbeiteten Läufen wies die Sitzung den Skill im Bericht als verwendet oder aufgerufen aus, und in einem davon verwendete sie ein Werkzeug, das der Skill sperrt.
+
 ## 2. Betriebsmodi (normativ)
 
 Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Ein Moduswechsel innerhalb einer Sitzung ist zulässig, MUSS aber ausdrücklich durch den Menschen angewiesen werden und wird vom KI-Client im Ergebnisbericht vermerkt.
@@ -144,7 +146,7 @@ Jede Sitzung endet mit einem Ergebnisbericht (Abschnitt 3.6). Bei Kontrollstufe 
 
 - Aufgabe: <Ticket-Referenz oder Kurzbeschreibung>
 - Betriebsmodus: <M1–M5>  |  Kontrollstufe: <niedrig|mittel|hoch> (auslösender Faktor: <R#>)
-- Verwendete Skills: <Skill-IDs und Versionen>
+- Verwendete Skills: <Skill-IDs und Versionen | keiner: welcher Skill in Frage kam und warum ohne ihn gearbeitet wurde | abgewiesen und von Hand nachgearbeitet: welcher>
 - Verwendeter Kontext: <Dateien/Verzeichnisse/Dokumente, jeweils mit Kontextklasse>
 
 ### Befunde und Änderungen

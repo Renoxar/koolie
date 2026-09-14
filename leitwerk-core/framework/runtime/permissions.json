@@ -1,5 +1,5 @@
 {
-  "_comment": "Werkzeugneutrale Regelmenge der Berechtigungsdatei (Ebene 3). Diese Datei wird nicht installiert, sondern bei der Installation in die Form des gewaehlten Client Packs uebersetzt (clientmap.py, Abbildung in clients/<pack>/manifest.json). Werkzeugverben: read, search, write, exec, fetch, mcp. Ein Pfadmuster steht in 'pattern', ein Befehlsverbot in 'command'; 'prefix' nennt die Form fuer Clients, die Befehle ueber ein Praefix sperren, und muss ein Praefix von 'command' sein. Fuer das Verb 'exec' gibt es ausschliesslich Befehlsverbote und keine Pfadregel: Ein Shell-Befehl, der in einen geschuetzten Pfad schreibt, wird von dieser Datei nicht erfasst. Das stand bis 0.29.0 anders im Kommentar des Schutz-Hooks, der sie als Traeger des Shell-Schreibwegs nannte; gemessen am 2026-09-12 (B04). Was den Kanal aufhaelt, ist die Regelschicht - die Fachmatrizen weisen es bei B4, B5 und B8 je Zugriffskanal aus (CR-2026-047, D-47). 'core': true kennzeichnet die Kernzusagen B1 bis B6 - aus ihnen wird _core_rules_integrity.deny_must_contain je Client erzeugt, und der Validator prueft die installierte Datei dagegen.",
+  "_comment": "Werkzeugneutrale Regelmenge der Berechtigungsdatei (Ebene 3). Diese Datei wird nicht installiert, sondern bei der Installation in die Form des gewaehlten Client Packs uebersetzt (clientmap.py, Abbildung in clients/<pack>/manifest.json). Werkzeugverben: read, search, write, exec, fetch, mcp, skill. Ein Pfadmuster steht in 'pattern', ein Befehlsverbot in 'command'; beim Verb 'skill' traegt 'pattern' keinen Pfad, sondern den Aufrufnamen eines Skills, und zwar WOERTLICH - ein Praefixmuster wirkt dort nicht (gemessen am 2026-09-14, Laeufe C1, D1 und E1 in tests/protocols/2026-09-14-erhebung-skillaufruf.md, D-82). Freigegeben sind ausschliesslich die zwoelf Skills, die dieses Framework ausliefert; ein Skill aus einer Ablage ausserhalb des Repositoriums ist nach Regel 2.6 der Prioritaetshierarchie ebenenlos und bleibt rueckfragepflichtig; 'prefix' nennt die Form fuer Clients, die Befehle ueber ein Praefix sperren, und muss ein Praefix von 'command' sein. Fuer das Verb 'exec' gibt es ausschliesslich Befehlsverbote und keine Pfadregel: Ein Shell-Befehl, der in einen geschuetzten Pfad schreibt, wird von dieser Datei nicht erfasst. Das stand bis 0.29.0 anders im Kommentar des Schutz-Hooks, der sie als Traeger des Shell-Schreibwegs nannte; gemessen am 2026-09-12 (B04). Was den Kanal aufhaelt, ist die Regelschicht - die Fachmatrizen weisen es bei B4, B5 und B8 je Zugriffskanal aus (CR-2026-047, D-47). 'core': true kennzeichnet die Kernzusagen B1 bis B6 - aus ihnen wird _core_rules_integrity.deny_must_contain je Client erzeugt, und der Validator prueft die installierte Datei dagegen.",
 
   "deny": [
     { "tool": "read",  "pattern": ".env", "core": true },
@@ -75,6 +75,18 @@
     { "tool": "exec",   "command": "git diff" },
     { "tool": "exec",   "command": "git log" },
     { "tool": "exec",   "command": "git show" },
-    { "tool": "exec",   "command": "git blame" }
+    { "tool": "exec",   "command": "git blame" },
+    { "tool": "skill",  "pattern": "fw-bugfix-prepare" },
+    { "tool": "skill",  "pattern": "fw-change-analyze" },
+    { "tool": "skill",  "pattern": "fw-change-small" },
+    { "tool": "skill",  "pattern": "fw-code-explain" },
+    { "tool": "skill",  "pattern": "fw-docs-update" },
+    { "tool": "skill",  "pattern": "fw-error-analyze" },
+    { "tool": "skill",  "pattern": "fw-mr-description" },
+    { "tool": "skill",  "pattern": "fw-plan" },
+    { "tool": "skill",  "pattern": "fw-refactor" },
+    { "tool": "skill",  "pattern": "fw-repo-analyze" },
+    { "tool": "skill",  "pattern": "fw-review-support" },
+    { "tool": "skill",  "pattern": "fw-tests" }
   ]
 }

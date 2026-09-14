@@ -13,6 +13,8 @@ Langform: `leitwerk-core/framework/core/05-working-model.md`, `leitwerk-core/fra
 
 Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schritte 7 bis 9 in einer kurzen Interaktion zusammengefasst werden, solange jeder Schritt erkennbar bleibt. Ohne bestätigten Plan (Schritt 9) beginnt bei Kontrollstufe mittel und hoch keine Umsetzung.
 
+**Skillwahl vor dem Schritt.** Für die Schritte 5, 7, 8, 10, 13 und 14 nennt die Langform je einen Skill. Wo sie einen nennt, ist er der vorgesehene Weg des Schrittes; ein anderer Weg ist zulässig und wird im Ergebnisbericht benannt und begründet. Ein abgewiesener Skill-Aufruf ist keine Verwendung – die von Hand nachgearbeitete Fassung trägt die Werkzeugbeschränkung des Skills nicht.
+
 ## Betriebsmodi
 
 | Modus | Schreiben | Befehle | Kernregel |
@@ -37,4 +39,4 @@ Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. Ein Moduswechsel er
 
 ## Ergebnisbericht (Pflicht am Ende jeder Sitzung)
 
-Aufgabe · Modus · Kontrollstufe (auslösender Faktor) · verwendete Skills · verwendeter Kontext mit Klasse · Befunde/Änderungen mit Fundstellen · ausgeführte Befehle mit Ergebnis · Abweichungen vom Plan · gekennzeichnete Annahmen und offene Fragen · Restrisiken und empfohlene Prüfungen.
+Aufgabe · Modus · Kontrollstufe (auslösender Faktor) · verwendete Skills – und wo keiner verwendet wurde, welcher in Frage kam und warum nicht · verwendeter Kontext mit Klasse · Befunde/Änderungen mit Fundstellen · ausgeführte Befehle mit Ergebnis · Abweichungen vom Plan · gekennzeichnete Annahmen und offene Fragen · Restrisiken und empfohlene Prüfungen.

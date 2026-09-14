@@ -3,16 +3,60 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.1.9` |
+| Version | `0.2.0` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.40.0 (2026-09-13)
+## Stand nach Release 0.41.0 (2026-09-14)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.41.0 gebracht hat – der Skillaufruf ist ein Werkzeugaufruf
+
+**Der erste Antrag dieses Projekts aus einem externen Befund** – ein Bericht aus einer
+Sitzung am Piloten, der Agent habe die Skills nicht verwendet. Gegengeprüft
+(`tests/protocols/2026-09-14-gegenpruefung-skillwahl.md`) und gemessen
+(`-erhebung-skillaufruf.md`, elf Läufe mit vier Kontroll- und Entlastungsläufen,
+`CR-2026-063`, D-81 bis D-84). **Der Befund bestätigt sich – und seine Ursachenanalyse
+war falsch.**
+
+| Frage | Ergebnis |
+|---|---|
+| Erkennt der Agent den passenden Skill nicht? | **In zwei von vier Läufen rief er ihn auf**, ohne dass die Aufgabe ihn nannte. Was ihn aufhielt, war nicht die Erkennung |
+| Was hielt ihn auf? | **Die eigene Berechtigungsdatei.** Der Skillaufruf ist ein eigener Werkzeugaufruf und stand in **keinem** Korb; er fiel auf die Rückfrage und im rückfragefreien Betrieb auf die Abweisung |
+| *Nicht gesucht:* Was passiert nach der Abweisung? | **Die Sitzung liest die `SKILL.md` als Datei und arbeitet den Ablauf nach.** Die Ausgabe ist von einem gelungenen Lauf nicht zu unterscheiden – und sie trägt die Werkzeugsperre des Skills **nicht** |
+| *Nicht gesucht:* Wirkt ein Präfixmuster in der Freigabe? | **Nein, lautlos nicht.** `Skill(fw-*)` weist den Aufruf ab, `Skill(fw-code-explain)` lässt ihn durch |
+
+**Die Regel, die man sich merken sollte:** *Eine Aufforderung ist nur so viel wert wie die
+Datei daneben sie zulässt.* Das Framework forderte in Abschnitt 17 die Nutzung der Skills
+und machte ihre Befolgung in der Berechtigungsdatei rückfragepflichtig – **ohne das
+irgendwo zu sagen**.
+
+**Das Argument, das man sich merken sollte:** Das Projekt wusste es dreimal und hat es nie
+aufgeschrieben. Drei Protokolle halten fest, dass ein Lauf verworfen wurde, weil „der
+`Skill`-Aufruf scheiterte". **Aus dreimaligem Eigenverschulden ist nie ein Befund über die
+ausgelieferte Datei geworden.**
+
+**Die Zahl, die den Befund trägt: zwölf.** So viele wörtliche Regeln braucht es, weil ein
+Muster gemessen nichts freigibt – und ein dreizehnter Skill braucht seine dreizehnte.
+**Prüfung 39** hält es fest.
+
+### Was 0.41.0 offen lässt
+
+- **Ob der verschärfte Text die Skillwahl verbessert, ist nicht gemessen.** Das wäre ein
+  Sitzungstest mit einer Stichprobe, die vier Läufe je Bedingung nicht hergeben.
+- **`devin-desktop` ist unerhoben** (**K-33**) – ausgerechnet der Client, an dem der
+  externe Bericht entstanden ist. Das Manifest sagt das jetzt ausdrücklich.
+- **Prüfung 39 fängt heute nichts.** Ihr Gegenbeweis ist eine **Konstruktion**, kein
+  Abzählen – die Lage von Prüfung 37.
+- **Die Regel zum abgewiesenen Aufruf ist eine Anweisung ohne Mechanismus.** Kein
+  Prüfwerkzeug liest einen Ergebnisbericht; was sie trägt, ist die Prüfpflicht des
+  Menschen.
+- **Bestehende `claude-code`-Installationen melden zwölf fehlende `allow`-Regeln**, bis
+  die Berechtigungsdatei von Hand nachgezogen ist.
 
 ### Was 0.40.0 gebracht hat – eine Quelle, ein Vokabular
 
