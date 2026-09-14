@@ -180,8 +180,15 @@
     ],
     "mcp": [
       "mcp__*"
+    ],
+    "skill": [
+      "Skill"
     ]
   },
+  "permission_name_tools": [
+    "Skill"
+  ],
+  "_permission_name_tools_note": "Werkzeuge, deren Regelargument kein Pfad ist, sondern ein Name. Fuer sie haengt die Abbildung weder das Wurzelpraefix (permission_path_prefix) noch das Praefixzeichen (permission_exec_suffix) an, und der Validator laesst sie neben permission_path_tools zu. Gemessen am 2026-09-14 (tests/protocols/2026-09-14-erhebung-skillaufruf.md, D-82): Der Skill-Aufruf ist bei diesem Client ein eigener Werkzeugaufruf mit dem Namen Skill und laeuft ohne allow-Regel in die Rueckfrage; das Argument wird WOERTLICH verglichen - Skill(fw-code-explain) laesst den Aufruf durch (Lauf C1), Skill(fw-*) nicht (Lauf D1), und Skill(fw-plan) weist fw-code-explain ab (Lauf E1, Kontrolllauf). Deshalb zwoelf woertliche Regeln statt eines Musters.",
   "permission_tools_bare": [
     "WebFetch",
     "WebSearch",

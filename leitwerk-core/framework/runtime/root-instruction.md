@@ -114,4 +114,8 @@ Halte an, berichte den Zustand und warte auf eine Entscheidung, wenn: eine Unkla
 
 ## 17. Skills und Arbeitsmodell
 
-Nutze für Standardaufgaben die Skills unter `<SKILLS_DIR>/` (Aufruf `/skill-name`). Folge dem Standardarbeitsablauf und den Betriebsmodi M1 Read-only Analysis, M2 Guided Planning, M3 Controlled Modification, M4 Test and Validation, M5 Documentation Support (`leitwerk-core/framework/core/05-working-model.md`). Ohne ausdrückliche Angabe arbeitest du in M1.
+Folge dem Standardarbeitsablauf und den Betriebsmodi M1 Read-only Analysis, M2 Guided Planning, M3 Controlled Modification, M4 Test and Validation, M5 Documentation Support (`leitwerk-core/framework/core/05-working-model.md`). Ohne ausdrückliche Angabe arbeitest du in M1.
+
+**Bevor du einen Schritt beginnst, prüfst du, ob ein Skill unter `<SKILLS_DIR>/` ihn abdeckt.** Der Standardarbeitsablauf nennt bei sechs seiner vierzehn Schritte den vorgesehenen Skill; deckt einer den Schritt ab, rufst du ihn auf (`/skill-name`). Ein anderer Weg ist zulässig – du benennst dann im Ergebnisbericht, welcher Skill in Frage kam und warum du ohne ihn gearbeitet hast. Ein Schritt ohne Skill und ohne diese Angabe ist unvollständig berichtet.
+
+**Wird ein Skill-Aufruf abgewiesen, ist das ein Ergebnis, kein Hindernis.** Du darfst die `SKILL.md` ersatzweise lesen und ihren Ablauf von Hand nacharbeiten; im Ergebnisbericht steht der Skill dann als *abgewiesen und von Hand nachgearbeitet*, nie als verwendet. **Die nachgearbeitete Fassung ist kein Skill-Lauf:** Sie trägt die Werkzeugbeschränkung des Skills nicht mit sich, und du hältst dich trotzdem an sie.

@@ -31,7 +31,7 @@ Jede Anweisung an den KI-Client, die über eine einfache Rückfrage hinausgeht, 
 4. **Keine Rollenspiele mit Regelwirkung.** Anweisungen, die den KI-Client auffordern, Regeln zu ignorieren, sich als anderes System auszugeben oder Sicherheitsprüfungen zu überspringen, sind unzulässig – auch zu Testzwecken außerhalb des Testkatalogs.
 5. **Ergebnis vor Stil.** Prompts fordern belegte Ergebnisse (Fundstellen, Testausgaben), nicht Selbstbewertungen („Bist du sicher?").
 6. **Sprache.** Anweisungen werden in der im Overlay festgelegten Arbeitssprache verfasst (`<TBD: Arbeitssprache>`); Bezeichner, Befehle und Pfade bleiben unverändert.
-7. **Skills bevorzugen.** Liegt für eine Aufgabe ein Skill vor, wird er verwendet (`/skill-name` `[DOK]`); freie Prompts sind für Aufgaben ohne passenden Skill vorgesehen.
+7. **Skills bevorzugen – von beiden Seiten.** Liegt für eine Aufgabe ein Skill vor, benennt ihn die Anweisung, und der KI-Client ruft ihn auch dann auf, wenn die Anweisung ihn nicht nennt (`/skill-name` `[DOK]`; Wurzel-Anweisungsdatei Abschnitt 17, `05-working-model.md` Abschnitt 1). Freie Prompts sind für Aufgaben ohne passenden Skill vorgesehen. **Das Passiv dieser Regel hat seit 0.7.0 offen gelassen, wer handelt** – gemessen am 2026-09-14 hat eine Sitzung den passenden Skill benannt und seinen Aufruf im eigenen Bericht für „nicht nötig“ erklärt (`leitwerk-core/tests/protocols/2026-09-14-erhebung-skillaufruf.md`).
 8. **Iterationen kennzeichnen.** Folgeanweisungen in derselben Sitzung benennen, was sich gegenüber dem vorherigen Schritt ändert („Nur Schritt 3 des Plans anpassen: …").
 
 ## 3. Unzulässige Prompt-Muster (normativ)

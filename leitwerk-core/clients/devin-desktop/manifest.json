@@ -119,8 +119,10 @@
     ],
     "mcp": [
       "mcp__*"
-    ]
+    ],
+    "skill": []
   },
+  "_permission_tools_skill_note": "UNERHOBEN, nicht abwesend. Ob der Skill-Aufruf bei diesem Client ein eigener, rueckfragepflichtiger Werkzeugaufruf ist, ist nicht gemessen; beim Pack claude-code ist er es (D-82). Die leere Liste ist deshalb kein Befund, sondern eine Enthaltung: Sie laesst die zwoelf allow-Regeln fuer dieses Pack ersatzlos entfallen. Das ist die strengere Seite - eine fehlende Vorabfreigabe ist eine Rueckfrage mehr, nie eine Erlaubnis mehr (clientmap._regel_rendern bricht nur fuer deny und ask ab). Bauform wie hook_tools_absent nach D-47: Eine Abwesenheit wird erklaert, nie aus einer Luecke erraten.",
   "permission_tools_bare": [
     "mcp__*"
   ],

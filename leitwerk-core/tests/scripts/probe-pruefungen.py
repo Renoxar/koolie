@@ -1128,10 +1128,10 @@ def _grenzfall_ergaenzen(root: str) -> None:
     """
     pfad = _p(root, EDGE_30)
     frei(pfad, "G-99")
-    ersetze(pfad, ("| Anzahl der Grenzf\u00e4lle | 19 |",
-                   "| Anzahl der Grenzf\u00e4lle | 20 |"))
+    ersetze(pfad, ("| Anzahl der Grenzf\u00e4lle | 20 |",
+                   "| Anzahl der Grenzf\u00e4lle | 21 |"))
     zeile_nach(
-        pfad, "| G-19 |",
+        pfad, "| G-20 |",
         "| G-99 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
         "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
 
@@ -2126,6 +2126,107 @@ gegenprobe("38a", "Die unveraenderten Packs bleiben unbeanstandet - eines bildet
 gegenprobe("38b", "Eine Vorabfreigabe, die ENGER ist als die Sperre, bleibt "
            "unbeanstandet - die zulaessige Richtung",
            _38_engere_vorabfreigabe, "enger als die Vorabfreigabe")
+
+
+# --- 39: Die Vorabfreigabe des Skillaufrufs und die vier Regeltraeger (D-81 bis D-84) -
+#
+# Anlass: Die Wurzel-Anweisungsdatei forderte die Nutzung der Skills, und die
+# ausgelieferte Berechtigungsdatei kannte das Werkzeug dafuer in keinem Korb. Gemessen
+# am 2026-09-14: Der Aufruf wurde abgewiesen, die Sitzung las die SKILL.md ersatzweise
+# als Datei, und die Ausgabe sah aus wie ein gelungener Lauf.
+#
+# Pruefung 39 faengt im Repositorium heute NICHTS - Regeln, Skillmenge und Traegertexte
+# sind mit demselben Release entstanden und passen per Konstruktion zueinander. Was sie
+# wert ist, haengt allein an diesen Sonden. Dieselbe Lage wie bei Pruefung 37, und sie
+# ist im Wirkungsnachweis so ausgewiesen.
+#
+# Die zweite Gegenprobe ist die wichtigere: Gegenstand 3 beanstandet ein Musterzeichen -
+# und die Datei fuehrt daneben Pfadregeln, die eines tragen MUESSEN ('**'). Eine
+# Musterpruefung ohne diese Unterscheidung beanstandete den richtigen Text.
+PERMS_39 = "leitwerk-core/framework/runtime/permissions.json"
+
+
+def _p39(root: str) -> str:
+    return P(root, PERMS_39.replace("/", os.sep))
+
+
+def _39_regel_fehlt(root: str) -> None:
+    """Ein ausgelieferter Skill verliert seine Freigabe - der Zustand vor 0.41.0."""
+    ersetze(_p39(root),
+            ('    { "tool": "skill",  "pattern": "fw-code-explain" },\r\n', ""))
+
+
+def _39_regel_ohne_skill(root: str) -> None:
+    """Eine Freigabe fuer einen Skill, den es nicht gibt."""
+    ersetze(_p39(root),
+            ('"pattern": "fw-code-explain" }', '"pattern": "fw-code-erklaeren" }'))
+
+
+def _39_muster(root: str) -> None:
+    """Das Praefixmuster, das gemessen nichts freigibt (D-82)."""
+    ersetze(_p39(root),
+            ('"pattern": "fw-code-explain" }', '"pattern": "fw-*" }'))
+
+
+def _39_anker_weg(root: str) -> None:
+    """Keine einzige skill-Regel mehr - die Pruefung darf nicht leise bestehen."""
+    text = lies(_p39(root))
+    zeilen = [z for z in text.split("\r\n") if '"tool": "skill"' not in z]
+    if len(zeilen) == len(text.split("\r\n")):
+        raise Praeparationsfehler(
+            "permissions.json: keine skill-Regel gefunden, die zu entfernen waere")
+    # Das Komma der letzten verbleibenden Regel muss weg, sonst ist die Datei kein JSON.
+    schreib(_p39(root),
+            "\r\n".join(zeilen).replace('"git blame" },', '"git blame" }'))
+
+
+def _39_traeger_weg(root: str) -> None:
+    """Ein Regeltraeger verliert die Skillwahl - der Zustand vor 0.41.0."""
+    ersetze(P(root, "leitwerk-core/framework/runtime/rules/00-framework-core.md"
+              .replace("/", os.sep)),
+            ("**Skillwahl vor dem Schritt.**", "**Hinweis zur Reihenfolge.**"))
+
+
+def _39_skill_ohne_regel(root: str) -> None:
+    """Ein neuer Skill im Verzeichnis, ohne dass jemand die Freigabe nachtraegt."""
+    quelle = P(root, "leitwerk-core/framework/skills/fw-code-explain"
+               .replace("/", os.sep))
+    ziel = P(root, "leitwerk-core/framework/skills/fw-zwischenstand"
+             .replace("/", os.sep))
+    shutil.copytree(quelle, ziel)
+
+
+def _39_pfadmuster_bleibt(root: str) -> None:
+    """Gegenprobe: Eine Pfadregel MUSS ein Muster tragen - '**' ist richtig so."""
+    ersetze(_p39(root),
+            ('    { "tool": "read",   "pattern": "**" },\r\n',
+             '    { "tool": "read",   "pattern": "**" },\r\n'
+             '    { "tool": "search", "pattern": "src/**" },\r\n'))
+
+
+sonde("39a", "Ein ausgelieferter Skill ohne Freigabe - der Zustand vor 0.41.0",
+      _39_regel_fehlt, "hat keine allow-Regel")
+
+sonde("39b", "Eine Freigabe fuer einen Skill, den es nicht gibt",
+      _39_regel_ohne_skill, "nennt keinen ausgelieferten Skill")
+
+sonde("39c", "Ein Praefixmuster in der Freigabe - es gaebe lautlos nichts frei (D-82)",
+      _39_muster, "traegt ein Musterzeichen")
+
+sonde("39d", "Verlorener Anker - keine einzige skill-Regel mehr",
+      _39_anker_weg, "keine einzige allow-Regel mit dem Verb 'skill'")
+
+sonde("39e", "Ein Regeltraeger verliert die Skillwahl",
+      _39_traeger_weg, "die Skillwahl fehlt")
+
+sonde("39f", "Ein neuer Skill, dessen Freigabe niemand nachtraegt",
+      _39_skill_ohne_regel, "'fw-zwischenstand' hat keine allow-Regel")
+
+gegenprobe("39a", "Die unveraenderte Datei bleibt unbeanstandet - zwoelf Regeln, zwoelf "
+           "Skills", None, "allow-Regel")
+
+gegenprobe("39b", "Eine PFADregel mit Muster bleibt unbeanstandet - Gegenstand 3 misst "
+           "nur die skill-Regeln", _39_pfadmuster_bleibt, "Musterzeichen")
 
 
 print()

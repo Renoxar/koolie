@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-01` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `entwurf` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jeder KI-Sitzung, nach Zuschnitt der Aufgabe |
@@ -36,7 +36,7 @@ Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig einge
 - [ ] **MUSS** Erlaubte Pfade für diese Aufgabe benannt; `<EXCLUDED_PATHS>` und `<READ_ONLY_PATHS>` bekannt.
 - [ ] **MUSS** Kontextquellen gelistet und je Quelle die Kontextklasse bestimmt (`leitwerk-core/checklists/02-privacy-context.md`); K2 nur mit Freigabe, K3 nie.
 - [ ] **MUSS** Overlay-Status ist `aktiv` (Ausnahme: Onboarding-Übung auf dem Übungsrepository).
-- [ ] **SOLL** Passender Skill gewählt (`/fw-…`); freier Prompt nur, wenn kein Skill passt (`leitwerk-core/prompts/README.md`).
+- [ ] **SOLL** Passender Skill gewählt (`/fw-…`); freier Prompt nur, wenn kein Skill passt (`leitwerk-core/prompts/README.md`). Die Wahl liegt **nicht allein** hier: Der KI-Client prüft sie vor jedem Schritt selbst und begründet einen Verzicht im Ergebnisbericht (`leitwerk-core/framework/core/05-working-model.md` Abschnitt 1).
 
 ### Sitzung und Werkzeug
 

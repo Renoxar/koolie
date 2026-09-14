@@ -461,12 +461,14 @@ def check_config(root: str, man: dict) -> None:
     pfadwerkzeuge = man.get("permission_path_tools")
     if pfadwerkzeuge:
         befehlswerkzeuge = set(man.get("permission_tools", {}).get("exec", []))
+        namenswerkzeuge = set(man.get("permission_name_tools", []))
         for korb in ("deny", "ask", "allow"):
             for regel in perms.get(korb, []):
                 if not isinstance(regel, str) or "(" not in regel:
                     continue
                 werkzeug = regel.split("(", 1)[0]
-                if werkzeug in befehlswerkzeuge or werkzeug in pfadwerkzeuge:
+                if (werkzeug in befehlswerkzeuge or werkzeug in pfadwerkzeuge
+                        or werkzeug in namenswerkzeuge):
                     continue
                 err(f"{rel}: {korb}-Regel '{regel}' nennt ein Werkzeug, fuer das dieser "
                     f"Client keine Pfadregeln auswertet. Zulaessig sind "
@@ -3675,6 +3677,136 @@ def check_werkzeugabbildung(root: str) -> None:
                         f"(D-78, D-79)")
 
 
+
+# ---------------------------------------------------------------------------
+# Pruefung 39: Die Vorabfreigabe des Skillaufrufs deckt sich mit den ausgelieferten
+# Skills, und die Skillwahl steht an allen vier Traegern (CR-2026-063, D-81 bis D-84).
+#
+# ANLASS. Die Wurzel-Anweisungsdatei fordert seit jeher, fuer Standardaufgaben die
+# Skills zu nutzen - und die ausgelieferte Berechtigungsdatei kannte das Werkzeug, mit
+# dem das geht, in KEINEM Korb. Gemessen am 2026-09-14
+# (tests/protocols/2026-09-14-erhebung-skillaufruf.md): Der Aufruf wurde abgewiesen, die
+# Sitzung las die SKILL.md ersatzweise als Datei, und die Ausgabe sah aus wie ein
+# gelungener Lauf. Die Ursache lag nicht im Pack, sondern im Vokabular der Kernquelle -
+# sechs Verben, keines fuer den Skillaufruf.
+#
+# VIER GEGENSTAENDE:
+#   1. Der verlorene Anker. Fehlt das Skillverzeichnis des Kerns oder fuehrt
+#      permissions.json keine einzige skill-Regel, meldet diese Pruefung das selbst -
+#      sonst bestuende sie leise (D-23).
+#   2. Die Deckung in BEIDE Richtungen. Jeder ausgelieferte Skill hat genau eine
+#      allow-Regel, und jede Regel nennt einen ausgelieferten Skill. Das ist der Preis
+#      von D-81 E3: Die Regeln stehen in der Datei, statt aus dem Verzeichnis erzeugt zu
+#      werden - nach D-53 IST der Inhalt dieser Datei die Berechtigung. Ohne diese
+#      Pruefung waere das die zweite Liste fuer dieselbe Sache, also der Befundtyp von
+#      CR-2026-062.
+#   3. Kein Musterzeichen. Gemessen am 2026-09-14 (D-82): Der Vergleich ist woertlich.
+#      Skill(fw-*) weist den Aufruf ab, Skill(fw-code-explain) laesst ihn durch,
+#      Skill(fw-plan) weist fw-code-explain ab (Kontrolllauf). Eine Regel mit * oder ?
+#      saehe richtig aus und gaebe LAUTLOS NICHTS frei - die Bauform von D-66 mit
+#      umgekehrtem Vorzeichen.
+#   4. Die vier Regeltraeger. Die Skillwahl stand vor 0.41.0 an fuenf Stellen und
+#      erreichte den Agenten an keiner verbindlich. Sie steht jetzt in der
+#      Wurzel-Anweisungsdatei, in der always-on-Kurzfassung, im Arbeitsmodell und in den
+#      Prompting-Regeln. Geprueft wird die ANWESENHEIT je Traeger, nicht der Wortlaut:
+#      Eine Pruefung, die Prosa vergleicht, bricht bei jeder Umformulierung.
+#
+# WAS SIE HEUTE FAENGT: nichts - Gegenstand 2 und 3 sind mit demselben Release entstanden
+# und passen per Konstruktion zu sich selbst; Gegenstand 4 ebenso. Das ist die Lage von
+# Pruefung 37 und dieselbe Ehrlichkeit: Der Gegenbeweis gegen den Vorstand ist hier eine
+# KONSTRUKTION, kein Abzaehlen, und was die Pruefung wert ist, haengt an ihren Sonden.
+#
+# WAS SIE NICHT LEISTET: Sie belegt nicht, dass der Agent den Skill waehlt. Das ist ein
+# Sitzungstest, und er ist nicht gefahren. Sie belegt, dass die Freigabe zur Skillmenge
+# passt und dass keiner der vier Traeger die Regel verliert.
+SKILLWAHL_TRAEGER = (
+    ("framework/runtime/root-instruction.md",
+     "Bevor du einen Schritt beginnst"),
+    ("framework/runtime/rules/00-framework-core.md",
+     "Skillwahl vor dem Schritt"),
+    ("framework/core/05-working-model.md",
+     "ist er der vorgesehene Weg des Schrittes"),
+    ("framework/core/06-prompting-rules.md",
+     "Skills bevorzugen \u2013 von beiden Seiten"),
+)
+
+
+def _skill_regeln(root: str) -> list[str] | None:
+    """Die Aufrufnamen aus den skill-Regeln der Kernquelle, oder None ohne Quelle."""
+    pfad = os.path.join(root, KERN, "framework", "runtime", "permissions.json")
+    if not os.path.exists(pfad):
+        return None
+    try:
+        quelle = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return None
+    return [r.get("pattern", "") for r in quelle.get("allow", [])
+            if isinstance(r, dict) and r.get("tool") == "skill"]
+
+
+def check_skillfreigabe(root: str) -> None:
+    """Pruefung 39 (D-81 bis D-84): Freigabe, Skillmenge und Regeltraeger decken sich."""
+    verzeichnis = os.path.join(root, KERN, "framework", "skills")
+    if not os.path.isdir(verzeichnis):
+        err(f"{KERN}/framework/skills: fehlt. Pruefung 39 misst die Vorabfreigabe des "
+            f"Skillaufrufs gegen die ausgelieferten Skills; ohne das Verzeichnis "
+            f"prueft sie nichts und bestuende leise (D-23)")
+        return
+    ausgeliefert = sorted(
+        name for name in os.listdir(verzeichnis)
+        if os.path.isfile(os.path.join(verzeichnis, name, "SKILL.md")))
+
+    regeln = _skill_regeln(root)
+    if regeln is None:
+        err(f"{KERN}/framework/runtime/permissions.json: nicht lesbar. Pruefung 39 hat "
+            f"ihren Anker verloren und bestuende sonst leise (D-23)")
+        return
+    if not regeln:
+        err(f"{KERN}/framework/runtime/permissions.json: keine einzige allow-Regel mit "
+            f"dem Verb 'skill'. Die Wurzel-Anweisungsdatei fordert in Abschnitt 17 die "
+            f"Nutzung der Skills; ohne Freigabe laeuft jeder Aufruf in die Rueckfrage "
+            f"und im rueckfragefreien Betrieb in die Abweisung (D-81)")
+        return
+
+    # Gegenstand 2: die Deckung, in beide Richtungen.
+    for name in ausgeliefert:
+        if name not in regeln:
+            err(f"{KERN}/framework/runtime/permissions.json: der ausgelieferte Skill "
+                f"'{name}' hat keine allow-Regel. Sein Aufruf laeuft in die Rueckfrage, "
+                f"und der Fehlschlag ist stumm - die Sitzung liest die SKILL.md "
+                f"ersatzweise als Datei, ohne die Werkzeugbeschraenkung des Skills "
+                f"(D-81, D-83)")
+    for name in regeln:
+        if name not in ausgeliefert:
+            err(f"{KERN}/framework/runtime/permissions.json: die allow-Regel fuer "
+                f"'{name}' nennt keinen ausgelieferten Skill. Eine Vorabfreigabe fuer "
+                f"einen Skill, den es nicht gibt, ist eine Zusage ohne Gegenstand "
+                f"(D-81)")
+    doppelt = sorted({n for n in regeln if regeln.count(n) > 1})
+    if doppelt:
+        err(f"{KERN}/framework/runtime/permissions.json: doppelte skill-Regel(n) fuer "
+            f"{', '.join(doppelt)}")
+
+    # Gegenstand 3: kein Musterzeichen.
+    for name in regeln:
+        if any(z in name for z in "*?["):
+            err(f"{KERN}/framework/runtime/permissions.json: die skill-Regel '{name}' "
+                f"traegt ein Musterzeichen. Der Vergleich ist woertlich - gemessen am "
+                f"2026-09-14 (D-82): Skill(fw-*) weist den Aufruf ab. Eine Regel mit "
+                f"Muster saehe richtig aus und gaebe lautlos nichts frei")
+
+    # Gegenstand 4: die vier Regeltraeger.
+    for rel, anker in SKILLWAHL_TRAEGER:
+        pfad = os.path.join(root, KERN, *rel.split("/"))
+        if not os.path.exists(pfad):
+            err(f"{KERN}/{rel}: fehlt. Pruefung 39 misst dort die Skillwahl (D-84)")
+            continue
+        if anker not in read(pfad):
+            err(f"{KERN}/{rel}: die Skillwahl fehlt (gesucht: '{anker}'). Sie stand vor "
+                f"0.41.0 an fuenf Stellen und erreichte den Agenten an keiner "
+                f"verbindlich; faellt ein Traeger weg, faellt sie leise zurueck (D-84)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -3730,6 +3862,7 @@ def main() -> int:
     check_agent_profil_ohne_start(root)
     check_decision_log_zellen(root)
     check_werkzeugabbildung(root)
+    check_skillfreigabe(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

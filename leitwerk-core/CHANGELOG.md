@@ -2,6 +2,92 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.41.0] - 2026-09-14
+
+**Der Skillaufruf ist ein Werkzeugaufruf - und die Berechtigungsdatei kannte ihn nicht.**
+Ein externer Bericht sagte, der Agent erkenne den passenden Skill nicht. Gemessen ist
+beides: Er erkennt ihn in der Haelfte der Laeufe nicht - und wo er ihn erkennt und
+aufruft, **weist die eigene Berechtigungsdatei den Aufruf ab**. Danach liest die Sitzung
+die `SKILL.md` ersatzweise als Datei; die Ausgabe ist von einem gelungenen Lauf **nicht
+zu unterscheiden** und traegt die Werkzeugsperre des Skills nicht mehr. Gegengeprueft und
+gemessen (`tests/protocols/2026-09-14-gegenpruefung-skillwahl.md`,
+`-erhebung-skillaufruf.md`, elf Laeufe mit vier Kontroll- und Entlastungslaeufen,
+`CR-2026-063`). **Der erste Antrag dieses Projekts aus einem externen Befund - und seine
+Ursachenanalyse war falsch.**
+
+### Neu
+
+- **Ein Werkzeugverb `skill` im Berechtigungsvokabular** (D-81). Die Kernquelle kannte
+  sechs Verben - `read`, `search`, `write`, `exec`, `fetch`, `mcp` - und keines fuer den
+  Skillaufruf; eine Freigabe war in dieser Datei **nie ausdrueckbar**. Sie fuehrt jetzt
+  zwoelf `allow`-Regeln, eine je Skill des Kerns. **Freigegeben ist nur, was das
+  Framework selbst ausliefert:** Eine Sitzung fuehrt daneben Skills aus einer
+  nutzerglobalen Ablage, die nach Regel 2.6 der Prioritaetshierarchie ebenenlos sind.
+- **`permission_tools.skill` je Pack, `permission_name_tools` bei `claude-code`.** Das
+  Argument einer Skill-Regel ist ein **Name**, kein Pfad; die Abbildung haengt weder
+  Wurzelpraefix noch Praefixzeichen an. `devin-desktop` fuehrt eine leere Liste **mit
+  Begruendung** - unerhoben, nicht abwesend, Bauform wie `hook_tools_absent` (D-47).
+- **Die Skillwahl bekommt Ausloeser, Zeitpunkt und Nachweis** (D-84). Sie stand an fuenf
+  Stellen und erreichte den Agenten an keiner verbindlich: die staerkste Formulierung im
+  Modul fuer den Menschen, der Preflight-Punkt als SOLL an die Bearbeiterin gerichtet,
+  die Skills des Arbeitsablaufs in einer Spalte, die kein Mindestinhalt ist, Abschnitt 17
+  ohne Verbindlichkeitsmarke und mit dem nirgends definierten Ausloeser
+  „Standardaufgaben", die always-on-Schicht **ohne die Wahl**. Jetzt: Wo der
+  Standardarbeitsablauf einen Skill nennt, ist er der vorgesehene Weg des Schrittes; ein
+  anderer Weg wird im Ergebnisbericht benannt **und begruendet**.
+- **Ein abgewiesener Skill-Aufruf ist keine Verwendung** (D-83, Grenzfall **G-20**). Der
+  Rueckfall auf die `SKILL.md` bleibt erlaubt - was schadet, ist nicht der Rueckfall,
+  sondern seine Stille. Im Ergebnisbericht heisst er *abgewiesen und von Hand
+  nachgearbeitet*.
+- **Pruefung 39** (D-81 bis D-84) mit vier Gegenstaenden: verlorener Anker; die Deckung
+  zwischen Skillmenge und Freigaben in **beide** Richtungen; kein Musterzeichen in einer
+  Skill-Regel; die Skillwahl an allen vier Regeltraegern.
+- **Sechs Sonden und zwei Gegenproben** zu Pruefung 39. Die zweite Gegenprobe ist die
+  wichtigere: Die Datei fuehrt neben den Skill-Regeln Pfadregeln, die ein Muster tragen
+  **muessen**.
+- **Zeile S2 des Packs `claude-code` bekommt ihre drei gemessenen Grenzen** und stand
+  seit dem ersten Release ohne eine einzige - waehrend die Nachbarzeile S3 seit 0.14.0
+  drei traegt.
+
+### Gemessen
+
+- **Das Argument einer Skill-Freigabe wird woertlich verglichen** (D-82).
+  `Skill(fw-code-explain)` laesst den Aufruf durch, `Skill(fw-*)` weist ihn ab,
+  `Skill(fw-plan)` weist `fw-code-explain` ab (Kontrolllauf). **Ein Praefixmuster gaebe
+  lautlos nichts frei** - die Bauform von D-66 mit umgekehrtem Vorzeichen. Deshalb zwoelf
+  Regeln statt einer: kein Entwurf, ein Messergebnis.
+- **Der stumme Rueckfall kostet die Zusage S3.** In einem Lauf rief die von Hand
+  nachgearbeitete Fassung `Bash` auf - ein Werkzeug, das `fw-code-explain` in
+  `disallowed-tools` sperrt und das ein echter Skill-Lauf nicht im Vorrat hat (D-64).
+- **Alle drei Regeltraeger erreichen die Sitzung ohne Werkzeugaufruf** -
+  Wurzel-Anweisungsdatei, always-on-Regeldatei und Overlay-Laufzeitfassung
+  (Entlastungslauf G1, mit abgeschalteten Werkzeugen gefahren; der erste Lauf ist
+  verworfen, weil die Sitzung suchte statt sich zu erinnern).
+
+### Migrationshinweise
+
+- **Bestehende Installationen mit dem Pack `claude-code` melden nach dem Update zwoelf
+  fehlende `allow`-Regeln** (Pruefung 37). Die Berechtigungsdatei steht in `shared_seed`
+  und wird nach der Erstinstallation nie wieder geschrieben (D-76); die zwoelf Zeilen
+  `Skill(fw-...)` sind vom Overlay Owner von Hand nachzutragen. **Bis dahin laeuft jeder
+  Skillaufruf weiter in die Rueckfrage** - die Installation ist funktionsfaehig, nur
+  unveraendert.
+- **Installationen mit dem Pack `devin-desktop` sind nicht betroffen**; die erzeugte
+  Datei aendert sich dort nicht.
+
+### Bekannte Einschraenkungen
+
+- **Ob der verschaerfte Text die Skillwahl verbessert, ist nicht gemessen** und wird
+  nicht behauptet. Vier Laeufe je Bedingung sind keine Stichprobe fuer eine
+  Verhaltensaussage; gemessen ist der Mechanismus.
+- **Pruefung 39 faengt heute nichts.** Regeln, Skillmenge und Traegertexte sind mit
+  diesem Release entstanden und passen per Konstruktion zueinander - die Lage von
+  Pruefung 37, und der Gegenbeweis ist hier eine **Konstruktion**, kein Abzaehlen.
+- **`devin-desktop` ist unerhoben** (**K-33**) - ausgerechnet der Client, an dem der
+  externe Bericht entstanden ist.
+- **Die Regel zum abgewiesenen Aufruf ist eine Anweisung ohne Mechanismus.** Kein
+  Pruefwerkzeug liest einen Ergebnisbericht.
+
 ## [0.40.0] - 2026-09-13
 
 **Eine Quelle, ein Vokabular.** Ein Manifest fuehrt **vier** Werkzeugabbildungen, nicht
