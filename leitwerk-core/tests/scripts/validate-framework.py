@@ -103,8 +103,16 @@ Prüft (statisch, ohne laufenden KI-Client):
      Frontmatter-Vokabulars ist je Pack abgebildet oder ausdruecklich als nicht
      abgebildet erklaert; die Sperrliste hook_tools ist fuer kein Verbpaar enger als
      die Vorabfreigabe tool_names; keine Quelle nennt ein Verb ausserhalb des Vokabulars
+ 39. Vorabfreigabe des Skillaufrufs (D-81 bis D-84): Jeder ausgelieferte Skill des
+     Kerns hat genau eine allow-Regel und jede Regel nennt einen ausgelieferten Skill;
+     kein Musterzeichen in einer Skill-Regel - gemessen gaebe es lautlos nichts frei;
+     die Skillwahl steht an allen vier Regeltraegern
+ 40. Register des Pruefapparats (D-85, D-86): Dieses Register ist lueckenlos und endet
+     bei der hoechsten Nummer, die die beiden Pruefskripte nennen; die Sondenmenge steht
+     im Satz darunter, im Kopfsatz von probe-pruefungen.py und in FW-KO-01 in derselben
+     ausgerechneten Schreibweise; die Grenzfallanzahl in FW-KO-05 ist die gezaehlte
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 30 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 40 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -3807,6 +3815,201 @@ def check_skillfreigabe(root: str) -> None:
                 f"verbindlich; faellt ein Traeger weg, faellt sie leise zurueck (D-84)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 40: Die Register des Pruefapparats werden nachgezaehlt
+# ---------------------------------------------------------------------------
+#
+# ANLASS. Gemessen am 2026-09-14 (tests/protocols/2026-09-14-gegenpruefung-pruefregister.md,
+# CR-2026-064): FUENF Aussagen ueber den eigenen Pruefstand, keine davon richtig. Das
+# Register im Kopfkommentar dieser Datei fuehrte die Pruefungen 1 bis 38, waehrend 39
+# lief; der Satz zum Wirkungsnachweis nannte "18 bis 30"; der Kopfsatz des Sondenskripts
+# war eine Release-Chronik, die bei 0.29.0 endete; FW-KO-01 nannte "6, 18 bis 31" und
+# FW-KO-05 zwoelf Grenzfaelle, wo es zwanzig sind. KEINE der fuenf war falsch
+# geschrieben - alle fuenf waren bei ihrer Einfuehrung richtig und sind stehen geblieben,
+# waehrend ihr Gegenstand wuchs. In zehn von zwoelf Releases hat sich mindestens eine der
+# drei Zahlen bewegt; deshalb ist die Behebung eine Pruefung und keine Textaenderung.
+#
+# VIER GEGENSTAENDE:
+#   1. Der verlorene Anker. Fuenf Ankertexte in vier Dateien. Geht einer verloren,
+#      bestuende diese Pruefung leise - sie meldet sein Fehlen deshalb selbst (D-23).
+#   2. Das Register ist lueckenlos von 1 bis zu seiner hoechsten Nummer, und diese
+#      hoechste Nummer ist die hoechste, die in den beiden Pruefskripten ueberhaupt
+#      genannt wird. In beide Richtungen: eine Pruefung ohne Eintrag ist ein Fehler, ein
+#      Eintrag ohne Nennung im Code auch.
+#   3. Die Sondenmenge steht an DREI Stellen in derselben, ausgerechneten Schreibweise -
+#      im Satz unter dem Register, im Kopfsatz von probe-pruefungen.py und in der
+#      Pruefmittelspalte von FW-KO-01. Der Vergleich ist woertlich, und die Fehlermeldung
+#      nennt die richtige Zeichenkette (D-86).
+#   4. Die Grenzfallanzahl in FW-KO-05 ist die gezaehlte. Pruefung 30 rechnet sie
+#      INNERHALB von EDGE_CASES.md nach; ausserhalb nennt sie nur dieses Testblatt, und
+#      dort als Arbeitsanweisung: Wer FW-KO-05 heute faehrt, prueft zwoelf von zwanzig
+#      Grenzfaellen und meldet ihn bestanden.
+#
+# WARUM NICHT DIE KOPFKOMMENTARE ALS ANKER (CR-2026-064 E2). Gemessen tragen sie drei
+# Formen - "# Pruefung N:", "# N:" und "# Pruefungen N bis M" -, und eine vierte sieht
+# aus wie ein Kopf und ist keiner: "# Pruefung 37 und dieselbe Ehrlichkeit ..." im Block
+# von Pruefung 39. Der erste Entwurf dieser Pruefung ist genau daran gefallen und hat
+# Pruefung 37 gefunden, wo kein Kopf stand.
+#
+# WARUM NUR TEST_CATALOG.md UND NICHT DAS GANZE REPOSITORIUM (D-86). docs/ROADMAP.md,
+# CR-2026-052 und der Wirkungsnachweis zu 0.32.0 nennen ebenfalls zwoelf Grenzfaelle -
+# und sind RICHTIG, weil sie den Stand von 0.32.0 beschreiben. Eine Nennung in der
+# Vorgeschichte ist kein Register, und wer sie mitzieht, macht aus einer richtigen Zeile
+# eine falsche.
+#
+# GRENZE. Sie zaehlt NENNUNGEN, nicht Pruefungen: Wer eine Pruefung baut und ihre Nummer
+# nirgends schreibt, wird nicht gefangen - dieselbe Ehrlichkeit wie Gegenstand 2 von
+# Pruefung 38, der Deklarationen zaehlt und nicht Richtigkeit. Und sie belegt die
+# VOLLSTAENDIGKEIT des Registers, nicht die Richtigkeit seiner Eintraege: Ein Eintrag,
+# der etwas anderes beschreibt als seine Pruefung tut, laeuft durch.
+REGISTER_ANKER = "Prüft (statisch, ohne laufenden KI-Client):"
+REGISTER_ENDE = "Der Wirksamkeitsnachweis nach D-23"
+NACHWEIS_SATZ = "Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen {} laeuft"
+SONDEN_SATZ = "Wirkungsnachweis nach D-23 fuer die Pruefungen {}"
+KATALOG_SPANNE = "für die Prüfungen {} als Skript"
+KATALOG_GRENZFAELLE = "Die {} Grenzfälle einzeln"
+REGISTER_DATEIEN = ("tests/scripts/validate-framework.py",
+                    "tests/scripts/probe-pruefungen.py",
+                    "tests/TEST_CATALOG.md",
+                    "tests/EDGE_CASES.md")
+
+
+def nummernspanne(zahlen) -> str:
+    """Kanonische Schreibweise einer Nummernmenge: '6 und 18 bis 40'.
+
+    Eine einzelne Nummer steht allein, eine luckenlose Folge als 'a bis b', mehrere
+    Bloecke durch Komma und ein abschliessendes 'und' getrennt. Diese Funktion ist die
+    einzige Quelle der Schreibweise; die drei Traeger vergleichen woertlich gegen sie.
+    """
+    folge = sorted(zahlen)
+    bloecke, lauf = [], [folge[0]]
+    for z in folge[1:]:
+        if z == lauf[-1] + 1:
+            lauf.append(z)
+        else:
+            bloecke.append(lauf)
+            lauf = [z]
+    bloecke.append(lauf)
+    teile = [str(b[0]) if len(b) == 1 else f"{b[0]} bis {b[-1]}" for b in bloecke]
+    if len(teile) == 1:
+        return teile[0]
+    return ", ".join(teile[:-1]) + " und " + teile[-1]
+
+
+def genannte_pruefungen(*texte: str) -> set:
+    """Jede Pruefungsnummer, die ein Text als 'Pruefung N' oder 'Pruefungen N bis M' nennt.
+
+    Der Zuschnitt ist Absicht (CR-2026-064 E2): Ein Querverweis auf eine kleinere Nummer
+    stoert nicht, weil nur die hoechste zaehlt - und eine neue Pruefung nennt ihre Nummer
+    zwangslaeufig, spaetestens in ihrem eigenen Kopfkommentar.
+    """
+    gefunden = set()
+    muster = re.compile(r"Pr[uü]efung(?:en)?\s+(\d+(?:\s*(?:,|und|bis)\s*\d+)*)")
+    for text in texte:
+        for treffer in muster.finditer(text):
+            teile = re.split(r"\s*(,|und|bis)\s*", treffer.group(1))
+            for i, teil in enumerate(teile):
+                if teil == "bis" and 0 < i < len(teile) - 1:
+                    gefunden |= set(range(int(teile[i - 1]), int(teile[i + 1]) + 1))
+                elif teil.isdigit():
+                    gefunden.add(int(teil))
+    return gefunden
+
+
+def check_pruefregister(root: str) -> None:
+    """Pruefung 40 (D-85, D-86): Register und Bestand des Pruefapparats decken sich."""
+    texte = {}
+    for rel in REGISTER_DATEIEN:
+        pfad = os.path.join(root, KERN, *rel.split("/"))
+        if not os.path.exists(pfad):
+            err(f"{KERN}/{rel}: fehlt. Prüfung 40 hält dort das Register des "
+                f"Prüfapparats gegen den Bestand (D-85)")
+            return
+        texte[rel] = read(pfad)
+    validator = texte["tests/scripts/validate-framework.py"]
+    sonden = texte["tests/scripts/probe-pruefungen.py"]
+    katalog = texte["tests/TEST_CATALOG.md"]
+    kanten = texte["tests/EDGE_CASES.md"]
+
+    # --- Gegenstand 1: die Anker ------------------------------------------------------
+    doc = validator.split('"""')[1] if validator.count('"""') >= 2 else ""
+    sondendoc = sonden.split('"""')[1] if sonden.count('"""') >= 2 else ""
+    if REGISTER_ANKER not in doc or REGISTER_ENDE not in doc:
+        err(f"{KERN}/tests/scripts/validate-framework.py: der Kopfkommentar führt kein "
+            f"Register mehr (gesucht: '{REGISTER_ANKER}' und '{REGISTER_ENDE}') – "
+            f"Prüfung 40 hat ihren Gegenstand verloren und würde sonst leise bestehen")
+        return
+    fwko01 = [z for z in katalog.splitlines() if z.startswith("| FW-KO-01")]
+    fwko05 = [z for z in katalog.splitlines() if z.startswith("| FW-KO-05")]
+    if len(fwko01) != 1 or len(fwko05) != 1:
+        err(f"{KERN}/tests/TEST_CATALOG.md: die Zeile FW-KO-01 oder FW-KO-05 steht nicht "
+            f"genau einmal (gefunden: {len(fwko01)} und {len(fwko05)}) – Prüfung 40 misst "
+            f"dort die Sondenmenge und die Grenzfallanzahl (D-85)")
+        return
+
+    # --- Gegenstand 2: das Register ist lueckenlos und vollstaendig --------------------
+    liste = doc.split(REGISTER_ANKER, 1)[1].split(REGISTER_ENDE, 1)[0]
+    gefuehrt = sorted({int(n) for n in re.findall(r"^\s{0,2}(\d+)[a-z]?\. ", liste, re.M)})
+    if not gefuehrt:
+        err(f"{KERN}/tests/scripts/validate-framework.py: das Register im Kopfkommentar "
+            f"führt keinen einzigen nummerierten Eintrag – Prüfung 40 hätte nichts zu "
+            f"vergleichen und bestünde leise")
+        return
+    luecken = [n for n in range(1, gefuehrt[-1] + 1) if n not in gefuehrt]
+    if luecken:
+        err(f"{KERN}/tests/scripts/validate-framework.py: das Register im Kopfkommentar "
+            f"hat Lücken – es fehlt {', '.join(str(n) for n in luecken)}. Eine Nummer "
+            f"ohne Eintrag ist eine Prüfung, die niemand findet (D-85)")
+    genannt = genannte_pruefungen(validator, sonden)
+    hoechste = max(genannt) if genannt else 0
+    if hoechste > gefuehrt[-1]:
+        err(f"{KERN}/tests/scripts/validate-framework.py: das Register im Kopfkommentar "
+            f"endet bei Prüfung {gefuehrt[-1]}; die Prüfskripte nennen Prüfung "
+            f"{hoechste}. Eine neue Prüfung ohne Registereintrag ist genau der Fall vom "
+            f"2026-09-14 – das Register ist die einzige Stelle, die sagt, was dieser "
+            f"Lauf prüft (D-85)")
+    elif hoechste and hoechste < gefuehrt[-1]:
+        err(f"{KERN}/tests/scripts/validate-framework.py: das Register im Kopfkommentar "
+            f"führt Prüfung {gefuehrt[-1]}; in den Prüfskripten wird sie nirgends bei "
+            f"ihrer Nummer genannt. Ein Eintrag ohne Prüfung verspricht mehr, als der "
+            f"Lauf leistet (D-85)")
+
+    # --- Gegenstand 3: die Sondenmenge an drei Stellen, wortgleich ---------------------
+    kennungen = (re.findall(r'\bsonde\("([^"]+)"', sonden)
+                 + re.findall(r'melde\("SONDE", "([^"]+)"', sonden))
+    mit_sonde = {int(m.group(1)) for m in (re.match(r"(\d+)", k) for k in kennungen) if m}
+    if not mit_sonde:
+        err(f"{KERN}/tests/scripts/probe-pruefungen.py: keine einzige Sonde mit einer "
+            f"Prüfungsnummer gefunden – Prüfung 40 rechnet daraus die Sondenmenge aus "
+            f"und hat ihren Gegenstand verloren")
+        return
+    spanne = nummernspanne(mit_sonde)
+    for rel, text, soll in (
+            ("tests/scripts/validate-framework.py", doc, NACHWEIS_SATZ.format(spanne)),
+            ("tests/scripts/probe-pruefungen.py", sondendoc, SONDEN_SATZ.format(spanne)),
+            ("tests/TEST_CATALOG.md", fwko01[0], KATALOG_SPANNE.format(spanne))):
+        if soll not in text:
+            err(f"{KERN}/{rel}: die Sondenmenge ist dort nicht in der ausgerechneten "
+                f"Schreibweise genannt. Erwartet wörtlich: '{soll}'. "
+                f"probe-pruefungen.py führt Sonden für die Prüfungen {spanne} – eine "
+                f"gepflegte Zahl über den Prüfapparat lag am 2026-09-14 an allen drei "
+                f"Stellen daneben (D-86)")
+
+    # --- Gegenstand 4: die Grenzfallanzahl ausserhalb ihrer Quelle ---------------------
+    grenzfaelle = set(re.findall(r"\bG-(\d\d)\b", kanten))
+    if not grenzfaelle:
+        err(f"{KERN}/tests/EDGE_CASES.md: keine einzige Grenzfallkennung der Form G-NN "
+            f"gefunden – Prüfung 40 zählt sie dort und hat ihren Gegenstand verloren")
+        return
+    soll_gf = KATALOG_GRENZFAELLE.format(len(grenzfaelle))
+    if soll_gf not in fwko05[0]:
+        err(f"{KERN}/tests/TEST_CATALOG.md: FW-KO-05 nennt nicht die gezählte Anzahl der "
+            f"Grenzfälle. Erwartet wörtlich: '{soll_gf}'. Die Zeile ist eine "
+            f"Arbeitsanweisung für eine Sitzung; sie stand von 0.33.0 bis 0.41.0 auf "
+            f"zwölf, während der Bestand auf zwanzig wuchs – wer sie so fährt, prüft "
+            f"einen Teil und meldet das Ganze (D-86)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -3863,6 +4066,7 @@ def main() -> int:
     check_decision_log_zellen(root)
     check_werkzeugabbildung(root)
     check_skillfreigabe(root)
+    check_pruefregister(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
