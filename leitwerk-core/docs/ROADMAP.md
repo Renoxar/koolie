@@ -9,10 +9,67 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.41.0 (2026-09-14)
+## Stand nach Release 0.42.0 (2026-09-14)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.42.0 gebracht hat – das Register des Prüfapparats wird nachgezählt
+
+**Der Anlass ist ein Nebenbefund aus dem ersten Migrationslauf dieses Projekts.** Der Pilot
+ist von 0.37.0 auf 0.41.0 gehoben worden
+(`tests/protocols/2026-09-14-migrationslauf-pilot.md`), und beim Lesen von Prüfung 37 fiel
+auf: Der Kopfkommentar des Validators führt die Prüfungen 1 bis 38, während Prüfung 39
+läuft. Gegengeprüft (`tests/protocols/2026-09-14-gegenpruefung-pruefregister.md`, elf
+Messungen, `CR-2026-064`, D-85 und D-86). **Der Befund bestätigt sich – und die Zählung war
+wieder zu klein.**
+
+| Frage | Ergebnis |
+|---|---|
+| Fehlt ein Registereintrag? | **Es sind fünf falsche Aussagen an drei Trägern**, und Prüfung 39 ist die **jüngste** davon |
+| Sind sie falsch geschrieben worden? | **Keine einzige.** Alle fünf waren bei ihrer Einführung richtig und sind stehen geblieben, während ihr Gegenstand weiterwuchs |
+| Wie alt sind sie? | Die älteste seit **zwölf** Releases. In **zehn von zwölf** Releases hat sich mindestens eine der drei Zahlen bewegt |
+| *Nicht gesucht:* Taugen die Kopfkommentare der Prüfungen als Anker? | **Nein.** Sie tragen drei Formen, und ein Querverweis im Fließtext sieht aus wie ein Kopf. **Der erste Entwurf der Prüfung ist genau daran gefallen** |
+| *Nicht gesucht:* Sind alle Nennungen dieser Zahlen falsch? | **Nein – und das entscheidet den Zuschnitt.** Roadmap, `CR-2026-052` und das Protokoll zu 0.32.0 nennen ebenfalls zwölf Grenzfälle und sind **richtig**: Sie beschreiben den Stand von 0.32.0 |
+
+**Die Zahl, die den Befund trägt: acht.** So weit lag `FW-KO-05` daneben – zwölf gegen
+zwanzig Grenzfälle, in der Prüfmittelspalte eines Abnahmetests, der auf `offen` steht.
+**Wer ihn heute führe, prüfte einen Teil und meldete das Ganze.**
+
+**Die Regel, die man sich merken sollte:** *Wo die Grenze eines Begriffs eindeutig ist,
+gehört die Zahl ausgerechnet, nicht gepflegt.* Der Satz steht seit 0.33.0 im Bestand und
+galt für jeden Gegenstand außer dem Prüfstand selbst.
+
+**Das Argument, das man sich merken sollte:** `CR-2026-062` hat das Nachziehen des
+Kopfkommentars ein Release zuvor eigens zur Ermessensfrage gemacht und beschlossen (E7);
+`CR-2026-063` hat es ein Release später nicht getan. **Eine Entscheidung, die nur in einem
+Antrag steht, hält bis zum nächsten Antrag.**
+
+**Prüfung 40** hält es fest, in vier Gegenständen: verlorener Anker; das Register lückenlos
+und bis zur höchsten genannten Nummer, in **beide** Richtungen; die Sondenmenge an drei
+Stellen in einer einzigen, ausgerechneten Schreibweise; die Grenzfallanzahl in `FW-KO-05`.
+**Ihr Gegenbeweis ist ein Abzählen:** fünf Fundstellen gegen 0.41.0, eine je Abweichung und
+keine weitere – das erste Mal seit 0.34.0, dass ein Gegenbeweis keine Konstruktion ist.
+
+### Was 0.42.0 offen lässt
+
+- **Prüfung 40 zählt Nennungen, nicht Prüfungen.** Wer eine Prüfung baut und ihre Nummer
+  nirgends schreibt, wird nicht gefangen – dieselbe Ehrlichkeit wie Gegenstand 2 von
+  Prüfung 38, der Deklarationen zählt und nicht Richtigkeit.
+- **Sie belegt Vollständigkeit, nicht Richtigkeit.** Ein Registereintrag, der etwas anderes
+  beschreibt als seine Prüfung tut, läuft durch. Das bleibt eine Lektüre.
+- **`FW-KO-05` bleibt offen.** Berichtigt ist seine Zahl, nicht sein Ergebnis: Ob ein
+  KI-Client die zwanzig Grenzfälle so einstuft wie die Tabelle, ist weiterhin ungemessen.
+- **Drei Sätze sind in ihrer Schreibweise gebunden** – der Preis des wörtlichen Vergleichs
+  (D-86). Die Fehlermeldung nennt dafür die richtige Zeichenkette.
+- **Der Abgleich zwischen Overlaytext und Berechtigungsdatei hat eine gemessene Fundstelle
+  bekommen.** Am Piloten führte die Berechtigungsdatei `Bash(mvn -B test:*)`, während
+  Abschnitt 6 des Overlays `mvn -B test` erklärt. **Prüfung 37 hat es gefangen, weil die
+  Abweichung zufällig auch formal auffällig war** – ein gefüllter Schlitz mit einem ganz
+  anderen Befehl liefe lautlos durch. Der Kandidat steht damit nicht mehr als Vermutung da.
+- **Der Migrationsweg bleibt Handarbeit.** Die zwölf `Skill(fw-…)`-Zeilen sind am Piloten
+  von Hand nachgetragen worden. Ob `install.py` das je selbst tun sollte, hängt an D-76 und
+  ist nicht entschieden.
 
 ### Was 0.41.0 gebracht hat – der Skillaufruf ist ein Werkzeugaufruf
 

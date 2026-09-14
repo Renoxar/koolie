@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 18 bis 24 (Release 0.26.0)
-fuer Pruefung 6 (Release 0.26.1, Befund B03), fuer Pruefung 25 samt
-install.py --list-skills (Release 0.27.0) und fuer die Aktivierungspruefung samt
-Clientwahl der Installation (Release 0.28.0, Befunde B02 und B10) und fuer den
-Schutz vorhandener Projektdateien bei der Erstinstallation (Release 0.29.0).
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 40, dazu fuer
+install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
+Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
+Skripts selbst.
+
+Die Aufzaehlung der Pruefungen steht hier in der Schreibweise, die Pruefung 40 aus den
+Sondenkennungen dieses Skripts ausrechnet und woertlich vergleicht (D-86). Bis 0.41.0
+stand an dieser Stelle eine Release-Chronik, die bei 0.29.0 endete: ein Register, das
+mit jedem Release falscher wurde, ohne dass ein Lauf davon Notiz nahm. Welches Release
+welche Sonde gebracht hat, steht im Aenderungsverlauf und nicht mehr hier.
 
 Aufruf (im Wurzelverzeichnis des Repositoriums):
     python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD]
@@ -1088,6 +1093,7 @@ gegenprobe("29", "Kuerzere Formulierung derselben acht Kategorien",
 # entwerten: eine Zeile verschwindet, eine Spalte bleibt leer, eine Entscheidung ist
 # durch keinen Grenzfall gedeckt.
 EDGE_30 = "leitwerk-core/tests/EDGE_CASES.md"
+KATALOG_30 = "leitwerk-core/tests/TEST_CATALOG.md"
 
 
 def _grenzfall_loeschen(root: str) -> None:
@@ -1124,7 +1130,14 @@ def _grenzfall_ergaenzen(root: str) -> None:
     Die Kennung ist seither G-99 und kollidiert mit keinem echten Fall. Die Anzahl
     bleibt woertlich: Ob eine Gegenprobe ihre Summen ABLEITEN soll, ist eine
     Ermessensfrage und nicht entschieden - eine abgeleitete Summe verdoppelt
-    womoeglich nur die Rechenweise der Pruefung, statt sie zu belegen.
+    womoeglich nur die Rechenweise der Pruefung, statt sie zu belegen. Die Frage
+    ist damit zum VIERTEN Mal aufgetreten und gehoert in einen eigenen Antrag.
+
+    Seit 0.42.0 zieht diese Gegenprobe ZWEI Register nach: die Anzahl im Steckbrief
+    von EDGE_CASES.md und die Arbeitsanweisung in FW-KO-05. Ein Repositorium mit 21
+    Grenzfaellen, dessen Testblatt weiter von zwanzig spricht, ist kein erlaubter
+    Fall, sondern genau der Befund, gegen den Pruefung 40 gebaut ist (D-86). Der
+    Sondenlauf zu 0.42.0 hat ihn gemeldet, bevor jemand ihn behaupten musste.
     """
     pfad = _p(root, EDGE_30)
     frei(pfad, "G-99")
@@ -1134,6 +1147,8 @@ def _grenzfall_ergaenzen(root: str) -> None:
         pfad, "| G-20 |",
         "| G-99 | Synthetischer Zusatzfall der Gegenprobe | **zul\u00e4ssig** | M1 | "
         "niedrig | keine | `leitwerk-core/tests/EDGE_CASES.md` Abschnitt 1 (D-52) |")
+    ersetze(_p(root, KATALOG_30),
+            ("Die 20 Grenzfälle einzeln", "Die 21 Grenzfälle einzeln"))
 
 
 sonde("30a", "Geloeschte Grenzfallzeile gegen die Anzahl im Steckbrief",
@@ -2228,6 +2243,133 @@ gegenprobe("39a", "Die unveraenderte Datei bleibt unbeanstandet - zwoelf Regeln,
 gegenprobe("39b", "Eine PFADregel mit Muster bleibt unbeanstandet - Gegenstand 3 misst "
            "nur die skill-Regeln", _39_pfadmuster_bleibt, "Musterzeichen")
 
+
+
+# --- 40: Die Register des Pruefapparats (D-85, D-86) ---------------------------------
+#
+# Anlass: Fuenf Aussagen ueber den eigenen Pruefstand, keine davon richtig - und keine
+# falsch geschrieben. Alle fuenf waren bei ihrer Einfuehrung richtig und sind stehen
+# geblieben, waehrend ihr Gegenstand wuchs; die aelteste seit zwoelf Releases.
+#
+# Diese Sonden sind der Grund, warum die Pruefung mehr ist als eine Textaenderung: Sie
+# belegen, dass das Vergessen gefangen wird, nicht nur das einmalige Nachziehen.
+#
+# Die zweite Gegenprobe ist die wichtigere. Der erste Entwurf dieser Pruefung hat einen
+# Querverweis im Fliesstext eines Kommentars fuer einen Kopf gehalten und Pruefung 37
+# dort gefunden, wo kein Kopf steht. Seither ankert sie an der hoechsten genannten
+# Nummer statt an einer Kommentarform - und diese Gegenprobe haelt genau das fest.
+VAL_40 = "leitwerk-core/tests/scripts/validate-framework.py"
+KAT_40 = "leitwerk-core/tests/TEST_CATALOG.md"
+
+NACHWEIS_40 = ("Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen "
+               "6 und 18 bis 40 laeuft")
+
+
+def _zeilenblock(*zeilen: str) -> str:
+    """Ein Block des Registers als CRLF-Text - der Kopfkommentar ist CRLF wie die Datei."""
+    return "".join(z + "\r\n" for z in zeilen)
+
+
+EINTRAG_25 = _zeilenblock(
+    " 25. Ausfall mit Ersatz (D-41): Eine Matrixzeile eines Client Packs auf "
+    "[NICHT ABBILDBAR]",
+    "     benennt den Ersatz - oder haelt ausdruecklich fest, dass es keinen gibt")
+
+EINTRAG_40 = _zeilenblock(
+    " 40. Register des Pruefapparats (D-85, D-86): Dieses Register ist lueckenlos und "
+    "endet",
+    "     bei der hoechsten Nummer, die die beiden Pruefskripte nennen; die Sondenmenge "
+    "steht",
+    "     im Satz darunter, im Kopfsatz von probe-pruefungen.py und in FW-KO-01 in "
+    "derselben",
+    "     ausgerechneten Schreibweise; die Grenzfallanzahl in FW-KO-05 ist die gezaehlte")
+
+ZUSATZ_OHNE_PRUEFUNG = _zeilenblock(
+    " 41. Eine Zeile, der keine Pruefung entspricht - sie verspricht mehr, als der Lauf",
+    "     leistet")
+
+
+def _p40v(root: str) -> str:
+    return P(root, VAL_40.replace("/", os.sep))
+
+
+def _p40k(root: str) -> str:
+    return P(root, KAT_40.replace("/", os.sep))
+
+
+def _40_eintrag_fehlt(root: str) -> None:
+    """Der Zustand vom 2026-09-14: Eine Pruefung laeuft, das Register kennt sie nicht."""
+    ersetze(_p40v(root), (EINTRAG_40, ""))
+
+
+def _40_luecke(root: str) -> None:
+    """Eine Nummer faellt aus dem Register - die Pruefung dahinter findet niemand."""
+    ersetze(_p40v(root), (EINTRAG_25, ""))
+
+
+def _40_eintrag_ohne_pruefung(root: str) -> None:
+    """Ein Eintrag ohne Prueffung dahinter - die Gegenrichtung von 40a."""
+    ersetze(_p40v(root), (EINTRAG_40, EINTRAG_40 + ZUSATZ_OHNE_PRUEFUNG))
+
+
+def _40_spanne_verdreht(root: str) -> None:
+    """Die Sondenmenge im Satz unter dem Register weicht ab - der Stand von 0.32.0."""
+    ersetze(_p40v(root),
+            (NACHWEIS_40,
+             "Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 30 laeuft"))
+
+
+def _40_grenzfallzahl(root: str) -> None:
+    """FW-KO-05 nennt eine Zahl, die nicht mehr stimmt - der Stand bis 0.41.0."""
+    ersetze(_p40k(root),
+            ("Die 20 Grenzfälle einzeln", "Die zwölf Grenzfälle einzeln"))
+
+
+def _40_anker_weg(root: str) -> None:
+    """Die Registerueberschrift verschwindet - die Pruefung darf nicht leise bestehen."""
+    ersetze(_p40v(root),
+            ("Prüft (statisch, ohne laufenden KI-Client):\r\n  1. Pflichtdateien",
+             "Geprüft wird unter anderem:\r\n  1. Pflichtdateien"))
+
+
+def _40_querverweis(root: str) -> None:
+    """Gegenprobe: Ein Querverweis auf eine kleinere Nummer ist kein Registereintrag.
+
+    Genau diese Zeilenform hat den ersten Entwurf der Pruefung fallen lassen.
+    """
+    ersetze(_p40v(root),
+            ("def main() -> int:\r\n",
+             "# Pruefung 37 und dieselbe Ehrlichkeit wie Pruefung 30: ein Querverweis im\r\n"
+             "# Fliesstext, kein Kopf - er darf das Register nicht bewegen.\r\n"
+             "def main() -> int:\r\n"))
+
+
+sonde("40a", "Eine Pruefung laeuft, das Register kennt sie nicht - der Fall vom "
+      "2026-09-14", _40_eintrag_fehlt, "die Prüfskripte nennen Prüfung 40")
+
+sonde("40b", "Eine Nummer faellt aus dem Register - die Pruefung dahinter findet "
+      "niemand", _40_luecke, "hat Lücken – es fehlt 25")
+
+sonde("40c", "Ein Registereintrag ohne Pruefung dahinter - die Gegenrichtung",
+      _40_eintrag_ohne_pruefung, "Ein Eintrag ohne Prüfung verspricht mehr")
+
+sonde("40d", "Die Sondenmenge im Satz unter dem Register weicht ab",
+      _40_spanne_verdreht,
+      "validate-framework.py: die Sondenmenge ist dort nicht in der ausgerechneten")
+
+sonde("40e", "FW-KO-05 nennt eine Grenzfallzahl, die nicht mehr stimmt",
+      _40_grenzfallzahl, "FW-KO-05 nennt nicht die gezählte Anzahl")
+
+sonde("40f", "Verlorener Anker - die Registerueberschrift verschwindet",
+      _40_anker_weg, "Prüfung 40 hat ihren Gegenstand verloren")
+
+gegenprobe("40a", "Das unveraenderte Repositorium bleibt unbeanstandet - Register, "
+           "Sondenmenge und Grenzfallzahl decken sich", None,
+           "das Register im Kopfkommentar")
+
+gegenprobe("40b", "Ein Querverweis auf eine kleinere Pruefungsnummer bleibt "
+           "unbeanstandet - er ist kein Kopf und kein Eintrag",
+           _40_querverweis, "die Prüfskripte nennen Prüfung")
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

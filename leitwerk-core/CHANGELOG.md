@@ -2,6 +2,75 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.42.0] - 2026-09-14
+
+**Das Register der Pruefungen wird nachgezaehlt.** Der Kopfkommentar von
+`validate-framework.py` fuehrte die Pruefungen 1 bis 38, waehrend Pruefung 39 lief -
+und beim Nachmessen waren es **fuenf** falsche Aussagen ueber den eigenen Pruefstand
+an **drei** Traegern, die aelteste seit **zwoelf** Releases. Keine war falsch
+geschrieben: Alle fuenf waren bei ihrer Einfuehrung richtig und sind stehen geblieben,
+waehrend ihr Gegenstand wuchs. Gegengeprueft und gemessen
+(`tests/protocols/2026-09-14-gegenpruefung-pruefregister.md`, elf Messungen,
+`CR-2026-064`). **Der Anlass ist ein Nebenbefund aus dem ersten Migrationslauf dieses
+Projekts** (`tests/protocols/2026-09-14-migrationslauf-pilot.md`).
+
+### Neu
+
+- **Pruefung 40** (D-85, D-86) mit vier Gegenstaenden: der verlorene Anker; das
+  Register ist lueckenlos und endet bei der hoechsten Nummer, die die beiden
+  Pruefskripte nennen - in **beide** Richtungen; die Sondenmenge steht an drei Stellen
+  in einer einzigen, ausgerechneten Schreibweise; die Grenzfallanzahl in `FW-KO-05` ist
+  die gezaehlte.
+- **Sechs Sonden und zwei Gegenproben** zu Pruefung 40. Die zweite Gegenprobe ist die
+  wichtigere: Ein Querverweis auf eine kleinere Pruefungsnummer im Fliesstext eines
+  Kommentars darf **nicht** als Registereintrag zaehlen - genau daran ist der erste
+  Entwurf dieser Pruefung gefallen.
+- **Der Kopfsatz von `probe-pruefungen.py` ist kein Release-Verzeichnis mehr.** Er war
+  als Chronik gebaut und endete bei 0.29.0; jetzt nennt er die Menge, die Pruefung 40
+  ausrechnet. Welches Release welche Sonde gebracht hat, steht hier im
+  Aenderungsverlauf.
+
+### Berichtigt
+
+- **Fuenf Aussagen ueber den Pruefapparat**, jede mit ihrem Alter: das Register selbst
+  (1 Release), der Satz zum Wirkungsnachweis im Validator (9), der Kopfsatz des
+  Sondenskripts (12), die Pruefmittelspalte von `FW-KO-01` (8) und die Grenzfallzahl in
+  `FW-KO-05` (9, und sie lag um acht daneben).
+- **`FW-KO-05` war eine halbe Arbeitsanweisung mit ganzem Ergebnis.** Der Abnahmetest
+  steht auf `offen` und verlangte „die zwoelf Grenzfaelle" - es sind zwanzig.
+
+### Gemessen
+
+- **Fuenf Fundstellen gegen 0.41.0**, eine je Abweichung, und keine weitere. Der
+  Gegenbeweis ist hier ein **Abzaehlen** und keine Konstruktion - das erste Mal seit
+  0.34.0.
+- **Die Kopfkommentare taugen nicht als Anker.** Gemessen tragen sie drei Formen -
+  `# Pruefung N:`, `# N:` und `# Pruefungen N bis M` -, und eine vierte sieht aus wie
+  ein Kopf und ist keiner. Deshalb ankert Pruefung 40 an der hoechsten **genannten**
+  Nummer.
+- **Der Migrationshinweis von 0.41.0 stimmt: genau zwoelf.** Am Piloten nachgezaehlt,
+  beim Heben von 0.37.0 auf 0.41.0 - der erste echte Migrationslauf dieses Projekts.
+
+### Migrationshinweise
+
+- **Keine.** Pruefung 40 liest ausschliesslich Dateien unter `<CORE_DIR>/` und aendert
+  kein erzeugtes Artefakt. Wer `leitwerk-core/` ersetzt, bekommt sie mit; sie kann in
+  einer Installation nur anschlagen, wenn dort am Kern gearbeitet wurde - und dann ist
+  die Meldung richtig.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 40 zaehlt Nennungen, nicht Pruefungen.** Wer eine Pruefung baut und ihre
+  Nummer nirgends schreibt, wird nicht gefangen - dieselbe Ehrlichkeit wie Gegenstand 2
+  von Pruefung 38, der Deklarationen zaehlt und nicht Richtigkeit.
+- **Sie belegt Vollstaendigkeit, nicht Richtigkeit.** Ein Registereintrag, der etwas
+  anderes beschreibt als seine Pruefung tut, laeuft durch.
+- **Drei Saetze sind in ihrer Schreibweise gebunden.** Das ist der Preis des
+  woertlichen Vergleichs; die Fehlermeldung nennt dafuer die richtige Zeichenkette.
+- **`FW-KO-05` bleibt offen.** Berichtigt ist seine Zahl, nicht sein Ergebnis: Ob ein
+  KI-Client die zwanzig Grenzfaelle so einstuft wie die Tabelle, ist weiterhin
+  ungemessen.
+
 ## [0.41.0] - 2026-09-14
 
 **Der Skillaufruf ist ein Werkzeugaufruf - und die Berechtigungsdatei kannte ihn nicht.**
