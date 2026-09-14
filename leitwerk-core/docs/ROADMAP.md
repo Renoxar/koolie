@@ -9,10 +9,55 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.42.0 (2026-09-14)
+## Stand nach Release 0.43.0 (2026-09-14)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
+
+### Was 0.43.0 gebracht hat – der Client ist erhoben, und eine Enthaltung war eine Behauptung
+
+**Kandidat 1 und 6 der Übergabe, in einer Sitzung** – beide hingen am selben Manifest.
+Erhoben mit **zwölf Läufen am Client** in fünf Umgebungen
+(`tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md`, `CR-2026-065`, D-87 bis D-89).
+**Das erste Release dieses Projekts, das einen Client misst statt eines Mechanismus.**
+
+| Frage | Ergebnis |
+|---|---|
+| Führt `devin-desktop` ein Suchwerkzeug? | **Zwei.** `grep` und `find_file_by_name`. Die Erklärung „kein eigenes Suchwerkzeug" war **falsch** – und sie nahm die Suchklasse aus dem Hook-Matcher |
+| Was hat das gekostet? | In einer Umgebung mit nur dem Hook: `read` auf `.env` blockiert, **`grep` auf dieselbe Datei liefert das Secret wörtlich**. Das Hook-Skript blockt beides – es wurde nicht gefragt |
+| Wie schlimm war es wirklich? | **Wie ausgeliefert war das Secret geschützt** – die Klasse `Read(...)` dieses Clients umfasst die Suche mit. Getragen hat also nur die **editierbare** Schicht, nicht die fail-closed-Schicht |
+| Ist der Skillaufruf rückfragepflichtig? (**K-33**) | **Er ist ein eigener Werkzeugaufruf** (`skill`) – und über die Berechtigungsdatei trotzdem nicht erreichbar. Zwei Schreibweisen geprüft, beide wirkungslos, gegen einen greifenden Kontrolllauf. **K-33 geschlossen, K-34 neu** |
+| *Nicht gesucht:* Wie wird die Slash-Form ausgeführt? | **Clientseitig expandiert.** Im `user`-Schritt der Mitschrift steht der Inhalt der `SKILL.md`. Eine Werkzeugschranke erreicht diesen Weg gar nicht |
+| *Nicht gesucht:* Ist `glob` im Frontmatter falsch? | **Nein – und der erste Entwurf der Behebung war es.** Der Client führt im Frontmatter ein **eigenes** Vokabular; `find_file_by_name` wird dort **verworfen** |
+
+**Die Zahl, die den Befund trägt: zwei.** So viele Suchwerkzeuge führt ein Client, dem das
+Framework keines zutraute – und so viele Fundstellen meldet Prüfung 41 gegen den Vorstand.
+
+**Die Regel, die man sich merken sollte:** *Eine Enthaltung, die sich als Behauptung
+tarnt, ist gefährlicher als eine offene Lücke – sie nimmt eine Werkzeugklasse aus der
+Durchsetzung und begründet es.* **Prüfung 41** verlangt deshalb eine der beiden redlichen
+Bauformen: Enthaltung oder Datum mit Fundstelle.
+
+**Die zweite Regel, teurer erkauft:** *Ein gemessener Name ist noch nicht der Name für die
+Stelle, an der man ihn einträgt.* Frontmatter-Vokabular und Laufzeitnamen sind **zwei
+Namensräume**; bei `claude-code` fallen sie zusammen, bei `devin-desktop` nicht. Gefangen
+hat das keine Prüfung, sondern ein Blick des Clients auf die eigene Datei.
+
+### Was 0.43.0 offen lässt
+
+- **Der Skillaufruf ist bei `devin-desktop` nicht kontrollierbar** (**K-34**). Zwei
+  Schreibweisen geprüft; ob eine dritte wirkt, ist offen – **ein Fehlen belegt sich nicht
+  selbst.**
+- **Die Richtungsregel von D-80 gilt für dieses Pack nicht mehr.** Ausgesetzt, nicht
+  erfüllt: ein deklarierter blinder Fleck statt einer falschen Zusage.
+- **Ein zweites Modell ist auf diesem Konto nicht messbar** (`Upgrade to Pro`). Bietet der
+  Client einem anderen Modell einen anderen Werkzeugbestand an, wäre `hook_tools` erneut
+  zu prüfen.
+- **Prüfung 41 prüft eine Form, nicht eine Tatsache.**
+- **Was `allowed-tools` bei diesem Client bewirkt, bleibt unerhoben** – Zeile S3 sagt es
+  seit 0.7.0.
+- **Bestehende `devin-desktop`-Installationen sind erst nach `install.py --update`
+  geschützt.**
 
 ### Was 0.42.0 gebracht hat – das Register des Prüfapparats wird nachgezählt
 

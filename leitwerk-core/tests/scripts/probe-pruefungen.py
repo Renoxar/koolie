@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 40, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 41, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -2050,13 +2050,28 @@ def _38_json(root: str, rel: str, wandler) -> None:
 
 
 def _38_deklaration_weg(root: str) -> None:
+    """Ein Verb faellt aus der Abbildung, ohne dass es erklaert wird.
+
+    Bis 0.42.0 hat diese Sonde die ERKLAERUNG entfernt; seit die Abbildung von
+    devin-desktop erhoben ist (D-87), gibt es keine mehr zu entfernen. Der Defekt ist
+    derselbe geblieben - er wird jetzt hergestellt statt abgeraeumt.
+    """
     _38_json(root, MANIFEST_DD_38,
-             lambda d: d["skill_frontmatter"].pop("tool_names_unmapped"))
+             lambda d: d["skill_frontmatter"]["tool_names"].pop("read"))
 
 
 def _38_notiz_weg(root: str) -> None:
-    _38_json(root, MANIFEST_DD_38,
-             lambda d: d["agent_frontmatter"].pop("_tool_names_unmapped_note"))
+    """Eine erklaerte Nichtabbildung ohne Begruendung - eine Behauptung.
+
+    Ebenfalls hergestellt statt abgeraeumt: Das Verb verliert seine Abbildung und
+    bekommt die Erklaerung, aber keine Notiz.
+    """
+    def _um(d):
+        fmt = d["agent_frontmatter"]
+        fmt["tool_names"].pop("read")
+        fmt["tool_names_unmapped"] = ["read"]
+        fmt.pop("_tool_names_unmapped_note", None)
+    _38_json(root, MANIFEST_DD_38, _um)
 
 
 def _38_beides_zugleich(root: str) -> None:
@@ -2261,8 +2276,8 @@ gegenprobe("39b", "Eine PFADregel mit Muster bleibt unbeanstandet - Gegenstand 3
 VAL_40 = "leitwerk-core/tests/scripts/validate-framework.py"
 KAT_40 = "leitwerk-core/tests/TEST_CATALOG.md"
 
-NACHWEIS_40 = ("Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen "
-               "6 und 18 bis 40 laeuft")
+REGISTER_KOPF = "Prüft (statisch, ohne laufenden KI-Client):"
+NACHWEIS_ANFANG = "Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen "
 
 
 def _zeilenblock(*zeilen: str) -> str:
@@ -2275,19 +2290,6 @@ EINTRAG_25 = _zeilenblock(
     "[NICHT ABBILDBAR]",
     "     benennt den Ersatz - oder haelt ausdruecklich fest, dass es keinen gibt")
 
-EINTRAG_40 = _zeilenblock(
-    " 40. Register des Pruefapparats (D-85, D-86): Dieses Register ist lueckenlos und "
-    "endet",
-    "     bei der hoechsten Nummer, die die beiden Pruefskripte nennen; die Sondenmenge "
-    "steht",
-    "     im Satz darunter, im Kopfsatz von probe-pruefungen.py und in FW-KO-01 in "
-    "derselben",
-    "     ausgerechneten Schreibweise; die Grenzfallanzahl in FW-KO-05 ist die gezaehlte")
-
-ZUSATZ_OHNE_PRUEFUNG = _zeilenblock(
-    " 41. Eine Zeile, der keine Pruefung entspricht - sie verspricht mehr, als der Lauf",
-    "     leistet")
-
 
 def _p40v(root: str) -> str:
     return P(root, VAL_40.replace("/", os.sep))
@@ -2297,9 +2299,35 @@ def _p40k(root: str) -> str:
     return P(root, KAT_40.replace("/", os.sep))
 
 
+def _40_registerblock(text: str):
+    """Der LETZTE nummerierte Registereintrag: (anfang, zeilen, i, j, nummer).
+
+    Abgeleitet statt verdrahtet. Die erste Fassung dieser Sonden trug die Nummer des
+    eigenen Releases im Suchtext und fiel mit der naechsten Pruefung: 40a meldete eine
+    Luecke statt des fehlenden letzten Eintrags, 40c ergaenzte eine Nummer, die es
+    inzwischen wirklich gibt. Eine Sonde, die ihre Grenze selbst ausrechnet, ueberlebt
+    das Release, das sie pruefen soll.
+    """
+    a = text.index(REGISTER_KOPF)
+    b = text.index(NACHWEIS_ANFANG, a)
+    zeilen = text[a:b].split("\r\n")
+    starts = [i for i, z in enumerate(zeilen) if re.match(r"^ \d+\. ", z)]
+    if not starts:
+        raise Praeparationsfehler(
+            "validate-framework.py: kein nummerierter Registereintrag gefunden")
+    i = starts[-1]
+    j = i + 1
+    while j < len(zeilen) and zeilen[j].startswith("     "):
+        j += 1
+    return a, b, zeilen, i, j, int(zeilen[i].split(".", 1)[0].strip())
+
+
 def _40_eintrag_fehlt(root: str) -> None:
     """Der Zustand vom 2026-09-14: Eine Pruefung laeuft, das Register kennt sie nicht."""
-    ersetze(_p40v(root), (EINTRAG_40, ""))
+    pfad = _p40v(root)
+    text = lies(pfad)
+    a, b, zeilen, i, j, _nr = _40_registerblock(text)
+    schreib(pfad, text[:a] + "\r\n".join(zeilen[:i] + zeilen[j:]) + text[b:])
 
 
 def _40_luecke(root: str) -> None:
@@ -2308,15 +2336,29 @@ def _40_luecke(root: str) -> None:
 
 
 def _40_eintrag_ohne_pruefung(root: str) -> None:
-    """Ein Eintrag ohne Prueffung dahinter - die Gegenrichtung von 40a."""
-    ersetze(_p40v(root), (EINTRAG_40, EINTRAG_40 + ZUSATZ_OHNE_PRUEFUNG))
+    """Ein Eintrag ohne Pruefung dahinter - die Gegenrichtung von 40a."""
+    pfad = _p40v(root)
+    text = lies(pfad)
+    a, b, zeilen, _i, j, nummer = _40_registerblock(text)
+    zusatz = [" %d. Eine Zeile, der keine Pruefung entspricht - sie verspricht mehr,"
+              % (nummer + 1),
+              "     als der Lauf leistet"]
+    schreib(pfad, text[:a] + "\r\n".join(zeilen[:j] + zusatz + zeilen[j:]) + text[b:])
 
 
 def _40_spanne_verdreht(root: str) -> None:
-    """Die Sondenmenge im Satz unter dem Register weicht ab - der Stand von 0.32.0."""
-    ersetze(_p40v(root),
-            (NACHWEIS_40,
-             "Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 18 bis 30 laeuft"))
+    """Die Sondenmenge im Satz unter dem Register weicht ab - der Stand von 0.32.0.
+
+    Die Spanne wird gesucht, nicht genannt: Sie waechst mit jedem Release.
+    """
+    pfad = _p40v(root)
+    text = lies(pfad)
+    neu, treffer = re.subn(r"(" + re.escape(NACHWEIS_ANFANG) + r")[^\r\n]*?( laeuft)",
+                           r"\g<1>18 bis 30\g<2>", text, count=1)
+    if treffer != 1:
+        raise Praeparationsfehler(
+            "validate-framework.py: Satz zum Wirkungsnachweis nicht gefunden")
+    schreib(pfad, neu)
 
 
 def _40_grenzfallzahl(root: str) -> None:
@@ -2345,7 +2387,7 @@ def _40_querverweis(root: str) -> None:
 
 
 sonde("40a", "Eine Pruefung laeuft, das Register kennt sie nicht - der Fall vom "
-      "2026-09-14", _40_eintrag_fehlt, "die Prüfskripte nennen Prüfung 40")
+      "2026-09-14", _40_eintrag_fehlt, "die Prüfskripte nennen Prüfung")
 
 sonde("40b", "Eine Nummer faellt aus dem Register - die Pruefung dahinter findet "
       "niemand", _40_luecke, "hat Lücken – es fehlt 25")
@@ -2370,6 +2412,91 @@ gegenprobe("40a", "Das unveraenderte Repositorium bleibt unbeanstandet - Registe
 gegenprobe("40b", "Ein Querverweis auf eine kleinere Pruefungsnummer bleibt "
            "unbeanstandet - er ist kein Kopf und kein Eintrag",
            _40_querverweis, "die Prüfskripte nennen Prüfung")
+
+
+# --- 41: Abwesenheitsbeleg, und 38 mit eigenem Namensraum (D-88) ----------------------
+#
+# Anlass: Eine Abwesenheitserklaerung nahm eine Werkzeugklasse aus der Durchsetzung und
+# begruendete es - mit einem Satz, der weder Enthaltung noch Beleg war. Pruefung 26 hat
+# ihn durchgelassen, weil sie Folgerichtigkeit prueft und nicht Wahrheit.
+#
+# Die zweite Gegenprobe ist die wichtigere: Eine Enthaltung braucht KEINEN Beleg. Wer das
+# verwechselt, verlangt fuer eine ehrliche Wissenslucke ein Protokoll, das es nicht geben
+# kann - und treibt damit genau die Behauptung hervor, gegen die die Pruefung gebaut ist.
+MAN_DD = "leitwerk-core/clients/devin-desktop/manifest.json"
+MAN_CC = "leitwerk-core/clients/claude-code/manifest.json"
+
+NOTE_DD_START = '"_agent_start_tools_absent_note": "UNERHOBEN, nicht abwesend'
+NOTE_CC_FUND = ("tests/protocols/2026-09-13-erhebung-disallowed-tools.md "
+                "Abschnitt 4.3")
+
+
+def _41_behauptung(root: str) -> None:
+    """Eine Abwesenheitserklaerung ohne Enthaltung und ohne Fundstelle - der Fall vom
+    2026-09-14. Die Note traegt danach noch ein Datum, aber keinen Beleg."""
+    ersetze(_p(root, MAN_DD),
+            (NOTE_DD_START,
+             '"_agent_start_tools_absent_note": "Dieser Client fuehrt kein Startwerkzeug'))
+
+
+def _41_datum_ohne_fundstelle(root: str) -> None:
+    """Ein Datum allein ist kein Beleg - die Fundstelle faellt weg."""
+    ersetze(_p(root, MAN_CC), (NOTE_CC_FUND, "einer fruehreren Erhebung"))
+
+
+def _41_gegenstand_weg(root: str) -> None:
+    """Kein Pack fuehrt noch eine Abwesenheitserklaerung - die Pruefung meldet es selbst."""
+    ersetze(_p(root, MAN_DD), ('  "agent_start_tools_absent": ["unerhoben"],\r\n', ""))
+    ersetze(_p(root, MAN_CC), ('    "skill_deny_unmapped": "argumentmuster",\r\n', ""))
+
+
+def _41_enthaltung_ohne_beleg(root: str) -> None:
+    """Gegenprobe: Eine Enthaltung braucht keinen Beleg - sie ist selbst die Aussage."""
+    text = lies(_p(root, MAN_CC))
+    anfang = text.index('"_skill_deny_unmapped_note": "')
+    ende = text.index('",', anfang)
+    neu = ('"_skill_deny_unmapped_note": "Unerhoben: Ob dieser Client befehlsgenaue '
+           'Verbote auswertet, ist nicht gemessen.')
+    schreib(_p(root, MAN_CC), text[:anfang] + neu + text[ende:])
+
+
+def _38_namensraum_ohne_notiz(root: str) -> None:
+    """Ein eigener Namensraum nimmt die Richtungsregel ausser Kraft - ohne Begruendung."""
+    text = lies(_p(root, MAN_DD))
+    anfang = text.index('"_tool_names_note": "ERHOBEN am 2026-09-14')
+    ende = text.index('",', anfang)
+    schreib(_p(root, MAN_DD), text[:anfang] + '"_tool_names_note": "' + text[ende:])
+
+
+def _38_namensraum_falsch(root: str) -> None:
+    """Der Namensraum wird auf 'werkzeugnamen' gestellt - die Richtungsregel muss greifen."""
+    ersetze(_p(root, MAN_DD),
+            ('"tool_names_namespace": "eigen",', '"tool_names_namespace": "werkzeugnamen",', 2))
+
+
+sonde("41a", "Abwesenheitserklaerung ohne Enthaltung und ohne Fundstelle - der Fall "
+      "vom 2026-09-14", _41_behauptung,
+      "weder als Enthaltung aus noch belegt sie sie")
+
+sonde("41b", "Ein Datum allein ist kein Beleg", _41_datum_ohne_fundstelle,
+      "weder als Enthaltung aus noch belegt sie sie")
+
+sonde("41c", "Verlorener Gegenstand - kein Pack erklaert mehr eine Abwesenheit",
+      _41_gegenstand_weg, "hat ihren Gegenstand verloren")
+
+sonde("38j", "Eigener Namensraum ohne Begruendung - die Richtungsregel faellt "
+      "unbegruendet weg", _38_namensraum_ohne_notiz,
+      "tool_names_namespace ist 'eigen', aber")
+
+sonde("38k", "Namensraum auf 'werkzeugnamen' gestellt - die Richtungsregel muss greifen",
+      _38_namensraum_falsch, "Die Sperrliste ist damit enger als die Vorabfreigabe")
+
+gegenprobe("41a", "Die unveraenderten Packs bleiben unbeanstandet - eine Enthaltung und "
+           "ein Beleg", None, "weder als Enthaltung aus noch belegt sie sie")
+
+gegenprobe("41b", "Eine Enthaltung ohne Datum und ohne Fundstelle bleibt unbeanstandet - "
+           "sie ist selbst die Aussage", _41_enthaltung_ohne_beleg,
+           "weder als Enthaltung aus noch belegt sie sie")
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler

@@ -34,9 +34,9 @@
   },
   "skill_frontmatter": {
     "tools_format": "list",
-    "tool_names": {},
-    "tool_names_unmapped": ["read", "grep", "glob", "edit", "exec"],
-    "_tool_names_unmapped_note": "UNERHOBEN, nicht abwesend (CR-2026-062, D-78). Dieses Pack bildet die Werkzeugnamen des Frontmatters nicht ab: tools_format ist 'list', die Quellform bleibt stehen, und die installierte Fassung traegt die Verben read, grep, glob, edit und exec unveraendert als Werkzeugnamen. Wie dieser Client seine Frontmatter-Werkzeuge WIRKLICH nennt, ist nicht gemessen - Zeile S3 dieses Packs sagt es ausdruecklich: 'Das Durchreichen ist belegt, die Wirkung nicht.' Die Deklaration ist deshalb eine Aussage ueber den Belegstand, nicht ueber den Client, und sie haelt zugleich einen gemessenen WIDERSPRUCH fest: Dasselbe Manifest erklaert unter hook_tools_absent, dieser Client fuehre kein eigenes Suchwerkzeug - und reicht in jeder installierten Skilldatei 'grep' und 'glob' als Werkzeugnamen durch. Beides kann nicht stimmen; welche Seite falsch ist, entscheidet eine Erhebung und nicht dieser Eintrag (CR-2026-062, Befund 5).",
+    "tool_names": {"read": ["read"], "grep": ["grep"], "glob": ["glob"], "edit": ["edit"], "exec": ["exec"]},
+    "tool_names_namespace": "eigen",
+    "_tool_names_note": "ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-87, D-88). Die Abbildung ist die IDENTITAET, und das ist ein Messergebnis, kein Nichtstun: Dieser Client fuehrt fuer das Frontmatter ein EIGENES, normalisiertes und geschlossenes Vokabular, das mit seinen Laufzeit-Werkzeugnamen nicht uebereinstimmt. Gemessen an einer Sondendatei, die zwoelf Namen anbot: angenommen wurden read, grep, glob, edit, exec und web_search (Read und Grep gross geschrieben ebenfalls, auf Kleinschreibung normalisiert); VERWORFEN wurden find_file_by_name, write, skill und ein erfundener Name. Das heisst: glob ist hier RICHTIG, obwohl der Client kein Laufzeugwerkzeug dieses Namens fuehrt - das glob-foermige heisst zur Laufzeit find_file_by_name und steht deshalb in hook_tools, nicht hier. Ein erster Entwurf dieses Releases hat genau das verwechselt und find_file_by_name eingetragen; der Client verwarf den Eintrag lautlos, und die Vorabfreigabe schrumpfte von drei Namen auf zwei. Beim Pack claude-code fallen beide Namensraeume zusammen - deshalb ist der Unterschied bis 0.42.0 niemandem aufgefallen. GRENZE: Gemessen ist, welche Namen der Client ANNIMMT, nicht was er mit ihnen tut - Zeile S3 sagt es.",
     "drop_fields": []
   },
   "shared_core": [
@@ -96,9 +96,9 @@
   "agent_frontmatter": {
     "tools_field": "allowed-tools",
     "tools_format": "list",
-    "tool_names": {},
-    "tool_names_unmapped": ["read", "grep", "glob", "edit", "exec"],
-    "_tool_names_unmapped_note": "Wie skill_frontmatter.tool_names_unmapped - dieselbe Abwesenheit an der zweiten Stelle, an der dasselbe Vokabular abgebildet wird. Das Agentenprofil fw-reviewer traegt danach 'allowed-tools: read, grep, glob'; ob dieser Client damit die Zusage A1 einloest, ist unerhoben (CR-2026-062, D-78)."
+    "tool_names": {"read": ["read"], "grep": ["grep"], "glob": ["glob"], "edit": ["edit"], "exec": ["exec"]},
+    "tool_names_namespace": "eigen",
+    "_tool_names_note": "Wie skill_frontmatter - dasselbe eigene Frontmatter-Vokabular an der zweiten Stelle, an der es abgebildet wird (2026-09-14, tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-88). Das Agentenprofil fw-reviewer traegt danach unveraendert 'allowed-tools: read, grep, glob'; ob dieser Client damit die Zusage A1 einloest, ist weiterhin unerhoben."
   },
   "agent_start_tools": [],
   "agent_start_tools_absent": ["unerhoben"],
@@ -122,19 +122,18 @@
     ],
     "skill": []
   },
-  "_permission_tools_skill_note": "UNERHOBEN, nicht abwesend. Ob der Skill-Aufruf bei diesem Client ein eigener, rueckfragepflichtiger Werkzeugaufruf ist, ist nicht gemessen; beim Pack claude-code ist er es (D-82). Die leere Liste ist deshalb kein Befund, sondern eine Enthaltung: Sie laesst die zwoelf allow-Regeln fuer dieses Pack ersatzlos entfallen. Das ist die strengere Seite - eine fehlende Vorabfreigabe ist eine Rueckfrage mehr, nie eine Erlaubnis mehr (clientmap._regel_rendern bricht nur fuer deny und ask ab). Bauform wie hook_tools_absent nach D-47: Eine Abwesenheit wird erklaert, nie aus einer Luecke erraten.",
+  "_permission_tools_skill_note": "ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-89; Klaerungspunkt K-33 damit geschlossen). Der Skill-Aufruf IST bei diesem Client ein eigener Werkzeugaufruf: Das Werkzeug heisst skill, der Skillname steht im Argument skill (Laeufe K1, K1b, P2, P3). Die Liste bleibt trotzdem leer, und der Grund ist ein anderer als bisher: Es ist keine Schreibweise bekannt, mit der eine Regel dieser Datei den Aufruf erreicht. Skill(fw-code-explain) laeuft durch (P2), skill(fw-code-explain) laeuft durch (P3) - waehrend Read(**/.env) in derselben Datei und denselben Laeufen abweist (P1b, Kontrolllauf). Eine Regel zu schreiben, die nichts tut, waere die Bauform von D-66 und D-82. ZWEITER WEG, nicht gesucht: Die Slash-Form /fw-name wird CLIENTSEITIG in den Prompt expandiert - im user-Schritt der Mitschrift steht der Inhalt der SKILL.md, nicht der Befehl (K1b). Eine Schranke auf dem Werkzeug erreicht diesen Weg ohnehin nicht. Offen als K-34: ob dieser Client eine wirksame Schreibweise kennt.",
   "permission_tools_bare": [
     "mcp__*"
   ],
   "permission_path_prefix": "",
   "permission_exec_match": "literal",
   "permissions_extra": {},
-  "permissions_note": "Dieser Client kennt kein eigenes Suchwerkzeug; die allow-Regel fuer Suchen entfaellt und faellt damit auf den strengeren Standard zurueck.",
+  "permissions_note": "Die allow-Regel fuer Suchen entfaellt bei diesem Client und faellt damit auf den strengeren Standard zurueck - NICHT, weil es keine Suche gaebe (das stand hier bis 0.42.0 und ist gemessen falsch), sondern weil die Berechtigungsklasse Read(...) dieses Clients die Suchwerkzeuge mit umfasst: Ein deny Read(**/.env) weist einen grep-Aufruf auf dieselbe Datei ab, gemessen am 2026-09-14 in den Laeufen P4 und W1 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-87). Eine eigene Search-Regel waere damit eine zweite Schreibweise fuer dieselbe Zusage.",
   "hook_path_fields": ["file_path", "path"],
   "_hook_path_fields_note": "Wie beim Pack claude-code, an der eigenen Aufzeichnung belegt: Die Hook-Eingaben dieses Clients fuehren tool_input mit file_path. path steht daneben, weil ein zusaetzlich erkanntes Feld eine Verschaerfung ist und die Aufloesung sonst an einer Namensvariante vorbeilaeuft (CR-2026-056 E6).",
-  "hook_tools": {"read": ["read"], "search": [], "exec": ["exec"], "write": ["edit", "write"]},
-  "hook_tools_absent": ["search"],
-  "_hook_tools_absent_note": "Dieser Client fuehrt kein eigenes Suchwerkzeug - dieselbe Feststellung wie in der Verbtabelle des Packs, wo die search-allow-Regel deshalb entfaellt. Die Abwesenheit wird ausdruecklich erklaert, weil eine leere Liste allein ein Abbildungsfehler ist: Ein Pack soll eine Werkzeugklasse nicht dadurch aus der Durchsetzung nehmen koennen, dass es sie weglaesst. Der Validator prueft deshalb, dass ein hier genanntes Verb auch in permission_tools leer ist (CR-2026-047 E3, D-47).",
+  "hook_tools": {"read": ["read"], "search": ["grep", "find_file_by_name"], "exec": ["exec"], "write": ["edit", "write"]},
+  "_hook_tools_note": "Die Suchklasse ist ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-87) und seither hier gefuehrt. Bis 0.42.0 stand sie unter hook_tools_absent mit der Begruendung, dieser Client fuehre kein eigenes Suchwerkzeug - das ist gemessen FALSCH: Er fuehrt zwei, grep (ripgrep) und find_file_by_name (Glob-Muster). Die Folge war gemessen: Der erzeugte Matcher lautete read|exec|edit|write, und in einer Umgebung mit nur diesem Hook kam derselbe Secret-Wert, den ein read-Aufruf nicht bekam, ueber einen grep-Aufruf woertlich heraus (Laeufe H1 und H2). Das Hook-Skript selbst blockiert beides - es wurde nicht gefragt. Entlastung: Wie ausgeliefert trug die Berechtigungsschicht, weil die Klasse Read(...) dieses Clients die Suche mit umfasst (Laeufe P4 und W1); die fail-closed-Schicht (D-31) trug sie nicht, und sie ist die, die eine bearbeitete Berechtigungsdatei ueberleben soll (D-77).",
   "hook_project_dir_var": "DEVIN_PROJECT_DIR",
   "import_control": {
     "key": "read_config_from",
