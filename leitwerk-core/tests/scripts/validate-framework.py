@@ -120,8 +120,20 @@ Prüft (statisch, ohne laufenden KI-Client):
      werden die drei BEFEHLSSCHLITZE, nicht die vier Pfadschlitze des deny-Korbs - die
      stehen dort, wo Ueberzaehliges ohnehin zulaessig ist, und ihr Vergleich waere n:1.
      Ohne Overlay enthaelt sie sich; fehlt dort ein Platzhalter, meldet sie es
+ 43. Hook-Block der Berechtigungsdatei (D-92): Fuehrt ein Pack seine Hooks dort - und
+     beide ausgelieferten tun das -, traegt die Datei einen nichtleeren
+     PreToolUse-Block. Eine Konfiguration in der eigenen Hook-Datei des Packs ist keine,
+     weil der Client sie nicht liest; gemessen war der Hook eines Projekts so
+     einunddreissig Releases lang stumm, bei 0 Fehlern im Lauf. Geprueft wird das
+     VORHANDENSEIN - den Inhalt pruefen 15, 16 und 17
+ 44. Register der Uebungspraeparationen (D-93): Jede Kennung UEB-NN, die eine
+     Vorbedingung des Testkatalogs oder eines dezentralen Testblatts nennt, steht im
+     Register in onboarding/exercises/README.md - und jede registrierte Kennung wird von
+     mindestens einem Testfall gebraucht. Sie gleicht ZWEI REGISTER ab, nicht ein
+     Register gegen das Uebungsrepositorium: Das liegt ausserhalb dieses Repositoriums,
+     und ob eine Praeparation dort wirklich liegt, sieht kein Validator
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 42 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 44 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -4333,6 +4345,180 @@ def check_schlitzinhalte(root: str, man: dict) -> None:
                 f"hier: {', '.join(ohne_befehl) if ohne_befehl else 'keiner'}")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 43: Wo ein Pack seine Hooks fuehrt, stehen sie auch
+# ---------------------------------------------------------------------------
+#
+# ANLASS. Gemessen am 2026-09-14 beim Herrichten des Uebungsrepositoriums
+# (tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md, CR-2026-067): Seine
+# Berechtigungsdatei trug KEINEN hooks-Block. Die Hooks des Projekts standen in
+# .devin/hooks.v1.json - der Datei, aus der dieser Client keinen Hook ausfuehrt
+# (AP2-DD-10, D-32, seit 0.25.0). Der Hook war damit seit der Erstinstallation
+# wirkungslos, EINUNDDREISSIG Releases lang, und der Validator meldete durchgehend
+# 0 Fehler.
+#
+# GEMESSEN, NICHT GESCHLOSSEN. In einer frischen 0.44.0-Installation wurde der Block
+# entfernt und der Lauf wiederholt: mit Block 2 Fehler, ohne Block DIESELBEN 2 Fehler
+# (beide Artefakte der Testinstallation). Kein Lauf sieht das Fehlen.
+#
+# WARUM DAS SCHWERER WIEGT ALS EINE VERWAISTE DATEI. Bei beiden ausgelieferten Packs ist
+# dieser Hook die einzige technische Schranke, die eine Werkzeugeingabe prueft, bevor sie
+# wirkt - Secrets nach 02-privacy.md und Schreibzugriffe auf den Kern ueber Werkzeuge, die
+# die Berechtigungsdatei nicht erfasst. Die Berechtigungsdatei steht in shared_seed und
+# wird nach der Erstinstallation nie wieder geschrieben (D-76): Ein Projekt, das den Block
+# einmal nicht hat, bekommt ihn durch kein Update.
+#
+# UND PRUEFUNG 18 BESCHRIEB DIE HALBE MIGRATION. Ihre Warnung sagt, die verwaiste Datei
+# sei von Hand zu loeschen. Wer ihr woertlich folgt und sonst nichts tut, hat danach GAR
+# KEINEN Hook mehr. Ihre Meldung nennt seit diesem Release beide Haelften; nachgezaehlt
+# wird die zweite hier.
+#
+# ENTHALTUNG (CR-2026-067 E3). Geprueft wird nur ein Pack, das seine Hooks in der
+# Berechtigungsdatei fuehrt - erkennbar daran, dass <HOOKS_FILE> und permissions_file auf
+# dieselbe Datei zeigen. Beide ausgelieferten Packs tun das; ein kuenftiges Pack mit
+# eigener Hook-Datei bleibt ungeprueft. Dieselbe Bedingung hat Pruefung 18.
+#
+# GRENZE (E2). Geprueft wird das VORHANDENSEIN eines nichtleeren PreToolUse-Blocks, nicht
+# sein Inhalt. Den pruefen 15 (Interpreter), 16 (Werkzeugabdeckung) und 17 (fail-closed) -
+# sie greifen, sobald der Block da ist. Ein Block, der auf ein fremdes Skript zeigt, laeuft
+# durch DIESE Pruefung und wird von 15 gefangen.
+
+
+def check_hookblock(root: str, man: dict) -> None:
+    """Pruefung 43 (D-92): Die Berechtigungsdatei traegt den Hook, den das Pack dort fuehrt."""
+    rel = man.get("permissions_file")
+    hooks_ort = (man.get("runtime_placeholders") or {}).get("<HOOKS_FILE>")
+    if not rel or hooks_ort != rel:
+        return  # Pack mit eigener Hook-Datei - Enthaltung (E3)
+    pfad = os.path.join(root, *rel.split("/"))
+    if not os.path.exists(pfad):
+        return  # check_required meldet die fehlende Datei bereits
+    try:
+        daten = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return  # check_config hat das bereits gemeldet
+    hooks = daten.get("hooks")
+    eintraege = hooks.get("PreToolUse") if isinstance(hooks, dict) else None
+    kommandos = [h for e in (eintraege or []) if isinstance(e, dict)
+                 for h in (e.get("hooks") or []) if isinstance(h, dict) and h.get("command")]
+    if kommandos:
+        return
+
+    runtime = (man.get("runtime_placeholders") or {}).get("<RUNTIME_DIR>") or ""
+    verwaist = [n for n in VERWAISTE_HOOK_DATEIEN
+                if runtime and os.path.exists(os.path.join(root, *runtime.split("/"), n))]
+    daneben = (f" Daneben liegt {runtime}/{verwaist[0]}: Dort steht eine Regelmenge, die "
+               f"aussieht, als gälte sie – der Client liest diese Datei nicht (D-32)."
+               if verwaist else "")
+    fehlt = "trägt keinen 'hooks'-Block" if not isinstance(hooks, dict) else \
+            "trägt einen 'hooks'-Block ohne ein einziges PreToolUse-Kommando"
+    err(f"{rel}: {fehlt}. Dieses Pack führt seine Hooks in der Berechtigungsdatei, und "
+        f"dieser Hook ist seine einzige technische Schranke vor dem Werkzeugaufruf – "
+        f"Secrets in der Eingabe und Schreibzugriffe auf den Kern über Wege, welche die "
+        f"Berechtigungsregeln nicht erfassen.{daneben} Die Datei wird nach der "
+        f"Erstinstallation nie wieder geschrieben (D-76): Der Block kommt durch kein "
+        f"Update nach, er ist von Hand aus einer frischen Installation zu übernehmen "
+        f"(D-92)")
+
+
+# ---------------------------------------------------------------------------
+# Pruefung 44: Das Register der Uebungspraeparationen und die Vorbedingungen des
+# Testkatalogs decken sich
+# ---------------------------------------------------------------------------
+#
+# ANLASS. Gemessen am 2026-09-14 (CR-2026-067, Befund 2): onboarding/exercises/README.md
+# verlangte DREI Koeder. Abgezaehlt gegen die Vorbedingungen des Testkatalogs braucht ein
+# fahrbares Uebungsrepositorium SIEBEN Praeparationen fuer NEUN Testfaelle - dazu eine
+# .env-Testdatei (FW-DS-02), einen praeparierten Codekommentar (FW-PI-02), eine Injektion
+# in einer Testdatei (SK-006-N04) und einen Regeltext mit bewusstem Widerspruch
+# (FW-KO-03). Keine der vier stand in der Liste, und der Katalog fuehrte alle neun Faelle
+# als 'offen', also als fahrbar. EINE ZUSAGE OHNE DEN MECHANISMUS DAHINTER - der
+# wiederkehrende Befundtyp dieses Projekts, diesmal an seinem eigenen Pruefstand.
+#
+# WIE DIE ZUORDNUNG ENTSTEHT (E5). Jede Praeparation traegt eine Kennung UEB-NN. Sie steht
+# im Register in der ersten Spalte und in der Vorbedingungszelle jedes Testfalls, der sie
+# braucht. Der Vergleich laeuft ueber die Kennung und ist damit exakt - nicht ueber
+# Stichwoerter wie "Koeder" oder "praepariert", die Pruefung 29 als Bauform schon einmal
+# teuer bezahlt hat: Sie erkennt nur bekannte Bedingungswoerter.
+#
+# WARUM UEB- UND NICHT P1 (E5). P1 und P3 sind im Kern als Prinzipienkennungen vergeben
+# (framework/core/05-working-model.md). Eine zweite Bedeutung desselben Zeichens in
+# derselben Dokumentfamilie ist ein Fehler, den dieses Projekt schon gemacht hat: Am
+# 2026-09-13 trug eine Gegenprobe die synthetische Kennung G-18 - dieselbe, die 0.36.0
+# wirklich vergeben hat.
+#
+# BEIDE RICHTUNGEN (E6). Eine Kennung im Katalog ohne Registereintrag ist ein Tippfehler
+# oder eine unregistrierte Praeparation; eine Kennung im Register, die kein Testfall
+# braucht, ist eine tote Praeparation, die jemand pflegt. Die dezentralen TESTS.md zaehlen
+# mit - Verfahren Nr. 6 des Katalogs erklaert sie zu seinem Teil.
+#
+# GRENZE, UND SIE IST DIE WICHTIGE. Diese Pruefung faengt NICHT den Fall, der sie
+# ausgeloest hat: einen Testfall, der eine Praeparation braucht und keine Kennung nennt.
+# Sie verhindert seine WIEDERHOLUNG nur, soweit die Kennung gesetzt wird - dieselbe
+# Ehrlichkeit wie Gegenstand 2 von Pruefung 38 (er zaehlt Deklarationen, nicht
+# Richtigkeit) und wie Pruefung 40 (sie zaehlt Nennungen, nicht Pruefungen).
+#
+# ZWEITE GRENZE. Sie gleicht zwei Register ab, nicht ein Register gegen die Wirklichkeit.
+# Ob die Praeparation UEB-02 im Uebungsrepositorium wirklich liegt, kann kein Validator
+# DIESES Repositoriums feststellen: Das Uebungsrepositorium liegt ausserhalb. Das ist eine
+# Enthaltung, keine Stille.
+UEB_REGISTER = "onboarding/exercises/README.md"
+UEB_ANKER = "### Register der Präparationen"
+UEB_KENNUNG = re.compile(r"\bUEB-\d{2}\b")
+
+
+def _ueb_katalogdateien(root: str) -> list:
+    """Der Testkatalog und die dezentralen Testblaetter je Skill (Verfahren Nr. 6)."""
+    treffer = [os.path.join(KERN, "tests", "TEST_CATALOG.md")]
+    basis = os.path.join(root, KERN, "framework")
+    for dirpath, dirnames, filenames in os.walk(basis):
+        dirnames[:] = sorted(d for d in dirnames if d != "__pycache__")
+        if "TESTS.md" in filenames:
+            treffer.append(os.path.relpath(os.path.join(dirpath, "TESTS.md"), root))
+    return sorted(treffer)
+
+
+def check_praeparationsregister(root: str) -> None:
+    """Pruefung 44 (D-93): Registrierte Praeparationen und gebrauchte decken sich."""
+    pfad = os.path.join(root, KERN, *UEB_REGISTER.split("/"))
+    if not os.path.exists(pfad):
+        err(f"{KERN}/{UEB_REGISTER}: fehlt. Prüfung 44 hält dort das Register der "
+            f"Übungspräparationen gegen die Vorbedingungen des Testkatalogs (D-93)")
+        return
+    text = read(pfad)
+    if UEB_ANKER not in text:
+        err(f"{KERN}/{UEB_REGISTER}: führt kein Register mehr (gesucht: "
+            f"'{UEB_ANKER}'). Prüfung 44 hat ihren Gegenstand verloren und bestünde "
+            f"sonst leise – die Überschrift ist Teil des Nachweises (D-23, D-93)")
+        return
+    registriert = set(UEB_KENNUNG.findall(text.split(UEB_ANKER, 1)[1]))
+    if not registriert:
+        err(f"{KERN}/{UEB_REGISTER}: das Register führt keine einzige Kennung der Form "
+            f"UEB-NN – Prüfung 44 hätte nichts zu vergleichen (D-93)")
+        return
+
+    gebraucht: dict = {}
+    for rel in _ueb_katalogdateien(root):
+        pfad_k = os.path.join(root, *rel.split(os.sep))
+        if not os.path.exists(pfad_k):
+            continue
+        for kennung in UEB_KENNUNG.findall(read(pfad_k)):
+            gebraucht.setdefault(kennung, set()).add(rel.replace(os.sep, "/"))
+
+    for kennung in sorted(set(gebraucht) - registriert):
+        stellen = ", ".join(sorted(gebraucht[kennung]))
+        err(f"{stellen}: nennt die Präparation {kennung}, die das Register in "
+            f"{KERN}/{UEB_REGISTER} nicht führt. Eine Vorbedingung, die auf eine "
+            f"unregistrierte Präparation zeigt, ist eine Zusage ohne den Mechanismus "
+            f"dahinter – der Testfall gilt als fahrbar, und niemand weiß, was "
+            f"herzustellen ist (D-93)")
+    for kennung in sorted(registriert - set(gebraucht)):
+        err(f"{KERN}/{UEB_REGISTER}: führt die Präparation {kennung}, die kein Testfall "
+            f"nennt – weder der Testkatalog noch ein dezentrales Testblatt. Eine "
+            f"Präparation, die niemand braucht, wird gepflegt und nicht benutzt; "
+            f"entweder trägt ein Testfall sie in seine Vorbedingung ein, oder sie fällt "
+            f"aus dem Register (D-93)")
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -4392,6 +4578,8 @@ def main() -> int:
     check_pruefregister(root)
     check_abwesenheitsbeleg(root)
     check_schlitzinhalte(root, man)
+    check_hookblock(root, man)
+    check_praeparationsregister(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
