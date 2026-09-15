@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.47.0 (2026-09-15)
+## Stand nach Release 0.48.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -21,18 +21,29 @@ validiert und übertragbar".* Fünf Kriterien, alle im Einflussbereich des Frame
 Pilot, Onboarding und organisatorische Freigabe sind **ausdrücklich keine** Vorbedingung,
 sondern Aufgabe der aufnehmenden Organisation.
 
-**Hier stehen keine Zahlen, sondern die Befehle, die sie ausrechnen.** Das ist Absicht und
-folgt dem Befund von 0.42.0: Fünf handgepflegte Zahlen über den eigenen Prüfstand waren
-nach zwölf Releases sämtlich falsch, ohne dass eine davon je falsch geschrieben worden
-wäre. **Ein Fortschrittsstand über das eigene Repositorium ist derselbe Gegenstand.**
+**Seit 0.48.0 steht der Stand hier als Zahl – weil eine Prüfung ihn ausrechnet.** Bis
+dahin standen hier bewusst nur *die Befehle*, die ihn ausrechnen: die Lehre aus 0.42.0,
+wo fünf handgepflegte Zahlen über den eigenen Prüfstand nach zwölf Releases sämtlich
+falsch waren. **Die Lehre war richtig und die Umsetzung hat sie nicht eingelöst.** Ein
+Befehl, den niemand ausführt, ist keine Ausrechnung, sondern eine Zahl mit einem
+Zwischenschritt – und weil ihn niemand ausführt, fällt auch nicht auf, dass er das
+Falsche zählt. Am 2026-09-15 wurden die vier Befehle zum ersten Mal ausgeführt:
+**alle vier lagen daneben** (`CR-2026-070`, D-98).
 
-| # | Kriterium (D-11) | Gezählt mit |
-|---|---|---|
-| **1** | kein unbearbeiteter `VERIFY`-Marker | `grep -rl "VERIFY AGAINST CURRENT CLIENT DOCUMENTATION" --include=*.md --include=*.json --include=*.py .` (ohne `build/out/`) |
-| **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebnisspalte in `tests/TEST_CATALOG.md`, dazu die dezentralen `TESTS.md` je Skill |
-| **3** | alle Modulstatus oberhalb `entwurf` | Steckbriefzeile mit dem Statuswert `entwurf` in `framework/core/`, `framework/skills/*/SKILL.md`, `framework/role-packs/` und `framework/tech-packs/` |
-| **4** | keine Decision Records im Status `entschieden (Vorschlag)` | `governance/DECISION_LOG.md` |
-| **5** | Übernahme in ein zweites Projekt nachgewiesen | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
+**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 69, Kriterium 4 = 9**
+
+Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
+und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
+nach; wer es vergisst, sieht es im nächsten Lauf. Stehen alle vier auf `0` und der Lauf
+ist grün, **dann ist das die Meldung** – erzwungen statt behauptet.
+
+| # | Kriterium (D-11) | Wie Prüfung 46 zählt | Was die alte Regel übersah |
+|---|---|---|---|
+| **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/` |
+| **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte |
+| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 steht über `entwurf` – das Lebenszyklusmodell aus `08-skill-conventions.md` ist nie angewendet worden |
+| **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9 |
+| **5** | Übernahme in ein zweites Projekt nachgewiesen | **zählt Prüfung 46 nicht** – eine Feststellung, keine Zahl. Eine Enthaltung, und sie steht im Kopfkommentar | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
 
 **Der größte Posten ist Kriterium 2, und zwar mit Abstand.** Alles, was ein Skript leisten
 kann, ist geleistet; was offen steht, trägt fast durchweg das Prüfmittel `sitzung` – also
@@ -71,15 +82,64 @@ Release erzeugt (`CR-2026-067`, Prüfungen 43 und 44).
 **Der erste Sitzungstest ist damit fahrbar** – er ist nicht gefahren. Das ist der nächste
 Schritt und kostet Modellzeit, keine Vorarbeit mehr.
 
-#### Was den Fokus halten würde, ohne Disziplin zu verlangen
+#### Der Fokus hält sich selbst – seit 0.48.0
 
-Vier der fünf Kriterien sind maschinell zählbar. **Eine Prüfung, die sie nachzählt, wäre der
-natürliche Nachfolger von Prüfung 40** – die tut für den Prüfapparat genau das. Dann stünde
-der 1.0.0-Stand nicht in einem gepflegten Absatz, sondern im Validatorlauf, und er wäre
-jeden Tag richtig. **Offen ist der Zuschnitt:** Ein Zähler, der bei jedem offenen Punkt einen
-Fehler meldete, machte jeden Lauf rot und wäre binnen eines Releases abgeschaltet; ein
-Zähler, der nur berichtet, ist keine Prüfung. **Das gehört entschieden, bevor etwas gebaut
-wird.**
+**Prüfung 46 ist gebaut** (`CR-2026-070`, D-98, D-99). Die Ermessensfrage, die hier fünf
+Releases lang offenstand, ist entschieden, und zwar gegen beide naheliegenden Antworten:
+Ein Zähler, der bei jedem offenen Punkt einen Fehler meldete, ergäbe heute **225 Fehler**,
+machte jeden Lauf rot und wäre binnen eines Releases abgeschaltet; ein Zähler, der nur
+berichtet, ist keine Prüfung. **Gewählt ist die Bauform von Prüfung 40 und 31:** Der Stand
+steht ausgerechnet an genau einer Stelle, und die Prüfung hält die geschriebene Zahl gegen
+die gezählte. **Nicht der offene Punkt ist der Fehler, sondern die falsche Zahl.**
+
+**Was das beim Bauen gekostet hat, war der eigentliche Ertrag:** Um die Ermessensfrage zu
+entscheiden, mussten die vier Zahlen einmal wirklich ausgerechnet werden – und dabei fiel
+auf, dass **alle vier Zählregeln danebengreifen**. Der Stand des einzigen offenen
+Meilensteins dieses Repositoriums war an vier von vier Stellen unrichtig.
+
+### Was 0.48.0 gebracht hat – alle vier Zählregeln des 1.0.0-Standes griffen daneben
+
+**Kandidat 2 der Übergabe war der D-11-Zähler**, und die Roadmap verlangte ausdrücklich,
+seine Ermessensfrage **vor** dem Bauen zu entscheiden. Um sie zu entscheiden, mussten die
+vier Zahlen einmal wirklich ausgerechnet werden – **und dabei fiel der Befund an**
+(`CR-2026-070`, D-98, D-99).
+
+| Frage | Ergebnis |
+|---|---|
+| Ist die Ermessensfrage entscheidbar gewesen? | **Ja, und gegen beide naheliegenden Antworten.** Ein Zähler, der jeden offenen Punkt meldete, ergäbe **225 Fehler** und wäre binnen eines Releases abgeschaltet; einer, der nur berichtet, ist keine Prüfung. Gewählt ist die Bauform von Prüfung 40 und 31 |
+| *Nicht gesucht:* Stimmten die vier Zahlen? | **Keine einzige.** 27 statt **29**, 103 statt **118**, 16 statt **69**, 16 statt **9**. Zwei zu klein, eine viermal zu klein, eine fast doppelt zu groß |
+| Ist eine davon je falsch geschrieben worden? | **Nein – das ist der Punkt.** Jede ist das richtige Ergebnis einer Regel, die weniger kann, als ihr Kriterium verlangt |
+| Was übersah Regel 1? | **Eine von zwei registrierten Markerschreibweisen.** Die clientgebundene Altform trägt dieselbe Frist „vor Version 1.0.0" – und allein im Pack `devin-desktop` sieben Fundstellen, dazu zwei in dessen `root-template/`, also in einer Datei, die **jede** Installation bekommt |
+| Was übersah Regel 2? | **Die dreizehnte `TESTS.md`.** „je Skill" wurde als zwölf Dateien gelesen; die des Role-Pack-Skills mit 15 offenen Zellen fehlte |
+| Was übersah Regel 3? | **Drei Viertel des Bestands** – und sie nannte `framework/core/` als Zählort, wo es gar keine Statuszeile gibt. **Keiner der 69 Steckbriefe steht über `entwurf`:** Das Lebenszyklusmodell dieses Frameworks ist noch nie angewendet worden |
+| Was übersah Regel 4? | **Nichts – sie zählte zu viel.** Ein roher `grep` nahm die Legende, fünf Klärungspunkte und **`D-11` selbst** mit |
+| *Nicht gesucht:* Wiederholte sich der Fehler beim Bauen? | **Ja.** Die erste Fassung des Zählers lief über `glob`, das Pfadbestandteile mit führendem Punkt überspringt – und übersah damit genau die zwei Träger, die den Befund zu Kriterium 1 tragen. **Sie hätte 27 gemeldet und die geglaubte Zahl zufällig bestätigt** |
+
+**Der Prüfapparat fing dabei zweimal seinen eigenen Erbauer.** Prüfung 14 meldete den
+Kopfkommentar der neuen Prüfung, weil er die clientgebundene Markerform wörtlich
+hinschrieb; und Sonde `46a` fiel, weil der Zahlenvergleich über `soll in text` lief und
+`"Kriterium 4 = 9"` in `"Kriterium 4 = 99"` steckt. **Beide Male hat der Lauf gefunden,
+was kein Lesen gefunden hätte.**
+
+**Die Lehre, die über diesen Fall hinausgeht:** Die Roadmap führte seit 0.42.0 bewusst
+keine Zahlen, sondern *die Befehle, die sie ausrechnen*. Das war die richtige Lehre – und
+sie ist nicht eingelöst worden. **Ein Befehl, den niemand ausführt, ist keine Ausrechnung,
+sondern eine Zahl mit einem Zwischenschritt.** Und weil ihn niemand ausführt, fällt auch
+nicht auf, dass er das Falsche zählt.
+
+### Was 0.48.0 offen lässt
+
+- **Der Zähler misst Zahlen, nicht Fortschritt.** Ein Modulstatus, der gehoben wird, ohne
+  dass jemand das Modul angesehen hat, senkt Kriterium 3 um eins. Die fachliche Abnahme
+  ist nicht maschinell, und die Prüfung behauptet es nicht.
+- **Kriterium 5 bleibt unbeobachtet** – es ist keine Zahl. Eine Enthaltung, und sie steht
+  im Kopfkommentar.
+- **Kriterium 3 ist jetzt sichtbar der zweitgrößte Posten** und war es vorher auch schon:
+  69 Steckbriefe, keiner über `entwurf`. **Das ist kein Messfehler, sondern die Lage** –
+  und sie ist mit einer fachlichen Abnahme je Träger zu schließen, nicht mit einem Skript.
+- **Ob 29 die richtige Zahl für Kriterium 1 ist, hängt an einer Entscheidung**, nicht an
+  einer Messung: Die Zahl enthält die Register- und Glossarzeilen des Markers selbst
+  (E3). Sie ist ein **Pegel**, kein Arbeitsvorrat.
 
 ### Was 0.47.0 gebracht hat – zwei von zwei Projekten versionierten den Bytecode des Kerns
 

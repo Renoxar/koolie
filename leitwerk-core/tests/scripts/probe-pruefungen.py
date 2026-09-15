@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 45, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 46, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -44,6 +44,7 @@ Was dieses Skript **nicht** leistet: Es belegt, dass die Pruefungen wirken, nich
 ihre Gegenstaende richtig sind. Die Grenze jeder einzelnen Pruefung steht in deren
 Kopfkommentar in validate-framework.py.
 """
+import glob
 import hashlib
 import io
 import json
@@ -3399,6 +3400,215 @@ def sonden_bytecode() -> None:
 buendel(sonden_bytecode,
         "Gegenstand 2 der Pruefung 45 an einem echten Repositorium: ohne git, ohne "
         "verfolgten Bytecode, und mit dem Fall des Piloten")
+
+
+# --- Pruefung 46: der 1.0.0-Stand (CR-2026-070, D-98, D-99) --------------------------
+#
+# Sechs Sonden, je eine auf einen eigenen Gegenstand, und zwei davon fuer die zwei
+# Richtungen: Ein Kriterium, das ZURUECKFAELLT, und ein Fortschritt, der NICHT
+# NACHGEZOGEN ist, sind beide ein Fehler. Ohne die zweite Richtung waere der Zaehler ein
+# Fortschrittsbalken - er hielte still, solange sich nichts verschlechtert, und der
+# Stand stuende wieder daneben.
+#
+# Drei Gegenproben, und sie treffen genau die Stellen, an denen die alten Zaehlregeln zu
+# breit oder zu schmal waren: ein Klaerungspunkt mit demselben Statuswort (die alte
+# Regel zaehlte fuenf davon mit) und ein Marker in einem datierten Protokoll (der
+# Zaehlbereich schliesst ihn aus, und das muss er auch tun).
+M46_ANKER = "die Standzeile steht 0x statt genau einmal"
+M46_K1 = "Kriterium 1 von D-11"
+M46_K2 = "Kriterium 2 von D-11"
+M46_K3 = "Kriterium 3 von D-11"
+M46_K4 = "Kriterium 4 von D-11"
+M46_NICHT_NACHGEZOGEN = "der Fortschritt ist nicht nachgezogen"
+P46_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
+P46_STAND = "Gezählt von Prüfung 46: Kriterium 1 = "
+# Der Marker in seiner clientneutralen Form - zusammengesetzt, weil eine woertliche
+# Nennung in diesem Skript selbst eine Fundstelle waere und Kriterium 1 um eins hoebe.
+# Dieses Skript liegt im Zaehlbereich.
+P46_MARKER = "<VERIFY AGAINST CURRENT " + "CLIENT" + " DOCUMENTATION>"
+
+
+def _46_zahl_verstellen(root: str, welche: int, neu: str) -> None:
+    """Eine der vier Zahlen der Standzeile auf einen anderen Wert setzen."""
+    pfad = P(root, P46_ROADMAP)
+    zeilen = lies(pfad).split("\r\n")
+    treffer = [i for i, z in enumerate(zeilen) if P46_STAND in z]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "ROADMAP.md: Standzeile steht %dx, erwartet genau einmal" % len(treffer))
+    teile = re.split(r"(= \d+)", zeilen[treffer[0]])
+    stellen = [i for i, s in enumerate(teile) if s.startswith("= ")]
+    if len(stellen) != 4:
+        raise Praeparationsfehler(
+            "ROADMAP.md: Standzeile fuehrt %d Zahlen, erwartet vier" % len(stellen))
+    teile[stellen[welche]] = "= " + neu
+    zeilen[treffer[0]] = "".join(teile)
+    schreib(pfad, "\r\n".join(zeilen))
+
+
+def _46_standzeile_weg(root: str) -> None:
+    """Die Standzeile ganz entfernen - der verlorene Anker."""
+    pfad = P(root, P46_ROADMAP)
+    zeilen = lies(pfad).split("\r\n")
+    behalten = [z for z in zeilen if P46_STAND not in z]
+    if len(behalten) == len(zeilen):
+        raise Praeparationsfehler("ROADMAP.md: keine Standzeile gefunden")
+    schreib(pfad, "\r\n".join(behalten))
+
+
+def _46_marker_dazu(root: str) -> None:
+    """Eine neue unverifizierte Aussage im Kern - Kriterium 1 steigt um eins."""
+    pfad = P(root, "leitwerk-core/framework/core/03-security.md".replace("/", os.sep))
+    schreib(pfad, lies(pfad) + "\r\n> Sondenzeile: Wirkung der Sandbox je "
+                               "Betriebssystem " + P46_MARKER + ".\r\n")
+
+
+def _46_testblatt_dazu(root: str) -> None:
+    """Ein Testblatt an einem Ort, den eine Ablagenliste uebersaehe.
+
+    Genau der Befund, der Pruefung 46 ausgeloest hat: Die alte Regel las "die dezentralen
+    TESTS.md je Skill" als zwoelf Dateien, und die dreizehnte lag unter role-packs/.
+    Diese Sonde legt eine vierzehnte unter tech-packs/ an - eine Ablagenliste, die die
+    dreizehnte uebersah, uebersaehe sie ebenso.
+    """
+    ordner = P(root, "leitwerk-core/framework/tech-packs/_template".replace("/", os.sep))
+    schreib(os.path.join(ordner, "TESTS.md"),
+            "# Sondentestblatt\r\n\r\n"
+            "| Test-ID | Ziel | Prüfmethode | Ergebnisstatus |\r\n"
+            "|---|---|---|---|\r\n"
+            "| SO-001 | Sondenfall | sitzung | offen |\r\n")
+
+
+def _46_steckbrief_dazu(root: str) -> None:
+    """Ein neues Modul auf `entwurf` - Kriterium 3 steigt um eins."""
+    schreib(P(root, "leitwerk-core/prompts/13-sondenprompt.md".replace("/", os.sep)),
+            "# Sondenprompt\r\n\r\n"
+            "| Attribut | Wert |\r\n|---|---|\r\n"
+            "| ID | `FW-PR-13` |\r\n| Version | `0.1.0` |\r\n"
+            "| Status | `entwurf` |\r\n| Owner (Rolle) | `<FRAMEWORK_OWNER>` |\r\n")
+
+
+def _46_record_gehoben(root: str) -> None:
+    """D-10 aus `entschieden (Vorschlag)` heben - Kriterium 4 SINKT um eins.
+
+    Die zweite Richtung: Fortschritt, der nicht nachgezogen ist. Ohne diese Sonde
+    belegte der Lauf nur, dass der Zaehler Rueckfaelle meldet.
+    """
+    pfad = P(root, "leitwerk-core/governance/DECISION_LOG.md".replace("/", os.sep))
+    zeilen = lies(pfad).split("\r\n")
+    treffer = [i for i, z in enumerate(zeilen) if z.startswith("| D-10 |")]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "DECISION_LOG.md: Zeile D-10 steht %dx, erwartet genau einmal"
+            % len(treffer))
+    if "entschieden (Vorschlag)" not in zeilen[treffer[0]]:
+        raise Praeparationsfehler(
+            "DECISION_LOG.md: D-10 traegt nicht mehr 'entschieden (Vorschlag)'")
+    zeilen[treffer[0]] = zeilen[treffer[0]].replace(
+        "entschieden (Vorschlag)", "entschieden (Sondenlauf)", 1)
+    schreib(pfad, "\r\n".join(zeilen))
+
+
+def _46_klaerungspunkt_dazu(root: str) -> None:
+    """Ein Klaerungspunkt mit demselben Statuswort - er ist KEIN Decision Record.
+
+    Die alte Zaehlregel war ein roher grep und zaehlte fuenf solcher Zeilen mit. D-11
+    sagt "Decision Records"; ein Klaerungspunkt ist keiner.
+    """
+    pfad = P(root, "leitwerk-core/governance/DECISION_LOG.md".replace("/", os.sep))
+    frei(pfad, "K-36")
+    zeile_nach(pfad, "| K-35 |",
+               "| K-36 | Sondenklärungspunkt | niedrig | Sondenlauf | "
+               "Framework Owner | entschieden (Vorschlag): Sondenauflösung |")
+
+
+def _46_protokollmarker(root: str) -> None:
+    """Ein Marker in einem datierten Protokoll - ausserhalb des Zaehlbereichs.
+
+    Die Gattungsausnahme aus E2. Ein Bericht von gestern ist nicht bearbeitbar; zaehlte
+    er mit, stiege Kriterium 1 mit jedem Protokoll, das den Marker erwaehnt, und koennte
+    nie sinken.
+    """
+    ordner = P(root, "leitwerk-core/tests/protocols".replace("/", os.sep))
+    schreib(os.path.join(ordner, "2026-09-15-sondenprotokoll.md"),
+            "# Sondenprotokoll\r\n\r\nGemessen: Mustersemantik " + P46_MARKER + ".\r\n")
+
+
+sonde("46a", "Eine Zahl der Standzeile steht zu hoch - der Zaehler meldet den nicht "
+             "nachgezogenen Fortschritt", lambda r: _46_zahl_verstellen(r, 3, "99"),
+      M46_NICHT_NACHGEZOGEN)
+
+sonde("46b", "Ohne Standzeile hat Pruefung 46 ihren Gegenstand verloren und sagt es, "
+             "statt leise zu bestehen", _46_standzeile_weg, M46_ANKER)
+
+sonde("46c", "Eine neue unverifizierte Aussage im Kern hebt Kriterium 1, ohne dass "
+             "jemand die Standzeile anfasst", _46_marker_dazu, M46_K1)
+
+sonde("46d", "Ein Testblatt an einer Ablage, die keine Liste kennt, hebt Kriterium 2 - "
+             "der Befund dieses Antrags", _46_testblatt_dazu, M46_K2)
+
+sonde("46e", "Ein neues Modul auf entwurf hebt Kriterium 3, auch ausserhalb der vier "
+             "frueher genannten Ablagen", _46_steckbrief_dazu, M46_K3)
+
+sonde("46f", "Ein gehobener Decision Record senkt Kriterium 4 - auch Fortschritt ohne "
+             "Nachziehen ist eine Abweichung", _46_record_gehoben, M46_K4)
+
+gegenprobe("46a", "Das unveraenderte Repositorium bleibt unbeanstandet - alle vier "
+                  "Zahlen der Standzeile stimmen", None, "D-11")
+
+gegenprobe("46b", "Ein Klaerungspunkt mit demselben Statuswort bleibt ungezaehlt - "
+                  "die alte Regel zaehlte fuenf davon mit", _46_klaerungspunkt_dazu,
+           M46_K4)
+
+gegenprobe("46c", "Ein Marker in einem datierten Protokoll bleibt ungezaehlt - ein "
+                  "Bericht von gestern ist nicht bearbeitbar", _46_protokollmarker,
+           M46_K1)
+
+
+# --- Selbstprobe C1: der Baumdurchlauf sieht mehr als die Mustersuche ----------------
+#
+# ANLASS: Die erste Fassung des Zaehlers lief ueber glob.glob(..., recursive=True).
+# glob ueberspringt Pfadbestandteile, die mit einem Punkt beginnen - damit fehlten
+# fuenfzehn Dateien des Kerns, darunter genau die zwei Traeger
+# clients/*/root-template/.devin/README.md und .../.claude/README.md, die den Befund zu
+# Kriterium 1 tragen. Der Zaehler haette 27 gemeldet und damit zufaellig die geglaubte
+# Zahl bestaetigt.
+#
+# Eine Zaehlregel, die einen Traeger still ueberspringt, war der ANLASS dieses Antrags.
+# Sie ist beim Bauen der Abhilfe ein zweites Mal entstanden - und eine benannte Falle,
+# in die man zweimal tritt, gehoert in den Code (D-74). Diese Probe zaehlt beide
+# Verfahren auf dem echten Baum gegeneinander ab: Findet glob genauso viel wie os.walk,
+# ist entweder der Bestand ohne versteckte Traeger - dann sagt sie das - oder jemand hat
+# den Zaehler zurueckgebaut.
+#
+# GRENZE: Sie misst den Bestand dieses Repositoriums, nicht den eines beliebigen. In
+# einem Projekt ohne versteckte Kerndateien ist der Unterschied null, und dann belegt
+# sie nichts - das steht dann in ihrer eigenen Meldung.
+def selbstprobe_baumdurchlauf() -> None:
+    """glob gegen os.walk auf dem echten Kern - der Fallstrick aus CR-2026-070 E7."""
+    kern = os.path.join(QUELLE, "leitwerk-core")
+    mit_glob = {p for p in glob.glob(os.path.join(kern, "**", "*"), recursive=True)
+                if os.path.isfile(p)}
+    mit_walk = set()
+    for ordner, _, dateien in os.walk(kern):
+        for name in dateien:
+            mit_walk.add(os.path.join(ordner, name))
+    versteckt = sorted(mit_walk - mit_glob)
+    melde("SELBSTPROBE", "C1", bool(versteckt),
+          "Der Baumdurchlauf des Zaehlers findet %d Kerndateien, die eine Mustersuche "
+          "ueberspringt" % len(versteckt))
+    if not versteckt:
+        notiz("        glob und os.walk finden dasselbe. Entweder traegt der Kern keine "
+              "versteckte Datei mehr - dann belegt diese Probe nichts -, oder der "
+              "Zaehler ist auf glob zurueckgebaut worden (CR-2026-070 E7).")
+    else:
+        for pfad in versteckt[:3]:
+            notiz("        " + os.path.relpath(pfad, QUELLE).replace(os.sep, "/"))
+
+
+buendel(selbstprobe_baumdurchlauf,
+        "Zaehlt Mustersuche gegen Baumdurchlauf auf dem echten Kern - der Fallstrick, "
+        "der beim Bauen von Pruefung 46 zuschnappte")
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
