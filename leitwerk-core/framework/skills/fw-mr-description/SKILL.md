@@ -30,7 +30,7 @@ triggers:
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
 | Version | `0.1.3` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (rein lesend; die Kontrollstufe der beschriebenen Änderung bestimmt Form des Nutzungsvermerks und Dokumentationsumfang) |

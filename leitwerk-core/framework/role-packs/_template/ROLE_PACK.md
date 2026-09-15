@@ -3,14 +3,16 @@
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<role-pack-name>/, ersetze alle Platzhalter,
      erstelle die Laufzeitfassung .devin/rules/30-role-<role-pack-name>.md (unter 12.000 Zeichen,
      trigger: model_decision) und trage das Pack in ../README.md und leitwerk-core/OWNERS.md ein.
-     Keine Governance-Regeln, keine Projektwerte. -->
+     Keine Governance-Regeln, keine Projektwerte.
+     Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
+     steht in leitwerk-core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
 
 | Attribut | Wert |
 |---|---|
 | Modul-ID | `RP-<ROLE_PACK_CODE>` |
 | Ebene | 6 – Role Pack |
 | Version | 0.1.1 |
-| Status | entwurf |
+| Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner | `<TBD: Rolle>` |
 | Zielrolle | `<TBD: z. B. Requirements Engineer>` |
 

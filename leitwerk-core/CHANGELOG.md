@@ -2,6 +2,91 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.50.0] - 2026-09-15
+
+**Das Lebenszyklusmodell des Frameworks ist zum ersten Mal angewendet - und die
+Vorbedingung, die den Vorgang aufhalten sollte, hielt in zwei von drei Punkten nicht.**
+Gegenstand ist die zweite Aktivitaet von Arbeitspaket `AP3` (P1) und Kriterium 3 von D-11
+(`CR-2026-072`, D-102 bis D-104, K-36, K-37,
+`tests/protocols/2026-09-15-gegenpruefung-modulstatus.md`).
+
+**Kriterium 3 von D-11 sinkt von 69 auf 52.** Es ist die zweite der vier Zahlen, die sich
+bewegt - Kriterium 4 stand mit 0.49.0 auf null.
+
+### Gemessen
+
+| Behauptung der Vorbedingung | Urteil |
+|---|---|
+| "57 der 69 Traeger sind keine Skills" | **falsch: 52.** Dazu 13 Skills (nicht 12 - der dreizehnte liegt in einem Role Pack) und 4 Vorlagen |
+| "Das Modell verlangt bestandene Testfaelle, also sind Kriterium 2 und 3 gekoppelt" | **falsch.** `pilot` verlangt "Testfaelle vorhanden"; "bestanden" steht in der Zeile `aktiv`. Gelesen worden war die falsche Zeile |
+| "Fuer die Nicht-Skills fehlt jede niedergeschriebene Bedingung" | **richtig** - und der einzige Punkt, der Arbeit ausgeloest hat |
+
+**Nicht gesucht: Vier der 69 Traeger sind Vorlagen**, bei denen die Kennungszelle ein
+Platzhalter ist - ihr Steckbrief beschreibt die **Kopie**. Der Statuswert `entwurf` war
+dort kein Platzhalter und ging unveraendert in jede Kopie ueber, durfte sich also nie
+aendern. **Damit war Kriterium 3 unerreichbar** - derselbe Defekt, zu dessen Beseitigung
+D-11 entstanden ist.
+
+**Nicht gesucht: Beide naheliegenden maschinellen Uebergangsbedingungen fallen durch.**
+"Keine offenen `<TBD...>`" haette 29 Traeger gesperrt, keinen zu Recht; "kein offener
+`VERIFY`-Marker" haette vier gesperrt, die ihn nur **benennen** - darunter die
+Release-Checkliste und den Release-Prozess.
+
+### Geaendert
+
+- **Dreizehn Skills stehen auf `pilot`** (D-103): zwoelf unter `framework/skills/` und
+  `role-re-ticket` im Role Pack `requirements-engineering`. **Ohne Versionswechsel und ohne
+  Eintrag in der `CHANGELOG.md` des Skills** - ein Statuswechsel aendert keine Anweisung,
+  und jede Versionsaenderung wuerde nach `08-skill-conventions.md` Abschnitt 7 die erneute
+  Ausfuehrung der Testfaelle verlangen.
+- **Die Statuszelle der vier Vorlagen ist ein Ausfuellschlitz** (D-104):
+  `clients/_template/CLIENT_PACK.md`, `framework/role-packs/_template/ROLE_PACK.md`,
+  `framework/tech-packs/_template/TECH_PACK.md`, `templates/SKILL_TEMPLATE.md`. Der
+  Ausfuellhinweis nennt den Wert, mit dem eine Kopie beginnt.
+- **`framework/core/01-governance.md` 0.1.1 -> 0.2.0:** neuer normativer Abschnitt 5
+  "Lebenszyklus der Modultraeger" mit den Uebergangsbedingungen fuer Traeger, die keine
+  Skills sind; Punkt 4 der Aenderungsgrundsaetze gilt jetzt fuer jeden Modultraeger (D-102).
+  Der Abschnitt ist **angehaengt** und nicht an der thematisch richtigen Stelle eingefuegt,
+  damit der Verweis aus `checklists/08-merge-request.md` auf "Abschnitt 4" nicht still
+  falsch wird.
+- **`framework/core/08-skill-conventions.md` 0.2.0 -> 0.2.1:** Reichweite der
+  Lebenszyklustabelle benannt, Verweis auf den allgemeinen Teil - und der Satz, der die
+  Fehllesung dieses Vorgangs kuenftig verhindert: **"Testfaelle bestanden" ist Bedingung
+  fuer `aktiv`, nicht fuer `pilot`.**
+- **`docs/ROADMAP.md`:** Standzeile auf Kriterium 3 = 52; Kriterientabelle, `AP3` und der
+  P3-Posten "Modulstatus heben" nachgezogen; neuer Abschnitt "Geplant: Projekt-Overlays als
+  Installationsparameter".
+
+### Migrationshinweise fuer Overlays
+
+- **Kein Overlay-Feld ist betroffen.** Wer `install.py --update` faehrt, bekommt dreizehn
+  Skills mit Status `pilot`; ein Projekt mit eigenen `prj-*`-Skills ist nicht betroffen.
+- **Wer eine Vorlage kopiert, fuellt kuenftig die Statuszelle aus.** Ein neues Pack beginnt
+  auf `entwurf`. Bei einem Skill faengt ein leergelassener Schlitz der Validator
+  (`SKILL_STATUS`); bei Client-, Role- und Technology-Pack faengt ihn heute nichts.
+
+### Bekannte Einschraenkungen
+
+- **Kriterium 3 ist um elf Traeger zu klein.** Die elf Module unter `framework/core/` fuehren
+  keine Statuszeile, waehrend `checklists/11-framework-release.md` fuer 1.0.0 einen Status
+  oberhalb `entwurf` fuer "alle Core-Module" verlangt - ein Pruefpunkt ohne Gegenstand
+  (`K-36`, offen). **`AP3` ist deshalb mit diesem Release nicht weiter:** Seine Aktivitaet
+  meint genau diese elf.
+- **Das Statusvokabular ist nur in einer `SKILL.md` durchgesetzt.** Fuer die uebrigen 56
+  Traeger waere `| Status | banane |` zulaessig. Heute ohne Gegenstand, weil ausschliesslich
+  Skills gehoben sind; faellig mit dem ersten gehobenen Nicht-Skill-Traeger.
+- **Die Versionszelle der vier Vorlagen** hat dieselbe Bauform wie ihre Statuszelle und ist
+  bewusst unangetastet (`K-37`, offen).
+- **Das Hauptdokument nennt fuer alle zwoelf Skills die Version 0.1.0** und "Alle Module im
+  Status `entwurf`". Die Versionsangabe war schon vorher falsch, die Statusangabe wird es
+  jetzt. Nicht berichtigt: Das Dokument steht laut eigenem Steckbrief auf Dokumentversion
+  0.9.0 vom 2026-09-10 und ist zweiundvierzig Releases hinter dem Kern; zwei Saetze
+  nachzuziehen behauptet einen Stand, den es nicht hat. Die Pflicht steht am P3-Posten
+  "Word-Fassung erzeugen".
+- **Ein Traeger auf `pilot` ist strukturell abgenommen, nicht erprobt.** Ob ein KI-Client
+  einem Skill folgt, belegt allein ein Sitzungstest - das sind die 87 offenen
+  Ergebniszellen von Kriterium 2, und sie sind unveraendert offen.
+
 ## [0.49.0] - 2026-09-15
 
 **Die neun Strukturentscheidungen sind bestaetigt - und die drei Einwaende, die sie

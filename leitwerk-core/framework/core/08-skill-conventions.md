@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.2.0 |
+| Version | 0.2.1 |
 
 ## 1. Begriff (normativ)
 
@@ -96,6 +96,8 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 | `aktiv` | freigegeben | Pilotfeedback ausgewertet, Positiv- und Negativtests bestanden, Freigabe Framework Owner |
 | `veraltet` | ersetzt oder nicht mehr empfohlen; Nutzung mit Hinweis | Nachfolger benannt oder Begründung dokumentiert |
 | `zurückgezogen` | entfernt; Verzeichnis bleibt bis zum nächsten Major-Release mit Hinweisdatei | Deprecation-Frist abgelaufen |
+
+**Reichweite dieser Tabelle.** Die fünf Statuswerte und ihre Bedeutung gelten für **jeden** Modulträger des Frameworks; die Spalte *Voraussetzung für Übergang* gilt für Skills. Die Bedingungen für Modulträger, die keine Skills sind, stehen in `01-governance.md` Abschnitt 5 (D-102). **„Testfälle bestanden" ist Bedingung für `aktiv`, nicht für `pilot`** – für `pilot` genügt, dass sie vorliegen (D-103).
 
 - MAJOR: Änderung des Ausgabeformats oder des Scopes; MINOR: neue Schritte oder Prüfungen ohne Formatbruch; PATCH: Korrekturen und Formulierungen.
 - Jede Versionsänderung erfordert die erneute Ausführung der Testfälle in `TESTS.md`; Ergebnisse werden im Testkatalog vermerkt.

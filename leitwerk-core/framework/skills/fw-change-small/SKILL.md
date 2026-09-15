@@ -25,7 +25,7 @@ triggers:
 | ID | `FW-SK-005` |
 | Name | `fw-change-small` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
 | Zulässige Kontrollstufen | niedrig (klare Aufgabe); mittel nur auf Basis eines bestätigten Plans; hoch nur nach dokumentierter Freigabe `<APPROVAL_ROLE>` und mit begleitender Person (Pairing) |

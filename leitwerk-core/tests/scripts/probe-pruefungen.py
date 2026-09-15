@@ -3489,6 +3489,13 @@ def _46_steckbrief_dazu(root: str) -> None:
             "| Status | `entwurf` |\r\n| Owner (Rolle) | `<FRAMEWORK_OWNER>` |\r\n")
 
 
+# Synthetische Kennung der Gegenprobe 46b. Sie stand bis 0.49.0 auf K-36 - und 0.50.0
+# hat K-36 und K-37 wirklich vergeben (CR-2026-072). Der Kennungswaechter frei() hat
+# die Kollision beim Sondenlauf gemeldet, statt sie als Befund am Repositorium
+# erscheinen zu lassen; das ist die Lehre von G-18 (2026-09-13) zum zweiten Mal, und
+# diesmal hat sie funktioniert. Die 99 folgt der Konvention von G-99 und UEB-99: hoch
+# genug, dass keine echte Vergabe sie erreicht.
+P46_KLAERUNG = "K-99"
 P46_BESTAETIGT = "| entschieden (`CR-2026-071`); "
 P46_VORSCHLAG = "| entschieden (Vorschlag); "
 
@@ -3533,9 +3540,9 @@ def _46_klaerungspunkt_dazu(root: str) -> None:
     sagt "Decision Records"; ein Klaerungspunkt ist keiner.
     """
     pfad = P(root, "leitwerk-core/governance/DECISION_LOG.md".replace("/", os.sep))
-    frei(pfad, "K-36")
+    frei(pfad, P46_KLAERUNG)
     zeile_nach(pfad, "| K-35 |",
-               "| K-36 | Sondenklärungspunkt | niedrig | Sondenlauf | "
+               "| " + P46_KLAERUNG + " | Sondenklärungspunkt | niedrig | Sondenlauf | "
                "Framework Owner | entschieden (Vorschlag): Sondenauflösung |")
 
 

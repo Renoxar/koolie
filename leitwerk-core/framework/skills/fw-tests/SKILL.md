@@ -24,7 +24,7 @@ triggers:
 | ID | `FW-SK-006` |
 | Name | `fw-tests` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (hoch nur ohne Änderung an Produktivcode – durch diesen Skill stets erfüllt) |
