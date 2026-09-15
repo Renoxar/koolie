@@ -20,7 +20,7 @@ triggers:
 | ID | `FW-SK-002` |
 | Name | `fw-code-explain` |
 | Version | `0.1.3` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (rein lesend) |

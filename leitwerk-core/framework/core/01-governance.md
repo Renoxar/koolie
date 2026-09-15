@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.2.0 |
 
 ## 1. Gegenstand und Geltung (normativ)
 
@@ -33,8 +33,24 @@ Die detaillierte RACI-Zuordnung liegt in `leitwerk-core/governance/RACI.md`.
 1. Änderungen am Framework Core erfolgen ausschließlich über Änderungsanträge (`leitwerk-core/governance/CHANGE_REQUEST_TEMPLATE.md`) und Releases (`leitwerk-core/governance/RELEASE_PROCESS.md`).
 2. Änderungen am Project Overlay erfolgen über den Prozess des Projekts, MÜSSEN aber die Validierung (`leitwerk-core/tests/scripts/validate-framework.py`) bestehen und DÜRFEN NICHT Core-Dateien verändern.
 3. Jede Änderung ist im `leitwerk-core/CHANGELOG.md` (Framework) beziehungsweise im Overlay-Änderungsverlauf dokumentiert.
-4. Skills durchlaufen den Lebenszyklus `entwurf → pilot → aktiv → veraltet → zurückgezogen` (`08-skill-conventions.md`).
+4. **Jeder Modulträger durchläuft den Lebenszyklus `entwurf → pilot → aktiv → veraltet → zurückgezogen`.** Die Statuswerte und die Übergangsbedingungen für Skills stehen in `08-skill-conventions.md` Abschnitt 7, die Bedingungen für alle übrigen Modulträger in Abschnitt 5 dieses Moduls (D-102).
 
 ## 4. Auditierbarkeit (normativ)
 
 Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welches Overlay (Version), welche Skills (Version) und welche Berechtigungskonfiguration galten. Dies wird erreicht durch Versionierung im Repository, `leitwerk-core/VERSION`-Datei, Overlay-Steckbrief mit Version und den KI-Nutzungsvermerk je Merge Request.
+
+
+## 5. Lebenszyklus der Modulträger (normativ)
+
+1. **Modulträger** ist jede versionierte Datei des Frameworks, die in ihrem Steckbrief eine Zeile `\| Status \| … \|` führt – Checklisten, Prompts, Entscheidungsbäume, Governance-Dokumente, Register, Onboarding- und Pilotdokumente, die Steckbriefe der Client-, Role- und Technology-Packs sowie Skills. **Vorlagen sind keine Modulträger:** Ihr Steckbrief beschreibt die Kopie, die aus ihnen entsteht; seine Zellen sind Ausfüllschlitze (D-104).
+2. Die fünf Statuswerte und ihre Bedeutung stehen in `leitwerk-core/framework/core/08-skill-conventions.md` Abschnitt 7 und gelten für **jeden** Modulträger. Die dort genannten Übergangsbedingungen gelten für Skills; für alle übrigen Modulträger gilt die Tabelle in Punkt 3 (D-102).
+3. Übergangsbedingungen für Modulträger, die keine Skills sind:
+
+| Übergang | Voraussetzung |
+|---|---|
+| `entwurf` → `pilot` | (a) Der Träger ist inhaltlich vollständig: Jeder Abschnitt, den sein Zweck verlangt, ist ausgefüllt. (b) Der Validatorlauf ist ohne Fehler. (c) Offene `VERIFY`-Marker des Trägers sind benannt; sie sperren den Übergang **nicht** – gezählt werden sie in Kriterium 1 von D-11. (d) Ein offener Ausfüllwert (`<TBD…>`) sperrt den Übergang nicht, wenn er einen Wert der aufnehmenden Organisation bezeichnet; er sperrt ihn, wenn er eine Aussage des Frameworks offenlässt. (e) **Review durch den Modul-Owner mit Fundstelle:** ein Protokoll unter `leitwerk-core/tests/protocols/`, das den Träger namentlich nennt und (a) bis (d) je Träger festhält |
+| `pilot` → `aktiv` | (a) bis (e) wie oben; zusätzlich: alle Testfälle des Trägers im Testkatalog auf `bestanden`, Anwendung in mindestens einem Projekt außerhalb des Frameworks mit ausgewerteter Rückmeldung (`leitwerk-core/governance/FEEDBACK_PROCESS.md`), Freigabe durch den Framework Owner |
+| `aktiv` → `veraltet` → `zurückgezogen` | wie in `08-skill-conventions.md` Abschnitt 7; die Ankündigungsfrist des Release-Prozesses gilt unverändert (`leitwerk-core/governance/RELEASE_PROCESS.md`) |
+
+4. **Ein Statuswert ist keine Aussage über das Verhalten eines KI-Clients.** Ob ein Client einem Träger folgt, belegt allein ein Sitzungstest des Testkatalogs. Ein Träger auf `pilot` ist strukturell abgenommen, nicht erprobt.
+5. Der Stand aller Modulstatus ist Kriterium 3 von D-11. Prüfung 46 des Validators rechnet ihn bei jedem Lauf aus und hält ihn gegen die Standzeile in `leitwerk-core/docs/ROADMAP.md`; **eine Abweichung in beide Richtungen ist ein Fehler.** Ein Statuswechsel ohne nachgezogene Standzeile lässt den Lauf scheitern.

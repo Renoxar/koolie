@@ -25,7 +25,7 @@ triggers:
 | ID | `FW-SK-007` |
 | Name | `fw-refactor` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
 | Zulässige Kontrollstufen | niedrig; mittel nur auf Basis eines bestätigten Plans; hoch nur nach dokumentierter Freigabe `<APPROVAL_ROLE>` und mit begleitender Person (Pairing) |

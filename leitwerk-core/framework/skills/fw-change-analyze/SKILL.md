@@ -19,7 +19,7 @@ triggers:
 | ID | `FW-SK-003` |
 | Name | `fw-change-analyze` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (rein lesend; die Analyse schlägt die Stufe vor, festgelegt wird sie vom Menschen) |

@@ -19,7 +19,7 @@ triggers:
 | ID | `FW-SK-004` |
 | Name | `fw-plan` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
 | Zulässige Kontrollstufen | niedrig (KANN), mittel (MUSS vor Umsetzung), hoch (Planung zulässig; Umsetzung erst nach Freigabe `<APPROVAL_ROLE>`) |

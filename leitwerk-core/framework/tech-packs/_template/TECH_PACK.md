@@ -3,14 +3,16 @@
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<tech-pack-name>/, ersetze alle Platzhalter,
      erstelle die Laufzeitfassung .devin/rules/40-tech-<tech-pack-name>.md aus
      .devin/rules/40-tech-TEMPLATE.md.template (trigger: glob) und trage das Pack in ../README.md
-     und leitwerk-core/OWNERS.md ein. Keine Governance-Regeln, keine Projektwerte. -->
+     und leitwerk-core/OWNERS.md ein. Keine Governance-Regeln, keine Projektwerte.
+     Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
+     steht in leitwerk-core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
 
 | Attribut | Wert |
 |---|---|
 | Modul-ID | `TP-<TECH_PACK_CODE>` |
 | Ebene | 5 – Technology Pack |
 | Version | 0.1.0 |
-| Status | entwurf |
+| Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner | `<TBD: Rolle>` |
 | Technologie und Versionsbereich | `<TBD: z. B. Sprache X ab Version N, Framework Y Major M>` |
 | Dateimuster für die Laufzeitfassung | `<TBD: Globs>` |

@@ -3,14 +3,16 @@
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<client-name>/, ersetze alle Platzhalter
      und lege ../<client-name>/root-template/ mit den Wurzelartefakten dieses Clients an.
      Trage das Pack in ../README.md Abschnitt 6 und in leitwerk-core/OWNERS.md ein.
-     Ein Client Pack führt keine Verhaltensregeln ein (../README.md Abschnitt 2). -->
+     Ein Client Pack führt keine Verhaltensregeln ein (../README.md Abschnitt 2).
+     Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
+     steht in leitwerk-core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
 
 | Attribut | Wert |
 |---|---|
 | Modul-ID | `CP-<CLIENT_PACK_CODE>` |
 | Ebene | keine – Abbildungsschicht |
 | Version | 0.2.0 |
-| Status | entwurf |
+| Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner (Rolle) | `<TBD: Rolle>` |
 | Client | `<TBD: Produktname>` |
 | Geprüfte Clientversion | `<TBD: Version; ohne diese Angabe ist keine Einstufung [TECHNISCH] zulässig>` |

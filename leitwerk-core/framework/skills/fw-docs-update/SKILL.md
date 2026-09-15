@@ -19,7 +19,7 @@ triggers:
 | ID | `FW-SK-011` |
 | Name | `fw-docs-update` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (Documentation Support ist auf allen Stufen zulässig; bei Stufe hoch Schreibzugriff nur mit referenzierter Freigabe) |

@@ -19,7 +19,7 @@ triggers:
 | ID | `FW-SK-009` |
 | Name | `fw-bugfix-prepare` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (Planung zulässig; Umsetzung erst nach Bestätigung beziehungsweise Freigabe `<APPROVAL_ROLE>` in getrennten Sitzungen) |

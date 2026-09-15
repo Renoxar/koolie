@@ -20,7 +20,7 @@ triggers:
 | ID | `FW-SK-008` |
 | Name | `fw-error-analyze` |
 | Version | `0.1.3` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (rein lesend; die Kontrollstufe des späteren Fixes legt der Mensch im Preflight fest) |

@@ -35,7 +35,7 @@ triggers:
 | ID | `FW-SK-010` |
 | Name | `fw-review-support` |
 | Version | `0.1.4` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis (mit freigegebenen lesenden Git-Befehlen) |
 | Zulässige Kontrollstufen | niedrig, mittel, hoch (rein lesend; ersetzt auf keiner Stufe das menschliche Review) |

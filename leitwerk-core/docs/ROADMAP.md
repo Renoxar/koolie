@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.49.0 (2026-09-15)
+## Stand nach Release 0.50.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -30,7 +30,7 @@ Zwischenschritt – und weil ihn niemand ausführt, fällt auch nicht auf, dass 
 Falsche zählt. Am 2026-09-15 wurden die vier Befehle zum ersten Mal ausgeführt:
 **alle vier lagen daneben** (`CR-2026-070`, D-98).
 
-**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 69, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 52, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -41,11 +41,18 @@ ist grün, **dann ist das die Meldung** – erzwungen statt behauptet.
 |---|---|---|---|
 | **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/` |
 | **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte |
-| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 steht über `entwurf` – das Lebenszyklusmodell aus `08-skill-conventions.md` ist nie angewendet worden |
+| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 stand über `entwurf`. **Mit 0.50.0 ist das Modell zum ersten Mal angewendet** (`CR-2026-072`, D-102 bis D-104): dreizehn Skills auf `pilot`, und vier Vorlagen tragen statt eines Statuswerts einen Ausfüllschlitz, weil ihr Steckbrief die Kopie beschreibt – **69 → 52**. Die 52 übrigen Träger sind keine Skills; ihre Übergangsbedingungen stehen seit 0.50.0 in `01-governance.md` Abschnitt 5 |
 | **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9. **✅ Erfüllt seit 0.49.0** (`CR-2026-071`, D-100): Die neun sind bestätigt |
 | **5** | Übernahme in ein zweites Projekt nachgewiesen | **zählt Prüfung 46 nicht** – eine Feststellung, keine Zahl. Eine Enthaltung, und sie steht im Kopfkommentar | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
 
 **Ein Kriterium von vier steht auf null – seit 0.49.0, und es ist das erste.** Kriterium 4 verlangte die Bestätigung von neun Strukturentscheidungen; sie lag seit `CR-2026-019` als Vorlage vor und ist zweiunddreißig Releases lang nicht beantwortet worden. **Nicht weil die Entscheidungen strittig waren, sondern weil die Bedingung falsch gewählt war** – siehe unten.
+
+**Mit 0.50.0 bewegt sich die zweite Zahl, und wieder war die Bedingung das Hindernis.** Kriterium 3
+sinkt von 69 auf 52 (`CR-2026-072`). Die Vorbedingung, die dem Vorgang vorangestellt war, enthielt
+drei Behauptungen – **zwei hielten nicht.** Das Lebenszyklusmodell verlangt für `pilot` „Testfälle
+**vorhanden**", nicht „bestanden"; die angenommene Kopplung an Kriterium 2 besteht für den ersten
+Übergang nicht. **Und vier der 69 Träger sind Vorlagen, deren Statuszelle in jede Kopie übergeht –
+mit ihnen wäre Kriterium 3 nie auf null gegangen.**
 
 **Der größte Posten ist Kriterium 2, und zwar mit Abstand.** Alles, was ein Skript leisten
 kann, ist geleistet; was offen steht, trägt fast durchweg das Prüfmittel `sitzung` – also
@@ -120,6 +127,75 @@ ist nicht nachgezogen.
 ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
+
+### Was 0.50.0 gebracht hat – das Lebenszyklusmodell ist zum ersten Mal angewendet
+
+**Die zweite Aktivität von `AP3` war der Auftrag, und ihr war eine Vorbedingung
+vorangestellt.** Die Gegenprüfung hat zuerst die Bedingung geprüft und nicht die Aufgabe –
+die Lehre von 0.49.0, eine Woche alt, auf den nächsten Vorgang angewendet (`CR-2026-072`,
+D-102 bis D-104, K-36, K-37,
+`tests/protocols/2026-09-15-gegenpruefung-modulstatus.md`,
+`tests/protocols/2026-09-15-wirkungsnachweise-0.50.0.md`).
+
+| Frage | Ergebnis |
+|---|---|
+| Stimmte die Vorbedingung? | **In zwei von drei Punkten nicht.** Sie nannte 57 Nicht-Skills (es sind **52**) und zwölf Skills (es sind **dreizehn**, der dreizehnte liegt in einem Role Pack) – dieselbe Abweichung um eins, die Prüfung 46 bei Kriterium 2 schon berichtigt hat, an derselben Datei und in derselben Woche |
+| Sind Kriterium 2 und 3 bei den Skills gekoppelt? | **Für den ersten Übergang nicht.** Die Spalte *Voraussetzung für Übergang* verlangt bei `pilot` „Testfälle **vorhanden**"; „bestanden" steht in der Zeile **`aktiv`**. Gelesen worden war die falsche Zeile. **Die dreizehn Skills waren heute hebbar, ohne einen einzigen Sitzungstest** |
+| Was war an der Vorbedingung richtig? | **Der dritte Punkt.** Für die 52 Nicht-Skill-Träger nennt das Framework keine Übergangsbedingung; `01-governance.md` Abschnitt 3 Punkt 4 nannte den Lebenszyklus ausdrücklich nur für Skills. Die Bedingungen stehen seit diesem Release in Abschnitt 5 desselben Moduls (D-102) |
+| *Nicht gesucht:* Warum war Kriterium 3 unerreichbar? | **Vier der 69 Träger sind Vorlagen**, und bei allen vier ist die Kennungszelle ein Platzhalter: Ihr Steckbrief beschreibt die **Kopie**. Der Statuswert `entwurf` ist dort kein Platzhalter und geht unverändert in jede Kopie über – **er darf sich also nie ändern**. Mit ihnen wäre Kriterium 3 nie auf null gegangen. **Das ist genau der Defekt, zu dessen Beseitigung D-11 entstanden ist** („machte das Release-Gate FW-CL-11 dadurch unerreichbar") |
+| Wie ist er behoben? | **Am Gegenstand, nicht an der Zählregel** (D-104). Die Statuszelle der vier Vorlagen ist jetzt ein Ausfüllschlitz wie jede andere Zelle desselben Steckbriefs. Eine Ausnahme in der Zählregel wäre die Bewegung gewesen, die `CR-2026-070` E6 ausdrücklich verworfen hat – ein Kriterium klein halten, indem es einen Teil seines Gegenstands nicht ansieht |
+| *Nicht gesucht:* Taugt eine maschinelle Übergangsbedingung? | **Nein, und beide naheliegenden Kandidaten fallen aus demselben Grund durch.** „Keine offenen `<TBD…>`" hätte 29 Träger gesperrt, keinen zu Recht – die Marke trägt drei Bedeutungen, und die dritte gehört der aufnehmenden Organisation, die D-11 ausnimmt. „Kein offener `VERIFY`-Marker" hätte vier Träger gesperrt, die den Marker nur **benennen** – darunter die Release-Checkliste und den Release-Prozess. **Das ist die Lehre E3 von `CR-2026-070` eine Ebene tiefer** |
+| Hat der Mechanismus aus 0.48.0 gegriffen? | **Ja, zum zweiten Mal und wieder bei einem Fortschritt.** Zwischen zwei Patches gemessen: genau ein Fehler, `Kriterium 3 … ist gezählt 52, die Standzeile nennt 69 – der Fortschritt ist nicht nachgezogen` |
+
+**Die Lehre, die über den Fall hinausgeht.** Mit 0.49.0 hat dieses Repositorium gelernt,
+dass es seine **Zusagen** prüft und seine **Bedingungen** nicht. Der Satz ist eine Woche
+alt, und schon der nächste Vorgang bringt den Beweis nach: Die Bedingung, die ihm
+vorangestellt war, enthielt drei Behauptungen, und zwei hielten nicht.
+
+> **Eine Bedingung, die niemand nachzählt, ist eine Zusage mit umgekehrtem Vorzeichen.**
+> Beim ersten Mal war sie falsch **gewählt** und hielt zweiunddreißig Releases; beim
+> zweiten war sie falsch **gelesen** und hätte das zweitgrößte Kriterium an das größte
+> gekettet.
+
+**Und eine zweite, über Formulare.** Eine Vorlage, deren Steckbriefzelle einen echten Wert
+statt eines Schlitzes trägt, gibt diesen Wert an jede Kopie weiter. Solange der Wert richtig
+ist, fällt das nicht auf – **und dann ist er unveränderlich, ohne dass jemand das
+entschieden hätte.**
+
+### Was 0.50.0 offen lässt
+
+- **Kriterium 3 ist um elf Träger zu klein, und das ist bekannt.** Die elf Module unter
+  `framework/core/` führen **keine** Statuszeile, während
+  `checklists/11-framework-release.md` unter *Abschluss* verlangt: *„(ab 1.0.0, D-11) Alle
+  **Core-Module**, Skills und Packs tragen einen Status oberhalb von `entwurf`."* Ein
+  Prüfpunkt ohne Gegenstand, in der Checkliste, die 1.0.0 freigibt. **Als `K-36`
+  aufgenommen; hier nicht entschieden**, weil die Antwort „Statuszeile nachtragen"
+  Kriterium 3 von 52 auf 63 heben würde – richtig, und in einem Vorgang zum Senken sähe es
+  falsch aus.
+- **`AP3` ist mit diesem Release nicht weiter.** Seine Aktivität *„Status je Modul von
+  `entwurf` auf `pilot`"* meint laut Zielzeile die Module unter `framework/core/` – also
+  genau die elf ohne Statuszeile. Gehoben sind dreizehn **Skills**; das ist Kriterium 3
+  von D-11, nicht `AP3`.
+- **Die Prüfung auf das Statusvokabular fehlt für 56 Träger.** `SKILL_STATUS` des Validators
+  greift nur in einer `SKILL.md`; sonst wäre `| Status | banane |` zulässig. **Heute ohne
+  Gegenstand** – dieses Release hebt ausschließlich Skills –, **fällig mit dem ersten
+  gehobenen Nicht-Skill-Träger**.
+- **Die Versionszelle der vier Vorlagen hat dieselbe Bauform wie ihre Statuszelle** und geht
+  ebenso in die Kopie über; ein aus `templates/SKILL_TEMPLATE.md` erzeugter Skill trägt
+  `0.1.2` und braucht dafür einen Eintrag in einer `CHANGELOG.md`, die es noch nicht gibt.
+  **Nicht angefasst, als `K-37` aufgenommen** – anders als beim Status ist dort nicht
+  entschieden, ob der Wert der Vorlage selbst gehört.
+- **Das Hauptdokument nennt für alle zwölf Skills die Version 0.1.0** und „Alle Module im
+  Status `entwurf`". Die Versionsangabe war schon vorher falsch (sie stehen auf 0.1.1 bis
+  0.1.4), die Statusangabe wird es mit diesem Release. **Nicht berichtigt:** Derselbe
+  Steckbrief nennt *Dokumentversion 0.9.0, Stand 2026-09-10* – zweiundvierzig Releases
+  hinter dem Kern. Zwei Sätze nachzuziehen behauptet einen Stand, den das Dokument nicht
+  hat. Die Pflicht steht am P3-Posten „Word-Fassung erzeugen".
+- **Kriterium 1 und 2 stehen unverändert:** 29 und 118. Die drei offenen `VERIFY`-Marker der
+  Skills `fw-mr-description` und `fw-review-support` bleiben stehen – ein benannter
+  Verifikationsbedarf sperrt `pilot` nicht, `aktiv` schon.
+- **Kein Nicht-Skill-Träger ist gehoben.** Die Bedingung entsteht mit diesem Release, die
+  Abnahme je Träger ist der nächste Vorgang – und sie ist nicht maschinell.
 
 ### Was 0.49.0 gebracht hat – die neun Strukturentscheidungen sind bestätigt
 
@@ -1764,6 +1840,48 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
+### Geplant: Projekt-Overlays als Installationsparameter
+
+Der `<FRAMEWORK_OWNER>` hat am 2026-09-15 angeregt, bei der Erstinstallation ein
+**Projekt-Overlay als Parameter** mitgeben zu können: ein vorbereitetes Standard-Overlay
+statt des leeren, und später weitere, die auf Projekttypen zugeschnitten sind. **Ohne
+Parameter bleibt es beim leeren Overlay wie bisher** (`CR-2026-072` E8). Ein Ziel-Release
+ist nicht festgelegt.
+
+Heute legt `install.py` das Overlay aus einer einzigen Quelle an: `templates/project-overlay`
+steht im `shared_seed` jedes Client Packs und wird **nur bei der Erstinstallation**
+geschrieben, danach gehört das Verzeichnis dem Projekt (D-76). Ein Parameter würde diese
+eine Quelle zu einer Auswahl machen.
+
+**Vor der Aufnahme sind die Voraussetzungen zu klären, nicht danach:**
+
+- **Ein Overlay trägt Projektwerte – der Kern darf keine enthalten.** Entscheidungsbaum 6
+  weist Projektwerte ausdrücklich dem Overlay zu, und Prüfung 6 und 14 setzen die
+  Projektneutralität des Kerns durch. Ein ausgeliefertes Standard-Overlay wäre die erste
+  Datei des Frameworks, die Projektwerte **vorschlägt**. **Die Abgrenzung gehört geklärt,
+  bevor jemand baut:** Welche Felder darf ein mitgeliefertes Overlay füllen, und welche
+  müssen Schlitze bleiben?
+- **Die Aktivierungsreife ist eine Prüfung, nicht eine Zusage.** `--check-overlay-ready`
+  verlangt alle Pflichtwerte gefüllt, keine offenen `<TBD…>` in den sicherheitsrelevanten
+  Abschnitten und den Status **noch nicht** `aktiv` (D-57). Ein Overlay, das „fertiger"
+  ausgeliefert wird, kommt dieser Grenze näher – **und ein Overlay, das die Prüfung von
+  selbst besteht, wäre ein aktivierungsreifer Zustand, den niemand geprüft hat.**
+- **Wer ist Owner?** Das Overlay gehört dem Projekt (`<APPROVAL_ROLE>`), die Vorlage dem
+  Framework. Ein zweites Overlay-Muster ist ein Framework-Artefakt mit eigener Version,
+  eigenem Steckbrief und eigenem Statuswert – also ein **Modulträger** nach
+  `framework/core/01-governance.md` Abschnitt 5.
+- **Ein zweites Muster ist ein zweites Register.** Sobald es mehr als eine Overlay-Quelle
+  gibt, muss eine Änderung an der einen in der anderen nachgezogen werden. Dieses
+  Repositorium hat diesen Befundtyp mehrfach im eigenen Bestand gefunden. **Zu entscheiden
+  ist deshalb zuerst die Bauform:** ein Muster mit Varianten, die nur Abweichungen tragen,
+  oder *n* vollständige Kopien.
+- **Die Nummernfolge.** Ein Antrag, der ein Projekt-Overlay **eines Projekts** betrifft,
+  gehört in die Nummernfolge dieses Projekts. Hier ist der Gegenstand `install.py` und der
+  Auslieferbestand des Frameworks – also die Framework-Folge.
+- **Prüfbar bleiben muss es.** Ein mitgeliefertes Overlay wird von `--strict-overlay` und
+  `--check-overlay-ready` gemessen wie jedes andere; ein Muster, das seine eigene Prüfung
+  nicht besteht, ist keine Hilfe, sondern eine Fehlerquelle in jeder Erstinstallation.
+
 ### Geplant: Client Pack `openai-codex`
 
 Ein drittes Client Pack ist vorgesehen (Projektentscheidung vom 2026-09-12); ein Ziel-Release ist
@@ -1791,8 +1909,20 @@ noch nicht festgelegt. **Vor der Aufnahme sind die Voraussetzungen zu klären, n
 **P3 – Word-Fassung erzeugen.** `build-docx.py` folgt dem Markdown und braucht keine
 Anpassung, wurde seit dem Umbau des Hauptdokuments aber nicht ausgeführt; `pandoc` und `mmdc`
 fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
+**Pflicht beim Bau, seit 0.50.0 benannt** (`CR-2026-072` E7): Der Steckbrief von `build/doc/00-kopf.md`
+(*„Alle Module im Status `entwurf`"*, Dokumentversion 0.9.0 vom 2026-09-10) und der Absatz in
+`build/doc/20-referenz-skills.md` (*„Alle Skills liegen im Status `entwurf` (Version 0.1.0 …)"* –
+**für alle zwölf falsch, sie stehen auf 0.1.1 bis 0.1.4**) gehören gegen den dann geltenden Stand
+gesetzt. Dass der Abstand von zweiundvierzig Releases niemandem aufgefallen ist, liegt daran, dass
+ihn nichts nachrechnet.
 
-**P3 – Modulstatus heben.** Alle Module stehen auf `entwurf`; Kriterium 3 von D-11.
+**P3 – Modulstatus heben. Begonnen mit 0.50.0.** Kriterium 3 von D-11 steht auf **52** (`CR-2026-072`,
+D-102 bis D-104): Die dreizehn Skills sind auf `pilot`, die vier Vorlagen tragen keinen Statuswert
+mehr. **Offen sind die 52 Träger, die keine Skills sind** – ihre Übergangsbedingungen stehen seit
+0.50.0 in `framework/core/01-governance.md` Abschnitt 5, und die Abnahme je Träger ist nicht
+maschinell. **Mit dem ersten gehobenen Nicht-Skill-Träger wird die Prüfung auf das Statusvokabular
+fällig** (heute nur in einer `SKILL.md` durchgesetzt). **Nicht Gegenstand dieses Postens, sondern von
+`K-36`:** die elf Module unter `framework/core/`, die gar keine Statuszeile führen.
 
 ### Bewusst offen gelassen
 
@@ -1892,7 +2022,7 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Ziel | Core-Module fachlich abgenommen (Status je Modul von `entwurf` auf `pilot`) |
 | Aktivitäten | Review aller `leitwerk-core/framework/core/`-Module und der Prioritätshierarchie durch die benannten Rollen; Einarbeitung von Organisationsvorgaben (Ebene B, Klassifizierungs-Mapping); Beschluss offener Strukturentscheidungen (D-01…D-10 bestätigen) |
 | Eingaben | Erstfassung 0.1.0; Organisationsrichtlinien; Ergebnis K-06 |
-| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log. **Teilergebnis mit 0.49.0:** Die neun Strukturentscheidungen sind beschlossen (`CR-2026-071`, D-100); offen bleiben die Modulabnahme und das Mapping |
+| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log. **Teilergebnis mit 0.49.0:** Die neun Strukturentscheidungen sind beschlossen (`CR-2026-071`, D-100); offen bleiben die Modulabnahme und das Mapping. **Mit 0.50.0 ausdrücklich NICHT erledigt:** Die Aktivität „Status je Modul von `entwurf` auf `pilot`" meint laut Zielzeile die Module unter `framework/core/` – und **keines der elf führt überhaupt eine Statuszeile** (`K-36`). Gehoben sind mit 0.50.0 dreizehn **Skills**; das ist Kriterium 3 von D-11, nicht `AP3` |
 | Abhängigkeiten | AP1 |
 | Verantwortliche Rolle | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`, `<ARCHITECT_ROLE>` |
 | Abnahmekriterien | jedes Modul reviewt (Nachweis); keine offenen Widerspruchsbefunde; Hierarchie bestätigt |

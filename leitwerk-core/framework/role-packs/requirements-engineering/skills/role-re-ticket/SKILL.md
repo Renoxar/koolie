@@ -20,7 +20,7 @@ triggers:
 | ID | `RP-RE-SK-001` |
 | Name | `role-re-ticket` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Betriebsmodus | M1 Read-only Analysis |
 | Zulässige Kontrollstufen | niedrig, mittel (der Skill ändert nichts; die Stufe der Umsetzung wird später durch `fw-change-analyze` und den Menschen bestimmt) |
