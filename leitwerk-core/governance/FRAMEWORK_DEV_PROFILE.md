@@ -68,6 +68,9 @@ Die Reihenfolge ist der Änderungsprozess des Frameworks, nicht ein Betriebsmodu
    MÜSSEN gegen die Vorversion **fallen**.
 5. **Abnahme:** `python leitwerk-core/tests/scripts/validate-framework.py --root .` ohne Fehler und
    der Sondenlauf in **beiden** Kodierungsumgebungen, mit und ohne `PYTHONIOENCODING=utf-8` (D-49).
+   Verglichen werden die **Ergebniszeilen oberhalb der Trennlinie**; der Auswertungsblock darunter
+   trägt Namen und Laufzeiten und ist ausdrücklich **nicht** Teil des Vergleichs (D-94). Ein
+   gescheiterter Aufräumer ist eine Abweichung wie jede andere (D-96).
 6. **Bericht** als Protokoll unter `tests/protocols/`. Das ist der Berichtspfad dieses
    Repositoriums; eine Analyse oder ein Review legt ihr Ergebnis dort ab.
 7. **Freigabe und Merge führt der Mensch aus** (V1, V2). Der KI-Client schlägt Commit-Nachricht und
@@ -106,6 +109,7 @@ Lesende und prüfende Befehle; keiner verändert das Repositorium:
 | Struktur- und Inhaltsprüfung | `python leitwerk-core/tests/scripts/validate-framework.py --root .` |
 | Aktivierungsreife eines Overlays | `python leitwerk-core/tests/scripts/validate-framework.py --root . --strict-overlay` |
 | Wirksamkeitsnachweis der Prüfungen | `python leitwerk-core/tests/scripts/probe-pruefungen.py .` |
+| Derselbe Nachweis, streng seriell | `python leitwerk-core/tests/scripts/probe-pruefungen.py . --bahnen 1` |
 | Abweichung einer Kern-Datei | `python leitwerk-core/install.py --check` |
 | Trockenlauf vor einer Installation | `python leitwerk-core/install.py --dry-run` |
 | Änderungsübersicht | `git status`, `git diff`, `git log`, `git show`, `git blame` |

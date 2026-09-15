@@ -2,6 +2,100 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.46.0] - 2026-09-15
+
+**Der Sondenlauf bekommt Namen, Laufzeiten, Beschreibungssaetze und acht Bahnen - und
+einen Aufraeumer, der sein Scheitern meldet.** Anlass ist ein Auftrag des Framework
+Owners, **kein Befund**: Der Lauf ist die Abnahmeform jedes Releases und wird zweimal je
+Release gefahren (D-49). Beim Bauen ist dann doch einer angefallen, und er stand im
+Pruefapparat selbst (`CR-2026-068`, D-94 bis D-96,
+`tests/protocols/2026-09-15-wirkungsnachweise-0.46.0.md`).
+
+### Gemessen
+
+- **13 min 07 s** dauerte der Lauf gegen 0.45.0, streng seriell: 128 Einheiten, jede mit
+  einer eigenen Kopie des Repositoriums und mindestens einem Validatorlauf darauf. **Der
+  Lauf sagte nicht, wo die dreizehn Minuten hingehen.**
+- **Auf acht Bahnen sind es 1 min 51 s** bei 874 s Rechenzeit - Faktor 7,9. Die sechs
+  teuersten Einheiten sind Buendel gegen echte Installationen und tragen ein Viertel
+  der Rechenzeit; die langsamste allein (`sonden_schlitzinhalte`) braucht **64 s** und
+  ist damit die **untere Schranke der Wanduhr**: Ein Buendel ist die kleinste Einheit,
+  also kommt kein noch so breiter Lauf darunter.
+- **Sechzehn Bahnen holen 28 Prozent Wanduhr und kosten 23 Prozent mehr Rechenzeit**
+  (79,7 s bei 1079,6 s). **Der Engpass ist die Platte, nicht die CPU** - jede Einheit
+  legt eine eigene Kopie des Repositoriums an. Deshalb bleibt die Vorgabe bei acht:
+  Sie holt 7,9 von theoretisch 8 heraus, ohne Rechenzeit zu verbrennen.
+- **Vierzehn Aufraeumstellen verschwiegen ihr Scheitern.** An jeder stand
+  `shutil.rmtree(..., ignore_errors=True)`, waehrend der Kopfsatz des Skripts zusagt, das
+  Repositorium bleibe unberuehrt. **Die zweite Haelfte dieser Zusage hatte keinen
+  Mechanismus:** Ein Lauf, der je Einheit ein eigenes Arbeitsverzeichnis anlegt und
+  einige davon liegen laesst, sieht Zeile fuer Zeile aus wie einer, der aufgeraeumt
+  hat. **Der Befundtyp dieses Projekts, diesmal im Pruefapparat selbst.**
+- **Alle vierzehn Buendel trugen keinen Beschreibungssatz**, zehn Einzelsonden statt
+  eines Satzes nur eine Kennung - "Pack ohne Auskunftsabschnitt", drei Worte. Wer den
+  Lauf las, sah eine Folge von Meldungen und musste erraten, welche Frage sie zusammen
+  beantworten.
+
+### Neu
+
+- **Ausfuehrungsplan statt Sofortlauf.** `sonde()`, `sonde_ohne_wert()`, `gegenprobe()`
+  und `buendel()` melden ihre Einheit an; gefahren wird am Ende durch einen Laeufer.
+  **Die Aufrufstellen sind zeichengleich geblieben** - das war die erste der drei
+  Zusagen: Pruefung 40 rechnet die Sondenmenge aus zwei woertlichen Mustern dieser Datei
+  aus, und ein Register mit eigener Schreibweise haette sie unsichtbar gemacht. Der
+  Anmelder heisst `eintragen()` und **nicht** `anmelde()`, weil letzteres den Suchtext
+  `melde(` enthielte und Pruefung 40 eine Sonde erfaende, die es nicht gibt.
+- **`--bahnen N`, Vorgabe 8.** Jede Einheit arbeitet ohnehin auf ihrer eigenen Kopie;
+  **innerhalb** eines Buendels bleibt es streng seriell, denn ein Buendel ist die
+  kleinste Einheit, nie seine Teile. `--bahnen 1` ergibt den seriellen Lauf von 0.45.0.
+- **Name und Beschreibungssatz je Einheit** (D-95), 5 bis 30 Worte, nachgezaehlt von der
+  neuen **Selbstprobe B1**. Der Satz eines Buendels steht als Kopfzeile ueber dessen
+  Zeilen. **Ihre Grenze steht in ihrem Kopfkommentar:** Sie zaehlt Worte, nicht Sinn.
+- **Laufzeit je Einheit, langsamste zuerst** (D-94) - **unterhalb einer Trennlinie**, die
+  sich selbst als nicht Teil der Abnahme bezeichnet. Die Ergebniszeilen darueber bleiben
+  die zeilengleiche Abnahmeform nach D-49; eine Laufzeit ist nie zweimal dieselbe, und
+  eine Abnahmeform, die einen Filter braucht, ist keine mehr.
+- **`aufraeumen()` an allen vierzehn Stellen** (D-96): drei Versuche ueber 1,5 s, danach
+  eine eigene `AUFRAEUMER`-Zeile mit Pfad und Grund - **und sie zaehlt als Abweichung.**
+  Die drei Versuche sind noetig, weil unter Windows ein gerade beendeter Unterprozess
+  eine Datei noch einen Augenblick festhaelt; eine Meldung, die auch ohne Anlass kommt,
+  wird binnen eines Releases abgeschaltet.
+- **Die Selbstproben A1 und A2 messen den Aufraeumer selbst.** A1 belegt sein Schweigen
+  beim Gelingen, A2 seine Meldung an einem Verzeichnis, das sich nicht loeschen laesst.
+  **Der Ausfall wird je Betriebssystem anders hergestellt** - unter Windows ueber eine
+  offene Datei, unter POSIX ueber das entzogene Schreibrecht des Verzeichnisses; ohne
+  diese Unterscheidung waere die Selbstprobe auf einem der beiden Systeme eine Zeile,
+  die nichts misst. Gemessen wird gegen eine **Hilfseinheit**, sonst zaehlte der
+  absichtlich herbeigefuehrte Ausfall als Abweichung des Laufs.
+- **Ein unerwarteter Fehler faellt seiner Einheit zur Last**, statt den Lauf abzubrechen
+  - derselbe Zuschnitt, den `buendel()` seit `CR-2026-060` fuer Praeparationsfehler hat.
+
+### Behoben
+
+- **Zehn Einzelsonden tragen jetzt einen Satz statt einer Kennung.** Was sie messen, hat
+  sich nicht geaendert; was der Lauf darueber sagt, schon.
+
+### Migrationshinweis
+
+**Die Vergleichsgrundlage der Abnahme aendert sich genau einmal.** Wer die Ausgabe eines
+Laufs gegen eine aeltere haelt, findet **29 Abweichungen und keine weitere**: zehn
+verlaengerte Saetze, sechzehn Buendelkopfzeilen und drei Selbstprobenzeilen (208
+Ergebniszeilen in 0.45.0, 227 in 0.46.0). **Keine Pruefung ist angefasst worden**, und
+die Sondenmenge ist nachgezaehlt dieselbe geblieben: `6 und 18 bis 44`.
+
+Ein Projekt, das den Sondenlauf in einer Pipeline fuehrt, sollte pruefen, ob dort ein
+Zeitlimit steht, das auf dreizehn Minuten ausgelegt war.
+
+### Bekannte Einschraenkungen
+
+- **Die Vorgabe von acht Bahnen ist eine feste Zahl, keine Eigenschaft der Maschine.**
+  Auf einem kleineren Laeufer ist sie zu gross, auf einem groesseren zu klein. Das ist
+  gewollt: Eine Vorgabe, die vom Rechner abhinge, machte zwei Laufzeiten unvergleichbar.
+- **Die Laufzeiten sind gemessen, nicht reproduzierbar.** Sie stehen deshalb unterhalb
+  der Trennlinie. Was sie belegen, ist die Verteilung, nicht ein Wert.
+- **Selbstprobe B1 zaehlt Worte, nicht Sinn.** Ein Satz aus achtzehn Fuellwoertern
+  besteht sie.
+
 ## [0.45.0] - 2026-09-15
 
 **Ein Hook, der einunddreissig Releases lang stumm war - und ein Register der
