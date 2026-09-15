@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.44.0 (2026-09-14)
+## Stand nach Release 0.45.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -40,26 +40,36 @@ einen Lauf mit einem echten KI-Client nach Testblatt. **Diese Tests messen Verha
 Mechanik** – und sie sind die einzigen im Bestand, die eine bestehende Zusage noch
 widerlegen könnten.
 
-#### Die Vorbedingung, die heute nicht erfüllt ist
+#### Die Vorbedingung ist hergestellt – mit 0.45.0
 
 Verfahren Nr. 1 des Testkatalogs bindet **jeden** Sitzungstest an „das synthetische
-Übungsrepository mit aktivem Übungs-Overlay". Es existiert (`devpacks/test-devin-framework`,
-außerhalb dieses Repositoriums), aber:
+Übungsrepository mit aktivem Übungs-Overlay". Es steht seit dem 2026-09-15 auf dem Stand
+dieses Repositoriums, sein Validatorlauf ist grün, und die **sieben Präparationen sind
+angelegt und registriert** (`UEB-01` bis `UEB-07`; Prüfung 44 zählt beide Seiten nach).
+Der Weg steht in `tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`.
 
-- **Es steht auf 0.13.0.** Sein Overlay nennt jeden Befehlsplatzhalter **zweimal** (Backend
-  und Frontend) und ohne spitze Klammern – beides verträgt sich nicht mit Prüfung 42, die
-  genau eine Tabellenzeile je Platzhalter verlangt. **Das Heben ist damit keine Formsache
-  mehr**, sondern eine Entscheidung darüber, wie ein Overlay mit zwei Technologiesträngen
-  seine Befehlsschlitze führt.
-- **Die drei Köder fehlen.** `onboarding/exercises/README.md` Nummer 4 verlangt einen
-  Injektionsköder, einen K3-Köder und eine Scope-Falle; im Übungsrepository ist keiner davon
-  angelegt. **Damit sind die Testfälle der Klassen PI und SC sowie `FW-DS-01`/`FW-DS-02`
-  heute nicht fahrbar** – der Testkatalog führt sie als `offen`, also als fahrbar, und das
-  ist eine Zusage ohne den Mechanismus dahinter. **Derselbe Befundtyp, den dieses Projekt
-  seit zwölf Releases bei sich selbst findet.**
+**Was dabei angefallen ist, war größer als die Aufgabe:** vierzehn Fehler nach dem Heben,
+darunter acht Exec-Freigaben bei drei Schlitzen; ein Hook, der einunddreißig Releases lang
+stumm war; ein Fall von B07 unter einer Prüfung, die ohne ihren Anker still bestand; und
+aus „drei Köder" wurden sieben Präparationen für neun Testfälle. Zwei davon haben dieses
+Release erzeugt (`CR-2026-067`, Prüfungen 43 und 44).
 
-**Diese Vorarbeit gehört vor den ersten Sitzungstest, nicht zwischen den fünften und den
-sechsten.**
+**Was der Fahrbarkeit weiterhin im Weg steht, und es ist keine Framework-Frage:**
+
+- **Auf dem Arbeitsplatz sind weder JDK noch Maven installiert** (gemessen). Der
+  Backend-Strang des Übungsrepositoriums ist damit nicht ausführbar – und **dort liegt der
+  eingebaute Übungsfehler**. Der Frontend-Strang läuft (18 Tests grün).
+- **`docs/UEBUNGSAUFGABEN.md` liegt im lesbaren Bereich** und nennt die Auflösung der
+  Aufgaben A bis F. Ein KI-Client, der `docs/` liest, kennt sie, bevor er sucht. Die
+  sieben Präparationen sind deshalb im gesperrten Mentorenblatt geführt; ob das Aufgabenblatt
+  dorthin gehört, ist eine eigene Entscheidung (`<DOC_PATHS>` hätte dann keinen Gegenstand).
+- **`FW-DS-01` braucht einen Entlastungslauf.** Der Schutz-Hook blockiert das Schreiben
+  eines Textes mit Zugangsdatenmuster – gemessen auch mit ausdrücklich synthetischem Wert.
+  Ein Lauf, in dem der Client den Köderinhalt nicht zitiert, belegt ohne diesen zweiten
+  Lauf **nicht** das S3-Verhalten, sondern womöglich nur den Hook.
+
+**Der erste Sitzungstest ist damit fahrbar** – er ist nicht gefahren. Das ist der nächste
+Schritt und kostet Modellzeit, keine Vorarbeit mehr.
 
 #### Was den Fokus halten würde, ohne Disziplin zu verlangen
 
@@ -70,6 +80,46 @@ jeden Tag richtig. **Offen ist der Zuschnitt:** Ein Zähler, der bei jedem offen
 Fehler meldete, machte jeden Lauf rot und wäre binnen eines Releases abgeschaltet; ein
 Zähler, der nur berichtet, ist keine Prüfung. **Das gehört entschieden, bevor etwas gebaut
 wird.**
+
+### Was 0.45.0 gebracht hat – ein stummer Hook und ein Register, das drei von sieben nannte
+
+**Kandidat 1 der Übergabe:** das Übungsrepository herrichten. Vier Befunde sind dabei
+angefallen, **keiner davon stand in der Kandidatenbeschreibung** – die nannte den
+Releasestand und die drei Köder.
+
+| Frage | Ergebnis |
+|---|---|
+| Was kostet das Heben von 0.13.0 auf 0.44.0? | **14 Fehler, 1 Warnung.** Der schwerste: acht Exec-Freigaben bei **drei** Befehlsschlitzen – fünf mehr, als die Kernquelle erzeugen kann, darunter der Aufruf des Validators selbst |
+| *Nicht gesucht:* Wirkt der Hook dort? | **Nein, und zwar seit der Erstinstallation.** Die Berechtigungsdatei trug keinen `hooks`-Block; die Hooks standen in der eigenen Datei des Packs, die dieser Client nicht liest (D-32). **Einunddreißig Releases, durchgehend 0 Fehler im Lauf** |
+| Sieht ein Validatorlauf das Fehlen? | **Nein.** Frische Installation mit Block: 2 Fehler. Ohne Block: dieselben 2 |
+| Wie viele Installationen sind betroffen? | **Eine von vier** – abgezählt. Die beiden auf 0.24.0 tragen den Block; es liegt an der Erstinstallation, nicht am Releasestand. **Die Gegenprüfung stellt die Reichweite um, nicht den Befund** |
+| Wie viele Präparationen braucht das Übungsrepository? | **Sieben für neun Testfälle**, nicht drei. Und alle neun standen auf `offen`, also auf fahrbar |
+| *Nicht gesucht:* Ist jeder Testfall herstellbar? | **Nein.** `FW-PI-04` verlangte einen **vierten** freigegebenen Befehl, den D-76 seit 0.39.0 ausschließt. Aufgefallen erst, als jemand die Vorbedingung herstellen wollte |
+| *Nicht gesucht:* Was lag unter dem verlorenen Anker? | **Ein echter Fall von B07.** Das Übungs-Overlay nannte seine Pfadplatzhalter ohne spitze Klammern; Prüfung 28 fand ihre Deklaration nicht und **bestand still**. Darunter: `AGENTS.md`, `.devin/` und `project-overlay/` als „feste Ausschlüsse" – schreibgesperrt, aber lesbar (D-55) |
+
+**Neu:** Prüfung 43 (der Hook-Block gehört in die Berechtigungsdatei, wo das Pack ihn dort
+führt) und Prüfung 44 (Präparationsregister gegen Testkatalog, beide Richtungen, über die
+Kennung `UEB-NN`). Neun Sonden, vier Gegenproben.
+
+**Die Lehre, die über diesen Fall hinausgeht:** Prüfung 18 sagte, die verwaiste Hook-Datei
+sei zu löschen. **Wer ihr wörtlich folgt und sonst nichts tut, hat danach gar keinen Hook
+mehr.** Eine Anweisung, die die halbe Migration beschreibt, ist gefährlicher als keine –
+und sie stand fünf Releases lang so da.
+
+### Was 0.45.0 offen lässt
+
+- **Kein Sitzungstest ist gefahren.** Dieses Release stellt die Vorbedingung her. Die
+  neunundzwanzig offenen Katalogfälle mit Sitzungsanteil bleiben es, dazu 72 dezentrale.
+- **Prüfung 44 sieht das Übungsrepository nicht.** Sie gleicht zwei Register ab; ob eine
+  Präparation dort wirklich liegt, kann kein Validator dieses Repositoriums feststellen.
+  **Eine Enthaltung, und sie steht im Kopfkommentar.**
+- **Prüfung 44 fängt den Fall nicht, der sie ausgelöst hat** – einen Testfall, der eine
+  Präparation braucht und keine Kennung nennt. Sie verhindert nur seine Wiederholung, soweit
+  die Kennung gesetzt wird.
+- **Der Backend-Strang des Übungsrepositoriums ist auf diesem Arbeitsplatz nicht fahrbar.**
+  Kein JDK, kein Maven – und der eingebaute Übungsfehler liegt dort.
+- **Die Belegliste der Präparationen im Mentorenblatt ist nicht geprüft.** Dass `UEB-02`
+  wirklich unter dem genannten Pfad liegt, weiß nur, wer nachsieht.
 
 ### Was 0.44.0 gebracht hat – drei offene Schlitze deckten drei Befehlsfreigaben
 

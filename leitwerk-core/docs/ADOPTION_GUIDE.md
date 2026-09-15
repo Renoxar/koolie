@@ -118,6 +118,27 @@ bleibt unberührt (P10, Baum 6).
    Berechtigungsdatei eintragen, ohne die Kernregeln im Block `_core_rules_integrity` zu entfernen; Manifest und
    Dokumente einpflegen.
 
+   **Mehr als ein Technologiestrang? Die Berechtigungsdatei hat drei Befehlsschlitze.**
+   `<BUILD_COMMAND>`, `<TEST_COMMAND>` und `<LINT_COMMAND>` – einen vierten Eintrag kann
+   ein Overlay dort nicht erzeugen, und die Datei wird nach der Erstinstallation nie
+   wieder geschrieben (D-76). Ein Projekt mit Backend **und** Frontend hat aber sechs
+   Build-, Test- und Prüfbefehle. Drei Sätze regeln den Fall:
+
+   - **Je Platzhalter genau eine Tabellenzeile** in Abschnitt 5 oder 6, mit spitzen
+     Klammern in der Platzhalterspalte und dem Befehl in der Zelle rechts daneben. Stehen
+     zwei Zeilen für denselben Platzhalter, ist nicht entschieden, welcher Befehl für den
+     Schlitz gilt – Prüfung 42 meldet es (D-91).
+   - **Den Schlitz bekommt der Befehl, der auf den Arbeitsplätzen des Projekts tatsächlich
+     läuft.** Gemessen, nicht vermutet: Am 2026-09-14 trug das Übungsrepository drei
+     Maven-Befehle in seiner Berechtigungsdatei, während auf der Maschine weder JDK noch
+     Maven installiert war. Ein Schlitz, der einen nicht ausführbaren Befehl trägt,
+     sichert nichts ab und verdeckt, welcher Befehl wirklich läuft.
+   - **Die übrigen Befehle bleiben gelistet und wirken über die Regelschicht.** Das ist
+     eine Anweisung an den KI-Client und keine technische Schranke; die Tabelle sagt es,
+     damit niemand mehr erwartet. **Ein Eintrag von Hand in die Berechtigungsdatei ist
+     kein Ersatz:** Prüfung 42 meldet jeden Befehl, den kein Platzhalter erklärt – am
+     Übungsrepository waren es fünf, darunter der Aufruf des Validators selbst.
+
 5. **Packs aktivieren.** Kein Pack ist nach der Installation aktiv — auch nicht das
    Referenzpack `software-development`. Je benötigtem Pack: Rolle im Overlay Abschnitt 1
    aufführen, dann Laufzeitfassung und – falls vorhanden – Skills kopieren:

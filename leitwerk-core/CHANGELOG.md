@@ -2,6 +2,95 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.45.0] - 2026-09-15
+
+**Ein Hook, der einunddreissig Releases lang stumm war - und ein Register der
+Uebungspraeparationen, das drei von sieben nannte.** Kandidat 1 der Uebergabe: das
+Uebungsrepositorium herrichten. Vier Befunde sind dabei angefallen, **keiner davon stand
+in der Kandidatenbeschreibung** (`tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`,
+`CR-2026-067`, D-92 und D-93).
+
+### Gemessen
+
+- **Die Berechtigungsdatei des Uebungsrepositoriums trug keinen `hooks`-Block.** Seine
+  Hooks standen in der eigenen Hook-Datei des Packs - der, aus der dieser Client keinen
+  Hook ausfuehrt (AP2-DD-10, D-32, seit 0.25.0). **Der Hook war seit der Erstinstallation
+  wirkungslos**, und der Validator meldete durchgehend 0 Fehler. Kontrolllauf an einer
+  frischen Installation: mit Block 2 Fehler, **ohne Block dieselben 2** - kein Lauf sieht
+  das Fehlen.
+- **Die Gegenpruefung stellt die Reichweite um, nicht den Befund.** Abgezaehlt ueber vier
+  lokale Installationen tragen drei den Block, auch die beiden auf 0.24.0. Es liegt nicht
+  am Releasestand, sondern an der Erstinstallation: **eine** Fundstelle, nicht vier.
+- **Pruefung 18 beschrieb die halbe Migration.** Ihre Warnung sagt, die verwaiste Datei
+  sei zu loeschen. Wer ihr woertlich folgt und sonst nichts tut, hat danach **gar keinen
+  Hook mehr** - und kein Lauf meldet es.
+- **Das Register der Uebungspraeparationen nannte drei von sieben.**
+  `onboarding/exercises/README.md` verlangte drei Koeder; abgezaehlt gegen die
+  Vorbedingungen des Testkatalogs braucht ein fahrbares Uebungsrepositorium **sieben
+  Praeparationen fuer neun Testfaelle**. Alle neun standen auf `offen`, also auf fahrbar -
+  **eine Zusage ohne den Mechanismus dahinter, am eigenen Pruefstand.**
+- **`FW-PI-04` verlangte, was D-76 ausschliesst:** ein Testskript „als freigegebener
+  Befehl", also einen VIERTEN Exec-Eintrag. Den kann ein Overlay seit 0.39.0 nicht
+  erzeugen. Aufgefallen ist es erst, als jemand die Vorbedingung herstellen wollte.
+- **Acht Exec-Freigaben bei drei Schlitzen.** Das Uebungsrepositorium ist der zweite und
+  schaerfere echte Fall des 0.44.0-Befunds: fuenf Freigaben mehr, als die Kernquelle
+  erzeugen kann, darunter der Aufruf des Validators selbst.
+
+### Neu
+
+- **Pruefung 43** (D-92): Fuehrt ein Client Pack seine Hooks in der Berechtigungsdatei -
+  und beide ausgelieferten tun das -, traegt die Datei einen nichtleeren
+  `PreToolUse`-Block. Geprueft wird das **Vorhandensein**; den Inhalt pruefen 15, 16 und
+  17 unveraendert weiter. Ein Pack mit eigener Hook-Datei bleibt ausgenommen, und die
+  Enthaltung steht im Kopfkommentar.
+- **Pruefung 44** (D-93): Das Praeparationsregister und die Vorbedingungen des
+  Testkatalogs decken sich - **in beiden Richtungen** ueber die Kennung `UEB-NN`. Keine
+  Kennung ohne Registereintrag, kein Registereintrag ohne Testfall. Die dezentralen
+  `TESTS.md` zaehlen mit (Verfahren Nr. 6). **Was sie nicht kann:** einen Testfall fangen,
+  der eine Praeparation braucht und keine Kennung nennt - genau den Fall, der sie
+  ausgeloest hat. Das steht in ihrem Kopfkommentar.
+- **Das Register `UEB-01` bis `UEB-07`** in `onboarding/exercises/README.md`, je mit Ort,
+  Gegenstand und den Testfaellen, die es braucht.
+- **Neun Sonden und vier Gegenproben** zu den beiden Pruefungen. Die drei Sonden zu 43
+  laufen gegen frische Installationen **beider** Packs (B02); Gegenprobe 44b stellt einen
+  **zulaessigen** Zustand her - eine achte Praeparation, registriert und gebraucht -, denn
+  eine Pruefung, die jede neue Kennung meldet, bestuende jede Sonde.
+
+### Behoben
+
+- **`FW-PI-04` ist herstellbar geworden.** Die praeparierte Ausgabe kommt aus einem der
+  drei erklaerten Befehle statt aus einem vierten; was der Testfall misst, bleibt gleich.
+- **Die Warnung der Pruefung 18 nennt beide Haelften der Migration** - die alte Datei
+  loeschen UND den Block in der Berechtigungsdatei fuehren.
+- **`ADOPTION_GUIDE.md` Schritt 4 beantwortet den Fall mehrerer Technologiestraenge:** je
+  Platzhalter genau eine Tabellenzeile, den Schlitz bekommt der Befehl, der auf den
+  Arbeitsplaetzen **tatsaechlich laeuft**, die uebrigen wirken ueber die Regelschicht.
+- **Verfahren Nr. 1 des Testkatalogs** sagt jetzt, dass ein Testfall ohne hergestellte
+  Praeparation nicht fahrbar ist - auch wenn seine Ergebniszelle `offen` sagt.
+
+### Migrationshinweise
+
+- **Eine Installation, deren Berechtigungsdatei keinen `hooks`-Block traegt, bekommt ab
+  diesem Release einen Fehler.** Der Block kommt durch kein Update nach: Die Datei steht
+  in `shared_seed` und wird nach der Erstinstallation nie wieder geschrieben (D-76). Er
+  ist von Hand aus einer frischen Installation desselben Packs zu uebernehmen; die
+  verwaiste Hook-Datei daneben wird dabei geloescht. **Gemessen betrifft das eine
+  bekannte Installation**, und sie ist mit diesem Release hergerichtet.
+- **Ein Testfall, der eine neue Praeparation braucht, registriert sie.** Kennung `UEB-NN`
+  in `onboarding/exercises/README.md` und dieselbe Kennung in der Vorbedingungszelle -
+  sonst meldet Pruefung 44 die Seite, die fehlt.
+
+### Bekannte Einschraenkungen
+
+- **Im Repositorium selbst findet Pruefung 43 nichts.** Die lokale Testinstallation traegt
+  ihren Block; der Gegenbeweis ist ein Abzaehlen an echten Installationen.
+- **Pruefung 44 gleicht zwei Register ab, nicht ein Register gegen die Wirklichkeit.** Ob
+  eine Praeparation im Uebungsrepositorium wirklich liegt, sieht kein Validator dieses
+  Repositoriums - es liegt ausserhalb.
+- **Kein Sitzungstest ist gefahren.** Dieses Release stellt die Vorbedingung her; die
+  neunundzwanzig Testfaelle des Katalogs mit Sitzungsanteil bleiben offen, dazu
+  zweiundsiebzig dezentrale.
+
 ## [0.44.0] - 2026-09-14
 
 **Drei offene Platzhalterschlitze deckten drei beliebige Befehlsfreigaben - und drei

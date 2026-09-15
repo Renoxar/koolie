@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 42, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 44, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -2738,6 +2738,162 @@ def sonden_schlitzinhalte() -> None:
 
 
 buendel(sonden_schlitzinhalte)
+
+M43_FEHLT = "trägt keinen 'hooks'-Block"
+M43_LEER = "ohne ein einziges PreToolUse-Kommando"
+M43_ALLE = (M43_FEHLT, M43_LEER)
+
+# Dieselbe Lagepruefung wie bei Pruefung 42: Ein String MUSS in der Ausgabe stehen, eine
+# Liste von Strings darf NICHT darin stehen. Sie ist nicht an 42 gebunden.
+_43_trifft = _42_trifft
+
+
+def _43_block_weg(pfad: str) -> None:
+    """Den hooks-Block entfernen - der Fall des Uebungsrepositoriums.
+
+    Der Waechter sitzt im Eingriff, nicht in einem Textvergleich: json.dumps
+    normalisiert die Datei ohnehin (dieselbe Zusage wie D-74, siehe _37_schreiben).
+    """
+    daten = json.loads(lies(pfad))
+    if "hooks" not in daten:
+        raise Praeparationsfehler(
+            "%s: es gibt keinen hooks-Block zu entfernen; die Sonde hat ihren "
+            "Gegenstand verloren" % os.path.basename(pfad))
+    del daten["hooks"]
+    schreib(pfad, json.dumps(daten, indent=2, ensure_ascii=False) + "\n")
+
+
+def _43_block_leeren(pfad: str) -> None:
+    """Den hooks-Block behalten, PreToolUse leeren - die halbe Migration."""
+    daten = json.loads(lies(pfad))
+    hooks = daten.get("hooks")
+    if not isinstance(hooks, dict) or not hooks.get("PreToolUse"):
+        raise Praeparationsfehler(
+            "%s: kein PreToolUse-Eintrag zum Leeren vorhanden" % os.path.basename(pfad))
+    hooks["PreToolUse"] = []
+    schreib(pfad, json.dumps(daten, indent=2, ensure_ascii=False) + "\n")
+
+
+def sonden_hookblock() -> None:
+    """Wirkungsnachweis zu Pruefung 43 (CR-2026-067, D-92)."""
+    # Der verwaiste Dateiname ist fuer beide Packs derselbe: VERWAISTE_HOOK_DATEIEN
+    # im Validator fuehrt genau einen. Die erste Fassung dieser Sonde riet fuer
+    # claude-code "hooks.json" und fiel - an der Sonde, nicht an der Pruefung.
+    for pack, rechte in (("claude-code", ".claude/settings.json"),
+                         ("devin-desktop", ".devin/config.json")):
+        verwaist = "hooks.v1.json"
+        root = installation(pack)
+        try:
+            pfad = os.path.join(root, *rechte.split("/"))
+            ausgang = lies(pfad)
+            schreib(os.path.join(root, "README.md"), "# Sondenprojekt\r\n")
+
+            # --- Gegenprobe 43a: der Auslieferungszustand ------------------------
+            melde("GEGENPROBE", "43a", _43_trifft(root, M43_ALLE),
+                  "Auslieferungszustand: der Block steht in der Berechtigungsdatei "
+                  "(%s)" % pack)
+
+            # --- Sonde 43a: der Fall des Uebungsrepositoriums --------------------
+            # Einunddreissig Releases lang so gemessen: Hooks in der eigenen Datei des
+            # Packs, die der Client nicht liest, und kein Block in der wirksamen.
+            _43_block_weg(pfad)
+            melde("SONDE", "43a", _43_trifft(root, M43_FEHLT),
+                  "Kein hooks-Block in der Berechtigungsdatei - der Hook ist stumm "
+                  "(%s)" % pack)
+
+            # --- Sonde 43b: dieselbe Lage mit verwaister Datei daneben -----------
+            # Wer der Warnung der Pruefung 18 woertlich folgt, loescht die alte Datei
+            # und hat danach gar keinen Hook. Die Meldung muss beide Haelften nennen.
+            runtime = os.path.dirname(pfad)
+            schreib(os.path.join(runtime, verwaist), "{}\n")
+            aus = validator_ausgabe(root)
+            ok = M43_FEHLT in aus and verwaist in aus
+            melde("SONDE", "43b", ok,
+                  "Kein Block, aber die verwaiste Hook-Datei daneben - die Meldung "
+                  "nennt beide (%s)" % pack)
+            if not ok:
+                print("        Ausgabe:", " | ".join(
+                    z for z in aus.splitlines() if "FEHLER" in z)[:400])
+            os.remove(os.path.join(runtime, verwaist))
+            schreib(pfad, ausgang)
+
+            # --- Sonde 43c: der Block steht da und ist leer ----------------------
+            _43_block_leeren(pfad)
+            melde("SONDE", "43c", _43_trifft(root, M43_LEER),
+                  "hooks-Block ohne PreToolUse-Kommando - vorhanden und wirkungslos "
+                  "(%s)" % pack)
+            schreib(pfad, ausgang)
+        finally:
+            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+
+
+buendel(sonden_hookblock)
+
+
+# --- Pruefung 44: das Praeparationsregister ------------------------------------------
+P44_REGISTER = "leitwerk-core/onboarding/exercises/README.md"
+P44_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md"
+M44_UNREGISTRIERT = "das Register in"
+M44_TOT = "die kein Testfall nennt"
+M44_ANKER = "führt kein Register mehr"
+# Jede Meldung der Pruefung 44 endet auf ihren Decision Record. Die generische
+# gegenprobe() nimmt genau einen Suchtext - dieser faengt alle drei und jede kuenftige.
+M44_JEDE = "(D-93)"
+
+# Synthetische Kennungen. UEB-08 waere die naechste echte - deshalb nehmen die beiden
+# Defektsonden 98 und 99, und nur die Gegenprobe, die einen ZULAESSIGEN Zustand
+# herstellt, nimmt 08. Die Lehre von G-18 (2026-09-13): Eine synthetische Kennung, die
+# mit einer echten kollidieren kann, misst nicht mehr ihren Fall.
+P44_UNREG = "UEB-99"
+P44_TOT = "UEB-98"
+P44_NEU = "UEB-08"
+
+P44_VORBEDINGUNG_ALT = "| FW-NE-01 (Basis) | Delegationsverbot | Übungsrepo |"
+P44_REGISTERZEILE = ("| `%s` | **Synthetisch:** Eintrag der Gegenprobe | nirgends | "
+                     "nichts | `FW-NE-01` |")
+
+
+def _44_pfad(root: str, rel: str) -> str:
+    return os.path.join(root, *rel.split("/"))
+
+
+def _44_katalog_nennt(root: str, kennung: str) -> None:
+    """Eine Vorbedingung ohne Kennung nennt eine - FW-NE-01 hat heute keine."""
+    ersetze(_44_pfad(root, P44_KATALOG),
+            (P44_VORBEDINGUNG_ALT,
+             P44_VORBEDINGUNG_ALT[:-1] + "; Präparation `%s` |" % kennung))
+
+
+def _44_register_zeile(root: str, kennung: str) -> None:
+    """Eine Zeile ans Ende der Registertabelle - hinter UEB-07."""
+    pfad = _44_pfad(root, P44_REGISTER)
+    frei(pfad, kennung)
+    zeile_nach(pfad, "| `UEB-07` |", P44_REGISTERZEILE % kennung)
+
+
+sonde("44a", "Eine Vorbedingung nennt eine Praeparation, die das Register nicht fuehrt",
+      lambda root: (frei(_44_pfad(root, P44_KATALOG), P44_UNREG),
+                    _44_katalog_nennt(root, P44_UNREG)),
+      M44_UNREGISTRIERT)
+
+sonde("44b", "Das Register fuehrt eine Praeparation, die kein Testfall braucht",
+      lambda root: _44_register_zeile(root, P44_TOT),
+      M44_TOT)
+
+sonde("44c", "Der verlorene Anker - die Registerueberschrift ist umbenannt",
+      lambda root: ersetze(_44_pfad(root, P44_REGISTER),
+                           ("### Register der Präparationen",
+                            "### Übersicht der Präparationen")),
+      M44_ANKER)
+
+gegenprobe("44a", "Auslieferungszustand: sieben registrierte, sieben gebrauchte "
+                  "Praeparationen", None, M44_JEDE)
+
+gegenprobe("44b", "Eine achte Praeparation, registriert UND von einem Testfall "
+                  "gebraucht - der zulaessige Weg",
+           lambda root: (_44_register_zeile(root, P44_NEU),
+                         _44_katalog_nennt(root, P44_NEU)),
+           M44_JEDE)
 
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
