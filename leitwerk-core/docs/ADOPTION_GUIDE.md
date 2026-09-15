@@ -92,6 +92,23 @@ bleibt unberührt (P10, Baum 6).
    weil sie im Framework-Repository Erzeugnisse sind. Im Projekt gehören sie in die
    Versionierung.
 
+   **Eine Zeile gehört umgekehrt hinein** – und bis 0.46.0 stand sie hier nicht, weshalb
+   sie in **beiden** bekannten Projekten fehlte (abgezählt am 2026-09-15: sechs
+   versionierte Bytecode-Dateien im einen, zwei im anderen):
+
+   ```gitignore
+   # Bytecode der Python-Werkzeuge des Kerns – ein Erzeugnis, kein Quelltext
+   __pycache__/
+   ```
+
+   `install.py` importiert `clientmap.py`, Validator und Hook laufen als Skript: Bei
+   jedem Lauf entsteht Bytecode unter `leitwerk-core/`. Versioniert ändert er sich mit
+   jedem Lauf und überlebt den Kern, aus dem er entstanden ist. **Prüfung 45 verlangt die
+   Zeile und meldet außerdem bereits versionierten Bytecode** – denn die Zeile allein
+   entfernt ihn nicht: Git liest die `.gitignore` für bereits verfolgte Dateien nicht.
+   Der Weg dorthin ist `git rm -r --cached leitwerk-core/**/__pycache__`, **danach** die
+   Zeile.
+
 3a. **Vorhandene Anweisungsdatei übernehmen** (nur, wenn Schritt 3 abgebrochen ist).
 
    Das Framework beansprucht die Wurzel-Anweisungsdatei für Ebene 1. Ihr bisheriger Inhalt

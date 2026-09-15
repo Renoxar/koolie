@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.46.0 (2026-09-15)
+## Stand nach Release 0.47.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -80,6 +80,51 @@ jeden Tag richtig. **Offen ist der Zuschnitt:** Ein Zähler, der bei jedem offen
 Fehler meldete, machte jeden Lauf rot und wäre binnen eines Releases abgeschaltet; ein
 Zähler, der nur berichtet, ist keine Prüfung. **Das gehört entschieden, bevor etwas gebaut
 wird.**
+
+### Was 0.47.0 gebracht hat – zwei von zwei Projekten versionierten den Bytecode des Kerns
+
+**Kandidat 4 der Übergabe war „den Piloten heben".** Er ist gehoben, 0.41.0 auf 0.46.0,
+und der Befund dieses Releases ist dabei angefallen – **zum vierten Mal in Folge war die
+Aufgabenbeschreibung zu klein** (`CR-2026-069`, D-97).
+
+| Frage | Ergebnis |
+|---|---|
+| Was kostete das Heben des Piloten? | **3 Fehler, 3 Warnungen** vor den Nacharbeiten; `install.py --update` fasste **genau eine** Kerndatei an |
+| Stimmte der Migrationshinweis von 0.44.0? | **Ja, und er nannte den Piloten namentlich.** Genau eine Fundstelle: `Bash(mvn -B -q compile)` im `ask`-Korb, von keinem Platzhalter erklärt |
+| Schwieg Prüfung 43 dort, wie vorhergesagt? | **Ja.** Die Berechtigungsdatei trägt ihren `hooks`-Block mit einem `PreToolUse`-Kommando |
+| *Nicht gesucht:* Was lag daneben? | **Sechs versionierte `.pyc`-Dateien** unter `leitwerk-core/`. Zwei davon standen beim Auschecken als geändert da, ohne dass jemand etwas getan hätte |
+| Ist das ein Fehler des Piloten? | **Nein.** Das Übungsrepositorium hat dasselbe, **zwei von zwei Projekten** – und das Framework-Repositorium selbst hat die Regel seit jeher, weshalb es dort nie auffiel |
+| *Nicht gesucht:* Taugt der Aufräumer aus 0.46.0? | **Er hatte recht und war trotzdem nutzlos.** Git schreibt seine Objektdateien schreibgeschützt; drei Versuche über anderthalb Sekunden endeten dreimal mit demselben „Zugriff verweigert" |
+
+**Der Leitfaden sagte nur die Hälfte.** Abschnitt 2 nannte zur `.gitignore` die **vier
+Zeilen, die ein Projekt weglassen muss** – und keine einzige, die es braucht. Wer ihm
+wörtlich folgt, schreibt eine eigene Datei und versioniert danach den Bytecode eines
+Werkzeugs, das bei jedem Lauf neuen erzeugt. **Das ist die Bauform des Befunds von
+0.45.0, ein zweites Mal:** *Eine Anweisung, die die halbe Migration beschreibt, ist
+gefährlicher als keine.*
+
+**Neu:** Prüfung 45 mit **zwei Gegenständen** – die Regel in der `.gitignore` und der
+Bestand über `git ls-files`. **Einer reicht nicht:** Git liest die `.gitignore` für
+bereits verfolgte Dateien nicht. Wer die Zeile nachträgt und `git rm --cached` vergisst,
+bekäme einen grünen Lauf und hätte die sechs Dateien weiter im Repositorium – **die
+halbe Migration ein drittes Mal, diesmal eingebaut statt gefangen.**
+
+**Die Lehre, die über diesen Fall hinausgeht:** Ein Leitfaden, der sagt, was man
+**weglassen** soll, ist nicht die Umkehrung eines Leitfadens, der sagt, was man
+**braucht**. Beide Listen sind nötig, und nur eine stand da.
+
+### Was 0.47.0 offen lässt
+
+- **Gegenstand 1 prüft die Datei, nicht die Wirkung.** Eine Regel, die durch eine spätere
+  Ausnahmezeile (`!*.pyc`) wieder aufgehoben wird, fällt ihm nicht auf. Den Fall fängt
+  Gegenstand 2, sobald git da ist – aber nur dann.
+- **Die Deckungsliste ist eine Liste, keine Semantik.** Fünf Schreibweisen gelten; eine
+  wirksame, aber exotische sechste meldet sie als fehlend.
+- **Das Übungsrepositorium ist noch nicht hergerichtet.** Es steht auf 0.45.0 und führt
+  zwei versionierte `.pyc`. Beides gehört beim nächsten Heben dorthin erledigt.
+- **Ob `install.py` die `.gitignore` je schreiben sollte, ist entschieden und nicht
+  erledigt.** Die Antwort ist nein (E5) – aber sie bedeutet, dass jedes Projekt die Zeile
+  selbst eintragen muss und die Prüfung sie nur einfordert.
 
 ### Was 0.46.0 gebracht hat – der Prüfapparat misst sich selbst
 
