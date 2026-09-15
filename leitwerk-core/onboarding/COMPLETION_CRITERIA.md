@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-OB-CRIT` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | Abschlussgespräch des Onboardings; Grundlage der Freigabe zur selbstständigen Nutzung |
 

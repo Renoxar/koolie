@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-GOV-DEV` |
 | Version | `0.1.0` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | das Quellrepositorium dieses Frameworks – **nicht** für ein Projekt, das ein Release anwendet |
 | Entstehung | Befund **B07** des unabhängigen Reviews vom 2026-09-12 (`CR-2026-053`, D-56) |

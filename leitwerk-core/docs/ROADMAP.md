@@ -4,12 +4,12 @@
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
 | Version | `0.2.0` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.51.0 (2026-09-15)
+## Stand nach Release 0.52.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -30,7 +30,7 @@ Zwischenschritt – und weil ihn niemand ausführt, fällt auch nicht auf, dass 
 Falsche zählt. Am 2026-09-15 wurden die vier Befehle zum ersten Mal ausgeführt:
 **alle vier lagen daneben** (`CR-2026-070`, D-98).
 
-**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 41, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 1, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -41,13 +41,15 @@ ist grün, **dann ist das die Meldung** – erzwungen statt behauptet.
 |---|---|---|---|
 | **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/` |
 | **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte |
-| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 stand über `entwurf`. **Mit 0.50.0 ist das Modell zum ersten Mal angewendet** (`CR-2026-072`, D-102 bis D-104): dreizehn Skills auf `pilot`, und vier Vorlagen tragen statt eines Statuswerts einen Ausfüllschlitz, weil ihr Steckbrief die Kopie beschreibt – **69 → 52**. **Mit 0.51.0 ist der Gegenstand vollständig und das erste Nicht-Skill-Bündel abgenommen** (`CR-2026-073`, D-105 bis D-108): Zwölf Träger ohne Statuszeile haben eine – **52 → 64** –, und 23 gehen auf `pilot`: die elf Checklisten und die zwölf Träger mit dem Kernmodul-Steckbrief. **64 → 41.** Die Übergangsbedingung steht seit 0.50.0 in `01-governance.md` Abschnitt 5; Prüfung 47 setzt seit 0.51.0 Vokabular und Vollständigkeit durch |
+| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 stand über `entwurf`. **Mit 0.50.0 ist das Modell zum ersten Mal angewendet** (`CR-2026-072`, D-102 bis D-104): dreizehn Skills auf `pilot`, und vier Vorlagen tragen statt eines Statuswerts einen Ausfüllschlitz, weil ihr Steckbrief die Kopie beschreibt – **69 → 52**. **Mit 0.51.0 ist der Gegenstand vollständig und das erste Nicht-Skill-Bündel abgenommen** (`CR-2026-073`, D-105 bis D-108): Zwölf Träger ohne Statuszeile haben eine – **52 → 64** –, und 23 gehen auf `pilot`: die elf Checklisten und die zwölf Träger mit dem Kernmodul-Steckbrief. **64 → 41.** **Mit 0.52.0 sind vierzig der einundvierzig übrigen abgenommen – 41 → 1** (`CR-2026-074`, D-109 bis D-111). Der eine Rest ist `clients/devin-desktop/CLIENT_PACK.md`: Sein Steckbrief lässt zwei Aussagen des Frameworks offen, und er geht über `AP2`, nicht über eine Abnahme. Die Übergangsbedingung steht seit 0.50.0 in `01-governance.md` Abschnitt 5; Prüfung 47 setzt seit 0.51.0 Vokabular und Vollständigkeit durch |
 | **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9. **✅ Erfüllt seit 0.49.0** (`CR-2026-071`, D-100): Die neun sind bestätigt |
 | **5** | Übernahme in ein zweites Projekt nachgewiesen | **zählt Prüfung 46 nicht** – eine Feststellung, keine Zahl. Eine Enthaltung, und sie steht im Kopfkommentar | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
 
 **Ein Kriterium von vier steht auf null – seit 0.49.0, und es ist das erste.** Kriterium 4 verlangte die Bestätigung von neun Strukturentscheidungen; sie lag seit `CR-2026-019` als Vorlage vor und ist zweiunddreißig Releases lang nicht beantwortet worden. **Nicht weil die Entscheidungen strittig waren, sondern weil die Bedingung falsch gewählt war** – siehe unten.
 
 **Mit 0.51.0 bewegt sich dieselbe Zahl zum zweiten Mal – und zum ersten Mal ist sie vorher gewachsen.** Die vollständige Erfassung hebt Kriterium 3 von 52 auf **64**, die Abnahme von 23 Trägern senkt es auf **41**. Beide Schritte sind gemessen; **Prüfung 46 hat zwischen ihnen zweimal gegriffen** (`tests/protocols/2026-09-15-wirkungsnachweise-0.51.0.md`). Eine Zahl, die steigt, weil ihr Gegenstand vollständig wird, ist kein Rückfall – die Meldung der Prüfung kann die beiden Fälle nicht trennen und nennt es trotzdem so (`K-38`).
+
+**Mit 0.52.0 bewegt sich dieselbe Zahl zum dritten Mal – und diesmal lag das Hindernis NICHT in der Bedingung.** Sie stand seit 0.50.0, das Vokabular war durchgesetzt, die Bündelform erprobt: Die erste Kandidatenzeile seit 0.48.0 ohne vorangestelltes Hindernis. **Gelegen hat es im Gegenstand** – ein Träger von einundvierzig sperrt sich selbst, und er sagt es in dem Absatz unter seinem Steckbrief seit acht Releases (D-110). **Kriterium 3: 41 → 1.**
 
 **Mit 0.50.0 bewegte sich die zweite Zahl, und wieder war die Bedingung das Hindernis.** Kriterium 3
 sinkt von 69 auf 52 (`CR-2026-072`). Die Vorbedingung, die dem Vorgang vorangestellt war, enthielt
@@ -129,6 +131,56 @@ ist nicht nachgezogen.
 ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
+
+### Was 0.52.0 gebracht hat – vierzig von einundvierzig Trägern sind abgenommen, der einundvierzigste sperrt sich selbst
+
+**Kandidat 1 der Übergabe, und die erste Kandidatenzeile seit 0.48.0 ohne vorangestelltes
+Hindernis** (`CR-2026-074`, D-109 bis D-111, `K-39` neu,
+`tests/protocols/2026-09-15-gegenpruefung-restliche-nicht-skill-traeger.md`,
+`tests/protocols/2026-09-15-wirkungsnachweise-0.52.0.md`).
+
+| Frage | Ergebnis |
+|---|---|
+| Wie viele der 41 sind abgenommen? | **Vierzig.** Neun Bündel nach Gattung, jeder Träger namentlich mit (a) bis (d) im Protokoll. **Kriterium 3: 41 → 1** |
+| *Nicht gesucht:* Warum nicht einundvierzig? | **`clients/devin-desktop/CLIENT_PACK.md` sperrt sich selbst.** Sein Steckbrief trägt `Geprüfte Clientversion <TBD: verbindliche Zielversion; Roadmap AP2>` und `Datum der Prüfung <TBD: steht aus>`, und der Absatz darunter sagt es wörtlich: *„Solange die Zielversion nicht festgelegt und geprüft ist (Roadmap AP2), gilt das Pack als **unbelegt**."* Das ist (d) – ein Ausfüllwert, der **keine** Angabe der aufnehmenden Organisation bezeichnet, sondern eine ausstehende Festlegung des Framework Owners (D-110) |
+| Und `claude-code`, das denselben Satz trägt? | **Abgenommen.** Beide Zellen tragen echte Werte (`2.1.267`, `2026-09-10`). **Die Trennlinie ist der Schlitz, nicht der Satz über den Belegstand:** `01-governance.md` Abschnitt 5 Punkt 4 sagt ausdrücklich, dass ein Statuswert keine Aussage über beobachtetes Verhalten ist. Ein Träger auf `pilot` ist strukturell abgenommen, nicht erprobt |
+| Was ist der eigentliche Befund? | **Dieselbe Zeichenfolge, zwei Bedeutungen – und diesmal in zwei Trägern gleichzeitig.** `<TBD: verbindliche Zielversion …>` steht in `docs/ROADMAP.md` in einer Zelle der Spalte *Offene Entscheidungen* und in `clients/devin-desktop/CLIENT_PACK.md` in der Zelle *Geprüfte Clientversion*. In der Roadmap ist es die **Nennung** eines offenen Punktes – genau ihr Zweck –, im Client Pack der **fehlende Wert** einer Aussage über ein Produkt. Die Roadmap ist deshalb abgenommen, das Pack nicht (D-109) |
+| *Nicht gesucht:* Sperrt ein Register mit offenen Ergebnissen sich selbst? | **Nein** (D-111). `tests/TEST_CATALOG.md` führt 31 Ergebniszellen auf `offen`; sein Gegenstand sind die Testfälle, nicht ihre Ergebnisse. Eine andere Antwort kettete Kriterium 3 an Kriterium 2 – **zum dritten Mal derselbe Fehler**, den D-103 für die dreizehn Skills und D-107 für die zwölf Prompt-Vorlagen berichtigt hat |
+| *Nicht gesucht:* `K-39` | **Ist `docs/ROADMAP.md` überhaupt ein Modulträger?** Sie wird in jedem Release fortgeschrieben, ihre Steckbriefversion steht seit `0.2.0` unverändert, und `CHANGELOG.md` – der Träger mit derselben Eigenschaft – ist vom Zählbereich der Prüfung 46 ausdrücklich ausgenommen. **In diesem Release nicht entschieden**, und der Vorgang hat sich ausdrücklich nicht auf diesem Weg entlastet |
+| Haben die Wächter gegriffen? | **Prüfung 46 einmal, und wieder gegen den Vorgang selbst:** `gezählt 1, die Standzeile nennt 41`. **Prüfung 47 hat geschwiegen** – das Vokabular hielt bei allen vierzig Wechseln, der Zusatz *„(Referenzpack der Erstfassung)"* eingeschlossen |
+
+**Die Lehre, die über den Fall hinausgeht.** 0.50.0 hat gelehrt: *Eine Marke, die in einem
+Bestand sowohl benutzt als auch benannt wird, taugt nicht als Bedingung.* Der Satz galt
+der Zählregel. **0.52.0 fügt die andere Richtung hinzu:**
+
+> **Sie taugt auch nicht als Entlastung.** Derselbe `<TBD…>`-Text trägt an einer Stelle die
+> Bedeutung „hier ist etwas offen" und an einer anderen die Bedeutung „hier fehlt ein
+> Wert". Wer nur die Marke zählt, nimmt beide Träger ab oder sperrt beide – und liegt in
+> genau einem der beiden Fälle falsch.
+
+**Und eine zweite, über Selbstauskunft:** Der einzige Träger, der die Abnahme nicht
+besteht, **sagt selbst, warum** – in dem Absatz unter seinem Steckbrief, unverändert seit
+acht Releases. Gefunden hat ihn keine Suche nach Schlitzen, sondern das Lesen des Trägers,
+der zur Abnahme anstand. **Zum zweiten Mal in Folge gilt:** Wer einen Gegenstand anfasst,
+findet die Aussage daneben, die niemand nachgezählt hat.
+
+### Was 0.52.0 offen lässt
+
+- **Ein Träger steht auf `entwurf`:** `clients/devin-desktop/CLIENT_PACK.md`. Er geht nicht
+  über eine Abnahme, sondern über **`AP2`** – Zielversion festlegen, Pack gegen sie prüfen,
+  beide Steckbriefzellen füllen. **Kriterium 3 kann ohne diesen Schritt nicht auf null
+  gehen**, und das ist richtig so: Die Zahl soll nicht sinken, weil jemand einen Schlitz
+  entfernt hat.
+- **`K-39` neu:** Ist `docs/ROADMAP.md` ein Modulträger? Der Preis beider Antworten steht
+  im Klärungspunkt; entschieden ist nichts.
+- **`K-37` und `K-38` unverändert.** Die Versionszelle der vier Vorlagen; die Einordnung
+  einer gestiegenen Zahl durch Prüfung 46.
+- **Kriterium 1 und 2 unverändert: 29 und 118.** Dieses Release hat keinen Sitzungstest
+  gefahren und keinen `VERIFY`-Marker bearbeitet. **Kriterium 2 ist ab hier der Posten mit
+  Abstand** – Kriterium 3 steht auf 1 und hängt an `AP2`.
+- **Das Hauptdokument** ist weiterhin zweiundvierzig Releases zurück und behauptet „Alle
+  Module im Status `entwurf`" – mit 0.52.0 für **76** Träger falsch statt für 36. Nicht
+  berichtigt, aus demselben Grund wie bei 0.50.0 und 0.51.0.
 
 ### Was 0.51.0 gebracht hat – der Gegenstand ist vollständig, und das erste Nicht-Skill-Bündel ist abgenommen
 
@@ -1972,14 +2024,15 @@ fehlten in der Umgebung. Vor der nächsten Auslieferung einmal bauen.
 gesetzt. Dass der Abstand von zweiundvierzig Releases niemandem aufgefallen ist, liegt daran, dass
 ihn nichts nachrechnet.
 
-**P3 – Modulstatus heben. Begonnen mit 0.50.0, fortgesetzt mit 0.51.0.** Kriterium 3 von D-11 steht auf
-**41**. Mit 0.50.0 (`CR-2026-072`, D-102 bis D-104) gingen die dreizehn Skills auf `pilot` und die vier
+**P3 – Modulstatus heben. Begonnen mit 0.50.0, fortgesetzt mit 0.51.0, mit 0.52.0 bis auf einen Träger erledigt.** Kriterium 3 von D-11 steht auf
+**1**. Mit 0.50.0 (`CR-2026-072`, D-102 bis D-104) gingen die dreizehn Skills auf `pilot` und die vier
 Vorlagen aus der Zählung; mit 0.51.0 (`CR-2026-073`, D-105 bis D-108) bekamen zwölf Träger ihre
 fehlende Statuszeile (**52 → 64**) und 23 Träger wurden abgenommen (**64 → 41**): die elf Checklisten
-und die zwölf Träger mit dem Kernmodul-Steckbrief. **Offen sind 41 Träger** – zwölf Prompt-Vorlagen,
-sechs Entscheidungsbäume, sieben Governance-Dokumente, drei `docs/`, zwei `tests/`-Register, vier
-Onboarding-, zwei Pilot-, drei Client-Pack- und zwei Role-Pack-Dokumente. Die Abnahme je Träger ist
-nicht maschinell; das Vokabular hält seit 0.51.0 Prüfung 47.
+und die zwölf Träger mit dem Kernmodul-Steckbrief. Mit 0.52.0 (`CR-2026-074`, D-109 bis D-111) sind vierzig der
+einundvierzig übrigen abgenommen (**41 → 1**), in neun Bündeln nach Gattung. **Offen ist ein einziger
+Träger:** `clients/devin-desktop/CLIENT_PACK.md`, und er geht nicht über eine Abnahme, sondern über
+`AP2` – Zielversion festlegen, Pack gegen sie prüfen, die beiden Steckbriefzellen füllen. Die
+Abnahme je Träger ist nicht maschinell; das Vokabular hält seit 0.51.0 Prüfung 47.
 
 ### Bewusst offen gelassen
 
@@ -2079,7 +2132,7 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Ziel | Core-Module fachlich abgenommen (Status je Modul von `entwurf` auf `pilot`) |
 | Aktivitäten | Review aller `leitwerk-core/framework/core/`-Module und der Prioritätshierarchie durch die benannten Rollen; Einarbeitung von Organisationsvorgaben (Ebene B, Klassifizierungs-Mapping); Beschluss offener Strukturentscheidungen (D-01…D-10 bestätigen) |
 | Eingaben | Erstfassung 0.1.0; Organisationsrichtlinien; Ergebnis K-06 |
-| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log. **Teilergebnis mit 0.49.0:** Die neun Strukturentscheidungen sind beschlossen (`CR-2026-071`, D-100); offen bleiben die Modulabnahme und das Mapping. **Mit 0.50.0 ausdrücklich NICHT erledigt** – gehoben waren dreizehn **Skills**, und das ist Kriterium 3 von D-11, nicht `AP3`. **Mit 0.51.0 erledigt:** Die elf Module unter `framework/core/` führen eine Statuszeile (`K-36`, D-105) und stehen auf `pilot`; die Abnahme je Modul steht in `tests/protocols/2026-09-15-gegenpruefung-nicht-skill-traeger.md` Abschnitt 5. **Offen bleibt aus diesem Arbeitspaket allein das `org-policies/`-Mapping** – es ist Ebene B und gehört der Organisation |
+| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log. **Teilergebnis mit 0.49.0:** Die neun Strukturentscheidungen sind beschlossen (`CR-2026-071`, D-100); offen bleiben die Modulabnahme und das Mapping. **Mit 0.50.0 ausdrücklich NICHT erledigt** – gehoben waren dreizehn **Skills**, und das ist Kriterium 3 von D-11, nicht `AP3`. **Mit 0.51.0 erledigt:** Die elf Module unter `framework/core/` führen eine Statuszeile (`K-36`, D-105) und stehen auf `pilot`; die Abnahme je Modul steht in `tests/protocols/2026-09-15-gegenpruefung-nicht-skill-traeger.md` Abschnitt 5. **Offen bleibt aus diesem Arbeitspaket allein das `org-policies/`-Mapping** – es ist Ebene B und gehört der Organisation. **Mit 0.52.0 unverändert:** Der Vorgang hebt Träger außerhalb von `framework/core/` |
 | Abhängigkeiten | AP1 |
 | Verantwortliche Rolle | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`, `<ARCHITECT_ROLE>` |
 | Abnahmekriterien | jedes Modul reviewt (Nachweis); keine offenen Widerspruchsbefunde; Hierarchie bestätigt |

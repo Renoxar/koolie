@@ -5,7 +5,7 @@
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
 | Version | 0.17.0 |
-| Status | entwurf |
+| Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
 | Geprüfte Clientversion | 2.1.267 (AP2-Dokumentenabgleich, `tests/protocols/2026-09-10-AP2-claude-code.md`). Die **verbindliche Zielversion** legt `<FRAMEWORK_OWNER>` fest und steht aus |

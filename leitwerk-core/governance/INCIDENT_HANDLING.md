@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-GOV-INC` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 
 ## 1. Geltung und Vorrang (normativ)

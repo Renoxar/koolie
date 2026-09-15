@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PR-010` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
 | Typische Kontrollstufe | niedrig bis mittel – Maximumprinzip über R1–R13 im Preflight |

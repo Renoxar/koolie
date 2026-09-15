@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DT-01` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight und vor jeder zusätzlichen Kontextbereitstellung; durch die Bearbeiterin oder den Bearbeiter |
 | Quelle | `leitwerk-core/framework/core/02-privacy.md`, `leitwerk-core/checklists/02-privacy-context.md` |

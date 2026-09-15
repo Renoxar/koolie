@@ -5,7 +5,7 @@
 | Modul-ID | RP-RE |
 | Ebene | 6 – Role Pack |
 | Version | 0.1.1 |
-| Status | entwurf |
+| Status | pilot |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
 | Laufzeitfassung | `30-role-requirements-engineering.md` in der Regelablage |

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-OB-GUIDE` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
 | Begleitdokumente | `QUICKSTART.md`, `MENTOR_CHECKLIST.md`, `exercises/`, `KNOWLEDGE_CHECK.md`, `COMPLETION_CRITERIA.md`, `REFERENCE.md`, `leitwerk-core/checklists/09-onboarding.md` |

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DT-02` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight, vor der ersten Anweisung; durch die Bearbeiterin oder den Bearbeiter |
 | Quelle | `leitwerk-core/framework/core/09-risk-model.md`, `leitwerk-core/framework/core/01-governance.md` |

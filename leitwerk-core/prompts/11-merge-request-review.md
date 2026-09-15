@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PR-011` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | entsprechend der Stufe des geprüften Änderungssatzes – Maximumprinzip über R1–R13 |

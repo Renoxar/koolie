@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PILOT` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | Projektleitung des Pilotprojekts mit `<FRAMEWORK_OWNER>` |
 | Metriken | `METRICS.md` |
 

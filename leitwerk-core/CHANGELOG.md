@@ -2,6 +2,98 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.52.0] - 2026-09-15
+
+**Vierzig der einundvierzig übrigen Nicht-Skill-Träger sind abgenommen; der
+einundvierzigste sperrt sich selbst.** Gegenstand ist Kriterium 3 von D-11
+(`CR-2026-074`, D-109 bis D-111, `K-39` neu,
+`tests/protocols/2026-09-15-gegenpruefung-restliche-nicht-skill-traeger.md`,
+`tests/protocols/2026-09-15-wirkungsnachweise-0.52.0.md`).
+
+**Kriterium 3 von D-11 fällt von 41 auf 1.** Es ist die dritte Bewegung dieser Zahl in
+drei Releases (69 → 52 → 41 → 1) und die erste, der **keine** Vorentscheidung
+vorangestellt war.
+
+### Abgenommen
+
+Neun Bündel nach Gattung, jeder Träger namentlich mit (a) bis (d) im Protokoll
+(`framework/core/01-governance.md` Abschnitt 5 Punkt 3, Zeile `entwurf → pilot`):
+
+| Gattung | Anzahl |
+|---|---|
+| Prompt-Vorlagen `prompts/01…12` | 12 |
+| Entscheidungsbäume `decision-trees/01…06` | 6 |
+| Governance-Dokumente | 7 |
+| `docs/` (Übernahmeleitfaden, Roadmap, Laufzeitglossar) | 3 |
+| `tests/`-Register (Testkatalog, Grenzfälle) | 2 |
+| Onboarding-Dokumente | 4 |
+| Pilot-Dokumente | 2 |
+| Client-Pack-Dokumente | 2 von 3 |
+| Role-Pack-Dokumente | 2 |
+| **Summe** | **40 von 41** |
+
+### Nicht abgenommen
+
+**`clients/devin-desktop/CLIENT_PACK.md` bleibt auf `entwurf`** (D-110). Seine
+Steckbriefzellen *Geprüfte Clientversion* und *Datum der Prüfung* tragen Ausfüllschlitze,
+die eine ausstehende Festlegung des Framework Owners bezeichnen – keinen Wert der
+aufnehmenden Organisation. Der Absatz darunter sagt es seit acht Releases selbst:
+*„Solange die Zielversion nicht festgelegt und geprüft ist (Roadmap AP2), gilt das Pack
+als unbelegt."* **Er geht über `AP2`, nicht über ein Review.**
+
+`clients/claude-code/CLIENT_PACK.md` trägt denselben Satz und ist abgenommen: Beide Zellen
+tragen echte Werte (`2.1.267`, `2026-09-10`). **Die Trennlinie ist der Ausfüllschlitz,
+nicht der Satz über den Belegstand** – für den Belegstand ist der Modulstatus nicht
+zuständig (`01-governance.md` Abschnitt 5 Punkt 4).
+
+### Der Befund
+
+**Bedingung (d) kennt zwei Bauformen der Marke `<TBD…>`, der Bestand hat drei** (D-109).
+Neben dem Ausfüllschlitz für einen Framework-Wert und dem für einen Organisationswert gibt
+es die **Nennung** – eine Stelle, die die Marke zitiert oder einen offenen Punkt benennt,
+ohne selbst einen Wert offenzulassen. Gemessen: 35 Fundstellen in 13 der 41 Träger, davon
+sperren **zwei**.
+
+> **Dieselbe Zeichenfolge steht in zwei Trägern und bedeutet zweimal etwas anderes.**
+> `<TBD: verbindliche Zielversion …>` ist in `docs/ROADMAP.md` eine Zelle der Spalte
+> *Offene Entscheidungen* – die Nennung eines offenen Punktes und damit ihr Zweck – und in
+> `clients/devin-desktop/CLIENT_PACK.md` der fehlende Wert einer Aussage über ein Produkt.
+> Wer nur die Marke zählt, nimmt beide ab oder sperrt beide und liegt in genau einem der
+> beiden Fälle falsch.
+
+**Zum dritten Mal in drei Releases war Kriterium 3 an Kriterium 2 gekettet** (D-111). Die
+Frage war diesmal, ob `tests/TEST_CATALOG.md` mit 31 offenen Ergebniszellen inhaltlich
+vollständig ist. **Ja:** Sein Gegenstand sind die Testfälle, nicht ihre Ergebnisse. D-103
+hat dieselbe Kettung für die dreizehn Skills gelöst, D-107 für die zwölf Prompt-Vorlagen.
+
+### Migrationshinweise für Overlays
+
+**Keine.** Der Modulstatus ist eine Angabe des Kerns; übernehmende Projekte lesen ihn und
+setzen ihn nicht. `install.py --update` fasst in diesem Release **keine Datei außerhalb von
+`leitwerk-core/`** an – die gehobenen Träger werden nicht in die Laufzeitschicht
+installiert. **Der Overlay-Steckbrief ist wie bei jedem Release in drei Trägern
+nachzuziehen** (`OVERLAY.md`, `framework/runtime/rules/20-project-overlay.md` der
+Installation, `overlay-manifest.yaml`); der Validator meldet die beiden Befunde
+nacheinander, nicht gemeinsam.
+
+### Bekannte Einschränkungen
+
+- **Ein Träger steht auf `entwurf`:** `clients/devin-desktop/CLIENT_PACK.md`. **Kriterium 3
+  kann ohne `AP2` nicht auf null gehen**, und das ist gewollt.
+- **Ein Träger auf `pilot` ist strukturell abgenommen, nicht erprobt**
+  (`01-governance.md` Abschnitt 5 Punkt 4). Kein Sitzungstest ist gefahren; **Kriterium 1
+  und 2 stehen unverändert auf 29 und 118.**
+- **`K-39` neu:** Ob `docs/ROADMAP.md` überhaupt ein Modulträger sein soll – sie wird in
+  jedem Release fortgeschrieben, ihre Steckbriefversion steht seit `0.2.0` unverändert, und
+  `CHANGELOG.md` ist aus demselben Grund vom Zählbereich ausgenommen. **Nicht entschieden**;
+  der Vorgang hat sich ausdrücklich nicht auf diesem Weg entlastet.
+- **`K-37` und `K-38` unverändert offen.**
+- **Keine neue Prüfung.** Die Unterscheidung zwischen Schlitz und Nennung ist nach D-102
+  ausdrücklich nicht maschinell; Prüfung 46 fängt jede Bewegung der Zahl in beide
+  Richtungen.
+- **Das Hauptdokument** (`build/`) ist weiterhin zweiundvierzig Releases zurück und
+  behauptet „Alle Module im Status `entwurf`" – mit 0.52.0 für 76 Träger falsch statt für
+  36. Nicht berichtigt; die Pflicht steht am P3-Posten „Word-Fassung erzeugen".
 ## [0.51.0] - 2026-09-15
 
 **Die Vorentscheidung `K-36` ist beantwortet, der Gegenstand von Kriterium 3 ist
