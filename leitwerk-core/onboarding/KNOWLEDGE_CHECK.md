@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-OB-CHECK` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zweck | Selbstkontrolle vor dem Abschlussgespräch – **keine Personalbeurteilung**; Ergebnisse verbleiben bei der oder dem Lernenden |
 | Bestehensrichtwert | 12 von 15 sinngemäß richtig; Fragen 3, 7 und 10 müssen richtig sein (Sicherheits- und Datenschutzkern) |

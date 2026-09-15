@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-GOV-PRIO` |
 | Version | `0.2.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Laufzeitfassung | Wurzel-Anweisungsdatei, Abschnitt 2 |
 

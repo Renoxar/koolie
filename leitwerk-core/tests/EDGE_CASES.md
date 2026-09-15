@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-EDGE` |
 | Version | `0.3.0` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anzahl der Grenzfälle | 20 |
 | Entstehung | Abnahmekriterium zu den Befunden **B07** und **B09** des unabhängigen Reviews vom 2026-09-12 (`CR-2026-052`, `CR-2026-053`) |

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DT-03` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight nach Baum 2; wählt den Betriebsmodus M1–M5 |
 | Quelle | `leitwerk-core/framework/core/05-working-model.md`, `leitwerk-core/framework/core/09-risk-model.md` |

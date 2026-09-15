@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DT-05` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | fortlaufend während jeder KI-Sitzung; durch den KI-Client (Anhalten) und Mensch (Eskalation) |
 | Quelle | `leitwerk-core/framework/core/10-error-escalation.md` |

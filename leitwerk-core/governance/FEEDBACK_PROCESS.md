@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-GOV-FB` |
 | Version | `0.1.0` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 ## 1. Zweck und Grundsatz (normativ)

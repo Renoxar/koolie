@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PR-005` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
 | Typische Kontrollstufe | niedrig bis hoch (hoch nur ohne Änderung an Produktivcode – durch diese Vorlage stets erfüllt) – Maximumprinzip über R1–R13 |

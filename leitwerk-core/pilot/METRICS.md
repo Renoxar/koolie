@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PILOT-METRICS` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | Projektleitung des Pilotprojekts mit `<FRAMEWORK_OWNER>` |
 
 > **Alle Metriken sind Vorschläge.** Zielwerte werden ausdrücklich **nicht** durch das Framework vorgegeben; sie sind projektspezifisch festzulegen (`<TBD: Zielwerte je Metrik>`) – und erst, nachdem die Referenzbasis erhoben ist. Einzelne Metriken erlauben keine belastbare Aussage über den Gesamtnutzen; bewertet wird immer das Bündel aus Produktivität, Qualität, Sicherheit und Akzeptanz. Keine Metrik wird zur Personenbewertung verwendet oder personenbezogen berichtet (V7); Befragungen sind freiwillig.

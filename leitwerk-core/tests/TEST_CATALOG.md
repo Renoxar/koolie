@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-TESTS` |
 | Version | `0.2.3` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Ausführung | vollständig vor jedem Release (`leitwerk-core/checklists/11-framework-release.md`); Basistests (Kennzeichnung „Basis") zusätzlich bei jeder Projektübernahme (`leitwerk-core/checklists/10-project-adoption.md`) und nach relevanten Produktänderungen des KI-Clients |
 

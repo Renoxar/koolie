@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DT-06` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | bei jeder neuen oder geänderten Regel; durch Autorinnen und Autoren von Regeln, geprüft vom Framework Owner beziehungsweise Overlay Owner |
 | Quelle | `leitwerk-core/framework/core/00-principles.md` (P10), `leitwerk-core/governance/PRIORITY_HIERARCHY.md` |

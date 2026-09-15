@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DOC-ADOPT` |
 | Version | `0.4.4` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `leitwerk-core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
 

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-OB-MENTOR` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Verhältnis zu FW-CL-09 | `leitwerk-core/checklists/09-onboarding.md` führt durch das Programm; diese Liste ergänzt die Mentorenperspektive je Modul |
 

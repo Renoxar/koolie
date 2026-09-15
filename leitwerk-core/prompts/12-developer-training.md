@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PR-012` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | niedrig (rein lesend, Lernkontext) |

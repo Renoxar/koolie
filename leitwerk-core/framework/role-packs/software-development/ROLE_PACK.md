@@ -5,7 +5,7 @@
 | Modul-ID | RP-DEV |
 | Ebene | 6 – Role Pack |
 | Version | 0.1.1 |
-| Status | entwurf (Referenzpack der Erstfassung) |
+| Status | pilot (Referenzpack der Erstfassung) |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Softwareentwicklerinnen und Softwareentwickler |
 | Laufzeitfassung | `runtime/30-role-software-development.md`, zur Aktivierung in die Regelablage |

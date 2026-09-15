@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PR-003` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
 | Typische Kontrollstufe | mittel oder hoch (Plan verpflichtend); niedrig KANN – Maximumprinzip über R1–R13, festgelegt im Preflight |

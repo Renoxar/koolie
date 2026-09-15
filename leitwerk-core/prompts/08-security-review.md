@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-PR-008` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | mittel bis hoch (Sicherheitsbezug) – Maximumprinzip über R1–R13 im Preflight |

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-GOV-REL` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 ## 1. Versionierung (normativ)

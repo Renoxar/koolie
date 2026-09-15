@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-GOV-RACI` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > **Ausfüllhinweis:** Die Vorlage arbeitet ausschließlich mit generischen Rollen; reale Rolleninhaber werden **nicht** hier, sondern im Teamverzeichnis der Organisation zugeordnet. R = Responsible (führt aus), A = Accountable (verantwortet, genau ein A je Zeile), C = Consulted, I = Informed. Projekte KÖNNEN Spalten ergänzen (zum Beispiel Betriebsrollen), DÜRFEN aber keine A-Zuordnungen des Frameworks auf den KI-Client oder auf „automatisch" setzen – Verantwortung liegt immer bei Menschen (P1).

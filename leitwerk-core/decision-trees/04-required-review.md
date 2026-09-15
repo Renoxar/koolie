@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-DT-04` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | nach Abschluss einer KI-Sitzung, vor Übernahme des Ergebnisses |
 | Quelle | `leitwerk-core/framework/core/07-review-rules.md`, `09-risk-model.md`, `leitwerk-core/checklists/04-review-ai-code.md` |
