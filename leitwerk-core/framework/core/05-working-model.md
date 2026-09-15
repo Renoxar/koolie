@@ -7,6 +7,7 @@
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
 | Version | 0.1.8 |
+| Status | `pilot` |
 
 ## 1. Standardarbeitsablauf (normativ)
 

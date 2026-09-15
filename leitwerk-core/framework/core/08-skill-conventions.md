@@ -7,6 +7,7 @@
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
 | Version | 0.2.1 |
+| Status | `pilot` |
 
 ## 1. Begriff (normativ)
 

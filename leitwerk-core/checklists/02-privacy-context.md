@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-02` |
 | Version | `0.1.3` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
 | Wann | im Preflight-Check und erneut vor jeder zusätzlichen Kontextbereitstellung in der Sitzung |
 | Wer | Bearbeiterin oder Bearbeiter; bei K2-Freigaben `<APPROVAL_ROLE>` beziehungsweise `<DATA_PROTECTION_CONTACT>` |

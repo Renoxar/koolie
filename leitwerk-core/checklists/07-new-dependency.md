@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-07` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Wann | bevor eine neue Abhängigkeit oder ein Major-Update eingeführt wird (auch nach einem KI-Vorschlag) |
 | Wer | Bearbeiterin oder Bearbeiter; Freigabe `<APPROVAL_ROLE>`, bei Sicherheitsrelevanz `<SECURITY_CONTACT>` |

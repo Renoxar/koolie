@@ -7,6 +7,7 @@
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
 | Version | 0.1.5 |
+| Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
 

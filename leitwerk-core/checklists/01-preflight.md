@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-01` |
 | Version | `0.1.4` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jeder KI-Sitzung, nach Zuschnitt der Aufgabe |
 | Wer | Bearbeiterin oder Bearbeiter |

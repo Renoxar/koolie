@@ -7,6 +7,7 @@
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
 | Version | 0.1.2 |
+| Status | `pilot` |
 
 ## 0. Konventionen dieses Frameworks
 

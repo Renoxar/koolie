@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-09` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | während des Onboardings einer neuen Entwicklerin oder eines neuen Entwicklers; Abschluss vor der Freigabe zur selbstständigen Nutzung |
 | Wer | Mentorin oder Mentor gemeinsam mit der oder dem Neuen |

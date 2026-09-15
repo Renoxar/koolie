@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-04` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | Selbstreview vor jedem Commit mit KI-Beteiligung; unabhängiges Review im Merge Request |
 | Wer | Bearbeiterin oder Bearbeiter (Selbstreview); unabhängige Reviewerin oder Reviewer (ab Stufe mittel verpflichtend) |

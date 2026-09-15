@@ -7,6 +7,7 @@
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
 | Version | 0.2.0 |
+| Status | `pilot` |
 
 ## 1. Gegenstand und Geltung (normativ)
 
@@ -42,7 +43,7 @@ Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welche
 
 ## 5. Lebenszyklus der Modulträger (normativ)
 
-1. **Modulträger** ist jede versionierte Datei des Frameworks, die in ihrem Steckbrief eine Zeile `\| Status \| … \|` führt – Checklisten, Prompts, Entscheidungsbäume, Governance-Dokumente, Register, Onboarding- und Pilotdokumente, die Steckbriefe der Client-, Role- und Technology-Packs sowie Skills. **Vorlagen sind keine Modulträger:** Ihr Steckbrief beschreibt die Kopie, die aus ihnen entsteht; seine Zellen sind Ausfüllschlitze (D-104).
+1. **Modulträger** ist jede versionierte Datei des Frameworks, die einen **Steckbrief** führt: die erste Tabelle des Dokuments, vor der ersten Überschrift der Ebene 2, mit der Kopfzeile `\| Attribut \| Wert \|`. Dazu gehören die Module unter `leitwerk-core/framework/core/`, Checklisten, Prompts, Entscheidungsbäume, Governance-Dokumente, Register, Onboarding- und Pilotdokumente, die Steckbriefe der Client-, Role- und Technology-Packs sowie Skills. **Jeder Modulträger MUSS in seinem Steckbrief eine Zeile `\| Status \| … \|` führen**; Prüfung 47 des Validators setzt das durch. **Bis 0.50.0 war der Modulträger über eben diese Zeile definiert** – eine Definition, die ihren Gegenstand entkommen lässt, indem er die Zeile weglässt, und zwölf Träger taten genau das, darunter die elf normativen Kernmodule (`K-36`, D-105). **Vorlagen sind keine Modulträger:** Ihr Steckbrief beschreibt die Kopie, die aus ihnen entsteht; seine Statuszelle ist ein Ausfüllschlitz (D-104).
 2. Die fünf Statuswerte und ihre Bedeutung stehen in `leitwerk-core/framework/core/08-skill-conventions.md` Abschnitt 7 und gelten für **jeden** Modulträger. Die dort genannten Übergangsbedingungen gelten für Skills; für alle übrigen Modulträger gilt die Tabelle in Punkt 3 (D-102).
 3. Übergangsbedingungen für Modulträger, die keine Skills sind:
 
@@ -53,4 +54,5 @@ Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welche
 | `aktiv` → `veraltet` → `zurückgezogen` | wie in `08-skill-conventions.md` Abschnitt 7; die Ankündigungsfrist des Release-Prozesses gilt unverändert (`leitwerk-core/governance/RELEASE_PROCESS.md`) |
 
 4. **Ein Statuswert ist keine Aussage über das Verhalten eines KI-Clients.** Ob ein Client einem Träger folgt, belegt allein ein Sitzungstest des Testkatalogs. Ein Träger auf `pilot` ist strukturell abgenommen, nicht erprobt.
-5. Der Stand aller Modulstatus ist Kriterium 3 von D-11. Prüfung 46 des Validators rechnet ihn bei jedem Lauf aus und hält ihn gegen die Standzeile in `leitwerk-core/docs/ROADMAP.md`; **eine Abweichung in beide Richtungen ist ein Fehler.** Ein Statuswechsel ohne nachgezogene Standzeile lässt den Lauf scheitern.
+5. **Ein Statuswechsel ist keine Versionsänderung.** Er ändert keine Anweisung des Trägers; eine angehobene Version behauptete eine Inhaltsänderung, die es nicht gibt, und löste bei einem Skill nach `08-skill-conventions.md` Abschnitt 7 die erneute Ausführung aller Testfälle aus. Auch der Änderungsverlauf des einzelnen Trägers verzeichnet ihn nicht; festgehalten ist er im Abnahmeprotokoll und im Änderungsverzeichnis des Frameworks (D-103, D-106).
+6. Der Stand aller Modulstatus ist Kriterium 3 von D-11. Prüfung 46 des Validators rechnet ihn bei jedem Lauf aus und hält ihn gegen die Standzeile in `leitwerk-core/docs/ROADMAP.md`; **eine Abweichung in beide Richtungen ist ein Fehler.** Ein Statuswechsel ohne nachgezogene Standzeile lässt den Lauf scheitern.

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-11` |
 | Version | `0.2.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jedem Framework-Release (auch Patch-Releases) |
 | Wer | Framework Owner; Zuarbeit Modul-Owner |
@@ -24,7 +24,7 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 - [ ] **MUSS** Alle für das Release vorgesehenen Änderungsanträge sind abgeschlossen oder ausdrücklich verschoben (`leitwerk-core/governance/DECISION_LOG.md` aktualisiert).
 - [ ] **MUSS** Konsistenz Core ↔ Laufzeitfassung geprüft: `leitwerk-core/framework/core/*` gegen die Wurzel-Anweisungsdatei und die Regelablage `00-*, 10-*, 15-*` **jedes Client Packs** (Stichproben je geändertem Modul; keine widersprüchlichen Anweisungen).
 - [ ] **MUSS** Skills konsistent zum Skill-Standard (`leitwerk-core/framework/core/08-skill-conventions.md`); Versionen, Status und CHANGELOG je geändertem Skill gepflegt; Deprecations mit Nachfolger dokumentiert.
-- [ ] **MUSS** Version je geänderter Checkliste und je geändertem Prompt gepflegt (Metadatentabelle, Semantic Versioning wie in `leitwerk-core/governance/RELEASE_PROCESS.md` Abschnitt 1). Bis 0.12.0 galt diese Pflicht nur für Skills; deshalb standen elf Checklisten und zwölf Prompts über zwölf Releases unverändert auf `0.1.0`, obwohl sie sich geändert hatten (`FW-VN-01`).
+- [ ] **MUSS** Version je geänderter Checkliste und je geändertem Prompt gepflegt (Metadatentabelle, Semantic Versioning wie in `leitwerk-core/governance/RELEASE_PROCESS.md` Abschnitt 1). Bis 0.12.0 galt diese Pflicht nur für Skills; deshalb standen elf Checklisten und zwölf Prompts über zwölf Releases unverändert auf `0.1.0`, obwohl sie sich geändert hatten (`FW-VN-01`). **Ein reiner Statuswechsel ist keine Änderung im Sinne dieses Prüfpunkts** (`leitwerk-core/framework/core/01-governance.md` Abschnitt 5 Punkt 5, D-106): Er ändert keine Anweisung, und eine angehobene Version behauptete eine Inhaltsänderung, die es nicht gibt.
 - [ ] **MUSS** Prioritätshierarchie unverändert oder Änderung begründet und in `leitwerk-core/governance/PRIORITY_HIERARCHY.md` nachgezogen.
 - [ ] **SOLL** Templates, Checklisten und Entscheidungsbäume gegen geänderte Module abgeglichen (Querverweise, Begriffe).
 
@@ -53,7 +53,7 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 - [ ] **MUSS** `leitwerk-core/VERSION` nach Semantic Versioning erhöht; `leitwerk-core/CHANGELOG.md` mit Änderungen, Migrationshinweisen für Overlays und bekannten Einschränkungen ergänzt.
 - [ ] **MUSS** Release-Archiv erzeugt und abgelegt; übernehmende Projekte informiert (Migrationshinweise, betroffene Overlay-Felder).
 - [ ] **MUSS** Freigabe des Releases durch den Framework Owner dokumentiert.
-- [ ] **MUSS** (ab 1.0.0, D-11) Alle Core-Module, Skills und Packs tragen einen Status oberhalb von `entwurf`.
+- [ ] **MUSS** (ab 1.0.0, D-11) Alle Core-Module, Skills und Packs tragen einen Status oberhalb von `entwurf`. **Seit 0.51.0 hat dieser Prüfpunkt seinen Gegenstand:** Bis dahin führte keines der elf Core-Module überhaupt eine Statuszeile – ein Prüfpunkt ohne Gegenstand in der Checkliste, die 1.0.0 freigibt (`K-36`, D-105).
 - [ ] **MUSS** (ab 1.0.0, D-11) Kein Decision Record in `leitwerk-core/governance/DECISION_LOG.md` trägt den Status `entschieden (Vorschlag)`.
 - [ ] **MUSS** (ab 1.0.0, D-11) Übernahme in mindestens ein zweites Projekt nach `leitwerk-core/checklists/10-project-adoption.md` nachgewiesen.
 

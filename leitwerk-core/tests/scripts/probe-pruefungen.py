@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 46, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 47, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -3633,6 +3633,144 @@ def selbstprobe_baumdurchlauf() -> None:
 buendel(selbstprobe_baumdurchlauf,
         "Zaehlt Mustersuche gegen Baumdurchlauf auf dem echten Kern - der Fallstrick, "
         "der beim Bauen von Pruefung 46 zuschnappte")
+
+# --- 47: das Statusvokabular jedes Modultraegers ------------------------------------
+#
+# Die vier Gegenstaende der Pruefung, je eine Sonde - und dazu die Sonde auf den
+# verlorenen Anker. Drei der vier Sonden legen eine NEUE Datei an, statt eine
+# bestehende zu verstellen: Der Statuswert des Bestands bewegt sich mit jedem Release,
+# und eine Sonde, die einen Wert woertlich sucht, misst ab dem naechsten Statuswechsel
+# den Suchtext statt die Pruefung (die Lehre von 46f, 0.49.0).
+M47_FEHLT = "der Steckbrief führt keine Zeile"
+M47_VOKABULAR = "gehört nicht zum Vokabular"
+M47_VORLAGE_ECHT = "die Statuszelle einer Vorlage trägt den echten Wert"
+M47_SCHLITZ_FREMD = "trägt den Ausfüllschlitz"
+M47_ANKER = "kein einziger Steckbrief gefunden"
+P47_STECKBRIEFKOPF = "| Attribut | Wert |"
+P47_SKILLVORLAGE = "leitwerk-core/templates/SKILL_TEMPLATE.md".replace("/", os.sep)
+P47_SCHLITZ = "<TBD: Status; ein neuer Skill beginnt auf entwurf>"
+
+
+def _47_datei(root: str, name: str, statuszeile: str) -> None:
+    """Eine neue Prompt-Datei mit Steckbrief und der uebergebenen Statuszeile.
+
+    Eine leere Statuszeile heisst: kein Status im Steckbrief.
+    """
+    schreib(P(root, ("leitwerk-core/prompts/" + name).replace("/", os.sep)),
+            "# Sondenvorlage\r\n\r\n"
+            + P47_STECKBRIEFKOPF + "\r\n|---|---|\r\n"
+            "| ID | `FW-PR-013` |\r\n| Version | `0.1.0` |\r\n"
+            + (statuszeile + "\r\n" if statuszeile else "")
+            + "| Owner (Rolle) | `<FRAMEWORK_OWNER>` |\r\n")
+
+
+def _47_ohne_statuszeile(root: str) -> None:
+    """Ein Steckbrief ohne Statuszeile - genau die zwoelf Traeger aus K-36."""
+    _47_datei(root, "13-sonde-ohne-status.md", "")
+
+
+def _47_fremdes_wort(root: str) -> None:
+    """Ein Statuswert ausserhalb des Vokabulars - bis 0.50.0 nur in einer SKILL.md gefangen."""
+    _47_datei(root, "13-sonde-vokabular.md", "| Status | `banane` |")
+
+
+def _47_schlitz_ausserhalb(root: str) -> None:
+    """Ein Ausfuellschlitz in einer Datei, die keine Vorlage ist - der Preis aus D-104."""
+    _47_datei(root, "13-sonde-schlitz.md",
+              "| Status | `<TBD: Status; ein neuer Prompt beginnt auf entwurf>` |")
+
+
+def _47_vorlage_mit_echtem_wert(root: str) -> None:
+    """Der Defekt von 0.50.0, wiederhergestellt: eine Vorlage traegt `entwurf`.
+
+    Die Statuszelle der Skillvorlage gab diesen Wert an jede Kopie weiter und durfte
+    sich deshalb nie aendern; genau daran war Kriterium 3 von D-11 unerreichbar
+    (D-104). Die Sonde stellt den Zustand HER statt ihn zu entfernen - wie 38a, 38b
+    und 46f.
+    """
+    ersetze(P(root, P47_SKILLVORLAGE), (P47_SCHLITZ, "entwurf"))
+
+
+def _47_steckbriefkopf_umbenennen(root: str) -> None:
+    """Die Kopfzeile jedes Steckbriefs umbenennen - die Pruefung findet keinen mehr.
+
+    Anders als bei den Pruefungen 28, 29, 31, 40 und 46 ist der Anker hier keine
+    einzelne Zeichenkette in einer Datei, sondern eine KONVENTION ueber den ganzen
+    Bestand. Verliert sie sich, faende die Pruefung nichts mehr und bestuende leise -
+    deshalb benennt diese Sonde sie ueberall um und belegt, dass der Lauf das meldet.
+    """
+    getroffen = 0
+    for ordner, _, dateien in os.walk(P(root, "leitwerk-core")):
+        for name in sorted(dateien):
+            if not name.endswith(".md"):
+                continue
+            pfad = os.path.join(ordner, name)
+            text = lies(pfad)
+            if P47_STECKBRIEFKOPF not in text:
+                continue
+            schreib(pfad, text.replace(P47_STECKBRIEFKOPF, "| Merkmal | Wert |"))
+            getroffen += 1
+    if getroffen < 50:
+        raise Praeparationsfehler(
+            "nur %d Dateien mit der Steckbriefkopfzeile gefunden, erwartet mindestens "
+            "50 - die Konvention hat sich geaendert" % getroffen)
+
+
+def _47_verlaufszusatz(root: str) -> None:
+    """Einem gehobenen Traeger einen Verlaufszusatz in Klammern anhaengen.
+
+    `entwurf (Referenzpack der Erstfassung)` steht seit der Erstfassung im Bestand;
+    verglichen wird deshalb das ERSTE WORT. Die Gegenprobe belegt, dass ein solcher
+    Zusatz zulaessig bleibt - und dass Pruefung 46 ihn weiterhin richtig einordnet.
+    """
+    ersetze(P(root, "leitwerk-core/checklists/01-preflight.md".replace("/", os.sep)),
+            ("| Status | `pilot` |", "| Status | `pilot (Abnahme CR-2026-073)` |"))
+
+
+def _47_tabelle_hinter_ueberschrift(root: str) -> None:
+    """Eine Steckbriefkopfzeile im KOERPER einer Datei ist kein Steckbrief.
+
+    Der Fall von templates/PLAN_TEMPLATE.md: Dort steht die Tabelle hinter einer
+    Ueberschrift der Ebene 2 und ist das Formular fuer die Kopie, nicht der Steckbrief
+    der Datei. Eine Erkennungsregel, die bloss nach der Kopfzeile sucht, verlangte dort
+    einen Statuswert - und die Datei fuehrt zu Recht keinen.
+    """
+    schreib(P(root, "leitwerk-core/examples/example-sondenformular.md"
+              .replace("/", os.sep)),
+            "# Beispielformular (synthetisch)\r\n\r\n"
+            "Ein Formular, das die Kopie ausfuellt - kein Steckbrief.\r\n\r\n"
+            "## Formular\r\n\r\n"
+            + P47_STECKBRIEFKOPF + "\r\n|---|---|\r\n"
+            "| Erstellt mit | `<Skill>` |\r\n| Bestaetigt durch | `<Rolle>` |\r\n")
+
+
+sonde("47a", "Ein Steckbrief ohne Statuszeile wird gemeldet - das Loch, durch das bis "
+             "0.50.0 zwoelf Traeger entkamen", _47_ohne_statuszeile, M47_FEHLT)
+
+sonde("47b", "Ein Statuswert ausserhalb des Vokabulars faellt auf, auch weit weg von "
+             "einer SKILL.md", _47_fremdes_wort, M47_VOKABULAR)
+
+sonde("47c", "Eine Vorlage mit echtem Statuswert wird gemeldet - der Defekt, der "
+             "Kriterium 3 unerreichbar machte", _47_vorlage_mit_echtem_wert,
+      M47_VORLAGE_ECHT)
+
+sonde("47d", "Ein Ausfuellschlitz ausserhalb einer Vorlage wird gemeldet - die "
+             "kopierte und nicht gefuellte Vorlage", _47_schlitz_ausserhalb,
+      M47_SCHLITZ_FREMD)
+
+sonde("47e", "Ohne die Steckbriefkonvention hat Pruefung 47 ihren Gegenstand verloren "
+             "und sagt es, statt leise zu bestehen", _47_steckbriefkopf_umbenennen,
+      M47_ANKER)
+
+gegenprobe("47a", "Das unveraenderte Repositorium bleibt unbeanstandet - jeder "
+                  "Steckbrief traegt einen gueltigen Statuswert", None, "Vokabular")
+
+gegenprobe("47b", "Ein Verlaufszusatz in Klammern bleibt zulaessig - verglichen wird "
+                  "das erste Wort des Werts", _47_verlaufszusatz, M47_VOKABULAR)
+
+gegenprobe("47c", "Eine Steckbriefkopfzeile hinter einer Ueberschrift ist kein "
+                  "Steckbrief und verlangt keinen Status", _47_tabelle_hinter_ueberschrift,
+           M47_FEHLT)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

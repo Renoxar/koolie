@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-06` |
 | Version | `0.1.1` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Wann | bei jeder Änderung mit R3-, R10- oder R11-Bezug; ergänzend zum Review bei Stufe hoch; stichprobenartig bei Stufe mittel |
 | Wer | Bearbeiterin oder Bearbeiter; bei Stufe hoch zusätzlich `<SECURITY_CONTACT>` |
