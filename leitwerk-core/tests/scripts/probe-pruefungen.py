@@ -3420,6 +3420,7 @@ M46_K2 = "Kriterium 2 von D-11"
 M46_K3 = "Kriterium 3 von D-11"
 M46_K4 = "Kriterium 4 von D-11"
 M46_NICHT_NACHGEZOGEN = "der Fortschritt ist nicht nachgezogen"
+M46_RUECKFALL = "ein Kriterium ist zur\u00fcckgefallen"
 P46_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
 P46_STAND = "Gezählt von Prüfung 46: Kriterium 1 = "
 # Der Marker in seiner clientneutralen Form - zusammengesetzt, weil eine woertliche
@@ -3488,11 +3489,26 @@ def _46_steckbrief_dazu(root: str) -> None:
             "| Status | `entwurf` |\r\n| Owner (Rolle) | `<FRAMEWORK_OWNER>` |\r\n")
 
 
-def _46_record_gehoben(root: str) -> None:
-    """D-10 aus `entschieden (Vorschlag)` heben - Kriterium 4 SINKT um eins.
+P46_BESTAETIGT = "| entschieden (`CR-2026-071`); "
+P46_VORSCHLAG = "| entschieden (Vorschlag); "
 
-    Die zweite Richtung: Fortschritt, der nicht nachgezogen ist. Ohne diese Sonde
-    belegte der Lauf nur, dass der Zaehler Rueckfaelle meldet.
+
+def _46_record_zurueckgefallen(root: str) -> None:
+    """D-10 auf `entschieden (Vorschlag)` zuruecksetzen - Kriterium 4 STEIGT auf eins.
+
+    Bis 0.48.0 hob diese Sonde D-10 AUS dem Vorschlagsstatus HERAUS und belegte damit
+    die Richtung "Fortschritt nicht nachgezogen". Mit 0.49.0 sind alle neun Records
+    bestaetigt (CR-2026-071, D-100) - die Hebung hat keinen Gegenstand mehr, und der
+    alte Suchtext haette zwar noch getroffen (er steht jetzt im Verlaufszusatz der
+    Zelle), aber an einer Stelle, die Pruefung 46 gar nicht liest. Eine Sonde, die
+    etwas veraendert, ohne den Gegenstand zu treffen, ist der schlechteste Zustand:
+    Der Baumvergleich meldet kein "[nichts praepariert]", und der Fehlschlag sieht aus
+    wie ein Befund an der Pruefung.
+
+    Die Sonde stellt ihren Defekt deshalb seither HER statt ihn zu entfernen - wie 38a
+    und 38b seit 0.38.0 - und deckt damit die Richtung, die vorher KEINE Sonde decken
+    konnte, weil Kriterium 4 nie null war: den RUECKFALL. Getroffen wird der ANFANG
+    der Statuszelle, denn genau das liest der Zaehler (`zellen[4].startswith`).
     """
     pfad = P(root, "leitwerk-core/governance/DECISION_LOG.md".replace("/", os.sep))
     zeilen = lies(pfad).split("\r\n")
@@ -3501,11 +3517,12 @@ def _46_record_gehoben(root: str) -> None:
         raise Praeparationsfehler(
             "DECISION_LOG.md: Zeile D-10 steht %dx, erwartet genau einmal"
             % len(treffer))
-    if "entschieden (Vorschlag)" not in zeilen[treffer[0]]:
+    if P46_BESTAETIGT not in zeilen[treffer[0]]:
         raise Praeparationsfehler(
-            "DECISION_LOG.md: D-10 traegt nicht mehr 'entschieden (Vorschlag)'")
+            "DECISION_LOG.md: die Statuszelle von D-10 beginnt nicht mit %r"
+            % P46_BESTAETIGT)
     zeilen[treffer[0]] = zeilen[treffer[0]].replace(
-        "entschieden (Vorschlag)", "entschieden (Sondenlauf)", 1)
+        P46_BESTAETIGT, P46_VORSCHLAG, 1)
     schreib(pfad, "\r\n".join(zeilen))
 
 
@@ -3550,8 +3567,8 @@ sonde("46d", "Ein Testblatt an einer Ablage, die keine Liste kennt, hebt Kriteri
 sonde("46e", "Ein neues Modul auf entwurf hebt Kriterium 3, auch ausserhalb der vier "
              "frueher genannten Ablagen", _46_steckbrief_dazu, M46_K3)
 
-sonde("46f", "Ein gehobener Decision Record senkt Kriterium 4 - auch Fortschritt ohne "
-             "Nachziehen ist eine Abweichung", _46_record_gehoben, M46_K4)
+sonde("46f", "Ein zurueckgefallener Decision Record hebt Kriterium 4 - die Standzeile "
+             "steht dann zu niedrig", _46_record_zurueckgefallen, M46_RUECKFALL)
 
 gegenprobe("46a", "Das unveraenderte Repositorium bleibt unbeanstandet - alle vier "
                   "Zahlen der Standzeile stimmen", None, "D-11")

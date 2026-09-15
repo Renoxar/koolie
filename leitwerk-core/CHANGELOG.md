@@ -2,6 +2,108 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.49.0] - 2026-09-15
+
+**Die neun Strukturentscheidungen sind bestaetigt - und die drei Einwaende, die sie
+zweiunddreissig Releases lang aufgehalten haben, zielten an der Entscheidung vorbei.**
+Gegenstand ist Arbeitspaket `AP3` (P1), Aktivitaet "Beschluss offener
+Strukturentscheidungen (D-01...D-10 bestaetigen)" (`CR-2026-071`, D-100, D-101,
+`tests/protocols/2026-09-15-gegenpruefung-strukturentscheidungen.md`).
+
+**Kriterium 4 von D-11 steht auf null.** Es ist die erste der vier Zahlen, die sich seit
+der Erstfassung bewegt hat - die rueckwirkende Messung ueber dreiundzwanzig
+Releasestaende fand es in jedem einzelnen unveraendert bei neun.
+
+### Gemessen
+
+| Record | Traegt die Begruendung von 2026-09-01 heute? | Beleg |
+|---|---|---|
+| D-01 Ebenenmodell | **ja** | acht Stufen in `PRIORITY_HIERARCHY.md`; Ebene B als Stufe 2 mit Einbindungspunkt unter `framework/org-policies/`, Ebene E als Stufe 8 |
+| D-02 Lang- und Laufzeitform | **ja, staerker als damals** | beide ausgelieferten Client Packs fuehren ein `manifest.json`, aus dem `install.py` und der Validator die Pfade lesen (D-12 bis D-14) |
+| D-03 Vier-Dateien-Struktur | **ja** | **13 von 13** Skills tragen genau die vier Dateien; Least Context ist am 2026-09-12 und am 2026-09-14 gemessen (Zusage S4) |
+| D-04 Berechtigungsdatei | **ja, seit D-18 geprueft statt zugesagt** | 53 `deny`-, 5 `ask`-, 19 `allow`-Regeln aus einer Quelle; `_core_rules_integrity.deny_must_contain` wird daraus erzeugt und vom Validator gehalten |
+| D-05 Berechtigungsmodi | **ja** | Einwand `AP2-CC-12` betrifft die Durchsetzungstiefe eines Clients, nicht die Regel |
+| D-06 Prioritaetshierarchie | **ja** | Verschaerfungsprinzip als Regel 2.1; Abschnitt 2 fuehrt inzwischen sechs ergaenzende Regeln |
+| D-07 Kontextklassen | **ja** | K0 bis K3 in `framework/core/02-privacy.md`, vollstaendig auch in der Laufzeitschicht (D-24) |
+| D-08 Metadaten im Dateikoerper | **die Entscheidung ja, die Begruendung nicht mehr** | Die Vorsichtsannahme ist fuer `claude-code` geklaert (K-18); dort waere ein Frontmatter-Feld heute kein Risiko, sondern ein undokumentiertes Feld. Fuer `devin-desktop` traegt die alte Begruendung weiter |
+| D-10 Erweiterungsmodule | **ja** | `framework/runtime/` liefert nur `mcp-config.example.json`; alle MCP-Werkzeuge stehen in `ask` - die Deaktivierung ist erzeugt, nicht versprochen |
+
+- **Acht von neun tragen unveraendert. Bei D-08 traegt die Entscheidung auf einem
+  anderen Grund** - und der andere Grund steht im Record. Eine Bestaetigung ist keine
+  Behauptung, dass sich nichts geaendert haette.
+- **Der eigentliche Befund war nicht gesucht: Alle drei Einwaende aus `CR-2026-019`
+  richten sich gegen etwas anderes als die Entscheidung, gegen die sie vorgebracht
+  sind.** `AP2-CC-12` trifft die Durchsetzungstiefe **eines** Clients auf **einem** Weg -
+  die Unterscheidung, fuer die es D-12 gibt. `K-20` trifft eine **Eingabe** des
+  Datenschutzmodells, und das Modell regelt ihr Fehlen **selbst** (Abschnitt 1.3
+  "restriktivste Auslegung", Abschnitt 2.2 Regel 3 "Fehlt eine Einstufung, gilt K3").
+  `K-04` trifft eine **organisatorische Freigabe**, und D-11 nimmt sie ausdruecklich aus.
+- **Alle drei Fragen bleiben offen.** Keine wird durch diesen Vorgang beantwortet; sie
+  werden ihrem richtigen Kriterium zugeordnet - zwei von ihnen gehoeren zu Kriterium 1.
+- **Nebenbefund, beim Abzaehlen der Statuszelle angefallen: Die Legende des Decision
+  Logs erklaerte vier Statuswerte, seine Tabellen fuehren sieben.** Es fehlte
+  ausgerechnet der meistverwendete - `entschieden (CR-JAHR-NNN)`, **89** Records, seit
+  D-11. Ein Verzeichnis, das seinen eigenen Bestand nicht vollstaendig nennt, ist der
+  Befundtyp dieses Repositoriums in seiner Grundform.
+
+### Geaendert
+
+- **D-01 bis D-08 und D-10 tragen `entschieden (CR-2026-071)`** - derselbe Wert wie die
+  uebrigen 89 Records, kein zweites Vokabular fuer denselben Zustand (E1). Wortlaut,
+  Begruendung und Datum von 2026-09-01 sowie die Fortschreibung aus `CR-2026-019`
+  bleiben unveraendert stehen; angehaengt ist je Record ein Satz mit Datum und Beleg.
+- **`K-08` ist mitbestaetigt** - die namentlich genannte offene Entscheidung von `AP3`
+  und in der Sache dasselbe wie D-01 und D-06. Die vier uebrigen Klaerungspunkte auf
+  `entschieden (Vorschlag)` gehen **nicht** mit: Bei K-12, K-13, K-17 und K-18 ist ein
+  Teil der Frage unbeantwortet (E4).
+- **Die Legende des Decision Logs fuehrt alle sieben Statuswerte**, getrennt nach
+  Decision Records und Klaerungspunkten (D-101). `verify` nennt die Client-Dokumentation
+  statt eines Produktnamens (D-19).
+- **Die Standzeile in `docs/ROADMAP.md` ist nachgezogen**: Kriterium 4 von 9 auf **0**.
+  **Der Mechanismus aus 0.48.0 hat dabei zum ersten Mal gegriffen** - nach dem
+  Statuswechsel und vor dem Nachziehen meldete der Lauf genau einen Fehler, und zwar
+  ueber einen **Fortschritt**. Ohne diese Bauform stuende dort heute noch neun.
+- **Sonde 46f ist umgebaut** (E6). Sie hob bisher D-10 **aus** dem Vorschlagsstatus
+  heraus; das hat keinen Gegenstand mehr. Sie **stellt ihren Defekt jetzt her statt ihn
+  zu entfernen** - wie 38a und 38b seit 0.38.0 - und deckt damit die Richtung, die
+  vorher keine Sonde decken konnte, weil Kriterium 4 nie null war: den **Rueckfall**.
+  Die Sondenmenge ist unveraendert: 154 Sonden, 62 Gegenproben, 12 Selbstproben.
+
+### Keine neue Pruefung - mit Absicht
+
+Der Framework Owner hat fuer dieses Release angeordnet, **keine neue Pruefung zu bauen,
+bevor sich eine der vier D-11-Zahlen bewegt hat**. Anlass war die Messung aus 0.48.0:
+Der Pruefapparat wuchs von 24 auf 46 Pruefungen, waehrend die D-11-Summe von 223 auf 225
+**stieg**. Die Pruefung auf das Statusvokabular des Decision Logs (D-101) ist deshalb
+**berichtigt, nicht geprueft**, und steht als Kandidat fuer das naechste Release - die
+Sperre faellt mit diesem, weil sich Kriterium 4 bewegt hat.
+
+### Nachweise
+
+- **Validator 0 Fehler, 0 Warnungen.**
+- **Sondenlauf in beiden Kodierungsumgebungen, Exit 0:** 154 Sonden, 62 Gegenproben, 12 Selbstproben, 18 Buendelkopfzeilen - **246 Ergebniszeilen, alle bestanden**, und die ersten 251 Zeilen beider Laeufe sind `diff`-gleich (D-49, D-94). Die Sondenmenge ist gegenueber 0.48.0 **unveraendert**: Dieses Release fuegt keine Sonde hinzu, es baut eine um.
+- **Gegenbeweis gegen den Vorstand 0.48.0** - frischer Auscheckstand, installiert mit dessen eigenem `install.py`: **genau eine Abweichung**, und es ist Sonde 46f mit `[Praeparation gebrochen]`. Gegen 0.48.0 gibt es keinen bestaetigten Record, den man zurueckfallen lassen koennte - und die Sonde sagt genau das, statt leise zu bestehen.
+- **Die zweite Richtung der Auflage ist gemessen, und sie war unbequemer als die Erwartung im Antrag:** Die ALTE Fassung von 46f haette auf dem neuen Stand **danebengetroffen statt gebrochen** - ihr Suchtext steht weiterhin in der Zeile, aber im Verlaufszusatz der Zelle, also an einer Stelle, die Pruefung 46 gar nicht liest. Weder `Praeparationsfehler` noch der Baumvergleich haetten gemeldet; die Sonde waere als gewoehnlicher Fehlschlag gefallen und haette ausgesehen wie ein Befund an der Pruefung. **Deshalb trifft die neue Fassung den ANFANG der Statuszelle** - genau das, was der Zaehler liest. Der Antragstext ist gegen die Messung berichtigt worden, nicht umgekehrt.
+- Protokolle: `tests/protocols/2026-09-15-gegenpruefung-strukturentscheidungen.md` (Gegenpruefung je Record) und `tests/protocols/2026-09-15-wirkungsnachweise-0.49.0.md`.
+
+### Migrationshinweis
+
+**Keiner.** Geaendert sind Governance- und Dokumenttexte sowie eine Sonde. Weder
+Installation noch Laufzeitschicht noch Berechtigungsdatei sind betroffen; `install.py
+--check` bleibt unveraendert. **Ein Projekt, das mit `install.py --update` hebt, bekommt
+die neue Standzeile im selben Zug** und laeuft gruen weiter.
+
+### Bekannte Einschraenkungen
+
+- **Drei Fragen bleiben offen und sind es auch geblieben:** `AP2-CC-12`, `K-20`, `K-04`.
+  Zwei davon liegen ausdruecklich ausserhalb des Einflussbereichs, den D-11 zum Massstab
+  macht.
+- **Vier Klaerungspunkte tragen weiterhin `entschieden (Vorschlag)`** - K-12, K-13, K-17
+  und K-18. Pruefung 46 zaehlt sie nicht; das ist seit `CR-2026-070` entschieden.
+- **D-101 ist eine Zusage ohne Mechanismus, und der Antrag sagt es.**
+- **Die anderen drei D-11-Zahlen stehen unveraendert:** 29, 118, 69. Eine von vier ist
+  gefallen, und es war die kleinste.
+
 ## [0.48.0] - 2026-09-15
 
 **Alle vier Zaehlregeln des 1.0.0-Standes greifen daneben - vier von vier Zahlen sind
