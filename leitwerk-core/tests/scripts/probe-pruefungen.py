@@ -11,7 +11,7 @@ mit jedem Release falscher wurde, ohne dass ein Lauf davon Notiz nahm. Welches R
 welche Sonde gebracht hat, steht im Aenderungsverlauf und nicht mehr hier.
 
 Aufruf (im Wurzelverzeichnis des Repositoriums):
-    python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD]
+    python3 leitwerk-core/tests/scripts/probe-pruefungen.py [PFAD] [--bahnen N]
 
 D-23 sagt: Eine Pruefung gilt erst als vorhanden, wenn sie eine bewusst gesetzte Sonde
 meldet. Dieses Skript fuehrt den Nachweis, statt ihn zu behaupten. Je Pruefung
@@ -21,6 +21,15 @@ meldet. Dieses Skript fuehrt den Nachweis, statt ihn zu behaupten. Je Pruefung
   * eine **Gegenprobe**: ein Fall, der erlaubt ist und aehnlich aussieht - die Pruefung
     DARF ihn nicht melden.
 
+Die kleinste Einheit ist die Sonde, die Gegenprobe oder - wo mehrere Faelle aufeinander
+aufbauen - das **Buendel**, nie einer seiner Teile. Jede Einheit traegt einen **Namen**
+und einen **Beschreibungssatz von 5 bis 30 Worten**; die Selbstprobe B1 zaehlt ihn nach.
+Die Einheiten laufen seit 0.46.0 **nebenlaeufig** auf mehreren Bahnen - jede auf ihrer
+eigenen Kopie, innerhalb eines Buendels weiterhin streng seriell (`--bahnen 1` faehrt
+den seriellen Lauf von frueher). Ihre **Laufzeit** steht am Ende, langsamste zuerst, und
+zwar unterhalb einer Trennlinie: Die Ergebniszeilen daruber sind die zeilengleiche
+Abnahmeform nach D-49, und eine Laufzeit ist nie zweimal dieselbe (CR-2026-068).
+
 Die Gegenprobe ist der Teil, den man weglassen kann und nicht weglassen sollte: Eine
 Pruefung, die alles meldet, besteht jede Sonde. Die Gegenproben hier treffen genau die
 Faelle, an denen die jeweilige Pruefung zu breit haette werden koennen - die erklaerende
@@ -28,7 +37,8 @@ Nennung eines Dateinamens im Fliesstext, ein Begriff ohne Manifestfeld, die Schu
 des durchsetzenden Hooks, ein Pack ohne Importsteuerung, Herkunftsangaben im Kommentar.
 
 Gearbeitet wird auf einer Kopie; das Repositorium selbst bleibt unberuehrt. Exit-Code 0 =
-alle Sonden gemeldet und keine Gegenprobe beanstandet.
+alle Sonden gemeldet, keine Gegenprobe beanstandet **und jede Kopie wieder geloescht** -
+eine liegengebliebene meldet der Aufraeumer und zaehlt als Abweichung (D-96).
 
 Was dieses Skript **nicht** leistet: Es belegt, dass die Pruefungen wirken, nicht dass
 ihre Gegenstaende richtig sind. Die Grenze jeder einzelnen Pruefung steht in deren
@@ -43,10 +53,41 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
+import time
+import traceback
+from concurrent.futures import ThreadPoolExecutor
 
-QUELLE = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else ".")
+BAHNEN_VORGABE = 8
+
+
+def argumente(argv: list) -> tuple:
+    """Pfad und Bahnenzahl aus der Befehlszeile - mehr Schalter gibt es nicht.
+
+    Die Vorgabe ist eine feste Zahl und NICHT die Kernzahl dieser Maschine. Eine
+    Vorgabe, die vom Rechner abhaengt, macht zwei Laufzeiten unvergleichbar - und der
+    Engpass ist ohnehin nicht die Rechenzeit: Jede Einheit legt eine eigene Kopie des
+    Repositoriums an und startet mindestens einen Unterprozess darauf.
+
+    `--bahnen 1` ist der serielle Lauf, Einheit fuer Einheit in der Reihenfolge dieser
+    Datei. Er ist der Rueckfallweg, wenn ein Befund sich nur seriell zeigt.
+    """
+    pfad, bahnen, rest = ".", BAHNEN_VORGABE, list(argv)
+    while rest:
+        wort = rest.pop(0)
+        if wort == "--bahnen":
+            if not rest or not rest[0].isdigit() or int(rest[0]) < 1:
+                sys.exit("--bahnen erwartet eine Zahl ab 1")
+            bahnen = int(rest.pop(0))
+        elif wort.startswith("--"):
+            sys.exit("Unbekannter Schalter: %s (bekannt ist nur --bahnen N)" % wort)
+        else:
+            pfad = wort
+    return os.path.abspath(pfad), bahnen
+
+
+QUELLE, BAHNEN = argumente(sys.argv[1:])
 VALIDATOR = "leitwerk-core/tests/scripts/validate-framework.py"
-fehler = 0
 
 
 def kopie() -> str:
@@ -199,74 +240,248 @@ def frei(pfad: str, *kennungen: str) -> None:
                 % (os.path.basename(pfad), kennung))
 
 
-def buendel(fn) -> None:
-    """Eine Funktion, die mehrere Sonden in EINER Installation faehrt.
+# --- Der Ausfuehrungsplan: erst anmelden, dann fahren -----------------------------
+#
+# Bis 0.45.0 lief jede Sonde in dem Augenblick, in dem der Auslegeteil dieser Datei ihre
+# Zeile erreichte: alle Einheiten streng nacheinander, jede mit einer eigenen Kopie des
+# Repositoriums und mindestens einem Validatorlauf darauf. Seit 0.46.0 melden sonde(),
+# sonde_ohne_wert(), gegenprobe() und buendel() ihre Einheit nur noch an; gefahren wird
+# am Ende, auf mehreren Bahnen (CR-2026-068, D-94 bis D-96).
+#
+# DREI ZUSAGEN, die dieser Umbau halten muss - alle drei waren hier schon einmal teuer:
+#
+#   1. DIE SCHREIBWEISE BLEIBT. Pruefung 40 rechnet die Sondenmenge aus zwei woertlichen
+#      Mustern dieser Datei aus: dem Aufruf `sonde(` mit seiner Kennung und `melde(` mit
+#      der Art SONDE und ihr. Ein Umbau auf ein Register mit eigener Schreibweise haette
+#      die Sonden fuer Pruefung 40 unsichtbar gemacht - und die Pruefung haette leise
+#      bestanden, weil eine leere Menge keine Abweichung ist. Beide Muster stehen
+#      deshalb unveraendert an ihren Aufrufstellen; geaendert hat sich allein, WANN der
+#      Aufruf seine Arbeit tut.
+#   2. DIE AUSGABE BLEIBT ZEILENGLEICH. D-49 nimmt den Lauf in beiden
+#      Kodierungsumgebungen ab, und zwar zeilenweise. Eine nebenlaeufige Einheit
+#      schreibt deshalb nicht selbst auf die Standardausgabe, sondern sammelt ihre
+#      Zeilen; ausgegeben werden sie in der Reihenfolge der ANMELDUNG, nicht in der der
+#      Fertigstellung. Die Laufzeiten stehen unterhalb der Trennlinie und sind
+#      ausdruecklich nicht Teil dieses Vergleichs - eine Laufzeit ist nie zweimal
+#      dieselbe, und eine Abnahmeform, die einen Filter braucht, ist keine mehr.
+#   3. EIN BUENDEL IST DIE KLEINSTE EINHEIT, NIE SEINE TEILE. Seine Faelle bauen
+#      aufeinander auf: eine Installation, Schritt fuer Schritt praepariert und wieder
+#      zurueckgesetzt. INNERHALB eines Buendels bleibt es streng seriell; nebenlaeufig
+#      sind allein die Einheiten gegeneinander.
 
-    Diese Funktionen melden selbst ueber melde() und haben deshalb keinen
-    baumhash-Waechter - neun Funktionen mit 35 Meldestellen. Faellt eine ihrer
-    Praeparationen aus, bricht das Buendel hier ab: laut, mit dem Suchtext, und ohne
-    dass der Rest als bestanden erscheint (CR-2026-060 E2).
+EINHEITEN = []
+_ORT = threading.local()
+
+SATZ_MIN = 5
+SATZ_MAX = 30
+
+
+def worte(satz: str) -> int:
+    return len(satz.split())
+
+
+def zahl(wert: float) -> str:
+    """Eine Zahl mit einer Nachkommastelle und Dezimalkomma - deutsch wie der Rest."""
+    return ("%.1f" % wert).replace(".", ",")
+
+
+def kurz(satz: str, breite: int) -> str:
+    return satz if len(satz) <= breite else satz[:breite - 3] + "..."
+
+
+class Einheit:
+    """Eine Sonde, eine Gegenprobe oder ein Buendel - mit Name, Satz und Laufzeit.
+
+    `kennung` ist der Name: bei einer Einzelsonde ihre Pruefungsnummer, bei einem
+    Buendel der Name seiner Funktion. `satz` ist der Beschreibungssatz, den die
+    Selbstprobe B1 nachzaehlt.
     """
-    try:
-        fn()
-    except Praeparationsfehler as exc:
-        melde("BUENDEL", "-", False, fn.__name__ + "  [Praeparation gebrochen]")
-        print("        " + str(exc))
-        print("        Gemessen wurde nichts - der Rest des Buendels ist nicht gelaufen.")
+
+    def __init__(self, art: str, kennung: str, satz: str, arbeit) -> None:
+        self.art = art
+        self.kennung = kennung
+        self.satz = satz
+        self.arbeit = arbeit
+        self.zeilen = []
+        self.fehler = 0
+        self.dauer = 0.0
+
+    def eintrag(self, art: str, kennung: str, ok: bool, was: str) -> None:
+        if not ok:
+            self.fehler += 1
+        self.zeilen.append(f"{art:10s} {kennung:4s} {'OK  ' if ok else 'FEHL'}  {was}")
+
+    def anmerkung(self, *teile) -> None:
+        self.zeilen.append(" ".join(str(t) for t in teile))
+
+    def fahren(self) -> None:
+        """Die Einheit fahren und dabei ihre Laufzeit nehmen.
+
+        Ein unerwarteter Fehler bricht nicht den ganzen Lauf ab, sondern faellt dieser
+        einen Einheit zur Last - mit Rueckverfolgung in den Anmerkungen. Der Grund ist
+        derselbe wie bei buendel(): Ein Abbruch, der 127 ungefahrene Einheiten
+        mitnimmt, verbirgt mehr, als er zeigt.
+        """
+        _ORT.einheit = self
+        beginn = time.perf_counter()
+        try:
+            self.arbeit()
+        except Exception as exc:  # absichtlich breit - siehe Kopfkommentar
+            self.eintrag(self.art, self.kennung, False,
+                         "Abbruch der Einheit: %s: %s" % (type(exc).__name__, exc))
+            self.anmerkung("        " + traceback.format_exc().rstrip().replace(
+                "\n", "\n        "))
+        finally:
+            self.dauer = time.perf_counter() - beginn
+            _ORT.einheit = None
+
+    def ausgeben(self) -> None:
+        for zeile in self.zeilen:
+            print(zeile)
+
+
+def eintragen(art: str, kennung: str, satz: str, arbeit) -> None:
+    """Eine Einheit in den Ausfuehrungsplan aufnehmen, statt sie sofort zu fahren."""
+    EINHEITEN.append(Einheit(art, kennung, satz, arbeit))
 
 
 def melde(art: str, nummer: str, ok: bool, was: str) -> None:
-    global fehler
-    if not ok:
-        fehler += 1
-    print(f"{art:10s} {nummer:4s} {'OK  ' if ok else 'FEHL'}  {was}")
+    """Eine Ergebniszeile - sie geht in die Sammlung der gerade laufenden Einheit."""
+    _ORT.einheit.eintrag(art, nummer, ok, was)
+
+
+def notiz(*teile) -> None:
+    """Eine Erlaeuterungszeile unter einer Ergebniszeile.
+
+    Sie steht an der Stelle, an der bis 0.45.0 print() stand. Der Unterschied zaehlt
+    erst seit der Nebenlaeufigkeit: print() schriebe sofort und mitten in die Zeilen
+    einer anderen Einheit hinein, und die Ausgabe waere nicht mehr zeilengleich
+    reproduzierbar - der Lauf haette seine Abnahmeform verloren (D-49).
+    """
+    _ORT.einheit.anmerkung(*teile)
+
+
+AUFRAEUM_VERSUCHE = 3
+AUFRAEUM_PAUSE = 0.5
+
+
+def aufraeumen(pfad: str) -> None:
+    """Ein Arbeitsverzeichnis loeschen - und das Scheitern MELDEN, nicht verschlucken.
+
+    Bis 0.45.0 stand an den vierzehn Aufraeumstellen dieses Skripts
+    `shutil.rmtree(..., ignore_errors=True)`. Das ist der Befundtyp, gegen den dieses
+    Repositorium gebaut ist: eine Zusage - "gearbeitet wird auf einer Kopie; das
+    Repositorium selbst bleibt unberuehrt" - mit einem Ausfallpfad, der nichts sagt. Ein
+    Lauf, der fuer jede Einheit ein eigenes Arbeitsverzeichnis anlegt und einige davon
+    liegen laesst, sah genau so aus wie einer, der aufgeraeumt hat - und die Platte
+    fuellte sich stumm.
+
+    WARUM DREI VERSUCHE UND NICHT EINER: Unter Windows haelt ein gerade beendeter
+    Unterprozess - oder ein Virenscanner, der ihm nachsieht - eine Datei noch einen
+    Augenblick fest. Ein einziger Versuch meldete dann eine Stoerung, die eine halbe
+    Sekunde spaeter keine mehr ist; und eine Meldung, die auch ohne Anlass kommt, wird
+    binnen eines Releases abgeschaltet.
+
+    WAS SIE NICHT LEISTET: Sie raeumt auf, was ihr genannt wird. Ein Verzeichnis, dessen
+    Pfad niemand weitergibt, bleibt liegen und wird von ihr nicht vermisst.
+    """
+    letzter = None
+    for _ in range(AUFRAEUM_VERSUCHE):
+        if not os.path.isdir(pfad):
+            return
+        try:
+            shutil.rmtree(pfad)
+            return
+        except OSError as exc:
+            letzter = exc
+            time.sleep(AUFRAEUM_PAUSE)
+    if not os.path.isdir(pfad):
+        return
+    einheit = getattr(_ORT, "einheit", None)
+    melde("AUFRAEUMER", "-", False,
+          "%s: %s bleibt liegen" % (einheit.kennung if einheit else "-", pfad))
+    notiz("        " + str(letzter))
+    notiz("        %d Versuche ueber %s s, danach aufgegeben."
+          % (AUFRAEUM_VERSUCHE,
+             zahl(AUFRAEUM_VERSUCHE * AUFRAEUM_PAUSE)))
+
+
+def buendel(fn, satz: str) -> None:
+    """Eine Funktion, die mehrere Sonden in EINER Installation faehrt.
+
+    Diese Funktionen melden selbst ueber melde() und haben deshalb keinen
+    baumhash-Waechter. Faellt eine ihrer Praeparationen aus, bricht das Buendel hier ab:
+    laut, mit dem Suchtext, und ohne dass der Rest als bestanden erscheint
+    (CR-2026-060 E2).
+
+    Der Beschreibungssatz ist seit 0.46.0 Pflicht und steht als Kopfzeile ueber den
+    Zeilen des Buendels. Bis dahin hatte jede Einzelsonde einen erklaerenden Text und
+    das Buendel keinen - man sah eine Folge von Meldungen und nicht, was sie zusammen
+    belegen sollten.
+    """
+    def arbeit() -> None:
+        notiz("BUENDEL    %s - %s" % (fn.__name__, satz))
+        try:
+            fn()
+        except Praeparationsfehler as exc:
+            melde("BUENDEL", "-", False, fn.__name__ + "  [Praeparation gebrochen]")
+            notiz("        " + str(exc))
+            notiz("        Gemessen wurde nichts - der Rest des Buendels ist nicht gelaufen.")
+
+    eintragen("BUENDEL", fn.__name__, satz, arbeit)
 
 
 def sonde(nummer: str, was: str, praeparieren, erwartet: str) -> None:
-    root = kopie()
-    try:
-        vorher = baumhash(root)
+    def arbeit() -> None:
+        root = kopie()
         try:
-            praeparieren(root)
-        except Praeparationsfehler as exc:
-            melde("SONDE", nummer, False, was + "  [Praeparation gebrochen]")
-            print("        " + str(exc))
-            return
-        if baumhash(root) == vorher:
-            melde("SONDE", nummer, False, was + "  [nichts praepariert]")
-            print("        Der Baum ist unveraendert - vermutlich passt der Suchtext "
-                  "der Sonde nicht mehr. Gemessen wuerde sonst die Sonde, nicht die Pruefung.")
-            return
-        ausgabe = lauf(root)
-        melde("SONDE", nummer, erwartet in ausgabe, was)
-        if erwartet not in ausgabe:
-            print("        Ausgabe:", " | ".join(ausgabe.splitlines()[:6]))
-    finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
-
-
-def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
-    root = kopie()
-    try:
-        if praeparieren:
             vorher = baumhash(root)
             try:
                 praeparieren(root)
             except Praeparationsfehler as exc:
-                melde("GEGENPROBE", nummer, False,
-                      was + "  [Praeparation gebrochen]")
-                print("        " + str(exc))
+                melde("SONDE", nummer, False, was + "  [Praeparation gebrochen]")
+                notiz("        " + str(exc))
                 return
             if baumhash(root) == vorher:
-                melde("GEGENPROBE", nummer, False, was + "  [nichts praepariert]")
+                melde("SONDE", nummer, False, was + "  [nichts praepariert]")
+                notiz("        Der Baum ist unveraendert - vermutlich passt der Suchtext "
+                      "der Sonde nicht mehr. Gemessen wuerde sonst die Sonde, nicht die Pruefung.")
                 return
-        ausgabe = lauf(root)
-        ok = verboten not in ausgabe and "0 Fehler" in ausgabe
-        melde("GEGENPROBE", nummer, ok, was)
-        if not ok:
-            print("        Ausgabe:", " | ".join(ausgabe.splitlines()[:6]))
-    finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            ausgabe = lauf(root)
+            melde("SONDE", nummer, erwartet in ausgabe, was)
+            if erwartet not in ausgabe:
+                notiz("        Ausgabe:", " | ".join(ausgabe.splitlines()[:6]))
+        finally:
+            aufraeumen(os.path.dirname(root))
+
+    eintragen("SONDE", nummer, was, arbeit)
+
+
+def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
+    def arbeit() -> None:
+        root = kopie()
+        try:
+            if praeparieren:
+                vorher = baumhash(root)
+                try:
+                    praeparieren(root)
+                except Praeparationsfehler as exc:
+                    melde("GEGENPROBE", nummer, False,
+                          was + "  [Praeparation gebrochen]")
+                    notiz("        " + str(exc))
+                    return
+                if baumhash(root) == vorher:
+                    melde("GEGENPROBE", nummer, False, was + "  [nichts praepariert]")
+                    return
+            ausgabe = lauf(root)
+            ok = verboten not in ausgabe and "0 Fehler" in ausgabe
+            melde("GEGENPROBE", nummer, ok, was)
+            if not ok:
+                notiz("        Ausgabe:", " | ".join(ausgabe.splitlines()[:6]))
+        finally:
+            aufraeumen(os.path.dirname(root))
+
+    eintragen("GEGENPROBE", nummer, was, arbeit)
 
 
 P = lambda root, *teile: os.path.join(root, *teile)
@@ -290,7 +505,8 @@ def _entferne_abschnitt(root: str) -> None:
     schreib(pfad, text[:start] + text[ende:])
 
 
-sonde("19", "Pack ohne Auskunftsabschnitt", _entferne_abschnitt,
+sonde("19", "Ein Pack ohne den Abschnitt ueber Anweisungs- und Konfigurationsquellen "
+     "ausserhalb des Projekts wird gemeldet", _entferne_abschnitt,
       "Anweisungs- und Konfigurationsquellen außerhalb des Projekts' fehlt")
 
 
@@ -303,7 +519,7 @@ def _datum_entfernen(root: str) -> None:
     schreib(pfad, text[:start] + mitte + text[ende:])
 
 
-sonde("19", "Auskunft ohne Erhebungsstand", _datum_entfernen, "nennt keinen Erhebungsstand")
+sonde("19", "Eine Auskunft ohne Erhebungsdatum ist eine Behauptung ohne Stand und wird gemeldet", _datum_entfernen, "nennt keinen Erhebungsstand")
 gegenprobe("19", "Vorlage mit <TBD>-Erhebungsstand laeuft durch", None, "Erhebungsstand")
 
 # --- 20: Dokumenttabellen gegen Manifest -----------------------------------------
@@ -314,7 +530,8 @@ sonde("20", "Verfaelschter Wert in der Registrierungstabelle",
                                  "| `<SKILLS_DIR>` | Skill-Ablage | `.devin/faehigkeiten`", 1)),
       "<SKILLS_DIR> steht fuer 'devin-desktop'")
 
-sonde("20", "Verfaelschter Wert im Laufzeitglossar",
+sonde("20", "Ein verfaelschter Pfad im Laufzeitglossar weicht vom Manifest des Packs ab und "
+      "wird gemeldet",
       lambda r: schreib(P(r, "leitwerk-core/docs/RUNTIME_GLOSSARY.md".replace("/", os.sep)),
                         lies(P(r, "leitwerk-core/docs/RUNTIME_GLOSSARY.md".replace("/", os.sep)))
                         .replace("| **Agentenprofile** | Verzeichnis der Subagentenprofile | `.devin/agents/`",
@@ -325,7 +542,8 @@ gegenprobe("20", "Begriff ohne Manifestfeld und eingebettete Hook-Datei bleiben 
            None, "das Manifest fuehrt")
 
 # --- 21: Hook-Skripte neutral ----------------------------------------------------
-sonde("21", "Clientgebundene Umgebungsvariable im Hook-Skript",
+sonde("21", "Eine clientgebundene Umgebungsvariable im gemeinsamen Hook-Skript bindet es an "
+      "ein Pack und wird gemeldet",
       lambda r: schreib(P(r, "leitwerk-core/tests/scripts/hook-overlay-status.py".replace("/", os.sep)),
                         lies(P(r, "leitwerk-core/tests/scripts/hook-overlay-status.py".replace("/", os.sep)))
                         .replace("root = argumente[0] if argumente else os.getcwd()",
@@ -348,7 +566,8 @@ def _steuerung_verfaelschen(root: str) -> None:
     schreib(pfad, lies(pfad).replace('"windsurf": false', '"windsurf": true', 1))
 
 
-sonde("22", "Verfaelschter Wert der Importsteuerung", _steuerung_verfaelschen,
+sonde("22", "Ein verfaelschter Wert der Importsteuerung read_config_from weicht vom Manifest "
+      "ab und wird gemeldet", _steuerung_verfaelschen,
       "die Importsteuerung 'read_config_from' steht als".replace("die ", "Die "))
 
 
@@ -360,7 +579,8 @@ def _steuerung_entfernen(root: str) -> None:
     schreib(pfad, json.dumps(d, indent=2, ensure_ascii=False) + "\n")
 
 
-sonde("22", "Fehlende Importsteuerung", _steuerung_entfernen,
+sonde("22", "Eine fehlende Importsteuerung read_config_from laesst offen, welche fremden "
+      "Konfigurationen der Client liest", _steuerung_entfernen,
       "Die Importsteuerung 'read_config_from' fehlt")
 
 gegenprobe("22", "Pack ohne import_control laeuft durch", None, "Importsteuerung")
@@ -453,31 +673,34 @@ def sonde_ohne_wert(nummer: str, was: str, praeparieren, erwartet: str, marker: 
     Fehlermeldung dieser Sonde den Wert weiter, den die Sonde gerade als weitergetragen
     beanstandet - derselbe Fehler eine Ebene hoeher.
     """
-    root = kopie()
-    try:
-        vorher = baumhash(root)
+    def arbeit() -> None:
+        root = kopie()
         try:
-            praeparieren(root)
-        except Praeparationsfehler as exc:
-            melde("SONDE", nummer, False, was + "  [Praeparation gebrochen]")
-            print("        " + str(exc))
-            return
-        if baumhash(root) == vorher:
-            melde("SONDE", nummer, False, was + "  [nichts praepariert]")
-            return
-        ausgabe = lauf(root)
-        gemeldet = erwartet in ausgabe
-        verschwiegen = marker not in ausgabe
-        melde("SONDE", nummer, gemeldet and verschwiegen, was)
-        if not gemeldet:
-            bereinigt = ausgabe.replace(marker, "<Marker entfernt>")
-            print("        Befund nicht gemeldet. Ausgabe:",
-                  " | ".join(bereinigt.splitlines()[:6]))
-        if not verschwiegen:
-            print(f"        Der Markerwert steht in der Ausgabe - das ist B03 selbst. "
-                  f"Erwartete Kennung: {erwartet}")
-    finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            vorher = baumhash(root)
+            try:
+                praeparieren(root)
+            except Praeparationsfehler as exc:
+                melde("SONDE", nummer, False, was + "  [Praeparation gebrochen]")
+                notiz("        " + str(exc))
+                return
+            if baumhash(root) == vorher:
+                melde("SONDE", nummer, False, was + "  [nichts praepariert]")
+                return
+            ausgabe = lauf(root)
+            gemeldet = erwartet in ausgabe
+            verschwiegen = marker not in ausgabe
+            melde("SONDE", nummer, gemeldet and verschwiegen, was)
+            if not gemeldet:
+                bereinigt = ausgabe.replace(marker, "<Marker entfernt>")
+                notiz("        Befund nicht gemeldet. Ausgabe:",
+                      " | ".join(bereinigt.splitlines()[:6]))
+            if not verschwiegen:
+                notiz(f"        Der Markerwert steht in der Ausgabe - das ist B03 selbst. "
+                      f"Erwartete Kennung: {erwartet}")
+        finally:
+            aufraeumen(os.path.dirname(root))
+
+    eintragen("SONDE", nummer, was, arbeit)
 
 
 sonde_ohne_wert("6", "E-Mail-Adresse: gemeldet, Wert nicht ausgegeben",
@@ -540,13 +763,15 @@ def sonde_hook_zusatzmuster() -> None:
     melde("SONDE", "6h", gemeldet and verschwiegen,
           "Hook: ungueltiges Zusatzmuster gemeldet, Wert nicht ausgegeben")
     if not gemeldet:
-        print("        Meldung fehlt. Ausgabe:",
+        notiz("        Meldung fehlt. Ausgabe:",
               " | ".join(ausgabe.replace(marker, "<Marker entfernt>").splitlines()[:4]))
     if not verschwiegen:
-        print("        Der Markerwert steht in der Ausgabe - das ist B03 im Hook.")
+        notiz("        Der Markerwert steht in der Ausgabe - das ist B03 im Hook.")
 
 
-buendel(sonde_hook_zusatzmuster)
+buendel(sonde_hook_zusatzmuster,
+        "Der ausgelieferte Hook meldet ein ungueltiges Zusatzmuster, ohne dessen Wert "
+        "auszugeben - projektspezifische Pfadmuster tragen Projekt-, Kunden- und Hostnamen")
 
 
 # --- 25 (D-41): Ein Ausfall ohne benannten Ersatz -------------------------------
@@ -600,7 +825,7 @@ def sonde_list_skills() -> None:
         melde("SONDE", "D41", gefuehrt and herkunft,
               "Skill ohne Kernquelle: gefuehrt, Herkunft 'Projekt', Aufrufbarkeit gelesen")
         if not (gefuehrt and herkunft):
-            print("        Ausgabe:", " | ".join(ausgabe.splitlines()[:8]))
+            notiz("        Ausgabe:", " | ".join(ausgabe.splitlines()[:8]))
 
         melde("GEGENPROBE", "D41", "sonde-d41-kein-skill" not in ausgabe,
               "Verzeichnis ohne SKILL.md wird nicht als Skill gefuehrt")
@@ -608,10 +833,12 @@ def sonde_list_skills() -> None:
         melde("SONDE", "D41", "kein vollstaendiger Ersatz" in ausgabe,
               "Die Auskunft nennt ihre eigene Grenze in der Ausgabe")
     finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+        aufraeumen(os.path.dirname(root))
 
 
-buendel(sonde_list_skills)
+buendel(sonde_list_skills,
+        "Die Skillauskunft von install.py fuehrt einen Projektskill mit richtiger Herkunft, "
+        "uebergeht ein Verzeichnis ohne SKILL.md und nennt ihre eigene Grenze")
 
 
 # --- strict-overlay (D-44): Aktivierungspruefung, dieselben Faelle je Pack --------
@@ -722,10 +949,12 @@ def sonden_aktivierungspruefung() -> None:
             melde("SONDE", "SO", "Abschnitt ## 13. fehlt" in aus,
                   f"Fehlender sicherheitsrelevanter Abschnitt wird gemeldet ({pack})")
         finally:
-            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_aktivierungspruefung)
+buendel(sonden_aktivierungspruefung,
+        "Die Aktivierungspruefung gegen je eine frische Installation beider Packs: "
+        "Overlay-Status, Platzhalter in der Berechtigungsdatei, fehlender Abschnitt 13")
 
 
 # --- B10 (D-45): Die Aktualisierung trifft das installierte Pack -----------------
@@ -752,7 +981,7 @@ def sonden_clientwahl() -> None:
             melde("SONDE", "B10", getroffen and keine_zweite,
                   f"Aktualisierung ohne --client trifft das installierte Pack ({pack})")
             if not (getroffen and keine_zweite):
-                print("        Ausgabe:", " | ".join(aus.splitlines()[:6]))
+                notiz("        Ausgabe:", " | ".join(aus.splitlines()[:6]))
 
             anderes = "devin-desktop" if pack == "claude-code" else "claude-code"
             q = unterprozess([sys.executable, werkzeug, "--update", "--root", root,
@@ -762,10 +991,12 @@ def sonden_clientwahl() -> None:
             melde("GEGENPROBE", "B10", abgewiesen and unberuehrt,
                   f"Widersprechendes --client bricht ab statt anzulegen ({pack} statt {anderes})")
         finally:
-            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_clientwahl)
+buendel(sonden_clientwahl,
+        "Die Aktualisierung erkennt das installierte Pack und weist ein fremdes ab, ohne "
+        "dabei eine einzige Datei anzulegen")
 
 
 # --- D-46: Die Erstinstallation ueberschreibt keine Projektdatei -----------------
@@ -801,9 +1032,9 @@ def sonden_erstinstallation() -> None:
         melde("SONDE", "D46", abgebrochen and unberuehrt and nichts_geschrieben,
               "Erstinstallation bricht ab, Projektdatei und Verzeichnis unberuehrt")
         if not unberuehrt:
-            print("        Die Projektdatei wurde veraendert - das ist der Befund selbst.")
+            notiz("        Die Projektdatei wurde veraendert - das ist der Befund selbst.")
         elif not (abgebrochen and nichts_geschrieben):
-            print("        Ausgabe:", " | ".join(
+            notiz("        Ausgabe:", " | ".join(
                 ((p.stdout or "") + (p.stderr or "")).splitlines()[:6]))
 
         # --- Gegenprobe: ein freies Verzeichnis laeuft durch ---------------------
@@ -817,10 +1048,12 @@ def sonden_erstinstallation() -> None:
               q.returncode == 0 and os.path.isfile(os.path.join(leer, wurzeldatei)),
               "Erstinstallation in ein freies Verzeichnis laeuft durch")
     finally:
-        shutil.rmtree(ziel, ignore_errors=True)
+        aufraeumen(ziel)
 
 
-buendel(sonden_erstinstallation)
+buendel(sonden_erstinstallation,
+        "Die Erstinstallation bricht vor einer vorhandenen Projektdatei ab, statt sie zu "
+        "ueberschreiben - und schreibt dabei nichts")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
@@ -897,7 +1130,9 @@ def sonden_suchkanal() -> None:
           "Suche im Kernverzeichnis bleibt moeglich - lesen darf der Agent ihn")
 
 
-buendel(sonden_suchkanal)
+buendel(sonden_suchkanal,
+        "Der Schutz-Hook faengt Grep und Glob auf geschuetzte Pfade ab und laesst eine "
+        "gewoehnliche Suche durch - die einzige Schranke des Suchkanals")
 
 
 # --- Pruefung 27 und der Installationsabbruch (CR-2026-050, D-50) -----------------
@@ -950,7 +1185,7 @@ def sonden_zusagenfeld_installation() -> None:
         melde("GEGENPROBE", "B01", p.returncode == 0,
               "Installation mit benanntem Ersatz laeuft durch")
         if p.returncode != 0:
-            print("        Ausgabe:", " | ".join(
+            notiz("        Ausgabe:", " | ".join(
                 ((p.stdout or "") + (p.stderr or "")).splitlines()[:4]))
 
         _ersatz_entfernen(quelle)
@@ -963,13 +1198,15 @@ def sonden_zusagenfeld_installation() -> None:
         melde("SONDE", "B01", q.returncode != 0 and gemeldet,
               "Installation bricht ab, wenn das Zusagenfeld ersatzlos entfiele")
         if not (q.returncode != 0 and gemeldet):
-            print("        Exit:", q.returncode, "| Ausgabe:",
+            notiz("        Exit:", q.returncode, "| Ausgabe:",
                   " | ".join(aus.splitlines()[:4]))
     finally:
-        shutil.rmtree(ziel, ignore_errors=True)
+        aufraeumen(ziel)
 
 
-buendel(sonden_zusagenfeld_installation)
+buendel(sonden_zusagenfeld_installation,
+        "install.py bricht beim Schreiben in ein Projekt ab, wenn eine Zusage ohne "
+        "benannten Ersatz verworfen wurde, und laeuft mit Ersatz durch")
 
 
 # --- 28: Lesesperre gegen Schreibsperre (B07, D-55) ------------------------------
@@ -1081,7 +1318,8 @@ sonde("29a", "Fehlende K3-Kategorie in der Kurzform",
 sonde("29b", "Bedingung an einer unbedingten K3-Kategorie",
       _bedingung_einfuegen, "traegt eine Bedingung")
 
-sonde("29c", "Verlorener Anker der K3-Liste",
+sonde("29c", "Der verlorene Anker der K3-Liste - die Pruefung meldet ihr Fehlen selbst, statt "
+      "leise zu bestehen",
       _anker_verlieren, "ist nicht mehr auffindbar")
 
 gegenprobe("29", "Kuerzere Formulierung derselben acht Kategorien",
@@ -1157,7 +1395,7 @@ sonde("30a", "Geloeschte Grenzfallzeile gegen die Anzahl im Steckbrief",
 sonde("30b", "Leere Spalte in einem Grenzfall",
       _spalte_leeren, "ist leer")
 
-sonde("30c", "Entscheidung ohne deckenden Grenzfall",
+sonde("30c", "Eine Entscheidung des Logs, die kein Grenzfall mehr deckt, wird gemeldet",
       _entscheidung_entkoppeln, "Keine Grenzfallzeile verweist auf D-53")
 
 gegenprobe("30", "Zusaetzlicher Grenzfall mit mitgezaehlter Anzahl",
@@ -1220,7 +1458,7 @@ def sonden_kandidatenpruefung() -> None:
             melde("GEGENPROBE", "CR", ok,
                   f"Vollstaendiger Kandidat mit Status 'inaktiv' laeuft durch ({pack})")
             if not ok:
-                print("        Ausgabe:", " | ".join(
+                notiz("        Ausgabe:", " | ".join(
                     z for z in aus.splitlines() if "check-overlay-ready" in z)[:400])
 
             # --- Sonde: ein bereits aktiver Kandidat ist keiner
@@ -1296,10 +1534,13 @@ def sonden_kandidatenpruefung() -> None:
             melde("GEGENPROBE", "FA", "allow-Regel auf ein Abrufwerkzeug" not in aus,
                   f"Die ausgelieferte Regelmenge bleibt unbeanstandet ({pack})")
         finally:
-            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_kandidatenpruefung)
+buendel(sonden_kandidatenpruefung,
+        "Kandidatenpruefung, Status-Hook und Freigabenpruefung gegen je eine Installation "
+        "beider Packs - widerspruechlicher Status, offene Platzhalter, allow auf ein "
+        "Abrufwerkzeug")
 
 
 # --- 31: Die Summen der Fachmatrix sind ausgerechnet (D-60) ----------------------
@@ -1357,13 +1598,13 @@ def _zeile_mit_summe(root: str) -> None:
 sonde("31a", "Verfaelschte Anzahl je Einstufung in der Zusammenfassung",
       _summe_verfaelschen, "Zeile(n) als [TECHNISCH]; gezaehlt sind")
 
-sonde("31b", "Verfaelschte Gesamtzahl der Matrixzeilen",
+sonde("31b", "Eine verfaelschte Gesamtzahl der Matrixzeilen wird gegen die gezaehlte Zahl gemeldet",
       _gesamtzahl_verfaelschen, "Matrixzeilen; gezaehlt sind")
 
 sonde("31c", "Fehlende Zusammenfassung - die Pruefung darf nicht leise bestehen",
       _zusammenfassung_entfernen, "kein Abschnitt '## 3. Zusammenfassung")
 
-sonde("31d", "Matrixzeile ohne Einstufung",
+sonde("31d", "Eine Matrixzeile ohne Einstufung faellt aus jeder Summe und wird gemeldet",
       _zeile_ohne_einstufung, "ohne Einstufung: Z9")
 
 def _uebersicht_verfaelschen(root: str) -> None:
@@ -1524,7 +1765,7 @@ def sonden_skill_deny() -> None:
         melde("GEGENPROBE", "33", "disallowed-tools" not in aus,
               "Die unveraenderte claude-code-Installation bleibt unbeanstandet")
         if "disallowed-tools" in aus:
-            print("        Ausgabe:", " | ".join(
+            notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "disallowed-tools" in z)[:400])
 
         # --- 33a: die Sperre fehlt ganz - der Stand bis 0.34.0 ----------------------
@@ -1578,10 +1819,12 @@ def sonden_skill_deny() -> None:
               "Verlorener Anker - die Pruefung meldet ihr Fehlen selbst")
         schreib(inst, quelle)
     finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+        aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_skill_deny)
+buendel(sonden_skill_deny,
+        "Die Abbildung von permissions.deny in das Frontmatter eines Skills und ihre "
+        "Grenzen - Argumentmuster, Doppelnennung in allowed-tools, verlorener Anker")
 
 
 
@@ -1816,7 +2059,9 @@ def selbstprobe_waechter() -> None:
           "Die Meldung nennt den Suchtext, der nicht mehr passt")
 
 
-buendel(selbstprobe_waechter)
+buendel(selbstprobe_waechter,
+        "Der Praeparationswaechter selbst: Er meldet jeden Suchtext, der nicht genau so oft "
+        "trifft wie erwartet, und schreibt bei Abbruch nichts")
 
 
 def selbstprobe_kennung() -> None:
@@ -1840,10 +2085,98 @@ def selbstprobe_kennung() -> None:
         melde("SELBSTPROBE", "K2", kollision,
               "Eine vergebene Kennung wird gemeldet - der Fall G-18 vom 2026-09-13")
     finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+        aufraeumen(os.path.dirname(root))
 
 
-buendel(selbstprobe_kennung)
+buendel(selbstprobe_kennung,
+        "Der Kennungswaechter ist genau so klug wie die Kennung, die man ihm gibt - eine "
+        "freie laeuft durch, eine vergebene wird gemeldet")
+
+
+# --- Selbstprobe: der Aufraeumer (CR-2026-068, D-96) ------------------------------
+#
+# Ohne sie waere der Aufraeumer eine ungepruefte Zusage - und zwar ausgerechnet die, die
+# an die Stelle von ignore_errors=True getreten ist. Eine Meldung, die geschrieben und
+# nie ausgeloest wurde, ist nach D-23 nicht vorhanden.
+#
+# GEMESSEN WIRD GEGEN EINE HILFSEINHEIT, nicht gegen die laufende: Der Aufraeumer meldet
+# in die Einheit, in der er gerufen wird. Taete er das hier, zaehlte sein absichtlich
+# herbeigefuehrter Ausfall als Abweichung des Laufs - die Selbstprobe erzeugte den Befund,
+# den sie misst.
+
+def _mit_zeuge(zeuge, tun) -> None:
+    """`tun` so ausfuehren, dass alle Meldungen in `zeuge` landen, nicht im Lauf."""
+    eigene = _ORT.einheit
+    _ORT.einheit = zeuge
+    try:
+        tun()
+    finally:
+        _ORT.einheit = eigene
+
+
+def _zeuge(nummer: str):
+    return Einheit("SELBSTPROBE", nummer,
+                   "Hilfseinheit der Selbstprobe %s - sie wird nie angemeldet und "
+                   "erscheint in keinem Lauf" % nummer, lambda: None)
+
+
+def _festhalten(ziel: str):
+    """Ein Arbeitsverzeichnis gegen das Loeschen sperren - je Betriebssystem anders.
+
+    Unter Windows genuegt eine offene Datei darin: das Entfernen scheitert mit
+    WinError 32. Unter POSIX nicht - dort haengt das Loeschen einer Datei am
+    Schreibrecht ihres VERZEICHNISSES, also wird dieses entzogen. **Ohne diese
+    Unterscheidung waere die Selbstprobe auf einem der beiden Systeme eine Zeile, die
+    nichts misst** - und genau dagegen ist sie gebaut.
+    """
+    innen = os.path.join(ziel, "unterordner")
+    os.makedirs(innen)
+    pfad = os.path.join(innen, "gehalten.txt")
+    schreib(pfad, "Diese Datei haelt ihr Verzeichnis fest.\r\n")
+    if os.name == "nt":
+        return io.open(pfad, "r+", encoding="utf-8")
+    os.chmod(innen, 0o500)
+    return innen
+
+
+def _loslassen(halter) -> None:
+    if hasattr(halter, "close"):
+        halter.close()
+    else:
+        os.chmod(halter, 0o700)
+
+
+def selbstprobe_aufraeumer() -> None:
+    """Der Aufraeumer schweigt, wenn er seine Arbeit tut, und meldet, wenn nicht."""
+    ziel = tempfile.mkdtemp(prefix="lw-auf-")
+    schreib(os.path.join(ziel, "datei.txt"), "Sondendatei\r\n")
+    zeuge = _zeuge("A1")
+    _mit_zeuge(zeuge, lambda: aufraeumen(ziel))
+    melde("SELBSTPROBE", "A1", not os.path.isdir(ziel) and not zeuge.zeilen,
+          "Ein geloeschtes Arbeitsverzeichnis erzeugt keine Zeile - der Aufraeumer "
+          "schweigt, wenn er seine Arbeit tut")
+
+    ziel = tempfile.mkdtemp(prefix="lw-auf-")
+    halter = _festhalten(ziel)
+    try:
+        zeuge = _zeuge("A2")
+        _mit_zeuge(zeuge, lambda: aufraeumen(ziel))
+        gemeldet = zeuge.fehler == 1 and any("bleibt liegen" in z for z in zeuge.zeilen)
+        genannt = any(ziel in z for z in zeuge.zeilen)
+        ok = os.path.isdir(ziel) and gemeldet and genannt
+        melde("SELBSTPROBE", "A2", ok,
+              "Ein Verzeichnis, das sich nicht loeschen laesst, wird mit Pfad und Grund "
+              "gemeldet und zaehlt als Abweichung")
+        if not ok:
+            notiz("        Gesammelt wurde:", " | ".join(zeuge.zeilen) or "nichts")
+    finally:
+        _loslassen(halter)
+        aufraeumen(ziel)
+
+
+buendel(selbstprobe_aufraeumer,
+        "Der Aufraeumer schweigt beim Gelingen und meldet sein Scheitern mit Pfad und "
+        "Grund - gemessen an einem Verzeichnis, das sich nicht loeschen laesst")
 
 
 # --- 37: Die drei Koerbe der Berechtigungsdatei gegen die Kernquelle (D-77) --------
@@ -1935,7 +2268,7 @@ def sonden_berechtigungskoerbe() -> None:
         melde("GEGENPROBE", "37a", ok,
               "Auslieferungszustand mit offenen Platzhaltern - ein Schlitz ist ein Schlitz")
         if not ok:
-            print("        Ausgabe:", " | ".join(
+            notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "settings.json" in z)[:400])
 
         # --- Gegenprobe 37b: ordentlich gefuellte Platzhalter bleiben unbeanstandet -
@@ -1954,7 +2287,7 @@ def sonden_berechtigungskoerbe() -> None:
         melde("GEGENPROBE", "37b", ok,
               "Drei gefuellte Befehlsschlitze ohne Praefixzeichen - der Normalfall")
         if not ok:
-            print("        Ausgabe:", " | ".join(
+            notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "settings.json" in z)[:400])
         schreib(pfad, ausgang)
 
@@ -2017,10 +2350,13 @@ def sonden_berechtigungskoerbe() -> None:
               "Verlorener Anker - die Pruefung meldet ihr Fehlen selbst")
         schreib(cm, quelle)
     finally:
-        shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+        aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_berechtigungskoerbe)
+buendel(sonden_berechtigungskoerbe,
+        "Sieben Eingriffe in die Berechtigungsdatei einer echten Installation, jeder einzeln "
+        "zurueckgesetzt: geloeschte, verengte und ergaenzte Regeln, geleerter ask-Korb, "
+        "Praefixzeichen")
 
 # --- 38: Eine Quelle, ein Vokabular, eine Richtung (CR-2026-062, D-78 bis D-80) ----
 #
@@ -2599,18 +2935,18 @@ def _42_trifft(root: str, erwartet) -> bool:
     """
     aus = validator_ausgabe(root)
     if "Ergebnis:" not in aus:
-        print("        Kein Messwert: der Lauf hat keine Ergebniszeile geliefert.")
+        notiz("        Kein Messwert: der Lauf hat keine Ergebniszeile geliefert.")
         return False
     if isinstance(erwartet, str):
         if erwartet not in aus:
-            print("        Ausgabe:", " | ".join(
+            notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
             return False
         return True
     uebrig = [m for m in erwartet if m in aus]
     if uebrig:
-        print("        Unerwartet gemeldet:", ", ".join(uebrig))
-        print("        Ausgabe:", " | ".join(
+        notiz("        Unerwartet gemeldet:", ", ".join(uebrig))
+        notiz("        Ausgabe:", " | ".join(
             z for z in aus.splitlines() if "FEHLER" in z)[:400])
         return False
     return True
@@ -2734,10 +3070,12 @@ def sonden_schlitzinhalte() -> None:
                   "gilt? (%s)" % pack)
             zurueck()
         finally:
-            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_schlitzinhalte)
+buendel(sonden_schlitzinhalte,
+        "Der Inhalt der drei Befehlsschlitze gegen die Berechtigungsdatei, je Pack: "
+        "unerklaerter Befehl, fremder Befehl, offener Schlitz, verlorener Anker, doppelte Zeile")
 
 M43_FEHLT = "trägt keinen 'hooks'-Block"
 M43_LEER = "ohne ein einziges PreToolUse-Kommando"
@@ -2812,7 +3150,7 @@ def sonden_hookblock() -> None:
                   "Kein Block, aber die verwaiste Hook-Datei daneben - die Meldung "
                   "nennt beide (%s)" % pack)
             if not ok:
-                print("        Ausgabe:", " | ".join(
+                notiz("        Ausgabe:", " | ".join(
                     z for z in aus.splitlines() if "FEHLER" in z)[:400])
             os.remove(os.path.join(runtime, verwaist))
             schreib(pfad, ausgang)
@@ -2824,10 +3162,12 @@ def sonden_hookblock() -> None:
                   "(%s)" % pack)
             schreib(pfad, ausgang)
         finally:
-            shutil.rmtree(os.path.dirname(root), ignore_errors=True)
+            aufraeumen(os.path.dirname(root))
 
 
-buendel(sonden_hookblock)
+buendel(sonden_hookblock,
+        "Vier echte Installationen: ein fehlender, ein leerer und ein verwaister hooks-Block "
+        "je Pack - der Fall des Uebungsrepositoriums")
 
 
 # --- Pruefung 44: das Praeparationsregister ------------------------------------------
@@ -2895,7 +3235,107 @@ gegenprobe("44b", "Eine achte Praeparation, registriert UND von einem Testfall "
                          _44_katalog_nennt(root, P44_NEU)),
            M44_JEDE)
 
+# --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
+#
+# Bis 0.45.0 trug jede Einzelsonde einen erklaerenden Text und jedes Buendel keinen. Wer
+# den Lauf las, sah eine Folge von Meldungen und nicht, was sie zusammen belegen sollten.
+# Seit 0.46.0 ist der Satz Pflicht - und eine Pflicht ohne Nachzaehlen ist eine Zusage
+# ohne Mechanismus, also genau der wiederkehrende Befundtyp dieses Projekts.
+#
+# GRENZE: Sie zaehlt WORTE, nicht Sinn. Ein Satz aus achtzehn Fuellwoertern besteht sie.
+# Die untere Grenze faengt die Kennung, die sich als Satz ausgibt ("Pack ohne
+# Auskunftsabschnitt"), die obere den Absatz, der sich in eine Zeile verirrt hat.
+# Dazwischen entscheidet der Mensch, und das ist Absicht.
+def selbstprobe_beschreibungen() -> None:
+    """Jede angemeldete Einheit traegt ihren Satz in der vorgeschriebenen Laenge."""
+    abweichend = [e for e in EINHEITEN if not SATZ_MIN <= worte(e.satz) <= SATZ_MAX]
+    melde("SELBSTPROBE", "B1", not abweichend,
+          "Alle %d Einheiten tragen einen Beschreibungssatz von %d bis %d Worten"
+          % (len(EINHEITEN), SATZ_MIN, SATZ_MAX))
+    for e in abweichend:
+        notiz("        %s %s: %d Worte - %s"
+              % (e.art, e.kennung, worte(e.satz), e.satz))
+
+
+buendel(selbstprobe_beschreibungen,
+        "Zaehlt die Worte jedes Beschreibungssatzes dieses Laufs - eine Kennung ohne "
+        "Satz und ein Absatz in einer Zeile fallen beide auf")
+
+
+# --- Der Laeufer ------------------------------------------------------------------
+
+def bahnfolge(einheiten: list) -> list:
+    """Reihenfolge der Einreichung - Buendel zuerst, danach wie angemeldet.
+
+    Die AUSGABE folgt der Anmeldereihenfolge; diese Folge hier bestimmt allein, welche
+    Einheit zuerst eine freie Bahn bekommt. Buendel sind die langen Stuecke - sie legen
+    echte Installationen an und fahren mehrere Validatorlaeufe nacheinander -, und ein
+    langes Stueck, das zuletzt beginnt, bestimmt allein das Ende des Laufs.
+
+    Sie ist fest und nicht gemessen: Eine Einreihung, die von der Laufzeit des letzten
+    Laufs abhinge, machte zwei Laeufe unvergleichbar und die Ausgabe von der Maschine
+    abhaengig.
+    """
+    return ([e for e in einheiten if e.art == "BUENDEL"]
+            + [e for e in einheiten if e.art != "BUENDEL"])
+
+
+def fahren(einheiten: list, bahnen: int) -> int:
+    """Alle Einheiten fahren; ausgegeben wird in der Reihenfolge der Anmeldung.
+
+    Der Unterschied zwischen beiden Zweigen ist die Laufzeit, nicht die Ausgabe: Bei
+    `--bahnen 1` faellt der Ausfuehrer weg, und die Einheiten laufen in genau der
+    Reihenfolge, in der sie in dieser Datei stehen. Dass beide Zweige dieselben Zeilen
+    erzeugen, ist die Zusage dieses Umbaus - der Wirkungsnachweis dazu steht im
+    Protokoll zu 0.46.0.
+    """
+    if bahnen == 1:
+        for einheit in einheiten:
+            einheit.fahren()
+            einheit.ausgeben()
+        return sum(e.fehler for e in einheiten)
+    with ThreadPoolExecutor(max_workers=bahnen) as ausfuehrer:
+        auftraege = {id(e): ausfuehrer.submit(e.fahren) for e in bahnfolge(einheiten)}
+        for einheit in einheiten:
+            auftraege[id(einheit)].result()
+            einheit.ausgeben()
+    return sum(e.fehler for e in einheiten)
+
+
+TRENNLINIE = ("--- Auswertung: Name und Laufzeit je Einheit, langsamste zuerst "
+              "(nicht Teil der zeilengleichen Abnahme nach D-49) ---")
+
+
+def auswertung(einheiten: list, wanduhr: float, bahnen: int) -> None:
+    """Die Laufzeiten - unterhalb der Trennlinie und ausserhalb der Abnahme.
+
+    Sie stehen hier und nicht in den Ergebniszeilen, weil D-49 den Lauf in beiden
+    Kodierungsumgebungen ZEILENGLEICH abnimmt. Eine Laufzeit ist nie zweimal dieselbe;
+    stuende sie in der Ergebniszeile, brauchte der Vergleich einen Filter - und eine
+    Abnahmeform, die einen Filter braucht, ist keine mehr.
+
+    Die Rechenzeit ist die Summe der Einzellaufzeiten, die Wanduhr die vergangene Zeit.
+    Ihr Verhaeltnis ist der einzige Messwert, der etwas ueber die Nebenlaeufigkeit sagt.
+    """
+    print()
+    print(TRENNLINIE)
+    for einheit in sorted(einheiten, key=lambda e: e.dauer, reverse=True):
+        print("%8s s  %-10s %-32s %s"
+              % (zahl(einheit.dauer), einheit.art, einheit.kennung,
+                 kurz(einheit.satz, 44)))
+    rechenzeit = sum(e.dauer for e in einheiten)
+    print("Gesamt %s s Rechenzeit in %s s Wanduhr auf %d Bahn%s%s."
+          % (zahl(rechenzeit), zahl(wanduhr), bahnen, "" if bahnen == 1 else "en",
+             "" if bahnen == 1 or wanduhr <= 0
+             else " (Faktor %s)" % zahl(rechenzeit / wanduhr)))
+
+
+_beginn = time.perf_counter()
+fehler = fahren(EINHEITEN, BAHNEN)
+_wanduhr = time.perf_counter() - _beginn
+
 print()
 print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
       else f"{fehler} Abweichung(en)")
+auswertung(EINHEITEN, _wanduhr, BAHNEN)
 sys.exit(1 if fehler else 0)

@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.45.0 (2026-09-15)
+## Stand nach Release 0.46.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -80,6 +80,60 @@ jeden Tag richtig. **Offen ist der Zuschnitt:** Ein Zähler, der bei jedem offen
 Fehler meldete, machte jeden Lauf rot und wäre binnen eines Releases abgeschaltet; ein
 Zähler, der nur berichtet, ist keine Prüfung. **Das gehört entschieden, bevor etwas gebaut
 wird.**
+
+### Was 0.46.0 gebracht hat – der Prüfapparat misst sich selbst
+
+**Der erste Gegenstand dieses Projekts, der kein Befund war.** Ein Auftrag des Framework
+Owners: Der Sondenlauf soll Namen und Laufzeiten führen, einen Beschreibungssatz je
+Einheit tragen, nebenläufig laufen und sein Aufräumen nicht mehr verschweigen
+(`CR-2026-068`, D-94 bis D-96). **Ein Befund ist beim Bauen dann doch angefallen, und er
+stand im Prüfapparat selbst.**
+
+| Frage | Ergebnis |
+|---|---|
+| Was kostet der Sondenlauf heute? | **13 min 07 s**, streng seriell, 128 Einheiten – und er wird **zweimal je Release** gefahren (D-49). Der Lauf sagte nicht, wo die Zeit hingeht |
+| Was kostet er nebenläufig? | **1 min 51 s** auf acht Bahnen bei 874 s Rechenzeit – Faktor 7,9 |
+| Wo liegt die Zeit? | Bei **114 Einzeleinheiten zu je rund 5,8 s** – drei Viertel der Rechenzeit, beliebig teilbar. Das andere Viertel liegt in **sechs Bündeln gegen echte Installationen**, und die sind **gar nicht** teilbar: Die langsamste (`sonden_schlitzinhalte`, 64 s) ist die untere Schranke der Wanduhr |
+| *Nicht gesucht:* Hält das Skript seine eigene Zusage? | **Nein.** An **vierzehn** Stellen stand `shutil.rmtree(..., ignore_errors=True)`, während der Kopfsatz zusagt, das Repositorium bleibe unberührt. Ein Lauf, der je Einheit ein eigenes Arbeitsverzeichnis anlegt und einige davon liegen lässt, sieht Zeile für Zeile aus wie einer, der aufgeräumt hat |
+| Wie viele Einheiten trugen einen Satz? | **114 von 128 einen kurzen, zehn davon nur eine Kennung** – und **alle vierzehn Bündel gar keinen** |
+| Ist eine Prüfung verändert worden? | **Nein.** Die Sondenmenge ist nachgezählt dieselbe: `6 und 18 bis 44`. Geändert haben sich 26 Zeilen der Ausgabe, und jede war angekündigt |
+
+**Die Fallstricke standen vorher fest, und der erste ist der lehrreiche:** Prüfung 40
+rechnet die Sondenmenge aus zwei **wörtlichen** Mustern des Sondenskripts aus. Ein Umbau
+auf ein Register mit eigener Schreibweise hätte die Sonden unsichtbar gemacht – und
+Prüfung 40 hätte **leise bestanden**, weil eine leere Menge keine Abweichung ist.
+Deshalb ist die Aufrufstelle jeder Sonde zeichengleich geblieben; geändert hat sich
+allein, **wann** der Aufruf seine Arbeit tut. Und der Anmelder heißt `eintragen()` und
+nicht `anmelde()`, weil letzteres den Suchtext `melde(` enthält und Prüfung 40 eine
+Sonde erfunden hätte, die es nicht gibt.
+
+**Die Lehre, die über diesen Fall hinausgeht:** Der Aufräumer ist die dritte Zusage
+dieses Repositoriums, die nur im Text stand – nach der Regel mit leerer Schnittmenge und
+dem Text, der weniger verspricht als der Mechanismus hält. **Neu ist der Ort:** Sie stand
+im Prüfapparat, also an der Stelle, die solche Zusagen sonst bei anderen findet. Wer sein
+eigenes Werkzeug nicht misst, misst mit einem ungeprüften Maß.
+
+### Was 0.46.0 offen lässt
+
+- **Die Vorgabe von acht Bahnen ist auf einer Maschine gemessen, nicht auf allen.** Drei
+  Punkte auf einem Rechner mit 32 Kernen: 1 Bahn 827 s, 8 Bahnen 111 s, 16 Bahnen 80 s.
+  **Sechzehn Bahnen holen 28 % Wanduhr und kosten 23 % mehr Rechenzeit** – der Engpass
+  ist die Platte, nicht die CPU. Die Vorgabe ist bewusst eine feste Zahl und keine
+  Eigenschaft der Maschine, sonst wären zwei Laufzeiten unvergleichbar; welcher Wert
+  auf einem anderen Rechner der beste ist, bleibt unerhoben.
+- **Selbstprobe B1 zählt Worte, nicht Sinn.** Ein Satz aus achtzehn Füllwörtern
+  besteht sie. Die untere Grenze fängt die Kennung, die sich als Satz ausgibt, die obere
+  den Absatz in einer Zeile; dazwischen entscheidet der Mensch.
+- **Der Aufräumer ist gemessen, sein Anlass nicht.** Die Selbstproben `A1` und `A2`
+  belegen sein Schweigen beim Gelingen und seine Meldung an einem Verzeichnis, das sich
+  nicht löschen lässt – hergestellt je Betriebssystem anders. **In keinem
+  Abnahmelauf ist eine Kopie unbeabsichtigt liegen geblieben**, also ist unerhoben, ob
+  drei Versuche über 1,5 s für den echten Fall reichen. Gemessen ist, dass die Meldung
+  kommt, wenn sie kommen muss.
+- **Die Laufzeit je Fall innerhalb eines Bündels ist nicht gemessen.** Ein Bündel
+  bekommt eine Zahl, nicht fünfunddreißig – das folgt daraus, dass ein Bündel
+  die kleinste Einheit ist. Wer wissen will, welcher der sieben Eingriffe in
+  `sonden_berechtigungskoerbe` teuer ist, erfährt es aus diesem Lauf nicht.
 
 ### Was 0.45.0 gebracht hat – ein stummer Hook und ein Register, das drei von sieben nannte
 
