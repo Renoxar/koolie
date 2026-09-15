@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 44, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 45, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -50,6 +50,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -365,6 +366,25 @@ AUFRAEUM_VERSUCHE = 3
 AUFRAEUM_PAUSE = 0.5
 
 
+def schreibschutz_loesen(pfad: str) -> None:
+    """Den Schreibschutz im ganzen Baum wegnehmen - leise, Datei fuer Datei.
+
+    Sie meldet nichts: Ob das Loesen gelingt, ist nicht die Frage; die Frage ist, ob
+    danach geloescht werden kann, und die beantwortet der naechste Loeschversuch. Eine
+    Meldung von hier wuerde derselben Stoerung zwei Zeilen geben.
+
+    Bewusst ohne onerror/onexc von shutil.rmtree: Die beiden Namen haben sich zwischen
+    den Python-Fassungen abgeloest, und ein Nachweiswerkzeug, das an der Fassung seines
+    Interpreters haengt, ist genau das, was D-49 abgeschafft hat.
+    """
+    for wurzel, verzeichnisse, dateien in os.walk(pfad):
+        for name in verzeichnisse + dateien:
+            try:
+                os.chmod(os.path.join(wurzel, name), stat.S_IWRITE | stat.S_IREAD)
+            except OSError:
+                pass
+
+
 def aufraeumen(pfad: str) -> None:
     """Ein Arbeitsverzeichnis loeschen - und das Scheitern MELDEN, nicht verschlucken.
 
@@ -382,6 +402,15 @@ def aufraeumen(pfad: str) -> None:
     Sekunde spaeter keine mehr ist; und eine Meldung, die auch ohne Anlass kommt, wird
     binnen eines Releases abgeschaltet.
 
+    WARUM AUSSERDEM DER SCHREIBSCHUTZ FAELLT (0.47.0): Warten hilft gegen eine gehaltene
+    Datei und **gar nichts** gegen eine schreibgeschuetzte. Gemessen am 2026-09-15, beim
+    ersten echten Fall dieses Aufraeumers: Die Sonde zu Pruefung 45 legt ein
+    Repositorium an, git schreibt seine Objektdateien schreibgeschuetzt, und drei
+    Versuche ueber anderthalb Sekunden endeten dreimal mit demselben
+    "[WinError 5] Zugriff verweigert". **Der Aufraeumer hatte recht und war trotzdem
+    nutzlos** - er meldete einen Zustand, den er selbst haette aufloesen koennen. Seit
+    diesem Release nimmt jeder Versuch ab dem zweiten zuerst den Schreibschutz weg.
+
     WAS SIE NICHT LEISTET: Sie raeumt auf, was ihr genannt wird. Ein Verzeichnis, dessen
     Pfad niemand weitergibt, bleibt liegen und wird von ihr nicht vermisst.
     """
@@ -394,6 +423,7 @@ def aufraeumen(pfad: str) -> None:
             return
         except OSError as exc:
             letzter = exc
+            schreibschutz_loesen(pfad)
             time.sleep(AUFRAEUM_PAUSE)
     if not os.path.isdir(pfad):
         return
@@ -2156,6 +2186,30 @@ def selbstprobe_aufraeumer() -> None:
           "Ein geloeschtes Arbeitsverzeichnis erzeugt keine Zeile - der Aufraeumer "
           "schweigt, wenn er seine Arbeit tut")
 
+    # --- A3: der Schreibschutz, und er ist kein gedachter Fall -----------------------
+    # Gemessen am 2026-09-15: git schreibt seine Objektdateien schreibgeschuetzt, und
+    # drei Versuche ueber anderthalb Sekunden endeten dreimal mit demselben
+    # "Zugriff verweigert". Warten hilft dagegen nicht.
+    #
+    # Unter POSIX blockiert eine schreibgeschuetzte DATEI das Loeschen nicht - dort
+    # haengt es am Schreibrecht ihres Verzeichnisses. Die Probe gilt trotzdem auf
+    # beiden Systemen, nur aus verschiedenen Gruenden: Unter Windows belegt sie den
+    # Mechanismus, unter POSIX, dass er nichts kaputt macht. **Wer ihn unter Windows
+    # entfernt, macht sie rot** - und das ist ihr Zweck.
+    ziel = tempfile.mkdtemp(prefix="lw-auf-")
+    pfad = os.path.join(ziel, "schreibgeschuetzt.txt")
+    schreib(pfad, "Diese Datei ist schreibgeschuetzt.\r\n")
+    os.chmod(pfad, stat.S_IREAD)
+    zeuge = _zeuge("A3")
+    _mit_zeuge(zeuge, lambda: aufraeumen(ziel))
+    melde("SELBSTPROBE", "A3", not os.path.isdir(ziel) and not zeuge.zeilen,
+          "Eine schreibgeschuetzte Datei haelt das Arbeitsverzeichnis nicht fest - der "
+          "Aufraeumer nimmt den Schutz weg und schweigt")
+    if os.path.isdir(ziel):
+        notiz("        Gesammelt wurde:", " | ".join(zeuge.zeilen) or "nichts")
+        schreibschutz_loesen(ziel)
+        shutil.rmtree(ziel, ignore_errors=True)
+
     ziel = tempfile.mkdtemp(prefix="lw-auf-")
     halter = _festhalten(ziel)
     try:
@@ -3234,6 +3288,118 @@ gegenprobe("44b", "Eine achte Praeparation, registriert UND von einem Testfall "
            lambda root: (_44_register_zeile(root, P44_NEU),
                          _44_katalog_nennt(root, P44_NEU)),
            M44_JEDE)
+
+
+# --- Pruefung 45: der Bytecode des Kerns (CR-2026-069, D-97) -------------------------
+#
+# Zwei Gegenstaende, zwei Bauarten. Gegenstand 1 ist ein Textvergleich und laeuft auf
+# einer Kopie wie jede gewoehnliche Sonde. Gegenstand 2 braucht ein **echtes
+# Repositorium** - kopie() laesst .git bewusst weg, und ohne .git ist der Gegenstand
+# nicht herstellbar. Er steht deshalb im Buendel und legt sich seins selbst an.
+M45_REGEL = "deckt den Bytecode des Kerns nicht ab"
+M45_OHNE_DATEI = ".gitignore: nicht vorhanden"
+M45_BESTAND = "sind versioniert"
+M45_NICHT_GELAUFEN = "ist nicht gelaufen"
+P45_ZEILE = "__pycache__/"
+
+
+def _45_regel_weg(root: str) -> None:
+    """Die Deckungszeile aus der .gitignore nehmen - und nur sie."""
+    ersetze(P(root, ".gitignore"), (P45_ZEILE + "\r\n", ""))
+
+
+def _45_datei_weg(root: str) -> None:
+    os.remove(P(root, ".gitignore"))
+
+
+def _45_andere_schreibweise(root: str) -> None:
+    """`*.pyc` statt `__pycache__/` - eine andere Schreibweise, dieselbe Wirkung."""
+    ersetze(P(root, ".gitignore"), (P45_ZEILE, "*.pyc"))
+
+
+sonde("45a", "Die .gitignore deckt den Bytecode des Kerns nicht mehr ab - jeder Lauf "
+             "legte dann versionierbaren Bytecode an", _45_regel_weg, M45_REGEL)
+
+sonde("45b", "Ohne .gitignore kann die Regel nicht geprueft werden, und die Pruefung "
+             "sagt es als Warnung statt zu schweigen", _45_datei_weg, M45_OHNE_DATEI)
+
+gegenprobe("45a", "Eine andere, ebenso wirksame Schreibweise bleibt unbeanstandet - "
+                  "eine zu enge Pruefung meldete hier den richtigen Text",
+           _45_andere_schreibweise, M45_REGEL)
+
+
+def _45_repo(root: str) -> bool:
+    """Aus dem Installationsverzeichnis ein Repositorium machen. False = kein git."""
+    p = unterprozess(["git", "init", "-q", root])
+    return p.returncode == 0
+
+
+def _45_bytecodedatei(root: str) -> str:
+    """Eine .pyc an den Ort legen, an dem der Kern seinen Bytecode erzeugt."""
+    ablage = os.path.join(root, "leitwerk-core", "__pycache__")
+    os.makedirs(ablage, exist_ok=True)
+    pfad = os.path.join(ablage, "clientmap.cpython-314.pyc")
+    io.open(pfad, "wb").write(b"\x00\x00\x00\x00Sondenbytecode")
+    return "leitwerk-core/__pycache__/clientmap.cpython-314.pyc"
+
+
+def sonden_bytecode() -> None:
+    """Wirkungsnachweis zu Gegenstand 2 der Pruefung 45 (CR-2026-069, D-97)."""
+    root = installation("claude-code")
+    try:
+        schreib(os.path.join(root, "README.md"), "# Sondenprojekt\r\n")
+        schreib(os.path.join(root, ".gitignore"), P45_ZEILE + "\r\n")
+
+        # --- Sonde 45d: kein Repositorium - die Haelfte faellt NICHT stumm aus -------
+        # Sie steht vor dem git init, weil genau dieser Zustand der Normalfall jeder
+        # anderen Sonde dieses Skripts ist: eine Kopie ohne .git.
+        aus = validator_ausgabe(root)
+        melde("SONDE", "45d", M45_NICHT_GELAUFEN in aus,
+              "Ohne Repositorium meldet Gegenstand 2, dass er nicht gelaufen ist - "
+              "eine Pruefhaelfte, die stumm ausfaellt, waere der Befundtyp selbst")
+
+        if not _45_repo(root):
+            melde("BUENDEL", "-", False,
+                  "sonden_bytecode  [git nicht erreichbar]")
+            notiz("        Ohne git ist Gegenstand 2 der Pruefung 45 nicht messbar.")
+            return
+
+        # --- Gegenprobe 45b: ein Repositorium ohne verfolgten Bytecode ---------------
+        # Sie belegt zweierlei: dass der Auslieferungszustand durchlaeuft UND dass
+        # Gegenstand 2 ueberhaupt gelaufen ist. Ohne die zweite Bedingung bestuende sie
+        # auch dann, wenn git fehlte - und meldete dann nichts ueber die Pruefung.
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        ok = M45_BESTAND not in aus and M45_NICHT_GELAUFEN not in aus
+        melde("GEGENPROBE", "45b", ok,
+              "Ein Repositorium ohne verfolgten Bytecode bleibt unbeanstandet, und "
+              "Gegenstand 2 ist dabei nachweislich gelaufen")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "45" in z or "Bytecode" in z)[:400])
+
+        # --- Sonde 45c: eine verfolgte .pyc unter <CORE_DIR>/ ------------------------
+        # Der Fall des Piloten, abgezaehlt am 2026-09-15: sechs Dateien. Die Regel in
+        # der .gitignore steht dabei da - git liest sie fuer verfolgte Dateien nicht,
+        # und genau deshalb reicht Gegenstand 1 allein nicht.
+        rel = _45_bytecodedatei(root)
+        unterprozess(["git", "-C", root, "add", "-f", rel])
+        aus = validator_ausgabe(root)
+        getroffen = M45_BESTAND in aus and rel in aus
+        melde("SONDE", "45c", getroffen,
+              "Eine verfolgte Bytecodedatei wird gemeldet, obwohl die Regel in der "
+              "Datei steht - der Fall des Piloten vom 2026-09-15")
+        if not getroffen:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_bytecode,
+        "Gegenstand 2 der Pruefung 45 an einem echten Repositorium: ohne git, ohne "
+        "verfolgten Bytecode, und mit dem Fall des Piloten")
+
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
 #

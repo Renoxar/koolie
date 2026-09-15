@@ -2,6 +2,89 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.47.0] - 2026-09-15
+
+**Beide Projekte, die dieses Framework benutzen, versionieren den Bytecode seines
+Kerns.** Gefunden beim Heben des Piloten von 0.41.0 auf 0.46.0 - nicht gesucht. Der
+Uebernahmeleitfaden nannte zur `.gitignore` nur die vier Zeilen, die ein Projekt
+**weglassen** muss; welche es **braucht**, stand nirgends (`CR-2026-069`, D-97,
+`tests/protocols/2026-09-15-migrationslauf-pilot-0.46.0.md`).
+
+### Gemessen
+
+- **Zwei von zwei Projekten, abgezaehlt am 2026-09-15:** Der Pilot fuehrte **sechs**
+  `.pyc`-Dateien unter `leitwerk-core/` in der Versionierung, das Uebungsrepositorium
+  **zwei**. Keines von beiden hatte eine Regel dagegen. **Das Framework-Repositorium
+  selbst hat sie seit jeher** - und genau deshalb ist der Fehler dort nie aufgefallen.
+- **Der Schaden ist Hygiene, nicht Sicherheit** - aber er ist stetig: Zwei der sechs
+  Dateien standen beim Auschecken des Piloten als geaendert da, ohne dass jemand etwas
+  getan haette. Nach dem Heben zeigte `git status` vier davon als **geloescht**: Sie
+  gehoerten zu einem Kern, den es nicht mehr gibt.
+- **Die Bauform ist die von 0.45.0, ein zweites Mal.** Eine Anweisung, die die halbe
+  Migration beschreibt, ist gefaehrlicher als keine. Wer dem Leitfaden woertlich folgt,
+  schreibt eine eigene `.gitignore` - und hat danach keine Zeile gegen den Bytecode.
+- **Der Aufraeumer aus 0.46.0 hatte seinen ersten echten Fall, und er war nutzlos.** Die
+  neue Sonde legt ein Repositorium an; git schreibt seine Objektdateien
+  schreibgeschuetzt. Drei Versuche ueber anderthalb Sekunden endeten dreimal mit
+  demselben `[WinError 5] Zugriff verweigert`. **Warten hilft gegen eine gehaltene Datei
+  und gar nichts gegen eine schreibgeschuetzte.** Die Roadmap fuehrte genau das als
+  offenen Punkt - der Fall ist da, und die Antwort ist nein.
+
+### Neu
+
+- **Pruefung 45** (D-97) mit **zwei Gegenstaenden**, weil einer nicht reicht:
+  **(1) Die Regel** - die `.gitignore` deckt `__pycache__` ab. Geprueft wird gegen fuenf
+  gebraeuchliche Schreibweisen, nicht gegen eine; ein Projekt mit `*.pyc` ist richtig und
+  bekommt keinen Fehler.
+  **(2) Der Bestand** - unter `<CORE_DIR>/` ist kein Bytecode verfolgt, gezaehlt ueber
+  `git ls-files`. **Git liest die `.gitignore` fuer bereits verfolgte Dateien nicht:**
+  Wer die Zeile nachtraegt und `git rm --cached` vergisst, haette sonst einen gruenen
+  Lauf und die Dateien weiter im Repositorium.
+- **Wo git fehlt, sagt Gegenstand 2, dass er nicht gelaufen ist** - als Warnung, wie
+  dieses Skript es fuer das fehlende PyYAML schon tut. Eine Pruefhaelfte, die stumm
+  ausfaellt, ist der Befundtyp selbst.
+- **Vier Sonden und zwei Gegenproben.** Die Sonden zu Gegenstand 2 laufen im Buendel
+  gegen ein **echtes Repositorium**, das sie sich selbst anlegen - `kopie()` laesst
+  `.git` bewusst weg, und ohne `.git` ist der Gegenstand nicht herstellbar.
+- **`docs/ADOPTION_GUIDE.md` Abschnitt 2 nennt die Zeile**, die hineingehoert, samt
+  Begruendung und samt dem Weg fuer bereits versionierte Dateien.
+- **Selbstprobe `A3`:** Eine schreibgeschuetzte Datei haelt das Arbeitsverzeichnis nicht
+  mehr fest. Der Aufraeumer nimmt ab dem zweiten Versuch den Schreibschutz im ganzen Baum
+  weg - **ohne `onerror`/`onexc` von `shutil.rmtree`**, weil die beiden Namen sich
+  zwischen den Python-Fassungen abgeloest haben und ein Nachweiswerkzeug, das an der
+  Fassung seines Interpreters haengt, genau das ist, was D-49 abgeschafft hat.
+
+### Behoben
+
+- **Der Aufraeumer loest den Schreibschutz, statt ihn zu melden.** Er hatte recht und war
+  trotzdem nutzlos: Er meldete einen Zustand, den er selbst aufloesen konnte.
+
+### Migrationshinweis
+
+**Ein Projekt ohne `__pycache__/` in der `.gitignore` bekommt ab diesem Release einen
+Fehler**, und ein Projekt mit bereits versioniertem Bytecode einen zweiten. Der Weg ist
+
+```bash
+git rm -r --cached leitwerk-core/**/__pycache__
+echo "__pycache__/" >> .gitignore
+```
+
+**in dieser Reihenfolge** - die Zeile allein entfernt nichts. Gemessen betrifft das beide
+bekannten Projekte; der Pilot ist mit diesem Tag hergerichtet.
+
+**Fehlt die `.gitignore` ganz, ist das eine Warnung und kein Fehler.** Ob ein Projekt
+ueberhaupt versioniert, kann kein Validator wissen.
+
+### Bekannte Einschraenkungen
+
+- **Gegenstand 2 laeuft nur, wo git erreichbar und die Wurzel ein Repositorium ist.** Wo
+  nicht, sagt die Pruefung es - und prueft dort nur die Regel.
+- **Die Deckungsliste ist eine Liste, keine Semantik.** Eine wirksame, aber exotische
+  Schreibweise in der `.gitignore` meldet sie als fehlend.
+- **Gegenstand 1 prueft die Datei, nicht die Wirkung.** Eine Regel, die durch eine
+  spaetere Ausnahmezeile (`!*.pyc`) wieder aufgehoben wird, faellt ihm nicht auf; den
+  Fall faengt Gegenstand 2, sobald git da ist.
+
 ## [0.46.0] - 2026-09-15
 
 **Der Sondenlauf bekommt Namen, Laufzeiten, Beschreibungssaetze und acht Bahnen - und

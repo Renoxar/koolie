@@ -132,8 +132,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      mindestens einem Testfall gebraucht. Sie gleicht ZWEI REGISTER ab, nicht ein
      Register gegen das Uebungsrepositorium: Das liegt ausserhalb dieses Repositoriums,
      und ob eine Praeparation dort wirklich liegt, sieht kein Validator
+ 45. Bytecode des Kerns (D-97): Die .gitignore des Projekts deckt __pycache__ ab,
+     und unter <CORE_DIR>/ ist kein Bytecode versioniert. Zwei Gegenstaende, weil
+     einer nicht reicht: git liest die .gitignore fuer bereits verfolgte Dateien
+     nicht. Gegenstand 2 laeuft nur, wo git erreichbar ist - sonst sagt die
+     Pruefung das als Warnung, statt stumm auszufallen
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 44 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 45 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -4519,6 +4524,102 @@ def check_praeparationsregister(root: str) -> None:
             f"entweder trägt ein Testfall sie in seine Vorbedingung ein, oder sie fällt "
             f"aus dem Register (D-93)")
 
+
+# --- 45: Der Bytecode des Kerns gehoert nicht in die Versionierung (D-97) -----------
+#
+# ANLASS. Abgezaehlt am 2026-09-15 an **beiden** Projekten, die dieses Framework benutzen:
+# Der Pilot fuehrte sechs .pyc-Dateien unter leitwerk-core/ in der Versionierung, das
+# Uebungsrepositorium zwei. Zwei von zwei. Der Uebernahmeleitfaden sagte zur .gitignore
+# nur, welche Zeilen man **weglassen** soll - die vier, die im Framework-Repositorium die
+# Wurzelbestandteile ausschliessen. Welche Zeile man **braucht**, sagte er nicht.
+#
+# **Das ist dieselbe Bauform wie der Befund von 0.45.0:** eine Anweisung, die die halbe
+# Migration beschreibt, ist gefaehrlicher als keine. Wer dem Leitfaden woertlich folgt,
+# schreibt eine eigene .gitignore - und versioniert danach den Bytecode eines Werkzeugs,
+# das bei jedem Lauf neuen erzeugt.
+#
+# ZWEI GEGENSTAENDE, und der zweite ist der, der den Fall wirklich faengt:
+#
+#   1. DIE REGEL. Die .gitignore des Projekts deckt __pycache__ ab. Geprueft wird gegen
+#      eine kleine Liste gebraeuchlicher Schreibweisen (GITIGNORE_DECKUNG), nicht gegen
+#      eine einzige - ein Projekt, das `*.pyc` schreibt, ist richtig, und eine Pruefung,
+#      die es meldete, waere zu eng. Genau der Fehler, den Pruefung 37 einmal gemacht hat.
+#   2. DER BESTAND. Wo git erreichbar und die Wurzel ein Repositorium ist: keine Datei
+#      unter <CORE_DIR>/ mit der Endung .pyc oder im Pfad __pycache__ darf verfolgt sein.
+#
+# WARUM BEIDE. Die Regel allein waere die halbe Migration ein zweites Mal: **git liest
+# die .gitignore fuer bereits verfolgte Dateien nicht.** Wer die Zeile nachtraegt und
+# `git rm --cached` vergisst, bekaeme einen gruenen Lauf und haette die sechs Dateien
+# weiter im Repositorium. Der Bestand allein wiederum sagt dem Projekt nicht, wie es die
+# Wiederholung verhindert - beim naechsten `git add` waeren sie zurueck.
+#
+# GRENZE. Gegenstand 2 laeuft nur, wo git erreichbar ist und die Wurzel ein Repositorium
+# ist. Wo nicht, sagt die Pruefung das als **Warnung** - dieselbe Bauform, die dieses
+# Skript fuer das fehlende PyYAML schon hat. Eine Pruefhaelfte, die stumm ausfaellt, waere
+# genau der Befundtyp, gegen den D-23 gebaut ist.
+# Und: Fehlt die .gitignore ganz, ist das eine **Warnung** und kein Fehler. Ob ein Projekt
+# ueberhaupt versioniert, kann dieses Skript nicht wissen; Gegenstand 2 faengt den echten
+# Fall ohnehin, sobald git da ist.
+GITIGNORE_DECKUNG = ("__pycache__/", "__pycache__", "**/__pycache__/",
+                     "*.pyc", "**/*.pyc")
+BYTECODE_MARKER = "__pycache__"
+
+
+def _verfolgte_dateien(root: str) -> list | None:
+    """Vom Versionsverwalter verfolgte Pfade unter <CORE_DIR>/ - oder None.
+
+    None heisst: nicht messbar. Kein git im Pfad, keine Versionierung, oder der Aufruf
+    ist gescheitert. Der Unterschied zu einer leeren Liste ist der ganze Punkt - eine
+    leere Liste ist ein Messergebnis, None ist keins.
+    """
+    try:
+        lauf = subprocess.run(["git", "-C", root, "ls-files", "--", KERN],
+                              capture_output=True, text=True, encoding="utf-8",
+                              errors="replace", timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if lauf.returncode != 0:
+        return None
+    return [z.strip() for z in (lauf.stdout or "").splitlines() if z.strip()]
+
+
+def check_bytecode_versioniert(root: str) -> None:
+    """Pruefung 45 (D-97): Der Bytecode des Kerns steht nicht in der Versionierung."""
+    # --- Gegenstand 1: die Regel ---------------------------------------------------
+    pfad = os.path.join(root, ".gitignore")
+    if not os.path.exists(pfad):
+        warn(".gitignore: nicht vorhanden. Prüfung 45 kann die Regel gegen den Bytecode "
+             "des Kerns nicht prüfen. Versioniert dieses Projekt, gehört `__pycache__/` "
+             "dort hinein – die Python-Werkzeuge des Kerns erzeugen bei jedem Lauf "
+             "Bytecode unter " + KERN + "/ (D-97)")
+    else:
+        zeilen = [z.strip() for z in read(pfad).splitlines()]
+        if not any(z in GITIGNORE_DECKUNG for z in zeilen):
+            err(f".gitignore: deckt den Bytecode des Kerns nicht ab. Die Python-Werkzeuge "
+                f"unter {KERN}/ erzeugen bei jedem Lauf `.pyc`-Dateien; versioniert, "
+                f"ändern sie sich mit jedem Lauf und überleben den Kern, aus dem sie "
+                f"entstanden sind. Eine dieser Zeilen gehört in die Datei: "
+                f"{', '.join('`%s`' % m for m in GITIGNORE_DECKUNG)} "
+                f"(docs/ADOPTION_GUIDE.md Abschnitt 2, D-97)")
+
+    # --- Gegenstand 2: der Bestand ---------------------------------------------------
+    verfolgt = _verfolgte_dateien(root)
+    if verfolgt is None:
+        warn(f"Gegenstand 2 der Prüfung 45 ist nicht gelaufen – git ist nicht erreichbar "
+             f"oder {root} ist kein Repositorium. Ob unter {KERN}/ Bytecode versioniert "
+             f"ist, sagt dieser Lauf damit **nicht**; die Regel in der .gitignore allein "
+             f"entfernt bereits verfolgte Dateien nicht (D-97)")
+        return
+    bytecode = sorted(p for p in verfolgt
+                      if p.endswith(".pyc") or BYTECODE_MARKER in p)
+    if bytecode:
+        gezeigt = ", ".join(bytecode[:4]) + (" …" if len(bytecode) > 4 else "")
+        err(f"{len(bytecode)} Bytecode-Datei(en) unter {KERN}/ sind versioniert: "
+            f"{gezeigt}. **Die Regel in der .gitignore entfernt sie nicht** – git liest "
+            f"sie für bereits verfolgte Dateien nicht. Der Weg ist "
+            f"`git rm -r --cached {KERN}/**/__pycache__` und danach die Regel (D-97)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -4580,6 +4681,7 @@ def main() -> int:
     check_schlitzinhalte(root, man)
     check_hookblock(root, man)
     check_praeparationsregister(root)
+    check_bytecode_versioniert(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
