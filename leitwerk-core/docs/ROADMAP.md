@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.48.0 (2026-09-15)
+## Stand nach Release 0.49.0 (2026-09-15)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -30,7 +30,7 @@ Zwischenschritt – und weil ihn niemand ausführt, fällt auch nicht auf, dass 
 Falsche zählt. Am 2026-09-15 wurden die vier Befehle zum ersten Mal ausgeführt:
 **alle vier lagen daneben** (`CR-2026-070`, D-98).
 
-**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 69, Kriterium 4 = 9**
+**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 69, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -42,8 +42,10 @@ ist grün, **dann ist das die Meldung** – erzwungen statt behauptet.
 | **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/` |
 | **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte |
 | **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 steht über `entwurf` – das Lebenszyklusmodell aus `08-skill-conventions.md` ist nie angewendet worden |
-| **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9 |
+| **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9. **✅ Erfüllt seit 0.49.0** (`CR-2026-071`, D-100): Die neun sind bestätigt |
 | **5** | Übernahme in ein zweites Projekt nachgewiesen | **zählt Prüfung 46 nicht** – eine Feststellung, keine Zahl. Eine Enthaltung, und sie steht im Kopfkommentar | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
+
+**Ein Kriterium von vier steht auf null – seit 0.49.0, und es ist das erste.** Kriterium 4 verlangte die Bestätigung von neun Strukturentscheidungen; sie lag seit `CR-2026-019` als Vorlage vor und ist zweiunddreißig Releases lang nicht beantwortet worden. **Nicht weil die Entscheidungen strittig waren, sondern weil die Bedingung falsch gewählt war** – siehe unten.
 
 **Der größte Posten ist Kriterium 2, und zwar mit Abstand.** Alles, was ein Skript leisten
 kann, ist geleistet; was offen steht, trägt fast durchweg das Prüfmittel `sitzung` – also
@@ -96,6 +98,71 @@ die gezählte. **Nicht der offene Punkt ist der Fehler, sondern die falsche Zahl
 entscheiden, mussten die vier Zahlen einmal wirklich ausgerechnet werden – und dabei fiel
 auf, dass **alle vier Zählregeln danebengreifen**. Der Stand des einzigen offenen
 Meilensteins dieses Repositoriums war an vier von vier Stellen unrichtig.
+
+#### Die erste Bewegung – mit 0.49.0
+
+**Kriterium 4 steht auf null.** Seit der Erstfassung stand es auf neun; die
+rückwirkende Messung über dreiundzwanzig Releasestände fand es in jedem einzelnen
+unverändert. Der Vorgang, der es gesenkt hat, ist keine Messung und kein Skript,
+sondern eine **Entscheidung** – genau die Arbeit, die Prüfung 46 nicht leisten kann und
+auch nicht behauptet zu leisten.
+
+**Und der Mechanismus hat dabei zum ersten Mal gegriffen.** Nach dem Statuswechsel im
+Decision Log und vor dem Nachziehen der Standzeile meldete der Lauf genau einen Fehler:
+
+```
+FEHLER   leitwerk-core/docs/ROADMAP.md: Kriterium 4 von D-11 (Decision Records ohne
+`entschieden (Vorschlag)`) ist gezählt **0**, die Standzeile nennt 9 – der Fortschritt
+ist nicht nachgezogen.
+```
+
+**Das ist der Preis, den `CR-2026-070` E1 ausdrücklich gewollt hat, und er ist bei der
+ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
+Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
+bemerkt.
+
+### Was 0.49.0 gebracht hat – die neun Strukturentscheidungen sind bestätigt
+
+**Beauftragt, nicht gefunden** – der erste Unterschied zu den fünf Releases davor.
+Gegenstand ist Arbeitspaket `AP3` (P1), Aktivität *„Beschluss offener
+Strukturentscheidungen (D-01…D-10 bestätigen)"* (`CR-2026-071`, D-100, D-101,
+`tests/protocols/2026-09-15-gegenpruefung-strukturentscheidungen.md`, `tests/protocols/2026-09-15-wirkungsnachweise-0.49.0.md`).
+
+| Frage | Ergebnis |
+|---|---|
+| Trägt die Begründung von 2026-09-01 heute noch? | **Bei acht von neun unverändert**, je Record an einem gemessenen Wert belegt – acht Hierarchiestufen, 13 von 13 Skills mit den vier Dateien, 53 `deny`-Regeln aus einer Quelle, ein einziges ausgeliefertes Agentenprofil |
+| Und beim neunten? | **D-08: Die Entscheidung trägt, die Begründung nicht mehr.** Sie war eine Vorsichtsannahme; für `claude-code` ist die Toleranzfrage geklärt (K-18), und ein Metadatenfeld im Frontmatter wäre dort heute kein Risiko, sondern ein undokumentiertes Feld. **Für `devin-desktop` trägt die alte Begründung weiter** – dieselbe Entscheidung, je Client ein anderer Grund |
+| *Nicht gesucht:* Warum hat es zweiunddreißig Releases gedauert? | **Weil die Bedingung falsch gewählt war.** `CR-2026-019` hat den Statuswechsel je Record vorgelegt und drei Einwände benannt. **Alle drei richten sich gegen etwas anderes als die Entscheidung, gegen die sie vorgebracht sind** |
+| Was trifft `AP2-CC-12` (gegen D-05)? | Die **Durchsetzungstiefe eines Clients auf einem Weg** – die Unterscheidung, für die es D-12 gibt. Wer eine Regel erst bestätigt, wenn jeder Client sie technisch erzwingt, hat die Fähigkeitsmatrix abgeschafft. Gemessen: Das Framework liefert genau **ein** Agentenprofil aus, und es setzt das Feld nicht |
+| Was trifft `K-20` (gegen D-07)? | Eine **Eingabe** des Datenschutzmodells – und das Modell regelt ihr Fehlen **selbst**: Abschnitt 1.3 („restriktivste Auslegung") und Abschnitt 2.2 Regel 3 („Fehlt eine Einstufung, gilt K3"). Der Einwand las das Modell so, als setzte es die Aussage voraus; es enthält die Regel für ihr Fehlen |
+| Was trifft `K-04` (gegen D-10)? | Eine **organisatorische Freigabe** – und D-11 nimmt sie ausdrücklich aus. Dazu: „standardmäßig deaktiviert" hat seit 0.5.0 einen Mechanismus statt einer Zusage (`mcp-config.example.json` statt Konfiguration, alle MCP-Werkzeuge in `ask`). **D-10 ist die Entscheidung, die das Framework sicher hält, solange K-04 offen ist** |
+| *Nicht gesucht:* Nebenbefund | **Die Legende des Decision Logs erklärte vier Statuswerte; seine Tabellen führen sieben.** Es fehlte ausgerechnet der meistverwendete: `entschieden (CR-JAHR-NNN)`, **89** Records. Berichtigt (D-101), nicht geprüft |
+
+**Die Lehre, die über diesen Fall hinausgeht:** Dieses Repositorium prüft seit
+dreiundzwanzig Releases, ob seine **Zusagen** halten. Es hat nie geprüft, ob seine
+**Bedingungen** die richtigen sind.
+
+> **Eine zu schwache Zusage lässt durch und fällt irgendwann auf. Eine zu starke
+> Bedingung hält auf – und fällt nie auf, weil ein unerfülltes Vorzeichen wie Sorgfalt
+> aussieht.**
+
+### Was 0.49.0 offen lässt
+
+- **Drei Fragen bleiben offen und sind es auch geblieben:** `AP2-CC-12` (Feld
+  `permissionMode` im Subagentenprofil), `K-20` (Codebasis-Indexierung bei
+  `devin-desktop`), `K-04` (Nutzungsumfang Cloud/CLI). Keine davon ist beantwortet;
+  sie sind nur ihrem richtigen Kriterium zugeordnet. **Zwei davon liegen ausdrücklich
+  außerhalb des Einflussbereichs, den D-11 zum Maßstab macht.**
+- **Vier Klärungspunkte tragen weiterhin `entschieden (Vorschlag)`** – K-12, K-13,
+  K-17, K-18. Prüfung 46 zählt sie nicht (das ist seit `CR-2026-070` entschieden), und
+  bei allen vieren ist ein Teil der Frage unbeantwortet. Sie gehören in einen eigenen
+  Vorgang.
+- **D-101 ist eine Zusage ohne Mechanismus, und der Antrag sagt es.** Eine Prüfung, die
+  das Statusvokabular gegen die Legende hält, ist baubar und steht als Kandidat – für
+  dieses Release war sie durch die Anweisung ausgeschlossen, keine neue Prüfung zu
+  bauen, bevor sich eine der vier D-11-Zahlen bewegt hat. **Sie hat sich bewegt.**
+- **Die anderen drei Zahlen stehen unverändert:** 29, 118, 69. Eine von vier ist
+  gefallen, und es war die kleinste.
 
 ### Was 0.48.0 gebracht hat – alle vier Zählregeln des 1.0.0-Standes griffen daneben
 
@@ -1535,24 +1602,36 @@ Platzhalter statt Werte; die Vorlage des Übungsrepositorys ist entsprechend umg
 Ebene 4 ist und das Framework ihr Format nicht vorschreibt; dafür spricht D-25 – ein von Hand
 gepflegter Wert ohne Prüfung veraltet.
 
-**P2 – Strukturentscheidungen bestätigen.** D-01 bis D-10 tragen weiterhin den Status
-`entschieden (Vorschlag)`; Kriterium 4 von D-11 verlangt, dass kein Decision Record mehr so steht.
+**Erledigt – die neun Strukturentscheidungen sind bestätigt (0.49.0).** D-01 bis D-08 und
+D-10 tragen `entschieden (CR-2026-071)`; **Kriterium 4 von D-11 steht damit auf null** – die
+erste der vier Zahlen, die sich seit der Erstfassung bewegt hat. Mit bestätigt ist `K-08`, die
+namentlich genannte offene Entscheidung von `AP3`.
 
-Die **Vorbedingung** ist mit 0.17.0 erledigt: Alle zehn beschreiben jetzt den geltenden Stand
-(`CR-2026-019`). Offen ist die Entscheidung selbst, und sie liegt je Record vor – sieben ohne
-erkennbaren Einwand, drei mit einem benannten:
+Die **Vorbedingung** war mit 0.17.0 erledigt (`CR-2026-019`). Die **Entscheidung** lag seither
+je Record vor und ist **zweiunddreißig Releases lang nicht getroffen worden** – sieben Records
+ohne erkennbaren Einwand, drei mit einem benannten. Die Gegenprüfung vom 2026-09-15
+(`tests/protocols/2026-09-15-gegenpruefung-strukturentscheidungen.md`) hat die drei Einwände
+einzeln geprüft, und das Ergebnis ist der eigentliche Befund dieses Releases:
 
-- **D-05** (Berechtigungsmodi): AP2-CC-12 ist offen – ob die Sperre gegen den Modus ohne
-  Rückfragen auch für das Feld `permissionMode` eines Subagentenprofils gilt, ist nicht
-  dokumentiert.
-- **D-07** (Kontextklassen): K-20 – Art und Ort der Codebasis-Indexierung – ist bei
-  `devin-desktop` unbelegt; das Datenschutzmodell setzt eine Aussage darüber voraus. Bei
-  `claude-code` ist die Abwesenheit belegt (X2).
-- **D-10** (Erweiterungsmodule): K-04 – Nutzungsumfang Cloud/CLI – ist offen und liegt außerhalb
-  des Frameworks.
+- **D-05 / `AP2-CC-12`** – ob die Sperre gegen den Modus ohne Rückfragen auch für das Feld
+  `permissionMode` eines Subagentenprofils gilt: **bleibt offen**, betrifft aber die
+  *Durchsetzungstiefe eines Clients* und nicht die Regel. Das ist die Unterscheidung, für die
+  es D-12 gibt, und sie gehört zu Kriterium 1, nicht zu Kriterium 4.
+- **D-07 / `K-20`** – Art und Ort der Codebasis-Indexierung bei `devin-desktop`: **bleibt
+  offen**, trifft die Entscheidung aber nicht. Der Einwand las das Datenschutzmodell so, als
+  setzte es eine Aussage darüber voraus; **das Modell regelt ihr Fehlen selbst** (Abschnitt 1.3
+  und Abschnitt 2.2 Regel 3). Bei `claude-code` ist die Abwesenheit belegt (X2).
+- **D-10 / `K-04`** – Nutzungsumfang Cloud/CLI: **bleibt offen** und ist eine *organisatorische
+  Freigabe*, die D-11 ausdrücklich ausnimmt. Dazu hat „standardmäßig deaktiviert" seit 0.5.0
+  einen Mechanismus statt einer Zusage.
 
-Bei allen dreien ist sowohl eine Bestätigung als auch eine ausdrückliche Zurückstellung mit
-Bedingung vertretbar; entschieden ist keine von beiden.
+**Alle drei Fragen bleiben stehen. Keine von ihnen war eine Frage nach Kriterium 4** – und
+genau das hat zweiunddreißig Releases gekostet. **Eine falsch gewählte Bedingung wartet für
+immer.**
+
+**Offen bleibt daraus:** vier Klärungspunkte auf `entschieden (Vorschlag)` – K-12, K-13, K-17
+und K-18 –, bei allen vieren mit einem unbeantworteten Teil der Frage; und eine Prüfung auf das
+Statusvokabular des Decision Logs (D-101, Nebenbefund).
 
 **Erledigt – die Akteursbezeichnung ist aus dem Kern gelöst (0.18.0).** Nicht 76 Nennungen in
 elf Modulen, wie hier bis 0.17.0 stand, sondern **248 in 78 Dateien**: Die Zahl war allein aus
@@ -1813,12 +1892,12 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Ziel | Core-Module fachlich abgenommen (Status je Modul von `entwurf` auf `pilot`) |
 | Aktivitäten | Review aller `leitwerk-core/framework/core/`-Module und der Prioritätshierarchie durch die benannten Rollen; Einarbeitung von Organisationsvorgaben (Ebene B, Klassifizierungs-Mapping); Beschluss offener Strukturentscheidungen (D-01…D-10 bestätigen) |
 | Eingaben | Erstfassung 0.1.0; Organisationsrichtlinien; Ergebnis K-06 |
-| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log |
+| Ergebnisse | abgenommene Core-Module; gefülltes `org-policies/`-Mapping; aktualisiertes Decision Log. **Teilergebnis mit 0.49.0:** Die neun Strukturentscheidungen sind beschlossen (`CR-2026-071`, D-100); offen bleiben die Modulabnahme und das Mapping |
 | Abhängigkeiten | AP1 |
 | Verantwortliche Rolle | `<FRAMEWORK_OWNER>` mit `<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`, `<ARCHITECT_ROLE>` |
 | Abnahmekriterien | jedes Modul reviewt (Nachweis); keine offenen Widerspruchsbefunde; Hierarchie bestätigt |
 | Risiken | Übersteuerung durch Einzelmeinungen → Änderungsanträge statt Ad-hoc-Edits |
-| Offene Entscheidungen | Bestätigung der 8-stufigen Hierarchie (K-08) |
+| Offene Entscheidungen | ~~Bestätigung der 8-stufigen Hierarchie (K-08)~~ – **erledigt mit 0.49.0** (`CR-2026-071`, D-100), gemeinsam mit D-01 und D-06 |
 
 ### AP4 – Technische Referenzimplementierung (P1)
 
