@@ -2,6 +2,93 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.48.0] - 2026-09-15
+
+**Alle vier Zaehlregeln des 1.0.0-Standes greifen daneben - vier von vier Zahlen sind
+falsch, jede auf eine andere Art.** Gesucht war Kandidat 2 der Uebergabe: eine Pruefung,
+die den 1.0.0-Stand nachzaehlt. Um die Ermessensfrage dazu zu entscheiden, mussten die
+vier Zahlen einmal wirklich ausgerechnet werden - **und dabei fiel der Befund an**
+(`CR-2026-070`, D-98, D-99,
+`tests/protocols/2026-09-15-gegenpruefung-d11-zaehlregeln.md`).
+
+### Gemessen
+
+| Kriterium (D-11) | Geglaubt | **Gezaehlt** | Warum die Regel danebengreift |
+|---|---|---|---|
+| 1 kein unbearbeiteter VERIFY-Marker | 27 | **29** | Der `grep` kannte **eine von zwei** registrierten Markerschreibweisen. Die clientgebundene Altform traegt dieselbe Frist "vor Version 1.0.0" und allein im Pack `devin-desktop` **sieben** Fundstellen, dazu **zwei** in dessen `root-template/` - also in einer Datei, die **jede** Installation bekommt |
+| 2 Testkatalog ohne `offen` | 103 | **118** | "die dezentralen `TESTS.md` je Skill" wurde als **zwoelf** Dateien gelesen. Es sind **dreizehn**; die des Role-Pack-Skills mit **15** offenen Zellen wurde nie mitgezaehlt |
+| 3 Modulstatus ueber `entwurf` | 16 | **69** | Die genannte Ablagenliste deckt **ein Viertel** des Bestands - `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere fehlten. **Und `framework/core/` war als Zaehlort genannt und traegt gar keine Statuszeile.** Keiner der 69 steht ueber `entwurf`: Das Lebenszyklusmodell dieses Frameworks ist noch nie angewendet worden |
+| 4 Decision Records `entschieden (Vorschlag)` | 16 | **9** | Die 16 ist die Trefferzahl eines rohen `grep`. Sie zaehlte die **Legende**, **fuenf Klaerungspunkte** und **D-11 selbst** mit |
+
+- **Keine der vier Zahlen ist je falsch geschrieben worden.** Jede ist das richtige
+  Ergebnis einer Regel, die weniger kann, als ihr Kriterium verlangt.
+- **Die Bauform ist die von 0.42.0, eine Ebene hoeher.** Dort waren fuenf handgepflegte
+  Zahlen ueber den **Pruefapparat** nach zwoelf Releases saemtlich falsch. Die Roadmap
+  zog die richtige Lehre - "hier stehen keine Zahlen, sondern die Befehle, die sie
+  ausrechnen" - und **hat sie nicht eingeloest**: Ein Befehl, den niemand ausfuehrt, ist
+  keine Ausrechnung, sondern eine Zahl mit einem Zwischenschritt. Und weil ihn niemand
+  ausfuehrt, faellt auch nicht auf, dass er das Falsche zaehlt.
+- **Der Fallstrick schnappte beim Bauen der Abhilfe ein zweites Mal zu.** Die erste
+  Fassung des Zaehlers lief ueber `glob.glob(..., recursive=True)`; **glob ueberspringt
+  Pfadbestandteile, die mit einem Punkt beginnen**. Damit fehlten fuenfzehn Kerndateien,
+  darunter genau die zwei Traeger `clients/*/root-template/.devin/README.md` und
+  `.../.claude/README.md`, die den Befund zu Kriterium 1 tragen. **Der Zaehler haette 27
+  gemeldet und damit zufaellig die geglaubte Zahl bestaetigt.** Behoben mit `os.walk`,
+  gemessen mit der Selbstprobe `C1`.
+- **Der eigene Pruefapparat fing den eigenen Kommentar.** Der Kopfkommentar der neuen
+  Pruefung schrieb die clientgebundene Altform woertlich hin - **Pruefung 14 verbietet
+  genau das im Kern** und hat es im ersten Lauf gemeldet. Beschrieben statt zitiert.
+- **Die Sonde fing einen Fehler in ihrer eigenen Pruefung.** Der Zahlenvergleich lief
+  ueber `soll in text`, und `"Kriterium 4 = 9"` steckt in `"Kriterium 4 = 99"`: Sonde 46a
+  fiel, bevor sie meldete. Verglichen werden jetzt die **Zahlen**, nicht die Zeichenkette.
+
+### Neu
+
+- **Pruefung 46** (D-98, D-99) - der D-11-Zaehler. Sie rechnet die vier maschinell
+  zaehlbaren Kriterien aus und haelt sie gegen **eine** Standzeile in `docs/ROADMAP.md`.
+  **Abweichung in beide Richtungen ist ein Fehler:** ein zurueckgefallenes Kriterium
+  ebenso wie ein Fortschritt, der nicht nachgezogen ist. Fehlt die Standzeile, meldet sie
+  den **verlorenen Anker** selbst - die Bauform der Pruefungen 28, 29, 31 und 40.
+  Kriterium 5 zaehlt sie **nicht**; das ist eine Enthaltung und steht im Kopfkommentar.
+- **Die Ermessensfrage ist entschieden**, und zwar gegen beide naheliegenden Antworten:
+  Ein Zaehler, der jeden offenen Punkt meldete, ergaebe **225 Fehler** und waere binnen
+  eines Releases abgeschaltet; ein Zaehler, der nur berichtet, ist keine Pruefung.
+- **Sechs Sonden, drei Gegenproben, eine Selbstprobe** (`46a` bis `46f`, `46a` bis `46c`,
+  `C1`). Der Pruefstand steht damit bei **154 Sonden, 62 Gegenproben, 12 Selbstproben**.
+- **Die vier Zaehlregeln der Roadmaptabelle sind durch die des Zaehlers ersetzt**, mit
+  einer Spalte, die je Kriterium nennt, was die alte Regel uebersah.
+
+### Geaendert
+
+- `docs/ROADMAP.md` traegt den Stand wieder als **Zahl** - weil eine Pruefung ihn haelt.
+  Der Absatz von 0.42.0 schliesst *gepflegte* Zahlen aus; eine ausgerechnete Zahl ist das
+  Gegenteil, und er ist entsprechend umgeschrieben.
+- **Nebenbefund:** `README.md` nannte den werkzeugneutralen Marker in seiner
+  **clientgebundenen** Altform. Berichtigt, nicht geprueft - eine Pruefung fuer eine
+  Datei, die jedes Projekt durch seine eigene ersetzt, waere ohne Gegenstand.
+
+### Migrationshinweis
+
+**Keiner.** Die Pruefung misst ausschliesslich den Kern, und der ist in jeder
+Installation derselbe. Ein Projekt, das mit `install.py --update` auf 0.48.0 hebt,
+bekommt Standzeile und Pruefung im selben Zug und laeuft gruen weiter. **Ein Projekt, das
+seinen Kern veraendert hat, bekommt eine Abweichung gemeldet** - und das ist richtig so;
+`install.py --check` nennt dieselbe Stelle.
+
+### Bekannte Einschraenkungen
+
+- **Der Zaehler misst Zahlen, nicht Fortschritt.** Ein Modulstatus, der von `entwurf` auf
+  `pilot` gehoben wird, ohne dass jemand das Modul angesehen hat, senkt Kriterium 3 um
+  eins. Die fachliche Abnahme ist nicht maschinell, und die Pruefung behauptet es nicht.
+- **Kriterium 1 kann nicht auf null gehen, solange der Marker sein eigenes Register und
+  seine Glossarzeile hat.** Das ist beabsichtigt: `PLACEHOLDER_REGISTRY.md` schreibt
+  beiden Markerformen in der Spalte "Ersetzung/Frist" ausdruecklich "vor Version 1.0.0"
+  vor. Ein Platzhalter, dessen letzte Aussage verifiziert ist, gehoert aus dem Register.
+- **Die Selbstprobe `C1` misst den Bestand dieses Repositoriums, nicht den eines
+  beliebigen.** In einem Kern ohne versteckte Traeger ist der Unterschied null - und dann
+  sagt sie das in ihrer eigenen Meldung, statt still zu bestehen.
+- **Kriterium 5 bleibt unbeobachtet.** Es ist keine Zahl.
+
 ## [0.47.0] - 2026-09-15
 
 **Beide Projekte, die dieses Framework benutzen, versionieren den Bytecode seines

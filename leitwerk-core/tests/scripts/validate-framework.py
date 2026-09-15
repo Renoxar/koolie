@@ -137,8 +137,16 @@ Prüft (statisch, ohne laufenden KI-Client):
      einer nicht reicht: git liest die .gitignore fuer bereits verfolgte Dateien
      nicht. Gegenstand 2 laeuft nur, wo git erreichbar ist - sonst sagt die
      Pruefung das als Warnung, statt stumm auszufallen
+ 46. Der 1.0.0-Stand (D-98, D-99): Die vier maschinell zaehlbaren Kriterien
+     aus D-11 werden ausgerechnet und gegen die Standzeile in docs/ROADMAP.md
+     gehalten - Markerfundstellen, offene Ergebniszellen, Modulstatus auf
+     `entwurf`, Decision Records auf `entschieden (Vorschlag)`. Abweichung in
+     BEIDE Richtungen ist ein Fehler. Am 2026-09-15 lagen alle vier Zahlen
+     daneben, ohne dass eine je falsch geschrieben worden waere: Jede war das
+     richtige Ergebnis einer Zaehlregel, die weniger kann als ihr Kriterium
+     verlangt. Kriterium 5 zaehlt sie nicht - das ist eine Enthaltung
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 45 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 46 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -4620,6 +4628,232 @@ def check_bytecode_versioniert(root: str) -> None:
             f"`git rm -r --cached {KERN}/**/__pycache__` und danach die Regel (D-97)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 46: Der 1.0.0-Stand wird ausgerechnet, nicht gepflegt
+# ---------------------------------------------------------------------------
+#
+# ANLASS. D-11 nennt fuenf Kriterien fuer 1.0.0; vier davon sind maschinell zaehlbar.
+# Die Roadmap fuehrte dafuer seit 0.42.0 ausdruecklich KEINE Zahlen, sondern "die
+# Befehle, die sie ausrechnen" - die richtige Lehre aus fuenf falschen Zahlen ueber den
+# Pruefapparat. Am 2026-09-15 wurden diese Befehle zum ersten Mal ausgefuehrt
+# (CR-2026-070, tests/protocols/2026-09-15-gegenpruefung-d11-zaehlregeln.md):
+#
+#   Kriterium 1  geglaubt 27   gezaehlt 29   der grep kannte EINE von ZWEI registrierten
+#                                            Markerschreibweisen; die clientgebundene
+#                                            Altform (Produktname statt CLIENT) traegt
+#                                            allein im Pack devin-desktop sieben
+#                                            Fundstellen und zwei in dessen root-template
+#   Kriterium 2  geglaubt 103  gezaehlt 118  "die dezentralen TESTS.md je Skill" wurde als
+#                                            zwoelf Dateien gelesen; es sind dreizehn
+#   Kriterium 3  geglaubt 16   gezaehlt 69   die genannte Ablagenliste deckt ein Viertel
+#                                            des Bestands - und framework/core/ ist
+#                                            genannt und traegt gar keine Statuszeile
+#   Kriterium 4  geglaubt 16   gezaehlt 9    ein roher grep zaehlte die Legende, fuenf
+#                                            Klaerungspunkte und D-11 selbst mit
+#
+# Vier von vier. Keine der Zahlen ist je falsch geschrieben worden - jede ist das
+# richtige Ergebnis einer Regel, die weniger kann als ihr Kriterium verlangt. Ein
+# Befehl, den niemand ausfuehrt, ist keine Ausrechnung, sondern eine Zahl mit einem
+# Zwischenschritt; und weil ihn niemand ausfuehrt, faellt auch nicht auf, dass er das
+# Falsche zaehlt.
+#
+# BAUFORM (E1). Die von Pruefung 40 und 31: Der Stand steht AUSGERECHNET an genau einer
+# Stelle - der Standzeile in docs/ROADMAP.md -, und diese Pruefung haelt die geschriebene
+# Zahl gegen die gezaehlte. Nicht der offene Punkt ist der Fehler, sondern die falsche
+# Zahl. Ein Zaehler, der jeden offenen Punkt meldete, ergaebe heute 225 Fehler, machte
+# jeden Lauf rot und waere binnen eines Releases abgeschaltet; ein Zaehler, der nur
+# berichtet, ist keine Pruefung. Der Preis dieser Bauform steht im Antrag und ist
+# gewollt: JEDER Fortschritt macht den Lauf rot, bis die Zahl nachgezogen ist. Genau
+# dieses Nachziehen ist der Vorgang, der bis 0.47.0 unterblieben ist.
+#
+# ZAEHLBEREICH (E2). Nur <CORE_DIR>/, ohne build/ (Erzeugnis), CHANGELOG.md,
+# governance/change-requests/ und tests/protocols/ (datierte, abgeschlossene
+# Aufzeichnungen). Der Kern ist in jeder Installation derselbe - install.py --check ist
+# genau dafuer da -, also ist die Zahl installationsunabhaengig und dieselbe Standzeile
+# gilt in jedem uebernehmenden Projekt. Fundstellen ausserhalb des Kerns zaehlen nicht,
+# auch echte: README.md:165 war so eine und ist per Hand berichtigt.
+#
+# DER FALLSTRICK, DER BEIM BAUEN ZUSCHNAPPTE (E7). Die erste Fassung lief ueber
+# glob.glob(..., recursive=True). glob ueberspringt Pfadbestandteile, die mit einem Punkt
+# beginnen - damit fehlten fuenfzehn Dateien des Kerns, darunter genau die zwei Traeger
+# clients/*/root-template/.devin/README.md und .../.claude/README.md, die den Befund zu
+# Kriterium 1 tragen. Der Zaehler haette 27 gemeldet und damit zufaellig die geglaubte
+# Zahl bestaetigt. Eine Zaehlregel, die einen Traeger still ueberspringt, war der Anlass
+# dieses Antrags; sie ist beim Bauen der Abhilfe ein zweites Mal entstanden. Deshalb
+# os.walk, und deshalb misst die Selbstprobe C1 des Sondenskripts beide Verfahren
+# gegeneinander.
+#
+# WAS SIE NICHT LEISTET.
+#   * Kriterium 5 von D-11 ("Uebernahme in ein zweites Projekt nachgewiesen") zaehlt sie
+#     NICHT. Das ist keine Zahl, sondern eine Feststellung. Eine ENTHALTUNG, und sie
+#     steht hier statt in einem Gegenstand, der nichts misst.
+#   * Sie misst Zahlen, nicht Fortschritt. Ein Modulstatus, der von `entwurf` auf `pilot`
+#     gehoben wird, ohne dass jemand das Modul angesehen hat, senkt Kriterium 3 um eins.
+#     Die fachliche Abnahme ist nicht maschinell, und diese Pruefung behauptet es nicht.
+#   * Kriterium 1 zaehlt auch die Fundstellen, die den Marker nur NENNEN - Registerzeile,
+#     Glossarzeile, Arbeitsanweisung (E3). Die Zahl ist ein PEGEL, kein Arbeitsvorrat,
+#     und sie kann nicht auf null gehen, solange der Marker sein eigenes Register hat.
+#     Das ist richtig so: PLACEHOLDER_REGISTRY.md schreibt beiden Markerformen in der
+#     Spalte "Ersetzung/Frist" ausdruecklich "vor Version 1.0.0" vor. Ein Platzhalter,
+#     dessen letzte Aussage verifiziert ist, gehoert aus dem Register - sonst fuehrt das
+#     Repositorium einen Platzhalter ohne Gegenstand.
+#   * Sie sagt nicht "1.0.0-reif" (E8). Stehen alle vier Zahlen auf 0 und der Lauf ist
+#     gruen, IST das die Meldung - erzwungen statt behauptet, und ohne einen fuenften
+#     Gegenstand, der heute nichts faengt.
+D11_DATEI = KERN + "/docs/ROADMAP.md"
+D11_SATZ = ("Gezählt von Prüfung 46: Kriterium 1 = {}, Kriterium 2 = {}, "
+            "Kriterium 3 = {}, Kriterium 4 = {}")
+D11_ANKER = "Gezählt von Prüfung 46: Kriterium 1 = "
+# Beide registrierten Schreibweisen (E4). Die Altform ist nur im Client Pack
+# devin-desktop zulaessig (Pruefung 14 setzt das durch) - sie traegt aber dieselbe Frist
+# "vor Version 1.0.0" und ist damit derselbe Gegenstand. Wer nur die neutrale Form
+# zaehlt, haelt ein Client Pack mit sieben offenen Verifikationsbedarfen fuer fertig.
+D11_MARKER_RE = re.compile(r"<VERIFY AGAINST CURRENT (?:CLIENT|DEVIN) DOCUMENTATION>")
+D11_AUSSER = ("build/", "CHANGELOG.md", "governance/change-requests/",
+              "tests/protocols/")
+D11_MARKER_ENDUNGEN = (".md", ".json", ".py")
+D11_STECKBRIEF_RE = re.compile(r"^\|\s*Status\s*\|\s*(.+?)\s*\|$")
+# Die Steckbriefzeile steht im Kopf des Dokuments. Sechzig Zeilen sind grosszuegig
+# gemessen (der spaeteste Treffer im Bestand steht auf Zeile 41) und halten zugleich die
+# Lebenszyklustabelle aus 08-skill-conventions.md (Zeile 92) und die Vorfalltabelle aus
+# INCIDENT_HANDLING.md (Zeile 37) draussen - beides Tabellen MIT einer Statusspalte, die
+# keinen Modulstatus fuehren.
+D11_STECKBRIEF_KOPF = 60
+D11_KRITERIEN = ("kein unbearbeiteter VERIFY-Marker",
+                 "Testkatalog und dezentrale Testblätter ohne `offen`",
+                 "Modulstatus über `entwurf`",
+                 "Decision Records ohne `entschieden (Vorschlag)`")
+
+
+def _d11_kerndateien(root: str, endungen: tuple):
+    """(absoluter Pfad, Pfad unter <CORE_DIR>/) je Kerndatei im Zaehlbereich.
+
+    os.walk und NICHT glob: glob ueberspringt Pfadbestandteile, die mit einem Punkt
+    beginnen, und genau dort liegen zwei Traeger des Kerns (E7, Selbstprobe C1).
+    """
+    wurzel = os.path.join(root, KERN)
+    for ordner, _, dateien in os.walk(wurzel):
+        for name in sorted(dateien):
+            if not name.endswith(endungen):
+                continue
+            pfad = os.path.join(ordner, name)
+            rest = os.path.relpath(pfad, wurzel).replace(os.sep, "/")
+            if any(rest == a or rest.startswith(a) for a in D11_AUSSER):
+                continue
+            yield pfad, rest
+
+
+def _d11_offene_zellen(text: str, praefix: str) -> int:
+    """Tabellenzeilen mit `praefix`, deren letzte Zelle mit 'offen' beginnt."""
+    treffer = 0
+    for zeile in text.replace("\r\n", "\n").split("\n"):
+        z = zeile.strip()
+        if not z.startswith(praefix) or z.startswith("|---"):
+            continue
+        zellen = tabellenzellen(z)
+        if zellen and zellen[-1].startswith("offen"):
+            treffer += 1
+    return treffer
+
+
+def _d11_zaehlen(root: str) -> list:
+    """Die vier maschinell zaehlbaren Kriterien von D-11, in ihrer Reihenfolge."""
+    # --- 1: Markerfundstellen, beide Schreibweisen -----------------------------------
+    k1 = 0
+    for pfad, _ in _d11_kerndateien(root, D11_MARKER_ENDUNGEN):
+        k1 += len(D11_MARKER_RE.findall(read(pfad)))
+
+    # --- 2: offene Ergebniszellen im Katalog UND in jedem Testblatt -------------------
+    # Gefunden durch Baumdurchlauf, nicht durch eine Ablagenliste (E5): Eine Liste kann
+    # eine dreizehnte Datei uebersehen, und sie hat es.
+    katalog = os.path.join(root, KERN, "tests", "TEST_CATALOG.md")
+    k2 = _d11_offene_zellen(read(katalog), "| FW-") if os.path.isfile(katalog) else 0
+    for pfad, _ in _d11_kerndateien(root, ("TESTS.md",)):
+        k2 += _d11_offene_zellen(read(pfad), "| ")
+
+    # --- 3: Steckbriefe auf `entwurf`, im ganzen Bestand ------------------------------
+    # Verglichen wird das ERSTE WORT des Werts: role-packs/software-development traegt
+    # "entwurf (Referenzpack der Erstfassung)", und ein Gleichheitsvergleich saehe sie
+    # nicht (E6).
+    k3 = 0
+    for pfad, _ in _d11_kerndateien(root, (".md",)):
+        for zeile in read(pfad).replace("\r\n", "\n").split("\n")[:D11_STECKBRIEF_KOPF]:
+            treffer = D11_STECKBRIEF_RE.match(zeile.strip())
+            if not treffer:
+                continue
+            wert = treffer.group(1).strip().strip("`").strip()
+            if wert.split()[:1] == ["entwurf"]:
+                k3 += 1
+            break
+
+    # --- 4: Decision Records auf `entschieden (Vorschlag)` ----------------------------
+    # NUR Zeilen der Form | D-NN |. Nicht die Legende, nicht die Klaerungspunkte K-NN,
+    # nicht D-11 selbst: D-11 sagt "Decision Records", und ein Klaerungspunkt ist keiner.
+    log = os.path.join(root, KERN, "governance", "DECISION_LOG.md")
+    k4 = 0
+    if os.path.isfile(log):
+        for zeile in read(log).replace("\r\n", "\n").split("\n"):
+            z = zeile.strip()
+            if not re.match(r"^\|\s*D-\d+\s*\|", z):
+                continue
+            zellen = tabellenzellen(z)
+            if len(zellen) > 4 and zellen[4].startswith("entschieden (Vorschlag)"):
+                k4 += 1
+    return [k1, k2, k3, k4]
+
+
+def check_d11_stand(root: str) -> None:
+    """Pruefung 46 (D-98, D-99): Der 1.0.0-Stand ist ausgerechnet, nicht gepflegt."""
+    pfad = os.path.join(root, D11_DATEI.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        err(f"{D11_DATEI}: fehlt. Prüfung 46 hält dort den ausgerechneten 1.0.0-Stand "
+            f"gegen die geschriebene Standzeile (D-98)")
+        return
+    text = read(pfad)
+
+    # --- Gegenstand 1: der Anker ------------------------------------------------------
+    # Die Bauform der Pruefungen 28, 29, 31 und 40: Eine Konsistenzpruefung findet ihren
+    # Gegenstand ueber einen Suchtext. Geht er verloren, bestuende sie LEISE - und
+    # niemand saehe, dass der 1.0.0-Stand nicht mehr geprueft wird.
+    wie_oft = text.count(D11_ANKER)
+    if wie_oft != 1:
+        err(f"{D11_DATEI}: die Standzeile steht {wie_oft}x statt genau einmal "
+            f"(gesucht: '{D11_ANKER}…'). Prüfung 46 hat ihren Gegenstand verloren und "
+            f"würde sonst leise bestehen. Erwartet wörtlich, in einer Zeile: "
+            f"'{D11_SATZ.format(*_d11_zaehlen(root))}' (D-98)")
+        return
+
+    # --- Gegenstand 2 bis 5: die vier Zahlen -----------------------------------------
+    # Verglichen werden die ZAHLEN, nicht die Zeichenkette. Ein Vergleich per `in`
+    # bestuende bei jedem Praefix: "Kriterium 4 = 9" steckt in "Kriterium 4 = 99", und
+    # die Sonde 46a ist genau daran gefallen, bevor sie es meldete.
+    gezaehlt = _d11_zaehlen(root)
+    soll = D11_SATZ.format(*gezaehlt)
+    zeile = next((z.strip() for z in text.replace("\r\n", "\n").split("\n")
+                  if D11_ANKER in z), "")
+    geschrieben = [int(n) for n in re.findall(r"Kriterium \d+ = (\d+)", zeile)]
+    if geschrieben == gezaehlt:
+        return
+    # Die Meldung nennt die gezaehlte Zahl je Kriterium einzeln - wer nur "stimmt nicht"
+    # liest, sucht selbst nach, und genau dieses Nachsuchen ist der Vorgang, der bis
+    # 0.47.0 unterblieben ist.
+    for i, (name, ist) in enumerate(zip(D11_KRITERIEN, gezaehlt)):
+        war = geschrieben[i] if i < len(geschrieben) else None
+        if war == ist:
+            continue
+        richtung = ("die Standzeile nennt keine Zahl dafür" if war is None else
+                    f"die Standzeile nennt {war}" +
+                    (" – ein Kriterium ist zurückgefallen" if ist > war else
+                     " – der Fortschritt ist nicht nachgezogen"))
+        err(f"{D11_DATEI}: Kriterium {i + 1} von D-11 ({name}) ist gezählt **{ist}**, "
+            f"{richtung}. Der 1.0.0-Stand gehört ausgerechnet und nicht gepflegt; am "
+            f"2026-09-15 lagen alle vier Zahlen daneben, ohne dass eine je falsch "
+            f"geschrieben worden wäre (CR-2026-070, D-98)")
+    if len(geschrieben) != len(gezaehlt):
+        err(f"{D11_DATEI}: die Standzeile führt {len(geschrieben)} Zahlen statt "
+            f"{len(gezaehlt)}. Erwartet wörtlich: '{soll}' (D-98)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -4682,6 +4916,7 @@ def main() -> int:
     check_hookblock(root, man)
     check_praeparationsregister(root)
     check_bytecode_versioniert(root)
+    check_d11_stand(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
