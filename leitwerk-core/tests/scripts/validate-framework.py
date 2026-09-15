@@ -145,8 +145,14 @@ Prüft (statisch, ohne laufenden KI-Client):
      daneben, ohne dass eine je falsch geschrieben worden waere: Jede war das
      richtige Ergebnis einer Zaehlregel, die weniger kann als ihr Kriterium
      verlangt. Kriterium 5 zaehlt sie nicht - das ist eine Enthaltung
+ 47. Statusvokabular jedes Modultraegers (D-105, D-108): Jeder Steckbrief des Kerns
+     fuehrt eine Statuszeile, und ihr Wert gehoert zum Vokabular aus
+     08-skill-conventions.md Abschnitt 7. Der Ausfuellschlitz einer Vorlage gehoert
+     ihr allein - in beide Richtungen. Bis 0.50.0 griff die Vokabularregel nur in
+     einer SKILL.md, und der Modultraeger war ueber die Zeile definiert, die er
+     tragen soll: Wer sie weglaesst, entkommt dem Lebenszyklus. Zwoelf taten es
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 46 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 47 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -4853,6 +4859,173 @@ def check_d11_stand(root: str) -> None:
         err(f"{D11_DATEI}: die Standzeile führt {len(geschrieben)} Zahlen statt "
             f"{len(gezaehlt)}. Erwartet wörtlich: '{soll}' (D-98)")
 
+# ---------------------------------------------------------------------------
+# Pruefung 47: Das Statusvokabular jedes Modultraegers
+# ---------------------------------------------------------------------------
+#
+# ANLASS (CR-2026-073 E5, D-108). Das Lebenszyklusmodell gilt seit 0.50.0 fuer JEDEN
+# Modultraeger (D-102) - durchgesetzt war das Vokabular fuer genau einen Dateityp. Die
+# Skillpruefung meldet seit 0.12.0 einen unbekannten Statuswert, aber nur in einer
+# SKILL.md; fuer die uebrigen 56 der 69 Statustraeger war jede Zeichenfolge
+# zulaessig, und "| Status | banane |" waere durch jeden Lauf gelaufen. Genau
+# dieser Fall stand fuer Skills bis 0.12.0 offen und ist mit FW-VN-01
+# geschlossen worden - fuer die anderen Ablagen nie. Solange kein Nicht-Skill gehoben war, hatte die Luecke keinen
+# Gegenstand; mit dem ersten gehobenen Nicht-Skill-Traeger hat sie einen (D-102, E5).
+#
+# DER ZWEITE ANLASS, UND ER IST DER GROESSERE (K-36, D-105). D-102 definierte den
+# Modultraeger ueber das Merkmal, das er tragen soll: "jede versionierte Datei mit
+# einer Steckbriefzeile Status". Eine solche Definition laesst jeden Traeger
+# entkommen, indem er die Zeile weglaesst - und zwoelf taten das, darunter die elf
+# normativen Kernmodule, fuer die checklists/11-framework-release.md unter Abschluss
+# ausdruecklich einen Status oberhalb von entwurf verlangt. Ein Pruefpunkt ohne
+# Gegenstand, in der Checkliste, die 1.0.0 freigibt. Gegenstand 2 dieser Pruefung
+# schliesst das Loch: Wer einen Steckbrief fuehrt, fuehrt eine Statuszeile.
+#
+# WIE EIN STECKBRIEF ERKANNT WIRD (E5). Als die ERSTE Tabelle des Dokuments, die VOR
+# der ersten Ueberschrift der Ebene 2 steht und die Kopfzeile "| Attribut | Wert |"
+# traegt. Der Zuschnitt ist gemessen und nicht geraten: Eine blosse Suche nach dieser
+# Kopfzeile in den ersten sechzig Zeilen trifft auch templates/PLAN_TEMPLATE.md, wo
+# sie im KOERPER der Vorlage steht - hinter einer H2, als Formular fuer den Plan, der
+# aus ihr entsteht. Das ist kein Steckbrief, und die Datei fuehrt zu Recht keinen
+# Status. Gegen den Bestand gemessen erkennt die Regel 81 Steckbriefe (69 mit und 12
+# ohne Statuszeile) und keinen Fehltreffer.
+#
+# VIER GEGENSTAENDE:
+#   1. Der verlorene Anker. Findet der Lauf ueberhaupt keinen Steckbrief, bestuende
+#      diese Pruefung leise. Sie meldet es deshalb selbst - die Bauform der Pruefungen
+#      28, 29, 31, 40 und 46 (D-23).
+#   2. Vollstaendigkeit. Jeder Steckbrief fuehrt eine Statuszeile. Das ist der
+#      Mechanismus zu D-105; ohne ihn entkaeme der naechste Traeger genauso.
+#   3. Vokabular. Das erste Wort des Werts ist einer der fuenf Statuswerte aus
+#      08-skill-conventions.md Abschnitt 7. Das ERSTE WORT, weil
+#      role-packs/software-development einen Verlaufszusatz traegt ("entwurf
+#      (Referenzpack der Erstfassung)") - dieselbe Leseregel wie Pruefung 46 (E6 von
+#      CR-2026-070).
+#   4. Der Ausfuellschlitz gehoert der Vorlage, und nur ihr (D-104). Eine Vorlage
+#      traegt in der Statuszelle einen Schlitz und KEINEN echten Wert - ein echter
+#      ginge unveraendert in jede Kopie ueber und waere damit unveraenderlich, ohne
+#      dass jemand das entschieden hat; genau dieser Defekt machte Kriterium 3 von
+#      D-11 unerreichbar. Umgekehrt traegt ein Traeger, der keine Vorlage ist, keinen
+#      Schlitz: Das ist der Preis, den D-104 benannt und nicht abgesichert hat - "wer
+#      eine Vorlage kopiert und den Schlitz nicht fuellt, hat ein Pack ohne
+#      Statuswert; bei einem Skill faengt das SKILL_STATUS, bei Client-, Role- und
+#      Technology-Pack heute nichts".
+#
+# WAS SIE NICHT LEISTET.
+#   * Sie prueft das VOKABULAR, nicht die BERECHTIGUNG. Ob ein Traeger auf pilot
+#     stehen darf, entscheidet das Review nach 01-governance.md Abschnitt 5 Punkt 3 -
+#     ein Protokoll, das ihn namentlich nennt. Das ist ausdruecklich nicht maschinell
+#     (D-102), und diese Pruefung behauptet es nicht.
+#   * Sie zaehlt nicht. Den Stand haelt Pruefung 46; hier geht es um die Frage, ob ein
+#     Wert ueberhaupt zum Vokabular gehoert.
+#   * Vorlagen erkennt sie am Ablageort (templates/ oder ein Verzeichnis _template),
+#     also an der Unterstrich-Konvention, die auch Pruefung 31 benutzt - nicht an einem
+#     Namen und nicht an einer gepflegten Liste.
+STATUS_KOPF_RE = re.compile(r"^\|\s*Attribut\s*\|\s*Wert\s*\|$")
+STATUS_ZEILE_RE = re.compile(r"^\|\s*Status\s*\|\s*(.+?)\s*\|$")
+# Der Ausfuellhinweis einer Vorlage in der Form, die D-104 gesetzt hat: die Marke, ein
+# Semikolon und der Satz, mit welchem Wert die Kopie beginnt.
+STATUS_SCHLITZ_RE = re.compile(r"^<TBD: Status; .*\bbeginnt auf entwurf>$")
+STATUS_ZELLE = "\\| Status \\| … \\|"
+
+
+def _status_steckbrief(text: str):
+    """Die Zeilen des Steckbriefs eines Dokuments, oder None.
+
+    Der Steckbrief ist die erste Tabelle des Dokuments; sie steht vor der ersten
+    Ueberschrift der Ebene 2 und traegt die Kopfzeile "| Attribut | Wert |". Eine
+    erste Tabelle mit anderer Kopfzeile bedeutet: kein Steckbrief - und eine Tabelle
+    weiter unten ist keiner, auch wenn sie so aussieht (PLAN_TEMPLATE.md).
+    """
+    zeilen = text.replace("\r\n", "\n").split("\n")
+    for nr, roh in enumerate(zeilen):
+        z = roh.strip()
+        if z.startswith("## "):
+            return None
+        if not z.startswith("|"):
+            continue
+        if not STATUS_KOPF_RE.match(z):
+            return None
+        raus = []
+        for weiter in zeilen[nr:]:
+            if not weiter.strip().startswith("|"):
+                break
+            raus.append(weiter.strip())
+        return raus
+    return None
+
+
+def _status_ist_vorlage(rest: str) -> bool:
+    """Liegt die Datei in einer Vorlagenablage? Unterstrich-Konvention wie Pruefung 31."""
+    return rest.startswith("templates/") or "/_template/" in rest
+
+
+def check_status_vokabular(root: str) -> None:
+    """Pruefung 47 (D-105, D-108): Jeder Steckbrief fuehrt einen gueltigen Statuswert."""
+    gefunden = 0
+    for pfad, rest in _d11_kerndateien(root, (".md",)):
+        steckbrief = _status_steckbrief(read(pfad))
+        if steckbrief is None:
+            continue
+        gefunden += 1
+        werte = [m.group(1).strip() for m in
+                 (STATUS_ZEILE_RE.match(z) for z in steckbrief) if m]
+
+        # --- Gegenstand 2: Vollstaendigkeit -------------------------------------------
+        if not werte:
+            err(f"{KERN}/{rest}: der Steckbrief führt keine Zeile `{STATUS_ZELLE}`. "
+                f"Jeder Träger mit einem Steckbrief durchläuft den Lebenszyklus "
+                f"(D-102); bis 0.50.0 definierte sich der Modulträger über genau diese "
+                f"Zeile und ließ damit jeden entkommen, der sie wegließ – zwölf taten "
+                f"es, darunter die elf normativen Kernmodule, für die FW-CL-11 einen "
+                f"Status oberhalb von `entwurf` verlangt (K-36, D-105)")
+            continue
+
+        wert = werte[0].strip("`").strip()
+        schlitz = wert.startswith("<TBD")
+        vorlage = _status_ist_vorlage(rest)
+
+        # --- Gegenstand 4: der Schlitz gehoert der Vorlage, und nur ihr ---------------
+        if schlitz and not vorlage:
+            err(f"{KERN}/{rest}: die Statuszelle trägt den Ausfüllschlitz '{wert}', "
+                f"obwohl die Datei keine Vorlage ist. Wer eine Vorlage kopiert, füllt "
+                f"den Schlitz – sonst steht ein Pack ohne Statuswert im Bestand. Das "
+                f"ist der Preis, den D-104 benannt und nicht abgesichert hat (D-108)")
+            continue
+        if vorlage and not schlitz:
+            err(f"{KERN}/{rest}: die Statuszelle einer Vorlage trägt den echten Wert "
+                f"'{wert}' statt eines Ausfüllschlitzes. Der Steckbrief einer Vorlage "
+                f"beschreibt die KOPIE; ein echter Wert geht unverändert in jede Kopie "
+                f"über und ist damit unveränderlich, ohne dass jemand das entschieden "
+                f"hätte. Genau so war Kriterium 3 von D-11 unerreichbar (D-104). "
+                f"Erwartet: '<TBD: Status; … beginnt auf entwurf>'")
+            continue
+        if schlitz:
+            if not STATUS_SCHLITZ_RE.match(wert):
+                err(f"{KERN}/{rest}: der Ausfüllschlitz '{wert}' folgt nicht der Form "
+                    f"'<TBD: Status; … beginnt auf entwurf>'. Ein Schlitz, der den "
+                    f"Anfangswert nicht nennt, lässt die Kopie raten (D-104)")
+            continue
+
+        # --- Gegenstand 3: das Vokabular ---------------------------------------------
+        erstes = wert.split()[:1]
+        if erstes and erstes[0] not in SKILL_STATUS:
+            err(f"{KERN}/{rest}: Statuswert '{wert}' gehört nicht zum Vokabular. "
+                f"Zulässig sind die fünf Werte aus "
+                f"framework/core/08-skill-conventions.md Abschnitt 7 "
+                f"({', '.join(sorted(SKILL_STATUS))}); verglichen wird das erste Wort, "
+                f"ein Verlaufszusatz in Klammern ist zulässig. Bis 0.50.0 griff diese "
+                f"Regel nur in einer SKILL.md – für 56 der 69 Statusträger war jede "
+                f"Zeichenfolge erlaubt (D-108)")
+
+    # --- Gegenstand 1: der Anker ------------------------------------------------------
+    if not gefunden:
+        err(f"{KERN}/: kein einziger Steckbrief gefunden (erste Tabelle des Dokuments "
+            f"vor der ersten Überschrift der Ebene 2, Kopfzeile `| Attribut | Wert |`). "
+            f"Prüfung 47 hat ihren Gegenstand verloren und würde sonst leise bestehen "
+            f"(D-108)")
+
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -4917,6 +5090,7 @@ def main() -> int:
     check_praeparationsregister(root)
     check_bytecode_versioniert(root)
     check_d11_stand(root)
+    check_status_vokabular(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

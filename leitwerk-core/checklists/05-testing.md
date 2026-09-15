@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-05` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | nach Testerstellung oder -änderung (M4) und vor jedem Merge Request mit Logikänderung |
 | Wer | Bearbeiterin oder Bearbeiter; Reviewerin oder Reviewer prüft RV4 |

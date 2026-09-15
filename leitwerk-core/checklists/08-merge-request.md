@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-08` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor dem Erstellen und vor dem Mergen eines Merge Requests mit KI-Beteiligung |
 | Wer | Bearbeiterin oder Bearbeiter (Erstellen); Reviewerinnen, Reviewer und freigebende Rollen (Mergen) |

@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-10` |
 | Version | `0.1.3` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | bei Übernahme des Frameworks in ein neues Projekt, vor dem Setzen des Overlay-Status auf `aktiv` |
 | Wer | Overlay Owner (`<APPROVAL_ROLE>`) mit Framework Owner; Beteiligung `<SECURITY_CONTACT>` und `<DATA_PROTECTION_CONTACT>` |

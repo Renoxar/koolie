@@ -7,6 +7,7 @@
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Version | 0.2.1 |
+| Status | `pilot` |
 
 ## 1. Schutzziele (normativ)
 

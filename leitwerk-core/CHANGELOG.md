@@ -2,6 +2,100 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.51.0] - 2026-09-15
+
+**Die Vorentscheidung `K-36` ist beantwortet, der Gegenstand von Kriterium 3 ist
+vollstaendig, und das erste Nicht-Skill-Buendel ist abgenommen.** Gegenstand sind
+Kriterium 3 von D-11 und die zweite Aktivitaet von Arbeitspaket `AP3` (P1)
+(`CR-2026-073`, D-105 bis D-108, K-36 geklaert, K-38 neu,
+`tests/protocols/2026-09-15-gegenpruefung-nicht-skill-traeger.md`,
+`tests/protocols/2026-09-15-wirkungsnachweise-0.51.0.md`).
+
+**Kriterium 3 von D-11 waechst erst von 52 auf 64 und sinkt dann auf 41.** Der Anstieg
+ist kein Rueckfall: Zwoelf Traeger werden zum ersten Mal gezaehlt, weil sie zum ersten
+Mal eine Statuszeile fuehren. Beide Zwischenstaende sind gemessen.
+
+### Gemessen
+
+| Behauptung der Vorentscheidung | Urteil |
+|---|---|
+| "`K-36`: die **elf** Module unter `framework/core/`" | **falsch: zwoelf.** `prompts/README.md` fuehrt denselben Steckbrief und ist normativ; die Erhebung von 0.50.0 hatte nur `framework/core/` abgesucht |
+| "Beide Antworten auf `K-36` sind vertretbar" | **falsch.** `CR-2026-001`, der Antrag, der D-11 gebracht hat, nennt Kriterium 3 woertlich "Alle Core-Module, Skills und Packs". Die elf waren von Anfang an gemeint |
+
+**Der eigentliche Befund ist die Definition.** `01-governance.md` Abschnitt 5 Punkt 1
+sagte bis 0.50.0: Modultraeger ist, wer eine Statuszeile fuehrt. **Wer sie weglaesst,
+entkommt dem Lebenszyklus** - und zwoelf taten das, darunter die elf normativsten
+Dokumente des Frameworks. Seit 0.51.0 ist das Merkmal der **Steckbrief**; Pruefung 47
+setzt die Zeile durch.
+
+**Nicht gesucht: eine zweite, strengere Uebergangsbedingung.** `prompts/README.md`
+Abschnitt 7 verlangte fuer `pilot` "mindestens eine dokumentierte Testsitzung je Vorlage
+auf dem Uebungsrepository" - eine Bedingung fuer zwoelf Modultraeger, die in keinem
+Register steht. **Es ist derselbe Fehler, den D-103 sieben Tage zuvor fuer die Skills
+berichtigt hat**, eine Ablage weiter. Aufgeloest mit D-107; die Testsitzung bleibt
+Voraussetzung fuer `aktiv`.
+
+**Nicht gesucht: Versionsregel gegen Statuswechsel.** D-103 hat die Skills ohne
+Versionswechsel gehoben, `RELEASE_PROCESS.md` und `FW-CL-11` verlangen dagegen woertlich
+eine Versionserhoehung bei jeder Aenderung. Beim ersten gehobenen Nicht-Skill-Traeger
+stehen die Saetze gegeneinander; D-106 entscheidet allgemein: **Ein reiner Statuswechsel
+ist keine Versionsaenderung.**
+
+### Geaendert
+
+- **Zwoelf Traeger fuehren eine Statuszeile** (D-105): die elf Module unter
+  `framework/core/` und `prompts/README.md`.
+- **Dreiundzwanzig Traeger stehen auf `pilot`** - die elf Checklisten und die zwoelf
+  Traeger mit dem Kernmodul-Steckbrief. Ohne Versionswechsel und ohne Eintrag im
+  Aenderungsverlauf des einzelnen Traegers (D-106). Die Abnahme je Traeger steht
+  namentlich in `tests/protocols/2026-09-15-gegenpruefung-nicht-skill-traeger.md`
+  Abschnitt 4 und 5.
+- `framework/core/01-governance.md` Abschnitt 5: Punkt 1 definiert den Modultraeger ueber
+  seinen **Steckbrief** und verlangt die Statuszeile als MUSS; neuer Punkt 5 zum
+  Verhaeltnis von Status und Version.
+- `governance/RELEASE_PROCESS.md` Abschnitt 1 und
+  `checklists/11-framework-release.md`: Ein reiner Statuswechsel ist keine Aenderung im
+  Sinne der Versionsregel. Der Pruefpunkt "Alle Core-Module, Skills und Packs tragen
+  einen Status oberhalb von `entwurf`" hat seit 0.51.0 seinen Gegenstand.
+- `prompts/README.md` Abschnitt 7: Die eigene Uebergangsbedingung fuer `pilot` entfaellt
+  (D-107).
+
+### Neu
+
+- **Pruefung 47 - Statusvokabular jedes Modultraegers** (D-108). Vier Gegenstaende:
+  verlorener Anker, Vollstaendigkeit (jeder Steckbrief fuehrt eine Statuszeile),
+  Vokabular (erstes Wort aus den fuenf Statuswerten) und der Ausfuellschlitz, der der
+  Vorlage gehoert - **in beide Richtungen**. Damit ist auch der Preis abgesichert, den
+  D-104 benannt hat: eine kopierte, nicht gefuellte Vorlage.
+- **Fuenf Sonden und drei Gegenproben** in `tests/scripts/probe-pruefungen.py`; die
+  Sondenmenge lautet jetzt "6 und 18 bis 47".
+
+### Bekannte Einschraenkungen
+
+- **41 Traeger stehen weiter auf `entwurf`**: zwoelf Prompt-Vorlagen, sechs
+  Entscheidungsbaeume, sieben Governance-Dokumente, drei `docs/`, zwei
+  `tests/`-Register, vier Onboarding-, zwei Pilot-, drei Client-Pack- und zwei
+  Role-Pack-Dokumente.
+- **Ein Traeger auf `pilot` ist strukturell abgenommen, nicht erprobt** (D-102). Kein
+  Sitzungstest ist gefahren; Kriterium 2 steht unveraendert auf 118, Kriterium 1 auf 29.
+- **`K-38` offen:** Pruefung 46 nennt jede gestiegene Zahl "ein Kriterium ist
+  zurueckgefallen". Am 2026-09-15 war eine davon ein Fortschritt der Messung. Die Zahl
+  war beide Male richtig, ihre Einordnung nicht.
+- **`K-37` unveraendert:** Die Versionszelle der vier Vorlagen hat dieselbe Bauform wie
+  die Statuszelle; Pruefung 47 sichert nur die Statuszelle ab.
+- **Das Hauptdokument** steht weiterhin auf Dokumentversion 0.9.0 (2026-09-10) und
+  behauptet "Alle Module im Status `entwurf`" - mit 0.51.0 fuer 36 Traeger falsch statt
+  fuer dreizehn. Bewusst nicht berichtigt; die Pflicht steht am P3-Posten "Word-Fassung
+  erzeugen".
+
+### Migrationshinweise fuer Overlays
+
+**Keine.** Der Modulstatus ist eine Angabe des Kerns; uebernehmende Projekte lesen ihn
+und setzen ihn nicht. Kein Overlay-Feld, kein Laufzeitartefakt und keine
+Berechtigungsdatei ist betroffen. Wer den Kern aktualisiert, zieht wie immer die
+kompatible Framework-Version in **drei** Traegern nach (`OVERLAY.md`,
+`overlay-manifest.yaml`, Laufzeitfassung `20-project-overlay.md`).
+
 ## [0.50.0] - 2026-09-15
 
 **Das Lebenszyklusmodell des Frameworks ist zum ersten Mal angewendet - und die

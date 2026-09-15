@@ -4,7 +4,7 @@
 |---|---|
 | ID | `FW-CL-03` |
 | Version | `0.1.2` |
-| Status | `entwurf` |
+| Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | nach Preflight und Analyse, unmittelbar bevor der KI-Client erstmals schreiben oder Befehle ausführen soll |
 | Wer | Bearbeiterin oder Bearbeiter |
