@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.54.0 (2026-09-17)
+## Stand nach Release 0.54.1 (2026-09-17)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -191,6 +191,11 @@ nicht als Entlastung.* 0.53.0: *Dieselbe Bedeutung kann ohne die Marke auskommen
 - **Die Messumgebung trug die Ebenen 5 und 6 nicht** – der Packwechsel hat zwei Role
   Packs, zwei Tech Packs und zwei Skills zurückgelassen. Für die sieben abgenommenen
   Zellen ohne Belang, für jede künftige Messung nicht.
+- **Der Migrationshinweis von 0.54.0 war falsch, berichtigt mit 0.54.1.** Das Release
+  ändert **je Projekt genau eine** Datei der Laufzeitschicht: das Testblatt
+  `fw-repo-analyze/TESTS.md` mit seinen vier gefüllten Ergebniszellen. `install.py`
+  kopiert je Skill das ganze Verzeichnis. **Widerlegt hat es nicht eine Prüfung, sondern
+  der nächste Arbeitsschritt** – das Heben der beiden Projekte (`K-46`).
 - **Kriterium 1 unverändert: 23.** Kein `VERIFY`-Marker bearbeitet.
 - **Das Hauptdokument** ist jetzt **vierundvierzig** Releases zurück.
 
