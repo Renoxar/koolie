@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.52.0 (2026-09-15)
+## Stand nach Release 0.53.0 (2026-09-16)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -30,7 +30,7 @@ Zwischenschritt – und weil ihn niemand ausführt, fällt auch nicht auf, dass 
 Falsche zählt. Am 2026-09-15 wurden die vier Befehle zum ersten Mal ausgeführt:
 **alle vier lagen daneben** (`CR-2026-070`, D-98).
 
-**Gezählt von Prüfung 46: Kriterium 1 = 29, Kriterium 2 = 118, Kriterium 3 = 1, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 23, Kriterium 2 = 118, Kriterium 3 = 0, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -39,9 +39,9 @@ ist grün, **dann ist das die Meldung** – erzwungen statt behauptet.
 
 | # | Kriterium (D-11) | Wie Prüfung 46 zählt | Was die alte Regel übersah |
 |---|---|---|---|
-| **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/` |
+| **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/`. **Mit 0.53.0 sind sechs Fundstellen aufgelöst – 29 → 23** (`CR-2026-075`, D-112 bis D-114): drei in der Pfadabbildung des Packs `devin-desktop`, zwei in dessen `root-template/` und eine in `framework/runtime/mcp-config.example.json`, der Quelle der MCP-Vorlage. **Zwei der drei Belege lagen seit dem 2026-09-11 beziehungsweise 2026-09-14 in diesem Repositorium**, ohne dass jemand sie gegen die Marker gehalten hätte |
 | **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte |
-| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 stand über `entwurf`. **Mit 0.50.0 ist das Modell zum ersten Mal angewendet** (`CR-2026-072`, D-102 bis D-104): dreizehn Skills auf `pilot`, und vier Vorlagen tragen statt eines Statuswerts einen Ausfüllschlitz, weil ihr Steckbrief die Kopie beschreibt – **69 → 52**. **Mit 0.51.0 ist der Gegenstand vollständig und das erste Nicht-Skill-Bündel abgenommen** (`CR-2026-073`, D-105 bis D-108): Zwölf Träger ohne Statuszeile haben eine – **52 → 64** –, und 23 gehen auf `pilot`: die elf Checklisten und die zwölf Träger mit dem Kernmodul-Steckbrief. **64 → 41.** **Mit 0.52.0 sind vierzig der einundvierzig übrigen abgenommen – 41 → 1** (`CR-2026-074`, D-109 bis D-111). Der eine Rest ist `clients/devin-desktop/CLIENT_PACK.md`: Sein Steckbrief lässt zwei Aussagen des Frameworks offen, und er geht über `AP2`, nicht über eine Abnahme. Die Übergangsbedingung steht seit 0.50.0 in `01-governance.md` Abschnitt 5; Prüfung 47 setzt seit 0.51.0 Vokabular und Vollständigkeit durch |
+| **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 stand über `entwurf`. **Mit 0.50.0 ist das Modell zum ersten Mal angewendet** (`CR-2026-072`, D-102 bis D-104): dreizehn Skills auf `pilot`, und vier Vorlagen tragen statt eines Statuswerts einen Ausfüllschlitz, weil ihr Steckbrief die Kopie beschreibt – **69 → 52**. **Mit 0.51.0 ist der Gegenstand vollständig und das erste Nicht-Skill-Bündel abgenommen** (`CR-2026-073`, D-105 bis D-108): Zwölf Träger ohne Statuszeile haben eine – **52 → 64** –, und 23 gehen auf `pilot`: die elf Checklisten und die zwölf Träger mit dem Kernmodul-Steckbrief. **64 → 41.** **Mit 0.52.0 sind vierzig der einundvierzig übrigen abgenommen – 41 → 1** (`CR-2026-074`, D-109 bis D-111). Der eine Rest ist `clients/devin-desktop/CLIENT_PACK.md`: Sein Steckbrief lässt zwei Aussagen des Frameworks offen, und er geht über `AP2`, nicht über eine Abnahme. Die Übergangsbedingung steht seit 0.50.0 in `01-governance.md` Abschnitt 5; Prüfung 47 setzt seit 0.51.0 Vokabular und Vollständigkeit durch. **✅ Mit 0.53.0 erfüllt – 1 → 0** (`CR-2026-075`): `AP2` hat die verbindliche Zielversion festgelegt, beide Steckbriefzellen tragen Werte, und der Träger ist abgenommen. **Kein Modulträger des Frameworks steht mehr auf `entwurf`** |
 | **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9. **✅ Erfüllt seit 0.49.0** (`CR-2026-071`, D-100): Die neun sind bestätigt |
 | **5** | Übernahme in ein zweites Projekt nachgewiesen | **zählt Prüfung 46 nicht** – eine Feststellung, keine Zahl. Eine Enthaltung, und sie steht im Kopfkommentar | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
 
@@ -131,6 +131,55 @@ ist nicht nachgezogen.
 ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
+
+### Was 0.53.0 gebracht hat – `AP2`, eine Zielspanne statt eines Punktwerts, und das zweite erfüllte Kriterium
+
+**Kandidat 1 der Übergabe** (`CR-2026-075`, D-112 bis D-114, `K-40` und `K-41` neu,
+`tests/protocols/2026-09-16-AP2-zielversion-devin-desktop.md`,
+`tests/protocols/2026-09-16-wirkungsnachweise-0.53.0.md`).
+
+| Frage | Ergebnis |
+|---|---|
+| Welche Form hat die verbindliche Zielversion? | **Eine Spanne, und sie steht in einer eigenen Steckbriefzeile neben dem gemessenen Punktwert** (D-113). Die vorgelegte Empfehlung lautete auf einen Punktwert; entschieden wurde gegen sie |
+| Und warum war das die bessere Entscheidung? | **Weil der Fall es binnen eines Befehls belegt hat.** Das Pack `claude-code` nennt als geprüfte Clientversion `2.1.267`; installiert war am 2026-09-16 **`2.1.273`**. Sechs Patchstände – und **die Zelle steht seit 0.13.0 unverändert, über vierzig Releases**. Wann der Client gewandert ist, hat niemand gemessen. **Ein Punktwert als Geltungsbereich veraltet lautlos**, weil der Client sich selbst aktualisiert |
+| Wie viele Marker sind aufgelöst? | **Sechs von elf.** Kriterium 1: **29 → 23** |
+| *Nicht gesucht:* Es waren zehn, nicht elf? | **Elf.** Die Übergabe zählte die acht des Packs und die zwei seines `root-template/`. Die MCP-Vorlage, auf die sich einer davon bezieht, wird aber aus `framework/runtime/mcp-config.example.json` erzeugt – **und diese Quelle trägt denselben Marker ein drittes Mal** |
+| Was ist der eigentliche Befund? | **Ein offener Marker ist eine Aussage über den eigenen Belegstand – und auch die veraltet.** Zwei der drei aufgelösten Marker brauchten keine neue Messung: Ihr Beleg lag seit dem 2026-09-11 beziehungsweise 2026-09-14 in diesem Repositorium. Der Marker behauptete weiter, der Gegenstand sei ungeprüft, und zählte in Kriterium 1 mit (D-114) |
+| *Nicht gesucht:* Das Schwesterpack | **Trug dieselbe offene Festlegung – als Satz statt als Ausfüllschlitz.** *„Die verbindliche Zielversion legt `<FRAMEWORK_OWNER>` fest und steht aus"*, seit 0.6.0. **Der Schlitz sperrte den Übergang, der Satz nicht.** D-110 bleibt für seinen Gegenstand richtig; die offene Festlegung war trotzdem dieselbe |
+| *Nicht gesucht:* `K-41` | **Der Satz „ohne geprüfte Clientversion ist keine Einstufung `[TECHNISCH]` zulässig" steht in keinem Kernmodul** – nur im Hauptdokument, das zweiundvierzig Releases zurück ist, und als Erklärtext in einem Ausfüllschlitz der Vorlage. **Keine der siebenundvierzig Prüfungen setzt ihn durch**, und `devin-desktop` hat ihn seit 0.7.0 verletzt – **sechsundvierzig Releases**, bei grünem Lauf |
+| Hat Prüfung 46 gegriffen? | **Ja, und zum ersten Mal bei zwei Kriterien in einem Vorgang:** `gezählt 23, die Standzeile nennt 29` und `gezählt 0, die Standzeile nennt 1`. Sechster Treffer, sechster Fortschritt |
+| War D-106 anzuwenden? | **Nein, und das ist der Punkt.** Ein reiner Statuswechsel ist keine Versionsänderung – dieser Vorgang ist keiner: Er füllt zwei Steckbriefzellen, legt eine dritte an und löst drei Marker auf. Die Version des Packs geht von `0.10.0` auf `0.11.0` |
+
+**Die Lehre, die über den Fall hinausgeht.** 0.50.0: *Eine Marke, die in einem Bestand
+sowohl benutzt als auch benannt wird, taugt nicht als Bedingung.* 0.52.0: *Sie taugt auch
+nicht als Entlastung.* **0.53.0 fügt die Gegenrichtung hinzu:**
+
+> **Dieselbe Bedeutung kann ohne die Marke auskommen.** Eine Suche über den Bestand findet
+> die Fundstellen, die die Marke tragen – nicht die, die dasselbe sagen. Gefunden hat das
+> Schwesterpack keine Suche, sondern die Frage, wo dieselbe Aussage sonst noch steht.
+
+**Und eine zweite, über die eigene Zeitrechnung:** Dieses Repositorium prüft, was es
+zusagt, und nicht, was es über sich selbst behauptet. Ein Marker ist eine Behauptung über
+den eigenen Belegstand; niemand hält sie gegen die Protokolle, die inzwischen dazugekommen
+sind. **Die billigste Messung dieses Releases war das Lesen zweier eigener Protokolle.**
+
+### Was 0.53.0 offen lässt
+
+- **Der Rest von `AP2`, und er kostet Kontingent:** vier sitzungsgebundene Marker (S3, B3,
+  B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask` und `allow`. X2 bleibt
+  dauerhaft offen – sein Gegenstand ist von außen nicht beobachtbar (`K-20`).
+- **`K-40` neu, und es ist der unbezahlte Preis von D-113:** Keine Prüfung rechnet nach,
+  ob die geprüfte Clientversion in der verbindlichen Zielspanne liegt. Die Spanne kann
+  veralten wie der Punktwert, nur langsamer. **Nicht gebaut**, weil die Anweisung vom
+  15.09. weiter gilt: keine neue Prüfung, solange eine Zahl zu senken ist.
+- **`K-41` neu:** Ort und Durchsetzung der `[TECHNISCH]`-Norm.
+- **`K-37`, `K-38`, `K-39` unverändert.**
+- **Kriterium 2 unverändert: 118.** Kein Sitzungstest gefahren. **Ab hier ist es der Posten
+  mit Abstand** – Kriterium 3 und 4 stehen auf null, Kriterium 1 hängt am Rest von `AP2`.
+- **Das Hauptdokument** ist weiterhin zweiundvierzig Releases zurück. Es behauptet „Alle
+  Module im Status `entwurf`" – **mit 0.53.0 für alle 77 Träger falsch** – und nennt als
+  Produktstand die recherchierte Version 3.8.20, während das Pack jetzt `3.9.x` führt.
+  Nicht berichtigt, aus demselben Grund wie bei 0.50.0 bis 0.52.0.
 
 ### Was 0.52.0 gebracht hat – vierzig von einundvierzig Trägern sind abgenommen, der einundvierzigste sperrt sich selbst
 
@@ -1726,7 +1775,7 @@ bis E3) liegen `<FRAMEWORK_OWNER>` zur Einzelentscheidung vor.
 **Offen bei `devin-desktop`:** alle zwölf Prüfmarker. Sie brauchen eine Installation vom KI-Client
 Desktop; nichts aus dem `claude-code`-Protokoll überträgt sich darauf.
 
-**Offen übergreifend:** die verbindliche Zielversion je Client. Das Protokoll hält fest, gegen
+**Offen übergreifend war:** die verbindliche Zielversion je Client – **mit 0.53.0 für beide Packs festgelegt** (`CR-2026-075`, D-112). Das Protokoll hält fest, gegen
 welche Version geprüft wurde (2.1.267); *freigegeben für* eine Version ist das Pack damit
 nicht – das ist eine Festlegung des `<FRAMEWORK_OWNER>`.
 
@@ -2121,9 +2170,9 @@ Textfassung der Abhängigkeiten: AP2 und AP3 folgen auf AP1 und laufen parallel;
 | Ergebnisse | Validierungsprotokoll je Mechanismus (FW-AK-02-Format); aktualisierte Marker; CRs für Abweichungen |
 | Abhängigkeiten | AP1 (Zugang, Planstufe) |
 | Verantwortliche Rolle | DevOps Engineer oder Entwickler mit `<FRAMEWORK_OWNER>` |
-| Abnahmekriterien | kein unbestätigter `[DOK]`-Eintrag mehr; VERIFY-Liste leer oder in CRs überführt |
+| Abnahmekriterien | kein unbestätigter `[DOK]`-Eintrag mehr; VERIFY-Liste leer oder in CRs überführt. **Stand 0.53.0: sechs von elf Fundstellen aufgelöst.** Offen bleiben fünf Zeilen der Fähigkeitsmatrix – S3, B3, B10, A1 und X2 –; **vier davon brauchen einen Sitzungstest und ein Sitzungskontingent**, X2 bezeichnet einen von außen nicht beobachtbaren Gegenstand (`K-20`). Ungemessen bleibt außerdem die Wirkung der Berechtigungskörbe `ask` und `allow` |
 | Risiken | Produktstand ändert sich während der Einführung → Changelog-Beobachtung ab sofort (RELEASE_PROCESS 6) |
-| Offene Entscheidungen | `<TBD: verbindliche Zielversion von Devin Desktop>` |
+| Offene Entscheidungen | **keine mehr.** Die verbindliche Zielversion ist mit 0.53.0 festgelegt (`CR-2026-075`, D-112): Spanne `3.9.x` mit Agent-CLI `3000.10.x`, gemessener Punktwert `3.9.19`. **Sie ist eine Spanne und kein Punktwert** (D-113) – ein Punktwert veraltet, sobald sich der Client aktualisiert, und beim Pack `claude-code` war er zum Zeitpunkt der Festlegung sechs Patchstände alt, ohne dass es jemandem aufgefallen wäre |
 
 ### AP3 – Framework Core (P1)
 

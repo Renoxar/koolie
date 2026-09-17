@@ -2,6 +2,82 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.53.0] - 2026-09-16
+
+**`AP2` ist gefahren: Die verbindliche Zielversion ist festgelegt – als Spanne –, sechs
+VERIFY-Marker sind aufgelöst, und der letzte Modulträger auf `entwurf` ist abgenommen.**
+Gegenstand sind Kriterium 1 und Kriterium 3 von D-11 (`CR-2026-075`, D-112 bis D-114,
+`K-40` und `K-41` neu, `tests/protocols/2026-09-16-AP2-zielversion-devin-desktop.md`,
+`tests/protocols/2026-09-16-wirkungsnachweise-0.53.0.md`).
+
+**Kriterium 1 fällt von 29 auf 23, Kriterium 3 von 1 auf 0.** Damit sind **zwei** der fünf
+Kriterien von D-11 erfüllt, und **kein Modulträger des Frameworks steht mehr auf
+`entwurf`**. Es ist das erste Release, in dem Prüfung 46 bei **zwei** Kriterien zugleich
+gegriffen hat.
+
+### Festgelegt
+
+- **Die verbindliche Zielversion ist eine Spanne, die geprüfte Clientversion ein
+  Punktwert** (D-113). Jedes Client Pack führt ab sofort **zwei** Steckbriefzeilen;
+  `framework/core/01-governance.md` Abschnitt 5 bekommt dafür Punkt 7.
+- **`devin-desktop`: Spanne `3.9.x`, Agent-CLI `3000.10.x`; gemessen `3.9.19` /
+  `3000.10.21` am 2026-09-16.** **`claude-code`: Spanne `2.1.x`; gemessen `2.1.267`**
+  (D-112).
+- **Der Grund, aus dem es eine Spanne ist, steht im Fall selbst:** `claude-code` nannte
+  `2.1.267`, installiert war `2.1.273` – sechs Patchstände. **Die Zelle steht seit 0.13.0 unverändert, also über vierzig Releases**; wann der Client gewandert ist, hat niemand gemessen, und genau das ist der Punkt.
+  Ein Punktwert als Geltungsbereich veraltet lautlos, weil der Client sich selbst
+  aktualisiert.
+
+### Aufgelöst – sechs VERIFY-Marker
+
+- **`clients/devin-desktop/CLIENT_PACK.md`, Berechtigungskonfiguration:** Der Client liest
+  `permissions.deny` aus `.devin/config.json` und führt den `hooks`-Block aus derselben
+  Datei aus. **Ungemessen bleibt die Wirkung von `ask` und `allow`.**
+- **`clients/devin-desktop/CLIENT_PACK.md`, MCP-Konfiguration:** Container `mcpServers`, je
+  Eintrag `command`, `args`, `transport`; drei Ablageorte, **der Standard ist der
+  unversionierte**.
+- **`clients/devin-desktop/CLIENT_PACK.md`, `DEVIN_PROJECT_DIR`:** im Hook-Prozess gesetzt
+  und auf das Projektverzeichnis zeigend.
+- **`clients/devin-desktop/root-template/.devin/README.md`** (zwei Zeilen): dieselben beiden
+  Messwerte.
+- **`framework/runtime/mcp-config.example.json`:** Verweis auf den Belegstand im Client
+  Pack – **werkzeugneutral**, weil der Kern keinen Client als Handelnden nennt (D-02, D-28).
+
+**Zwei der drei Belege lagen seit dem 2026-09-11 beziehungsweise 2026-09-14 in diesem
+Repositorium** (D-114). Ein offener Marker ist eine Aussage über den eigenen Belegstand –
+und auch die veraltet.
+
+### Abgenommen
+
+`clients/devin-desktop/CLIENT_PACK.md` geht von `entwurf` auf `pilot`. **D-106 ist hier
+ausdrücklich nicht angewendet:** Der Vorgang ist kein reiner Statuswechsel, also gehen die
+Versionen von `clients/devin-desktop/CLIENT_PACK.md` auf `0.11.0`, von
+`clients/claude-code/CLIENT_PACK.md` auf `0.18.0`, von `clients/_template/CLIENT_PACK.md`
+auf `0.3.0` und von `framework/core/01-governance.md` auf `0.3.0`, und die
+Änderungsverläufe der beiden Packs bekommen einen Eintrag.
+
+### Offen
+
+- **`K-40`** – keine Prüfung rechnet nach, ob die geprüfte Clientversion in der Zielspanne
+  liegt. Der unbezahlte Preis von D-113.
+- **`K-41`** – der Satz „ohne geprüfte Clientversion keine Einstufung `[TECHNISCH]`" steht
+  in keinem Kernmodul und wird von keiner Prüfung durchgesetzt.
+- **Der Rest von `AP2`:** vier sitzungsgebundene Marker (S3, B3, B10, A1) und die Wirkung
+  von `ask` und `allow`. Sie kosten ein Devin-Kontingent.
+
+### Migrationshinweis für Overlays
+
+**Dieses Release fasst erstmals seit 0.50.0 wieder eine Datei außerhalb von
+`leitwerk-core/` an.** `framework/runtime/mcp-config.example.json` wird als
+`.devin/mcp_config.json.example` beziehungsweise in die Laufzeitschicht des jeweiligen
+Clients installiert; `install.py --update` zieht sie nach. **Geändert hat sich allein der
+Kommentartext** – der Schlüssel `mcpServers` und sein leerer Standardwert bleiben, also
+ändert sich keine Konfiguration eines übernehmenden Projekts.
+
+**Wie bei jedem Release ist der Overlay-Steckbrief in DREI Trägern nachzuziehen**
+(`OVERLAY.md`, die Laufzeitfassung `20-project-overlay.md` und `overlay-manifest.yaml`);
+der Validator meldet sie nacheinander, wenn sie auseinanderlaufen.
+
 ## [0.52.0] - 2026-09-15
 
 **Vierzig der einundvierzig übrigen Nicht-Skill-Träger sind abgenommen; der

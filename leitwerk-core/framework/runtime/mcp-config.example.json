@@ -1,4 +1,4 @@
 {
-  "_comment": "Vorlage. MCP-Server werden erst nach Freigabe je Server im Project Overlay (Abschnitt 13) eingetragen. Standard des Frameworks: keine Server. Dateiname für die aktive Konfiguration laut Dokumentation dieses Clients: <MCP_FILE> (projektweit, versioniert) beziehungsweise <RUNTIME_DIR>/mcp_config.local.json (lokal, nicht versioniert). Zugangsdaten gehören niemals in die versionierte Datei. Exakte Struktur: <VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>.",
+  "_comment": "Vorlage. MCP-Server werden erst nach Freigabe je Server im Project Overlay (Abschnitt 13) eingetragen. Standard des Frameworks: keine Server. Dateiname für die aktive Konfiguration laut Dokumentation dieses Clients: <MCP_FILE> (projektweit, versioniert) beziehungsweise <RUNTIME_DIR>/mcp_config.local.json (lokal, nicht versioniert). Zugangsdaten gehören niemals in die versionierte Datei. Die exakte Struktur ist je Client im Abschnitt 1 seines Client Packs belegt; dieser Kern nennt sie nicht, weil sie clientabhängig ist (D-02, D-28).",
   "mcpServers": {}
 }
