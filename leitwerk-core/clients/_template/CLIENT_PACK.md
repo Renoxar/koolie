@@ -11,11 +11,12 @@
 |---|---|
 | Modul-ID | `CP-<CLIENT_PACK_CODE>` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 | Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner (Rolle) | `<TBD: Rolle>` |
 | Client | `<TBD: Produktname>` |
-| Geprüfte Clientversion | `<TBD: Version; ohne diese Angabe ist keine Einstufung [TECHNISCH] zulässig>` |
+| Verbindliche Zielversion | `<TBD: Versionsspanne, für die dieses Pack gilt, z. B. 4.2.x>` |
+| Geprüfte Clientversion | `<TBD: Punktversion, an der gemessen wurde; ohne diese Angabe ist keine Einstufung [TECHNISCH] zulässig>` |
 | Datum der Prüfung | `<TBD: JJJJ-MM-TT>` |
 
 ## 1. Pfadabbildung

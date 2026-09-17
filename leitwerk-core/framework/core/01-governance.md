@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 | Status | `pilot` |
 
 ## 1. Gegenstand und Geltung (normativ)
@@ -56,3 +56,4 @@ Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welche
 4. **Ein Statuswert ist keine Aussage über das Verhalten eines KI-Clients.** Ob ein Client einem Träger folgt, belegt allein ein Sitzungstest des Testkatalogs. Ein Träger auf `pilot` ist strukturell abgenommen, nicht erprobt.
 5. **Ein Statuswechsel ist keine Versionsänderung.** Er ändert keine Anweisung des Trägers; eine angehobene Version behauptete eine Inhaltsänderung, die es nicht gibt, und löste bei einem Skill nach `08-skill-conventions.md` Abschnitt 7 die erneute Ausführung aller Testfälle aus. Auch der Änderungsverlauf des einzelnen Trägers verzeichnet ihn nicht; festgehalten ist er im Abnahmeprotokoll und im Änderungsverzeichnis des Frameworks (D-103, D-106).
 6. Der Stand aller Modulstatus ist Kriterium 3 von D-11. Prüfung 46 des Validators rechnet ihn bei jedem Lauf aus und hält ihn gegen die Standzeile in `leitwerk-core/docs/ROADMAP.md`; **eine Abweichung in beide Richtungen ist ein Fehler.** Ein Statuswechsel ohne nachgezogene Standzeile lässt den Lauf scheitern.
+7. **Ein Client Pack führt zwei Versionsangaben, und sie beantworten verschiedene Fragen** (D-113): Die **verbindliche Zielversion** ist eine Versionsspanne und sagt, wofür das Pack gilt – sie ist eine Festlegung des Framework Owners. Die **geprüfte Clientversion** ist ein Punktwert und sagt, woran gemessen wurde – sie ist ein Messwert. Beide in einer Zelle zu führen, lässt die Festlegung neben dem Messwert verschwinden; ein Punktwert als Geltungsbereich veraltet, sobald sich der Client aktualisiert, und das Framework setzt seinen Takt nicht. **Ein offener `VERIFY`-Marker gilt als aufgelöst, wenn ein datiertes Protokoll seinen Gegenstand gegen eine Installation innerhalb der Zielspanne misst** – auch wenn das Protokoll älter ist als der Vorgang, der den Marker anfasst (D-114). Die aufgelöste Zeile nennt dann Protokoll und Datum, damit sichtbar bleibt, wie alt der Beleg ist.
