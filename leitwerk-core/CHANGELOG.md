@@ -2,6 +2,37 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.53.1] - 2026-09-17
+
+**Nachtrag zu den Laufzeiten der Abnahmeläufe von 0.53.0.** Kein Träger des Kerns ist
+berührt, keine Zahl von D-11 bewegt sich; geändert ist ein Protokollabschnitt und
+dieses Verzeichnis.
+
+Der Framework Owner hat nach dem Merge mitgeteilt, dass der Arbeitsplatz im Verlauf
+der Sitzung versehentlich heruntergefahren wurde. Das Protokoll nennt die
+Verlangsamung der Läufe C und D „unerklärt" – **wer von dem Ausfall erfährt, schreibt
+ihm die Zahlen zu.** Nachgerechnet an den Epochen der Laufprotokolle: **Er kann es
+nicht gewesen sein.** Lauf C läuft lückenlos über seine gemessenen 5656 s, und die
+Maschine hat während beider Läufe auf jede Fortschrittsabfrage geantwortet – ein
+Ruhezustand ist damit ebenfalls ausgeschlossen. Der Ausfall liegt nach allen vier
+Läufen.
+
+**Und die dritte Erklärung ist belegt.** Nach dem Neustart läuft derselbe Baum in
+**142,3 s** – zeichengleich mit den 141,6 s und 137,1 s der beiden ersten Läufe vom
+16.09. und rund ein Zehntel der 1351,8 s des letzten Laufs vor dem Ausfall. **Die
+Verlangsamung lag an einem Zustand des Arbeitsplatzes, den der Neustart behoben hat**;
+Repositorium, Sondenmenge und Nebenläufigkeit sind entlastet.
+
+**Der Lauf, der es belegt, ist keiner Absicht zu verdanken:** Der Arbeitsplatz wurde
+versehentlich heruntergefahren, und die Mitteilung darüber kam als Nebenbemerkung mit dem
+Zusatz, sie habe wohl keinen Einfluss auf die Auswertung. **Sie hatte den größten von
+allen.**
+
+### Migrationshinweis für Overlays
+
+**Keiner.** Dieses Release ändert keine Datei der Laufzeitschicht und keinen Träger,
+der in ein Projekt installiert wird.
+
 ## [0.53.0] - 2026-09-16
 
 **`AP2` ist gefahren: Die verbindliche Zielversion ist festgelegt – als Spanne –, sechs
