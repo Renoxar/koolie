@@ -2,6 +2,82 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.54.1] - 2026-09-17
+
+**Nachtrag: Der Migrationshinweis von 0.54.0 war falsch.** Kein Traeger des Kerns aendert
+seine Aussage, keine Zahl von D-11 bewegt sich; geaendert sind das
+Aenderungsverzeichnis, zwei Klaerungspunkte und ein Protokoll.
+
+0.54.0 sagte: *"Keiner. Dieses Release aendert keine Datei der Laufzeitschicht und keinen
+Traeger, der in ein Projekt installiert wird."* **Gemessen beim Heben der beiden
+uebernehmenden Projekte, unmittelbar nach dem Merge:**
+
+| Projekt | Client Pack | Dateien ausserhalb `leitwerk-core/` | `git diff --numstat` |
+|---|---|---|---|
+| Uebungsrepositorium | `devin-desktop` | **1** - `.devin/skills/fw-repo-analyze/TESTS.md` | `4  4` |
+| Pilot | `claude-code` | **1** - `.claude/skills/fw-repo-analyze/TESTS.md` | `4  4` |
+
+Die vier geaenderten Zeilen sind **genau die vier Ergebniszellen**, die 0.54.0 gefuellt
+hat. `install.py` kopiert je Skill das **ganze Verzeichnis** in die Laufzeitschicht, und
+ein Skillverzeichnis enthaelt neben `SKILL.md` auch `TESTS.md`. Der Hinweis wurde
+geschrieben in der Annahme, ein Testblatt sei eine Datei des Pruefapparats - **es ist auch
+eine Datei des Skills.**
+
+> **Der wiederkehrende Befundtyp, diesmal an einer Aussage ueber das eigene Erzeugnis.**
+> Die Ableitung war plausibel und falsch, und ein einziger `install.py --update`
+> widerlegt sie. **Wer einen Migrationshinweis schreibt, fuehrt vorher ein
+> `install.py --update` gegen ein uebernehmendes Projekt aus** - ein Hinweis ist eine
+> Aussage ueber ein Erzeugnis, und die wird am Erzeugnis geprueft, nicht am Quelltext.
+
+**Kein Anlass zur Sorge fuer die Projekte:** Beruehrt ist eine Aufzeichnung ueber
+Testergebnisse des Frameworks - keine Regeldatei, kein Hook, keine Berechtigung, keine
+Anweisung. Beide Validatorlaeufe sind unveraendert.
+
+### Geaendert
+
+- `governance/DECISION_LOG.md`: `K-46` neu (gehoert ein Testblatt ueberhaupt in die
+  Laufzeitschicht?); `K-45` um einen zweiten gemessenen Fall erweitert - die Pfadpruefung
+  nimmt historische Dokumente nicht aus, waehrend Pruefung 14 es tut. Gemessen beim
+  Piloten: Die Zahl der Pfadangaben eines nicht installierten Packs steigt von **9 auf
+  12**, weil die beiden neuen Dokumente von 0.54.0 den Pfad des anderen Packs nennen.
+- `CHANGELOG.md`: Der Eintrag zu 0.54.0 behaelt seinen Wortlaut und traegt einen Verweis
+  auf diesen Nachtrag. **Ein Aenderungsverzeichnis, das seine eigenen Fehler loescht, ist
+  keines.**
+- `docs/ROADMAP.md`: Abschnitt zu 0.54.0 um den Befund ergaenzt.
+- `tests/protocols/2026-09-17-nachtrag-migrationshinweis-0.54.1.md` neu.
+
+### Bekannte Einschraenkungen
+
+- **`K-46`:** Ein Projekt sieht die Testergebnisse des Frameworks in seiner
+  Laufzeitschicht, und zwar **ohne dass eine Version sich aendert** - D-119 sagt
+  ausdruecklich, dass das Fuellen einer Ergebniszelle keine Versionsaenderung ist. Wer den
+  Diff seiner Laufzeitschicht liest, findet eine Aenderung ohne Version dahinter. D-119
+  bleibt fuer seinen Gegenstand richtig; offen ist, ob ein Testblatt in die
+  Laufzeitschicht gehoert.
+- **`K-45`, zweiter Fall:** Jedes Protokoll, das einen Lauf gegen ein anderes Client Pack
+  beschreibt, erhoeht dauerhaft eine Warnung in jeder Installation des jeweils anderen
+  Packs.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner - und diesmal ist er gemessen, VOR dem Merge.** Dieses Release fasst `VERSION`,
+`CHANGELOG.md`, `docs/ROADMAP.md`, `governance/DECISION_LOG.md` und ein Protokoll an; keine
+dieser Dateien speist die Laufzeitschicht.
+
+**Gemessen an je einer Kopie beider uebernehmender Projekte, mit dem `leitwerk-core`
+dieses Arbeitsbaums und `install.py --update --dry-run`:**
+
+| Client Pack | angelegt | aktualisiert | unveraendert |
+|---|---|---|---|
+| `claude-code` | 0 | **0** | 58 |
+| `devin-desktop` | 0 | **0** | 64 |
+
+> **Der erste Entwurf dieses Hinweises schrieb 'belegt durch je einen `install.py --update`
+> in beiden uebernehmenden Projekten nach dem Merge' - also einen Beleg, den es zum
+> Zeitpunkt des Schreibens nicht gab.** Das ist derselbe Fehler, den dieses Release
+> behebt, eine Ebene weiter: eine Aussage ueber ein Erzeugnis, geschrieben vor der
+> Messung. **Gefunden im Durchgang vor dem Commit; der Trockenlauf kostete eine Minute.**
+
 ## [0.54.0] - 2026-09-17
 
 **Der erste Sitzungstest des Projekts ist gefahren, und Kriterium 2 von D-11 bewegt sich
@@ -75,6 +151,12 @@ Client gemessen", nicht "fuer alle".
   unveraendert.
 
 ### Migrationshinweis fuer Overlays
+
+> **ACHTUNG: DIESER HINWEIS IST FALSCH und steht hier, weil ein Aenderungsverzeichnis seine
+> eigenen Fehler nicht loescht. Berichtigt mit 0.54.1:** 0.54.0 aendert **je Projekt genau
+> eine** Datei der Laufzeitschicht - das Testblatt `fw-repo-analyze/TESTS.md`, mit den vier
+> Ergebniszellen, die dieses Release gefuellt hat. Gemessen in beiden uebernehmenden
+> Projekten.
 
 **Keiner.** Dieses Release aendert keine Datei der Laufzeitschicht und keinen Traeger,
 der in ein Projekt installiert wird. Uebernehmende Projekte ziehen wie gewohnt
