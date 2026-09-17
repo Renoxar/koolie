@@ -114,6 +114,65 @@ dieselbe), die Nebenläufigkeit ebenfalls (der Faktor hält). Damit bleibt die M
 dafür liegt **kein Messwert** vor. **Eine Zahl ohne Ergebniszeile daneben ist keine
 Erklärung, sondern eine Vermutung** – deshalb steht hier keine.
 
+#### Nachtrag vom 2026-09-17: zwei Erklärungen sind ausgeschlossen, die dritte bleibt offen
+
+**Anlass ist eine Mitteilung des Framework Owners nach dem Merge von 0.53.0:** Der
+Arbeitsplatz ist im Verlauf dieser Sitzung **versehentlich heruntergefahren** und erst
+einen Tag später wieder gestartet worden. Damit liegt eine naheliegende Erklärung für die
+Zahlen dieses Abschnitts auf dem Tisch – **und sie hält nicht.** Nachgerechnet:
+
+| Lauf | Ende (Epoche) | Ende (Ortszeit) |
+|---|---|---|
+| A | 1789526586 | 2026-09-16 04:43:06 |
+| B | 1789526723 | 2026-09-16 04:45:23 |
+| C | 1789532379 | 2026-09-16 06:19:39 |
+| D | 1789533866 | 2026-09-16 06:44:26 |
+
+**Ausgeschlossen: ein Herunterfahren während eines Laufs.** C beginnt mit dem Ende von B
+(04:45:23) und endet 06:19:39 – die Differenz ist **5656 s** und damit zeichengleich mit
+der vom Skript selbst gemessenen Wanduhr. Ein Herunterfahren hätte den Prozess beendet;
+beide Läufe haben regulär mit einer Ergebniszeile abgeschlossen.
+
+**Ausgeschlossen: ein Ruhezustand während eines Laufs.** Ein schlafender Rechner ließe die
+Wanduhr weiterlaufen und würde genau dieses Bild erzeugen – alle acht Bahnen gleichzeitig
+eingefroren, der Parallelfaktor unverändert bei 8,0. **Dagegen steht eine Beobachtung:**
+Der Fortschritt beider Läufe ist während ihrer gesamten Dauer in kurzen Abständen abgefragt
+worden, und **jede Abfrage hat geantwortet** – mit einer gewachsenen Zeilenzahl. Die
+Maschine war durchgehend wach und bedienbar, nur langsam.
+
+**Der Ausfall liegt nach allen vier Läufen**, zwischen dem 2026-09-16 06:44 und dem
+2026-09-17.
+
+**Und die dritte Erklärung ist belegt – durch einen Lauf, den niemand geplant hat.** Nach
+dem Neustart ist derselbe Baum am 2026-09-17 ein fünftes Mal gefahren worden (Lauf E, zur
+Abnahme von 0.53.1):
+
+| Lauf | Tag | Wanduhr | Rechenzeit | Parallelfaktor |
+|---|---|---|---|---|
+| A | 16.09., vor dem Ausfall | 141,6 s | 1119,4 s | 7,9 |
+| B | 16.09., vor dem Ausfall | 137,1 s | 1079,9 s | 7,9 |
+| D | 16.09., vor dem Ausfall | 1351,8 s | 10786,9 s | 8,0 |
+| **E** | **17.09., nach dem Neustart** | **142,3 s** | **1120,5 s** | **7,9** |
+
+**E liegt zeichengleich auf A und B** – 142,3 s gegen 141,6 s, Rechenzeit 1120,5 s gegen
+1119,4 s. Derselbe Baum, dieselbe Sondenmenge, dieselben 254 Ergebniszeilen, dieselbe
+Zeilengleichheit. **Der Unterschied ist der Neustart.**
+
+> ✅ **Damit ist die Verlangsamung nicht mehr unerklärt: Sie lag an einem Zustand des
+> Arbeitsplatzes, den ein Neustart behoben hat.** Das Repositorium, die Sondenmenge und die
+> Nebenläufigkeit sind entlastet – alle drei durch je eine eigene Messung.
+>
+> ⚠️ **Und der Lauf, der es belegt, ist keiner Absicht zu verdanken.** Der Arbeitsplatz ist
+> **versehentlich** heruntergefahren worden; die Mitteilung darüber kam als Nebenbemerkung,
+> ausdrücklich mit dem Zusatz, sie habe wohl keinen Einfluss auf die Auswertung. **Sie hatte
+> den größten von allen** – sie hat aus einer offenen Zahl einen belegten Befund gemacht.
+> **Der Entlastungslauf ist in diesem Projekt eine eigene Gattung** (13.09.); hier ist er
+> zum ersten Mal zugefallen statt gebaut worden.
+
+> **Was der Nachtrag ändert:** Aus „unerklärt" wird „belegt", und der Weg dahin ist der
+> übliche dieses Projekts – **nicht die beste Erklärung suchen, sondern die Erklärungen
+> ausschließen, bis eine übrig bleibt, und für die übrige eine Ergebniszeile vorlegen.**
+
 > ⚠️ **Praktische Folge für die nächste Sitzung, und sie ist die eigentliche Ausbeute
 > dieses Abschnitts:** Die Übergabe nennt bisher „rund zweieinhalb Minuten nebenläufig,
 > rund siebzehn seriell". **Beides hat in dieser Sitzung nicht gehalten** – es waren bis zu
