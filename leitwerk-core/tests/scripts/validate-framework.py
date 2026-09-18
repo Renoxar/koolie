@@ -129,12 +129,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      weil der Client sie nicht liest; gemessen war der Hook eines Projekts so
      einunddreissig Releases lang stumm, bei 0 Fehlern im Lauf. Geprueft wird das
      VORHANDENSEIN - den Inhalt pruefen 15, 16 und 17
- 44. Register der Uebungspraeparationen (D-93): Jede Kennung UEB-NN, die eine
+ 44. Register der Uebungspraeparationen (D-93, D-131): Jede Kennung UEB-NN, die eine
      Vorbedingung des Testkatalogs oder eines dezentralen Testblatts nennt, steht im
      Register in onboarding/exercises/README.md - und jede registrierte Kennung wird von
-     mindestens einem Testfall gebraucht. Sie gleicht ZWEI REGISTER ab, nicht ein
-     Register gegen das Uebungsrepositorium: Das liegt ausserhalb dieses Repositoriums,
-     und ob eine Praeparation dort wirklich liegt, sieht kein Validator
+     mindestens einem Testfall gebraucht. DRITTER GEGENSTAND seit 0.58.0: Jede
+     registrierte Zeile fuehrt eine nichtleere Belegzelle. Sie gleicht ZWEI REGISTER ab,
+     nicht ein Register gegen das Uebungsrepositorium: Das liegt ausserhalb dieses
+     Repositoriums, und ob eine Praeparation dort wirklich liegt, sieht kein Validator
  45. Bytecode des Kerns (D-97): Die .gitignore des Projekts deckt __pycache__ ab,
      und unter <CORE_DIR>/ ist kein Bytecode versioniert. Zwei Gegenstaende, weil
      einer nicht reicht: git liest die .gitignore fuer bereits verfolgte Dateien
@@ -4582,6 +4583,10 @@ def check_hookblock(root: str, man: dict) -> None:
 UEB_REGISTER = "onboarding/exercises/README.md"
 UEB_ANKER = "### Register der Präparationen"
 UEB_KENNUNG = re.compile(r"\bUEB-\d{2}\b")
+# Gegenstand 3 (D-131). Die Spalte wird ueber ihre UEBERSCHRIFT gefunden, nicht ueber
+# ihre Nummer: Eine Erkennungsregel fuer eine Dokumentstruktur gehoert an die Stellung,
+# nicht an eine Zaehlung, die die naechste eingeschobene Spalte verschiebt.
+UEB_BELEGSPALTE = "Wie sie belegt ist"
 
 
 def _ueb_katalogdateien(root: str) -> list:
@@ -4635,6 +4640,33 @@ def check_praeparationsregister(root: str) -> None:
             f"Präparation, die niemand braucht, wird gepflegt und nicht benutzt; "
             f"entweder trägt ein Testfall sie in seine Vorbedingung ein, oder sie fällt "
             f"aus dem Register (D-93)")
+
+    # --- Gegenstand 3: die Belegzelle (D-131) --------------------------------------
+    # UEB-06 stand dreizehn Releases lang im Register und stellte seinen Gegenstand
+    # nicht her. Der Eintrag behauptete, der Testbefehl gebe die Anweisung aus; gemessen
+    # hat das niemand, und er tut es nicht. Ein Vorhandensein belegt sich selbst, ein
+    # Fehlen nicht - und eine Praeparation, deren Gegenstand erst durch einen Lauf
+    # entsteht, ist ein Fehlen, solange niemand den Lauf gefahren hat.
+    zeilen = [z for z in text.split(UEB_ANKER, 1)[1].split("\n") if z.strip().startswith("|")]
+    kopf = next((z for z in zeilen if UEB_BELEGSPALTE in z), None)
+    if kopf is None:
+        err(f"{KERN}/{UEB_REGISTER}: die Registertabelle führt keine Spalte "
+            f"'{UEB_BELEGSPALTE}'. Gegenstand 3 der Prüfung 44 hat seinen Anker verloren "
+            f"und bestünde sonst leise – die Spaltenüberschrift ist Teil des Nachweises "
+            f"(D-23, D-131)")
+        return
+    spalte = tabellenzellen(kopf).index(UEB_BELEGSPALTE)
+    for zeile in zeilen:
+        zellen = tabellenzellen(zeile)
+        treffer = UEB_KENNUNG.findall(zellen[0]) if zellen else []
+        if not treffer:
+            continue
+        if len(zellen) <= spalte or not zellen[spalte]:
+            err(f"{KERN}/{UEB_REGISTER}: die Zeile {treffer[0]} führt keine Belegzelle "
+                f"('{UEB_BELEGSPALTE}'). Ein Registereintrag ohne Beleg ist eine Zusage "
+                f"über einen Mechanismus, den niemand ausgeführt hat – genau der Fall "
+                f"von UEB-06, der dreizehn Releases lang einen Testfall unfahrbar "
+                f"gehalten hat (D-131)")
 
 
 # --- 45: Der Bytecode des Kerns gehoert nicht in die Versionierung (D-97) -----------
