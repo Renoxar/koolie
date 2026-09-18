@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 48, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 50, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -231,8 +231,14 @@ def frei(pfad: str, *kennungen: str) -> None:
 
     Der Waechter prueft Abwesenheit, nicht Eignung: Er ist genau so klug wie die
     Kennung, die man ihm gibt.
+
+    NICHT als Vergabe zaehlt die Zeile, die eine Kennung ausdruecklich als synthetisch
+    und nie vergeben AUSWEIST (Decision Log, Ausnahmemenge von Pruefung 50). Ohne diese
+    Trennung haette der Absatz, der die synthetischen Kennungen schuetzt, sie fuer
+    diesen Waechter zu vergebenen gemacht - gemessen am 2026-09-18 an Gegenprobe 46b.
     """
-    text = lies(pfad)
+    text = "\n".join(z for z in lies(pfad).splitlines()
+                     if not z.lstrip().startswith("**Belegte synthetische Kennungen"))
     for kennung in kennungen:
         if kennung in text:
             raise Praeparationsfehler(
@@ -4103,6 +4109,251 @@ gegenprobe("48b", "Ein Clientpfad in der Ergebnisstatuszelle des Testkatalogs bl
 
 gegenprobe("48c", "Ein Clientpfad in der Roadmap bleibt zulaessig - sie fuehrt die "
                   "Erhebungen je Arbeitspaket", _48_chronik, M48_PFAD)
+
+
+# --- Pruefung 49: ausdruecklicher Skill-Aufruf im Testkatalog (D-146) --------------
+#
+# Der Befund, der sie veranlasst hat, ist am 2026-09-18 an FW-SC-01 gemessen worden: Der
+# Hauptlauf rief `fw-change-small` auf, wurde abgewiesen - neun von zwoelf Kernskills
+# fuehren `triggers` ohne `- model`, und das Pack claude-code bildet das auf
+# `disable-model-invocation: true` ab - und arbeitete den Ablauf nicht nach. Damit fiel
+# Schritt 3 des Skills aus, der die Verwender der geaenderten Einheit erhebt; die
+# Scope-Falle konnte nicht zuschnappen. Die Zelle stand danach als `offen`, und die
+# Ursache wurde einer Regelkollision zugeschrieben, die es nicht gibt (CR-2026-085).
+M49_AUFRUF = "ohne den ausdrücklichen Aufruf"
+M49_ANKER = "kein Skill mit 'triggers' ohne '- model' gefunden"
+P49_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md".replace("/", os.sep)
+P49_KATALOGANKER = "| FW-AK-02 (Basis) |"
+P49_SKILLS = "leitwerk-core/framework/skills".replace("/", os.sep)
+
+
+def _49_skill_ohne_modell(root: str) -> str:
+    """Ein Kernskill, dessen Quelle `triggers` ohne `- model` fuehrt - abgeleitet.
+
+    Die Sonde raet den Namen nicht: Waere er gepflegt, prueften Sonde und Pruefung
+    verschiedene Mengen, und die Sonde bestuende an einem Skill, den es nicht mehr gibt.
+    """
+    basis = P(root, *P49_SKILLS.split(os.sep))
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "SKILL.md")
+        if not os.path.isfile(pfad):
+            continue
+        text = lies(pfad)
+        i = text.find("triggers:")
+        if i < 0:
+            continue
+        block = text[i:text.find("---", 3)] if text.startswith("---") else text[i:i + 200]
+        if "- model" not in block:
+            return name
+    raise Praeparationsfehler(
+        "Kein Kernskill mit `triggers` ohne `- model` - die Sonden zu 49 brauchen einen")
+
+
+def _49_skill_mit_modell(root: str) -> str:
+    """Das Gegenstueck: ein Skill, den das Modell von sich aus waehlen darf."""
+    basis = P(root, *P49_SKILLS.split(os.sep))
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "SKILL.md")
+        if not os.path.isfile(pfad):
+            continue
+        text = lies(pfad)
+        i = text.find("triggers:")
+        if i < 0:
+            continue
+        block = text[i:text.find("---", 3)] if text.startswith("---") else text[i:i + 200]
+        if "- model" in block:
+            return name
+    raise Praeparationsfehler(
+        "Kein Kernskill mit `- model` - die Gegenprobe zu 49 braucht einen")
+
+
+def _49_katalogzeile(root: str, zeile: str) -> None:
+    zeile_nach(P(root, P49_KATALOG), P49_KATALOGANKER, zeile)
+
+
+def _49_nackte_nennung(root: str) -> None:
+    """Der Skillname ohne Schraegstrich im Ausloeser eines `sitzung`-Testfalls.
+
+    Genau die Schreibweise, in der vier Katalogzeilen ihn bis 0.59.1 fuehrten - und in
+    der der Prompt zu FW-SC-01 ihn gar nicht fuehrte.
+    """
+    _49_katalogzeile(root,
+        "| FW-SO-03 | Sondenzeile | Sondenvorbedingung | %s mit Sondenaufgabe "
+        "| Ablehnung | Zugriff | sitzung | offen |" % _49_skill_ohne_modell(root))
+
+
+def _49_anker_verlieren(root: str) -> None:
+    """Ohne `triggers` in den Skillquellen hat Pruefung 49 keine Marken mehr.
+
+    Sie leitet sie von dort ab; geht der Schluessel verloren, faende sie nichts und
+    bestuende leise. Die Sonde belegt, dass sie das Fehlen selbst meldet (D-23).
+    """
+    basis = P(root, *P49_SKILLS.split(os.sep))
+    getroffen = 0
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "SKILL.md")
+        if not os.path.isfile(pfad):
+            continue
+        if "triggers:" in lies(pfad):
+            ersetze(pfad, ("triggers:", "ladeausloeser:"))
+            getroffen += 1
+    if not getroffen:
+        raise Praeparationsfehler(
+            "Keine SKILL.md mit `triggers` - die Ankersonde zu 49 haette nichts zu "
+            "verstellen")
+
+
+def _49_ausdruecklicher_aufruf(root: str) -> None:
+    """Derselbe Skill als `/name` bleibt zulaessig - das ist der Aufruf selbst."""
+    _49_katalogzeile(root,
+        "| FW-SO-04 | Sondenzeile | Sondenvorbedingung | `/%s` mit Sondenaufgabe "
+        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        % _49_skill_ohne_modell(root))
+
+
+def _49_modellaufrufbar(root: str) -> None:
+    """Ein Skill MIT `- model` bleibt nackt zulaessig - der Zuschnitt ist nicht zu breit.
+
+    Ohne dieses Paar meldete die Pruefung jeden Skillnamen und waere eine Stilregel.
+    """
+    _49_katalogzeile(root,
+        "| FW-SO-05 | Sondenzeile | Sondenvorbedingung | %s mit Sondenaufgabe "
+        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        % _49_skill_mit_modell(root))
+
+
+def _49_andere_spalte(root: str) -> None:
+    """Derselbe Name in einer ANDEREN Spalte bleibt zulaessig - die Regel gilt dem Ausloeser.
+
+    Das Gegenstueck zur Spaltenaufloesung: Wer die Zeile statt der Spalte nimmt, meldet
+    auch die Zelle, die das erwartete Verhalten beschreibt - und dort ist die Nennung
+    eine Aussage ueber den Lauf, keine Anweisung an ihn.
+    """
+    _49_katalogzeile(root,
+        "| FW-SO-06 | Sondenzeile | Sondenvorbedingung | Sondenaufgabe "
+        "| Der Lauf nennt %s als zustaendig | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        % _49_skill_ohne_modell(root))
+
+
+def _49_andere_pruefmethode(root: str) -> None:
+    """Eine nackte Nennung bei Pruefmethode `review` bleibt zulaessig.
+
+    Die Regel gilt dem Lauf, nicht dem Lesen: Eine Durchsicht ruft keinen Skill auf.
+    """
+    _49_katalogzeile(root,
+        "| FW-SO-07 | Sondenzeile | Sondenvorbedingung | %s mit Sondenaufgabe "
+        "| Ablehnung | Zugriff | review | bestanden (Sondenbeleg) |"
+        % _49_skill_ohne_modell(root))
+
+
+sonde("49a", "Ein Kernskill ohne Modellzulassung, im Ausloeser eines sitzung-Testfalls "
+             "nackt genannt, wird gemeldet", _49_nackte_nennung, M49_AUFRUF)
+
+sonde("49b", "Ohne `triggers` in den Skillquellen meldet Pruefung 49 den verlorenen "
+             "Gegenstand, statt leise zu bestehen", _49_anker_verlieren, M49_ANKER)
+
+gegenprobe("49a", "Das unveraenderte Repositorium bleibt unbeanstandet - die vier "
+                  "Fundstellen sind auf `/name` gestellt", None, M49_AUFRUF)
+
+gegenprobe("49b", "Derselbe Skill als `/name` bleibt zulaessig - das ist der Aufruf",
+           _49_ausdruecklicher_aufruf, M49_AUFRUF)
+
+gegenprobe("49c", "Ein Skill MIT Modellzulassung bleibt nackt zulaessig - der Zuschnitt "
+                  "ist nicht zu breit", _49_modellaufrufbar, M49_AUFRUF)
+
+gegenprobe("49d", "Derselbe Name in einer anderen Spalte bleibt zulaessig - die Regel "
+                  "gilt dem Ausloeser", _49_andere_spalte, M49_AUFRUF)
+
+gegenprobe("49e", "Eine nackte Nennung bei Pruefmethode `review` bleibt zulaessig - "
+                  "eine Durchsicht ruft keinen Skill auf", _49_andere_pruefmethode,
+           M49_AUFRUF)
+
+
+# --- Pruefung 50: Vollstaendigkeit des Klaerungspunktregisters (D-147) -------------
+M50_FEHLT = "steht in keiner Registerzeile"
+M50_ANKER = "hat ihren Anker verloren"
+P50_LOG = "leitwerk-core/governance/DECISION_LOG.md".replace("/", os.sep)
+P50_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
+# Eine Kennung, die es im Register nicht gibt und nie geben wird - die Sonde vergibt
+# keine echte. 'Eine synthetische Kennung nimmt nie die naechste freie' (0.59.0).
+#
+# ZUSAMMENGESETZT, und das ist kein Trick, sondern der Gegenstand: Dieses Skript liegt
+# im Kern, und Pruefung 50 meldet jede dort GENANNTE Kennung ohne Registerzeile. Stuende
+# sie woertlich hier, muesste sie in die Ausnahmemenge - und dann meldete die Sonde
+# nichts mehr. Eine Sonde, deren Gegenstand die eigene Nennung ist, darf sich nicht
+# selbst nennen - auch nicht in dem Kommentar, der das erklaert. Der erste Entwurf
+# dieses Absatzes tat es, und Pruefung 50 hat ihn gemeldet.
+K50_SYNTH = "K-" + "95"
+
+
+def _50_freie_kennung(root: str) -> str:
+    """Belegt, dass die Sondenkennung im Register wirklich fehlt - sonst misst sie nichts."""
+    if ("| " + K50_SYNTH + " |") in lies(P(root, P50_LOG)):
+        raise Praeparationsfehler(
+            "%s steht bereits im Register - die Sonde zu 50 braucht eine freie Kennung"
+            % K50_SYNTH)
+    return K50_SYNTH
+
+
+def _50_nennung_ohne_register(root: str) -> None:
+    """Eine Kennung wird in einem Kerntraeger genannt und steht in keiner Registerzeile.
+
+    Genau der Fall von K-34 (sieben Traeger, seit 0.32.0) und K-55 (drei Traeger, als
+    'neu' angekuendigt und nie eingetragen).
+    """
+    kennung = _50_freie_kennung(root)
+    pfad = P(root, P50_ROADMAP)
+    schreib(pfad, lies(pfad).rstrip("\r\n") + "\r\n\r\n"
+            + "Sondennachtrag: Offen bleibt die Frage nach dem Sondengegenstand (%s).\r\n"
+            % kennung)
+
+
+def _50_anker_verlieren(root: str) -> None:
+    """Ohne den Absatz mit den synthetischen Kennungen hat Pruefung 50 keine Ausnahme mehr.
+
+    Sie leitet sie von dort ab; geht der Absatz verloren, meldete sie jede Sondenkennung
+    des Pruefapparats als Befund - oder, schlimmer, man naehme die Liste in den Code.
+    """
+    ersetze(P(root, P50_LOG),
+            ("**Belegte synthetische Kennungen", "**Frueher belegte Kennungen"))
+
+
+def _50_nennung_mit_register(root: str) -> None:
+    """Dieselbe Nennung MIT Registerzeile bleibt zulaessig - das ist der erlaubte Fall."""
+    kennung = _50_freie_kennung(root)
+    _50_nennung_ohne_register(root)
+    zeile_nach(P(root, P50_LOG), "| K-56 | Ein dezentrales Testblatt",
+               "| %s | Sondenfrage? | niedrig | Sondenbegruendung | Sondenweg | offen |"
+               % kennung)
+
+
+def _50_synthetische_kennung(root: str) -> None:
+    """Eine synthetische Kennung des Pruefapparats bleibt ohne Registerzeile zulaessig.
+
+    Ohne dieses Paar meldete die Pruefung ihre eigenen Sonden - der Zuschnitt waere zu
+    breit, und die Ausnahme haette keinen belegten Gegenstand.
+    """
+    pfad = P(root, P50_ROADMAP)
+    schreib(pfad, lies(pfad).rstrip("\r\n") + "\r\n\r\n"
+            + "Sondennachtrag: Die Gegenprobe benutzt die synthetische Kennung K-99.\r\n")
+
+
+sonde("50a", "Eine Kennung, die ein Kerntraeger nennt und das Register nicht fuehrt, "
+             "wird gemeldet - der Fall von K-34 und K-55", _50_nennung_ohne_register,
+      M50_FEHLT)
+
+sonde("50b", "Ohne den Absatz mit den synthetischen Kennungen meldet Pruefung 50 den "
+             "verlorenen Anker, statt leise zu bestehen", _50_anker_verlieren, M50_ANKER)
+
+gegenprobe("50a", "Das unveraenderte Repositorium bleibt unbeanstandet - K-34 und K-55 "
+                  "sind nachgetragen", None, M50_FEHLT)
+
+gegenprobe("50b", "Dieselbe Nennung MIT Registerzeile bleibt zulaessig",
+           _50_nennung_mit_register, M50_FEHLT)
+
+gegenprobe("50c", "Eine synthetische Kennung des Pruefapparats bleibt ohne Registerzeile "
+                  "zulaessig - der Zuschnitt ist nicht zu breit", _50_synthetische_kennung,
+           M50_FEHLT)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
