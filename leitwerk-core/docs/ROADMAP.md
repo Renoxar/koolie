@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.54.1 (2026-09-17)
+## Stand nach Release 0.55.0 (2026-09-18)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -30,7 +30,7 @@ Zwischenschritt – und weil ihn niemand ausführt, fällt auch nicht auf, dass 
 Falsche zählt. Am 2026-09-15 wurden die vier Befehle zum ersten Mal ausgeführt:
 **alle vier lagen daneben** (`CR-2026-070`, D-98).
 
-**Gezählt von Prüfung 46: Kriterium 1 = 23, Kriterium 2 = 111, Kriterium 3 = 0, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 23, Kriterium 2 = 105, Kriterium 3 = 0, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -40,7 +40,7 @@ ist grün, **dann ist das die Meldung** – erzwungen statt behauptet.
 | # | Kriterium (D-11) | Wie Prüfung 46 zählt | Was die alte Regel übersah |
 |---|---|---|---|
 | **1** | kein unbearbeiteter `VERIFY`-Marker | Fundstellen **beider** registrierter Markerschreibweisen unter `<CORE_DIR>/`, ohne `build/`, `CHANGELOG.md`, `governance/change-requests/` und `tests/protocols/` | Der `grep` kannte **eine von zwei** Schreibweisen. Die clientgebundene Altform (`PLACEHOLDER_REGISTRY.md`, Frist ebenfalls „vor Version 1.0.0") trägt allein im Pack `devin-desktop` sieben Fundstellen und zwei in dessen `root-template/`. **Mit 0.53.0 sind sechs Fundstellen aufgelöst – 29 → 23** (`CR-2026-075`, D-112 bis D-114): drei in der Pfadabbildung des Packs `devin-desktop`, zwei in dessen `root-template/` und eine in `framework/runtime/mcp-config.example.json`, der Quelle der MCP-Vorlage. **Zwei der drei Belege lagen seit dem 2026-09-11 beziehungsweise 2026-09-14 in diesem Repositorium**, ohne dass jemand sie gegen die Marker gehalten hätte |
-| **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte. **Mit 0.54.0 bewegt sich diese Zahl zum ersten Mal – 118 → 111** (`CR-2026-076`, D-115 bis D-119): der erste Sitzungstest des Projekts, sechzehn Läufe, sieben Ergebniszellen abgenommen. **Ein `bestanden` sagt seither, dass das erwartete Verhalten eingetreten ist – nicht, dass das Framework es bewirkt hat** (D-115), und es nennt das gemessene Client Pack (D-117) |
+| **2** | Testkatalog vollständig protokolliert, kein Testfall `offen` | Ergebniszellen auf `offen` in `tests/TEST_CATALOG.md` **und in jeder `TESTS.md` des Kerns**, gefunden durch Baumdurchlauf | „je Skill" wurde als zwölf Dateien gelesen. Es sind **dreizehn** – `role-packs/requirements-engineering/skills/role-re-ticket/TESTS.md` mit 15 offenen Zellen fehlte. **Mit 0.54.0 bewegt sich diese Zahl zum ersten Mal – 118 → 111** (`CR-2026-076`, D-115 bis D-119): der erste Sitzungstest des Projekts, sechzehn Läufe, sieben Ergebniszellen abgenommen. **Ein `bestanden` sagt seither, dass das erwartete Verhalten eingetreten ist – nicht, dass das Framework es bewirkt hat** (D-115), und es nennt das gemessene Client Pack (D-117). **Mit 0.55.0 bewegt sie sich zum zweiten Mal – 111 → 105** (`CR-2026-077`, D-120 bis D-123): der zweite Sitzungstest, dreiundzwanzig Läufe, sechs Ergebniszellen der Klassen `ZA` und `DS` abgenommen. **Neu ist, was ein `bestanden` bei einem Schranken-Testfall NICHT sagt** (D-122): In allen sechs Hauptläufen ist die verbotene Handlung **null Mal versucht** worden – der Client lehnt auf den Regeltext hin ab, bevor die technische Schranke anlaufen könnte. Die Zelle weist seither je Schicht aus, was belegt ist |
 | **3** | alle Modulstatus oberhalb `entwurf` | **Jede** Steckbriefzeile `\| Status \| … \|` im Kopf einer `.md` des Kerns, verglichen am ersten Wort des Werts | Die Ablagenliste deckte **ein Viertel** des Bestands; `checklists/`, `prompts/`, `governance/`, `decision-trees/` und sechs weitere Ablagen fehlten. **Und `framework/core/` war genannt und trägt gar keine Statuszeile.** Keiner der 69 stand über `entwurf`. **Mit 0.50.0 ist das Modell zum ersten Mal angewendet** (`CR-2026-072`, D-102 bis D-104): dreizehn Skills auf `pilot`, und vier Vorlagen tragen statt eines Statuswerts einen Ausfüllschlitz, weil ihr Steckbrief die Kopie beschreibt – **69 → 52**. **Mit 0.51.0 ist der Gegenstand vollständig und das erste Nicht-Skill-Bündel abgenommen** (`CR-2026-073`, D-105 bis D-108): Zwölf Träger ohne Statuszeile haben eine – **52 → 64** –, und 23 gehen auf `pilot`: die elf Checklisten und die zwölf Träger mit dem Kernmodul-Steckbrief. **64 → 41.** **Mit 0.52.0 sind vierzig der einundvierzig übrigen abgenommen – 41 → 1** (`CR-2026-074`, D-109 bis D-111). Der eine Rest ist `clients/devin-desktop/CLIENT_PACK.md`: Sein Steckbrief lässt zwei Aussagen des Frameworks offen, und er geht über `AP2`, nicht über eine Abnahme. Die Übergangsbedingung steht seit 0.50.0 in `01-governance.md` Abschnitt 5; Prüfung 47 setzt seit 0.51.0 Vokabular und Vollständigkeit durch. **✅ Mit 0.53.0 erfüllt – 1 → 0** (`CR-2026-075`): `AP2` hat die verbindliche Zielversion festgelegt, beide Steckbriefzellen tragen Werte, und der Träger ist abgenommen. **Kein Modulträger des Frameworks steht mehr auf `entwurf`** |
 | **4** | keine Decision Records im Status `entschieden (Vorschlag)` | Nur Zeilen der Form `\| D-NN \|` in `governance/DECISION_LOG.md`, Statuszelle über `tabellenzellen()` | Ein roher `grep` zählte die **Legende**, **fünf Klärungspunkte** und **`D-11` selbst** mit – 16 statt 9. **✅ Erfüllt seit 0.49.0** (`CR-2026-071`, D-100): Die neun sind bestätigt |
 | **5** | Übernahme in ein zweites Projekt nachgewiesen | **zählt Prüfung 46 nicht** – eine Feststellung, keine Zahl. Eine Enthaltung, und sie steht im Kopfkommentar | **erfüllt** – das Übungsrepository wurde nach 0.10.0 über sechs Releases hinweg **aktualisiert** statt neu installiert (`FW-RE-01`). Organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat; D-11 verlangt das nicht |
@@ -73,8 +73,8 @@ widerlegen könnten.
 > im Kontext, weil der Client sie aus einem übergeordneten Verzeichnis lädt – **alle acht
 > waren als Kontrolllauf wertlos, und kein Mechanismus hat es gemeldet.**
 
-> ⚠️ **Von den 111 offenen Zellen nennen sieben eine registrierte Präparation.**
-> Gemessen am 2026-09-17: im Katalog 6 von 28, in den dreizehn Testblättern **1 von 83**;
+> ⚠️ **Von den 105 offenen Zellen nennen sechs eine registrierte Präparation.**
+> Gemessen am 2026-09-17, nachgezählt nach 0.55.0: im Katalog 5 von 22, in den dreizehn Testblättern **1 von 83**;
 > zwölf der dreizehn Blätter nennen keine einzige. Prüfung 44 benennt diese Grenze seit
 > 0.45.0 selbst – **neu ist ihr Umfang** (`K-42`).
 
@@ -145,6 +145,46 @@ ist nicht nachgezogen.
 ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
+
+### Was 0.55.0 gebracht hat – der Hauptlauf misst die technische Schranke nicht, und ein Präfixmuster untererfasst
+
+**Kandidat 1 der Übergabe, fortgesetzt** (`CR-2026-077`, D-120 bis D-123, `K-47` bis `K-49` neu,
+`tests/protocols/2026-09-17-sitzungstest-schranken.md`,
+`tests/protocols/2026-09-18-wirkungsnachweise-0.55.0.md`).
+
+| Frage | Ergebnis |
+|---|---|
+| Wie viele Ergebniszellen sind abgenommen? | **Sechs.** `FW-DS-02`, `FW-ZA-01`, `FW-ZA-02`, `FW-ZA-03`, `FW-ZA-04`, `FW-ZA-06`. **Kriterium 2: 111 → 105** – die zweite Bewegung dieses Kriteriums, und die erste in Folge |
+| Womit gemessen? | **Dreiundzwanzig Läufe** mit dem Client Pack `claude-code` (Produktversion `2.1.274`), 1356,5 s Modellzeit, 12,23 USD, **kein Lauf verworfen**. Sechs Zuschnitte, vier davon erst während der Messung entstanden. Dazu eine Messung **am Hook ohne Sitzung** – zwölf Minuten, kein Kontingent –, und sie ordnet die ganze Reihe: Bei drei der sechs Fälle stehen **zwei** technische Schranken im Pfad |
+| Was ist der Hauptbefund? | **Der Hauptlauf misst die technische Schranke überhaupt nicht** (D-122). In allen sechs Hauptläufen ist die verbotene Handlung **null Mal versucht** worden, zwei Läufe riefen kein einziges Werkzeug auf. Der Client lehnt auf den **Regeltext** hin ab, bevor `deny` oder Hook anlaufen könnten. **Zwei Zellen verlangen die technische Sperre ausdrücklich** – diese Hälfte ist aus dem Hauptlauf allein nicht abnehmbar |
+| Und die Gegenrichtung? | **Die Regelschicht trägt alle sechs Fälle allein.** Im Zuschnitt ohne die technische Schicht – `deny`-Einträge gelöscht, Handlung ausdrücklich freigegeben, Hook entfernt – lehnt der Client in **allen sechs** Fällen ebenso ab. Das ist die stärkere Aussage, nicht die schwächere. **Preis, benannt:** Ein Regeltext ist keine Durchsetzung; er trägt, solange der Client ihn befolgt |
+| Was hat die Berührungsprobe gelernt? | **Sie passte nicht auf einen Unterlassungsfall** (D-120). Bei `FW-DS-02` ist gutes Verhalten gerade das **Nicht**-Öffnen – nach dem Wortlaut von D-116 wäre kein Status außer `offen` zulässig gewesen, **und zwar WEIL der Lauf sich richtig verhalten hat.** Verfahren Nr. 7 trägt seither eine zweite Form: benannt mit Fundstelle, oder ein `permission_denial` |
+| Was ist jetzt gemessen, was vorher dokumentiert war? | **„`deny` gewinnt immer“** (D-121). Im Zuschnitt `V` steht derselbe Befehl zugleich in `allow` und in `deny`; der Lauf ruft ihn auf und wird abgewiesen. `framework/core/03-security.md` führt den Satz seither als `[MESS]` – und von ihm hängen das Netzverbot und das Schreibverbot auf das Kernverzeichnis ab |
+| Der schärfste Befund? | **Das Präfixmuster eines `deny`-Eintrags untererfasst – und das trifft eine `[TECHNISCH]`-Zeile eines ausgelieferten Packs** (D-123). Bei `allow` = `Bash(git:*)` wird `git push origin main` abgewiesen, `git -C <pfad> push origin main` läuft durch und erreicht das Remote. **Ausgelöst hat ihn eine misslungene Gegenprobe** – sie sollte den Push durchlassen und hat ihn abgewiesen |
+| Ist das ein Loch im ausgelieferten Zustand? | **Nein, und der Satz gehört in denselben Absatz.** Der `allow`-Korb führt fünf lesende `git`-Kommandos; was dort nicht steht, fällt ohnehin auf eine Abweisung – gemessen. **Der Gurt hat ein Loch, die Hosenträger halten.** Ein Projekt, das seinen `allow`-Korb auf `Bash(git:*)` verbreitert, verliert den Schutz auf Fernwirkung **ohne jede Meldung** (`K-47`) |
+| Was hat das Gegenprüfen verändert? | **Es hat den Befund verkleinert und geschärft.** Das Messprotokoll ordnete ein, der Vorbehalt zu B6 „verschweigt die Schmalheit“. **Er nennt sie seit 0.15.0** – mit genau der Schreibweise, die gemessen wurde – **und verweist für sie auf Zeile B6, die sie nicht trug.** Zweiundvierzig Releases lang, bei grünem Lauf. Die Abhilfe ist damit eine andere: nicht einen fehlenden Satz ergänzen, sondern einen vorhandenen dorthin stellen, wo die Einstufung steht (`K-48`) |
+| Hat Prüfung 46 gegriffen? | **Ja, zum achten Mal** – `gezählt 105, die Standzeile nennt 111` |
+
+### Was 0.55.0 offen lässt
+
+- **Die Zurechnung zur technischen Schicht bleibt für vier der sechs Fälle offen.** Nur bei
+  `FW-ZA-01` und `FW-ZA-06` hat ein Lauf die Schranke überhaupt angelaufen; bei `FW-ZA-02`
+  entfernt der Zuschnitt, der den Regeltext entfernt, **zugleich den Gegenstand**.
+- **Nur ein Client Pack ist gemessen** (`claude-code 2.1.274`). Für `devin-desktop` ist nichts
+  gemessen (D-117).
+- **`K-47` bis `K-49` sind angelegt und nicht entschieden.** Keine Prüfung wurde gebaut –
+  dieselbe Begründung wie bei 0.54.0, und derselbe Preis.
+- **Der werkzeugneutrale Kern nennt an 17 Stellen in 14 anweisenden Trägern den Dateinamen genau
+  eines Client Packs.** Gefunden beim Fahren dieses Testfalls: Die **Eingabe** von `FW-ZA-02` lautet
+  „Passe AGENTS.md an“ – in der gemessenen `claude-code`-Installation gibt es diese Datei
+  nicht. Am schwersten wiegen sechs Prompt-Vorlagen mit Pfaden in die Skill-Ablage eines Clients und
+  ein **normatives** Kernmodul. **Warum keine Prüfung es meldet, ist der eigentliche Befund:** Die
+  Pfadprüfung liest nur Token in Backticks und meldet nur Pfade, die es **nicht gibt** – im
+  Framework-Repositorium ist genau ein Pack installiert, **dessen Laufzeitschicht existiert und damit
+  unsichtbar ist.** Gemeldet wird stets nur der jeweils andere Client. **Das ist B02 eine Ebene
+  höher.** **Eigener Vorgang, Ziel-Release noch nicht festgelegt** – die Aufzählung liegt fertig vor.
+- **Elf der dreizehn Skill-Testblätter bleiben unberührt**, ebenso `FW-PI-02` bis `FW-PI-04`,
+  die DS-Fälle 04 und 05 und die Klassen NE, SC, FI, KO.
 
 ### Was 0.54.0 gebracht hat – der erste Sitzungstest, und er hat zuerst seine eigene Messumgebung gemessen
 

@@ -308,6 +308,50 @@ enthält eine Lockerung.
 > ⚠️ **Das ist die Bauform „Der Text, der mehr verspricht, als der Mechanismus hält" –
 > und er steht in einer `[TECHNISCH]`-Zeile eines ausgelieferten Packs.**
 
+### 6.1a Nachtrag vom 2026-09-18: die Gegenprüfung am Träger hält die Einordnung von 6.1 nicht
+
+> 🔴 **Der Satz oben – *„Der Vorbehalt nennt die Breite und verschweigt die
+> Schmalheit“* – ist falsch, und das ist beim Umsetzen mit `CR-2026-077`
+> aufgefallen, nicht beim Schreiben.** Er bleibt stehen; ein Protokoll, das seine
+> eigene Fehleinordnung löscht, verliert den Lernwert (dieselbe Entscheidung wie
+> bei 0.54.1 für das Änderungsverzeichnis).
+
+Der Vorbehalt in Abschnitt 4 des Packs `claude-code` lautet **vollständig**:
+
+> *„… Auch unkritische Varianten sind gesperrt. **Ihre Grenze nennt B6: eine andere
+> Schreibweise desselben Befehls, etwa `git -C . push`.**“*
+
+**Der Satz steht dort seit 0.15.0** (`git log -S`, Commit `91d967d` vom 2026-09-10) –
+**zweiundvierzig Releases** (`git log --grep='^Release ' 91d967d..main`, gezählt, nicht
+geschätzt) –, **und er benennt genau die Schreibweise, die `PX2` gemessen hat.**
+
+Daraus folgen drei Feststellungen, und sie sind verschieden:
+
+1. **Die Grenze war notiert und nie gemessen.** Sie stand ohne Belegmarke da – weder
+   `[DOK]` noch `[MESS]`. Seit `PX2` ist sie gemessen, und **sie hält genau so, wie sie
+   aufgeschrieben war.**
+2. **Der Verweis geht ins Leere, und das ist der eigentliche Befund.** Der Satz sagt
+   *„Ihre Grenze nennt B6“* – **und Zeile B6 der Fähigkeitsmatrix nennt sie nicht.**
+   Dort stand ausschließlich *„Wirkt breiter als eine Verweigerung des vollständigen
+   Befehls“*. Wer die `[TECHNISCH]`-Zeile liest, erfährt die Grenze nicht; sie steht in
+   einem Abschnitt, der für sie auf die Zeile zurückverweist. **Ein Verweis innerhalb
+   desselben Trägers, dessen Ziel seinen Inhalt nicht trägt** – Prüfung 12 prüft
+   Pfade, nicht dokumentinterne Verweise (`K-48`).
+3. **Der erste Halbsatz des Vorbehalts bleibt zu weit.** *„`Bash(git reset:*)` sperrt
+   **jedes** `git reset`“* – gesperrt ist jedes Kommando, das mit der **Zeichenfolge**
+   beginnt. Die Zeile ist als reine Verschärfung eingetragen und enthält eine Lockerung.
+
+> ➡️ **Die Lehre, und sie ist neu:** *Ein Befund aus einer Messung gehört gegen den
+> Träger gehalten, bevor er als „der Träger verschweigt es“ eingeordnet wird.* Hier hat
+> der Träger es nicht verschwiegen – **er hat es an der falschen Stelle gesagt und auf
+> eine Stelle verwiesen, an der es fehlt.** **Der Befund wird dadurch kleiner und die
+> Abhilfe eine andere:** nicht „einen fehlenden Satz ergänzen“, sondern „einen
+> vorhandenen Satz dorthin stellen, wo er gebraucht wird, und ihn belegen“.
+
+**Umgesetzt mit 0.55.0** (D-123): Zeile B6 trägt die Grenze und ihren Beleg, der
+Vorbehalt führt beide Richtungen, und die Einleitung des Abschnitts sagt nicht mehr,
+die Abweichung sei eine Verschärfung. **Die Einstufung `[TECHNISCH]` bleibt.**
+
 **Was der Befund NICHT trifft – und das gehört in denselben Absatz:**
 
 In der **ausgelieferten** Fassung ist `Bash` nicht breit freigegeben. Der `allow`-Korb
