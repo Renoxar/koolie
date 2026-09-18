@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-007` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -49,7 +49,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}).
 Scope: Lesen nur in {verdachtsbereich} und den zugehörigen Verwendern innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen: <EXCLUDED_PATHS>, Konfigurations- und Datendateien mit Umgebungswerten, alles außerhalb des Repositorys.
 Kontext: Der folgende bereinigte Fehlerbericht (K2, Freigabe liegt vor), Quellcode des Fehlerpfads (K1), bestehende Tests (K1). Keine weiteren Quellen anfordern oder verwenden.
 Akzeptanzkriterien: Jeder Ursachenkandidat hat mindestens eine Fundstelle (pfad/datei:zeile) und eine Konfidenz (hoch/mittel/niedrig) mit Begründung; ausgeschlossene Ursachen sind mit Beleg ausgeschlossen; die Reproduktionshypothese ist als Schrittfolge formuliert, die ich selbst ausführen kann; fehlende Informationen sind konkret benannt.
-Ausgabeformat: Fehleranalyse nach .devin/skills/fw-error-analyze/SKILL.md Abschnitt 5; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Fehleranalyse nach Abschnitt 5 der SKILL.md des Skills fw-error-analyze; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen.
 
 Vorgehen:

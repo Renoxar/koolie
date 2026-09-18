@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-002` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -47,7 +47,7 @@ Kontrollstufe: vorläufig {kontrollstufe} (Faktor {faktor}); du bestätigst dies
 Scope: Erlaubt sind {vermuteter_bereich} sowie per Suche ermittelte Verwender innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen sind <EXCLUDED_PATHS>, Konfigurations- und Umgebungsdateien mit Werten sowie alles außerhalb des Repositorys.
 Kontext: Aufgabenbeschreibung unten (K2, bereinigt); Quellcode, Tests, Schnittstellenbeschreibungen und Manifestdateien im Scope (K1); {kontextquellen} (K1 laut Overlay-Manifest); Framework-Dateien (K0). Keine K3-Inhalte.
 Akzeptanzkriterien: Jede Aussage zu Komponenten, Verwendern, Schnittstellen und Tests hat eine Fundstelle oder ein protokolliertes Suchmuster; alle dreizehn Faktoren sind bewertet oder als „durch den Menschen festzulegen" gekennzeichnet; der Stufenvorschlag folgt dem Maximumprinzip und ist als nicht bindend gekennzeichnet; fachliche Fragen sind gestellt, nicht beantwortet.
-Ausgabeformat: Änderungsanalyse nach .devin/skills/fw-change-analyze/SKILL.md Abschnitt 5; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Änderungsanalyse nach Abschnitt 5 der SKILL.md des Skills fw-change-analyze; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Ohne Antwort analysierst du nur die belastbaren Teile; der Rest wird als <TBD: …> ausgewiesen und der Stufenvorschlag trägt den Zusatz „unter Vorbehalt offener Fragen".
 
 Aufgabenbeschreibung (Referenz: {referenz}):

@@ -1,9 +1,10 @@
 # Technology Pack `<TECH_PACK_NAME>` – Vorlage
 
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<tech-pack-name>/, ersetze alle Platzhalter,
-     erstelle die Laufzeitfassung .devin/rules/40-tech-<tech-pack-name>.md aus
-     .devin/rules/40-tech-TEMPLATE.md.template (trigger: glob) und trage das Pack in ../README.md
-     und leitwerk-core/OWNERS.md ein. Keine Governance-Regeln, keine Projektwerte.
+     erstelle die Laufzeitfassung unter ../<tech-pack-name>/runtime/40-tech-<tech-pack-name>.md aus
+     der Vorlage 40-tech-TEMPLATE.md.template der Regelablage (trigger: glob) und trage das Pack
+     in ../README.md und leitwerk-core/OWNERS.md ein. Erst die Aktivierung kopiert sie
+     dorthin. Keine Governance-Regeln, keine Projektwerte.
      Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
      steht in leitwerk-core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
 

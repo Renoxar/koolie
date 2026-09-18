@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-001` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -49,7 +49,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, festgelegt im Pref
 Scope: Erlaubt ist ausschließlich {zielpfad} innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen sind <EXCLUDED_PATHS>, Dateien mit Secret-Mustern, Konfigurations- und Datendateien mit Umgebungswerten sowie alles außerhalb des Repositorys.
 Kontext: Quellcode, Build- und Manifestdateien, Tests und Dokumentation in {zielpfad} (K1); {kontextquellen} (K1 laut Overlay-Manifest); Framework-Dateien (K0). Keine K2-Inhalte ohne dokumentierte Freigabe, keine K3-Inhalte.
 Akzeptanzkriterien: Jede Aussage zu Struktur, Einstiegspunkten, Abhängigkeiten, Tests und Konventionen trägt eine Fundstelle; jede Frage des Katalogs ist beantwortet oder das Nichtfinden ist mit Suchmuster belegt; Vermutungen sind gekennzeichnet; ausgeschlossene Pfade wurden nicht gelesen.
-Ausgabeformat: Repository-Analyse nach .devin/skills/fw-repo-analyze/SKILL.md Abschnitt 5, ergänzt um den Abschnitt „Antworten auf den Fragenkatalog"; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Repository-Analyse nach Abschnitt 5 der SKILL.md des Skills fw-repo-analyze, ergänzt um den Abschnitt „Antworten auf den Fragenkatalog"; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Ohne Antwort bearbeitest du nur die belastbaren Teile und kennzeichnest den Rest als <TBD: …>.
 
 Vorgehen:

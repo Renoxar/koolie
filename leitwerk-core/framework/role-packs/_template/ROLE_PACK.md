@@ -1,8 +1,9 @@
 # Role Pack `<ROLE_PACK_NAME>` – Vorlage
 
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<role-pack-name>/, ersetze alle Platzhalter,
-     erstelle die Laufzeitfassung .devin/rules/30-role-<role-pack-name>.md (unter 12.000 Zeichen,
-     trigger: model_decision) und trage das Pack in ../README.md und leitwerk-core/OWNERS.md ein.
+     erstelle die Laufzeitfassung unter ../<role-pack-name>/runtime/30-role-<role-pack-name>.md
+     (unter 12.000 Zeichen, trigger: model_decision) und trage das Pack in ../README.md und
+     leitwerk-core/OWNERS.md ein. Erst die Aktivierung kopiert sie in die Regelablage.
      Keine Governance-Regeln, keine Projektwerte.
      Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
      steht in leitwerk-core/framework/core/01-governance.md Abschnitt 5 (D-104). -->

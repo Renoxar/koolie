@@ -1,7 +1,7 @@
 # Änderungsantrag – Vorlage
 
 <!-- Verwendung: für jede Änderung an Framework Core, Packs, Skills, Checklisten, Prompts,
-     Entscheidungsbäumen, Templates oder an der Berechtigungskonfiguration (.devin/config.json).
+     Entscheidungsbäumen, Templates oder an der Berechtigungsdatei der Laufzeitschicht.
      Einreichen beim zuständigen Owner laut leitwerk-core/governance/RACI.md. Auch KI-Vorschläge zu solchen
      Änderungen laufen ausschließlich über diese Vorlage (V10). -->
 

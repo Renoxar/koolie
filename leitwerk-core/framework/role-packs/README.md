@@ -29,8 +29,10 @@ Neue Packs entstehen aus `_template/ROLE_PACK.md`.
 Jedes Pack legt seine Laufzeitfassung unter `<pack>/runtime/30-role-<pack>.md` ab und seine Skills – falls vorhanden – unter `<pack>/skills/`. Zur Aktivierung werden beide in die Laufzeitschicht kopiert:
 
 ```bash
-cp leitwerk-core/framework/role-packs/<pack>/runtime/30-role-<pack>.md .devin/rules/
-cp -r leitwerk-core/framework/role-packs/<pack>/skills/* .devin/skills/    # falls vorhanden
+# <Regelablage> und <Skill-Ablage> sind die Pfade des installierten Client Packs;
+# ihre Entsprechung je Pack steht in leitwerk-core/docs/RUNTIME_GLOSSARY.md.
+cp leitwerk-core/framework/role-packs/<pack>/runtime/30-role-<pack>.md <Regelablage>/
+cp -r leitwerk-core/framework/role-packs/<pack>/skills/* <Skill-Ablage>/    # falls vorhanden
 ```
 
 `leitwerk-core/install.py` nimmt diesen Schritt bewusst nicht vorweg: **Die Aktivierung eines Packs ist eine Projektentscheidung** (Punkt 4), kein Installationsschritt. Kein Pack ist nach einer Erstinstallation aktiv – auch nicht das Referenzpack `software-development`.

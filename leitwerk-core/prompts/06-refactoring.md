@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-006` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -48,7 +48,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, durch mich festgel
 Scope: Änderungen ausschließlich in {scope_pfade} innerhalb <ALLOWED_PATHS>. Nicht geändert werden Verwender außerhalb des Bereichs, <READ_ONLY_PATHS>, <EXCLUDED_PATHS>, Tests in <TEST_PATHS>, Testkonfiguration, <CI_CONFIG_PATHS>, <QUALITY_GATE_CONFIG_PATHS>. Erlaubte Befehle: <TEST_COMMAND>, <LINT_COMMAND>; keine Befehle mit Fernwirkung, keine destruktiven Git-Befehle.
 Kontext: Quellcode des Bereichs und seiner Verwender (K1); Tests des Bereichs (K1); <PROJECT_RULES_PATH> und Linter-Konfiguration (K1, nur lesen); Architekturvorgaben des Overlays (K1); Plan {plan_oder_freigabe} (K1). Keine K3-Inhalte.
 Akzeptanzkriterien: Der Testnachweis „vorher" liegt vor und ist grün; nach jedem Schritt liefern dieselben Tests dieselben Ergebnisse oder der Schritt wurde zurückgeführt; jeder Schritt folgt genau einem Refactoring-Muster und ist einzeln rücknehmbar; die Verwenderliste ist vor und nach dem Refactoring mit demselben Suchmuster identisch; Tests, Assertions, Testkonfiguration und Quality Gates sind unverändert; <LINT_COMMAND> wurde ausgeführt und unverändert berichtet.
-Ausgabeformat: Refactoring-Protokoll nach .devin/skills/fw-refactor/SKILL.md Abschnitt 5; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Refactoring-Protokoll nach Abschnitt 5 der SKILL.md des Skills fw-refactor; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Zeigen zusammenzuführende Duplikate unterschiedliches Verhalten, ist die Wahl des gültigen Verhaltens eine fachliche Entscheidung: nicht entscheiden, sondern fragen. Ohne Antwort führst du den betroffenen Schritt nicht aus.
 
 Unverändert bleiben: {unveraendert} – in jedem Fall fachliches Verhalten, Randbedingungen, Fehlerbehandlung, Logging, Standardwerte, Ausnahmen, Reihenfolgen mit Seiteneffekten, öffentliche Schnittstellen und Verwender außerhalb des Bereichs.

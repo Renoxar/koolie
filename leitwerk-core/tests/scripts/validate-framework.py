@@ -151,8 +151,17 @@ Prüft (statisch, ohne laufenden KI-Client):
      ihr allein - in beide Richtungen. Bis 0.50.0 griff die Vokabularregel nur in
      einer SKILL.md, und der Modultraeger war ueber die Zeile definiert, die er
      tragen soll: Wer sie weglaesst, entkommt dem Lebenszyklus. Zwoelf taten es
+ 48. Werkzeugneutralitaet des Kerns (D-02, D-128): Kein anweisender Traeger des Kerns
+     nennt einen Pfad oder Dateinamen, der genau einem Client Pack gehoert. Die Marken
+     stammen aus den runtime_placeholders der Manifeste, nicht aus einer gepflegten
+     Liste. Ausgenommen sind Chronik, Werkzeuge und die Abbildungstabellen; die
+     Gattungen stehen in docs/RUNTIME_GLOSSARY.md. In tests/TEST_CATALOG.md steht die
+     Regel nur vor der letzten Zelle - dort ist ein Pfad der Beleg einer Messung. Die
+     Regel galt seit 0.31.0 und wurde von nichts durchgesetzt: Pruefung 12 liest nur
+     Token in Backticks, meldet nur Pfade, die es NICHT GIBT, und fuehrte ihre eigenen
+     Wurzeln clientgebunden. Siebzehn Fundstellen in vierzehn Traegern
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 47 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 48 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -296,20 +305,30 @@ BACKTICK_RE = re.compile(r"`([^`\n]+)`")
 # Nur Pfade unter diesen Wurzeln werden aus Backticks geprüft. Bewusst eng gehalten:
 # Sie benennen Framework-Artefakte und sind damit genau die Verweise, die bei einer
 # Umbenennung oder Umstrukturierung stillschweigend brechen.
-LINK_ROOTS = ("leitwerk-core/", ".devin/", "project-overlay/",
-              "AGENTS.md", "AGENTS.local.md", "README.md")
+#
+# Die Wurzeln des Frameworks stehen fest, die der Laufzeitschicht kommen aus den
+# Manifesten (_link_roots). Bis 0.56.2 standen '.devin/', 'AGENTS.md' und
+# 'AGENTS.local.md' hier WOERTLICH - die Pfade des jeweils anderen Packs waren damit
+# gar kein Kandidat der Heuristik (CR-2026-080). Die Ableitung hat heute keine
+# gemessene Wirkung; sie schafft eine gepflegte Clientliste ab, die ein drittes Client
+# Pack von Hand nachtragen muesste und die niemand nachzaehlt.
+LINK_ROOTS_FEST = ("leitwerk-core/", "project-overlay/", "README.md")
 # Zeichen, die einen Kandidaten als Glob, Platzhalter, Befehl oder Prosa ausweisen.
 NOT_A_PATH = set("*<>|?\"' \t()[]{}$!,")
+#
+# Bis 0.56.2 stand hier zusaetzlich OPTIONAL_RUNTIME_RE: eine Ausnahme fuer die
+# Laufzeitpfade, die erst durch eine Projektentscheidung entstehen (30-, 40-, 2N-,
+# Pack- und Projektskills). Sie ist mit 0.57.0 weggefallen. In drei Zuschnitten
+# gemessen (CR-2026-080): Seit die Client-Bindungs-Warnung nach Pruefung 48 gewandert
+# ist, deckt die Fremdpfaderkennung weiter unten denselben Fall VOLLSTAENDIG ab - ein
+# Verweis unter der Laufzeitwurzel irgendeines Packs laeuft ohnehin nicht in die
+# Totpfadmeldung. Eine Ausnahme, die nichts mehr ausnimmt, ist schlimmer als keine:
+# Sie sieht wie Sorgfalt aus. Und sie hat sich mit der engen Wurzelliste gegenseitig
+# gedeckt - zwei Fehler in derselben Richtung fallen einzeln nicht auf.
+#
 # Dateien mit absichtlich nicht existierenden Beispielpfaden (synthetische Beispiele,
 # Vorlagen, Migrationshinweise auf frühere Stände). Markdown-Links werden auch dort
 # geprüft – nur die Backtick-Heuristik ist ausgesetzt.
-# Laufzeitpfade, die erst durch eine Projektentscheidung entstehen und im Framework-
-# Repository berechtigt fehlen: Laufzeitfassungen aktivierter Packs (30-, 40-),
-# Overlay-Regelerweiterungen (2N-) sowie Pack- und Projekt-Skills. Ein Verweis darauf
-# beschreibt das Ziel einer Aktivierung, nicht eine vorhandene Datei
-# (framework/role-packs/README.md Punkt 4).
-OPTIONAL_RUNTIME_RE = re.compile(
-    r"^\.devin/(?:rules/(?:2\d|30|40)-|skills/(?:role|tech|prj)-)")
 LINK_EXCEPTIONS = (
     "leitwerk-core/docs/PLACEHOLDER_REGISTRY.md",
     "leitwerk-core/CHANGELOG.md",
@@ -1110,6 +1129,34 @@ def _client_runtime_paths(root: str) -> dict:
     return out
 
 
+def _link_roots(root: str) -> tuple:
+    """Wurzeln der Backtick-Heuristik: die festen des Frameworks und die jedes Packs.
+
+    Die Laufzeitwurzeln stammen aus den Manifesten, damit ein neues Client Pack ohne
+    Aenderung an dieser Pruefung erfasst wird - dieselbe Bauform wie
+    _client_actor_names in Pruefung 14.
+    """
+    runtime: set[str] = set()
+    base = os.path.join(root, KERN, "clients")
+    if os.path.isdir(base):
+        for name in sorted(os.listdir(base)):
+            if name.startswith("_"):
+                continue
+            mp = os.path.join(base, name, "manifest.json")
+            if not os.path.exists(mp):
+                continue
+            try:
+                man = json.loads(read(mp))
+            except json.JSONDecodeError:
+                continue
+            if man.get("runtime_dir"):
+                runtime.add(man["runtime_dir"].rstrip("/") + "/")
+            for key in ("root_instruction_file", "root_instruction_local"):
+                if man.get(key):
+                    runtime.add(man[key])
+    return LINK_ROOTS_FEST + tuple(sorted(runtime))
+
+
 def _target_exists(root: str, src_rel: str, target: str) -> bool:
     """Prüft repo-relativ, relativ zur verweisenden Datei und - für Dateien innerhalb
     eines Client Packs - relativ zu dessen root-template."""
@@ -1143,7 +1190,7 @@ def check_links(root: str) -> None:  # noqa: C901
     und Befehlszeilen werden über NOT_A_PATH verworfen statt gemeldet.
     """
     fremdpfade = _client_runtime_paths(root)
-    gebunden: dict[str, list[str]] = {}
+    link_roots = _link_roots(root)
     for path in iter_text_files(root):
         if not path.endswith((".md", ".template")):
             continue
@@ -1162,14 +1209,12 @@ def check_links(root: str) -> None:  # noqa: C901
         seen = set()
         for m in BACKTICK_RE.finditer(text):
             tok = m.group(1).strip()
-            if not tok.startswith(LINK_ROOTS):
+            if not tok.startswith(link_roots):
                 continue
             target = _normalize_target(tok)
             if target is None or target in seen:
                 continue
             seen.add(target)
-            if OPTIONAL_RUNTIME_RE.match(target):
-                continue
             if _target_exists(root, rel, target):
                 continue
             # Gehoert der Pfad zur Laufzeitschicht eines anderen Client Packs, ist es
@@ -1181,16 +1226,11 @@ def check_links(root: str) -> None:  # noqa: C901
             # Laufzeitschicht - dort ist der Pfad richtig, nicht eine Altlast.
             if fremd and re.match(r"leitwerk-core/clients/[^/]+/root-template/", rel):
                 continue
-            if fremd:
-                gebunden.setdefault(fremd, []).append(f"{rel}: {tok}")
-            else:
+            # Ein Pfad eines anderen Packs ist kein toter Verweis, sondern eine
+            # Client-Bindung. Seit 0.57.0 meldet sie Pruefung 48 - als Fehler, ueber
+            # alle Traeger und ohne die drei Grenzen dieser Heuristik (D-128).
+            if not fremd:
                 err(f"{rel}: Pfadangabe existiert nicht: {tok}")
-
-    for client, stellen in sorted(gebunden.items()):
-        warn(f"{len(stellen)} Pfadangaben nennen die Laufzeitschicht des Client Packs "
-             f"'{client}', das hier nicht installiert ist. Im werkzeugneutralen Kern ist das "
-             f"eine Client-Bindung (D-02). Erste Fundstellen: "
-             + "; ".join(stellen[:3]) + ("; …" if len(stellen) > 3 else ""))
 
 
 RUNTIME_PLACEHOLDER_RE = re.compile(
@@ -5027,6 +5067,174 @@ def check_status_vokabular(root: str) -> None:
 
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 48: Der werkzeugneutrale Kern nennt keinen Pfad eines Client Packs
+# ---------------------------------------------------------------------------
+#
+# ANLASS. Gemessen am 2026-09-18 (CR-2026-080, D-128): SIEBZEHN Fundstellen in
+# VIERZEHN anweisenden Traegern nannten den Dateinamen oder das Verzeichnis genau
+# eines Client Packs - darunter sechs Prompt-Vorlagen und mit Abschnitt 2 von
+# 08-skill-conventions.md ein NORMATIVES Kernmodul, dessen Prosa zwei Zeilen tiefer
+# richtig "die Skill-Ablage der Laufzeitschicht" sagt. Die Regel dazu steht seit
+# 0.31.0 in docs/RUNTIME_GLOSSARY.md, und durchgesetzt hat sie nichts.
+#
+# WARUM PRUEFUNG 12 SIE NICHT FAND - drei Gruende, alle nachgelesen:
+#   1. Sie liest nur Token in BACKTICKS. Zehn der siebzehn standen ohne: in einem
+#      Codeblock, in Prosa oder in einem HTML-Kommentar.
+#   2. Sie meldet nur Pfade, die es NICHT GIBT. Im Framework-Repositorium ist genau
+#      ein Pack installiert; dessen Laufzeitschicht existiert und ist damit
+#      unsichtbar. Gemeldet wurde nur der jeweils ANDERE Client.
+#   3. Und ihre Wurzelliste war selbst clientgebunden: LINK_ROOTS fuehrte woertlich
+#      '.devin/', 'AGENTS.md' und 'AGENTS.local.md'. Die Pfade des anderen Packs
+#      waren damit gar kein Kandidat - die Pruefung, die die Bindung melden sollte,
+#      trug sie selbst. Dieser dritte Grund stand in keiner Fassung des Befunds; er
+#      ist beim Nachzaehlen aufgefallen.
+#
+# UND ER HAT SICH BEIM MESSEN VERKLEINERT, nicht vergroessert. Der Verdacht war, die
+# enge Wurzelliste erzeuge in einer Installation des anderen Packs eine Falschmeldung.
+# Drei Zuschnitte sagen: nein. Sie deckte sich mit der zweiten engen Stelle desselben
+# Blocks, OPTIONAL_RUNTIME_RE, die ebenfalls nur '.devin/' kannte - beide waren in
+# DERSELBEN Richtung zu eng und haben einander gedeckt. Die Ableitung aus den
+# Manifesten bleibt trotzdem: Sie schafft eine gepflegte Clientliste ab. Aber sie
+# behebt keine gemessene Falschmeldung, und das gehoert hierhin und nicht weggelassen.
+#
+# DIE MARKEN STAMMEN AUS DEN MANIFESTEN, nicht aus einer gepflegten Liste - dieselbe
+# Bauform wie _client_actor_names in Pruefung 14: Ein neues Client Pack bringt seine
+# Pfade selbst mit und wird ohne Aenderung an dieser Pruefung erfasst.
+#
+# DREI GATTUNGEN SIND AUSGENOMMEN, und sie stehen in docs/RUNTIME_GLOSSARY.md und
+# nicht nur hier - eine Ausnahme, die allein im Quelltext steht, ist keine Regel:
+#   * CHRONIK berichtet einen vergangenen Stand. Ihn nachtraeglich zu glaetten,
+#     zerstoert die Nachvollziehbarkeit. docs/ROADMAP.md gehoert dazu: Sie fuehrt die
+#     Erhebungsergebnisse der Arbeitspakete und die Befundberichte je Release.
+#   * WERKZEUGE (.py) stellen Installationen her oder pruefen sie; sie MUESSEN Pfade
+#     nennen. Diese Datei ist selbst eines davon.
+#   * Die ABBILDUNGSTABELLEN - Glossar, Platzhalterregister und die Client Packs -
+#     muessen beide Namen nennen; dort ist der Pfad der Inhalt.
+#
+# EINE VIERTE AUSNAHME TRAEGT EINE FRIST. build/ haelt die Quellen des Hauptdokuments;
+# es ist ueber vierzig Releases zurueck und wird mit AP11 (~0.69.0) neu gesetzt. Die
+# Ausnahme faellt mit diesem Schritt, und sie steht dort in der Roadmap.
+#
+# EINE SPALTE STATT EINER DATEI. In tests/TEST_CATALOG.md ist die letzte Zelle einer
+# Tabellenzeile der Ergebnisstatus; ein Pfad dort nennt, was ein Lauf gelesen hat, und
+# gehoert zum gemessenen Client Pack (D-117). Die anweisenden Spalten derselben Zeile
+# stehen unter der Regel - die Eingabe "Passe AGENTS.md an" war eine davon. Denselben
+# Zuschnitt - die LETZTE Zelle - benutzt Pruefung 46 fuer den Ergebnisstatus.
+#
+# GRENZE. Sie findet die PFADE eines Packs, nicht seinen Produktnamen. "Devin Desktop"
+# in einem Kerntext laesst D-28 ausdruecklich zu, und Pruefung 14 setzt genau das
+# durch. Ob diese Erlaubnis zu weit reicht - fuenfzehn Fundstellen in zehn Traegern,
+# darunter der Titel des Onboarding-Leitfadens -, ist K-52 und nicht entschieden.
+P48_AUSGENOMMEN = (
+    # Ein Client Pack DARF die Pfade seines Clients nennen.
+    KERN + "/clients/",
+    # Frist: faellt mit AP11 (~0.69.0), wenn das Hauptdokument neu gesetzt wird.
+    KERN + "/build/",
+)
+# Chronik nach docs/RUNTIME_GLOSSARY.md. Dieselbe Menge wie ACTOR_HISTORY, um
+# docs/ROADMAP.md erweitert: Sie fuehrt die Erhebungen je Arbeitspaket.
+P48_CHRONIK = ACTOR_HISTORY + (KERN + "/docs/ROADMAP.md",)
+# Die Abbildungstabellen selbst.
+P48_ABBILDUNG = (KERN + "/docs/RUNTIME_GLOSSARY.md",
+                 KERN + "/docs/PLACEHOLDER_REGISTRY.md")
+# Traeger, in denen die LETZTE Tabellenzelle ein Beleg ist und kein Anweisungstext.
+P48_ERGEBNISSPALTE = (KERN + "/tests/TEST_CATALOG.md",)
+ZELLTRENNER_RE = re.compile(r"(?<!\\)\|")
+
+
+def _client_pfadmarken(root: str) -> list:
+    """(Pfad, Clientname) je Laufzeitartefakt jedes Client Packs, laengste zuerst.
+
+    Quelle sind die runtime_placeholders der Manifeste - nicht eine gepflegte Liste.
+    <CLIENT_NAME> traegt keinen Pfad, und <CORE_DIR> gehoert der Installation und
+    keinem Client (docs/PLACEHOLDER_REGISTRY.md).
+
+    Laengste zuerst, damit '.claude/skills' als sich selbst zaehlt und nicht als
+    '.claude': Wer kurz vor lang prueft, zaehlt dieselbe Stelle zweimal.
+    """
+    marken: dict[str, str] = {}
+    base = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(base):
+        return []
+    for name in sorted(os.listdir(base)):
+        if name.startswith("_"):
+            continue
+        mp = os.path.join(base, name, "manifest.json")
+        if not os.path.exists(mp):
+            continue
+        try:
+            man = json.loads(read(mp))
+        except json.JSONDecodeError:
+            continue
+        client = man.get("client", name)
+        for schluessel, wert in (man.get("runtime_placeholders") or {}).items():
+            if schluessel in ("<CLIENT_NAME>", "<CORE_DIR>") or not wert:
+                continue
+            marken.setdefault(wert, client)
+    return sorted(marken.items(), key=lambda kv: (-len(kv[0]), kv[0]))
+
+
+def _belegspalte(zeile: str) -> int:
+    """Spaltenindex, ab dem die LETZTE Zelle einer Markdown-Tabellenzeile beginnt.
+
+    Keine Tabellenzeile - oder eine ohne Inhalt hinter dem letzten Trenner - liefert
+    die Zeilenlaenge; dann liegt kein Treffer dahinter und alles steht unter der Regel.
+    """
+    if not zeile.lstrip().startswith("|"):
+        return len(zeile)
+    trenner = [m.start() for m in ZELLTRENNER_RE.finditer(zeile)]
+    if len(trenner) < 2:
+        return len(zeile)
+    # Die letzte Zelle liegt zwischen dem vorletzten und dem letzten Trenner.
+    return trenner[-2] + 1
+
+
+def check_tool_neutrality(root: str) -> None:
+    """Pruefung 48 (D-02, D-128): Kein anweisender Kerntraeger nennt einen Clientpfad."""
+    marken = _client_pfadmarken(root)
+    if not marken:
+        err(f"{KERN}/clients/: kein Client Pack mit runtime_placeholders gefunden – "
+            f"Prüfung 48 leitet ihre Marken daraus ab und hat ihren Gegenstand "
+            f"verloren; sie bestünde sonst leise (D-23)")
+        return
+    for path in iter_text_files(root):
+        if not path.endswith((".md", ".template")):
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith(KERN + "/"):
+            continue
+        if rel.startswith(P48_AUSGENOMMEN + P48_CHRONIK + P48_ABBILDUNG):
+            continue
+        if os.path.basename(rel) in ACTOR_HISTORY_BASENAMES:
+            continue
+        belegspalte = rel in P48_ERGEBNISSPALTE
+        for i, zeile in enumerate(read(path).splitlines(), 1):
+            ab = _belegspalte(zeile) if belegspalte else len(zeile)
+            belegt = [False] * (len(zeile) + 1)
+            for marke, client in marken:
+                start = 0
+                while True:
+                    j = zeile.find(marke, start)
+                    if j < 0:
+                        break
+                    start = j + 1
+                    ende = j + len(marke)
+                    if j >= ab or any(belegt[j:ende]):
+                        continue
+                    # Teil eines laengeren Namens ist kein Treffer.
+                    if (j and (zeile[j - 1].isalnum() or zeile[j - 1] in "/._-")):
+                        continue
+                    if zeile[ende:ende + 1].isalnum() or zeile[ende:ende + 1] in "._-":
+                        continue
+                    for k in range(j, ende):
+                        belegt[k] = True
+                    err(f"{rel}:{i}: '{marke}' gehört der Laufzeitschicht des Client "
+                        f"Packs '{client}'. Der Kern ist werkzeugneutral (D-02) und "
+                        f"nennt den Begriff, nicht den Pfad – die Entsprechung je Pack "
+                        f"steht in {KERN}/docs/RUNTIME_GLOSSARY.md (D-128)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -5091,6 +5299,7 @@ def main() -> int:
     check_bytecode_versioniert(root)
     check_d11_stand(root)
     check_status_vokabular(root)
+    check_tool_neutrality(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:

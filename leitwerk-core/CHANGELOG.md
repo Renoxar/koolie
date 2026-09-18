@@ -2,6 +2,104 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.57.0] - 2026-09-18
+
+**Der werkzeugneutrale Kern war an ein Client Pack gebunden - siebzehn Fundstellen in
+vierzehn anweisenden Traegern** (`CR-2026-080`, D-128; `K-52` neu). Die Regel dazu steht
+seit 0.31.0 in `docs/RUNTIME_GLOSSARY.md`: *"Im Kern wird ausschliesslich der Begriff
+verwendet."* **Durchgesetzt hat sie nichts.**
+
+Betroffen waren sechs Prompt-Vorlagen, die beiden Pack-Vorlagen, die Antragsvorlage, ein
+Entscheidungsbaum, ein Grenzfall, zwei Eingabezellen des Testkatalogs, das
+Role-Pack-README - und mit `framework/core/08-skill-conventions.md` Abschnitt 2 ein
+**normatives** Kernmodul.
+
+**Der schaerfste Einzelfall traegt seine Widerlegung im eigenen Abschnitt:** Der Ablagebaum
+von `08-skill-conventions.md` zeigte das Verzeichnis eines Packs, und der Absatz direkt
+darunter sagte seit jeher richtig "die Skill-Ablage der Laufzeitschicht". **Die falsche von
+beiden war die normative Form.**
+
+### Warum keine der 47 Pruefungen es gemeldet hat - drei Gruende
+
+1. **Pruefung 12 liest nur Token in Backticks.** Zehn der siebzehn standen ohne - im
+   Codeblock, in Prosa oder im HTML-Kommentar.
+2. **Sie meldet nur Pfade, die es NICHT GIBT.** Im Framework-Repositorium ist genau ein
+   Pack installiert; dessen Laufzeitschicht existiert und ist damit unsichtbar. Das ist
+   **`B02` eine Ebene hoeher**.
+3. **Ihre eigene Wurzelliste war clientgebunden.** `LINK_ROOTS` fuehrte woertlich
+   `.devin/`, `AGENTS.md` und `AGENTS.local.md`; die Pfade des anderen Packs waren gar
+   kein Kandidat. **Die Pruefung, die die Client-Bindung melden sollte, trug sie selbst.**
+
+### Und der dritte Grund ist beim Messen KLEINER geworden
+
+Der Verdacht war eine Falschmeldung in einer Installation des anderen Packs. **Drei
+Zuschnitte sagen: nein.** `LINK_ROOTS` und `OPTIONAL_RUNTIME_RE` waren in **derselben
+Richtung** zu eng und haben einander gedeckt - die erste Enge verhinderte, dass die zweite
+je auffiel.
+
+**Eine neue Bauform fuer den Befundkatalog:** neben *"die Zusage, die mehr verspricht als
+sie leistet"* steht jetzt *"zwei Stellen, die einander decken"*. Einzeln waere jede
+aufgefallen; zusammen sahen sie aus wie ein Lauf ohne Befund.
+
+### Hinzugefuegt
+
+- **Pruefung 48** (`tests/scripts/validate-framework.py`): Kein anweisender Kerntraeger
+  nennt einen Pfad, der genau einem Client Pack gehoert. **Die Marken stammen aus den
+  `runtime_placeholders` der Manifeste, nicht aus einer gepflegten Liste** - ein neues
+  Client Pack bringt seine Pfade selbst mit. Vier Sonden und drei Gegenproben in
+  `probe-pruefungen.py`; Sondenmenge jetzt `6 und 18 bis 48`.
+- `docs/RUNTIME_GLOSSARY.md`: **die vier Ausnahmegattungen, vollstaendig und mit
+  Begruendung je Gattung** - Chronik (um `docs/ROADMAP.md` erweitert), Werkzeuge (`.py`),
+  die Abbildungstabellen und, **mit Frist bis `AP11`**, `build/`. Dazu die Spaltenregel
+  fuer den Testkatalog. Version `0.1.1` -> `0.2.0`.
+- `governance/DECISION_LOG.md`: **D-128** neu; **`K-52`** neu - reicht die Erlaubnis aus
+  D-28, den Produktnamen im Kern zu nennen, zu weit?
+
+### Geaendert
+
+- Vierzehn anweisende Traeger nennen jetzt den **Begriff** statt des Pfades:
+  `prompts/01`, `02`, `03`, `05`, `06`, `07`, `framework/core/08-skill-conventions.md`,
+  `framework/role-packs/README.md`, `framework/role-packs/_template/ROLE_PACK.md`,
+  `framework/tech-packs/_template/TECH_PACK.md`, `governance/CHANGE_REQUEST_TEMPLATE.md`,
+  `decision-trees/03-analyze-or-modify.md`, `tests/EDGE_CASES.md`, `tests/TEST_CATALOG.md`.
+- **Nebenbefund, mitbehoben:** Beide Pack-Vorlagen wiesen die Laufzeitfassung in die
+  **Regelablage** statt in die Quellablage `<pack>/runtime/`. Wer ihnen woertlich folgte,
+  legte die Datei dorthin, wo `install.py --update` sie nie anfasst.
+- `tests/scripts/validate-framework.py`: `LINK_ROOTS` wird aus den Manifesten abgeleitet.
+  **Ohne gemessene Wirkung** - sie schafft eine gepflegte Clientliste ab, die ein drittes
+  Client Pack nachtragen muesste und die niemand nachzaehlt.
+- `docs/ROADMAP.md`: Releaseplanzeile `0.57.0` erledigt; **die Frist der `build/`-Ausnahme
+  steht bei `AP11`**; Rueckblick und "Was 0.57.0 offen laesst".
+
+### Entfernt
+
+- **`OPTIONAL_RUNTIME_RE`** aus `validate-framework.py`. Seit die Client-Bindungs-Warnung
+  nach Pruefung 48 gewandert ist, deckt die Fremdpfaderkennung denselben Fall
+  vollstaendig ab - **in drei Zuschnitten gemessen**. Eine Ausnahme, die nichts mehr
+  ausnimmt, ist schlimmer als keine: Sie sieht wie Sorgfalt aus.
+- Die Client-Bindungs-**Warnung** am Ende von `check_links`. Derselbe Gegenstand ist in
+  Pruefung 48 ein **Fehler**, ueber alle Traeger und ohne die drei Grenzen der Heuristik.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner - und das ist gemessen, nicht abgeleitet.** `install.py --update --dry-run` gegen
+je eine Kopie beider uebernehmender Projekte mit dem `leitwerk-core` dieses Arbeitsbaums:
+**0 angelegt, 0 aktualisiert** (Pilot 58 unveraendert, Uebungsrepositorium 64). **Keiner
+der vierzehn geaenderten Traeger wird gerendert** - genau deshalb hilft dort kein
+Platzhalter.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 48 prueft die Schreibweise, nicht die Sache** - derselbe Gegenpreis wie bei
+  `K-40`. Ein Kerntext, der ein Laufzeitverzeichnis in Prosa umschreibt, laeuft durch.
+- **Sie findet Pfade, keine Produktnamen.** Fuenfzehn Nennungen in zehn Traegern, zwei
+  davon im Titel, bleiben offen: `K-52`.
+- **Die `build/`-Ausnahme hat eine Frist und keine Pruefung, die sie mahnt** - nur die
+  Zeile bei `AP11` in der Roadmap.
+- **Die Versionszellen der beiden Pack-Vorlagen sind bewusst nicht gehoben** (`K-37`).
+- **Dieses Release bewegt keine Zahl von D-11**: Kriterium 1 bleibt 23, Kriterium 2 bleibt
+  105.
+
 ## [0.56.2] - 2026-09-18
 
 **Die Umbenennung wird vorgezogen: Sie ist der letzte inhaltliche Schritt vor 1.0.0 -

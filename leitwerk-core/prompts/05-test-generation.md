@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-005` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
@@ -47,7 +47,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, durch mich festgel
 Scope: Erlaubt sind neue und bestehende Testdateien der Komponente in <TEST_PATHS>. Ausgeschlossen sind Produktivcode in <ALLOWED_PATHS>, <READ_ONLY_PATHS>, <EXCLUDED_PATHS>, Testkonfiguration, <QUALITY_GATE_CONFIG_PATHS>, <CI_CONFIG_PATHS>, Abhängigkeiten und Lockfiles.
 Kontext: Quellcode von {komponente} und ihrer direkten Abhängigkeiten (K1); bestehende Tests {bestehende_tests}, Fixtures und Testhilfen (K1); Testkonfiguration von <TEST_FRAMEWORK> (K1, nur lesen); <PROJECT_RULES_PATH> (K1); fachliche Erwartungen unten (K1 oder K2, bereinigt). Keine Echtdaten, keine K3-Inhalte.
 Akzeptanzkriterien: Jeder Testfall ist einer belegten Erwartung zugeordnet (Akzeptanzkriterium, Dokumentation oder Codefundstelle); je Verhalten sind Normalfall, Randbedingungen und Fehlerfälle getestet oder als nicht abgedeckt gelistet; Testnamen beschreiben das erwartete Verhalten; kein Test verifiziert ausschließlich Mocks oder interne Aufrufreihenfolgen; ausschließlich synthetische, gekennzeichnete Testdaten; bestehende Tests, Assertions und Schwellenwerte unverändert; <TEST_COMMAND> ausgeführt und unverändert berichtet.
-Ausgabeformat: Testerstellung nach .devin/skills/fw-tests/SKILL.md Abschnitt 5; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Testerstellung nach Abschnitt 5 der SKILL.md des Skills fw-tests; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Ist das erwartete Verhalten eines Falls weder aus den Erwartungen noch aus Code oder Dokumentation belegbar (insbesondere Randbedingungen, Rundung, Zeitzonen, Leerwerte), schreibst du dafür keinen Test, sondern führst den Fall als <TBD: …> in der Liste nicht abgedeckter Fälle.
 
 Fachlich erwartetes Verhalten:
