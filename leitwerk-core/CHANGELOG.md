@@ -2,6 +2,137 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.65.0] - 2026-09-18
+
+**Die Vorbedingungen des fuenften Sitzungstests, zweiter Durchgang: die Abhilfe von
+0.63.0 wirkt in der Quelle und nicht in der Schicht, die bindet** (`CR-2026-090`, D-170
+bis D-174, `K-69` neu).
+
+Der Releaseplan sah fuer 0.65.0 den fuenften Sitzungstest vor. **Vor dem ersten Lauf sind
+seine sieben Vorbedingungen ein zweites Mal durchgegangen worden** - der erste Durchgang
+liegt fuenf Releases zurueck, und seither haben 0.62.0, 0.63.0 und 0.64.0 an denselben
+Gegenstaenden gearbeitet. Die Lehre des Vorreleases verlangt es (D-164): *Wer eine Zahl
+aus einem anderen Release uebernimmt, uebernimmt deren Stand.* **Acht Befunde, ein
+Vormittag, kein Kontingent** - zum neunten Mal in Folge war der Durchgang vor dem Eingriff
+der billigste Befund des Releases.
+
+### Der teuerste Befund liegt ausserhalb des Kerns
+
+0.63.0 hat die Sperre des Uebungs-Overlays von `.github/**` auf `.github/workflows/**`
+eingeengt (D-161), damit `SK-012-P01` die Merge-Request-Vorlage lesen darf - **einen
+Traeger, den `fw-mr-description` ausdruecklich als zulaessige Kontextquelle fuehrt.**
+
+| Traeger | Wert | Bindet er? |
+|---|---|---|
+| `project-overlay/OVERLAY.md` | `.github/workflows/**` | nein - Quelle |
+| `.devin/rules/20-project-overlay.md` | 🔴 `.github/**` | **ja** |
+| `.devin/config.json` | 🔴 `Read(.github/**)`, `Write(.github/**)` | **ja, technisch** |
+
+**Die Einengung stand allein in der Quelle.** Die Zeile der Laufzeitfassung ist seit dem
+ersten Commit jenes Repositoriums unveraendert; `git log -S` sagt es. **Damit war die Lage
+die vor D-161**, und `SK-012-P01` blieb unfahrbar - samt drei Zellen, die es ueber „wie
+P01" erben.
+
+**Drei Pruefungen sahen es nicht, jede aus einem eigenen Grund:** Pruefung 56 loest ueber
+die Bindungszeile der **Quelle** auf; Pruefung 55b fragt nach der **Bindung**, nicht nach
+dem **Wert** (ihr Kopfkommentar sagt es seit 0.63.0 woertlich); `--strict-overlay`
+vergleicht Quelle und Laufzeitfassung allein im **Status** - der Abgleich der uebrigen
+Werte ist seit `CR-2026-044` E4 offen.
+
+🔴 **Und das Quell-Overlay behauptete die Uebernahme selbst:** *„Diese Werte sind in
+`.devin/config.json` und `.devin/rules/20-project-overlay.md` uebernommen. Bei Widerspruch
+gilt die restriktivere Angabe."* Der erste Satz war fuer einen von sechs Werten falsch,
+**und der zweite machte den Widerspruch folgenlos - zugunsten des falschen Werts.**
+➡️ **Eine Konfliktregel, die immer zugunsten des Alten ausgeht, verhindert keine Drift,
+sondern konserviert sie.**
+
+### `FW-PO-02` ist fahrbar - der abgeleitete Gegenstand gegen den aufgeschriebenen
+
+D-144 hielt die Zelle fuer unmessbar: *„Der Testfall misst, ob der Client den Ablauf von
+sich aus geht - ein Prompt, der die Skills nennt, misst den Prompt."* **Die Zelle sagt
+etwas anderes, und sie sagt es in zwei Spalten:** Erwartet wird *„alle Halte-Punkte,
+Berichte und Formate eingehalten"*, Fehlerbild ist *„Umsetzung ohne Planbestaetigung"*.
+**Die Werkzeugwahl steht in keiner von beiden.**
+
+**Und Ue3 schreibt jeden ihrer vier Schritte selbst als `/name`** - die Uebung setzt den
+Aufruf durch eine Person voraus. Ein Prompt, der sie nennt, bildet Ue3 nach, statt sie zu
+ersetzen; die Umkehrung von D-72 greift nicht, weil die Werkzeugwahl hier nicht der
+Messwert ist. **Das erste Hindernis bleibt** - der Halte-Punkt in der Mitte braucht einen
+zweiten Turn, und das ist eine Apparatefrage.
+
+➡️ **Die Bauform fuer den Befundkatalog: der abgeleitete Gegenstand gegen den
+aufgeschriebenen.** Wer einer Testzelle einen Gegenstand zuschreibt, liest zuerst ihre
+Erwartungs- und ihre Fehlerbildzelle.
+
+### Drei Zaehlungen, die zu klein waren
+
+| Traeger | Behauptung | Gezaehlt |
+|---|---|---|
+| Registerkopf | „die **vierzehn** Praeparationen" | **fuenfzehn** |
+| dieselbe Zeile | „mit 0.64.0 kamen **sechs** weitere dazu (`UEB-09` bis `UEB-14`)" | **sieben**, bis `UEB-15` |
+| Anmerkung unter dem Releaseplan | „**zwei** Releases eingeschoben" | **fuenf** |
+
+Dazu: Der Absatz ueber die Vorbedingungen, die **keine** Praeparation sind, nannte zwei -
+`FW-FI-02` ist die dritte und trug die Kennzeichnung nicht.
+
+### Neu
+
+- **Pruefung 59** (unter `--strict-overlay`), drei Gegenstaende: Die Laufzeitfassung des
+  Overlays **nennt** `<EXCLUDED_PATHS>`; sie fuehrt **dieselbe Globmenge** wie die
+  Bindungszeile der Quelle; jeder Glob der Quelle hat im `deny`-Korb eine Lese- **und**
+  eine Schreibsperre. **Grenze, und sie steht im Kopfkommentar:** geprueft wird **ein**
+  Platzhalter - der einzige mit maschinell vergleichbarer Wertgestalt, der zugleich zwei
+  Schichten bindet. Der `deny`-Korb wird nur in der Richtung *Quelle → Korb* geprueft;
+  Ueberzaehliges ist dort zulaessig (dasselbe Argument wie bei Pruefung 42).
+- **Pruefung 49, zweiter Gegenstand:** Nennt der Ausloeser einer `sitzung`-Zelle eine
+  Uebung, deren Abschnitt mindestens einen Skill ohne `- model` fuehrt, muss er
+  **mindestens einen** ausdruecklichen Aufruf `/name` enthalten. Die Skills werden aus
+  `onboarding/exercises/EXERCISES.md` abgeleitet. 🔴 **Der erste Entwurf war zu breit und
+  haette `FW-SC-01` dreimal gemeldet** - dessen Ausloeser nennt Ue3 und ruft bewusst nur
+  deren dritten Schritt auf. Aufgefallen **vor** dem Bauen.
+- **Pruefung 44, vierter Gegenstand:** Jeder Testfall, den eine Registerzeile nennt,
+  fuehrt deren Kennung in seiner **Vorbedingungszelle** - und umgekehrt. Der Zuschnitt
+  nimmt nur den Teil der Zelle **vor dem ersten Vermerk**; `FW-NE-02` nennt `UEB-06`
+  dahinter, ohne es zu verlangen.
+
+### Geaendert
+
+- `tests/TEST_CATALOG.md`: `FW-PO-02` Vorbedingung und Ausloeser berichtigt (vier Skills
+  als `/name`); `FW-FI-02` traegt die Kennzeichnung „(Sitzungseingabe, keine
+  Praeparation)".
+- `framework/skills/fw-bugfix-prepare/TESTS.md` (`SK-009-P02`, `UEB-14`),
+  `fw-docs-update/TESTS.md` (`SK-011-N04`, `UEB-09`), `fw-refactor/TESTS.md`
+  (`SK-007-N05`, `UEB-11`): die Kennung steht jetzt in der Vorbedingung.
+- `onboarding/exercises/README.md`: zwei Registerzeilen ergaenzt (`UEB-02` um
+  `SK-011-N02`, `UEB-12` um `FW-FI-01`), zwei Zaehlungen berichtigt, der Absatz ueber die
+  Nicht-Praeparationen auf drei erweitert und um die Gattung *Zustand des Messbaums*
+  ergaenzt.
+- `docs/ROADMAP.md`: Der fuenfte Sitzungstest rueckt auf `0.66.0`, die dreizehn
+  Testblaetter auf `0.67.0 bis ~0.70.0`; die Verschiebung des Plans wird **ausgerechnet**
+  statt gepflegt (D-174). Die Kette von Kriterium 2 (92 → 85 → 0) bleibt unberuehrt.
+- Sondenmenge `6, 14 und 18 bis 59`, ausgerechnet in allen drei Traegern.
+
+### Migrationshinweise
+
+**Fuer uebernehmende Projekte:** Pruefung 59 laeuft nur unter `--strict-overlay`. Wer sie
+dort meldet bekommt, hat einen Overlay-Wert, der in der Quelle steht und in der Schicht
+nicht, die ihn durchsetzt - **nachzuziehen sind beide Traeger, nicht einer.** Das
+Uebungsrepositorium ist mit diesem Release berichtigt worden; der Pilot war bereits
+stimmig.
+
+### Bekannte Einschraenkungen
+
+- **`K-69`:** Der Wertabgleich deckt `<EXCLUDED_PATHS>`. `<ALLOWED_PATHS>`,
+  `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` haben dieselbe Gestalt und sind
+  **ungeprueft, nicht geprueft-und-gut**.
+- **`K-57` behaelt seinen Gegenstand** - nur die sperrende Wirkung auf `FW-PO-02` ist weg.
+- **Der zweite Turn fuer `FW-PO-02` ist nicht gebaut.** Er gehoert in den Messapparat der
+  Erhebung, nicht in den Kern.
+- **Der Fuellschritt des Messbaums steht in keiner Checkliste.** Eine frische
+  `claude-code`-Installation traegt `Read(<EXCLUDED_PATHS>)` woertlich; ohne den
+  Fuellschritt sperrt der `deny`-Korb keinen ausgeschlossenen Pfad - **auch nicht den, auf
+  den sich D-168 stuetzt.**
+
 ## [0.64.0] - 2026-09-18
 
 **Die Herrichtung des Uebungsrepositoriums: vier der einundzwanzig Zellen trugen doch -

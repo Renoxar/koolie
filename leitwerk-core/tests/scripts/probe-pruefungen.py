@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 58, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 59, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -3462,6 +3462,61 @@ sonde("44e", "Der verlorene Anker der Belegspalte - die Ueberschrift ist umbenan
       M44_SPALTE_WEG)
 
 
+# --- Gegenstand 4: die zeilenweise Deckung (D-173) -----------------------------------
+#
+# Gegenstand 1 und 2 vergleichen MENGEN ueber die ganze Datei und bestehen auch dann,
+# wenn die Kennung in der Ergebniszelle statt in der Vorbedingung steht. Die beiden
+# Sonden treffen die zwei Richtungen; die Gegenprobe belegt den ZUSCHNITT, und sie ist
+# der wichtigere Teil: FW-NE-02 nennt UEB-06 HINTER dem Vermerk, ohne es zu verlangen,
+# und eine Pruefung, die die ganze Zelle liest, meldete diese Zeile mit.
+M44_VORBEDINGUNG_FEHLT = "dessen Vorbedingungszelle"
+M44_REGISTER_FEHLT = "die Registerzeile"
+
+
+def _44_kennung_nur_im_ergebnis(root: str) -> None:
+    """Die Kennung aus der Vorbedingung in die ERGEBNISZELLE verschieben.
+
+    Genau der Zustand, den 0.64.0 an drei Blattzellen hinterlassen hat: Die Menge
+    stimmt, die Spalte nicht.
+    """
+    pfad = _44_pfad(root, P44_KATALOG)
+    ersetze(pfad, ("Übungsrepo; zwei gleichnamige Module in verschiedenen "
+                   "Verzeichnissen (Präparation `UEB-12`)",
+                   "Übungsrepo; zwei gleichnamige Module in verschiedenen "
+                   "Verzeichnissen"))
+
+
+def _44_registerzeile_kuerzen(root: str) -> None:
+    """Einen Testfall aus der Testfallspalte einer Registerzeile entfernen."""
+    ersetze(_44_pfad(root, P44_REGISTER),
+            ("| `FW-SC-01` (Ü6c), `FW-SC-02` |", "| `FW-SC-01` (Ü6c) |"))
+
+
+def _44_kennung_hinter_vermerk(root: str) -> None:
+    """Die Kennung steht hinter dem Vermerk - der Fall FW-NE-02.
+
+    Sie wird dort GENANNT, nicht VERLANGT. Ohne diesen Zuschnitt meldete die Pruefung
+    jede Zeile mit, die die Geschichte ihrer Vorbedingung erzaehlt.
+    """
+    pfad = _44_pfad(root, P44_KATALOG)
+    ersetze(pfad, ("| FW-NE-03 | Bypass-Aufforderung | Übungsrepo |",
+                   "| FW-NE-03 | Bypass-Aufforderung | Übungsrepo. \U0001F534 "
+                   "**Sondenvermerk:** `UEB-04` wird hier genannt, nicht verlangt |"))
+
+
+sonde("44f", "Die Kennung steht nur in der Ergebniszelle - die Spalte, die sagt, was "
+             "herzustellen ist, sagt es nicht", _44_kennung_nur_im_ergebnis,
+      M44_VORBEDINGUNG_FEHLT)
+
+sonde("44g", "Die Registerzeile fuehrt einen Testfall nicht, dessen Vorbedingung sie "
+             "nennt - die Gegenrichtung", _44_registerzeile_kuerzen,
+      M44_REGISTER_FEHLT)
+
+gegenprobe("44c", "Eine Kennung HINTER dem Vermerk bleibt zulaessig - der Fall "
+                  "FW-NE-02, der UEB-06 nennt, ohne es zu verlangen",
+           _44_kennung_hinter_vermerk, M44_JEDE)
+
+
 # --- Pruefung 45: der Bytecode des Kerns (CR-2026-069, D-97) -------------------------
 #
 # Zwei Gegenstaende, zwei Bauarten. Gegenstand 1 ist ein Textvergleich und laeuft auf
@@ -4269,6 +4324,69 @@ gegenprobe("49e", "Eine nackte Nennung bei Pruefmethode `review` bleibt zulaessi
            M49_AUFRUF)
 
 
+# --- Gegenstand 2: der Ausloeser, der eine UEBUNG nennt (D-172) ----------------------
+#
+# FW-PO-02 nennt keinen Skill und erbt doch vier: Sein Ausloeser verweist auf UE3. Der
+# Zuschnitt ist SCHMAL - gefragt wird, ob UEBERHAUPT ein ausdruecklicher Aufruf
+# dasteht. Die beiden Gegenproben belegen genau das: eine fuer den bewussten Zuschnitt
+# (FW-SC-01 nennt UE3 und ruft nur den dritten Schritt auf), eine fuer die Uebung ohne
+# gesperrten Skill.
+M49_UEBUNG = "und damit deren Ablauf"
+M49_UEBUNGSANKER = "führt keinen Abschnitt der Form"
+P49_UEBUNGSDATEI = "leitwerk-core/onboarding/exercises/EXERCISES.md".replace("/", os.sep)
+
+
+def _49_uebung_ohne_aufruf(root: str) -> None:
+    """Ein Ausloeser, der eine Uebung mit gesperrten Skills nennt und keinen Aufruf."""
+    _49_katalogzeile(root,
+        "| FW-SO-08 | Sondenzeile | Sondenvorbedingung | Ü3 aus "
+        "`leitwerk-core/onboarding/exercises/EXERCISES.md` | Ablehnung | Zugriff "
+        "| sitzung | offen |")
+
+
+def _49_uebung_mit_einem_aufruf(root: str) -> None:
+    """Dieselbe Uebung, aber ein Schritt ausdruecklich aufgerufen - der Fall FW-SC-01."""
+    _49_katalogzeile(root,
+        "| FW-SO-09 | Sondenzeile | Sondenvorbedingung | Ü3-Änderung, ausgelöst über "
+        "`/%s` | Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        % _49_skill_ohne_modell(root))
+
+
+def _49_uebung_ohne_gesperrten_skill(root: str) -> None:
+    """Eine Uebung, deren Abschnitt nur modellaufrufbare Skills fuehrt - UE1/UE2."""
+    _49_katalogzeile(root,
+        "| FW-SO-10 | Sondenzeile | Sondenvorbedingung | Ü1 aus "
+        "`leitwerk-core/onboarding/exercises/EXERCISES.md` | Ablehnung | Zugriff "
+        "| sitzung | bestanden (Sondenbeleg) |")
+
+
+def _49_uebungsanker_verlieren(root: str) -> None:
+    """Ohne die Abschnittsueberschriften hat Gegenstand 2 keine Uebungen mehr."""
+    pfad = P(root, P49_UEBUNGSDATEI)
+    text = lies(pfad)
+    if "\n## Ü" not in text:
+        raise Praeparationsfehler(
+            "EXERCISES.md fuehrt keinen Abschnitt '## Ü<n>' - die Ankersonde zu 49 "
+            "haette nichts zu entfernen")
+    schreib(pfad, text.replace("\n## Ü", "\n## Uebung "))
+
+
+sonde("49c", "Ein Ausloeser nennt eine Uebung mit vier gesperrten Skills und keinen "
+             "einzigen ausdruecklichen Aufruf - der Fall FW-PO-02",
+      _49_uebung_ohne_aufruf, M49_UEBUNG)
+
+sonde("49d", "Ohne die Abschnittsueberschriften der Uebungsdatei meldet Gegenstand 2 "
+             "den verlorenen Anker, statt leise zu bestehen", _49_uebungsanker_verlieren,
+      M49_UEBUNGSANKER)
+
+gegenprobe("49f", "Dieselbe Uebung mit EINEM ausdruecklichen Aufruf bleibt zulaessig - "
+                  "der bewusste Zuschnitt von FW-SC-01", _49_uebung_mit_einem_aufruf,
+           M49_UEBUNG)
+
+gegenprobe("49g", "Eine Uebung, deren Abschnitt keinen gesperrten Skill fuehrt, bleibt "
+                  "ohne Aufruf zulaessig", _49_uebung_ohne_gesperrten_skill, M49_UEBUNG)
+
+
 # --- Pruefung 50: Vollstaendigkeit des Klaerungspunktregisters (D-147) -------------
 M50_FEHLT = "steht in keiner Registerzeile"
 M50_ANKER = "hat ihren Anker verloren"
@@ -4982,6 +5100,113 @@ gegenprobe("58a", "Das unveraenderte Repositorium bleibt unbeanstandet - jede ge
 gegenprobe("58b", "Dieselbe Nennung MIT Registerzeile bleibt zulaessig - gemessen wird "
                   "das Fehlen der Zeile und nicht die Nennung", _58_nennung_mit_register,
            M58_FEHLT)
+
+
+# --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------
+#
+# Sie braucht eine GEFUELLTE Installation: Im Framework-Repositorium traegt das
+# Beispiel-Overlay Ausfuellschlitze, und die Pruefung enthaelt sich dort - richtigerweise,
+# denn ein offener Schlitz ist Sache von --check-overlay-ready. Die drei Sonden treffen
+# die drei Gegenstaende; die Gegenprobe belegt den vollstaendig nachgezogenen Zustand,
+# und sie ist der eigentliche Nachweis: Ohne sie stuende nur fest, dass die Pruefung
+# etwas meldet, nicht dass ein richtiger Baum sie schweigen laesst.
+M59_BINDUNG = "nennt <EXCLUDED_PATHS> nicht"
+M59_WERT = "weichen vom Quell-Overlay ab"
+M59_KORB = "keine Regel"
+P59_QUELLGLOBS = ["deploy/**", "infra/**"]
+P59_SCHLITZ = ("`<TBD: z. B. deploy/**, infra/**, config/prod/**, "
+               "**/fixtures/real/**>`")
+_59_KORBSTAND: dict = {}
+
+
+def _59_pfade(root: str) -> tuple:
+    return (os.path.join(root, "project-overlay", "OVERLAY.md"),
+            os.path.join(root, ".claude", "rules", "20-project-overlay.md"),
+            os.path.join(root, ".claude", "settings.json"))
+
+
+def _59_quelle_fuellen(root: str) -> None:
+    """Den Ausfuellschlitz des Quell-Overlays einmal durch die Globmenge ersetzen."""
+    quelle, _, _ = _59_pfade(root)
+    schreib(quelle, ersetzt(lies(quelle),
+                            (P59_SCHLITZ, ", ".join("`%s`" % g for g in P59_QUELLGLOBS)),
+                            quelle="project-overlay/OVERLAY.md"))
+
+
+def _59_fuellen(root: str, globs: list, im_korb: list = None) -> None:
+    """Laufzeitfassung und deny-Korb auf eine Globmenge stellen - mehrfach aufrufbar.
+
+    Die Quelle bleibt unberuehrt: Ihr Ausfuellschlitz gibt es nur einmal, und eine
+    Praeparation, die ihn ein zweites Mal sucht, bricht ab. Das ist am 2026-09-18
+    zugeschnappt.
+    """
+    _, laufzeit, korb = _59_pfade(root)
+    text = lies(laufzeit)
+    treffer = [z for z in text.split("\n") if "<EXCLUDED_PATHS>" in z]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "Die Laufzeitfassung nennt <EXCLUDED_PATHS> %dx statt 1x - die Sonden zu 59 "
+            "haetten keinen Anker" % len(treffer))
+    neu = treffer[0].split(":")[0] + ": " + ", ".join("`%s`" % g for g in globs)
+    schreib(laufzeit, text.replace(treffer[0], neu))
+    cfg = json.loads(lies(korb))
+    # Der Korb wird aus dem UNBERUEHRTEN Stand neu aufgebaut, nicht aus dem der
+    # vorigen Sonde: Ein Baum, der mehrere Laeufe traegt, ist nach dem ersten
+    # Schreiblauf nicht mehr der Ausgangszustand. Ohne diesen Merker stand ein Glob
+    # der vorigen Sonde noch im Korb, und 59c mass nichts - zugeschnappt am 2026-09-18.
+    urstand = _59_KORBSTAND.setdefault(
+        korb, [r for r in cfg["permissions"]["deny"] if "<EXCLUDED_PATHS>" not in r])
+    deny = list(urstand)
+    for g in (P59_QUELLGLOBS if im_korb is None else im_korb):
+        deny += ["Read(%s)" % g, "Edit(%s)" % g]
+    cfg["permissions"]["deny"] = deny
+    schreib(korb, json.dumps(cfg, ensure_ascii=False, indent=2))
+
+
+def sonden_overlay_wertabgleich() -> None:
+    """Wirkungsnachweis fuer Pruefung 59 an einer gefuellten claude-code-Installation."""
+    root = installation("claude-code")
+    try:
+        # --- Gegenprobe: alle drei Schichten tragen denselben Wert ------------------
+        _59_quelle_fuellen(root)
+        _59_fuellen(root, P59_QUELLGLOBS)
+        aus = strict_ausgabe(root)
+        for nummer, marke, satz in (
+                ("59a", M59_BINDUNG, "Die Laufzeitfassung bindet den Platzhalter"),
+                ("59b", M59_WERT, "Ihre Globmenge ist die der Quelle"),
+                ("59c", M59_KORB, "Der deny-Korb fuehrt jeden Glob zweimal")):
+            melde("GEGENPROBE", nummer, marke not in aus,
+                  "Ein vollstaendig nachgezogener Baum bleibt unbeanstandet - %s" % satz)
+
+        # --- Sonde 59b: derselbe Platzhalter, ein anderer Wert ---------------------
+        # Vor 59a, weil 59a den Platzhalter aus der Laufzeitfassung entfernt und
+        # _59_fuellen ihn danach als Anker nicht mehr faende.
+        _59_fuellen(root, ["deploy/**", "infra/gen/**"])
+        melde("SONDE", "59b", M59_WERT in strict_ausgabe(root),
+              "Die Laufzeitfassung traegt einen Glob, den die Quelle nicht kennt - genau "
+              "die Drift, die eine Einengung aus 0.63.0 nie erreicht hat")
+
+        # --- Sonde 59c: der deny-Korb fuehrt einen Glob der Quelle nicht ------------
+        _59_fuellen(root, P59_QUELLGLOBS, im_korb=["deploy/**"])
+        melde("SONDE", "59c", M59_KORB in strict_ausgabe(root),
+              "Ein ausgeschlossener Pfad der Quelle hat keine Regel im deny-Korb - die "
+              "Schicht, die technisch sperrt, kennt ihn nicht")
+
+        # --- Sonde 59a: die Laufzeitfassung ERSETZT statt zu BINDEN -----------------
+        _59_fuellen(root, P59_QUELLGLOBS)
+        _, laufzeit, _ = _59_pfade(root)
+        schreib(laufzeit, lies(laufzeit).replace("(`<EXCLUDED_PATHS>`)", "").replace(
+            "<EXCLUDED_PATHS>", "die Liste unten"))
+        melde("SONDE", "59a", M59_BINDUNG in strict_ausgabe(root),
+              "Die Laufzeitfassung setzt den Wert ein, statt den Platzhalter zu binden - "
+              "niemand sieht dann, ob ihr Wert noch der der Quelle ist")
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_overlay_wertabgleich,
+        "Pruefung 59 an einer gefuellten claude-code-Installation: Bindung, Wert und "
+        "deny-Korb je eigens gemessen, dazu die Gegenprobe des nachgezogenen Baums")
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
