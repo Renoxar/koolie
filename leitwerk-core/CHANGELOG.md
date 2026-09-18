@@ -2,6 +2,156 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.61.0] - 2026-09-18
+
+**Die Grenzfaelle gegen die Fassungen gehalten: `FW-KO-05` ist zum ersten Mal gefahren und
+findet vier Befunde - drei davon in Traegern, die `always_on` in jede Sitzung laden**
+(`CR-2026-086`, D-148 bis D-153, `K-59` bis `K-61` neu).
+
+Der Releaseplan sah fuer 0.61.0 den fuenften Sitzungstest vor. Vor dem ersten Lauf ist
+wieder die Vorbedingung durchgegangen worden - **und zwei der neun Zellen sind gar keine
+Sitzungszellen:** `FW-KO-05` und `FW-AK-01` tragen Pruefmittel `review` und brauchen kein
+Kontingent. `FW-KO-05` steht seit seiner Entstehung (0.32.0) auf `offen` und ist nie
+gefahren worden. Also wurde er gefahren. Die Durchsicht kostete kein Kontingent.
+
+**Ausgezaehlt:** 20 Grenzfaelle, davon 2 mit diesem Pruefmittel nicht pruefbar - ihr
+Gegenstand ist der Schutz-Hook, keine Fassung - und 18 pruefbar; davon **13 ohne Abweichung
+und fuenf mit**, also vier Befunde in sieben Fundstellen. **Vier der sieben liegen in der
+Regelablage**, der Fassung, die der eigene Ausloeser des Testfalls nicht nannte.
+
+### B1: Die Overlay-Laufzeitfassung bot an, was ihre eigene Quelle ausschliesst (33 Releases)
+
+`framework/runtime/rules/20-project-overlay.md` fuehrte bis 0.60.0 einen Ausfuellschlitz
+fuer *freigegebene externe Domains*. **Die Quelle derselben Regel legt den Wert seit 0.33.0
+auf "keine" fest** - mit Begruendung (D-59): `deny` gewinnt, und bei einem Client ohne
+Musterunterstuetzung fuer die Abrufwerkzeuge ist eine Domain-Angabe gar nicht ausdrueckbar.
+
+🔴 **Der Befund ist nicht, dass jemand eine Stelle uebersehen hat, sondern warum sie nicht
+zu finden war.** 0.33.0 hat die Domain-Ausnahme in **sechzehn Traegern** angefasst, davon
+**acht anweisenden** - darunter `rules/10-privacy-security.md`, eine Datei im **selben
+Verzeichnis**. `rules/20-project-overlay.md` war nicht darunter, **weil dort kein Satz
+stand, sondern ein Schlitz.**
+
+➡️ **Eine Regel kann als Satz oder als Ausfuellschlitz ausgedrueckt sein, und ein Sweep nach
+der Formulierung findet nur den Satz** (D-150). Und die Release-Nachricht von 0.33.0 sagte
+im Migrationshinweis: *"Ein Overlay, das freigegebene externe Domains fuehrt, verliert seine
+Grundlage - sie hat nie gewirkt."*
+
+### B2: Ein Delegationsverbot auf der freigebbaren Seite (60 Releases, zwei Fassungen)
+
+`framework/runtime/rules/10-privacy-security.md` und `checklists/06-security.md` fuehrten
+*Security-Konfiguration* in derselben Aufzaehlung wie Authentifizierung und Kryptografie -
+und die Rechtsfolge dieser Aufzaehlung lautete *"Umsetzung ausschliesslich nach
+dokumentierter Freigabe"*.
+
+🔴 **G-05 und G-06 sagen das Gegenteil:** Eine Berechtigungsmatrix eines laufenden Systems,
+eine Firewall-Regel und Sicherheitskonfiguration als Code sind **V6 - nicht delegierbar,
+auch nach Freigabe nicht.** Die Wurzel-Anweisungsdatei trennt seit D-53 zwei Saetze, die
+Langform zieht die Abgrenzung zu V6. **Die Regelablage und die Checkliste hat die Trennung
+nie erreicht** - dieselbe Bauform wie bei D-49 und D-58: eine Lehre in einer Funktion
+gezogen und nicht zur Nachbarin getragen.
+
+### B3: Derselbe Mechanismus, dieselbe Datei (60 Releases)
+
+Ihr Regelsatz zu den Kontextklassen lautete *"Mischinhalte tragen die hoechste enthaltene
+Klasse."* - der Langform fehlt dort das *"bis die hoeher eingestuften Bestandteile entfernt
+oder ersetzt sind"*. Damit ist **G-02** - die bereinigte Ableitung ist ein eigener Inhalt
+(D-52) - aus dieser Fassung nicht mehr ableitbar.
+
+➡️ **Eine Kurzfassung, die den einschraenkenden Halbsatz der Langform weglaesst, kehrt ihre
+Aussage um** (D-152). Zweimal in einer Datei. **Pruefung 29 haette beides nicht gefunden:**
+Sie prueft die K3-Kategorien auf Vollstaendigkeit und auf Bedingungswoerter - ein fehlender
+Vorbehalt ist das Gegenteil davon.
+
+### B4: Der zweite Einsatzkontext steht in drei Fassungen nicht - nicht behoben (`K-59`)
+
+G-11 haelt eine Analyse im Quellrepositorium ohne aktives Overlay, als Protokoll abgelegt,
+fuer **zulaessig** (M1 + M5, D-56). Die Wurzel-Anweisungsdatei, die Overlay-Laufzeitfassung
+und die Preflight-Checkliste sagen unbedingt *"nur lesend"* beziehungsweise verlangen
+`aktiv` mit genau einer Ausnahme - dem Uebungsrepository. **Den zweiten Einsatzkontext
+kennen von den sechs Fassungen allein die fuenf Analyseskills, seit 0.32.0** - das sind
+**vierunddreissig Releases**.
+
+🔴 **Die Lage ist nicht theoretisch:** Jede Sitzung an diesem Framework steht in diesem
+Kontext und legt ihr Ergebnis unter `tests/protocols/` ab. **Nicht behoben, und das ist
+Absicht** - den Text nachzuziehen hiesse, eine Ausnahme in **jede Installation**
+auszuliefern, und genau diese Bauform lehnt `FRAMEWORK_DEV_PROFILE.md` Abschnitt 5 selbst ab.
+
+### `FW-KO-05` trug sein eigenes Pruefmittel falsch - seit seiner Entstehung
+
+Vier anweisende Traeger sagten, der Testfall laufe **als Sitzung**; seine eigene Zeile
+traegt `review`, und vier ihrer fuenf Zellen beschreiben einen Textvergleich. **Der
+Widerspruch entstand in einem einzigen Commit:** 0.32.0 schrieb `review` in die
+Pruefmittelzelle und *"FW-KO-05, ein Sitzungstest"* in seine eigene Nachricht.
+
+**Die Ursache steht im Antrag.** `CR-2026-052` fragte, wie die Wirkung nachgewiesen wird, wo
+es nichts zu messen gibt, und antwortete mit dem Gegensatzpaar **Sitzung gegen Skript** -
+die dritte Pruefmethode des Katalogs war nicht im Blick. **Eine Vorlage, deren Antwortmenge
+kleiner war als ihr Gegenstand**: dieselbe Bauform wie bei D-127. Berichtigt mit D-148; die
+Rueckschau in `docs/ROADMAP.md` traegt einen **Nachtrag** statt einer Berichtigung. Ob ein
+KI-Client die Grenzfaelle wirklich so einstuft, misst kein Testfall - das ist `K-60`.
+
+### Und der Releaseplan hatte zwei Fehler, beide aus 0.60.0
+
+`CR-2026-085` E5 hat `FW-RE-01` als Sammelzelle in den Posten der Testblaetter verschoben;
+Kriterium 2 geht damit von 93 auf 84 statt auf 83. **Die Zahl wurde nachgezogen, die
+Aufzaehlung nicht:** Die Zeile `0.61.0` fuehrte weiter `RE` (1) - **sie widersprach ihrer
+eigenen Zahl** -, und die Folgezeile begann bei **83** statt bei 84. **Die Kette riss um
+eins.** Nachgezaehlt am zentralen Katalog: 12 offene Zellen, Sitzungstest 5 nimmt neun,
+93 → 84, drei Sammelzellen bleiben. Sitzungstest 5 steht jetzt auf `0.62.0`, **und
+Pruefung 53 rechnet die Kette nach.** Die zweite Haelfte des Befundes bleibt ungeprueft:
+Die Zeile nannte weiter `RE`, das ihre eigene Zahl nicht mehr enthielt - das ist Prosa.
+
+### Neu: Pruefung 51, 52 und 53
+
+- **Pruefung 51 (D-150):** Traegt die Kontextquellentabelle der Overlay-Vorlage fuer ein
+  Feld einen **festen** Wert, fuehrt die Overlay-Laufzeitfassung fuer dasselbe Feld keinen
+  `<TBD>`-Schlitz. Die Feldmenge ist aus der Vorlage **abgeleitet**.
+- **Pruefung 52 (D-151):** In keiner anweisenden Fassung steht ein Gegenstand der V6-Zeile
+  in einer Einheit, die zugleich `Kontrollstufe hoch` und eine Umsetzungsfreigabe traegt.
+  Die Begriffe stammen aus der V6-Zeile selbst; **ausgenommen ist die Langform, die sie
+  traegt** - sie MUSS beide Seiten nennen, und die Ausnahme ist abgeleitet.
+- **Pruefung 53 (D-153):** Die Kriterium-2-Kette des Releaseplans wird nachgerechnet -
+  was ein Posten erreicht, ist der Ausgangswert des naechsten, und der letzte Wert ist
+  null. 🔴 **Das Protokoll zu 0.56.0 hatte ausdruecklich entschieden, die Vorhersagen
+  ungeprueft zu lassen** (*"sie tragen keinen Anspruch, den eine Pruefung einloesen
+  muesste"*). **Die Begruendung trug die Wahrheit der Vorhersage, nicht ihre innere
+  Widerspruchsfreiheit** - und nur die zweite ist pruefbar. Sonde `53a` stellt genau den
+  Fehler her, den 0.60.0 gemergt hat.
+
+**Sieben Sonden und zehn Gegenproben**, Spanne jetzt `6, 14 und 18 bis 53`. Beide Sonden
+stellen den Stand vor 0.61.0 **woertlich** wieder her und messen damit den Befund, den
+dieses Release behoben hat. Gegenprobe `51b` laesst die **Quelle** den Wert offen und der
+Schlitz wird zulaessig - das belegt, dass die Pruefung die Vorlage liest und kein
+verdrahtetes Feld.
+
+### Was 0.61.0 NICHT bewegt
+
+**Kriterium 2 bleibt 93.** `FW-KO-05` bleibt `offen`, weil G-11 nicht behoben ist - ein
+Teilergebnis senkt die Zahl nicht (Zaehlregel zu Pruefung 46). **Das siebte Release ohne
+Zahlbewegung** - und es hat in Traegern, die in jede Sitzung laden, ein Delegationsverbot
+auf der falschen Seite gefunden.
+
+### Migrationshinweis
+
+**Gemessen, nicht vermutet** (`install.py --update --dry-run` gegen eine Kopie des
+**Arbeitsbaums** beider uebernehmender Projekte, mit dem `leitwerk-core` des Arbeitsbaums):
+
+| Projekt | Stand | aktualisiert |
+|---|---|---|
+| `test-devin-framework` | Overlay 0.60.0 | **1** - `<RULES_DIR>/10-privacy-security.md` |
+| `otp-generator` | Overlay 0.54.1 | **6** - dieselbe Datei, dazu die fuenf Nachzuegler aus 0.58.0/0.59.0 (`fw-bugfix-prepare`, `fw-plan` je SKILL und CHANGELOG, `fw-tests/TESTS.md`) |
+
+🔴 **Und die wichtigste Zeile des Hinweises ist die, die NICHT in der Tabelle steht: Die
+Behebung von B1 erreicht kein uebernehmendes Projekt.**
+`<RULES_DIR>/20-project-overlay.md` steht in beiden Trockenlaeufen unter *Projektdateien
+unberuehrt gelassen* - `install.py` schreibt sie nie, weil das Projekt sie fuellt. **Wer ein
+Projekt hebt, zieht die Domainzeile dort von Hand nach.** Ein Overlay, das eine Domainliste
+fuehrt, hat seine Grundlage nie gehabt (D-59, seit 0.33.0).
+
+**Und `fw-tests/TESTS.md` steht wieder in der Liste** - das ist `K-56`, unveraendert offen:
+Ein Testblatt ist eine Aufzeichnung und wird als Regelquelle ausgeliefert.
+
 ## [0.60.0] - 2026-09-18
 
 **Die Vorbedingungen des fuenften Sitzungstests: vier von zehn tragen nicht, und alle vier

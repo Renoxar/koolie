@@ -183,8 +183,33 @@ Prüft (statisch, ohne laufenden KI-Client):
      eine Faehigkeitsmatrix -, `K-55` von CR-2026-083 in drei Traegern als neu
      angekuendigt und nie eingetragen. Die Uebersicht der offenen Punkte war beide Male
      zu klein, und nichts hat es gemeldet
+ 51. Ausfuellschlitz fuer einen festgelegten Overlay-Wert (D-150): Traegt die
+     Kontextquellentabelle der Overlay-Vorlage fuer ein Feld einen FESTEN Wert, darf die
+     Overlay-Laufzeitfassung fuer dasselbe Feld keinen <TBD>-Schlitz fuehren. Die
+     Feldmenge ist aus der Vorlage ABGELEITET. Eine Regel kann als Satz oder als Schlitz
+     ausgedrueckt sein, und ein Sweep nach der Formulierung findet nur den Satz: 0.33.0
+     hat die Domain-Ausnahme in sechzehn Traegern angefasst, davon acht anweisenden -
+     darunter eine Datei im selben Verzeichnis; rules/20-project-overlay.md war nicht
+     darunter, weil dort kein Satz stand. Die
+     Laufzeitfassung bot dreiunddreissig Releases lang an, was ihre eigene Quelle
+     ausschliesst (Grenzfall G-13)
+ 52. V6-Gegenstand mit Freigabefolge (D-151): In keiner anweisenden Fassung steht ein
+     Gegenstand der V6-Zeile in einer Einheit, die zugleich `Kontrollstufe hoch` und eine
+     Umsetzungsfreigabe traegt. V6 ist auch nach Freigabe nicht delegierbar; die
+     Abgrenzung trennt Anwendungslogik vom Betrieb (D-53). Die Begriffe stammen aus der
+     V6-Zeile selbst, ausgenommen ist die Langform, die sie traegt - sie MUSS beide
+     Seiten nennen. Zwei Fassungen fuehrten beides in EINER Aufzaehlung, sechzig Releases
+     lang (Grenzfaelle G-05 und G-06)
+ 53. Kriterium-2-Kette des Releaseplans (D-153): Was ein Posten des Releaseplans in
+     docs/ROADMAP.md erreicht, ist der Ausgangswert des naechsten, und der letzte Wert ist
+     null - Kriterium 2 muss dort ankommen. Sie beurteilt NICHT, ob eine Vorhersage
+     stimmt; sie prueft, ob die Tabelle mit sich selbst uebereinstimmt. Das Protokoll zu
+     0.56.0 hatte ausdruecklich entschieden, die Vorhersagen ungeprueft zu lassen - mit
+     0.60.0 ist eingetreten, was eine Pruefung verhindert haette: Eine Zelle wurde aus
+     einem Posten genommen, seine Zahl nachgezogen, die des Folgepostens nicht. Die Kette
+     riss um eins und wurde so gemergt
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 50 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 53 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -2826,7 +2851,9 @@ def check_k3_kategorien(root: str) -> None:
     Belegt Uebereinstimmung der Kategorien, nicht die Gleichheit der Formulierungen - eine
     Kurzform darf kuerzer sein, aber keine Kategorie weglassen und keine an eine Bedingung
     binden. Was die Pruefung nicht leistet: Sie sieht nicht, ob ein KI-Client die Liste
-    auch anwendet. Das ist FW-KO-05 und laeuft als Sitzung (leitwerk-core/tests/EDGE_CASES.md).
+    auch anwendet. Das ist FW-KO-05, ein Dokumentenreview ueber die Fassungen
+    (leitwerk-core/tests/EDGE_CASES.md); ob ein KI-Client die Liste anwendet, misst
+    kein Testfall des Katalogs - das ist K-60 (D-148).
     """
     for rel, start, ende in K3_TRAEGER:
         pfad = os.path.join(root, rel.replace("/", os.sep))
@@ -5482,6 +5509,266 @@ def check_klaerungsregister(root: str) -> None:
             f"Ein Register, das seinen Gegenstand nicht führt, ist keine Liste offener "
             f"Punkte, sondern eine Auswahl (D-147)")
 
+# --- Pruefung 51 -------------------------------------------------------------------
+# Eine Regel kann als SATZ oder als AUSFUELLSCHLITZ ausgedrueckt sein, und ein Sweep nach
+# einer Marke findet nur den Satz. 0.33.0 hat die Domain-Ausnahme in sechzehn Traegern
+# angefasst, davon acht anweisenden - darunter eine Datei im selben Verzeichnis; die
+# Overlay-Laufzeitfassung war nicht darunter, weil dort kein Satz stand. Dreiunddreissig
+# Releases lang bot die Overlay-Laufzeitfassung damit an, was ihre eigene Quelle
+# ausdruecklich ausschliesst (D-150, Grenzfall G-13).
+#
+# ABGELEITET, NICHT GEPFLEGT: Die Feldmenge stammt aus der Kontextquellentabelle der
+# Overlay-Vorlage. Traegt eine Zeile dort einen FESTEN Wert in der Freigabespalte - also
+# keinen <TBD> -, dann ist der Wert entschieden, und die Laufzeitfassung darf fuer
+# dasselbe Feld keinen Schlitz fuehren. Traegt die Quelle selbst einen Schlitz, bleibt er
+# in beiden zulaessig; die Zeile der MCP-Server belegt das als Gegenprobe.
+#
+# WAS SIE NICHT LEISTET: Sie vergleicht Feldnamen, nicht Werte. Ob der eingetragene feste
+# Wert derselbe ist, sieht sie nicht - das ist FW-KO-05 und laeuft als Durchsicht.
+P51_QUELLE = KERN + "/templates/project-overlay/OVERLAY.md"
+P51_LAUFZEIT = KERN + "/framework/runtime/rules/20-project-overlay.md"
+P51_TABELLENKOPF = "| Kontextquelle | Kontextklasse | Freigabe | Bedingungen |"
+P51_KLAMMER_RE = re.compile(r"\s*\([^)]*\)\s*$")
+
+
+def _51_feldname(zelle: str) -> str:
+    """Der blosse Feldname einer Zeile - ohne Fettmarkierung und ohne Klammerzusatz.
+
+    'Freigegebene externe Domains (Fetch)' und 'Freigegebene externe Domains' sind
+    dasselbe Feld; die Klammer sagt, ueber welches Werkzeug es wirkt.
+    """
+    name = zelle.replace("**", "").strip()
+    return P51_KLAMMER_RE.sub("", name).strip()
+
+
+def check_overlay_schlitze(root: str) -> None:
+    """Pruefung 51 (D-150): Kein Schlitz fuer einen Wert, den die Overlay-Vorlage festlegt."""
+    qpfad = os.path.join(root, P51_QUELLE.replace("/", os.sep))
+    lpfad = os.path.join(root, P51_LAUFZEIT.replace("/", os.sep))
+    if not os.path.isfile(qpfad) or not os.path.isfile(lpfad):
+        err(f"{P51_QUELLE} oder {P51_LAUFZEIT} fehlt – Prüfung 51 hat ihren Gegenstand "
+            f"verloren; sie bestünde sonst leise (D-23)")
+        return
+    quelle = read(qpfad).replace("\r\n", "\n")
+    if P51_TABELLENKOPF not in quelle:
+        err(f"{P51_QUELLE}: die Kontextquellentabelle mit dem Kopf "
+            f"'{P51_TABELLENKOPF}' ist nicht mehr auffindbar. Prüfung 51 leitet ihre "
+            f"Feldmenge daraus ab und hätte ohne sie nichts zu prüfen (D-23)")
+        return
+    rest = quelle.split(P51_TABELLENKOPF, 1)[1]
+    festgelegt = []
+    for zeile in rest.split("\n")[1:]:
+        if not zeile.startswith("|"):
+            break
+        zellen = tabellenzellen(zeile)
+        if len(zellen) < 3:
+            continue
+        if TBD_RE.search(zellen[2]):
+            continue
+        festgelegt.append((_51_feldname(zellen[0]), zellen[2].replace("**", "").strip()))
+    if not festgelegt:
+        err(f"{P51_QUELLE}: keine Zeile der Kontextquellentabelle trägt einen festen "
+            f"Freigabewert. Prüfung 51 hätte damit keinen Gegenstand mehr (D-23)")
+        return
+    laufzeit = read(lpfad).replace("\r\n", "\n")
+    for name, wert in festgelegt:
+        for zeile in laufzeit.split("\n"):
+            roh = zeile.lstrip("-* ").strip()
+            if not roh.startswith(name + ":"):
+                continue
+            if TBD_RE.search(roh):
+                err(f"{P51_LAUFZEIT}: Das Feld '{name}' trägt einen Ausfüllschlitz, "
+                    f"obwohl {P51_QUELLE} seinen Wert auf '{wert}' festlegt. Eine Regel "
+                    f"kann als Satz oder als Schlitz ausgedrückt sein – ein Sweep nach "
+                    f"der Formulierung findet nur den Satz, und die Laufzeitfassung ist "
+                    f"die, die in jede Sitzung lädt (D-150, Grenzfall G-13)")
+
+
+# --- Pruefung 52 -------------------------------------------------------------------
+# Eine Kurzfassung, die den einschraenkenden Halbsatz der Langform weglaesst, kehrt ihre
+# Aussage um. Die Wurzel-Anweisungsdatei trennt seit D-53 zwei Saetze: Anwendungslogik mit
+# Sicherheitsbezug ist Kontrollstufe hoch und nach Freigabe umsetzbar - tatsaechliche
+# Berechtigungen und Betriebs-, Infrastruktur- und Sicherheitskonfigurationen sind V6 und
+# auch nach Freigabe nicht delegierbar. Zwei Fassungen fuehrten beides in EINER
+# Aufzaehlung, deren Rechtsfolge die Freigabe war, und stellten damit ein
+# Delegationsverbot auf die freigebbare Seite - sechzig Releases lang (D-151,
+# Grenzfaelle G-05 und G-06).
+#
+# ABGELEITET: Die Begriffe stammen aus der V6-Zeile der Delegationsverbotsliste. Die
+# Schreibvarianten stehen daneben, wie bei Pruefung 29 - das Projekt fuehrt
+# 'Sicherheitskonfiguration' und 'Security-Konfiguration' synonym, und eine Pruefung, die
+# nur eine Schreibweise kennt, findet die Haelfte.
+#
+# AUSGENOMMEN ist die Langform, aus der die Begriffe stammen: Dort steht die Abgrenzung
+# zu V6, und sie MUSS beide Seiten in einem Absatz nennen. Die Ausnahme ist abgeleitet -
+# es ist die Datei, aus der gelesen wurde, nicht ein gepflegter Name.
+#
+# WAS SIE NICHT LEISTET: Sie liest Woerter, keine Bedeutung. Ein Text, der dieselbe
+# Aussage ohne diese Begriffe trifft, entgeht ihr - dieselbe Grenze wie bei Pruefung 29.
+P52_RISIKO = KERN + "/framework/core/09-risk-model.md"
+P52_V6_RE = re.compile(r"^\|\s*V6\s*\|([^|]*)\|", re.M)
+# Schreibvarianten je Begriff der V6-Zeile. Links der Wortstamm, wie er dort steht.
+P52_VARIANTEN = {
+    "Produktionssystem": r"Produktionssystem",
+    "Infrastruktur": r"Infrastruktur",
+    "Berechtigung": r"Berechtigung",
+    "Sicherheitskonfiguration": r"Sicherheitskonfiguration|Security-Konfiguration",
+}
+P52_STUFE_RE = re.compile(r"Kontrollstufe\s+\*{0,2}hoch")
+P52_FOLGE_RE = re.compile(r"Umsetzung[^.;]{0,120}Freigabe")
+P52_EINZELN_RE = re.compile(r"^\s*(?:[-*+]\s|\d+\.\s|\|)")
+
+
+def _52_v6_begriffe(root: str) -> list:
+    """Die Begriffe der V6-Zeile, auf ihren Stamm gebracht - abgeleitet, nicht gepflegt."""
+    pfad = os.path.join(root, P52_RISIKO.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        return []
+    m = P52_V6_RE.search(read(pfad).replace("\r\n", "\n"))
+    if not m:
+        return []
+    treffer = []
+    for stamm, muster in P52_VARIANTEN.items():
+        if re.search(stamm, m.group(1)):
+            treffer.append((stamm, re.compile(muster)))
+    return treffer
+
+
+def _52_einheiten(text: str):
+    """Liefert die Pruefeinheiten: Listenpunkte und Tabellenzeilen einzeln, Prosa als Absatz.
+
+    Die Einheit muss die des Lesers sein. Wer einen Listenpunkt liest, liest ihn allein;
+    wer einen Absatz liest, liest ihn ganz. Eine Pruefung ueber die ganze Datei fände in
+    jeder normativen Datei beides und meldete ueberall.
+    """
+    absatz = []
+    for zeile in text.replace("\r\n", "\n").split("\n"):
+        if not zeile.strip() or P52_EINZELN_RE.match(zeile):
+            if absatz:
+                yield "\n".join(absatz)
+                absatz = []
+            if zeile.strip():
+                yield zeile
+            continue
+        absatz.append(zeile)
+    if absatz:
+        yield "\n".join(absatz)
+
+
+def check_v6_freigabefolge(root: str) -> None:
+    """Pruefung 52 (D-151): Kein V6-Gegenstand in einer Aufzaehlung mit Freigabefolge."""
+    begriffe = _52_v6_begriffe(root)
+    if not begriffe:
+        err(f"{P52_RISIKO}: die Zeile 'V6' der Delegationsverbotsliste ist nicht mehr "
+            f"auffindbar oder nennt keinen der bekannten Begriffe. Prüfung 52 leitet "
+            f"ihren Gegenstand daraus ab und hätte ohne sie nichts zu prüfen (D-23)")
+        return
+    ausgenommen = os.path.join(root, P52_RISIKO.replace("/", os.sep))
+    for pfad in _normative_traeger(root):
+        if os.path.abspath(pfad) == os.path.abspath(ausgenommen):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        for einheit in _52_einheiten(read(pfad)):
+            if not P52_STUFE_RE.search(einheit) or not P52_FOLGE_RE.search(einheit):
+                continue
+            for stamm, muster in begriffe:
+                if muster.search(einheit):
+                    err(f"{rel}: '{stamm}' steht in einer Aufzählung, deren Rechtsfolge "
+                        f"eine Freigabe ist ('…{P52_FOLGE_RE.search(einheit).group(0)[:60]}…'). "
+                        f"V6 ist auch nach Freigabe nicht delegierbar; die Abgrenzung "
+                        f"trennt Anwendungslogik von Betrieb (D-53, D-151, Grenzfälle "
+                        f"G-05 und G-06)")
+                    break
+
+
+def _normative_traeger(root: str):
+    """Die anweisenden Fassungen: Wurzel-Anweisungsdatei, Regelablage, Langform,
+    Overlay-Vorlage, Skills und Checklisten - die sechs, die FW-KO-05 gegeneinander hält."""
+    pfade = []
+    p = os.path.join(root, KERN, "framework", "runtime", "root-instruction.md")
+    if os.path.isfile(p):
+        pfade.append(p)
+    for teil in (("framework", "runtime", "rules"), ("framework", "core"),
+                 ("checklists",), ("templates", "project-overlay")):
+        verz = os.path.join(root, KERN, *teil)
+        if not os.path.isdir(verz):
+            continue
+        for name in sorted(os.listdir(verz)):
+            if name.endswith(".md"):
+                pfade.append(os.path.join(verz, name))
+    skills = os.path.join(root, KERN, "framework", "skills")
+    if os.path.isdir(skills):
+        for name in sorted(os.listdir(skills)):
+            p = os.path.join(skills, name, "SKILL.md")
+            if os.path.isfile(p):
+                pfade.append(p)
+    return pfade
+
+
+# --- Pruefung 53 -------------------------------------------------------------------
+# Der Releaseplan sagt je Posten voraus, wohin Kriterium 2 geht. Die Vorhersagen bilden
+# eine KETTE: Was ein Posten erreicht, ist der Ausgangswert des naechsten. Bis 0.60.0 hat
+# niemand sie nachgerechnet - und das Protokoll zu 0.56.0 hatte ausdruecklich entschieden,
+# das nicht zu tun ("die Zwischenstaende sind Vorhersagen und tragen keinen Anspruch, den
+# eine Pruefung einloesen muesste").
+#
+# DIE ENTSCHEIDUNG IST MIT 0.61.0 UMGEKEHRT, UND DER GRUND IST GEMESSEN (D-153): 0.60.0 hat
+# eine Zelle aus einem Posten herausgenommen, die Zahl des Postens nachgezogen und die des
+# FOLGEPOSTENS stehen lassen. Die Kette riss um eins, der Plan war in sich widerspruechlich,
+# und er ist so gemergt worden.
+#
+# DIE PRUEFUNG BEURTEILT NICHT, OB EINE VORHERSAGE STIMMT - das kann sie nicht. Sie prueft,
+# ob die Tabelle mit sich selbst uebereinstimmt: Kette geschlossen, und der letzte Wert ist
+# null, weil Kriterium 2 dort ankommen muss (D-11).
+#
+# WAS SIE NICHT LEISTET: Die zweite Haelfte desselben Befundes war PROSA - die Zeile nannte
+# weiter eine Klasse, die ihre eigene Zahl nicht mehr enthielt. Das ist nicht mechanisch zu
+# finden und bleibt Gegenstand des Durchgangs vor dem Commit.
+P53_ROADMAP = KERN + "/docs/ROADMAP.md"
+P53_UEBERSCHRIFT = "#### Der Releaseplan bis 1.0.0 und darüber hinaus"
+P53_KETTE_RE = re.compile(r"Kriterium 2:\s*\*\*(\d+)\s*→\s*(\d+)\*\*")
+
+
+def check_releaseplan_kette(root: str) -> None:
+    """Pruefung 53 (D-153): Die Kriterium-2-Kette des Releaseplans schliesst und endet bei 0."""
+    pfad = os.path.join(root, P53_ROADMAP.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        err(f"{P53_ROADMAP} fehlt – Prüfung 53 hat ihren Gegenstand verloren; sie bestünde "
+            f"sonst leise (D-23)")
+        return
+    text = read(pfad).replace("\r\n", "\n")
+    if P53_UEBERSCHRIFT not in text:
+        err(f"{P53_ROADMAP}: die Überschrift '{P53_UEBERSCHRIFT}' ist nicht mehr "
+            f"auffindbar. Prüfung 53 liest den Releaseplan darunter und hätte ohne sie "
+            f"nichts zu prüfen (D-23)")
+        return
+    rest = text.split(P53_UEBERSCHRIFT, 1)[1]
+    glieder = []
+    for zeile in rest.split("\n"):
+        if not zeile.startswith("|"):
+            if glieder and not zeile.strip():
+                continue
+        m = P53_KETTE_RE.search(zeile)
+        if m:
+            glieder.append((int(m.group(1)), int(m.group(2)), zeile.split("|")[1].strip()))
+    if len(glieder) < 2:
+        err(f"{P53_ROADMAP}: der Releaseplan führt weniger als zwei Vorhersagen zu "
+            f"Kriterium 2. Prüfung 53 rechnet eine Kette nach und hätte damit keinen "
+            f"Gegenstand mehr (D-23)")
+        return
+    for (_, ende, posten), (start, _, folge) in zip(glieder, glieder[1:]):
+        if ende != start:
+            err(f"{P53_ROADMAP}: Die Kriterium-2-Kette des Releaseplans reißt zwischen "
+                f"{posten} (endet bei {ende}) und {folge} (beginnt bei {start}). Was ein "
+                f"Posten erreicht, ist der Ausgangswert des nächsten; eine Tabelle, die "
+                f"sich selbst widerspricht, ist keine Vorhersage (D-153)")
+    if glieder[-1][1] != 0:
+        err(f"{P53_ROADMAP}: Die Kriterium-2-Kette des Releaseplans endet bei "
+            f"{glieder[-1][1]} statt bei 0 ({glieder[-1][2]}). Kriterium 2 von D-11 ist "
+            f"erfüllt, wenn der Testkatalog keine offene Zelle mehr führt – ein Plan, der "
+            f"nicht dort ankommt, führt nicht bis 1.0.0 (D-153)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -5549,6 +5836,9 @@ def main() -> int:
     check_tool_neutrality(root)
     check_skillaufruf_im_katalog(root)
     check_klaerungsregister(root)
+    check_overlay_schlitze(root)
+    check_v6_freigabefolge(root)
+    check_releaseplan_kette(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
