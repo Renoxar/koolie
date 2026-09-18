@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 0.55.0 (2026-09-18)
+## Stand nach Release 0.56.0 (2026-09-18)
 
 Wird mit jedem Release fortgeschrieben. Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -78,6 +78,50 @@ widerlegen könnten.
 > zwölf der dreizehn Blätter nennen keine einzige. Prüfung 44 benennt diese Grenze seit
 > 0.45.0 selbst – **neu ist ihr Umfang** (`K-42`).
 
+#### Der Releaseplan bis 1.0.0 und darüber hinaus
+
+**Die Nummern sind eine Reihenfolge, keine Termine** – die Vorbemerkung dieses Dokuments
+gibt weder Termine noch Aufwände vor, und dieser Plan hält sich daran (`CR-2026-078`,
+D-124). **Und er rechnet mit sich selbst:** Die Aufgabenbeschreibung dieses Projekts war
+zehnmal in Folge zu klein, und 0.54.1 ist ein Nachtrag zu einem Release, das fertig
+aussah. **Folge-Releases aus Testfunden fallen dazwischen; das ist der Normalfall, nicht
+die Störung.**
+
+| Release | Gegenstand | Wirkung auf D-11 | Sitzungskontingent |
+|---|---|---|---|
+| **0.56.0** | *dieses Release:* der Plan selbst, drei Ziel-Releases, der neue Projektname, der Overlay-Parameter | – | nein |
+| **0.57.0** | **Die Clientbindung des werkzeugneutralen Kerns** – 17 Fundstellen in 14 anweisenden Trägern, darunter sechs Prompt-Vorlagen und ein normatives Kernmodul. Dazu die Prüflücke benennen, die es nie gemeldet hat | – | **nein** – die Aufzählung liegt fertig vor |
+| **0.58.0** | **Sitzungstest 3:** Klasse `PI` (`FW-PI-02` bis `-04`) und die restlichen `DS`-Fälle | Kriterium 2: **105 → 100** | ja |
+| **0.59.0** | **Sitzungstest 4:** Klassen `NE` (4) und `SC` (3) | Kriterium 2: **100 → 93** | ja |
+| **0.60.0** | **Sitzungstest 5:** `FI` (3), `KO` (2), `PO` (2), `AK` (2), `RE` (1) – **der zentrale Katalog ist danach leer** | Kriterium 2: **93 → 83** | ja |
+| **0.61.0 bis ~0.65.0** | **Die dreizehn Testblätter**, je Bündel von zwei bis drei Skills. 83 Ergebniszellen, davon 15 allein im Blatt des Role Packs `requirements-engineering` | Kriterium 2: **83 → 0** | ja, mehrfach |
+| **~0.66.0** | **`AP2` zu Ende:** die vier sitzungsgebundenen Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Körbe `ask` und `allow`. **`X2` bleibt dauerhaft offen** (`K-20`) | Kriterium 1: **23 → ~19** | ja (Pack `devin-desktop`) |
+| **~0.67.0** | **Die übrigen `VERIFY`-Marker** außerhalb `devin-desktop`. **Und der Schritt, den der Zähler am Ende verlangt:** Registerzeile und Glossarzeile des Markers selbst abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, diese Roadmap) umformulieren – **ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** (`CR-2026-070` E3) | Kriterium 1: **auf 0** | teils |
+| **~0.68.0** | **`AP11` Stabilisierung:** das Hauptdokument gegen den dann geltenden Stand setzen (es ist über vierzig Releases zurück), Word-Fassung bauen, Gegenzeichnung der zwölf offenen und fünf fehlenden Protokollabschnitte nachziehen, `CR-2026-029` und `-030` Abschnitt 6 nachtragen | – | nein |
+| **1.0.0** | **`AP12`:** Freigabelauf nach `checklists/11-framework-release.md`. **Alle fünf Kriterien von D-11**, der Validator rechnet sie aus und meldet die Abweichung selbst | **alle** | nein |
+| **2.0.0** | **Die Umbenennung auf `Koolie`** (D-125). Brechend: `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen | – | nein |
+| **2.1.0** | **Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen | – | ja (AP2-Lauf) |
+| **2.2.0** | **Das optionale Projekt-Overlay „General Development"**, gewählt über `--overlay general` (D-126) | – | nein |
+
+> ⚠️ **Warum die Umbenennung VOR den beiden Erweiterungen steht und nicht in der
+> Reihenfolge, in der sie aufgeschrieben wurde:** Ein neues Client Pack und ein neues
+> Overlay-Muster sind neue Träger **mit Pfaden**. Wer sie vor der Umbenennung baut, baut
+> sie unter einem Namen, der ein Release später wechselt – und benennt sie zweimal um.
+
+> ⚠️ **Und der Preis der Festlegung, nach 1.0.0 umzubenennen, ist benannt** (`CR-2026-078`
+> E4): Nach SemVer ist eine Umbenennung eine **brechende Änderung** und erzwingt ein
+> Major-Release samt Migration für **jedes** übernehmende Projekt. **Vor 1.0.0 wäre sie
+> billiger** – es gibt genau zwei übernehmende Projekte, beide im eigenen Haus. Die
+> Festlegung trägt trotzdem: Ein Umbenennungslauf über jeden Pfad ist genau die Art
+> Arbeit, **die nichts misst und alles anfasst**, und er gehört hinter die Zahl, nicht vor
+> sie.
+
+**Grobe Größenordnung, aus gemessenem Durchsatz:** Sieben, elf, zwölf, sechzehn und
+dreiundzwanzig Läufe je Arbeitssitzung; rund 0,53 USD und 59 s je Lauf bei einem
+Schranken-Testfall, rund 1 USD und zweieinhalb Minuten bei einer Analyseaufgabe. **Ein
+Testfall braucht Hauptlauf und Kontrolllauf**, und ein Schranken-Testfall zusätzlich
+einen Zuschnitt, der die technische Hälfte trennt (D-122).
+
 #### Die Vorbedingung ist hergestellt – mit 0.45.0
 
 Verfahren Nr. 1 des Testkatalogs bindet **jeden** Sitzungstest an „das synthetische
@@ -145,6 +189,36 @@ ist nicht nachgezogen.
 ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
+
+### Was 0.56.0 gebracht hat – vier Posten ohne Ziel-Release bekommen eines, und das Projekt einen neuen Namen
+
+**Ein Planungsrelease** (`CR-2026-078`, D-124 bis D-126, `K-50` neu,
+`tests/protocols/2026-09-18-wirkungsnachweise-0.56.0.md`). **Es ändert keinen anweisenden
+Träger, keine Prüfung und keine Sonde** – es legt fest, was wann gebaut wird.
+
+| Frage | Ergebnis |
+|---|---|
+| Was war das Problem? | **Vier Posten lagen ohne Ziel-Release.** Das Client Pack `openai-codex` seit dem 2026-09-12, die Projekt-Overlays als Installationsparameter seit dem 2026-09-15, die Clientbindung des Kerns seit 0.55.0 – dazu eine neue, vierte Änderung: der Name des Projekts. **Ein Posten ohne Zahl bleibt in diesem Projekt erfahrungsgemäß lange liegen**; Paket 6 steht seit neunzehn Releases |
+| Was steht jetzt in der Roadmap? | **Ein Releaseplan bis 1.0.0 und darüber hinaus** – als Reihenfolge, ohne Termine und ohne Aufwände, wie es die Vorbemerkung dieses Dokuments seit der Erstfassung verlangt |
+| Wie heißt das Projekt künftig? | **`Koolie`** (D-125) – der australische Hütehund, auf Deutsch **German Coolie**. **Die Metapher trägt den Gegenstand:** Ein Hütehund hält die Herde in den Grenzen, **ohne ihr zu schaden**, und arbeitet auf Zuruf |
+| Warum nicht `Kelpie`? | **Klanglich der beste Kandidat und dieselbe Metapher – aber doppeldeutig, und die zweite Lesart ist das Gegenteil der Zusage.** Der Kelpie der schottischen Sage sieht vertrauenswürdig aus, lädt zum Aufsitzen ein und ertränkt den Reiter: **die Archetypfigur des trügerischen Versprechens** – und damit ausgerechnet der wiederkehrende Befundtyp dieses Projekts |
+| Wann wird umbenannt? | **`2.0.0`, unmittelbar nach 1.0.0** – und **vor** den beiden inhaltlichen Erweiterungen, weil ein neues Client Pack und ein neues Overlay-Muster neue Träger **mit Pfaden** sind und sonst zweimal umbenannt würden |
+| Und der Preis dieser Festlegung? | **Benannt, und er ist hoch:** Nach SemVer ist die Umbenennung eine **brechende Änderung** und erzwingt ein Major-Release samt Migration für jedes übernehmende Projekt. **Vor 1.0.0 wäre sie billiger.** Die Festlegung trägt trotzdem: Ein Umbenennungslauf über jeden Pfad ist Arbeit, **die nichts misst und alles anfasst** |
+| Wie heißt der Overlay-Parameter? | **`--overlay <name>`, erster Wert `general`** (D-126). Eine Achse mit Werteliste statt eines Schalters je Overlay – ein zweites Muster kommt später ohne Änderung an der Befehlszeile hinzu. Verworfen: `--profile general`, weil „Profil“ im Framework bereits doppelt belegt ist |
+| Was ist beim Planen aufgefallen? | **Kriterium 1 hat einen Bodensatz, und er ist Absicht.** `CR-2026-070` E3 zählt auch die Fundstelle, die den Marker nur **nennt**. **Der letzte Schritt vor 1.0.0 ist deshalb nicht „den letzten Marker auflösen", sondern „den Marker samt Register und Glossarzeile abschaffen"** – `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das vor. **Ohne diesen Schritt läuft das letzte Release in eine Zahl, die sich nicht mehr senken lässt** |
+
+### Was 0.56.0 offen lässt
+
+- **`K-50`:** Ob die Umbenennung einen **maschinellen** Migrationspfad braucht oder ein
+  Migrationshinweis genügt. `install.py --update` schreibt `leitwerk-core/` nicht; ein
+  übernehmendes Projekt trägt den alten Namen in Berechtigungsdatei, Hook-Kommando, jeder
+  Regeldatei mit `<CORE_DIR>` und im Overlay.
+- **Die Voraussetzungen des mitgelieferten Overlays sind NICHT entschieden** – entschieden
+  ist der Name des Parameters, nicht die Bauform des Musters. Welche Felder ein
+  ausgeliefertes Overlay füllen darf, wer sein Owner ist und wie ein zweites Register
+  vermieden wird, steht unverändert als Aufgabe im Abschnitt *Geplant*.
+- **Der Plan ist eine Reihenfolge und keine Zusage.** Die Aufgabenbeschreibung dieses
+  Projekts war zehnmal in Folge zu klein; Folge-Releases aus Testfunden fallen dazwischen.
 
 ### Was 0.55.0 gebracht hat – der Hauptlauf misst die technische Schranke nicht, und ein Präfixmuster untererfasst
 
@@ -2104,13 +2178,12 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
-### Geplant: Projekt-Overlays als Installationsparameter
+### Geplant: Projekt-Overlays als Installationsparameter – Ziel-Release **2.2.0**
 
 Der `<FRAMEWORK_OWNER>` hat am 2026-09-15 angeregt, bei der Erstinstallation ein
 **Projekt-Overlay als Parameter** mitgeben zu können: ein vorbereitetes Standard-Overlay
 statt des leeren, und später weitere, die auf Projekttypen zugeschnitten sind. **Ohne
-Parameter bleibt es beim leeren Overlay wie bisher** (`CR-2026-072` E8). Ein Ziel-Release
-ist nicht festgelegt.
+Parameter bleibt es beim leeren Overlay wie bisher** (`CR-2026-072` E8). **Der Parameter heißt `--overlay <name>`, der erste Wert `general`** (D-126, `CR-2026-078` E5) – eine Achse mit Werteliste statt eines Schalters je Overlay, damit ein zweites Muster ohne Änderung an der Befehlszeile hinzukommt. **Ziel-Release `2.2.0`** (D-124). **Die Voraussetzungen unten sind damit NICHT entschieden** – entschieden ist der Name des Parameters, nicht die Bauform des Musters.
 
 Heute legt `install.py` das Overlay aus einer einzigen Quelle an: `templates/project-overlay`
 steht im `shared_seed` jedes Client Packs und wird **nur bei der Erstinstallation**
@@ -2146,10 +2219,11 @@ eine Quelle zu einer Auswahl machen.
   `--check-overlay-ready` gemessen wie jedes andere; ein Muster, das seine eigene Prüfung
   nicht besteht, ist keine Hilfe, sondern eine Fehlerquelle in jeder Erstinstallation.
 
-### Geplant: Client Pack `openai-codex`
+### Geplant: Client Pack `openai-codex` – Ziel-Release **2.1.0**
 
-Ein drittes Client Pack ist vorgesehen (Projektentscheidung vom 2026-09-12); ein Ziel-Release ist
-noch nicht festgelegt. **Vor der Aufnahme sind die Voraussetzungen zu klären, nicht danach:**
+Ein drittes Client Pack ist vorgesehen (Projektentscheidung vom 2026-09-12). **Ziel-Release ist
+`2.1.0`** – nach der Umbenennung, weil ein neues Pack neue Träger **mit Pfaden** anlegt und
+sonst zweimal umbenannt würde (D-124, `CR-2026-078` E2). **Vor der Aufnahme sind die Voraussetzungen zu klären, nicht danach:**
 
 - **Die Reihenfolge steht in `clients/README.md` Abschnitt 5** – neun Schritte, davon vier
   Erhebungen. Ein Pack entsteht nicht durch Kopieren der Vorlage, sondern durch Messen.
@@ -2189,6 +2263,45 @@ einundvierzig übrigen abgenommen (**41 → 1**), in neun Bündeln nach Gattung.
 Träger:** `clients/devin-desktop/CLIENT_PACK.md`, und er geht nicht über eine Abnahme, sondern über
 `AP2` – Zielversion festlegen, Pack gegen sie prüfen, die beiden Steckbriefzellen füllen. Die
 Abnahme je Träger ist nicht maschinell; das Vokabular hält seit 0.51.0 Prüfung 47.
+
+### Geplant: Die Umbenennung auf `Koolie` – Ziel-Release **2.0.0**
+
+Der `<FRAMEWORK_OWNER>` hat am 2026-09-18 entschieden, den Namen `leitwerk` durch einen
+griffigeren zu ersetzen (`CR-2026-078` E3, D-125). **Gewählt ist `Koolie`** – der
+australische Hütehund, der auf Deutsch **German Coolie** heißt, weil deutsche
+Auswanderer ihn mitbrachten.
+
+**Die Metapher trägt den Gegenstand:** Ein Hütehund hält die Herde in den Grenzen,
+**ohne ihr zu schaden**, und arbeitet auf Zuruf. Genau das tut dieses Framework – es macht
+den KI-Client nicht besser, es hält ihn im Gatter und zwingt ihn zum Anhalten.
+
+**Was die Umbenennung anfasst:**
+
+- **Jeden Pfad des Auslieferbestands:** `leitwerk-core/` wird `koolie-core/`. Der Wert des
+  Platzhalters `<CORE_DIR>` ändert sich, und er steht in Regeltexten, in der
+  Berechtigungsdatei, im Schutz-Hook und in jedem Client Pack.
+- **Den Namen des Repositoriums** und die Remote-URL beider übernehmender Projekte.
+- **Die Verzeichnisse beider übernehmender Projekte.** `install.py --update` schreibt
+  `leitwerk-core/` **nicht** – das Verzeichnis wird von Hand ersetzt (Abschnitt *Ein
+  Projekt heben*). Ob die Umbenennung einen maschinellen Migrationspfad braucht oder ein
+  Migrationshinweis genügt, ist offen: **`K-50`.**
+
+> ⚠️ **Was ausdrücklich NICHT umgeschrieben wird: die Chronik.** Protokolle,
+> Änderungsanträge und das Änderungsverzeichnis beschreiben einen **vergangenen** Zustand
+> (D-02, und dieselbe Begründung wie bei der Ausnahmeliste von Prüfung 14). Das
+> Repositorium führt danach dauerhaft zwei Namen: einen für die Sache und einen für ihre
+> Geschichte. **Das ist kein Mangel, sondern die Bedingung dafür, dass ein Protokoll
+> beweiskräftig bleibt.**
+
+**Verworfen, je mit Grund** (`CR-2026-078` E3): **`Kelpie`** – klanglich der beste
+Kandidat und dieselbe Metapher, **aber doppeldeutig, und die zweite Lesart ist das
+Gegenteil der Zusage**: Der Kelpie der schottischen Sage ist ein Wassergeist in
+Pferdegestalt, der vertrauenswürdig aussieht, zum Aufsitzen einlädt und den Reiter
+ertränkt – die Archetypfigur des trügerischen Versprechens, und damit ausgerechnet der
+wiederkehrende Befundtyp dieses Projekts. **`Ibex`** – vier Zeichen, trittsicher im
+Steilhang, keine Kollision; verworfen wegen der Endung `-ex`, die sich als Konsummarke
+liest. **`Meerkat`**, **`Hornbill`**, **`Markhor`** – je eine tragende Metapher, aber
+länger und teils vorbelegt.
 
 ### Bewusst offen gelassen
 

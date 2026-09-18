@@ -2,6 +2,82 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.56.0] - 2026-09-18
+
+**Ein Planungsrelease: vier Posten ohne Ziel-Release bekommen eines, und das Projekt einen
+neuen Namen** (`CR-2026-078`, D-124 bis D-126, `K-50` neu). **Dieses Release aendert
+keinen anweisenden Traeger, keine Pruefung und keine Sonde** - es legt fest, was wann
+gebaut wird.
+
+**Das Problem war das Liegenbleiben.** Das Client Pack `openai-codex` stand seit dem
+2026-09-12 ohne Ziel-Release, die Projekt-Overlays als Installationsparameter seit dem
+2026-09-15, die Clientbindung des Kerns seit 0.55.0. *Ein Posten ohne Zahl bleibt in
+diesem Projekt erfahrungsgemaess lange liegen* - Paket 6 steht seit neunzehn Releases.
+
+**Die Roadmap fuehrt jetzt einen Releaseplan bis 1.0.0 und darueber hinaus** - als
+Reihenfolge, ohne Termine und ohne Aufwaende, wie es die Vorbemerkung des Dokuments seit
+der Erstfassung verlangt. Naechstes Sachrelease ist **0.57.0** mit der Clientbindung des
+werkzeugneutralen Kerns; die Sitzungstests 3 bis 5 raeumen danach den zentralen Katalog
+(Kriterium 2: 105 -> 83), die dreizehn Testblaetter den Rest.
+
+**Das Projekt heisst kuenftig `Koolie`** (D-125) - der australische Huetehund, auf Deutsch
+**German Coolie**, weil deutsche Auswanderer ihn mitbrachten. Die Metapher traegt den
+Gegenstand: Ein Huetehund haelt die Herde in den Grenzen, **ohne ihr zu schaden**, und
+arbeitet auf Zuruf.
+
+> **Warum nicht `Kelpie`, der klanglich beste Kandidat mit derselben Metapher?** Weil er
+> doppeldeutig ist **und die zweite Lesart das Gegenteil der Zusage bedeutet**: Der Kelpie
+> der schottischen Sage ist ein Wassergeist in Pferdegestalt, der vertrauenswuerdig
+> aussieht, zum Aufsitzen einlaedt und den Reiter ertraenkt - die Archetypfigur des
+> truegerischen Versprechens, und damit ausgerechnet der wiederkehrende Befundtyp dieses
+> Projekts.
+
+**Umbenannt wird mit `2.0.0`, unmittelbar nach 1.0.0** - und **vor** den beiden
+inhaltlichen Erweiterungen, weil ein neues Client Pack und ein neues Overlay-Muster neue
+Traeger **mit Pfaden** sind und sonst zweimal umbenannt wuerden. **Der Preis ist
+benannt:** Nach SemVer ist eine Umbenennung eine brechende Aenderung und erzwingt ein
+Major-Release samt Migration fuer jedes uebernehmende Projekt; vor 1.0.0 waere sie
+billiger. Die Festlegung traegt trotzdem - ein Umbenennungslauf ueber jeden Pfad ist
+Arbeit, die nichts misst und alles anfasst.
+
+**Das mitgelieferte Projekt-Overlay wird ueber `--overlay <name>` gewaehlt** (D-126),
+erster Wert `general`. Eine Achse mit Werteliste statt eines Schalters je Overlay.
+Verworfen: `--profile general`, weil "Profil" im Framework bereits doppelt belegt ist
+(Entwicklungsprofil, Agentenprofile).
+
+**Beim Planen aufgefallen, und es gehoert in jeden Plan bis 1.0.0:** Kriterium 1 hat einen
+Bodensatz, und er ist Absicht. `CR-2026-070` E3 zaehlt auch die Fundstelle, die den Marker
+nur **nennt**. Der letzte Schritt vor 1.0.0 ist deshalb nicht "den letzten Marker
+aufloesen", sondern "den Marker samt Register und Glossarzeile abschaffen" -
+`PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das vor. **Ohne diesen Schritt
+laeuft das letzte Release in eine Zahl, die sich nicht mehr senken laesst.**
+
+### Geaendert
+
+- `docs/ROADMAP.md`: Abschnitt **"Der Releaseplan bis 1.0.0 und darueber hinaus"** neu; die
+  Abschnitte "Geplant: Projekt-Overlays als Installationsparameter" und "Geplant: Client
+  Pack `openai-codex`" bekommen ihr Ziel-Release; **"Geplant: Die Umbenennung auf
+  `Koolie`"** neu; Abschnitte zu 0.56.0.
+- `governance/DECISION_LOG.md`: D-124 bis D-126; `K-50` neu.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner - gemessen VOR dem Merge.** `install.py --update --dry-run` mit dem
+`leitwerk-core` dieses Arbeitsbaums gegen je eine Kopie beider uebernehmender Projekte:
+**0 angelegt, 0 aktualisiert** (`claude-code` 58 unveraendert, `devin-desktop` 64).
+Angefasst sind `docs/`, `governance/`, `VERSION` und dieses Verzeichnis.
+
+> **Fuer `2.0.0` gilt das ausdruecklich NICHT.** Die Umbenennung ist eine brechende
+> Aenderung; ihr Migrationshinweis ist selbst Gegenstand von `K-50`.
+
+### Bekannte Einschraenkungen
+
+- **`K-50`:** Der Migrationspfad der Umbenennung ist offen.
+- **Die Voraussetzungen des mitgelieferten Overlays sind nicht entschieden** - entschieden
+  ist der Name des Parameters, nicht die Bauform des Musters.
+- **Der Plan ist eine Reihenfolge und keine Zusage.** Folge-Releases aus Testfunden fallen
+  dazwischen; das ist in diesem Projekt der Normalfall.
+
 ## [0.55.0] - 2026-09-18
 
 **Der zweite Sitzungstest ist gefahren, und Kriterium 2 von D-11 bewegt sich zum zweiten
