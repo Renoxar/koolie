@@ -220,7 +220,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      eingeschraenkte Arbeitsbereichseinstellung in gepunkteter Schreibweise durch und
      dieselbe in verschachtelter nicht. Behoben in 3.10.31 vom 2026-09-16; die
      verbindliche Zielspanne des Packs devin-desktop liegt vollstaendig davor
- 55. Pflichtplatzhalter, gebunden statt ersetzt (D-16n): ZWEI GEGENSTAENDE. (a) Jeder
+ 55. Pflichtplatzhalter, gebunden statt ersetzt (D-160): ZWEI GEGENSTAENDE. (a) Jeder
      Platzhalter, den docs/PLACEHOLDER_REGISTRY.md als "Pflicht vor Aktivierung" fuehrt
      und im Overlay verortet, kommt in der Overlay-Vorlage mindestens einmal vor - sonst
      bietet die Vorlage ihn nie zum Ausfuellen an. (b) Unter --strict-overlay: Jeder
@@ -231,14 +231,39 @@ Prüft (statisch, ohne laufenden KI-Client):
      2026-09-18 am Uebungsrepositorium: acht Pflichtplatzhalter ungebunden, davon fuenf
      mit zusammen 65 Fundstellen in der geladenen Schicht - <ISSUE_TRACKER> allein in
      vierzehn Traegern. Der Validator meldete 0 Fehler
- 56. Kein ausgeschlossener Traeger als Vorbedingung (D-16n+1): Keine Vorbedingung des
+ 56. Kein ausgeschlossener Traeger als Vorbedingung (D-161): Keine Vorbedingung des
      Testkatalogs und keines Testblatts verlangt einen Traeger, den dasselbe Overlay
      unter <EXCLUDED_PATHS> fuehrt - weder lesen noch aendern. Aufgeloest wird ueber die
      Bindungszeile des genannten Platzhalters. Gemessen am 2026-09-18: SK-012-P01
      verlangt <MR_TEMPLATE_PATH>, und dessen Wert liegt unter .github/**, das im selben
      Overlay ausgeschlossen ist; drei weitere Zellen erben es ueber "wie P01"
+ 57. Kein ungebundener Pflichtplatzhalter als Vorbedingung (D-166): Keine
+     Vorbedingung des Testkatalogs und keines Testblatts verlangt einen Pflichtplatzhalter
+     als NICHT GESETZT oder UNGEBUNDEN. Sie ist die Kehrseite von 55b: Was 55b im aktiven
+     Overlay als Fehler meldet, darf eine Testzelle nicht als Vorbedingung fordern - sonst
+     stehen eine Pruefung und ein Testfall desselben Repositoriums gegeneinander, und der
+     Testfall ist nur in einem Baum fahrbar, den der Validator beanstandet. Gemessen am
+     2026-09-18: RE-001-N09 verlangte das Uebungs-Overlay "ohne gesetztes
+     <ISSUE_TRACKER>", und Pruefung 55b war im SELBEN Release entstanden. Gegen den Skill
+     gehalten trifft die Zelle etwas anderes: role-re-ticket nennt den Fall
+     "<ISSUE_TRACKER> unbekannt", also Bindung OHNE Wert - ein Ausfuellschlitz, kein
+     fehlender Platzhalter. Der Zuschnitt arbeitet auf TEILSAETZEN, nicht auf Zellen: Eine
+     Vorbedingung, die den Platzhalter in einem Teilsatz fordert und in einem anderen eine
+     Verneinung traegt, ist zulaessig. Die Pflichtmenge wird aus dem Platzhalterregister
+     ABGELEITET, nicht gepflegt
+ 58. Vollstaendigkeit des Decision-Record-Registers (D-169): Jede im Kern genannte
+     Zeichenfolge `D-` mit folgender Ziffer ist eine Kennung der Form D-NNN, und sie
+     steht als Zeile im Register des Decision Logs. Ausgenommen sind allein die belegten
+     synthetischen Kennungen des Pruefapparats - dieselbe Menge und derselbe
+     Ableitungsweg wie bei Pruefung 50. Sie ist deren Schwester eine Kennungsfamilie
+     weiter: Pruefung 50 gilt fuer K-, und ihr Muster wuerde den gemessenen Fall auch
+     dann nicht treffen, wenn man es auf D- umstellte. Gemessen am 2026-09-18: Die
+     Registereintraege der Pruefungen 55 und 56 verwiesen seit 0.63.0 auf zwei Kennungen
+     mit einem PLATZHALTER statt einer Zahl; die Meldungen derselben Pruefungen nannten
+     die richtigen. Zwischen Ziffer und Platzhalter steht keine Wortgrenze - eine
+     Kennung, die die Form knapp verfehlt, ist fuer jeden Zaehler unsichtbar
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 56 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 58 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6067,6 +6092,126 @@ def check_ausgeschlossene_vorbedingung(root: str, man: dict) -> None:
                             break
 
 
+# --- Pruefung 57: kein ungebundener Pflichtplatzhalter als Vorbedingung -------------
+#
+# DIE KEHRSEITE VON 55b. Pruefung 55b meldet ein aktives Overlay, das einen
+# Pflichtplatzhalter nicht bindet. Eine Testzelle, die genau diesen Zustand als
+# Vorbedingung verlangt, ist damit nur in einem Baum fahrbar, den der Validator
+# beanstandet - eine Pruefung und ein Testfall desselben Repositoriums stehen
+# gegeneinander, und keiner von beiden sagt es.
+#
+# WARUM TEILSAETZE UND NICHT ZELLEN. Eine Vorbedingung nennt haeufig mehrere Zustaende
+# in einer Zelle. Wer die ganze Zelle nach einer Verneinung durchsucht, meldet jede
+# Zelle mit, die irgendwo ein "ohne" traegt - die Bauform, an der Pruefung 56 beim
+# ersten Lauf zweimal zu breit gemeldet hat. Getrennt wird an Semikolon und Punkt.
+#
+# WAS SIE NICHT LEISTET. Sie erkennt die AUFGEZAEHLTEN Wendungen, nicht jede moegliche.
+# "Ein Overlay, in dem der Platzhalter fehlt" entgeht ihr - dieselbe Grenze, die
+# Pruefung 29 bei Bedingungswoertern hat. Die Aufzaehlung steht hier und nirgends sonst.
+P57_VERNEINUNG = (
+    "ohne gesetzt",
+    "ohne gebunden",
+    "ohne belegt",
+    "nicht gesetzt",
+    "nicht gebunden",
+    "nicht belegt",
+    "ungebunden",
+)
+
+
+def _p57_teilsaetze(text: str) -> list:
+    """Die Vorbedingung in Teilsaetze zerlegen - Semikolon und Punkt trennen."""
+    return [t.strip() for t in re.split(r"[;.]", text) if t.strip()]
+
+
+def check_ungebundene_vorbedingung(root: str) -> None:
+    """Pruefung 57: Keine Vorbedingung verlangt einen ungebundenen Pflichtplatzhalter."""
+    pflicht = {name for name, _ in _p55_pflicht(root)}
+    if not pflicht:
+        return  # _p55_pflicht hat den verlorenen Gegenstand bereits gemeldet
+    for rel in _ueb_katalogdateien(root):
+        pfad = os.path.join(root, *rel.split(os.sep))
+        if not os.path.isfile(pfad):
+            continue
+        anzeige = rel.replace(os.sep, "/")
+        for zeile in read(pfad).replace("\r\n", "\n").split("\n"):
+            z = zeile.strip()
+            if not z.startswith("| ") or z.startswith("|---"):
+                continue
+            zellen = tabellenzellen(z)
+            if len(zellen) < 4:
+                continue
+            for teil in _p57_teilsaetze(zellen[2]):
+                namen = [n for n in re.findall(r"<([A-Z][A-Z0-9_]*)>", teil)
+                         if n in pflicht]
+                if not namen:
+                    continue
+                klein = teil.lower()
+                marke = next((m for m in P57_VERNEINUNG if m in klein), None)
+                if marke is None:
+                    continue
+                err(f"{anzeige}: Die Vorbedingung von '{zellen[0]}' verlangt "
+                    f"<{namen[0]}> als nicht gesetzt ('{marke}'). Der Platzhalter ist "
+                    f"im Register 'Pflicht vor Aktivierung', und Pruefung 55b meldet "
+                    f"genau diesen Zustand im aktiven Overlay als Fehler - die Zelle "
+                    f"waere nur in einem Baum fahrbar, den der Validator beanstandet. "
+                    f"Gemeint ist in aller Regel ein gebundener Platzhalter OHNE Wert, "
+                    f"also ein Ausfuellschlitz (D-166)")
+                break
+
+# --- Pruefung 58: Vollstaendigkeit des Decision-Record-Registers -------------------
+#
+# DIE SCHWESTER VON PRUEFUNG 50, eine Kennungsfamilie weiter. Der gemessene Fall stammt
+# aus dem eigenen Pruefapparat: Die Registereintraege der Pruefungen 55 und 56 trugen
+# seit 0.63.0 einen Platzhalter an der Stelle der Nummer, waehrend die Meldungen
+# derselben Pruefungen die richtige Kennung nannten.
+#
+# WARUM DAS MUSTER EINEN SCHWANZ HAT. Ein Muster der Form D-\d+ mit abschliessender
+# Wortgrenze findet den gemessenen Fall NICHT: Zwischen der letzten Ziffer und dem
+# Platzhalterzeichen steht keine Wortgrenze. Deshalb wird alles gelesen, was auf die
+# erste Ziffer folgt - und danach geprueft, ob die Form ueberhaupt stimmt. Eine Kennung,
+# die die Form knapp verfehlt, ist fuer einen Zaehler sonst unsichtbar, und das ist die
+# gefaehrlichere Haelfte: Sie sieht im Fliesstext wie eine Kennung aus.
+D58_ERWAEHNUNG_RE = re.compile(r"(?<![\w-])D-\d[\w+]*")
+D58_ZEILE_RE = re.compile(r"^\|\s*(D-\d+)\s*\|", re.M)
+
+
+def check_decisionregister(root: str) -> None:
+    """Pruefung 58 (D-169): Jede genannte D-Kennung steht im Register des Decision Logs."""
+    logpfad = os.path.join(root, KERN, "governance", "DECISION_LOG.md")
+    if not os.path.exists(logpfad):
+        return  # Pruefung 50 meldet den fehlenden Traeger bereits
+    logtext = read(logpfad)
+    synth = _synthetische_kennungen(logtext)
+    gefuehrt = set(D58_ZEILE_RE.findall(logtext))
+    if not gefuehrt:
+        err(f"{KERN}/governance/DECISION_LOG.md: keine Registerzeile '| D-NNN |' "
+            f"gefunden - Prüfung 58 hat ihren Gegenstand verloren; sie bestünde sonst "
+            f"leise (D-23, D-169)")
+        return
+    fundorte: dict = {}
+    for path in iter_text_files(root):
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith(KERN + "/"):
+            continue
+        if not path.endswith((".md", ".py", ".json", ".template")):
+            continue
+        for kennung in set(D58_ERWAEHNUNG_RE.findall(read(path))):
+            fundorte.setdefault(kennung, set()).add(rel)
+    for kennung in sorted(set(fundorte) - gefuehrt - synth):
+        traeger = sorted(fundorte[kennung])
+        ort = (f"{len(traeger)} Träger(n) ({', '.join(traeger[:3])}"
+               f"{' …' if len(traeger) > 3 else ''})")
+        if re.fullmatch(r"D-\d+", kennung) is None:
+            err(f"{KERN}/governance/DECISION_LOG.md: '{kennung}' wird in {ort} genannt "
+                f"und ist keine Kennung der Form D-NNN. Eine Kennung, die die Form knapp "
+                f"verfehlt, ist für jeden Zähler unsichtbar und liest sich im Fließtext "
+                f"trotzdem wie eine (D-169)")
+        else:
+            err(f"{KERN}/governance/DECISION_LOG.md: '{kennung}' wird in {ort} genannt "
+                f"und steht in keiner Registerzeile. Ein Register, das seinen Gegenstand "
+                f"nicht führt, ist keine Liste, sondern eine Auswahl (D-169)")
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -6139,6 +6284,8 @@ def main() -> int:
     check_releaseplan_kette(root)
     check_zusatzschluessel(root, man)
     check_pflichtplatzhalter(root)
+    check_ungebundene_vorbedingung(root)
+    check_decisionregister(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
