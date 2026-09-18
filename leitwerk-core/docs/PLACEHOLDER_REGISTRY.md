@@ -29,7 +29,7 @@ Die Begriffsfassung derselben Abbildung steht in `leitwerk-core/docs/RUNTIME_GLO
 
 | Platzhalter | Bedeutung | `devin-desktop` | `claude-code` |
 |---|---|---|---|
-| `<CLIENT_NAME>` | Produktname des Clients (nur dort, wo ein Text ihn nennen muss) | `Devin Desktop` | `Claude Code` |
+| `<CLIENT_NAME>` | Produktname des Clients. **Nur zum Nennen, nie zum Zuschreiben** (D-129): Sagt ein Text etwas *über* das Produkt, gehört es in dessen Client Pack. Und er hilft **nur in einer gerenderten Quelle** – einziger angewandter Fall: der Titel von `framework/runtime/root-instruction.md` | `Devin Desktop` | `Claude Code` |
 | `<RUNTIME_DIR>` | Laufzeitschicht | `.devin` | `.claude` |
 | `<ROOT_INSTRUCTION_FILE>` | Wurzel-Anweisungsdatei | `AGENTS.md` | `CLAUDE.md` |
 | `<ROOT_INSTRUCTION_LOCAL>` | Nutzerlokale Ergänzung dazu | `AGENTS.local.md` | `CLAUDE.local.md` |

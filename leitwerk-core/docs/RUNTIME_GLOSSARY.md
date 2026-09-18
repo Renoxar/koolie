@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-GLOSSARY` |
-| Version | `0.2.0` |
+| Version | `0.3.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -38,7 +38,22 @@ Die Regel gilt für jeden Träger des Kerns. Ausgenommen ist genau, was hier ste
 
 > 🔴 **Von 0.31.0 bis 0.56.2 galt diese Regel und wurde von nichts durchgesetzt.** Siebzehn Fundstellen in vierzehn anweisenden Trägern nannten den Pfad genau eines Packs – darunter sechs Prompt-Vorlagen und mit Abschnitt 2 von `framework/core/08-skill-conventions.md` ein **normatives** Kernmodul, dessen Prosa zwei Zeilen tiefer richtig „die Skill-Ablage der Laufzeitschicht" sagte. **Prüfung 12 konnte sie nicht finden:** Sie liest nur Token in Backticks (zehn der siebzehn standen ohne), sie meldet nur Pfade, **die es nicht gibt** (im Framework-Repositorium ist genau ein Pack installiert, dessen Laufzeitschicht existiert und damit unsichtbar ist), und ihre eigene Wurzelliste war clientgebunden (`CR-2026-080`).
 
-**Prüfung 14** setzt die zweite Hälfte durch: Kein Client wird im Kern als **Handelnder** benannt (D-28). Der **Produktname** bleibt dort ausdrücklich zulässig, wo ein Produkt gemeint ist. Ob diese Erlaubnis zu weit reicht, ist **`K-52`** und nicht entschieden – Prüfung 48 findet Pfade, keine Produktnamen.
+**Prüfung 14** setzt dieselbe Regel für den **Namen** durch: Im Kern steht kein Clientname – weder als Handelnder noch als Produkt, und kein Platzhalter trägt ihn (D-28, **D-129**). Beide Prüfungen teilen sich **eine** Ausnahmemenge; bis 0.57.0 waren es zwei, und sie waren schon auseinandergelaufen.
+
+## Der Name: nennen oder zuschreiben
+
+Für Namen gilt dieselbe Regel wie für Pfade, und sie hat eine Trennlinie, die man kennen muss:
+
+| Fall | Was der Text tut | Was dort steht |
+|---|---|---|
+| **Nennen** | Der Text trägt den Namen und sagt **nichts** über das Produkt | `<CLIENT_NAME>` – und der löst sich **nur in einer gerenderten Quelle** auf. Einziger angewandter Fall im ganzen Bestand: der Titel von `framework/runtime/root-instruction.md` |
+| **Zuschreiben** | Der Text sagt etwas **über** das Produkt – eine Fähigkeit, eine Voreinstellung, einen Geltungsbereich, eine Voraussetzung | Das gehört in das **Client Pack**; der Kern verweist auf dessen **Fähigkeitsmatrix** (`leitwerk-core/clients/README.md` Abschnitt 4) |
+
+> 🔴 **Der Verweis geht auf die Matrix, nicht auf eine ZEILE darin.** Die Fähigkeitsmatrizen führen je Pack verschiedene Zeilen – `devin-desktop` hat `M1` bis `M7`, `claude-code` nur `M1` bis `M3`. **Eine Zeilenkennung in einem Kerntext wäre dieselbe Client-Bindung eine Ebene tiefer**, und keine Prüfung meldet sie: Prüfung 31 rechnet die Summen *innerhalb* eines Packs nach und verlangt nirgends, dass zwei Packs dieselben Zeilen führen. **Aufgefallen beim Bauen von 0.57.1** – der erste Entwurf verwies auf „Zeile M4", die es nur bei einem der beiden Packs gibt.
+
+> 🔴 **Bis 0.57.0 war der Produktname *mit Zusatz* im Kern ausdrücklich zulässig – „er benennt ein Produkt, nicht den Handelnden" (D-28). Am 2026-09-18 ist der Geltungsbereich dieser Ausnahme ausgezählt worden: fünfzehn Nennungen in zwölf anweisenden Trägern, und in *keiner einzigen* wurde der Name bloß genannt.** Jede trug etwas – einen Geltungsbereich („Das Framework regelt den Einsatz von …"), eine Produktaussage („… fordert vor jedem MCP-Aufruf eine Bestätigung an `[DOK]`") oder eine Voraussetzung („Zugang zu … vorhanden"). **Die Ausnahme hatte in ihrem eigenen Geltungsbereich keinen einzigen berechtigten Fall** – Client Packs und Chronik sind ohnehin ausgenommen (`CR-2026-081`, D-129).
+>
+> **Der ausgeschriebene Name kann beides sein, und kein Skript kann es unterscheiden.** Deshalb ist er im Kern gar nicht mehr zulässig – dieselbe Lehre wie bei `<TBD…>` in 0.52.0: *Eine Marke mit zwei Bedeutungen taugt weder als Bedingung noch als Entlastung.*
 
 ## Begriffe und ihre Entsprechungen
 

@@ -9,7 +9,7 @@ Dieses Verzeichnis ist **kein** Bestandteil des Framework Core. Es ist der defin
 | KI-Nutzungsrichtlinie der Organisation | zulässige Werkzeuge, Freigabeprozess, Meldewege | Verweisblatt oder bereinigter Auszug |
 | Informationssicherheitsrichtlinie (relevante Auszüge) | Klassifizierungsschema, Umgang mit Secrets, Meldefristen | Verweisblatt |
 | Datenschutzvorgaben (relevante Auszüge) | Umgang mit personenbezogenen Daten in Entwicklung und Test | Verweisblatt |
-| Nachweis der Werkzeugfreigabe | Freigabe von Devin Desktop mit Auflagen (Plan, Einstellungen, Vertragsstand) | Verweisblatt mit Referenz |
+| Nachweis der Werkzeugfreigabe | Freigabe des eingesetzten KI-Clients mit Auflagen (Plan, Einstellungen, Vertragsstand) | Verweisblatt mit Referenz |
 | Erzwungene Team-Einstellungen | Dokumentation der administrativ gesetzten Einstellungen (Berechtigungen, Sandbox, MCP, Modelle, Websuche) | Auszug ohne interne Adressen |
 
 ## Regeln

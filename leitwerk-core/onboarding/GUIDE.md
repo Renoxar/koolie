@@ -1,9 +1,9 @@
-# Onboarding-Leitfaden – Devin Desktop für neue Entwicklerinnen und Entwickler
+# Onboarding-Leitfaden – der KI-Client für neue Entwicklerinnen und Entwickler
 
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-GUIDE` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
@@ -23,7 +23,7 @@ Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontro
 
 ## Voraussetzungen
 
-- Zugang zu `<REPOSITORY_NAME>` und Devin Desktop; Grundkenntnisse in `<TECH_STACK>` und Git.
+- Zugang zu `<REPOSITORY_NAME>` und zum eingesetzten KI-Client; Grundkenntnisse in `<TECH_STACK>` und Git.
 - Datenschutz- und Vertraulichkeitsunterweisung der Organisation absolviert (`<TBD: Referenz>`).
 - Benannte Mentorin oder benannter Mentor; Übungsrepository eingerichtet (`exercises/README.md`).
 - Gelesen: `QUICKSTART.md`, die Wurzel-Anweisungsdatei, Overlay Abschnitte 1–6 und 13–16.

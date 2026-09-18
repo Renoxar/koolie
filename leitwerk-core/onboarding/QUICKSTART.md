@@ -1,4 +1,4 @@
-# Quick-Start – Devin Desktop im Projekt `<PROJECT_NAME>`
+# Quick-Start – der KI-Client im Projekt `<PROJECT_NAME>`
 
 > Für den ersten Arbeitstag. Der ausführliche Weg steht in `GUIDE.md`; die verbindlichen Regeln in der Wurzel-Anweisungsdatei und `leitwerk-core/framework/core/`. Bis zur dokumentierten Freigabe durch deine Mentorin oder deinen Mentor arbeitest du mit dem Werkzeug nur begleitet.
 
@@ -13,7 +13,7 @@
 ## Erste Sitzung in acht Schritten
 
 1. Lies die Wurzel-Anweisungsdatei des Projekts (10 Minuten) und überflieg `project-overlay/OVERLAY.md` Abschnitte 1–6 und 13–16.
-2. Öffne das Übungsrepository (`leitwerk-core/onboarding/exercises/`, von deiner Mentorin oder deinem Mentor bereitgestellt) in Devin Desktop.
+2. Öffne das Übungsrepository (`leitwerk-core/onboarding/exercises/`, von deiner Mentorin oder deinem Mentor bereitgestellt) im KI-Client.
 3. Prüfe den Permission-Modus: **Normal**. Bypass und Smart sind im Framework untersagt.
 4. Preflight: `leitwerk-core/checklists/01-preflight.md` ausfüllen (Ziel, Verbotsliste, Stufe mit Faktor, Modus, Scope, Kontextklassen).
 5. Starte mit einer Analyse: `/fw-repo-analyze <übungsmodul> "Wie ist das Modul aufgebaut?"`

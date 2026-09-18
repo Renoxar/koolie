@@ -2,6 +2,98 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.57.1] - 2026-09-18
+
+**Die Ausnahme aus D-28 hatte in ihrem eigenen Geltungsbereich keinen einzigen
+berechtigten Fall** (`CR-2026-081`, D-129; `K-52` geschlossen). Der Produktname eines
+Clients war im Kern *mit Zusatz* ausdruecklich zulaessig - "er benennt ein Produkt, nicht
+den Handelnden" -, und Pruefung 14 setzte genau diese Grenze durch.
+
+**Ausgezaehlt: fuenfzehn Nennungen in ZWOELF anweisenden Traegern, und in KEINER EINZIGEN
+wurde der Name bloss genannt.** Jede trug etwas:
+
+- einen **Geltungsbereich** - `01-governance.md` Satz 1: "Das Framework regelt den Einsatz
+  von <Produkt>". Satz 2 desselben Absatzes sagt richtig "die mit dem KI-Client arbeiten";
+- eine **Produktaussage** mit `[DOK]` - die MCP-Bestaetigung in `02-privacy.md`, der
+  Plan-Modus in beiden Plan-Skills;
+- eine **Voraussetzung** - "Zugang zu <Produkt> vorhanden" in der Onboarding-Checkliste,
+  dazu die **Titel** beider Onboarding-Dokumente.
+
+### Zwei Berichtigungen an der eigenen Vorgaengerzeile
+
+Der Eintrag zu `K-52` aus 0.57.0 nannte **zehn** Traeger und behauptete, in den gerenderten
+Traegern hoelfe `<CLIENT_NAME>`. **Beides war falsch**, und beides ist beim Nachzaehlen vor
+dem Eingriff aufgefallen:
+
+1. Es sind **zwoelf** Traeger - die beiden Plan-Skills waren als "die Skills" erwaehnt und
+   in der Traegerzahl nicht mitgezaehlt.
+2. **`<CLIENT_NAME>` hilft in KEINER der fuenfzehn Fundstellen**, auch nicht in den drei
+   gerenderten: Dort traegt der Name eine Aussage, die nur fuer ein Pack gilt, und der
+   Platzhalter haette sie an jedes weitergegeben.
+
+**`CR-2026-080`, das Protokoll zu 0.57.0 und der Roadmap-Abschnitt behalten ihren
+Wortlaut und tragen einen Nachtrag** - ein Dokument, das seine eigene Fehleinordnung
+loescht, verliert den Lernwert.
+
+### Geaendert
+
+- **D-28 ist mit D-129 verschaerft: Im Kern steht kein Clientname - auch nicht mit
+  Zusatz.** An seine Stelle tritt eine Trennlinie:
+  - **Nennen** - der Text traegt den Namen und sagt nichts ueber das Produkt. Dafuer ist
+    `<CLIENT_NAME>` gebaut, und er loest sich **nur in einer gerenderten Quelle** auf.
+    **Einziger angewandter Fall im ganzen Bestand:** der Titel von
+    `framework/runtime/root-instruction.md`.
+  - **Zuschreiben** - der Text sagt etwas *ueber* das Produkt. Das gehoert in dessen Client
+    Pack; der Kern verweist auf die **Faehigkeitsmatrix**.
+- **Zwoelf anweisende Traeger** nennen jetzt den Begriff: `framework/core/00-principles.md`,
+  `-01-governance.md`, `-02-privacy.md`, `framework/org-policies/README.md`,
+  `framework/skills/fw-plan/SKILL.md`, `.../fw-bugfix-prepare/SKILL.md`,
+  `checklists/09-onboarding.md`, `governance/RELEASE_PROCESS.md`, `onboarding/GUIDE.md`,
+  `onboarding/QUICKSTART.md`, `prompts/README.md`,
+  `templates/project-overlay/OVERLAY.md`.
+- **Pruefung 14** setzt es durch, meldet einen verlorenen Gegenstand jetzt selbst (statt
+  still auszusteigen) und teilt sich ihre Ausnahmemenge mit Pruefung 48.
+- `docs/RUNTIME_GLOSSARY.md` fuehrt die Trennlinie; `docs/PLACEHOLDER_REGISTRY.md` schaerft
+  `<CLIENT_NAME>`.
+
+### Hinzugefuegt
+
+- **Vier Sonden und drei Gegenproben fuer Pruefung 14.** Sie gibt es seit 0.20.0 und sie
+  hatte **keine** - sie lag ausserhalb der Nachweisspanne. Nach D-23 galt sie damit als
+  nicht vorhanden. Die Spanne lautet jetzt `6, 14 und 18 bis 48`.
+  **Sonde `14b` belegt, dass die Verschaerfung den ALTEN Gegenstand nicht verloren hat.**
+- Eine **gemeinsame** Ausnahmemenge (`NEUTRAL_*`) fuer die Pruefungen 14 und 48. Bis 0.57.0
+  waren es zwei, und sie waren nach einem Release schon auseinandergelaufen: `ROADMAP.md`
+  stand nur in einer. **Pruefung 13 bekommt eine eigene** (`OHNE_ARTEFAKTVERSION`) - sie
+  fragt etwas anderes, naemlich welches Dokument eine eigene Artefaktversion traegt.
+
+### Migrationshinweis fuer Overlays
+
+**Drei der zwoelf Traeger werden gerendert.** Die beiden Plan-Skills gehen mit
+`install.py --update` mit - der Satz zur Plan-Ablage verweist dort jetzt auf die
+Faehigkeitsmatrix des Packs statt auf einen Produktnamen. **Und nicht auf eine ZEILE
+darin:** Die Matrizen fuehren je Pack verschiedene Zeilen - `devin-desktop` hat M1 bis
+M7, `claude-code` nur M1 bis M3. Eine Zeilenkennung im Kern waere dieselbe Bindung eine
+Ebene tiefer. Die Overlay-Vorlage ist
+`shared_seed` und wird **nur bei der Erstinstallation** geschrieben; ein bestehendes
+Projekt behaelt seine Fassung. Gemessen: siehe Protokoll.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 14 findet den Namen, nicht die Umschreibung.** "Das Werkzeug aus Kapitel 3"
+  laeuft durch - dieselbe Ehrlichkeit wie bei Pruefung 48.
+- **Die Trennlinie *Nennen / Zuschreiben* ist eine Regel fuer Menschen.** Kein Skript
+  entscheidet sie; die Pruefung macht nur den einen Fall unmoeglich, in dem sie regelmaessig
+  falsch beantwortet wurde.
+- **Die beiden Plan-Skills verlieren eine konkrete Pfadangabe.** Wer sie mit
+  `devin-desktop` faehrt, schlaegt den Pfad jetzt im Client Pack nach.
+- **Eine verschaerfte Regel als PATCH unterzeichnet sich.** Die Nummer folgt
+  `RELEASE_PROCESS.md` Abschnitt 1 (kein neues Modul, keine neue Regel - eine Ausnahme
+  faellt weg) und dem Releaseplan, dessen Nummern eine Reihenfolge sind.
+- **`K-37`** bleibt offen: die Versionszelle der Vorlagen.
+- **Dieses Release bewegt keine Zahl von D-11**: Kriterium 1 bleibt 23, Kriterium 2 bleibt
+  105.
+
 ## [0.57.0] - 2026-09-18
 
 **Der werkzeugneutrale Kern war an ein Client Pack gebunden - siebzehn Fundstellen in
