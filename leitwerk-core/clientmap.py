@@ -343,6 +343,13 @@ def render_permissions(quelltext: str, man: dict, hooks_quelltext: str | None = 
 
     ergebnis: dict = {"_comment": _kommentar(man, hooks_quelltext is not None),
                       "permissions": rechte}
+    # Zusatzschluessel auf der OBERSTEN Ebene der Einstellungsdatei - nicht innerhalb
+    # von permissions. Der Unterschied ist keine Kosmetik: Ein Schluessel auf der
+    # falschen Ebene wird von diesem Client stillschweigend nicht gelesen, und nichts
+    # meldet es. permissions_extra deckt die eine Ebene, settings_extra die andere
+    # (CR-2026-087, D-155). Pruefung 54 haelt beide gegen die erzeugte Datei.
+    for schluessel, wert in man.get("settings_extra", {}).items():
+        ergebnis[schluessel] = wert
     steuerung = import_control(man)
     if steuerung is not None:
         ergebnis[steuerung[0]] = steuerung[1]
