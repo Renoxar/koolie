@@ -99,7 +99,7 @@ die Störung.**
 | **~0.67.0** | **Die übrigen `VERIFY`-Marker** außerhalb `devin-desktop`. **Und der Schritt, den der Zähler am Ende verlangt:** Registerzeile und Glossarzeile des Markers selbst abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, diese Roadmap) umformulieren – **ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** (`CR-2026-070` E3) | Kriterium 1: **auf 0** | teils |
 | **~0.68.0** | **`AP11` Stabilisierung:** das Hauptdokument gegen den dann geltenden Stand setzen (es ist über vierzig Releases zurück), Word-Fassung bauen, Gegenzeichnung der zwölf offenen und fünf fehlenden Protokollabschnitte nachziehen, `CR-2026-029` und `-030` Abschnitt 6 nachtragen | – | nein |
 | **1.0.0** | **`AP12`:** Freigabelauf nach `checklists/11-framework-release.md`. **Alle fünf Kriterien von D-11**, der Validator rechnet sie aus und meldet die Abweichung selbst | **alle** | nein |
-| **2.0.0** | **Die Umbenennung auf `Koolie`** (D-125). Brechend: `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen | – | nein |
+| **2.0.0** | **Die Umbenennung auf `Koolie`** (D-125). Brechend: `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen. 🔴 **BEDINGUNG (0.56.1): vor der ersten Übernahme nach `AP13`.** Solange nur die zwei hauseigenen Projekte übernommen haben, kostet die Umbenennung dasselbe wie vor 1.0.0; danach nicht mehr | – | nein |
 | **2.1.0** | **Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen | – | ja (AP2-Lauf) |
 | **2.2.0** | **Das optionale Projekt-Overlay „General Development"**, gewählt über `--overlay general` (D-126) | – | nein |
 
@@ -108,13 +108,20 @@ die Störung.**
 > Overlay-Muster sind neue Träger **mit Pfaden**. Wer sie vor der Umbenennung baut, baut
 > sie unter einem Namen, der ein Release später wechselt – und benennt sie zweimal um.
 
-> ⚠️ **Und der Preis der Festlegung, nach 1.0.0 umzubenennen, ist benannt** (`CR-2026-078`
-> E4): Nach SemVer ist eine Umbenennung eine **brechende Änderung** und erzwingt ein
-> Major-Release samt Migration für **jedes** übernehmende Projekt. **Vor 1.0.0 wäre sie
-> billiger** – es gibt genau zwei übernehmende Projekte, beide im eigenen Haus. Die
-> Festlegung trägt trotzdem: Ein Umbenennungslauf über jeden Pfad ist genau die Art
-> Arbeit, **die nichts misst und alles anfasst**, und er gehört hinter die Zahl, nicht vor
-> sie.
+> ⚠️ **Und der Preis der Festlegung, nach 1.0.0 umzubenennen – berichtigt mit 0.56.1.**
+> `CR-2026-078` E4 schrieb, die Umbenennung erzwinge *„Migration für **jedes** übernehmende
+> Projekt"*, **und benannte im nächsten Satz selbst, dass es zwei sind, beide im eigenen
+> Haus** – der wiederkehrende Befundtyp, diesmal in einem Absatz über die eigene Planung.
+> **Gegengeprüft am Bestand: `AP13` (Übernahme in weitere Projekte) hängt ausdrücklich von
+> `AP12` (Release 1.0.0) ab.** Die ersten Übernahmen außerhalb des Hauses kommen also erst
+> **nach** 1.0.0; `AP9` (Realbetrieb im Piloten) ist nicht gefahren. **Eine Umbenennung als
+> `2.0.0` vor dem Beginn von `AP13` trifft dieselben zwei Projekte wie eine Umbenennung
+> davor – der Unterschied ist die Versionsnummer, nicht die Arbeit.**
+>
+> **Übrig bleibt ein kosmetischer Preis** – `1.0.0` trägt einen Namen, der ein Release
+> später wechselt – **und eine echte Bedingung, die vorher niemand gesehen hat: `2.0.0`
+> MUSS vor der ersten Übernahme nach `AP13` liegen.** Läuft `AP13` zuerst an, kehrt der
+> ursprüngliche Preis zurück, und dann ist er zutreffend.
 
 **Grobe Größenordnung, aus gemessenem Durchsatz:** Sieben, elf, zwölf, sechzehn und
 dreiundzwanzig Läufe je Arbeitssitzung; rund 0,53 USD und 59 s je Lauf bei einem

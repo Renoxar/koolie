@@ -2,6 +2,61 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.56.1] - 2026-09-18
+
+**Nachtrag: Der Preis der Umbenennung war ueberzeichnet, und die Widerlegung stand im
+eigenen Absatz.** Keine Entscheidung wird umgestossen, keine Zahl von D-11 bewegt sich;
+geaendert sind eine Begruendung, eine Warnung und eine Zeile des Releseplans - und **eine
+Bedingung kommt hinzu, die vorher niemand gesehen hat.**
+
+`CR-2026-078` E4 schrieb, eine Umbenennung nach 1.0.0 erzwinge *"Migration fuer **jedes**
+uebernehmende Projekt"* - **und benannte im naechsten Satz selbst, dass es zwei sind,
+beide im eigenen Haus.** Das ist der wiederkehrende Befundtyp dieses Projekts, diesmal in
+einem Absatz ueber die eigene Planung.
+
+**Aufgefallen ist es nicht beim Schreiben, sondern beim Einwand des `<FRAMEWORK_OWNER>`:**
+*Es gibt noch keinen produktiven Einsatz.* **Gegengeprueft am Bestand, und der Befund ist
+groesser als der Einwand:**
+
+| Beleg | Was er sagt |
+|---|---|
+| **`AP13` haengt ausdruecklich von `AP12` ab** (*Abhaengigkeiten: AP12*; *Eingaben: Release 1.0.0*) | **Die ersten Uebernahmen ausserhalb des Hauses kommen konstruktionsbedingt erst NACH 1.0.0** |
+| `AP9` (Realbetrieb im Piloten) ist nicht gefahren | Kein Realbetrieb, also kein produktiver Einsatz |
+| Kriterium 5 von D-11 | *"erfuellt ... organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat"* |
+
+**Damit traegt die Festlegung auf einem anderen Grund, und der Grund gehoert
+hingeschrieben:** Eine Umbenennung als `2.0.0`, unmittelbar nach 1.0.0 und **vor** dem
+Beginn von `AP13`, trifft **genau dieselben zwei Projekte** wie eine Umbenennung davor.
+**Der Unterschied ist die Versionsnummer, nicht die Arbeit.**
+
+**Was als Preis uebrig bleibt, vollstaendig:** erstens kosmetisch - `1.0.0` traegt einen
+Namen, der ein Release spaeter wechselt. **Zweitens eine echte Bedingung: `2.0.0` MUSS vor
+der ersten Uebernahme nach `AP13` liegen.** Laeuft `AP13` zuerst an, kehrt der
+urspruengliche Preis zurueck - und dann ist *"Migration fuer jedes uebernehmende Projekt"*
+keine Uebertreibung mehr, sondern zutreffend.
+
+### Geaendert
+
+- `governance/change-requests/CR-2026-078-planung-nach-1-0-0.md`: Nachtrag zu E4. **Der
+  falsche Absatz bleibt stehen** - ein Antrag, der seine Fehleinschaetzung loescht,
+  verliert den Lernwert (dieselbe Entscheidung wie bei 0.54.1 und 0.55.0).
+- `governance/DECISION_LOG.md`: D-125 traegt den Nachtrag in seiner Statuszelle. **Die
+  Aufloesung bleibt unveraendert** - sie ist jetzt besser begruendet als durch ihre eigene
+  Vorlage.
+- `docs/ROADMAP.md`: Die Warnung zum Preis ist berichtigt; die Zeile `2.0.0` des
+  Releaseplans traegt die neue Bedingung.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner.** Angefasst sind `governance/`, `docs/`, `VERSION` und dieses Verzeichnis.
+
+### Bekannte Einschraenkungen
+
+- **Die Bedingung ist von keiner Pruefung gehalten.** Dass `2.0.0` vor der ersten
+  Uebernahme nach `AP13` liegt, steht als Satz im Releaseplan und in D-125 - **kein
+  Mechanismus setzt es durch.** Das ist bewusst so: Eine Pruefung muesste wissen, welche
+  Projekte uebernommen haben, und diese Liste fuehrt das Framework nicht.
+
 ## [0.56.0] - 2026-09-18
 
 **Ein Planungsrelease: vier Posten ohne Ziel-Release bekommen eines, und das Projekt einen

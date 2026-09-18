@@ -155,6 +155,44 @@ Bestands ist genau die Art Arbeit, die dabei nichts misst und alles anfasst**, u
 würde jede offene Messung, jede Fundstelle in einem Testblatt und jeden laufenden Zweig
 berühren. Er gehört hinter die Zahl, nicht vor sie.
 
+#### Nachtrag vom 2026-09-18 (`0.56.1`): Der Preis oben ist überzeichnet, und die Widerlegung steht zwei Sätze daneben
+
+> 🔴 **Der Absatz „Der Preis dieser Festlegung ist hoch" sagt *„Migration für **jedes**
+> übernehmende Projekt"* – und benennt im nächsten Satz selbst, dass es **zwei** sind,
+> beide im eigenen Haus. **Das ist der wiederkehrende Befundtyp dieses Projekts, diesmal in
+> einem Absatz über die eigene Planung:** eine Aussage, deren Widerlegung im eigenen
+> Dokument steht.
+
+**Aufgefallen ist es nicht beim Schreiben, sondern beim Einwand des `<FRAMEWORK_OWNER>`:**
+*Es gibt noch keinen produktiven Einsatz.* **Gegengeprüft am Bestand, und der Befund ist
+größer als der Einwand:**
+
+| Beleg | Fundstelle | Was er sagt |
+|---|---|---|
+| **`AP13 – Übernahme in weitere Projekte` hängt von `AP12` ab** | `docs/ROADMAP.md`, Arbeitspakete: *Abhängigkeiten: AP12*; *Eingaben: Release 1.0.0* | **Die ersten Übernahmen außerhalb des Hauses kommen konstruktionsbedingt erst NACH 1.0.0** |
+| `AP9 – Pilot` ist nicht gefahren | dieselbe Ablage, *Realbetrieb in der Pilotgruppe*; offene Entscheidungen `<PILOT_DURATION>`, `<TBD: Zielwerte>` | Kein Realbetrieb, also kein produktiver Einsatz |
+| Kriterium 5 von D-11 | Standzeile der Roadmap | *„erfüllt … organisatorisch bleibt es offen, weil es keinen Organisationsbezug hat"* |
+
+> ➡️ **Damit trägt die Festlegung auf einem anderen Grund, und der Grund gehört
+> hingeschrieben** (*„Eine Bestätigung ist nicht die Behauptung, dass sich nichts geändert
+> hat"*): Eine Umbenennung als `2.0.0`, unmittelbar nach 1.0.0 und **vor** dem Beginn von
+> `AP13`, trifft **genau dieselben zwei Projekte** wie eine Umbenennung davor. **Der
+> Unterschied ist die Versionsnummer, nicht die Arbeit.**
+
+**Was als Preis übrig bleibt, vollständig:**
+
+1. **Kosmetisch:** `1.0.0` trägt einen Namen, der ein Release später wechselt.
+2. **Und eine echte Bedingung, die vorher niemand gesehen hat:** **`2.0.0` MUSS vor der
+   ersten Übernahme nach `AP13` liegen.** Läuft `AP13` zuerst an, kehrt der ursprüngliche
+   Preis zurück – dann ist *„Migration für jedes übernehmende Projekt"* keine Übertreibung
+   mehr, sondern zutreffend. **Diese Bedingung steht ab 0.56.1 in der Zeile `2.0.0` des
+   Releaseplans.**
+
+**Die Auflösung von E4 bleibt unverändert** – sie ist jetzt besser begründet als durch
+ihre eigene Vorlage. **Der falsche Absatz bleibt stehen**; ein Antrag, der seine
+Fehleinschätzung löscht, verliert den Lernwert (dieselbe Entscheidung wie bei 0.54.1 und
+bei 0.55.0).
+
 ### E5 – Wie heißt der Installationsparameter für das mitgelieferte Overlay?
 
 **Auflösung: `--overlay <name>`, erster und vorerst einziger Wert `general`.**
