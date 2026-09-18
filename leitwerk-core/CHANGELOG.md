@@ -2,6 +2,41 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.59.1] - 2026-09-18
+
+**Der Trockenlauf von 0.59.0 hat den falschen Baum gemessen** (`CR-2026-084`, `K-56` neu).
+
+`git archive HEAD` nimmt den **committeten** Stand. Zum Zeitpunkt des Trockenlaufs war
+0.59.0 noch nicht committet - gemessen wurde 0.58.0 gegen 0.58.0. **Die Null war keine
+Messung, sondern eine Tautologie**, und der Migrationshinweis von 0.59.0 sagte deshalb
+"keiner", wo "eine Datei" richtig ist.
+
+**Derselbe Fehler war in derselben Sitzung schon einmal aufgetreten** - beim Aufbau der
+Messumgebung, wo er zwei Sitzungslaeufe gekostet hat. **Beim zweiten Mal hat er eine
+gemessene Zahl in ein gemergtes Release getragen.**
+
+### Gegen den gemergten Stand neu gemessen
+
+| Projekt | Stand vorher | `--update --dry-run` | welche Dateien |
+|---|---|---|---|
+| Uebungsrepositorium | 0.58.0 | 0 angelegt, **1 aktualisiert** | `.devin/skills/fw-tests/TESTS.md` |
+| Pilot `otp-generator` | 0.54.1 | 0 angelegt, **5 aktualisiert** | die vier Plan-Skill-Dateien aus 0.57.1 **plus** `.claude/skills/fw-tests/TESTS.md` |
+
+### Und die eine Datei ist ein Befund fuer sich (`K-56`)
+
+Es ist das **Testblatt**, in das 0.59.0 zwei Ergebniszellen eingetragen hat. **Eine
+Ergebniszelle eines dezentralen Testblatts wandert bei jedem Update in die
+Laufzeitschicht jedes uebernehmenden Projekts** - obwohl D-119 sagt, das Eintragen eines
+Ergebnisstatus sei keine Aenderung des Traegers, und obwohl D-141 in demselben Release
+die Trennlinie *Regelquelle gegen Aufzeichnung* gezogen hat. **Ein Testblatt ist eine
+Aufzeichnung und wird als Regelquelle ausgeliefert.** Betroffen sind 87 Zellen in
+dreizehn Blaettern, und die naechsten fuenf Releases fuellen sie.
+
+### Was sich NICHT aendert
+
+**Keine Zahl von D-11.** Kriterium 2 bleibt **93**. Die falsche Zahl bleibt im Protokoll
+stehen und traegt einen Nachtrag - dieselbe Entscheidung wie bei 0.54.1 und 0.58.0.
+
 ## [0.59.0] - 2026-09-18
 
 **Der vierte Sitzungstest: sieben Ergebniszellen abgenommen, Kriterium 2 von 100 auf 93**
@@ -77,10 +112,15 @@ bliebe bei 100 von 106 Zellen leer.
 
 ### Migrationshinweis
 
-**Keiner.** Das Release aendert keine Regel, keine Berechtigung, keinen Hook und keinen
-Skill-Ablauf. Es traegt Ergebniszellen ein, berichtigt zwei Vorbedingungen und den
-Releaseplan und fuegt dem Praeparationsregister eine Zeile hinzu. `install.py --update`
-schreibt nichts ausserhalb von `leitwerk-core/` - gemessen am Uebungsrepositorium.
+**Genau eine Datei.** Das Release aendert keine Regel, keine Berechtigung, keinen Hook
+und keinen Skill-Ablauf. Es traegt Ergebniszellen ein, berichtigt zwei Vorbedingungen und
+den Releaseplan und fuegt dem Praeparationsregister eine Zeile hinzu. **`install.py
+--update` schreibt genau eine Datei ausserhalb von `leitwerk-core/`:**
+`<client>/skills/fw-tests/TESTS.md` - das Testblatt mit den zwei neuen Ergebniszellen.
+
+**Berichtigt mit 0.59.1.** Die erste Fassung dieses Eintrags sagte "nichts" und berief
+sich auf einen Trockenlauf, der den **committeten** Stand gemessen hat - und der war
+noch 0.58.0. Die Null war keine Messung, sondern eine Tautologie.
 
 ### Bekannte Einschraenkung
 

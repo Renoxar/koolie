@@ -94,13 +94,33 @@ einem **kurzen** Pfad (`C:\lw-mig`; das Scratchpad-Verzeichnis plus die Role-Pac
 
 | Projekt | Stand vorher | `--update --dry-run` |
 |---|---|---|
-| Übungsrepositorium | 0.58.0 | **0 angelegt, 0 aktualisiert**, 64 unverändert, 20 Projektdateien behalten |
-| Pilot `otp-generator` | 0.54.1 | 0 angelegt, **4 aktualisiert**, 54 unverändert |
+| Übungsrepositorium | 0.58.0 | ~~0 angelegt, 0 aktualisiert~~ → **1 aktualisiert** (Nachtrag 0.59.1) |
+| Pilot `otp-generator` | 0.54.1 | ~~4 aktualisiert~~ → **5 aktualisiert** (Nachtrag 0.59.1) |
 
-✅ **Die Null beim Übungsrepositorium ist die Aussage:** 0.59.0 hat **keine** Wirkung auf
-die Laufzeitschicht. Die vier Dateien beim Piloten sind `.claude/skills/fw-plan/`
-und `.claude/skills/fw-bugfix-prepare/`, je `SKILL.md` und `CHANGELOG.md` – **die Wirkung von
-0.57.1, nicht die dieses Releases**, und genau die vier, die die Übergabe vorausgesagt hat.
+🔴 **NACHTRAG 0.59.1 – dieser Trockenlauf hat den falschen Baum gemessen, und der Fehler
+ist derselbe wie beim Aufbau der Messumgebung sechs Stunden zuvor.** `git archive HEAD`
+nimmt den **committeten** Stand; zum Zeitpunkt des Laufs war `0.59.0` noch nicht
+committet, gemessen wurde also `0.58.0` gegen `0.58.0`. **Die Null war keine Messung,
+sondern eine Tautologie.**
+
+**Gegen den gemergten Stand (`cdcc4fa`) neu gemessen:**
+
+| Projekt | Stand vorher | `--update --dry-run` | welche Dateien |
+|---|---|---|---|
+| Übungsrepositorium | 0.58.0 | 0 angelegt, **1 aktualisiert** | `.devin/skills/fw-tests/TESTS.md` |
+| Pilot `otp-generator` | 0.54.1 | 0 angelegt, **5 aktualisiert** | die vier Plan-Skill-Dateien aus 0.57.1 **plus** `.claude/skills/fw-tests/TESTS.md` |
+
+🔴 **Und die eine Datei ist ein Befund für sich:** Es ist das **Testblatt**, in das
+dieses Release zwei Ergebniszellen eingetragen hat. **Eine Ergebniszelle eines
+dezentralen Testblatts wandert bei jedem Update in die Laufzeitschicht jedes
+übernehmenden Projekts** – obwohl D-119 sagt, das Eintragen eines Ergebnisstatus sei
+keine Änderung des Trägers, und obwohl D-141 in demselben Release die Trennlinie
+*Regelquelle gegen Aufzeichnung* gezogen hat. **Ein Testblatt ist eine Aufzeichnung und
+wird als Regelquelle ausgeliefert** (`K-56`).
+
+**Die falsche Zahl bleibt oben stehen und trägt diesen Nachtrag** – dieselbe
+Entscheidung wie bei 0.54.1 und 0.58.0: Ein Protokoll, das seine eigene
+Fehleinordnung löscht, verliert den Lernwert.
 
 ---
 
