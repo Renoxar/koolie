@@ -3364,6 +3364,8 @@ P44_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md"
 M44_UNREGISTRIERT = "das Register in"
 M44_TOT = "die kein Testfall nennt"
 M44_ANKER = "führt kein Register mehr"
+M44_OHNE_BELEG = "führt keine Belegzelle"
+M44_SPALTE_WEG = "führt keine Spalte"
 # Jede Meldung der Pruefung 44 endet auf ihren Decision Record. Die generische
 # gegenprobe() nimmt genau einen Suchtext - dieser faengt alle drei und jede kuenftige.
 M44_JEDE = "(D-93)"
@@ -3377,8 +3379,10 @@ P44_TOT = "UEB-98"
 P44_NEU = "UEB-08"
 
 P44_VORBEDINGUNG_ALT = "| FW-NE-01 (Basis) | Delegationsverbot | Übungsrepo |"
+# Sechs Spalten seit 0.58.0 - die Belegzelle ist die vierte (D-131). Eine neue Pruefung
+# kann eine bestehende Gegenprobe unvollstaendig machen; nachgezogen wird die GEGENPROBE.
 P44_REGISTERZEILE = ("| `%s` | **Synthetisch:** Eintrag der Gegenprobe | nirgends | "
-                     "nichts | `FW-NE-01` |")
+                     "Vorhandensein der Datei | nichts | `FW-NE-01` |")
 
 
 def _44_pfad(root: str, rel: str) -> str:
@@ -3417,11 +3421,34 @@ sonde("44c", "Der verlorene Anker - die Registerueberschrift ist umbenannt",
 gegenprobe("44a", "Auslieferungszustand: sieben registrierte, sieben gebrauchte "
                   "Praeparationen", None, M44_JEDE)
 
-gegenprobe("44b", "Eine achte Praeparation, registriert UND von einem Testfall "
-                  "gebraucht - der zulaessige Weg",
+gegenprobe("44b", "Eine achte Praeparation, registriert MIT Belegzelle UND von "
+                  "einem Testfall gebraucht - der zulaessige Weg",
            lambda root: (_44_register_zeile(root, P44_NEU),
                          _44_katalog_nennt(root, P44_NEU)),
            M44_JEDE)
+
+
+# --- Gegenstand 3: die Belegzelle (D-131) --------------------------------------------
+#
+# UEB-06 stand dreizehn Releases lang im Register und stellte seinen Gegenstand nicht
+# her. Die beiden Sonden treffen die zwei Wege, auf denen das wieder geschehen kann: eine
+# Zeile ohne Beleg, und eine Spaltenueberschrift, die sich aendert. Die zweite ist die
+# Sonde auf den verlorenen Anker - ohne sie bestuende Gegenstand 3 leise.
+def _44_beleg_leeren(root: str) -> None:
+    """Die Belegzelle einer echten Registerzeile leeren - UEB-04 hat die kuerzeste."""
+    ersetze(_44_pfad(root, P44_REGISTER),
+            ("| Wurzelverzeichnis | Vorhandensein der Datei |",
+             "| Wurzelverzeichnis |  |"))
+
+
+sonde("44d", "Eine registrierte Praeparation ohne Belegzelle - der Fall UEB-06",
+      _44_beleg_leeren,
+      M44_OHNE_BELEG)
+
+sonde("44e", "Der verlorene Anker der Belegspalte - die Ueberschrift ist umbenannt",
+      lambda root: ersetze(_44_pfad(root, P44_REGISTER),
+                           ("| Wie sie belegt ist |", "| Wie belegt |")),
+      M44_SPALTE_WEG)
 
 
 # --- Pruefung 45: der Bytecode des Kerns (CR-2026-069, D-97) -------------------------
