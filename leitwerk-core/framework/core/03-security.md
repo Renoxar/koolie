@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
-| Version | 0.2.1 |
+| Version | 0.2.2 |
 | Status | `pilot` |
 
 ## 1. Schutzziele (normativ)
@@ -55,7 +55,7 @@ Die ausgelieferte Berechtigungsdatei setzt die Politik um (`[DOK]` für den Mech
 | Netzwerkzugriff | Abrufwerkzeuge vollständig (`Fetch(*)` beziehungsweise die Werkzeugnamen des Client Packs) | deny, **ohne Ausnahme je Domain** – siehe unten |
 | MCP-Werkzeuge | `mcp__*` | ask; Freigaben je Server im Overlay |
 
-Regeln aus höheren Ebenen (Organisation) haben Vorrang, `deny` gewinnt immer `[DOK]`. Änderungen an der Regelmenge erfolgen ausschließlich über Änderungsantrag (V10).
+Regeln aus höheren Ebenen (Organisation) haben Vorrang, `deny` gewinnt immer `[MESS]` (D-121). **Gemessen am 2026-09-17** (`leitwerk-core/tests/protocols/2026-09-17-sitzungstest-schranken.md` Abschnitt 5.2): In einer Installation, deren Berechtigungsdatei denselben Befehl **zugleich im `allow`- und im `deny`-Korb** führt, ruft der Lauf ihn auf und wird abgewiesen; die Fernwirkung ist ausgeblieben und am Ziel nachgeprüft. Gemessen ist ein Client Pack; für jedes andere bleibt der Satz `[DOK]`, bis seine Fähigkeitsmatrix etwas anderes ausweist. Änderungen an der Regelmenge erfolgen ausschließlich über Änderungsantrag (V10).
 
 **Das Overlay setzt keine Freigabestufe herab und ergänzt keine Regel (normativ).** Bis 0.38.0 stand in der Zeile „Freigegebene Projektbefehle" der Zusatz „KANN im Overlay für Stufe niedrig auf allow gesetzt werden". **Das widerspricht dem Satz unmittelbar darüber** – derselbe Befundtyp wie die Domain-Ausnahme, die bis 0.32.0 zwei Zeilen tiefer stand (B11, D-59). Dem Projekt gehören an dieser Datei die Platzhalter und sonst nichts: `<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>` sowie die Pfadlisten. **Ein vierter freigegebener Befehl ist dort nicht ausdrückbar** – er wirkt über die Regelschicht (`project-overlay/OVERLAY.md` Abschnitt 6 und Abschnitt 3.2 des Arbeitsmodells), und das ist eine Anweisung, keine technische Schranke. **Prüfung 37 hält die installierte Datei gegen die Kernquelle:** Was dort erzeugt wird, muss hier stehen; eine zusätzliche Regel ist nur unter `deny` zulässig, weil sie dort eine Verschärfung ist (D-76, D-77). **Prüfung 37 allein reichte dafür nicht:** Sie vergleicht Mengen, und drei offene Befehlsschlitze deckten deshalb drei hinzugefügte Freigaben – gemessen bis hin zu einem Befehl mit Fernwirkung. **Prüfung 42 schließt das:** Ein gefüllter Befehlsschlitz trägt den Befehl, den Abschnitt 5 oder 6 des Overlays für seinen Platzhalter erklärt, und ein Schlitz ohne erklärten Befehl deckt nichts (`CR-2026-066`, D-90, D-91). **Die Pfadlisten bleiben ungeprüft** – sie stehen im `deny`-Korb, wo Überzähliges ohnehin zulässig ist, und ihr Inhalt wird mit keinem Overlaytext verglichen. **Unberührt bleibt die Zeile zu den MCP-Werkzeugen:** Ihre „Freigaben je Server im Overlay" laufen über `<MCP_FILE>` und lassen die Stufe `ask` unverändert – ein anderer Mechanismus, und ein stimmiger.
 
