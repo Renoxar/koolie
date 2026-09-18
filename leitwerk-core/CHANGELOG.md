@@ -2,6 +2,191 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.62.0] - 2026-09-18
+
+**Die Quellenliste gegen die Wirklichkeit gehalten: `FW-AK-01` ist zum ersten Mal
+vollstaendig gefahren und findet dreizehn Befunde - darunter zwei Anweisungsquellen
+ausserhalb des Repositoriums, die standardmaessig eingeschaltet sind, und von denen sich
+nur eine abschalten laesst** (`CR-2026-087`, D-154 bis D-159, `K-62` bis `K-65` neu).
+
+Der Releaseplan sah fuer 0.62.0 den fuenften Sitzungstest vor. **Es ist derselbe Griff wie
+bei 0.61.0, und er hat sich zum zweiten Mal gelohnt:** Von den neun Zellen des Buendels
+tragen zwei Pruefmittel `review` statt `sitzung`. `FW-KO-05` ist mit 0.61.0 gefahren
+worden; die zweite ist `FW-AK-01`, sie stand seit 0.16.0 **halb** gefuehrt - Teil
+`claude-code` gegen Clientversion 2.1.267, Teil `devin-desktop` gar nicht -, und sie
+brauchte kein Kontingent. **Zwei `review`-Zellen in zwei Releases, zusammen siebzehn
+Befunde, zusammen kein Kontingent.** Wer ein Testbuendel plant, trennt zuerst nach
+Pruefmittel.
+
+**Ausgezaehlt:** 22 Quellen (17 `QD`, 5 `QC`) und beide Produkt-Changelogs -
+`devin-desktop` von 3.8.20 bis **3.10.31**, `claude-code` von 2.1.268 bis **2.1.275**.
+**Zwoelf Quellen tragen ihren zugeschriebenen Beleg unveraendert, zehn nicht.**
+
+### B1: Eine Skillquelle des Kontos, standardmaessig an - und die Abhilfe ist in genau der ausgelieferten Datei unwirksam
+
+Seit Clientversion 2.1.275 laedt `claude-code` die im Konto eingeschalteten Skills nach
+`~/.claude/skills/synced/` und gleicht sie **waehrend** der Sitzung etwa alle zehn Minuten
+ab. Die Quelle sagt woertlich *"This is enabled by default."*
+
+🔴 **Der Befund ist nicht die Quelle, sondern die Stelle, an der sie abzuschalten waere.**
+Der Schalter `syncClaudeAiSkills: false` wirkt aus verwalteten Einstellungen, aus
+`--settings`, aus der Benutzerdatei und aus der unversionierten Projektdatei - und
+ausdruecklich **nicht** aus der versionierten: *"a `false` in `.claude/settings.json` is
+ignored"*. **Genau diese Datei ist die einzige, die dieses Pack ausliefert.**
+
+➡️ **Neue Bauform: die Abhilfe, die in genau der ausgelieferten Datei unwirksam ist.** Der
+Mechanismus existiert, ist dokumentiert und eine Zeile lang - und die Ebene, auf der das
+Framework arbeitet, ist die einzige ausgenommene. **Ohne die Vorrangtabelle haette das
+Framework den Schluessel ausgeliefert, der Validator haette ihn bestaetigt, und er haette
+nichts getan.** Zeile `X1` traegt die Grenze jetzt in ihrer eigenen Zeile (`K-63`).
+
+### B2: Eine zweite Anweisungsquelle, die der Client sich selbst schreibt - und diese ist lieferbar
+
+Derselbe Client fuehrt neben der Wurzel-Anweisungsdatei und der Regelablage eine Quelle,
+die er sich **selbst schreibt**: Notizen ausserhalb des Projekts, deren Index mit den
+ersten 200 Zeilen beziehungsweise 25 KB **in jede Sitzung** geladen wird. Woertlich: *"Auto
+memory is on by default."* Damit stuende in jeder Sitzung ein Anweisungstext, den die
+Prioritaetshierarchie nicht kennt, der Validator nicht sieht und kein Review erreicht.
+
+🟢 **Dieser Schluessel steht in keiner Vorrangausnahme.** Das Framework liefert
+`autoMemoryEnabled: false` aus - als **Standard**, nicht als Schranke: Die unversionierte
+Projektdatei hat hoeheren Vorrang (D-154).
+
+> 🔴 **Der Vergleich B1 gegen B2 ist der Ertrag dieses Durchgangs.** Zwei Quellen
+> ausserhalb des Repositoriums, beide standardmaessig an, beide mit einem dokumentierten
+> Ein-Zeilen-Schalter - **die eine ist lieferbar, die andere nicht, und der Unterschied
+> steht in einer Tabelle, die man gelesen haben muss.**
+
+### B7 und B9: Zwei Befunde, die ohne den Changelog nicht entstanden waeren
+
+**B7 - drei von siebzehn Quellen belegen einen entfernten Agenten** (Changelog 3.9.19 vom
+08.09.2026: *"Cascade has been removed."*). Die Seiten sind erreichbar und inhaltlich
+unveraendert; veraltet ist nicht ihr Text, sondern wofuer sie taugen. 🔴 Die schaerfste
+Stelle haengt an Zeile `R1`, der tragendsten Regelladungszusage dieses Packs. 🟢 **Der
+Befund wurde beim Messen kleiner und schaerfer:** Der tragfaehige Beleg stand daneben und
+war nicht genannt - `QD-6` fuehrt die Wurzel-Anweisungsdatei als Regeldatei **ohne Bindung
+an einen Agenten**. Die Abhilfe ist nicht, eine Zusage aufzugeben, sondern einen
+vorhandenen Beleg dorthin zu stellen, wo die Einstufung steht.
+
+**B9 - eine Aussage der Liste ist in der verbindlichen Zielspanne des Packs widerlegt.**
+Changelog 3.10.31 vom 16.09.2026: *"Restricted Mode blocks restricted workspace settings
+written in nested object form, **not just the dotted form** (CVE-2026-81376)."* Die Quelle
+sagt unveraendert, Einstellungen der Organisationsebene seien **nie** ueberschreibbar, und
+Zeile `M2` stuetzt sich genau darauf. **Die Zielspanne `3.9.x` liegt vollstaendig vor der
+Behebung.** ➡️ **Dieselbe Regel in zwei Ausdrucksformen, durchgesetzt nur in einer** - die
+Bauform von D-150, hier im Produkt statt im eigenen Bestand.
+
+> 🔴 **Beide Befunde waeren bei einem Abgleich Seite gegen Seite herausgefallen.** Alle vier
+> betroffenen Seiten sind Wort fuer Wort unveraendert. **Deshalb musste vor dem Abgleich
+> festgelegt werden, wann eine Quelle als abweichend zaehlt** - und die Festlegung nennt
+> den Changelog ausdruecklich als dritte Alternative.
+
+### B13: Der Befund, der die Liste selbst trifft
+
+Anhang 31.4 sagte ueber sich selbst, die Belegspalte nenne **je Zeile** die Seite, auf die
+sie sich stuetzt. **Ausgezaehlt: 43 Zeilen mit `[DOK]`, davon 14 mit genannter Quelle** -
+`devin-desktop` 4 von 20, `claude-code` 10 von 23.
+
+🟢 **Die Gegenprobe steht im eigenen Bestand:** Das Pack `claude-code` sagt dasselbe
+**eingeschraenkt** (*"Wo eine Zeile mit AP2 belegt ist"*) und ist damit wahr. **Die
+unbedingte Fassung stand im Anhang, die bedingte im Pack, und nur eine von beiden traf
+zu.** ➡️ **Wer zwei Fassungen derselben Zusage hat, prueft die unbedingte.**
+
+🔴 **Der Preis ist an diesem Durchgang gemessen:** Weil die Zuordnung fehlt, mussten **alle
+22 Quellen** abgerufen werden. **Eine Quellenliste ohne Zuordnung je Zeile macht ihre
+eigene Wiederholungspruefung so teuer wie die erste** - und `FW-AK-01` verlangt sie
+*laufend*. **Nicht nebenbei behoben** (eine geratene Zuordnung saehe wie ein Beleg aus),
+sondern als `K-62` gefuehrt und mit eigenem Posten im Releaseplan (D-156).
+
+### Ein VERIFY-Marker ist aufgeloest - Kriterium 1: 23 -> 22
+
+Zeile `R5` von `claude-code` sagte: *"Kein Kommando dieses Clients fuehrt die wirksamen
+Regelquellen auf."* **Das ist nicht mehr wahr.** Die Dokumentation nennt seit 2.1.275 zwei
+Wege: eine Auskunft ueber die tatsaechlich geladenen Anweisungsdateien und ein
+Hook-Ereignis, das beim Laden feuert - mit dem **Ladegrund** als Matcher. Der Marker
+verlangt woertlich einen Abgleich gegen die aktuelle Client-Dokumentation; der ist
+gefahren (D-158). **Die Zeile geht auf `[DOK]` mit zwei benannten Grenzen**, nicht auf
+`[TECHNISCH]`: Ein Dokumentenabgleich belegt keine beobachtete Wirkung.
+
+### Pruefung 54: Zusatzschluessel auf der deklarierten Ebene
+
+Bis 0.61.0 gab es genau ein Feld fuer Zusatzschluessel, und es landete **innerhalb** von
+`permissions`. Fuer einen Schluessel auf der obersten Ebene war das die falsche Stelle, und
+es gab keine richtige. Neu: `settings_extra` neben `permissions_extra`, **beide Pflicht,
+notfalls leer** - der Unterschied zwischen "nicht abgebildet" und "gibt es nicht" gehoert
+deklariert (D-155).
+
+**Ein Schluessel auf der falschen Ebene bleibt gueltiges JSON und wird stillschweigend
+nicht gelesen.** Der Anlass ist eine **fremde** Messung: genau diese Bauform als
+CVE-2026-81376 beim Schwesterclient. Vier Sonden und drei Gegenproben; die wichtigere
+Haelfte ist Gegenprobe `54b` - ein **leeres** `settings_extra` bleibt zulaessig, und damit
+ist belegt, dass die Pruefung die ausdrueckliche Abwesenheit von der Luecke unterscheidet.
+
+### Drei Pruefungen haben gegen diese Aenderung gemeldet, bevor sie fertig war
+
+Pruefung 46 (`gezaehlt 22, die Standzeile nennt 23` - **zum neunten Mal und wieder gegen
+einen Fortschritt**), Pruefung 50 (`K-63` und `K-64` standen in den Manifesten, bevor sie
+im Register standen) und Pruefung 40 (die Sondenmenge nannte `18 bis 53`, waehrend Pruefung
+54 bereits lief - *erst die Sonde, dann die Spanne*). 🟢 **Und Pruefung 53 hat ihren ersten
+Anwendungsfall begleitet:** Die Kriterium-2-Kette des Releaseplans ist mit 0.61.0 gebaut
+worden und traegt die dritte Verschiebung der exakten Nummern in drei Releases.
+
+### Geaendert
+
+- `clients/claude-code/CLIENT_PACK.md` auf 0.21.0: Steckbrief (Stand der
+  Produktbeobachtung), `R5` (Marker aufgeloest), `S4` und `S5` (Reichweite), `X1` (benannte
+  Grenze), `X2` (erneut geprueft), neuer Abschnitt 8a.
+- `clients/devin-desktop/CLIENT_PACK.md` auf 0.12.0: Steckbrief (verlassene Zielspanne,
+  Stand der Produktbeobachtung), Pfadabbildung (**sechs** Skill-Suchpfade statt zwei), `R1`
+  (Beleg umgestellt), `R4` (Herkunft der Zahlen ist Altbestand), `M2` (CVE), `X1` (zwei
+  benannte Grenzen), `X2` (erster dokumentierter Datenpunkt).
+- `clientmap.py`, beide `manifest.json`: `settings_extra`.
+- `build/doc/31-anhaenge.md`: Zusage der Zuordnung je Zeile berichtigt, beide
+  Recherchestaende, `QC-6` neu, 31.4.3 neu gefasst.
+- `tests/TEST_CATALOG.md`: `FW-AK-01` **bestanden**; Sondenmenge `6, 14 und 18 bis 54`.
+- `tests/scripts/validate-framework.py`, `tests/scripts/probe-pruefungen.py`: Pruefung 54.
+- `docs/ROADMAP.md`: Releaseplan (Sitzungstest 5 auf 0.63.0, neuer Posten `~0.65.0`),
+  Standzeile.
+- `governance/DECISION_LOG.md`: D-154 bis D-159, `K-62` bis `K-65`.
+
+### Migrationshinweis
+
+🔴 **Die Abhilfe aus D-154 erreicht kein bestehendes Projekt.** `install.py --update`
+fuehrt die Einstellungsdatei unter *Projektdateien unberuehrt gelassen* - sie traegt
+Projektwerte und wird von einem Update **nie** ueberschrieben. Der Schluessel
+`autoMemoryEnabled: false` erreicht damit jede **Erstinstallation** und kein bestehendes
+Projekt. **Wer ein Projekt hebt und den Client `claude-code` fuehrt, traegt die Zeile von
+Hand nach** - auf der obersten Ebene der Einstellungsdatei, nicht innerhalb von
+`permissions`.
+
+**Gemessen am 2026-09-18** gegen eine Kopie beider uebernehmender Projekte, mit dem
+`leitwerk-core` des **Arbeitsbaums** (nicht aus `git archive HEAD` - ein Release, das einen
+ausgelieferten Traeger anfasst, kann keine Null haben): `otp-generator` **6 Dateien**,
+`test-devin-framework` **1 Datei**, in keinem von beiden die Einstellungsdatei.
+
+⚠️ **Damit hat der Trockenlauf zum dritten Mal in vier Releases einen Migrationshinweis
+umgeworfen.**
+
+### Bekannte Einschraenkungen
+
+- 🔴 **Vier Befunde bleiben offen, weil ihr Gegenstand ausserhalb der Reichweite des
+  Frameworks liegt:** `K-62` (29 von 43 `[DOK]`-Zeilen ohne Quellenangabe - nach diesem Release 26 von 44,
+  weil der Abgleich fuenf Zeilen gelesen hat), `K-63` (die
+  Kontoquelle der Skills), `K-64` (die organisationsseitige Skillquelle des Schwesterpacks)
+  und `K-65` (der Schalter fuer fremde Agentenprotokolle ist entfallen).
+- 🔴 **Die verbindliche Zielspanne von `devin-desktop` bleibt `3.9.x`, waehrend das Produkt
+  bei 3.10.31 steht** (D-157). Sie wird nicht mitgezogen: Sie ist der *geprueffte*
+  Geltungsbereich, und sie zu heben ohne Messung waere eine Zusage ohne Messung. ⚠️ **`K-40`
+  kann diesen Fall nicht fangen** - der aktuelle Produktstand steht in keiner Datei dieses
+  Repositoriums.
+- **Das `bestanden` von `FW-AK-01` altert ab dem Abnahmetag** - dieselbe Bauform wie `K-61`
+  bei `FW-KO-02`. Es sagt: *am 2026-09-18 stand keine veraltete Aussage als Tatsache im
+  Bestand.* Ueber den 19.09. sagt es nichts, und der Ausloeser der Zelle verlangt sie
+  deshalb *laufend* im Release-Zyklus.
+- **Pruefung 54 prueft, ob ein deklarierter Schluessel ankommt, nicht ob er der richtige
+  ist.** Ob `autoMemoryEnabled` der Schluessel ist, den der Client liest, sagt die
+  Herstellerdokumentation - dafuer gibt es `FW-AK-01`, nicht den Validator.
+
 ## [0.61.0] - 2026-09-18
 
 **Die Grenzfaelle gegen die Fassungen gehalten: `FW-KO-05` ist zum ersten Mal gefahren und

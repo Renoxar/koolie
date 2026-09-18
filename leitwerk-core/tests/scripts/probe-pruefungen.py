@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 53, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 54, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -4529,19 +4529,19 @@ P53_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
 P53_UEBERSCHRIFT = "#### Der Releaseplan bis 1.0.0 und darüber hinaus"
 # Genau der Fehler, den 0.60.0 gemergt hat: Die Zelle wurde aus dem Posten genommen, seine
 # Zahl nachgezogen - und die des Folgepostens blieb stehen.
-P53_KETTENGLIED = "| Kriterium 2: **84 → 0** | ja, mehrfach |"
+P53_KETTENGLIED = "| Kriterium 2: **85 → 0** | ja, mehrfach |"
 
 
 def _53_kette_reissen(root: str) -> None:
     """Der Stand vor 0.61.0: Der Folgeposten beginnt um eins unter dem Vorgaengerende."""
     ersetze(P(root, P53_ROADMAP),
-            (P53_KETTENGLIED, "| Kriterium 2: **83 → 0** | ja, mehrfach |"))
+            (P53_KETTENGLIED, "| Kriterium 2: **84 → 0** | ja, mehrfach |"))
 
 
 def _53_null_verfehlen(root: str) -> None:
     """Ein Plan, der nicht bei null ankommt, fuehrt nicht bis 1.0.0."""
     ersetze(P(root, P53_ROADMAP),
-            (P53_KETTENGLIED, "| Kriterium 2: **84 → 4** | ja, mehrfach |"))
+            (P53_KETTENGLIED, "| Kriterium 2: **85 → 4** | ja, mehrfach |"))
 
 
 def _53_anker_verlieren(root: str) -> None:
@@ -4556,8 +4556,8 @@ def _53_glied_anfuegen(root: str) -> None:
     Die Pruefung rechnet eine Kette nach und zaehlt keine Posten; ohne dieses Paar waere
     nicht belegt, dass sie dem Plan folgt statt einer festen Laenge.
     """
-    zeile_nach(P(root, P53_ROADMAP), "| **0.63.0 bis ~0.67.0** |",
-               "| **~0.68.0** | Sondenposten | Kriterium 2: **0 → 0** | nein |")
+    zeile_nach(P(root, P53_ROADMAP), "| **0.64.0 bis ~0.68.0** |",
+               "| **~0.69.0** | Sondenposten | Kriterium 2: **0 → 0** | nein |")
 
 
 def _53_nennung_vor_dem_plan(root: str) -> None:
@@ -4587,6 +4587,121 @@ gegenprobe("53b", "Ein weiterer Posten, der die Kette fortsetzt, bleibt zulaessi
 
 gegenprobe("53c", "Eine Kriterium-2-Angabe vor der Ueberschrift bleibt zulaessig - der "
                   "Zuschnitt beginnt am Plan", _53_nennung_vor_dem_plan, M53_KETTE)
+
+
+# --- Pruefung 54: Zusatzschluessel auf der deklarierten Ebene (D-155) --------------
+#
+# ZWEI ZUSCHNITTE, UND DER ZWEITE IST DER WICHTIGERE. Das Repositorium traegt eine
+# devin-desktop-Testinstallation, und dieses Pack fuehrt settings_extra ABSICHTLICH leer.
+# Eine Sonde auf der Kopie des Repositoriums belegt deshalb nur die Deklarationspflicht.
+# Was der Befund von 0.62.0 verlangt - dass ein Schluessel mit WERT auf der richtigen
+# EBENE ankommt -, ist nur an einer claude-code-Installation zu messen. Das ist B02: nicht,
+# dass eine Pruefung falsch prueft, sondern dass sie einen Client nicht sieht.
+M54_FEHLT_FELD = "Feld settings_extra fehlt"
+M54_FEHLT_KEY = "aus settings_extra fehlt in der obersten Ebene"
+M54_EBENE = "steht in dem Objekt permissions statt in der obersten Ebene"
+M54_WERT = "das Manifest deklariert in settings_extra aber"
+MAN_DD_54 = "leitwerk-core/clients/devin-desktop/manifest.json".replace("/", os.sep)
+
+
+def _54_deklaration_fehlt(root: str) -> None:
+    """Das Pack fuehrt das Feld gar nicht - der Stand jedes Packs bis 0.61.0."""
+    ersetze(P(root, MAN_DD_54), ('  "settings_extra": {},\r\n', ""))
+
+
+def _54_leeres_feld_bleibt(root: str) -> None:
+    """Gegenprobe: Ein leeres settings_extra ist eine Deklaration und bleibt zulaessig.
+
+    Ohne dieses Paar stuende nur fest, dass die Pruefung ein fehlendes Feld meldet - nicht,
+    dass sie die ausdrueckliche Abwesenheit von der Luecke unterscheidet. Genau diese
+    Unterscheidung ist ihr Zweck.
+    """
+    ersetze(P(root, MAN_DD_54),
+            ('  "settings_extra": {},\r\n',
+             '  "settings_extra": {},\r\n  "_sonde_54": "leer ist eine Deklaration",\r\n'))
+
+
+def _cc_manifest_54(root: str) -> str:
+    return os.path.join(root, "leitwerk-core", "clients", "claude-code", "manifest.json")
+
+
+def sonden_zusatzschluessel() -> None:
+    """Wirkungsnachweis an einer claude-code-Installation (D-155).
+
+    Gemessen wird an der ERZEUGTEN Datei, nicht am Manifest: Die Pruefung fragt, ob die
+    Verschaerfung ankommt, und das entscheidet die Abbildung, nicht die Deklaration.
+    """
+    root = installation("claude-code")
+    try:
+        rechte = os.path.join(root, ".claude", "settings.json")
+        ausgang = lies(rechte)
+
+        # --- Gegenprobe: die frische Installation traegt den Schluessel --------------
+        # Sie ist hier die wichtigere Haelfte: Sie belegt, dass die Abbildung aus
+        # 0.62.0 ueberhaupt etwas ausliefert. Ohne sie bewiese jede Sonde nur, dass die
+        # Pruefung irgendetwas meldet.
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "54c", "autoMemoryEnabled" not in aus,
+              "Die frische claude-code-Installation traegt autoMemoryEnabled auf der "
+              "obersten Ebene und bleibt unbeanstandet")
+        if "autoMemoryEnabled" in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "autoMemoryEnabled" in z)[:400])
+
+        # --- 54a: der Schluessel fehlt ganz - der Stand bis 0.61.0 ------------------
+        # Die erzeugte Datei ist LF: install.py schreibt LF, git normalisiert. Ein
+        # Suchtext mit \r\n traefe hier NICHT - anders als in den Manifest-Sonden, die
+        # gegen das CRLF des Repositoriums laufen.
+        schreib(rechte, ersetzt(
+            ausgang,
+            ('  "autoMemoryEnabled": false,\n', ""),
+            quelle=".claude/settings.json"))
+        melde("SONDE", "54b", M54_FEHLT_KEY in validator_ausgabe(root),
+              "Ein deklarierter Zusatzschluessel fehlt in der erzeugten Datei - die "
+              "Verschaerfung kommt nicht an")
+
+        # --- 54b: der Schluessel steht auf der FALSCHEN Ebene -----------------------
+        # Der eigentliche Gegenstand: Die Datei bleibt gueltiges JSON, der Schluessel ist
+        # da, er wird nur nicht gelesen. Bis 0.61.0 haette nichts es gemeldet.
+        schreib(rechte, ersetzt(
+            ausgang,
+            ('  "autoMemoryEnabled": false,\n', ""),
+            ('"permissions": {\n    "defaultMode": "default",',
+             '"permissions": {\n    "autoMemoryEnabled": false,\n    '
+             '"defaultMode": "default",'),
+            quelle=".claude/settings.json"))
+        melde("SONDE", "54c", M54_EBENE in validator_ausgabe(root),
+              "Derselbe Schluessel INNERHALB von permissions - gueltiges JSON, vom "
+              "Client nicht gelesen, und die Pruefung nennt die Ebene")
+
+        # --- 54c: der Wert ist ein anderer als der deklarierte ----------------------
+        schreib(rechte, ersetzt(
+            ausgang,
+            ('  "autoMemoryEnabled": false,\n', '  "autoMemoryEnabled": true,\n'),
+            quelle=".claude/settings.json"))
+        melde("SONDE", "54d", M54_WERT in validator_ausgabe(root),
+              "Der Schluessel steht auf der richtigen Ebene und traegt den "
+              "entgegengesetzten Wert - eine Verschaerfung, die keine ist")
+
+        schreib(rechte, ausgang)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+sonde("54a", "Ein Pack fuehrt settings_extra gar nicht - der Stand jedes Packs bis "
+             "0.61.0, und die Abwesenheit war nicht von der Luecke zu unterscheiden",
+      _54_deklaration_fehlt, M54_FEHLT_FELD)
+
+gegenprobe("54a", "Das unveraenderte Repositorium bleibt unbeanstandet - beide Packs "
+                  "fuehren beide Felder", None, M54_FEHLT_FELD)
+
+gegenprobe("54b", "Ein LEERES settings_extra ist eine Deklaration und bleibt zulaessig - "
+                  "die Pruefung trennt die ausdrueckliche Abwesenheit von der Luecke",
+           _54_leeres_feld_bleibt, M54_FEHLT_FELD)
+
+buendel(sonden_zusatzschluessel,
+        "Pruefung 54 an einer claude-code-Installation: fehlend, falsche Ebene und "
+        "falscher Wert je eigens gemessen, dazu die unveraenderte Installation")
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

@@ -208,8 +208,20 @@ Prüft (statisch, ohne laufenden KI-Client):
      0.60.0 ist eingetreten, was eine Pruefung verhindert haette: Eine Zelle wurde aus
      einem Posten genommen, seine Zahl nachgezogen, die des Folgepostens nicht. Die Kette
      riss um eins und wurde so gemergt
+ 54. Zusatzschluessel auf der deklarierten Ebene (D-155): Jeder Schluessel aus
+     settings_extra steht in der erzeugten Berechtigungsdatei auf der OBERSTEN Ebene,
+     jeder aus permissions_extra INNERHALB von permissions - je mit dem deklarierten
+     Wert. Ein Pack fuehrt beide Felder, notfalls leer: Der Unterschied zwischen "nicht
+     abgebildet" und "gibt es nicht" gehoert deklariert, nicht aus einem fehlenden Feld
+     erraten. Die Ebene ist keine Kosmetik - ein Schluessel auf der falschen Ebene wird
+     stillschweigend nicht gelesen, und nichts meldet es. Anlass ist eine FREMDE Messung
+     (FW-AK-01, CR-2026-087, 2026-09-18): Beim Client des Schwesterpacks ist genau diese
+     Bauform als CVE-2026-81376 aufgetreten - der Restricted Mode setzte eine
+     eingeschraenkte Arbeitsbereichseinstellung in gepunkteter Schreibweise durch und
+     dieselbe in verschachtelter nicht. Behoben in 3.10.31 vom 2026-09-16; die
+     verbindliche Zielspanne des Packs devin-desktop liegt vollstaendig davor
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 53 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 54 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -5769,6 +5781,84 @@ def check_releaseplan_kette(root: str) -> None:
             f"nicht dort ankommt, führt nicht bis 1.0.0 (D-153)")
 
 
+# --- Pruefung 54 -------------------------------------------------------------------
+# Das Framework liefert die Berechtigungsdatei eines Packs erzeugt aus, und ein Pack darf
+# darin Schluessel setzen, die nicht aus der neutralen Regelmenge stammen. Bis 0.61.0 gab
+# es dafuer genau ein Feld: permissions_extra - und es landet INNERHALB des
+# permissions-Objekts. Fuer einen Schluessel, den der Client auf der obersten Ebene liest,
+# war das die falsche Stelle, und es gab keine richtige.
+#
+# DIE EBENE IST KEINE KOSMETIK. Ein Schluessel an der falschen Stelle wird nicht gelesen,
+# die Datei bleibt gueltiges JSON, der Validator meldete nichts - und die Verschaerfung,
+# die das Pack auszuliefern glaubt, wirkt nicht. Das ist die Bauform "die Zusage, die mehr
+# verspricht als ihr Mechanismus haelt", angewandt auf eine Dateiebene.
+#
+# ANLASS IST EINE FREMDE MESSUNG, KEINE EIGENE (FW-AK-01, CR-2026-087, 2026-09-18): Beim
+# Client des Schwesterpacks ist genau das als CVE-2026-81376 aufgetreten - der Restricted
+# Mode setzte eine eingeschraenkte Arbeitsbereichseinstellung in GEPUNKTETER Schreibweise
+# durch und dieselbe Einstellung in VERSCHACHTELTER Form nicht. Behoben in 3.10.31 vom
+# 2026-09-16; die verbindliche Zielspanne des Packs devin-desktop (3.9.x) liegt
+# vollstaendig davor. Dieselbe Regel, zwei Ausdrucksformen, durchgesetzt nur in einer -
+# die Bauform von Pruefung 51, diesmal im Produkt statt im eigenen Bestand.
+#
+# WAS SIE NICHT LEISTET: Sie prueft, ob ein DEKLARIERTER Schluessel ankommt, nicht ob er
+# der richtige ist. Ob autoMemoryEnabled der Schluessel ist, den dieser Client liest, sagt
+# die Herstellerdokumentation - und dafuer gibt es FW-AK-01, nicht den Validator.
+P54_FELDER = ("settings_extra", "permissions_extra")
+
+
+def check_zusatzschluessel(root: str, man: dict) -> None:
+    """Pruefung 54 (D-155): Deklarierte Zusatzschluessel stehen auf ihrer Ebene."""
+    rel = man.get("permissions_file")
+    if not rel:
+        return
+    pfad = os.path.join(root, *rel.split("/"))
+    if not os.path.isfile(pfad):
+        return
+    try:
+        cfg = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return  # Pruefung 3 meldet das bereits; hier waere es eine zweite Meldung
+    if not isinstance(cfg, dict):
+        return
+    pack = man.get("client", "?")
+    for feld in P54_FELDER:
+        erklaert = man.get(feld)
+        if erklaert is None:
+            err(f"clients/{pack}/manifest.json: Feld {feld} fehlt. Ein Pack führt "
+                f"beide Felder, notfalls leer - der Unterschied zwischen „nicht "
+                f"abgebildet“ und „gibt es nicht“ gehört "
+                f"deklariert und nicht aus einem fehlenden Feld erraten (D-155)")
+            continue
+        if not isinstance(erklaert, dict):
+            err(f"clients/{pack}/manifest.json: Feld {feld} ist kein Objekt (D-155)")
+            continue
+        eigen = cfg if feld == "settings_extra" else cfg.get("permissions", {})
+        fremd = cfg.get("permissions", {}) if feld == "settings_extra" else cfg
+        ebene = ("der obersten Ebene" if feld == "settings_extra"
+                 else "dem Objekt permissions")
+        gegen = ("dem Objekt permissions" if feld == "settings_extra"
+                 else "der obersten Ebene")
+        if not isinstance(eigen, dict):
+            continue
+        for schluessel, wert in erklaert.items():
+            if schluessel in eigen:
+                if eigen[schluessel] != wert:
+                    err(f"{rel}: Schlüssel „{schluessel}“ trägt "
+                        f"{json.dumps(eigen[schluessel], ensure_ascii=False)}, das "
+                        f"Manifest deklariert in {feld} aber "
+                        f"{json.dumps(wert, ensure_ascii=False)} (D-155)")
+                continue
+            if isinstance(fremd, dict) and schluessel in fremd:
+                err(f"{rel}: Schlüssel „{schluessel}“ steht in {gegen} "
+                    f"statt in {ebene}. Das Manifest deklariert ihn in {feld}; auf der "
+                    f"falschen Ebene wird er stillschweigend nicht gelesen (D-155)")
+                continue
+            err(f"{rel}: Schlüssel „{schluessel}“ aus {feld} fehlt in "
+                f"{ebene}. Das Pack liefert eine Verschärfung aus, die in der "
+                f"erzeugten Datei nicht ankommt (D-155)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -5839,6 +5929,7 @@ def main() -> int:
     check_overlay_schlitze(root)
     check_v6_freigabefolge(root)
     check_releaseplan_kette(root)
+    check_zusatzschluessel(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
