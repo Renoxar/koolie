@@ -2,6 +2,113 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.60.0] - 2026-09-18
+
+**Die Vorbedingungen des fuenften Sitzungstests: vier von zehn tragen nicht, und alle vier
+fielen VOR dem ersten Lauf an** (`CR-2026-085`, D-142 bis D-147, `K-55` beantwortet,
+`K-34` und `K-55` ins Register nachgetragen, `K-57` und `K-58` neu).
+
+Der Releaseplan sah fuer 0.60.0 zehn Ergebniszellen vor. **Gefahren wird keine** - erst die
+Vorbedingungen, dann die Messung. Die Erhebung hat eine halbe Stunde gekostet und kein
+Kontingent; vier der zehn Zellen waeren gegen einen Gegenstand gelaufen, den es nicht gibt.
+
+### `UEB-07` hat seinen Gegenstand ZWANZIG Releases lang nicht hergestellt
+
+Drei Fehler, jeder fuer sich hinreichend. `FW-KO-03` stand seit 0.45.0 als `offen`, also
+als fahrbar, und war es nie.
+
+- **Der Ablageort war verdrahtet.** Das Register des Kerns nennt ihn werkzeugneutral
+  ("Regelablage der Laufzeitschicht"); `tools/praeparationen.py` des
+  Uebungsrepositoriums schrieb nach `.devin/rules/`. Jeder Messbaum traegt aber
+  `claude-code`, und `install.py` erzwingt beim Packwechsel, dass die alte Ablage weicht.
+  **Gemessen: nackter `FileNotFoundError`.** Seit 0.60.0 wird der Ort aus dem MANIFEST des
+  installierten Packs aufgeloest - abgeleitet, nicht gepflegt.
+- **Das Ziel ist untracked, und jeder Messbaum entsteht aus `git archive HEAD`.** Eine
+  Praeparation, die nur im Arbeitsbaum steht, ist im Messbaum nicht vorhanden - und
+  `--status` meldete trotzdem "gesetzt", weil es den falschen Baum ansah. **Die Belegzelle
+  belegte am falschen Ort** (dieselbe Lehre wie `UEB-06`/D-130, eine Registerzeile weiter).
+- 🔴 **Die Praeparation lieferte ihre eigene Loesung mit.** Die Regeldatei lag
+  `always_on` im Kontext jedes Laufs und nannte darin ihre Kennung, ihren Testfall, den
+  Widerspruch mit Fundstelle **und den Erwartungswert woertlich**. **Gemessen worden waere
+  damit, ob der Client eine Anleitung lesen kann.** Das Mentorenblatt desselben
+  Repositoriums verbietet genau das in seinem eigenen Vorspann.
+
+➡️ **Zwei Regeln fuers Register** (D-142): Eine Praeparation in der Laufzeitschicht wird
+**im Messbaum** gesetzt und ihr Ort abgeleitet - und **eine Praeparation traegt ihren
+Erwartungswert nicht.** Ein Waechter im Werkzeug setzt die zweite durch.
+
+### Neun von zwoelf `fw-*`-Skills sind fuer das Modell nicht aufrufbar - und das hat `FW-SC-01` scheitern lassen
+
+**Die Ursachenanalyse von 0.59.0 war falsch, und die eigene Mitschrift widerlegt sie**
+(D-145). Der Hauptlauf rief `fw-change-small` auf und **wurde abgewiesen**: Die Quelle
+fuehrt `triggers` ohne `- model`, und `claude-code` bildet das auf
+`disable-model-invocation: true` ab. Damit fiel **Schritt 3 des Skills** aus, der *direkte
+Verwender der zu aendernden Einheiten per Suche nach Bezeichnern* verlangt - genau die
+Erhebung, die die Scope-Falle zuschnappen laesst.
+
+**Es gibt keine Regelkollision:** Schritt 3 macht die Verwendersuche *fuer die Aufgabe
+noetig*; `CLAUDE.md` §5 entzieht ihr die Voraussetzung nicht. **`K-55` ist damit
+beantwortet, und die Antwort ist die entgegengesetzte: Die Falle liegt AUF dem Arbeitsweg -
+der Lauf ist ihn nicht gegangen.**
+
+🔴 **Und eine neue Bauform: Der Lauf hat eine Erlaubnis als Verbot gelesen.** Abschnitt 17
+der Wurzel-Anweisungsdatei sagt, er *darf* die `SKILL.md` ersatzweise lesen und den Ablauf
+von Hand nacharbeiten; der Bericht schrieb, die Abweisung *untersage* das - gestuetzt auf
+den Wortlaut der Werkzeugmeldung statt auf den Regeltext (`K-58`).
+
+### `FW-PO-02` misst im nicht-interaktiven Betrieb eine Unmoeglichkeit
+
+Der Ablauf von Ue3 hat einen **menschlichen Halte-Punkt in der Mitte**, und der Messapparat
+faehrt einen Turn ohne `--resume`. **Und alle vier Skills von Ue3 sind fuer das Modell
+gesperrt** - der Testfall misst, ob der Client den Ablauf VON SICH AUS geht; ein Prompt,
+der die Skills nennt, misst den Prompt (D-144, Umkehrung von D-72).
+
+### `FW-RE-01` ist eine Sammelzelle - der dritte Fall, ein Release nach D-139
+
+Ihr Ausloeser spannt alle **18** Basistests des Katalogs und die Skill-Tests der betroffenen
+Skills; ihr erwartetes Ergebnis *unveraendert bestanden* setzt fuer jeden Bestandteil ein
+vorheriges `bestanden` voraus. Ausgezaehlt: **5 von 18** Basistests offen, **81 von 87**
+Zellen der Testblaetter. Sie wandert an das Ende der Testblaetter (D-143).
+
+### Zwei neue Pruefungen
+
+- **Pruefung 49** (D-146): Nennt der Ausloeser eines `sitzung`-Testfalls einen Kernskill
+  ohne Modellzulassung, nennt er ihn als `/name`. Marken **abgeleitet** aus den
+  Skillquellen, Spalten ueber die Kopfzeile aufgeloest. Vier Fundstellen berichtigt.
+  🔴 **Sie findet den Fall nicht, der sie veranlasst hat** - `FW-SC-01` nannte den Skill
+  gar nicht; deshalb wurde zuerst der Ausloeser berichtigt.
+- **Pruefung 50** (D-147): Jede im Kern genannte Kennung `K-NN` steht als Zeile im
+  Register des Decision Logs. **Zwei fehlten:** `K-34` seit 0.32.0 in sieben Traegern -
+  darunter ein Manifest und eine Faehigkeitsmatrix -, `K-55` von `CR-2026-083` in drei
+  Traegern als *neu* angekuendigt und nie eingetragen. **Die Ausnahmemenge steht in dem
+  Dokument, das die Regel traegt**, und wird von dort abgeleitet.
+
+### Was sich NICHT aendert
+
+**Keine Zahl von D-11.** Kriterium 2 bleibt **93**. Der Releaseplan schiebt den fuenften
+Sitzungstest auf `0.61.0` und rechnet dort mit **93 → 84** statt 83 - `FW-RE-01` faellt
+heraus. **Die Posten mit `~` werden nicht umnummeriert:** Zwoelf der siebzehn Fundstellen
+zu `~0.68.0` liegen in Aufzeichnungen, und nach D-141 sind das Daten.
+
+### Migrationshinweis
+
+**Keine Aenderung der Laufzeitschicht.** Angefasst sind Testkatalog, Register, Roadmap,
+Decision Log und der Pruefapparat - keiner dieser Traeger wird von `install.py --update`
+in ein uebernehmendes Projekt geschrieben.
+
+Trockenlauf gegen den **ARBEITSBAUM** beider Projekte (Lehre aus 0.59.1, kurzer Pfad
+`C:\lw-mig`):
+
+| Projekt | Stand | `--update --dry-run` |
+|---|---|---|
+| Uebungsrepositorium | 0.59.1 | **0 angelegt, 0 aktualisiert**, 64 unveraendert |
+| Pilot `otp-generator` | 0.54.1 | 0 angelegt, **5 aktualisiert**, 53 unveraendert |
+
+**Die Null ist gegen die Erwartung gehalten und haelt** - das Uebungsrepositorium steht auf
+0.59.1 und misst die Wirkung dieses Releases allein. **Die fuenf Dateien des Piloten sind
+Rueckstand, nicht Wirkung:** die vier Plan-Skill-Dateien aus 0.57.1 und das Testblatt aus
+0.59.0, die 0.59.1 bereits benannt hat.
+
 ## [0.59.1] - 2026-09-18
 
 **Der Trockenlauf von 0.59.0 hat den falschen Baum gemessen** (`CR-2026-084`, `K-56` neu).

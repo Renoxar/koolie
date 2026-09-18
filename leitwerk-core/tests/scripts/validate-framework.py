@@ -164,8 +164,27 @@ Prüft (statisch, ohne laufenden KI-Client):
      Regel galt seit 0.31.0 und wurde von nichts durchgesetzt: Pruefung 12 liest nur
      Token in Backticks, meldet nur Pfade, die es NICHT GIBT, und fuehrte ihre eigenen
      Wurzeln clientgebunden. Siebzehn Fundstellen in vierzehn Traegern
+ 49. Ausdruecklicher Skill-Aufruf im Testkatalog (D-146): Nennt der Ausloeser eines
+     Testfalls mit Pruefmethode `sitzung` einen Kernskill, dessen Quelle `triggers`
+     ohne `- model` fuehrt, muss er ihn als `/name` nennen. Ein solcher Skill ist nur
+     ueber den ausdruecklichen Aufruf einer Person erreichbar - das Client Pack
+     `claude-code` bildet die fehlende Modellzulassung auf `disable-model-invocation`
+     ab. Ein nicht-interaktiver Messlauf bekommt sonst eine Abweisung statt des
+     Ablaufs, und der Testfall misst etwas anderes als seinen Gegenstand. Gemessen am
+     2026-09-18 an `FW-SC-01`: Der Hauptlauf rief `fw-change-small` auf, wurde
+     abgewiesen, arbeitete den Ablauf nicht nach - und damit fiel Schritt 3 des Skills
+     aus, der die Verwender der geaenderten Einheit erhebt. Neun von zwoelf Skills
+     betroffen, vier Fundstellen im Katalog
+ 50. Vollstaendigkeit des Klaerungspunktregisters (D-147): Jede im Kern genannte
+     Kennung `K-NN` steht als Zeile im Register des Decision Logs. Ausgenommen sind
+     allein die belegten synthetischen Kennungen des Pruefapparats; ihre Menge steht in
+     dem Dokument, das die Regel traegt, und wird von dort abgeleitet. Am 2026-09-18
+     fehlten zwei: `K-34` seit 0.32.0 in sieben Traegern (Stand vor der Behebung) - darunter ein Manifest und
+     eine Faehigkeitsmatrix -, `K-55` von CR-2026-083 in drei Traegern als neu
+     angekuendigt und nie eingetragen. Die Uebersicht der offenen Punkte war beide Male
+     zu klein, und nichts hat es gemeldet
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 48 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 50 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -5311,6 +5330,158 @@ def check_tool_neutrality(root: str) -> None:
                         f"steht in {KERN}/docs/RUNTIME_GLOSSARY.md (D-128)")
 
 
+
+# --- Pruefung 49 -------------------------------------------------------------------
+# Die Marken stammen aus den Skillquellen des Kerns, nicht aus einer gepflegten Liste.
+# 'triggers' ist ein Kernbegriff; die Abbildung auf das Clientfeld leistet install.py
+# (bei claude-code 'disable-model-invocation'). Diese Pruefung fragt nach der QUELLE,
+# damit sie unabhaengig vom installierten Pack dasselbe sagt.
+SKILL_TRIGGER_RE = re.compile(r"^triggers:\s*$(.*?)(?=^\S|\Z)", re.M | re.S)
+
+
+def _skills_ohne_modellaufruf(root: str) -> list:
+    """Namen der Kernskills, deren Quelle 'triggers' ohne '- model' fuehrt, sortiert.
+
+    Ein solcher Skill ist nur ueber den ausdruecklichen Aufruf einer Person erreichbar;
+    das Modell darf ihn nicht von sich aus waehlen. Gemessen am 2026-09-18: neun von
+    zwoelf (CR-2026-085, D-146).
+    """
+    namen = []
+    for basis in (os.path.join(root, KERN, "framework", "skills"),):
+        if not os.path.isdir(basis):
+            continue
+        for name in sorted(os.listdir(basis)):
+            pfad = os.path.join(basis, name, "SKILL.md")
+            if not os.path.isfile(pfad):
+                continue
+            text = read(pfad)
+            if not text.startswith("---"):
+                continue
+            ende = text.find("---", 3)
+            if ende < 0:
+                continue
+            m = SKILL_TRIGGER_RE.search(text[3:ende])
+            if m and "- model" not in m.group(1):
+                namen.append(name)
+    return namen
+
+
+def _tabellenspalte(kopf: str, ueberschrift: str) -> int:
+    """Index der Spalte mit dieser Ueberschrift - ueber die STELLUNG, nicht die Nummer.
+
+    Eine neue Spalte im Testkatalog verschiebt sonst jede Pruefung, die eine Nummer
+    verdrahtet hat. -1 heisst: diese Tabelle fuehrt die Spalte nicht.
+    """
+    zellen = [z.strip() for z in kopf.strip().strip("|").split("|")]
+    for i, z in enumerate(zellen):
+        if z == ueberschrift:
+            return i
+    return -1
+
+
+def check_skillaufruf_im_katalog(root: str) -> None:
+    """Pruefung 49 (D-146): Ein nicht modellaufrufbarer Skill steht als /name im Ausloeser."""
+    namen = _skills_ohne_modellaufruf(root)
+    if not namen:
+        err(f"{KERN}/framework/skills/: kein Skill mit 'triggers' ohne '- model' gefunden – "
+            f"Prüfung 49 leitet ihre Marken daraus ab und hat ihren Gegenstand verloren; "
+            f"sie bestünde sonst leise (D-23)")
+        return
+    dateien = [os.path.join(root, KERN, "tests", "TEST_CATALOG.md")]
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "TESTS.md" in files:
+                dateien.append(os.path.join(wurzel, "TESTS.md"))
+    for pfad in sorted(dateien):
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        i_ein = i_pm = -1
+        for nr, zeile in enumerate(read(pfad).splitlines(), 1):
+            if not zeile.lstrip().startswith("|"):
+                continue
+            if "Prüfmethode" in zeile and "Eingabe" in zeile:
+                i_ein = _tabellenspalte(zeile, "Eingabe")
+                i_pm = _tabellenspalte(zeile, "Prüfmethode")
+                continue
+            if i_ein < 0 or i_pm < 0:
+                continue
+            zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+            if len(zellen) <= max(i_ein, i_pm):
+                continue
+            if "sitzung" not in zellen[i_pm]:
+                continue
+            ausloeser = zellen[i_ein]
+            for skill in namen:
+                # Nur die nackte Nennung ist ein Befund: '/name' ist der Aufruf selbst.
+                for m in re.finditer(r"(?<![/\w-])" + re.escape(skill) + r"(?![\w-])", ausloeser):
+                    err(f"{rel}:{nr}: Der Auslöser nennt '{skill}' ohne den ausdrücklichen "
+                        f"Aufruf. Die Quelle des Skills führt 'triggers' ohne '- model' – "
+                        f"das Modell darf ihn nicht von sich aus wählen, und ein "
+                        f"nicht-interaktiver Lauf bekommt eine Abweisung statt des Ablaufs. "
+                        f"Schreibe '/{skill}' (D-146)")
+                    break
+
+
+# --- Pruefung 50 -------------------------------------------------------------------
+# Die Ausnahmemenge steht in dem Dokument, das die REGEL traegt - nicht hier. Eine
+# Ausnahme im Kopfkommentar einer Pruefung findet niemand, der die Regel liest (0.57.0).
+SYNTH_ANKER = "**Belegte synthetische Kennungen"
+KLAERUNG_RE = re.compile(r"\bK-\d+\b")
+KLAERUNG_ZEILE_RE = re.compile(r"^\|\s*(K-\d+)\s*\|", re.M)
+
+
+def _synthetische_kennungen(logtext: str) -> set:
+    """Die belegten synthetischen Kennungen - aus dem Absatz des Decision Logs.
+
+    Sie gehoeren keinem Klaerungspunkt: Sonden und Gegenproben des Pruefapparats
+    brauchen Kennungen, die nie echt vergeben werden (D-23-Nachweis ohne Kollision).
+    Leere Menge heisst: der Anker ist verloren - der Aufrufer meldet das.
+    """
+    for zeile in logtext.splitlines():
+        if zeile.lstrip().startswith(SYNTH_ANKER):
+            return set(re.findall(r"`([A-Z]+-\d+)`", zeile))
+    return set()
+
+
+def check_klaerungsregister(root: str) -> None:
+    """Pruefung 50 (D-147): Jede im Kern genannte Klaerungspunktkennung steht im Register."""
+    logpfad = os.path.join(root, KERN, "governance", "DECISION_LOG.md")
+    if not os.path.exists(logpfad):
+        err(f"{KERN}/governance/DECISION_LOG.md fehlt – Prüfung 50 hat ihren Gegenstand "
+            f"verloren; sie bestünde sonst leise (D-23)")
+        return
+    logtext = read(logpfad)
+    synth = _synthetische_kennungen(logtext)
+    if not synth:
+        err(f"{KERN}/governance/DECISION_LOG.md: der Absatz '{SYNTH_ANKER}…' fehlt oder "
+            f"nennt keine Kennung in Backticks – Prüfung 50 leitet ihre Ausnahmemenge "
+            f"daraus ab und hat ihren Anker verloren (D-23)")
+        return
+    gefuehrt = set(KLAERUNG_ZEILE_RE.findall(logtext))
+    if not gefuehrt:
+        err(f"{KERN}/governance/DECISION_LOG.md: keine Registerzeile '| K-NN |' gefunden – "
+            f"Prüfung 50 hat ihren Gegenstand verloren (D-23)")
+        return
+    fundorte: dict = {}
+    for path in iter_text_files(root):
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith(KERN + "/"):
+            continue
+        if not path.endswith((".md", ".py", ".json", ".template")):
+            continue
+        for kennung in set(KLAERUNG_RE.findall(read(path))):
+            fundorte.setdefault(kennung, set()).add(rel)
+    for kennung in sorted(set(fundorte) - gefuehrt - synth,
+                          key=lambda k: int(k.split("-")[1])):
+        traeger = sorted(fundorte[kennung])
+        err(f"{KERN}/governance/DECISION_LOG.md: '{kennung}' wird in "
+            f"{len(traeger)} Träger(n) genannt ({', '.join(traeger[:3])}"
+            f"{' …' if len(traeger) > 3 else ''}) und steht in keiner Registerzeile. "
+            f"Ein Register, das seinen Gegenstand nicht führt, ist keine Liste offener "
+            f"Punkte, sondern eine Auswahl (D-147)")
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -5376,6 +5547,8 @@ def main() -> int:
     check_d11_stand(root)
     check_status_vokabular(root)
     check_tool_neutrality(root)
+    check_skillaufruf_im_katalog(root)
+    check_klaerungsregister(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
     if args.check_overlay_ready:
