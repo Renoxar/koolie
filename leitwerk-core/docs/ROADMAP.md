@@ -226,7 +226,7 @@ D-141, `K-53` beantwortet, `K-54` und `K-55` neu,
 | Wurde die technische Schicht gemessen? | **In fünf von sechs Fällen nicht – sie ist nicht angelaufen.** Einzige Ausnahme: zwei abgewiesene `git`-Aufrufe im Kontrolllauf zu `FW-NE-01` (`Bash(git branch:*)` im `deny`-Korb). **Und die Gegenprobe zur Fernwirkung ist hart:** Beide bare-Repositorien sind nach achtzehn Läufen **unverändert** |
 | Was `K-53` jetzt sagt | **Beantwortet (D-140): Ja, mit ausgewiesener Abweichung in der Ergebniszelle.** Bei 0.58.0 ein Einzelfall, bei 0.59.0 **vier von sechs** – und nicht mehr der Befehls-, sondern der **Schreibkorb**. Ohne die Entfernung von `Edit(**)` aus `ask` ist auch die Handlung versperrt, deren **Unterlassen** der Testfall prüft |
 | Hat Prüfung 46 gegriffen? | **Ja, und wieder gegen einen Fortschritt:** `gezählt 100, die Standzeile nennt 94`. Die Meldung war richtig, ihre Einordnung (*„zurückgefallen“*) nicht – derselbe Fall wie `K-38` |
-| Was das Release für die Laufzeit bedeutet | **Nichts, und das ist gemessen:** `install.py --update --dry-run` gegen das Übungsrepositorium meldet **0 angelegt, 0 aktualisiert** |
+| Was das Release für die Laufzeit bedeutet | 🔴 **Genau eine Datei – und die erste Antwort war falsch** (berichtigt mit 0.59.1). Der Trockenlauf lief gegen den **committeten** Stand und mass 0.58.0 gegen 0.58.0. Richtig: `<client>/skills/fw-tests/TESTS.md`, das Testblatt mit den zwei neuen Ergebniszellen. **Damit wandert eine Ergebniszelle in die Laufzeitschicht jedes übernehmenden Projekts** (`K-56`) |
 
 ### Was 0.58.0 gebracht hat – eine Präparation, die ihren Gegenstand nur behauptet hat
 
