@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-009` |
 | Name | `fw-bugfix-prepare` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -68,7 +68,7 @@ triggers:
 7. Risikofaktoren abgleichen: R1–R13 für die geplante Korrektur mit Fundstellen bewerten; höchste Stufe nach Maximumprinzip mit der festgelegten Stufe vergleichen; Abweichung nach oben melden – die Stufe legt der Mensch fest. Bei R3, R4 oder R10 die Einbindung von `<SECURITY_CONTACT>` beziehungsweise `<DATA_PROTECTION_CONTACT>` vorsehen. Erfordert die Korrektur eine Schnittstellen-, Schema- oder Verwenderänderung außerhalb der Einheit (R8, R11) oder mehr als `<CHANGE_SIZE_THRESHOLD>` Dateien: [HALT]; kein Fix-Plan, sondern Verweis auf `fw-change-analyze` und `fw-plan`.
 8. Rollback und Abbruchkriterien festlegen: Rollback als Revert der Korrektur gemeinsam mit dem Regressionstest in umgekehrter Reihenfolge (ein Regressionstest ohne Korrektur schlägt fehl und DARF NICHT deaktiviert werden); Datenauswirkungen benennen. Abbruchkriterien mindestens: Ursache bestätigt sich bei der Umsetzung nicht; Regressionstest schlägt vor der Korrektur nicht fehl; weitere Komponenten berührt; Tests außerhalb des Scopes fehlgeschlagen; Kontrollstufe steigt; K3-Fund.
 9. Freigabeerfordernis eintragen (Plan-Abschnitt 10) gemäß Vorbedingung 5; Bestätigungsstatus `entwurf`; getrennte Sitzungen und getrennte Commits für Regressionstest und Korrektur vorsehen.
-10. Plan im Ausgabeformat ausgeben: alle zehn Abschnitte der Vorlage, nicht zutreffende Abschnitte mit „nicht zutreffend – Begründung". Ablage: Sitzungsausgabe; im Plan-Modus von Devin Local liegt die Plan-Datei unter `~/<RUNTIME_DIR>/plans/` außerhalb des Repositorys `[DOK]`; die Übernahme in Ticket, Merge Request oder `<TBD: Ablage von Plänen im Projekt>` erfolgt durch den Menschen.
+10. Plan im Ausgabeformat ausgeben: alle zehn Abschnitte der Vorlage, nicht zutreffende Abschnitte mit „nicht zutreffend – Begründung". Ablage: Sitzungsausgabe; kennt der Client einen Plan-Modus mit eigener Ablage außerhalb des Repositorys, gilt sie ebenso – ob er einen kennt, sagt die Fähigkeitsmatrix seines Client Packs; die Übernahme in Ticket, Merge Request oder `<TBD: Ablage von Plänen im Projekt>` erfolgt durch den Menschen.
 11. Ergebnisbericht gemäß `leitwerk-core/framework/core/05-working-model.md` Abschnitt 3.6 anhängen und mit [HALT] enden: Umsetzung erst nach Bestätigung (niedrig: Bearbeiterin oder Bearbeiter; mittel: schriftlich durch Modul-Owner oder `<APPROVAL_ROLE>`; hoch: dokumentierte Freigabe `<APPROVAL_ROLE>`) – zuerst `fw-tests` (Regressionstest muss fehlschlagen), danach `fw-change-small` (Korrektur), jeweils in einer neuen Sitzung.
 
 ## 4. Grenzen und Rückfragenregeln

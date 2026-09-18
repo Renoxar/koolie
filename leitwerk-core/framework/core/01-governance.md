@@ -6,12 +6,12 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.0 |
+| Version | 0.3.1 |
 | Status | `pilot` |
 
 ## 1. Gegenstand und Geltung (normativ)
 
-1. Das Framework regelt den Einsatz von Devin Desktop (und strukturell weiterer KI-gestützter Entwicklungswerkzeuge) in Softwareentwicklungsprojekten. Es gilt für alle Personen, die im Geltungsbereich eines Project Overlays mit dem KI-Client arbeiten.
+1. Das Framework regelt den Einsatz KI-gestützter Entwicklungswerkzeuge in Softwareentwicklungsprojekten; **welches Werkzeug ein Projekt einsetzt, bestimmt sein installiertes Client Pack** (`leitwerk-core/clients/README.md`). Es gilt für alle Personen, die im Geltungsbereich eines Project Overlays mit dem KI-Client arbeiten.
 2. Das Framework ergänzt bestehende Entwicklungs-, Review- und Freigabeprozesse. Es ersetzt sie nicht und hat im Konfliktfall keinen Vorrang vor rechtlichen, regulatorischen oder organisationsweiten Vorgaben (`leitwerk-core/governance/PRIORITY_HIERARCHY.md`).
 3. Ohne ein freigegebenes Project Overlay (Status `aktiv` im Overlay-Steckbrief) DARF der KI-Client in einem Projekt NICHT produktiv eingesetzt werden; zulässig sind nur Onboarding-Übungen auf synthetischen Übungsrepositorys.
 

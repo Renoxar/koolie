@@ -5,13 +5,13 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ (Abschnitte 2, 3, 5, 6, 7), Erläuterung (Abschnitte 1, 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.2 |
+| Version | 0.1.3 |
 | Status | `pilot` |
 | Grundlage | `leitwerk-core/framework/core/06-prompting-rules.md`, `leitwerk-core/framework/core/05-working-model.md`, `leitwerk-core/framework/core/09-risk-model.md`, `leitwerk-core/framework/core/02-privacy.md` |
 
 ## 1. Zweck (Erläuterung)
 
-Die Prompt-Bibliothek enthält zwölf geprüfte Vorlagen für wiederkehrende Aufgaben mit Devin Desktop. Jede Vorlage setzt die Pflichtelemente einer Aufgabenanweisung aus `leitwerk-core/framework/core/06-prompting-rules.md` Abschnitt 1 um (Ziel, Betriebsmodus, Kontrollstufe mit Faktor, Scope, Kontext mit Klasse, Akzeptanzkriterien, Ausgabeformat, Rückfrageregel) und verankert die Regeln des Frameworks im Wortlaut der Anweisung: Fundstellen statt Behauptungen, gekennzeichnete Annahmen, keine Scope-Erweiterung, Rückfragen statt Annahmen, Ergebnisbericht am Ende, menschliche Prüfung vor jeder Übernahme. Die Vorlagen sind für zwei Situationen gedacht: für Aufgaben ohne passenden Skill sowie als strukturierte Anweisung rund um den Aufruf eines Skills (zum Beispiel mit Fragenkatalog, ausformulierten fachlichen Erwartungen oder zusätzlichen Vorgaben).
+Die Prompt-Bibliothek enthält zwölf geprüfte Vorlagen für wiederkehrende Aufgaben mit dem KI-Client. Jede Vorlage setzt die Pflichtelemente einer Aufgabenanweisung aus `leitwerk-core/framework/core/06-prompting-rules.md` Abschnitt 1 um (Ziel, Betriebsmodus, Kontrollstufe mit Faktor, Scope, Kontext mit Klasse, Akzeptanzkriterien, Ausgabeformat, Rückfrageregel) und verankert die Regeln des Frameworks im Wortlaut der Anweisung: Fundstellen statt Behauptungen, gekennzeichnete Annahmen, keine Scope-Erweiterung, Rückfragen statt Annahmen, Ergebnisbericht am Ende, menschliche Prüfung vor jeder Übernahme. Die Vorlagen sind für zwei Situationen gedacht: für Aufgaben ohne passenden Skill sowie als strukturierte Anweisung rund um den Aufruf eines Skills (zum Beispiel mit Fragenkatalog, ausformulierten fachlichen Erwartungen oder zusätzlichen Vorgaben).
 
 ## 2. Verhältnis Prompt und Skill
 

@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-004` |
 | Name | `fw-plan` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -68,7 +68,7 @@ triggers:
 7. Teststrategie festlegen (Plan-Abschnitt 6): neue oder geänderte Tests gegen das fachliche Verhalten; Befehle nur `<TEST_COMMAND>`, `<LINT_COMMAND>`, `<BUILD_COMMAND>`; nicht automatisiert prüfbare Punkte mit manuellem Prüfschritt.
 8. Risiken und Gegenmaßnahmen aus den Faktoren der Analyse ableiten (Plan-Abschnitt 7); Rollback als konkrete Reihenfolge je Schritt einschließlich Datenauswirkungen (Plan-Abschnitt 8); Abbruchkriterien (Plan-Abschnitt 9) mindestens: Berührung weiterer Komponenten, fehlgeschlagene Tests außerhalb des Scopes, Anstieg der Kontrollstufe, Fund von K3-Inhalten.
 9. Freigabeerfordernis eintragen (Plan-Abschnitt 10) gemäß Vorbedingung 5; bei R3, R4 oder R10 zusätzlich `<SECURITY_CONTACT>` beziehungsweise `<DATA_PROTECTION_CONTACT>`; bei Stufe hoch Pairing bei der Umsetzung vermerken. Bestätigungsstatus: `entwurf`.
-10. Plan im Ausgabeformat ausgeben: alle zehn Abschnitte der Vorlage, nicht zutreffende Abschnitte mit „nicht zutreffend – Begründung". Ablage: Sitzungsausgabe; im Plan-Modus von Devin Local liegt die Plan-Datei unter `~/<RUNTIME_DIR>/plans/` außerhalb des Repositorys `[DOK]`; die Übernahme in Ticket, Merge Request oder `<TBD: Ablage von Plänen im Projekt>` erfolgt durch den Menschen.
+10. Plan im Ausgabeformat ausgeben: alle zehn Abschnitte der Vorlage, nicht zutreffende Abschnitte mit „nicht zutreffend – Begründung". Ablage: Sitzungsausgabe; kennt der Client einen Plan-Modus mit eigener Ablage außerhalb des Repositorys, gilt sie ebenso – ob er einen kennt, sagt die Fähigkeitsmatrix seines Client Packs; die Übernahme in Ticket, Merge Request oder `<TBD: Ablage von Plänen im Projekt>` erfolgt durch den Menschen.
 11. Ergebnisbericht gemäß `leitwerk-core/framework/core/05-working-model.md` Abschnitt 3.6 anhängen und mit [HALT] enden: Die Umsetzung beginnt erst nach Bestätigung durch die Bearbeiterin oder den Bearbeiter (niedrig), schriftlicher Bestätigung des Plans (mittel) beziehungsweise dokumentierter Freigabe durch `<APPROVAL_ROLE>` (hoch) – in einer neuen Sitzung mit dem im Plan benannten Umsetzungs-Skill.
 
 ## 4. Grenzen und Rückfragenregeln

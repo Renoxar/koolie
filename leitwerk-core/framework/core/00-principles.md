@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.2 |
+| Version | 0.1.3 |
 | Status | `pilot` |
 
 ## 0. Konventionen dieses Frameworks
@@ -23,7 +23,7 @@ Abschnitte sind als **Normativ**, **Erläuterung** oder **Beispiel (synthetisch)
 
 ### 0.2 Belegstatus technischer Aussagen (normativ)
 
-Jede Aussage über Devin Desktop trägt einen Belegstatus:
+Jede Aussage über einen KI-Client trägt einen Belegstatus:
 
 | Kennzeichen | Bedeutung |
 |---|---|

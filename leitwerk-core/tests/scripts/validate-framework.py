@@ -35,9 +35,12 @@ Prüft (statisch, ohne laufenden KI-Client):
  13. Versionskette (FW-VN-01): Overlay-Version an allen drei Ablageorten gleich, Steckbrief-
      angabe zur kompatiblen Framework-Version passend zu <CORE_DIR>/VERSION, und das
      Versionsfeld jedes Kernartefakts in der Form MAJOR.MINOR.PATCH
- 14. Akteursbezeichnung (D-02, D-28): Der Kern nennt keinen Client als Handelnden. Die
-     Namen stammen aus den Pack-Kennungen; der Produktname mit Zusatz bleibt zulaessig,
-     historische Dokumente sind ausgenommen
+ 14. Clientname im Kern (D-02, D-28, D-129): Der Kern nennt keinen Client - weder als
+     Handelnden noch als Produkt, und kein Platzhalter traegt den Namen. Die Namen
+     stammen aus den Pack-Kennungen, die Ausnahmen aus NEUTRAL_AUSNAHMEN (dieselbe
+     Menge wie Pruefung 48). Bis 0.57.0 war der Produktname MIT ZUSATZ zulaessig; die
+     Ausnahme hatte in ihrem Geltungsbereich keinen einzigen berechtigten Fall -
+     fuenfzehn Fundstellen in zwoelf Traegern, jede mit einer Aussage ueber das Produkt
  15. Hook-Interpreter (AP2-CC-13, D-29): Der Interpreter der Hook-Aufrufe startet auf
      dieser Maschine wirklich Python. Geprueft wird die Wirkung, nicht die Anwesenheit
      des Namens - unter Windows ist 'python3' haeufig ein Alias ohne Interpreter
@@ -161,7 +164,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      Token in Backticks, meldet nur Pfade, die es NICHT GIBT, und fuehrte ihre eigenen
      Wurzeln clientgebunden. Siebzehn Fundstellen in vierzehn Traegern
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 48 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 48 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -1413,7 +1416,8 @@ def check_artefakt_versionen(root: str) -> None:
         rel = os.path.relpath(path, root).replace(os.sep, "/")
         if not rel.startswith(KERN + "/") or rel.startswith(KERN + "/clients/"):
             continue
-        if rel.startswith(ACTOR_HISTORY) or os.path.basename(rel) in ACTOR_HISTORY_BASENAMES:
+        if (rel.startswith(OHNE_ARTEFAKTVERSION)
+                or os.path.basename(rel) in NEUTRAL_CHRONIK_BASENAMES):
             continue
         m = ARTEFAKT_VERSION_RE.search(read(path))
         if not m:
@@ -1581,17 +1585,53 @@ def check_overlay_ready(root: str, man: dict) -> None:
             f"Kandidat vollstaendig (check-overlay-ready)")
 
 
-# Pruefung 14: Der werkzeugneutrale Kern nennt keinen Client als Akteur.
-# Historische Dokumente bleiben ausgenommen - sie beschreiben einen vergangenen
-# Zustand (docs/RUNTIME_GLOSSARY.md, Abschnitt "Regel").
-ACTOR_HISTORY = (
-    "leitwerk-core/CHANGELOG.md",
-    "leitwerk-core/governance/change-requests/",
-    "leitwerk-core/governance/DECISION_LOG.md",
-    "leitwerk-core/tests/protocols/",
+# --- Ausnahmen der Werkzeugneutralitaet (D-128, D-129) ----------------------------
+#
+# EINE Menge fuer BEIDE Pruefungen, die den Kern auf Clientbindung halten: Pruefung 14
+# (der Produktname) und Pruefung 48 (der Pfad). Bis 0.57.0 fuehrten sie zwei Mengen -
+# und die waren schon auseinandergelaufen: docs/ROADMAP.md stand nur in einer von
+# beiden. Zwei Listen fuer denselben Gegenstand driften; eine tut es nicht.
+#
+# Die Gattungen und ihre Begruendung stehen in docs/RUNTIME_GLOSSARY.md, nicht hier -
+# eine Ausnahme, die nur im Quelltext steht, ist keine Regel, sondern eine
+# Voreinstellung.
+NEUTRAL_CHRONIK = (
+    KERN + "/CHANGELOG.md",
+    KERN + "/governance/change-requests/",
+    KERN + "/governance/DECISION_LOG.md",
+    KERN + "/tests/protocols/",
+    KERN + "/docs/ROADMAP.md",
 )
 # Jeder Aenderungsverlauf ist ein historisches Dokument, nicht nur der des Frameworks.
-ACTOR_HISTORY_BASENAMES = ("CHANGELOG.md",)
+NEUTRAL_CHRONIK_BASENAMES = ("CHANGELOG.md",)
+# Die Abbildungstabellen und die Client Packs muessen beide Namen nennen.
+NEUTRAL_ABBILDUNG = (
+    KERN + "/docs/RUNTIME_GLOSSARY.md",
+    KERN + "/docs/PLACEHOLDER_REGISTRY.md",
+    KERN + "/clients/",
+)
+# Die einzige befristete Ausnahme: build/ haelt die Quellen des Hauptdokuments, das mit
+# AP11 (~0.69.0) neu gesetzt wird. Sie faellt mit diesem Schritt (docs/ROADMAP.md).
+NEUTRAL_FRIST = (KERN + "/build/",)
+NEUTRAL_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_ABBILDUNG + NEUTRAL_FRIST
+
+# Eine ANDERE Frage mit derselben Antwortliste, und deshalb eine eigene Konstante:
+# Welches Dokument traegt ueberhaupt eine eigene Artefaktversion? Chronik traegt keine -
+# aber docs/ROADMAP.md traegt eine und gehoert geprueft. Bis 0.57.0 teilten sich
+# Pruefung 13 und Pruefung 14 eine Liste; wer sie fuer den einen Zweck erweitert, haette
+# sie fuer den anderen stillschweigend mit erweitert.
+OHNE_ARTEFAKTVERSION = (
+    KERN + "/CHANGELOG.md",
+    KERN + "/governance/change-requests/",
+    KERN + "/governance/DECISION_LOG.md",
+    KERN + "/tests/protocols/",
+)
+
+
+def neutral_ausgenommen(rel: str) -> bool:
+    """Wahr, wenn dieser Traeger von der Werkzeugneutralitaet ausgenommen ist."""
+    return (rel.startswith(NEUTRAL_AUSNAHMEN)
+            or os.path.basename(rel) in NEUTRAL_CHRONIK_BASENAMES)
 
 
 def _client_actor_names(root: str) -> list[tuple[str, str]]:
@@ -1618,44 +1658,63 @@ def _client_actor_names(root: str) -> list[tuple[str, str]]:
 
 
 def check_actor_naming(root: str) -> None:
-    """Pruefung 14 (D-02): Kein Client wird im Kern als Handelnder benannt.
+    """Pruefung 14 (D-02, D-129): Im Kern steht kein Clientname - auch nicht als Produkt.
 
-    Der Kern beschreibt, was ein KI-Client tun MUSS - nicht, was ein bestimmtes
-    Produkt tut. Erlaubt bleibt der Produktname mit Zusatz ("Devin Desktop",
-    "Claude Code"): Er benennt ein Produkt, nicht den Handelnden. Muss ein Kerntext
-    den Namen selbst tragen, steht dort <CLIENT_NAME>.
+    BIS 0.57.0 GALT EINE AUSNAHME: Der Produktname MIT ZUSATZ war zulaessig, weil er
+    "ein Produkt benennt und nicht den Handelnden" (D-28). Am 2026-09-18 ist ihr
+    Geltungsbereich ausgezaehlt worden (CR-2026-081): FUENFZEHN Nennungen in ZWOELF
+    anweisenden Traegern - und in KEINER EINZIGEN wurde der Name blosse genannt. Jede
+    trug etwas: einen Geltungsbereich ("Das Framework regelt den Einsatz von <Produkt>"),
+    eine Produktaussage ("<Produkt> fordert vor jedem MCP-Aufruf eine Bestaetigung an")
+    oder eine Voraussetzung ("Zugang zu <Produkt> vorhanden"). Die Ausnahme hatte in
+    ihrem eigenen Geltungsbereich KEINEN EINZIGEN berechtigten Fall - Client Packs und
+    Chronik sind ohnehin ausgenommen.
+
+    WAS BLEIBT, IST DER UNTERSCHIED ZWISCHEN NENNEN UND ZUSCHREIBEN:
+      * NENNEN - der Text traegt den Namen, sagt aber nichts ueber das Produkt. Dafuer
+        gibt es <CLIENT_NAME>, und er loest sich auf:
+        framework/runtime/root-instruction.md traegt ihn im Titel. Das ist der einzige
+        angewandte Fall im ganzen Bestand - gezaehlt, nicht geschaetzt.
+      * ZUSCHREIBEN - der Text sagt etwas UEBER das Produkt. Das gehoert in dessen
+        Client Pack; der Kern verweist auf die Faehigkeitsmatrix.
+    Ein ausgeschriebener Produktname kann beides sein, und kein Skript kann es
+    unterscheiden - deshalb ist er im Kern jetzt gar nicht mehr zulaessig. Dieselbe
+    Lehre wie bei <TBD...> in 0.52.0: Eine Marke mit zwei Bedeutungen taugt weder als
+    Bedingung noch als Entlastung.
+
+    GRENZE. Sie sucht den kapitalisierten Namen aus der Pack-Kennung. Eine Umschreibung
+    ("das Werkzeug aus Kapitel 3") laeuft durch - dieselbe Ehrlichkeit wie bei
+    Pruefung 48, die Pfade findet und keine Prosa.
     """
     namen = _client_actor_names(root)
     if not namen:
+        err(f"{KERN}/clients/: kein Client Pack mit manifest.json gefunden - Pruefung 14 "
+            f"leitet ihre Namen daraus ab und hat ihren Gegenstand verloren; sie bestuende "
+            f"sonst leise (D-23)")
         return
-    # Der Produktname ist erlaubt, die Akteursbezeichnung nicht: "Devin Desktop"
-    # und "Devin-Desktop" benennen ein Produkt, der blosse Name den Handelnden.
-    erlaubt = re.compile("|".join(
-        [re.escape(v) for _, v in namen] + [re.escape(v.replace("-", " ")) for _, v in namen]
-        + [r"%s [A-Z]\w+" % re.escape(k) for k, _ in namen]))
     muster = re.compile(r"\b(%s)\b" % "|".join(k for k, _ in namen))
     for path in iter_text_files(root):
         if not path.endswith((".md", ".py", ".template")):
             continue
         rel = os.path.relpath(path, root).replace(os.sep, "/")
-        if not rel.startswith("leitwerk-core/") or rel.startswith("leitwerk-core/clients/"):
-            continue
-        if rel.startswith(ACTOR_HISTORY) or os.path.basename(rel) in ACTOR_HISTORY_BASENAMES:
+        if not rel.startswith(KERN + "/") or neutral_ausgenommen(rel):
             continue
         for i, zeile in enumerate(read(path).splitlines(), 1):
-            m = muster.search(erlaubt.sub("", zeile))
+            m = muster.search(zeile)
             if not m:
                 continue
-            err(f"{rel}:{i}: '{m.group(1)}' benennt einen Client als Akteur; der Kern ist "
-                f"werkzeugneutral (D-02). Gemeint ist der Begriff 'der KI-Client'; muss der "
-                f"Text den Produktnamen tragen, steht dort <CLIENT_NAME>")
+            err(f"{rel}:{i}: '{m.group(1)}' nennt ein Client-Produkt; der Kern ist "
+                f"werkzeugneutral (D-02, D-129). Sagt der Text etwas UEBER das Produkt, "
+                f"gehoert es in dessen Client Pack und der Kern verweist auf die "
+                f"Faehigkeitsmatrix; benennt er es nur, steht dort <CLIENT_NAME> - und der "
+                f"loest sich nur in einer gerenderten Quelle auf")
 
 
 # Ein Platzhalter, der einen Clientnamen traegt, bindet den Kern genauso an ein Produkt
 # wie eine Akteursnennung - nur faellt er dort nicht auf, weil er in Grossbuchstaben
-# steht. Das Register selbst ist ausgenommen: Es nennt Platzhalter, es verwendet sie nicht.
+# steht. Das Register selbst ist ausgenommen; es steht seit 0.57.1 als
+# Abbildungstabelle in NEUTRAL_AUSNAHMEN und braucht keine eigene Liste mehr.
 PLATZHALTER_RE = re.compile(r"<([A-Z][A-Z0-9_ ]{2,80})>")
-PLATZHALTER_AUSNAHMEN = (KERN + "/docs/PLACEHOLDER_REGISTRY.md",)
 
 
 def check_placeholder_naming(root: str) -> None:
@@ -1675,8 +1734,7 @@ def check_placeholder_naming(root: str) -> None:
         rel = os.path.relpath(path, root).replace(os.sep, "/")
         if not rel.startswith(KERN + "/") or rel.startswith(KERN + "/clients/"):
             continue
-        if (rel.startswith(ACTOR_HISTORY) or rel in PLATZHALTER_AUSNAHMEN
-                or os.path.basename(rel) in ACTOR_HISTORY_BASENAMES):
+        if neutral_ausgenommen(rel):
             continue
         for i, zeile in enumerate(read(path).splitlines(), 1):
             for m in PLATZHALTER_RE.finditer(zeile):
@@ -5122,22 +5180,10 @@ def check_status_vokabular(root: str) -> None:
 # stehen unter der Regel - die Eingabe "Passe AGENTS.md an" war eine davon. Denselben
 # Zuschnitt - die LETZTE Zelle - benutzt Pruefung 46 fuer den Ergebnisstatus.
 #
-# GRENZE. Sie findet die PFADE eines Packs, nicht seinen Produktnamen. "Devin Desktop"
-# in einem Kerntext laesst D-28 ausdruecklich zu, und Pruefung 14 setzt genau das
-# durch. Ob diese Erlaubnis zu weit reicht - fuenfzehn Fundstellen in zehn Traegern,
-# darunter der Titel des Onboarding-Leitfadens -, ist K-52 und nicht entschieden.
-P48_AUSGENOMMEN = (
-    # Ein Client Pack DARF die Pfade seines Clients nennen.
-    KERN + "/clients/",
-    # Frist: faellt mit AP11 (~0.69.0), wenn das Hauptdokument neu gesetzt wird.
-    KERN + "/build/",
-)
-# Chronik nach docs/RUNTIME_GLOSSARY.md. Dieselbe Menge wie ACTOR_HISTORY, um
-# docs/ROADMAP.md erweitert: Sie fuehrt die Erhebungen je Arbeitspaket.
-P48_CHRONIK = ACTOR_HISTORY + (KERN + "/docs/ROADMAP.md",)
-# Die Abbildungstabellen selbst.
-P48_ABBILDUNG = (KERN + "/docs/RUNTIME_GLOSSARY.md",
-                 KERN + "/docs/PLACEHOLDER_REGISTRY.md")
+# GRENZE. Sie findet die PFADE eines Packs, nicht seinen Produktnamen - den setzt
+# Pruefung 14 durch. Beide teilen sich seit 0.57.1 EINE Ausnahmemenge
+# (NEUTRAL_AUSNAHMEN); bis dahin waren es zwei, und sie waren schon auseinandergelaufen.
+#
 # Traeger, in denen die LETZTE Tabellenzelle ein Beleg ist und kein Anweisungstext.
 P48_ERGEBNISSPALTE = (KERN + "/tests/TEST_CATALOG.md",)
 ZELLTRENNER_RE = re.compile(r"(?<!\\)\|")
@@ -5204,9 +5250,7 @@ def check_tool_neutrality(root: str) -> None:
         rel = os.path.relpath(path, root).replace(os.sep, "/")
         if not rel.startswith(KERN + "/"):
             continue
-        if rel.startswith(P48_AUSGENOMMEN + P48_CHRONIK + P48_ABBILDUNG):
-            continue
-        if os.path.basename(rel) in ACTOR_HISTORY_BASENAMES:
+        if neutral_ausgenommen(rel):
             continue
         belegspalte = rel in P48_ERGEBNISSPALTE
         for i, zeile in enumerate(read(path).splitlines(), 1):

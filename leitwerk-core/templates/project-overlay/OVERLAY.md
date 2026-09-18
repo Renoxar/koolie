@@ -29,7 +29,7 @@
 | Freigabe der KI-Nutzung durch Organisation | `<TBD: Referenz auf Freigabedokument oder „ausstehend">` | Voraussetzung für Status aktiv |
 | Ergebnis Datenschutz- und Vertragsprüfung | `<TBD: Referenz oder „ausstehend">` | siehe `leitwerk-core/framework/core/02-privacy.md` Abschnitt 1 |
 | Planstufe / verfügbare Admin-Kontrollen | `<TBD: Teams / Enterprise; erzwungene Einstellungen>` | Klärungspunkt K-05 |
-| Nutzungsumfang | `<TBD: nur Devin Desktop lokal / zusätzlich Cloud-Sessions / CLI>` | Klärungspunkt K-04; Standard: nur Desktop lokal |
+| Nutzungsumfang | `<TBD: nur lokal / zusätzlich weitere Betriebsarten>` | Klärungspunkt K-04; Standard: nur lokal. Welche Betriebsarten der Client kennt, führt sein Client Pack |
 | Betriebssysteme der Arbeitsplätze | `<TBD>` | relevant für Sandbox-Verfügbarkeit (K-11) |
 
 ## 2. Technische Architektur (für den KI-Client relevante Kurzfassung)

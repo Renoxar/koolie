@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-09` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | während des Onboardings einer neuen Entwicklerin oder eines neuen Entwicklers; Abschluss vor der Freigabe zur selbstständigen Nutzung |
@@ -19,7 +19,7 @@ Führt durch das Onboarding-Programm (`leitwerk-core/onboarding/GUIDE.md`) bis z
 
 ### Voraussetzungen
 
-- [ ] **MUSS** Zugang zum Projekt-Repository und zu Devin Desktop vorhanden; Overlay-Status und Rollen des Projekts bekannt.
+- [ ] **MUSS** Zugang zum Projekt-Repository und zum eingesetzten KI-Client vorhanden; Overlay-Status und Rollen des Projekts bekannt.
 - [ ] **MUSS** Datenschutz- und Vertraulichkeitsunterweisung der Organisation absolviert (`<TBD: Referenz auf Unterweisung>`).
 - [ ] **MUSS** `leitwerk-core/onboarding/QUICKSTART.md` gelesen; Übungsrepository (`leitwerk-core/onboarding/exercises/`) eingerichtet.
 

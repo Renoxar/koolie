@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 48, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 48, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -516,6 +516,139 @@ def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
 
 
 P = lambda root, *teile: os.path.join(root, *teile)
+
+# --- 14: der Clientname im Kern ------------------------------------------------------
+#
+# Pruefung 14 gibt es seit 0.20.0 und sie hatte bis 0.57.1 KEINE Sonde - sie lag
+# ausserhalb der Spanne "6 und 18 bis 47". Nach D-23 galt sie damit als nicht
+# vorhanden. Wer sie aendert, baut sie nach; diese vier Einheiten holen das nach und
+# belegen zugleich die Verschaerfung von D-129.
+#
+# Die Sonden lesen den Namen aus den Manifesten der Kopie, statt ihn zu schreiben:
+# Eine Sonde, die einen Produktnamen raet, misst den geratenen Namen.
+M14_NAME = "nennt ein Client-Produkt"
+M14_PLATZHALTER = "traegt den Clientnamen"
+M14_ANKER = "kein Client Pack mit manifest.json gefunden"
+P14_WURZELQUELLE = "leitwerk-core/framework/runtime/root-instruction.md".replace("/", os.sep)
+P14_CHRONIK = "leitwerk-core/tests/protocols/2026-09-18-sonde-14.md".replace("/", os.sep)
+
+
+def _14_produktname(root: str) -> str:
+    """Kapitalisierter Produktname eines Packs - aus dessen Kennung, nicht geraten."""
+    base = P(root, "leitwerk-core", "clients")
+    for name in sorted(os.listdir(base)):
+        if name.startswith("_"):
+            continue
+        mp = os.path.join(base, name, "manifest.json")
+        if os.path.exists(mp):
+            kennung = json.loads(lies(mp))["client"]
+            return " ".join(w.capitalize() for w in kennung.split("-"))
+    raise Praeparationsfehler(
+        "Kein Client Pack mit manifest.json unter clients/ - die Sonden zu 14 leiten "
+        "den Produktnamen von dort ab")
+
+
+def _14_datei(root: str, name: str, inhalt: str) -> None:
+    """Eine neue Prompt-Datei mit vollstaendigem Steckbrief und der Inhaltszeile."""
+    schreib(P(root, ("leitwerk-core/prompts/" + name).replace("/", os.sep)),
+            "# Sondenvorlage\r\n\r\n"
+            "| Attribut | Wert |\r\n|---|---|\r\n"
+            "| ID | `FW-PR-015` |\r\n| Version | `0.1.0` |\r\n"
+            "| Status | `pilot` |\r\n"
+            "| Owner (Rolle) | `<FRAMEWORK_OWNER>` |\r\n\r\n"
+            + inhalt + "\r\n")
+
+
+def _14_produktname_mit_zusatz(root: str) -> None:
+    """Der Produktname MIT ZUSATZ in einem Kerntraeger - bis 0.57.0 zulaessig.
+
+    Genau die Form, die D-28 erlaubte und die in fuenfzehn Fundstellen stand.
+    """
+    _14_datei(root, "15-sonde-produktname.md",
+              "Zugang zu %s ist Voraussetzung fuer die Uebung." % _14_produktname(root))
+
+
+def _14_blosser_name(root: str) -> None:
+    """Der blosse Name als Handelnder - der Fall, den D-28 schon immer verbot.
+
+    Sie belegt, dass die Verschaerfung den ALTEN Gegenstand nicht verloren hat: Eine
+    neue Pruefung darf den Fall ihrer Vorgaengerin nicht mitnehmen.
+    """
+    _14_datei(root, "15-sonde-akteur.md",
+              "%s entscheidet, welche Datei geoeffnet wird."
+              % _14_produktname(root).split()[0])
+
+
+def _14_platzhalter_mit_namen(root: str) -> None:
+    """Ein Platzhalter, der den Clientnamen traegt - der Fall aus CR-2026-070.
+
+    Der Marker stand acht Releases im Kern, weil die Akteurspruefung den
+    kapitalisierten Namen sucht und der Marker ihn GROSS schreibt.
+    """
+    _14_datei(root, "15-sonde-platzhalter.md",
+              "Stand: <VERIFY AGAINST CURRENT %s DOCUMENTATION>."
+              % _14_produktname(root).split()[0].upper())
+
+
+def _14_anker_verlieren(root: str) -> None:
+    """Ohne manifest.json unter clients/ hat Pruefung 14 keine Namen mehr.
+
+    Bis 0.57.1 stieg sie an dieser Stelle STILL aus (`if not namen: return`) - eine
+    Pruefung, die ihren Gegenstand verliert und nichts sagt, ist nach D-23 keine.
+    """
+    base = P(root, "leitwerk-core", "clients")
+    getroffen = 0
+    for name in sorted(os.listdir(base)):
+        mp = os.path.join(base, name, "manifest.json")
+        if os.path.exists(mp):
+            os.remove(mp)
+            getroffen += 1
+    if not getroffen:
+        raise Praeparationsfehler(
+            "Kein manifest.json unter clients/ - die Ankersonde zu 14 haette nichts "
+            "zu entfernen")
+
+
+def _14_chronik(root: str) -> None:
+    """Ein Produktname in einem Protokoll bleibt zulaessig - es berichtet eine Messung."""
+    schreib(P(root, P14_CHRONIK),
+            "# Sondenprotokoll\r\n\r\nDer Lauf ist gegen %s gefahren worden.\r\n"
+            % _14_produktname(root))
+
+
+def _14_platzhalter_gerendert(root: str) -> None:
+    """<CLIENT_NAME> in einer gerenderten Quelle - der einzige Weg, der offen bleibt.
+
+    Die Wurzel-Anweisungsdatei traegt ihn seit 0.7.0 im Titel und ist damit der einzige
+    angewandte Fall im ganzen Bestand. Die Gegenprobe legt einen zweiten daneben und
+    belegt, dass die verschaerfte Pruefung ihn nicht mitnimmt.
+    """
+    pfad = P(root, P14_WURZELQUELLE)
+    schreib(pfad, lies(pfad).rstrip("\r\n")
+            + "\r\n\r\nDiese Anweisung gilt fuer <CLIENT_NAME>.\r\n")
+
+
+sonde("14a", "Der Produktname MIT ZUSATZ in einem Kerntraeger wird gemeldet - die "
+             "Ausnahme, die D-129 abgeschafft hat", _14_produktname_mit_zusatz, M14_NAME)
+
+sonde("14b", "Der blosse Name als Handelnder wird weiterhin gemeldet - die Verschaerfung "
+             "hat den alten Gegenstand nicht verloren", _14_blosser_name, M14_NAME)
+
+sonde("14c", "Ein Platzhalter mit Clientnamen wird gemeldet - er steht gross und entgeht "
+             "der Namenssuche", _14_platzhalter_mit_namen, M14_PLATZHALTER)
+
+sonde("14d", "Ohne manifest.json unter clients/ meldet Pruefung 14 den verlorenen "
+             "Gegenstand, statt still auszusteigen", _14_anker_verlieren, M14_ANKER)
+
+gegenprobe("14a", "Das unveraenderte Repositorium bleibt unbeanstandet - die fuenfzehn "
+                  "Nennungen sind aufgeloest", None, M14_NAME)
+
+gegenprobe("14b", "Ein Produktname in einem Protokoll bleibt zulaessig - Chronik "
+                  "berichtet einen vergangenen Stand", _14_chronik, M14_NAME)
+
+gegenprobe("14c", "<CLIENT_NAME> in einer gerenderten Quelle bleibt zulaessig - das ist "
+                  "der Weg, den D-129 offen laesst", _14_platzhalter_gerendert, M14_NAME)
+
 
 # --- 18: verwaister Hook-Dateiname in einer root-template-Vorlage -----------------
 sonde("18b", "Verwaiste Hook-Datei als geliefertes Artefakt in der Vorlage",

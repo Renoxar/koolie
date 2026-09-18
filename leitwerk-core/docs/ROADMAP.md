@@ -204,6 +204,34 @@ ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
 
+### Was 0.57.1 gebracht hat – eine Ausnahme, die in ihrem eigenen Geltungsbereich leer war
+
+**Die Antwort auf `K-52`, und sie ist schärfer als die Frage** (`CR-2026-081`, D-129,
+`tests/protocols/2026-09-18-wirkungsnachweise-0.57.1.md`). **Es bewegt keine Zahl von
+D-11:** Kriterium 1 bleibt 23, Kriterium 2 bleibt 105.
+
+| Frage | Ergebnis |
+|---|---|
+| Was war das Problem? | **Fünfzehn Nennungen des Produktnamens in zwölf anweisenden Trägern** – darunter der **Geltungsbereich des ganzen Frameworks** (`01-governance.md` Satz 1), die Reichweite der Belegstatus-Regel, die Überschrift eines normativen Abschnitts und die **Titel** beider Onboarding-Dokumente |
+| War das nicht erlaubt? | **Ja – und genau das war der Befund.** D-28 ließ den Produktnamen *mit Zusatz* ausdrücklich zu, *„wo ein Produkt gemeint ist"*, und Prüfung 14 setzte diese Grenze durch. **In keiner der fünfzehn Fundstellen wurde der Name bloß genannt:** Jede trug einen Geltungsbereich, eine Produktaussage oder eine Voraussetzung. **Die Ausnahme hatte in ihrem eigenen Geltungsbereich keinen einzigen berechtigten Fall** – Client Packs und Chronik sind ohnehin ausgenommen |
+| Was tritt an ihre Stelle? | **Eine Trennlinie, die schärfer ist als „gerendert oder nicht":** **Nennen** – der Text trägt den Namen und sagt nichts über das Produkt – dafür ist `<CLIENT_NAME>` gebaut. **Zuschreiben** – der Text sagt etwas *über* das Produkt – das gehört in dessen Client Pack, und der Kern verweist auf die Fähigkeitsmatrix (D-129) |
+| Und `<CLIENT_NAME>`? | 🔴 **Er hilft in keiner der fünfzehn Fundstellen** – auch nicht in den drei gerenderten. Die beiden Plan-Skills tragen dort eine `[DOK]`-Aussage, die Zeile **M4** der Fähigkeitsmatrix von `devin-desktop` ist; die Overlay-Vorlage trägt eine produktspezifische **Optionsliste**. Der Platzhalter hätte den Namen getauscht und die Aussage stehen lassen. **Das korrigiert, was 0.57.0 an dieser Stelle behauptet hat** |
+| Wo wird `<CLIENT_NAME>` dann gebraucht? | **Genau einmal im ganzen Bestand, gezählt und nicht geschätzt:** im Titel von `framework/runtime/root-instruction.md`. Das ist der Nennen-Fall, und ein Platzhalter mit genau einem Fall ist kein toter Platzhalter |
+| Was ist beim Nachbauen aufgefallen? | **Prüfung 14 hatte seit 0.20.0 keine Sonde** – sie lag außerhalb der Nachweisspanne „6 und 18 bis 48". Nach D-23 galt sie damit als nicht vorhanden, und sie wurde hier geändert. **Sie bekommt vier Sonden und drei Gegenproben**; die Spanne lautet jetzt *„6, 14 und 18 bis 48"* |
+| Und ein dritter Befund? | **Sie stieg bei fehlenden Manifesten STILL aus** (`if not namen: return`). Eine Prüfung, die ihren Gegenstand verliert und nichts sagt, besteht leise – dieselbe Bauform, gegen die die Prüfungen 28, 29, 31, 40, 46 und 48 je eine Ankermeldung tragen. Sonde `14d` belegt die neue |
+| Was war an den Ausnahmelisten? | **Zwei Listen für denselben Gegenstand, nach einem Release schon auseinandergelaufen** – `docs/ROADMAP.md` stand nur in der von Prüfung 48. Seit 0.57.1 teilen sich beide **eine** Menge. **Und ein dritter Nutzer meinte etwas anderes:** Prüfung 13 fragt, welches Dokument eine eigene Artefaktversion trägt – sie bekommt eine eigene Konstante, sonst hätte eine Erweiterung für die Neutralität sie stillschweigend mit erweitert |
+| Was hat es gekostet? | **Benannt:** Die beiden Plan-Skills verlieren eine konkrete Pfadangabe – wer sie mit `devin-desktop` fährt, schlägt den Pfad jetzt im Pack nach. Die Overlay-Vorlage verliert ihre Beispieloptionen. Und **eine verschärfte Regel als PATCH auszuliefern unterzeichnet sie**; das Gegengewicht ist der Releaseplan, dessen Nummern eine Reihenfolge sind |
+| Wie stark ist der Nachweis? | **Gegenbeweis gegen den unberührten Vorstand `0.57.0`: genau 15 Fundstellen in genau 12 Trägern** – ohne Rest, ohne Überschuss |
+
+### Was 0.57.1 offen lässt
+
+- **`K-37`** – die Versionszelle der Vorlagen, seit 0.53.0 unentschieden.
+- **Prüfung 14 findet den Namen, nicht die Umschreibung.** Ein Kerntext, der „das Werkzeug
+  aus Kapitel 3" schreibt, läuft durch – dieselbe Ehrlichkeit wie bei Prüfung 48.
+- **Die Trennlinie *Nennen / Zuschreiben* ist eine Regel für Menschen.** Kein Skript
+  entscheidet sie; die Prüfung macht nur den einen Fall unmöglich, in dem sie regelmäßig
+  falsch beantwortet wurde.
+
 ### Was 0.57.0 gebracht hat – die Regel galt sechsundzwanzig Releases lang, und durchgesetzt hat sie nichts
 
 **Der erste Posten des Releaseplans** (`CR-2026-080`, D-128, `K-52` neu,
@@ -232,6 +260,15 @@ und sagt es: Kriterium 1 bleibt 23, Kriterium 2 bleibt 105.
   wiederkehrende Aufgaben mit <Produkt>" ein. D-28 erlaubt den Namen, *wo ein Produkt gemeint
   ist* – **nicht, wo der Kern ein bestimmtes Werkzeug voraussetzt.** Zwei der zehn Träger
   werden gerendert; dort hülfe `<CLIENT_NAME>` wirklich, in den übrigen acht nicht.
+
+  > 🔴 **Nachtrag mit `0.57.1`: An diesem Absatz stimmten zwei Aussagen nicht, und beide
+  > sind beim Nachzählen vor dem Eingriff aufgefallen** (`CR-2026-081`). **Erstens: es sind
+  > ZWÖLF Träger, nicht zehn** – die beiden Plan-Skills waren als „die Skills" erwähnt und in
+  > der Trägerzahl nicht mitgezählt. **Zweitens: `<CLIENT_NAME>` hilft in KEINER der fünfzehn
+  > Fundstellen**, auch nicht in den drei gerenderten: Dort trägt der Name eine Aussage, die
+  > nur für ein Pack gilt, und der Platzhalter hätte sie an jedes weitergegeben.
+  > **Der Absatz behält seinen Wortlaut** – ein Dokument, das seine eigene Fehleinordnung
+  > löscht, verliert den Lernwert (dieselbe Entscheidung wie bei 0.54.1 und 0.55.0).
 - **`K-37` – die Versionszelle der Vorlagen.** Dieses Release hat die beiden Pack-Vorlagen
   inhaltlich geändert und ihre Versionszelle **bewusst nicht** gehoben: Sie hat dieselbe
   Bauform wie die Statuszelle, die 0.53.0 zum Ausfüllschlitz gemacht hat. Sie zu heben hieße,
