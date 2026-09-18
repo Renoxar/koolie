@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 50, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 53, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -4354,6 +4354,239 @@ gegenprobe("50b", "Dieselbe Nennung MIT Registerzeile bleibt zulaessig",
 gegenprobe("50c", "Eine synthetische Kennung des Pruefapparats bleibt ohne Registerzeile "
                   "zulaessig - der Zuschnitt ist nicht zu breit", _50_synthetische_kennung,
            M50_FEHLT)
+
+
+# --- Pruefung 51: Ausfuellschlitz fuer einen festgelegten Overlay-Wert (D-150) -----
+M51_SCHLITZ = "trägt einen Ausfüllschlitz, obwohl"
+M51_ANKER = "Kontextquellentabelle mit dem Kopf"
+P51_QUELLE = "leitwerk-core/templates/project-overlay/OVERLAY.md".replace("/", os.sep)
+P51_LAUFZEIT = ("leitwerk-core/framework/runtime/rules/20-project-overlay.md"
+                .replace("/", os.sep))
+# Der Stand VOR 0.61.0, woertlich. Die Sonde stellt ihn wieder her: Sie misst genau den
+# Befund, den dieses Release behoben hat, und nicht einen nachgebauten.
+P51_ALTZEILE = '- Freigegebene externe Domains: `<TBD: Liste oder „keine">`'
+
+
+def _zeile_ersetzen(pfad: str, praefix: str, neu: str) -> None:
+    """Die eine Zeile, die mit `praefix` beginnt, ganz ersetzen.
+
+    Fuer eine Praeparation, deren Gegenstand eine ganze Zeile ist, taugt kein Suchtext
+    ueber den Zeileninhalt: Er waere die Zeile selbst und muesste bei jeder Umformulierung
+    nachgezogen werden. Der Praefix ist der Feldname, und der ist der Gegenstand.
+    """
+    zeilen = lies(pfad).split("\r\n")
+    treffer = [i for i, z in enumerate(zeilen) if z.startswith(praefix)]
+    if len(treffer) != 1:
+        raise Praeparationsfehler(
+            "%s: Praefix %r steht %dx am Zeilenanfang, erwartet genau einmal"
+            % (os.path.basename(pfad), praefix, len(treffer)))
+    zeilen[treffer[0]] = neu
+    schreib(pfad, "\r\n".join(zeilen))
+
+
+def _51_schlitz_zurueck(root: str) -> None:
+    """Der Stand vor 0.61.0: die Laufzeitfassung bietet an, was die Quelle ausschliesst."""
+    _zeile_ersetzen(P(root, P51_LAUFZEIT), "- Freigegebene externe Domains:", P51_ALTZEILE)
+
+
+def _51_anker_verlieren(root: str) -> None:
+    """Ohne die Kontextquellentabelle hat Pruefung 51 keine Feldmenge mehr.
+
+    Sie leitet sie von dort ab; geht der Kopf verloren, pruefte sie nichts und bestuende
+    leise - genau die Bauform, die D-23 ausschliesst.
+    """
+    ersetze(P(root, P51_QUELLE),
+            ("| Kontextquelle | Kontextklasse | Freigabe | Bedingungen |",
+             "| Quelle | Klasse | Freigabe | Bedingungen |"))
+
+
+def _51_quelle_oeffnet(root: str) -> None:
+    """Legt die QUELLE den Wert nicht fest, ist der Schlitz zulaessig - beides zusammen.
+
+    Das Paar belegt, dass die Pruefung die Quelle liest und nicht ein verdrahtetes Feld:
+    Derselbe Schlitz, der eben gemeldet wurde, bleibt unbeanstandet, sobald die Vorlage
+    ihn selbst offen laesst.
+    """
+    _51_schlitz_zurueck(root)
+    ersetze(P(root, P51_QUELLE),
+            ("| Freigegebene externe Domains (Fetch) | K0 | **„keine\"** |",
+             "| Freigegebene externe Domains (Fetch) | K0 | `<TBD: Liste oder "
+             "„keine\">` |"))
+
+
+def _51_fremdes_feld(root: str) -> None:
+    """Ein Schlitz fuer ein Feld, das die Quellentabelle nicht fuehrt, bleibt zulaessig."""
+    zeile_nach(P(root, P51_LAUFZEIT), "- Freigegebene externe Domains:",
+               "- Freigegebene Sondenquellen: `<TBD: Liste oder „keine\">`")
+
+
+sonde("51a", "Ein Ausfuellschlitz in der Laufzeitfassung fuer einen Wert, den die "
+             "Overlay-Vorlage festlegt, wird gemeldet", _51_schlitz_zurueck, M51_SCHLITZ)
+
+sonde("51b", "Ohne den Kopf der Kontextquellentabelle meldet Pruefung 51 die verlorene "
+             "Feldmenge, statt leise zu bestehen", _51_anker_verlieren, M51_ANKER)
+
+gegenprobe("51a", "Das unveraenderte Repositorium bleibt unbeanstandet - die Domainzeile "
+                  "traegt seit 0.61.0 den festen Wert", None, M51_SCHLITZ)
+
+gegenprobe("51b", "Laesst die Quelle den Wert selbst offen, bleibt derselbe Schlitz "
+                  "zulaessig - die Pruefung liest die Vorlage", _51_quelle_oeffnet,
+           M51_SCHLITZ)
+
+gegenprobe("51c", "Ein Schlitz fuer ein Feld ausserhalb der Quellentabelle bleibt "
+                  "zulaessig - der Zuschnitt ist nicht zu breit", _51_fremdes_feld,
+           M51_SCHLITZ)
+
+
+# --- Pruefung 52: V6-Gegenstand mit Freigabefolge (D-151) --------------------------
+M52_FOLGE = "deren Rechtsfolge eine Freigabe ist"
+M52_ANKER = "Delegationsverbotsliste ist nicht mehr auffindbar"
+P52_LAUFZEIT = ("leitwerk-core/framework/runtime/rules/10-privacy-security.md"
+                .replace("/", os.sep))
+P52_RISIKO = "leitwerk-core/framework/core/09-risk-model.md".replace("/", os.sep)
+P52_CL06 = "leitwerk-core/checklists/06-security.md".replace("/", os.sep)
+# Woertlich der Stand vor 0.61.0 - sechzig Releases lang stand er so.
+P52_ALTSATZ = (
+    "Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie, "
+    "Security-Konfiguration, Eingabevalidierung an Systemgrenzen, Verarbeitung "
+    "personenbezogener Daten: Kontrollstufe hoch. Nur analysieren und planen; Umsetzung "
+    "ausschließlich nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` und "
+    "`<SECURITY_CONTACT>`."
+)
+
+
+def _52_altsatz_zurueck(root: str) -> None:
+    """Der Stand vor 0.61.0: ein Delegationsverbot in der Aufzaehlung mit Freigabefolge."""
+    _zeile_ersetzen(P(root, P52_LAUFZEIT),
+                    "Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie,",
+                    P52_ALTSATZ)
+
+
+def _52_anker_verlieren(root: str) -> None:
+    """Ohne die V6-Zeile hat Pruefung 52 keine Begriffe mehr - sie leitet sie von dort ab."""
+    ersetze(P(root, P52_RISIKO),
+            ("| V6 | Änderungen an Produktionssystemen",
+             "| V6-alt | Änderungen an Produktionssystemen"))
+
+
+def _52_nur_anwendungslogik(root: str) -> None:
+    """Dieselbe Freigabefolge OHNE V6-Gegenstand bleibt zulaessig - das ist G-04."""
+    zeile_nach(P(root, P52_CL06),
+               "## Abbruch- und Eskalationskriterien",
+               "\r\nSondennachtrag: Eine Änderung an Kryptografie oder "
+               "Sitzungsverwaltung ist Kontrollstufe hoch; die Umsetzung erfolgt nach "
+               "dokumentierter Freigabe durch `<APPROVAL_ROLE>`.")
+
+
+def _52_ohne_freigabefolge(root: str) -> None:
+    """Ein V6-Gegenstand OHNE Freigabefolge bleibt zulaessig - die Regel gilt dem Paar."""
+    zeile_nach(P(root, P52_CL06),
+               "## Abbruch- und Eskalationskriterien",
+               "\r\nSondennachtrag: Eine Sicherheitskonfiguration mit Schutzwirkung ist "
+               "Kontrollstufe hoch und nicht delegierbar; zulässig sind Analyse und "
+               "Planvorschlag.")
+
+
+def _52_langform_ausgenommen(root: str) -> None:
+    """Die Langform, aus der die Begriffe stammen, darf beide Seiten in einem Absatz nennen.
+
+    Ohne diese Ausnahme meldete die Pruefung ausgerechnet den Text, der die Abgrenzung
+    ZIEHT - und die Ausnahme ist abgeleitet: es ist die Datei, aus der gelesen wurde.
+    """
+    zeile_nach(P(root, P52_RISIKO),
+               "## 5. Anwendungshinweise (Erläuterung)",
+               "\r\nSondennachtrag zur Abgrenzung: Eine Sicherheitskonfiguration bleibt "
+               "V6; eine Berechtigungsprüfung in der Anwendungslogik ist Kontrollstufe "
+               "hoch, und ihre Umsetzung erfolgt nach dokumentierter Freigabe.")
+
+
+sonde("52a", "Ein Gegenstand von V6 in einer Aufzaehlung mit Freigabefolge wird gemeldet "
+             "- der Stand vor 0.61.0", _52_altsatz_zurueck, M52_FOLGE)
+
+sonde("52b", "Ohne die V6-Zeile der Delegationsverbotsliste meldet Pruefung 52 den "
+             "verlorenen Gegenstand, statt leise zu bestehen", _52_anker_verlieren,
+      M52_ANKER)
+
+gegenprobe("52a", "Das unveraenderte Repositorium bleibt unbeanstandet - beide Fassungen "
+                  "trennen seit 0.61.0 Anwendungslogik vom Betrieb", None, M52_FOLGE)
+
+gegenprobe("52b", "Dieselbe Freigabefolge ohne einen Gegenstand von V6 bleibt zulaessig - "
+                  "das ist der erlaubte Fall", _52_nur_anwendungslogik, M52_FOLGE)
+
+gegenprobe("52c", "Ein Gegenstand von V6 ohne Freigabefolge bleibt zulaessig - die Regel "
+                  "gilt dem Paar, nicht dem Wort", _52_ohne_freigabefolge, M52_FOLGE)
+
+gegenprobe("52d", "Die Langform, aus der die Begriffe stammen, bleibt ausgenommen - sie "
+                  "zieht die Abgrenzung und nennt beide Seiten", _52_langform_ausgenommen,
+           M52_FOLGE)
+
+
+# --- Pruefung 53: Die Kriterium-2-Kette des Releaseplans (D-153) -------------------
+M53_KETTE = "Kette des Releaseplans reißt zwischen"
+M53_NULL = "Kette des Releaseplans endet bei"
+M53_ANKER = "liest den Releaseplan darunter"
+P53_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
+P53_UEBERSCHRIFT = "#### Der Releaseplan bis 1.0.0 und darüber hinaus"
+# Genau der Fehler, den 0.60.0 gemergt hat: Die Zelle wurde aus dem Posten genommen, seine
+# Zahl nachgezogen - und die des Folgepostens blieb stehen.
+P53_KETTENGLIED = "| Kriterium 2: **84 → 0** | ja, mehrfach |"
+
+
+def _53_kette_reissen(root: str) -> None:
+    """Der Stand vor 0.61.0: Der Folgeposten beginnt um eins unter dem Vorgaengerende."""
+    ersetze(P(root, P53_ROADMAP),
+            (P53_KETTENGLIED, "| Kriterium 2: **83 → 0** | ja, mehrfach |"))
+
+
+def _53_null_verfehlen(root: str) -> None:
+    """Ein Plan, der nicht bei null ankommt, fuehrt nicht bis 1.0.0."""
+    ersetze(P(root, P53_ROADMAP),
+            (P53_KETTENGLIED, "| Kriterium 2: **84 → 4** | ja, mehrfach |"))
+
+
+def _53_anker_verlieren(root: str) -> None:
+    """Ohne die Ueberschrift liest Pruefung 53 keinen Plan - und sagt es."""
+    ersetze(P(root, P53_ROADMAP),
+            (P53_UEBERSCHRIFT, "#### Der Plan bis 1.0.0"))
+
+
+def _53_glied_anfuegen(root: str) -> None:
+    """Ein weiterer Posten, der die Kette fortsetzt, bleibt zulaessig.
+
+    Die Pruefung rechnet eine Kette nach und zaehlt keine Posten; ohne dieses Paar waere
+    nicht belegt, dass sie dem Plan folgt statt einer festen Laenge.
+    """
+    zeile_nach(P(root, P53_ROADMAP), "| **0.63.0 bis ~0.67.0** |",
+               "| **~0.68.0** | Sondenposten | Kriterium 2: **0 → 0** | nein |")
+
+
+def _53_nennung_vor_dem_plan(root: str) -> None:
+    """Eine Kriterium-2-Angabe VOR der Ueberschrift bleibt zulaessig - der Zuschnitt beginnt dort."""
+    ersetze(P(root, P53_ROADMAP),
+            (P53_UEBERSCHRIFT,
+             "Sondennachtrag: Eine Vorhersage ausserhalb des Plans, Kriterium 2: "
+             "**99 → 1**.\r\n\r\n" + P53_UEBERSCHRIFT))
+
+
+sonde("53a", "Ein Folgeposten, der unter dem Ende seines Vorgaengers beginnt, wird "
+             "gemeldet - genau der Fehler, den 0.60.0 gemergt hat", _53_kette_reissen,
+      M53_KETTE)
+
+sonde("53b", "Ein Plan, dessen Kette nicht bei null ankommt, wird gemeldet - Kriterium 2 "
+             "muss dort ankommen", _53_null_verfehlen, M53_NULL)
+
+sonde("53c", "Ohne die Ueberschrift des Releaseplans meldet Pruefung 53 den verlorenen "
+             "Gegenstand, statt leise zu bestehen", _53_anker_verlieren, M53_ANKER)
+
+gegenprobe("53a", "Das unveraenderte Repositorium bleibt unbeanstandet - die Kette "
+                  "schliesst und endet bei null", None, M53_KETTE)
+
+gegenprobe("53b", "Ein weiterer Posten, der die Kette fortsetzt, bleibt zulaessig - "
+                  "gerechnet wird die Kette, nicht die Laenge", _53_glied_anfuegen,
+           M53_KETTE)
+
+gegenprobe("53c", "Eine Kriterium-2-Angabe vor der Ueberschrift bleibt zulaessig - der "
+                  "Zuschnitt beginnt am Plan", _53_nennung_vor_dem_plan, M53_KETTE)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
