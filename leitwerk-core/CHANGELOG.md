@@ -2,6 +2,132 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.63.0] - 2026-09-18
+
+**Die Vorbedingungen der dreizehn Testblaetter durchgegangen: 21 von 81 Zellen tragen
+nicht - und das aktive Overlay bindet acht seiner Pflichtplatzhalter gar nicht**
+(`CR-2026-088`, D-160 bis D-162, `K-66` und `K-67` neu).
+
+Der Releaseplan sah fuer 0.63.0 den fuenften Sitzungstest vor. **Vor dem ersten Lauf sind
+die Vorbedingungen durchgegangen worden - zum siebten Mal in Folge, und zum siebten Mal
+war es der billigste Befund des Releases.** Diesmal galt der Durchgang nicht zehn Zellen
+einer Klasse, sondern **allen 81 offenen Zellen der dreizehn Testblaetter**: dem Posten,
+der 88 Prozent des Restbestands von Kriterium 2 ausmacht. Kein Kontingent.
+
+### Die Trennlinie, die vorher niemand gezogen hatte
+
+Eine Vorbedingung beschreibt entweder **einen Eingabetext**, den der Lauf selbst
+mitbringt - Stacktrace, Aufgabenbeschreibung, Fehlerbericht -, oder **einen Zustand des
+Repositoriums**, der vorher da sein muss. **Nur die zweite Gattung braucht eine
+registrierte Praeparation** (D-162).
+
+🔴 **Ohne die Trennlinie waere die Zahl falsch geworden, und zwar zu gross.** `K-42`
+zaehlte 82 von 83 Blattzellen als *ohne Praeparation*; gemessen sind **25 von 81** gar
+kein Repositoriumszustand. **Die echte Luecke ist kleiner und schaerfer: 21.**
+
+| Klasse | Bedeutung | Zellen |
+|---|---|---|
+| A | Eingabetext des Laufs | 25 |
+| B | registrierte Praeparation, vorhanden | 3 |
+| C | Zustand des Repositoriums, gemessen vorhanden | 17 |
+| D | je Lauf herzustellen, in keinem Register | 15 |
+| E | **Gegenstand fehlt oder widerspricht dem Overlay** | **21** |
+
+### Der erste Befund: 21 Zellen ohne Gegenstand
+
+🔴 **`fw-docs-update` ist vollstaendig unfahrbar - sechs von sechs.** Alle Zellen
+verlangen ein Uebungsdokument in `<DOC_PATHS>`; `docs/` enthaelt **genau eine Datei**, und
+das ist das Aufgabenblatt mit den Aufloesungen.
+
+Dazu fehlen: eine Test-Fixture mit K3-Inhalt (3 Zellen), eine Berechtigungspruefung im
+Uebungscode (2), dokumentierte Akzeptanzkriterien (1 - der Begriff kommt im ganzen
+Uebungsrepositorium kein einziges Mal vor), ein Glossar (1), zwei gleichnamige Module (1),
+ein Duplikat **innerhalb einer Datei** (1), und zwei Duplikate, die sich in einer
+Randbedingung **unterscheiden** (1) - `UEB-03` traegt absichtlich **dieselbe** falsche
+Grenze an beiden Stellen, weil das die Scope-Falle ausmacht.
+
+**Alle 21 standen als `offen`, also als fahrbar.** Seit diesem Release sagen sie es in
+ihrer eigenen Zeile. **Die Herrichtung bekommt einen eigenen Posten** (`0.65.0`, `K-66`):
+Sieben Gegenstaende in einem Zug zu erfinden ist die Bauform, gegen die D-156 entschieden
+hat.
+
+### Der zweite Befund, und er ist groesser: das Overlay bindet nicht, es ersetzt
+
+🔴 **Acht von neunundzwanzig Pflichtplatzhaltern waren im aktiven Uebungs-Overlay
+ungebunden.** Das Overlay hatte ihre Werte in den Text gesetzt - „Tickets aus GitHub
+Issues" statt „Tickets aus `<ISSUE_TRACKER>`" - und den Platzhalter damit verloren.
+
+**Fuer das Overlay selbst ist das folgenlos; fuer jeden Kerntext, der denselben
+Platzhalter traegt, nicht.** In der geladenen Laufzeitschicht standen **65 Fundstellen**
+von fuenf Pflichtplatzhaltern, die kein Leser aufloesen kann - `<ISSUE_TRACKER>` allein in
+**vierzehn Traegern**, `<PROJECT_RULES_PATH>` in elf. Darunter Regeln, die eine Meldung an
+eine nicht benannte Stelle verlangen. **Der Validator meldete 0 Fehler, 0 Warnungen.**
+
+🔴 **Und die Vorlage selbst hatte eine Luecke:** `<CHANGE_SIZE_THRESHOLD>` ist Pflicht vor
+der Aktivierung und kam in der Overlay-Vorlage **ueberhaupt nicht** vor. Ein Projekt, das
+die Vorlage ausfuellt, begegnete ihm nie. **Pruefung 55 hat das beim ersten Lauf
+gemeldet.**
+
+### Der dritte Befund - und er hat sich beim Gegenpruefen umgedreht
+
+`SK-012-P01` verlangt `<MR_TEMPLATE_PATH>`, und das Uebungs-Overlay sperrte den Wert ueber
+`.github/**`. **Der erste Verdacht war, die Zelle sei falsch.** Gegen den Traeger gehalten
+ist es umgekehrt: `fw-mr-description` fuehrt `<MR_TEMPLATE_PATH>` ausdruecklich als
+**zulaessige Kontextquelle** und verlangt in seiner Abschlusspruefung, die Vorlage in
+Struktur und Pflichtfeldern einzuhalten.
+
+➡️ **Ein Skill, der eine Datei lesen muss, und ein Overlay, das sie sperrt - das Overlay
+ist die falsche Stelle.** Die Sperre ist auf `.github/workflows/**` eingeengt, ihren
+eigenen Gegenstand laut Overlay. Uebungsaufgabe E bleibt unberuehrt.
+
+### Pruefung 55 und 56
+
+**55** haelt die Pflichtplatzhalter in zwei Gegenstaenden: (a) die Vorlage bietet jeden im
+Overlay verorteten an, (b) unter `--strict-overlay` bindet das aktive Overlay jeden, den
+ein Traeger der geladenen Schicht nennt. **56** verbietet eine Vorbedingung, die einen vom
+selben Overlay ausgeschlossenen Traeger verlangt.
+
+🔴 **Pruefung 56 hat in EINEM Release zweimal zu breit gemeldet** - erst bei drei Zellen,
+die `<EXCLUDED_PATHS>` selbst zum Gegenstand haben, dann beim Vergleich von
+Pfad**anfaengen** statt Pfaden (`.github/pull_request_template.md` gegen
+`.github/workflows/**`). **Beide Zuschnitte sind jetzt durch eine Gegenprobe belegt.**
+
+🔴 **Und zwei Sonden massen zuerst nichts, beide Male war die Sonde schuld:** `55b`
+ersetzte `| ja |` und liess die eine Registerzeile stehen, die `ja (oder "keine")` traegt;
+`55c` liess den Platzhalter in der Prosa der Vorlage stehen und machte ihn damit
+„gebunden". **Der Baumhash-Waechter hat beide gemeldet, statt sie leise bestehen zu
+lassen.**
+
+### Geaendert
+
+- `tests/scripts/validate-framework.py`, `tests/scripts/probe-pruefungen.py`: Pruefung 55
+  und 56, vier Sonden, fuenf Gegenproben.
+- `templates/project-overlay/OVERLAY.md`: Bindungszeile fuer `<CHANGE_SIZE_THRESHOLD>`.
+- Dreizehn `TESTS.md`: 21 Zellen tragen den Befund in ihrer eigenen Zeile; vier davon als
+  **behoben**.
+- `tests/TEST_CATALOG.md`: Sondenmenge `6, 14 und 18 bis 56`.
+- `docs/ROADMAP.md`: Sitzungstest 5 auf `0.64.0`, neuer Posten `0.65.0` (Herrichtung).
+- `governance/DECISION_LOG.md`: D-160 bis D-162, `K-66`, `K-67`.
+
+### Migrationshinweis
+
+**Ein uebernehmendes Projekt, dessen Overlay einen Pflichtplatzhalter durch seinen Wert
+ersetzt statt ihn zu binden, faellt ab 0.63.0 unter `--strict-overlay` auf.** Die Abhilfe
+ist eine Zeile je Platzhalter: den Namen in Backticks neben den Wert setzen. Im
+Uebungsrepositorium waren es acht; gemessen an den 65 Fundstellen, die dadurch
+aufloesbar werden, ist das der billigste Eingriff dieses Releases.
+
+### Bekannte Einschraenkungen
+
+- 🔴 **Die 21 Zellen bleiben unfahrbar** - sie sagen es jetzt, und die Herrichtung ist
+  `0.65.0` (`K-66`).
+- **Pruefung 55b prueft, ob der Platzhaltername VORKOMMT, nicht ob der Wert daneben
+  richtig ist.** Die Vorlage kennt drei Bindungsformen (`K-67`).
+- **Pruefung 56 loest ueber die Bindungszeile auf.** Eine Vorbedingung, die einen
+  ausgeschlossenen Pfad **woertlich** nennt, entgeht ihr.
+- **15 Zellen brauchen je Lauf einen Zustand, der in keinem Register steht** (Branch,
+  Diff, roter Test, Vorlaufergebnis). Sie sind fahrbar, aber unbelegt.
+
 ## [0.62.0] - 2026-09-18
 
 **Die Quellenliste gegen die Wirklichkeit gehalten: `FW-AK-01` ist zum ersten Mal

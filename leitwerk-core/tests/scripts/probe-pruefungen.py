@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 54, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 56, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -4530,6 +4530,7 @@ P53_UEBERSCHRIFT = "#### Der Releaseplan bis 1.0.0 und darüber hinaus"
 # Genau der Fehler, den 0.60.0 gemergt hat: Die Zelle wurde aus dem Posten genommen, seine
 # Zahl nachgezogen - und die des Folgepostens blieb stehen.
 P53_KETTENGLIED = "| Kriterium 2: **85 → 0** | ja, mehrfach |"
+P53_KETTE_SUCH = "Kriterium 2: **"
 
 
 def _53_kette_reissen(root: str) -> None:
@@ -4556,8 +4557,20 @@ def _53_glied_anfuegen(root: str) -> None:
     Die Pruefung rechnet eine Kette nach und zaehlt keine Posten; ohne dieses Paar waere
     nicht belegt, dass sie dem Plan folgt statt einer festen Laenge.
     """
-    zeile_nach(P(root, P53_ROADMAP), "| **0.64.0 bis ~0.68.0** |",
-               "| **~0.69.0** | Sondenposten | Kriterium 2: **0 → 0** | nein |")
+    # DER ANKER IST ABGELEITET, NICHT GEPFLEGT - und das ist mit 0.63.0 noetig
+    # geworden: Er stand zweimal in zwei Releases auf einer Postennummer, und beide
+    # Male hat die Verschiebung des Releaseplans die Gegenprobe fallen lassen
+    # ("Praeparation gebrochen"). Gesucht wird die LETZTE Zeile der Kette; dahinter
+    # gehoert der Sondenposten, damit die Kette geschlossen bleibt.
+    text = lies(P(root, P53_ROADMAP))
+    kette = [z for z in text.replace("\r\n", "\n").split("\n")
+             if P53_KETTE_SUCH in z]
+    if not kette:
+        raise Praeparationsfehler(
+            "ROADMAP.md: keine Zeile mit einer Kriterium-2-Kette gefunden - die "
+            "Gegenprobe haette keinen Anker")
+    zeile_nach(P(root, P53_ROADMAP), kette[-1].strip(),
+               "| **~0.99.0** | Sondenposten | Kriterium 2: **0 → 0** | nein |")
 
 
 def _53_nennung_vor_dem_plan(root: str) -> None:
@@ -4702,6 +4715,137 @@ gegenprobe("54b", "Ein LEERES settings_extra ist eine Deklaration und bleibt zul
 buendel(sonden_zusatzschluessel,
         "Pruefung 54 an einer claude-code-Installation: fehlend, falsche Ebene und "
         "falscher Wert je eigens gemessen, dazu die unveraenderte Installation")
+
+
+# --- Pruefung 55 und 56: Pflichtplatzhalter und gesperrte Traeger (D-160, D-161) ---
+#
+# ZWEI ZUSCHNITTE, AUS EINEM GRUND: Teil (a) von Pruefung 55 liest die VORLAGE und laeuft
+# im gewoehnlichen Lauf. Teil (b) und Pruefung 56 lesen ein GEFUELLTES Overlay - und das
+# Repositorium traegt nur die unausgefuellte Vorlage, in der jeder Wert <TBD> ist.
+# Deshalb baut das Buendel eine frische Installation und schreibt genau die zwei
+# Bindungszeilen hinein, um die es geht. Alles andere an --strict-overlay meldet dort
+# ohnehin, und die Sonden pruefen je auf IHRE Meldung, nicht auf die Fehlerzahl.
+M55_VORLAGE = "kommt in der Vorlage aber nicht vor"
+M55_ANKER = "keine Zeile trägt 'Pflicht vor Aktivierung' = ja"
+M55_BINDUNG = "<ISSUE_TRACKER> wird von"
+M56_GESPERRT = "das dasselbe Overlay unter <EXCLUDED_PATHS> führt"
+P55_REG = "leitwerk-core/docs/PLACEHOLDER_REGISTRY.md".replace("/", os.sep)
+P55_VOR = "leitwerk-core/templates/project-overlay/OVERLAY.md".replace("/", os.sep)
+
+
+def _55_vorlage_luecke(root: str) -> None:
+    """Ein Pflichtplatzhalter verschwindet aus der Vorlage - der Fall vom 2026-09-18."""
+    ersetze(P(root, P55_VOR),
+            ("| Änderungsschwelle (`CHANGE_SIZE_THRESHOLD`) |",
+             "| Änderungsschwelle |"))
+
+
+def _55_anker_weg(root: str) -> None:
+    """Ohne die Pflichtspalte hat Pruefung 55 keinen Gegenstand - und sagt es."""
+    p = P(root, P55_REG)
+    text = lies(p)
+    # NICHT "| ja |": Eine der 29 Zeilen traegt 'ja (oder „keine")', bliebe stehen,
+    # und die Pflichtmenge waere nicht leer - die Sonde maesse dann nichts.
+    schreib(p, text.replace("| ja", "| spaeter"))
+
+
+def _55_ohne_overlayort(root: str) -> None:
+    """Gegenprobe: Ein Pflichtplatzhalter, den das Register NICHT im Overlay verortet,
+    muss in der Vorlage nicht vorkommen. `<FRAMEWORK_OWNER>` wird in OWNERS.md gesetzt -
+    ohne diesen Zuschnitt meldete die Pruefung ihn bei jedem Lauf."""
+    p = P(root, P55_VOR)
+    text = lies(p)
+    schreib(p, text.replace("<FRAMEWORK_OWNER>", "<FRAMEWORK-EIGNER>"))
+
+
+BINDUNGEN = (
+    "\n## Sondenabschnitt (nur fuer den Wirkungsnachweis)\n\n"
+    "| Element | Platzhalter | Wert |\n|---|---|---|\n"
+    "| Ticketsystem | `ISSUE_TRACKER` | Beispiel-Ticketsystem |\n"
+    "| Merge-Request-Vorlage | `MR_TEMPLATE_PATH` | `%s` |\n"
+)
+
+
+def _ov(root: str) -> str:
+    return os.path.join(root, "project-overlay", "OVERLAY.md")
+
+
+def sonden_platzhalterbindung() -> None:
+    """Wirkungsnachweis fuer Pruefung 55b und 56 an einer gefuellten Installation."""
+    root = installation("claude-code")
+    try:
+        pfad = _ov(root)
+        ausgang = lies(pfad)
+        # Eine ausgeschlossene Pfadmenge, die nicht <TBD> ist - sonst hat 56 keinen Anker.
+        gefuellt = ersetzt(
+            ausgang,
+            ("`<TBD: z. B. deploy/**, infra/**, config/prod/**, **/fixtures/real/**>`",
+             "`deploy/**`, `infra/**`"),
+            quelle="project-overlay/OVERLAY.md")
+
+        # --- Gegenprobe 55: der gebundene Platzhalter wird nicht beanstandet ---------
+        schreib(pfad, gefuellt + BINDUNGEN % ".mr/pull_request_template.md")
+        aus = strict_ausgabe(root)
+        melde("GEGENPROBE", "55c", M55_BINDUNG not in aus,
+              "Ein Overlay, das <ISSUE_TRACKER> BINDET, bleibt unbeanstandet - die "
+              "Pruefung misst die Bindung, nicht das Vorhandensein eines Werts")
+
+        # --- Gegenprobe 56: derselbe Baum, Vorlage ausserhalb der Sperre -------------
+        melde("GEGENPROBE", "56a", M56_GESPERRT not in aus,
+              "Liegt der Wert von <MR_TEMPLATE_PATH> ausserhalb von <EXCLUDED_PATHS>, "
+              "bleibt die Vorbedingung zulaessig")
+
+        # --- 55b: die Bindung fehlt, der Kerntext nennt den Platzhalter weiter -------
+        # Der gemessene Fall ist die ERSETZUNG: Das Overlay nennt den Wert und den
+        # Platzhalter nirgends mehr. In einer frischen Installation steht er noch in
+        # der Prosa der Vorlage - die muss die Sonde mit entfernen, sonst gilt er als
+        # gebunden und sie maesse nichts.
+        ohne = gefuellt.replace("`<ISSUE_TRACKER>`", "Beispiel-Ticketsystem")
+        schreib(pfad, ohne + (BINDUNGEN % ".mr/pull_request_template.md").replace(
+            "| Ticketsystem | `ISSUE_TRACKER` | Beispiel-Ticketsystem |\n", ""))
+        melde("SONDE", "55c", M55_BINDUNG in strict_ausgabe(root),
+              "Das Overlay nennt den Wert, bindet den Platzhalter aber nicht - genau der "
+              "Fall, der am 2026-09-18 fuenf Platzhalter in 65 Fundstellen unaufloesbar "
+              "liess")
+
+        # --- 56: die Vorbedingung verlangt einen gesperrten Traeger ------------------
+        schreib(pfad, gefuellt + BINDUNGEN % "deploy/pull_request_template.md")
+        melde("SONDE", "56a", M56_GESPERRT in strict_ausgabe(root),
+              "Eine Vorbedingung verlangt <MR_TEMPLATE_PATH>, und dessen Wert liegt "
+              "unter einem ausgeschlossenen Pfad - die Zelle ist nicht fahrbar")
+
+        # --- Gegenprobe 56b: die NACHBARDATEI im selben Verzeichnis ---------------
+        # Der erste Entwurf von Pruefung 56 verglich nur das erste Pfadsegment und
+        # meldete `.github/pull_request_template.md` gegen `.github/workflows/**`.
+        # Ohne dieses Paar stuende nur fest, dass die Pruefung einen gesperrten Pfad
+        # findet - nicht, dass sie den ungesperrten Nachbarn in Ruhe laesst.
+        nachbar = ersetzt(gefuellt, ("`deploy/**`, `infra/**`",
+                                     "`deploy/gen/**`, `infra/**`"),
+                          quelle="project-overlay/OVERLAY.md")
+        schreib(pfad, nachbar + BINDUNGEN % "deploy/pull_request_template.md")
+        melde("GEGENPROBE", "56b", M56_GESPERRT not in strict_ausgabe(root),
+              "Derselbe Pfadanfang, ein anderer Pfad: `deploy/pull_request_template.md` gegen `deploy/gen/**` bleibt zulaessig - die Pruefung vergleicht Pfade, nicht Anfaenge")
+
+        schreib(pfad, ausgang)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+sonde("55a", "Ein Pflichtplatzhalter fehlt in der Overlay-Vorlage - ein Projekt, das sie "
+             "ausfuellt, begegnet ihm nie", _55_vorlage_luecke, M55_VORLAGE)
+
+sonde("55b", "Ohne die Spalte 'Pflicht vor Aktivierung' meldet Pruefung 55 den "
+             "verlorenen Gegenstand, statt leise zu bestehen", _55_anker_weg, M55_ANKER)
+
+gegenprobe("55a", "Das unveraenderte Repositorium bleibt unbeanstandet - die Vorlage "
+                  "bietet jeden Pflichtplatzhalter an", None, M55_VORLAGE)
+
+gegenprobe("55b", "Ein Pflichtplatzhalter, den das Register NICHT im Overlay verortet, "
+                  "muss in der Vorlage nicht stehen", _55_ohne_overlayort, M55_VORLAGE)
+
+buendel(sonden_platzhalterbindung,
+        "Pruefung 55b und 56 an einer gefuellten claude-code-Installation: fehlende "
+        "Bindung und gesperrter Traeger je eigens gemessen, dazu beide Gegenproben")
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

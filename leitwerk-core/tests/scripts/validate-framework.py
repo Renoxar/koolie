@@ -220,8 +220,25 @@ Prüft (statisch, ohne laufenden KI-Client):
      eingeschraenkte Arbeitsbereichseinstellung in gepunkteter Schreibweise durch und
      dieselbe in verschachtelter nicht. Behoben in 3.10.31 vom 2026-09-16; die
      verbindliche Zielspanne des Packs devin-desktop liegt vollstaendig davor
+ 55. Pflichtplatzhalter, gebunden statt ersetzt (D-16n): ZWEI GEGENSTAENDE. (a) Jeder
+     Platzhalter, den docs/PLACEHOLDER_REGISTRY.md als "Pflicht vor Aktivierung" fuehrt
+     und im Overlay verortet, kommt in der Overlay-Vorlage mindestens einmal vor - sonst
+     bietet die Vorlage ihn nie zum Ausfuellen an. (b) Unter --strict-overlay: Jeder
+     solche Platzhalter, den ein Traeger der geladenen Laufzeitschicht NENNT, ist im
+     aktiven Overlay GEBUNDEN, also dort beim Namen genannt. Ein Overlay, das den
+     Platzhalter durch seinen WERT ERSETZT statt ihn zu binden, ist fuer sich stimmig und
+     laesst jeden Kerntext unaufloesbar, der denselben Platzhalter traegt. Gemessen am
+     2026-09-18 am Uebungsrepositorium: acht Pflichtplatzhalter ungebunden, davon fuenf
+     mit zusammen 65 Fundstellen in der geladenen Schicht - <ISSUE_TRACKER> allein in
+     vierzehn Traegern. Der Validator meldete 0 Fehler
+ 56. Kein ausgeschlossener Traeger als Vorbedingung (D-16n+1): Keine Vorbedingung des
+     Testkatalogs und keines Testblatts verlangt einen Traeger, den dasselbe Overlay
+     unter <EXCLUDED_PATHS> fuehrt - weder lesen noch aendern. Aufgeloest wird ueber die
+     Bindungszeile des genannten Platzhalters. Gemessen am 2026-09-18: SK-012-P01
+     verlangt <MR_TEMPLATE_PATH>, und dessen Wert liegt unter .github/**, das im selben
+     Overlay ausgeschlossen ist; drei weitere Zellen erben es ueber "wie P01"
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 54 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 56 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -5859,6 +5876,197 @@ def check_zusatzschluessel(root: str, man: dict) -> None:
                 f"erzeugten Datei nicht ankommt (D-155)")
 
 
+# --- Pruefung 55 und 56 --------------------------------------------------------------
+# ANLASS: der Durchgang durch die Vorbedingungen der dreizehn Testblaetter (2026-09-18).
+# Er hat zwei Dinge gefunden, die nichts gemeldet hat.
+#
+# ERSTENS: Ein Overlay darf einen Platzhalter durch seinen WERT ERSETZEN statt ihn zu
+# BINDEN. Fuer das Overlay selbst ist das folgenlos - es nennt ja den Wert. Fuer jeden
+# KERNTEXT, der denselben Platzhalter traegt, ist es das nicht: Im Uebungsrepositorium
+# standen 65 Fundstellen von fuenf Pflichtplatzhaltern in der geladenen Laufzeitschicht,
+# die kein Leser aufloesen konnte - <ISSUE_TRACKER> allein in vierzehn Traegern.
+# Der Validator meldete 0 Fehler, 0 Warnungen.
+#
+# ZWEITENS: Eine Vorbedingung darf einen Traeger verlangen, den dasselbe Overlay sperrt.
+# SK-012-P01 verlangt die Merge-Request-Vorlage; ihr Pfad liegt unter .github/**, und das
+# steht im Uebungs-Overlay unter <EXCLUDED_PATHS>. Die Zelle war damit nie fahrbar.
+#
+# WAS 55 NICHT LEISTET: (b) prueft, ob der Platzhalter GENANNT wird, nicht ob der Wert
+# daneben richtig ist. Eine Bindung an den falschen Wert laeuft durch.
+# WAS 56 NICHT LEISTET: Sie loest ueber die Bindungszeile auf. Eine Vorbedingung, die
+# einen ausgeschlossenen Pfad WOERTLICH nennt statt ueber einen Platzhalter, entgeht ihr.
+P55_REGISTER = KERN + "/docs/PLACEHOLDER_REGISTRY.md"
+P55_VORLAGE = KERN + "/templates/project-overlay/OVERLAY.md"
+P55_LAUFZEIT = (KERN + "/framework/runtime/rules", KERN + "/framework/skills")
+P55_ZEILE_RE = re.compile(r"^\|\s*`<([A-Z][A-Z0-9_]*)>`\s*\|")
+
+
+def _p55_pflicht(root: str) -> list:
+    """(Name, Ort) je Platzhalter mit 'Pflicht vor Aktivierung' = ja - abgeleitet."""
+    pfad = os.path.join(root, P55_REGISTER.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        err(f"{P55_REGISTER} fehlt - Prüfung 55 hat ihren Gegenstand verloren; sie "
+            f"bestünde sonst leise (D-23)")
+        return []
+    raus = []
+    for zeile in read(pfad).replace("\r\n", "\n").split("\n"):
+        z = zeile.strip()
+        treffer = P55_ZEILE_RE.match(z)
+        if not treffer:
+            continue
+        zellen = tabellenzellen(z)
+        if len(zellen) > 4 and zellen[4].startswith("ja"):
+            raus.append((treffer.group(1), zellen[2]))
+    if not raus:
+        err(f"{P55_REGISTER}: keine Zeile trägt 'Pflicht vor Aktivierung' = ja. Prüfung "
+            f"55 leitet ihre Menge von dort ab und hätte damit nichts zu prüfen (D-23)")
+    return raus
+
+
+def check_pflichtplatzhalter(root: str) -> None:
+    """Pruefung 55a: Die Overlay-Vorlage bietet jeden Pflichtplatzhalter an."""
+    pfad = os.path.join(root, P55_VORLAGE.replace("/", os.sep))
+    if not os.path.isfile(pfad):
+        return
+    vorlage = read(pfad)
+    for name, ort in _p55_pflicht(root):
+        if not ort.lower().startswith("overlay"):
+            continue  # anderswo gesetzt - die Vorlage muss ihn nicht anbieten
+        if name not in vorlage:
+            err(f"{P55_VORLAGE}: Der Platzhalter <{name}> ist im Register als 'Pflicht "
+                f"vor Aktivierung' geführt und dort in '{ort}' verortet, kommt in der "
+                f"Vorlage aber nicht vor. Ein Projekt, das die Vorlage ausfüllt, "
+                f"begegnet ihm nie (D-160)")
+
+
+def check_platzhalterbindung(root: str, man: dict) -> None:
+    """Pruefung 55b (--strict-overlay): Das aktive Overlay BINDET, statt zu ersetzen."""
+    overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
+    if not os.path.isfile(overlay):
+        return
+    text = read(overlay)
+    genannt = {}
+    for basis in P55_LAUFZEIT:
+        wurzel = os.path.join(root, basis.replace("/", os.sep))
+        if not os.path.isdir(wurzel):
+            continue
+        for ordner, _, dateien in os.walk(wurzel):
+            for n in sorted(dateien):
+                if not n.endswith(".md"):
+                    continue
+                p = os.path.join(ordner, n)
+                inhalt = read(p)
+                rel = os.path.relpath(p, root).replace(os.sep, "/")
+                for name, _ in _p55_pflicht(root):
+                    if f"<{name}>" in inhalt:
+                        genannt.setdefault(name, []).append(rel)
+    for name, traeger in sorted(genannt.items()):
+        if name in text:
+            continue
+        err(f"project-overlay/OVERLAY.md: Der Pflichtplatzhalter <{name}> wird von "
+            f"{len(traeger)} Träger(n) der geladenen Schicht genannt (z. B. "
+            f"{traeger[0]}), ist im Overlay aber nirgends gebunden. Ein Overlay, das den "
+            f"Platzhalter durch seinen Wert ersetzt statt ihn zu binden, lässt jeden "
+            f"Kerntext unauflösbar, der ihn trägt (D-160)")
+
+
+P56_KATALOG = KERN + "/tests/TEST_CATALOG.md"
+
+
+def _p56_ausgeschlossen(text: str) -> list:
+    """Die Globs aus der <EXCLUDED_PATHS>-Zeile des aktiven Overlays."""
+    for zeile in text.replace("\r\n", "\n").split("\n"):
+        if "<EXCLUDED_PATHS>" not in zeile:
+            continue
+        zellen = tabellenzellen(zeile.strip())
+        for zelle in zellen:
+            if "<EXCLUDED_PATHS>" in zelle:
+                continue
+            treffer = re.findall(r"`([^`]+)`", zelle)
+            if treffer:
+                return treffer
+    return []
+
+
+def _p56_deckt(glob: str, pfad: str) -> bool:
+    """Deckt das Glob-Muster den Pfad? Segmentweise, nicht nach Pfadanfang.
+
+    DER ERSTE ENTWURF VERGLICH NUR DAS ERSTE SEGMENT, und das hat in EINEM Release
+    zweimal falsch gemeldet: erst bei drei Zellen, die <EXCLUDED_PATHS> selbst zum
+    Gegenstand haben, dann bei `.github/pull_request_template.md` gegen
+    `.github/workflows/**` - derselbe Anfang, verschiedene Pfade. Eine Pruefung, die
+    Pfadanfaenge vergleicht, meldet jede Nachbardatei mit.
+    """
+    muster = re.escape(glob).replace(r"\*\*", "\x00").replace(r"\*", "[^/]*")
+    muster = muster.replace("\x00", ".*")
+    return re.fullmatch(muster, pfad) is not None
+
+
+def _p56_bindung(text: str, name: str) -> str:
+    """Der Wert, den die Bindungszeile des Platzhalters traegt."""
+    for zeile in text.replace("\r\n", "\n").split("\n"):
+        z = zeile.strip()
+        if not z.startswith("|") or f"`{name}`" not in z:
+            continue
+        zellen = tabellenzellen(z)
+        return " ".join(zellen[1:])
+    return ""
+
+
+def check_ausgeschlossene_vorbedingung(root: str, man: dict) -> None:
+    """Pruefung 56 (--strict-overlay): Keine Vorbedingung verlangt einen gesperrten Traeger."""
+    overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
+    if not os.path.isfile(overlay):
+        return
+    otext = read(overlay)
+    globs = _p56_ausgeschlossen(otext)
+    if not globs:
+        err(f"project-overlay/OVERLAY.md: Die Zeile zu <EXCLUDED_PATHS> führt keine "
+            f"Pfade in Backticks. Prüfung 56 leitet ihre Menge von dort ab und hätte "
+            f"damit nichts zu prüfen (D-23)")
+        return
+    dateien = [os.path.join(root, P56_KATALOG.replace("/", os.sep))]
+    for ordner, _, namen in os.walk(os.path.join(root, KERN.replace("/", os.sep),
+                                                 "framework")):
+        for n in sorted(namen):
+            if n == "TESTS.md":
+                dateien.append(os.path.join(ordner, n))
+    for pfad in dateien:
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        for zeile in read(pfad).replace("\r\n", "\n").split("\n"):
+            z = zeile.strip()
+            if not z.startswith("| ") or z.startswith("|---"):
+                continue
+            zellen = tabellenzellen(z)
+            if len(zellen) < 4:
+                continue
+            vorbed = zellen[2]
+            for name in re.findall(r"<([A-Z][A-Z0-9_]*)>", vorbed):
+                # DER ZUSCHNITT, UND ER IST BEIM ERSTEN LAUF NOETIG GEWORDEN: Eine Zelle,
+                # die <EXCLUDED_PATHS> SELBST nennt, hat die Sperre zum Gegenstand - sie
+                # prueft, ob der Client sie achtet. Ohne diese Ausnahme meldete die
+                # Pruefung am 2026-09-18 drei solche Zellen (SK-001-N01, SK-010-N02,
+                # SK-012-N03) als nicht fahrbar, und alle drei sind es. Eine Pruefung,
+                # die ihren eigenen Gegenstand beanstandet, behauptet mehr als ihr Fall
+                # hergibt.
+                if name == "EXCLUDED_PATHS":
+                    continue
+                wert = _p56_bindung(otext, name)
+                if not wert:
+                    continue
+                for pfadangabe in re.findall(r"`([^`]+)`", wert):
+                    for g in globs:
+                        if _p56_deckt(g, pfadangabe):
+                            err(f"{rel}: Die Vorbedingung von '{zellen[0]}' verlangt "
+                                f"<{name}>; der Wert '{pfadangabe}' liegt unter "
+                                f"'{g}', das dasselbe Overlay unter <EXCLUDED_PATHS> "
+                                f"führt - weder lesen noch ändern. Die Zelle ist damit "
+                                f"nicht fahrbar (D-161)")
+                            break
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -5930,8 +6138,11 @@ def main() -> int:
     check_v6_freigabefolge(root)
     check_releaseplan_kette(root)
     check_zusatzschluessel(root, man)
+    check_pflichtplatzhalter(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
+        check_platzhalterbindung(root, man)
+        check_ausgeschlossene_vorbedingung(root, man)
     if args.check_overlay_ready:
         check_overlay_ready(root, man)
     if args.mermaid:
