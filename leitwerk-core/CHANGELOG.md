@@ -2,6 +2,71 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.56.2] - 2026-09-18
+
+**Die Umbenennung wird vorgezogen: Sie ist der letzte inhaltliche Schritt vor 1.0.0 -
+und zwar VOR `AP11`** (`CR-2026-079`, D-127; `K-51` neu). Ziel-Release `~0.68.0` statt
+`2.0.0`; `openai-codex` wird `1.1.0`, das Projekt-Overlay `1.2.0`. **Die erste
+freigegebene Fassung heisst damit `Koolie 1.0.0`.**
+
+**Der Befund an der eigenen Vorlage: `CR-2026-078` E4 stellte eine Ja/Nein-Frage, wo eine
+Positionsfrage stand.** Sie stellte "vor 1.0.0" gegen "nach 1.0.0", **als waeren das zwei
+Punkte - es ist ein Intervall.** Die tragfaehige Stelle lag darin und stand in keiner
+Fassung des Antrags: **nach der letzten Messung, vor der Freigabe.**
+
+**Alle drei Preise, die 0.56.0 und 0.56.1 benannt haben, fallen damit weg:**
+
+- **Keine brechende Aenderung und kein `2.0.0`** - vor 1.0.0 gibt es keine
+  Stabilitaetszusage.
+- **Kein kosmetischer Rest** - 1.0.0 traegt dann schon den endgueltigen Namen.
+- **Die Bedingung "vor der ersten Uebernahme nach `AP13`" entfaellt ersatzlos**, weil
+  `AP13` konstruktionsbedingt erst nach 1.0.0 beginnt.
+
+**Und der eigene Gegeneinwand von E4 verliert seinen Gegenstand:** *"Ein Umbenennungslauf
+ueber jeden Pfad ist genau die Art Arbeit, die nichts misst und alles anfasst"* - an
+dieser Stelle ist **nichts mehr zu messen**, Kriterium 1 und 2 stehen dann auf null.
+
+**Die Lage VOR `AP11` ist nicht Geschmack, sondern mechanisch:** `AP11` erzeugt das
+Hauptdokument und die Word-Fassung. Laege die Umbenennung danach, truegen beide den alten
+Namen und muessten zweimal gebaut werden - dieselbe Begruendung, mit der D-124 die
+Umbenennung vor die beiden inhaltlichen Erweiterungen gesetzt hat.
+
+### Geaendert
+
+- `docs/ROADMAP.md`: Releaseplan - die Umbenennung wandert von `2.0.0` auf `~0.68.0`,
+  `AP11` auf `~0.69.0`, `openai-codex` auf `1.1.0`, das Overlay auf `1.2.0`. Die Warnung
+  zum Preis ist durch den neuen Stand ersetzt; die drei Abschnitte "Geplant" tragen ihre
+  neuen Ziel-Releases.
+- `governance/DECISION_LOG.md`: **D-127** neu; D-124 und D-125 tragen den Nachtrag in ihrer
+  Statuszelle. **Die Wahl des Namens bleibt unberuehrt** - geaendert ist der Zeitpunkt.
+- `governance/DECISION_LOG.md`: **`K-51`** neu - soll die Sondenlauf-Auflage an den
+  Gegenstand des Releases gebunden werden?
+
+### Zu `K-51`: gemessen statt geschaetzt
+
+Anlass ist die Frage, ob ein reines Prosarelease den Sondenlauf braucht. **Gemessen:**
+`probe-pruefungen.py` fuehrt Pfadliterale auf `docs/ROADMAP.md` (Standzeile von Pruefung
+46, B03) und `governance/DECISION_LOG.md` (Anker `| D-40 |`, `| D-10 |`), je mit
+**Praeparationswaechter** - ein sorgloser Prosaeingriff dort laesst den Validator gruen
+und den Sondenlauf fallen. **Nicht im Sondenskript vorkommen:** `CHANGELOG.md`, `VERSION`,
+`governance/change-requests/**`, `tests/protocols/**`. Ein Release, dessen Diff nur daraus
+besteht, braeuchte den Lauf nicht - **davon gab es 1 von 57** (`0.53.1`, ausgezaehlt ueber
+alle Release-Commits). **Nicht entschieden, und die Vertagung ist begruendet:** Die saubere
+Form braucht nach D-23 selbst Skript, Sonde und Gegenprobe, um bei 1:57 rund fuenf Minuten
+Wanduhr ohne Kontingent zu sparen.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner.** Angefasst sind `docs/`, `governance/`, `VERSION` und dieses Verzeichnis.
+
+### Bekannte Einschraenkungen
+
+- **`K-50` bleibt offen und wird wichtiger:** Der Migrationspfad der Umbenennung betrifft
+  jetzt beide uebernehmenden Projekte im Freigabefenster zwischen `~0.68.0` und 1.0.0.
+- **Die Umbenennung liegt im Freigabefenster.** Das Gegengewicht ist, dass ihr zwei
+  vollstaendige Durchgaenge folgen: `AP11` und der Freigabelauf nach `checklists/11`.
+- **`K-51` ist angelegt und nicht entschieden.** Die Auflage aus D-49 gilt unveraendert.
+
 ## [0.56.1] - 2026-09-18
 
 **Nachtrag: Der Preis der Umbenennung war ueberzeichnet, und die Widerlegung stand im
