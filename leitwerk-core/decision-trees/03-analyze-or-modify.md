@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-03` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight nach Baum 2; wählt den Betriebsmodus M1–M5 |
@@ -17,7 +17,7 @@
 4. **Nur Dokumentation?** Sollen ausschließlich Dokumente in `<DOC_PATHS>` entstehen oder aktualisiert werden? → **M5 Documentation Support** (`fw-docs-update`, `fw-mr-description`).
 5. **Produktivcode ändern?** → **M3 Controlled Modification** (`fw-change-small`, `fw-refactor`) – nur wenn die Stufenvoraussetzungen erfüllt sind: niedrig mit klar abgegrenzter Aufgabe; mittel mit bestätigtem Plan; hoch mit dokumentierter Freigabe und Begleitung. Sind sie nicht erfüllt → zurück zu M1/M2.
 6. **Gemischte Aufgaben** werden zerlegt: erst M1/M2, dann je ein Modus je Sitzung (Q1, P7). Ein Moduswechsel innerhalb einer Sitzung erfordert eine ausdrückliche Anweisung und wird im Ergebnisbericht vermerkt.
-7. **Ohne Angabe gilt M1** (AGENTS.md Abschnitt 17).
+7. **Ohne Angabe gilt M1** (Wurzel-Anweisungsdatei, Abschnitt 17).
 
 ## Diagramm
 

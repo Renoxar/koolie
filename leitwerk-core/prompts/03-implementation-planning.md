@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-003` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -48,7 +48,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, durch mich festgel
 Scope: Umsetzung geplant ausschließlich in {scope_pfade} innerhalb <ALLOWED_PATHS>; nicht berührt werden <READ_ONLY_PATHS>, <EXCLUDED_PATHS>, <CI_CONFIG_PATHS> und <QUALITY_GATE_CONFIG_PATHS>. Vorgesehener Umsetzungsmodus: {umsetzungsmodus}.
 Kontext: Aufgabenbeschreibung unten (K2, bereinigt); Impact-Analyse {analyse_referenz} (K1); Quellcode, Tests und Schnittstellenbeschreibungen im Scope (K1); Overlay-Vorgaben zu Architektur, <PROJECT_RULES_PATH> und Definition of Done (K1); leitwerk-core/templates/PLAN_TEMPLATE.md (K0). Vorgaben: {vorgaben}. Keine K3-Inhalte.
 Akzeptanzkriterien: Alle zehn Abschnitte der Vorlage sind ausgefüllt (nicht Zutreffendes mit Begründung); der Ist-Zustand trägt ausschließlich Fundstellen; bei Stufe mittel und hoch sind mindestens zwei Optionen nach Risiko, Aufwand, Reversibilität und Architekturkonsistenz bewertet und die Empfehlung ist als Vorschlag gekennzeichnet; jeder Schritt nennt Dateien im Scope, Zwischenergebnis und Prüfung; kein Schritt baut auf einer offenen Frage auf; Rollback und Abbruchkriterien sind konkret.
-Ausgabeformat: Änderungsplan nach .devin/skills/fw-plan/SKILL.md Abschnitt 5 mit der Struktur aus leitwerk-core/templates/PLAN_TEMPLATE.md; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6 und ein ausdrücklicher Halt.
+Ausgabeformat: Änderungsplan nach Abschnitt 5 der SKILL.md des Skills fw-plan mit der Struktur aus leitwerk-core/templates/PLAN_TEMPLATE.md; abschließend der Ergebnisbericht nach leitwerk-core/framework/core/05-working-model.md Abschnitt 3.6 und ein ausdrücklicher Halt.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Bestimmt eine offene Frage die Optionswahl oder die Schrittfolge, fragst du vor der Fertigstellung; sonst gibst du den Plan „unter Vorbehalt" aus, kennzeichnest betroffene Stellen als <TBD: …> und abhängige Schritte als „blockiert bis F<n>".
 
 Aufgabenbeschreibung:

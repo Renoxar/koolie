@@ -90,7 +90,7 @@ die Störung.**
 | Release | Gegenstand | Wirkung auf D-11 | Sitzungskontingent |
 |---|---|---|---|
 | **0.56.0** | *dieses Release:* der Plan selbst, drei Ziel-Releases, der neue Projektname, der Overlay-Parameter | – | nein |
-| **0.57.0** | **Die Clientbindung des werkzeugneutralen Kerns** – 17 Fundstellen in 14 anweisenden Trägern, darunter sechs Prompt-Vorlagen und ein normatives Kernmodul. Dazu die Prüflücke benennen, die es nie gemeldet hat | – | **nein** – die Aufzählung liegt fertig vor |
+| **0.57.0** ✅ | **Die Clientbindung des werkzeugneutralen Kerns** – 17 Fundstellen in 14 anweisenden Trägern aufgelöst, darunter sechs Prompt-Vorlagen und ein normatives Kernmodul. **Die Prüflücke ist nicht nur benannt, sondern geschlossen:** Prüfung 48 setzt die Neutralitätsregel durch, und der dritte Grund für ihr Ausbleiben war neu – die Wurzelliste von Prüfung 12 war selbst clientgebunden (`CR-2026-080`, D-128, `K-52`) | – | nein |
 | **0.58.0** | **Sitzungstest 3:** Klasse `PI` (`FW-PI-02` bis `-04`) und die restlichen `DS`-Fälle | Kriterium 2: **105 → 100** | ja |
 | **0.59.0** | **Sitzungstest 4:** Klassen `NE` (4) und `SC` (3) | Kriterium 2: **100 → 93** | ja |
 | **0.60.0** | **Sitzungstest 5:** `FI` (3), `KO` (2), `PO` (2), `AK` (2), `RE` (1) – **der zentrale Katalog ist danach leer** | Kriterium 2: **93 → 83** | ja |
@@ -98,7 +98,7 @@ die Störung.**
 | **~0.66.0** | **`AP2` zu Ende:** die vier sitzungsgebundenen Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Körbe `ask` und `allow`. **`X2` bleibt dauerhaft offen** (`K-20`) | Kriterium 1: **23 → ~19** | ja (Pack `devin-desktop`) |
 | **~0.67.0** | **Die übrigen `VERIFY`-Marker** außerhalb `devin-desktop`. **Und der Schritt, den der Zähler am Ende verlangt:** Registerzeile und Glossarzeile des Markers selbst abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, diese Roadmap) umformulieren – **ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** (`CR-2026-070` E3) | Kriterium 1: **auf 0** | teils |
 | **~0.68.0** | 🔴 **Die Umbenennung auf `Koolie`** (D-125, vorgezogen mit D-127). `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen. **Hier, weil alle Messungen abgeschlossen sind und `AP11` noch nicht gelaufen ist** – sonst trügen Hauptdokument und Word-Fassung den alten Namen und müssten zweimal gebaut werden | – | nein |
-| **~0.69.0** | **`AP11` Stabilisierung:** das Hauptdokument gegen den dann geltenden Stand setzen (es ist über vierzig Releases zurück), Word-Fassung bauen, Gegenzeichnung der zwölf offenen und fünf fehlenden Protokollabschnitte nachziehen, `CR-2026-029` und `-030` Abschnitt 6 nachtragen. **Erstmals vollständig unter dem neuen Namen** | – | nein |
+| **~0.69.0** | **`AP11` Stabilisierung:** das Hauptdokument gegen den dann geltenden Stand setzen (es ist über vierzig Releases zurück), Word-Fassung bauen, Gegenzeichnung der zwölf offenen und fünf fehlenden Protokollabschnitte nachziehen, `CR-2026-029` und `-030` Abschnitt 6 nachtragen. **Erstmals vollständig unter dem neuen Namen.** 🔴 **Und hier fällt die einzige befristete Ausnahme von Prüfung 48:** `build/` ist von der Neutralitätsregel ausgenommen, weil es die Quellen des Hauptdokuments hält (D-128). Wer `AP11` fährt, streicht die Ausnahme in `docs/RUNTIME_GLOSSARY.md` und in `tests/scripts/validate-framework.py` und räumt die dann gemeldeten Fundstellen mit auf | – | nein |
 | **1.0.0** | **`AP12`:** Freigabelauf nach `checklists/11-framework-release.md` – **als `Koolie 1.0.0`**. **Alle fünf Kriterien von D-11**, der Validator rechnet sie aus und meldet die Abweichung selbst | **alle** | nein |
 | **1.1.0** | **Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen | – | ja (AP2-Lauf) |
 | **1.2.0** | **Das optionale Projekt-Overlay „General Development"**, gewählt über `--overlay general` (D-126) | – | nein |
@@ -203,6 +203,46 @@ ist nicht nachgezogen.
 ersten Gelegenheit fällig geworden** – bei einem Fortschritt, nicht bei einem Rückfall.
 Ohne diese Bauform wäre die Zahl in der Roadmap heute noch neun, und niemand hätte es
 bemerkt.
+
+### Was 0.57.0 gebracht hat – die Regel galt sechsundzwanzig Releases lang, und durchgesetzt hat sie nichts
+
+**Der erste Posten des Releaseplans** (`CR-2026-080`, D-128, `K-52` neu,
+`tests/protocols/2026-09-18-wirkungsnachweise-0.57.0.md`). **Es bewegt keine Zahl von D-11**
+und sagt es: Kriterium 1 bleibt 23, Kriterium 2 bleibt 105.
+
+| Frage | Ergebnis |
+|---|---|
+| Was war das Problem? | **Siebzehn Fundstellen in vierzehn anweisenden Trägern** nannten den Pfad oder Dateinamen genau eines Client Packs – sechs Prompt-Vorlagen, zwei Pack-Vorlagen, die Antragsvorlage, ein Entscheidungsbaum, ein Grenzfall, zwei Eingabezellen des Testkatalogs, das Role-Pack-README und mit `framework/core/08-skill-conventions.md` Abschnitt 2 ein **normatives** Kernmodul |
+| Wie sah der schärfste Einzelfall aus? | **Die Zusage und ihre Widerlegung standen in demselben Abschnitt.** Der Ablagebaum von `08-skill-conventions.md` zeigte das Verzeichnis eines Packs – und der Absatz direkt darunter sagte seit jeher richtig „die Skill-Ablage der Laufzeitschicht". **Die falsche von beiden war die normative Form** |
+| Warum hat es keine der 47 Prüfungen gemeldet? | **Drei Gründe, und der dritte stand in keiner Fassung des Befunds.** Prüfung 12 liest nur Token in **Backticks** – zehn der siebzehn standen ohne. Sie meldet nur Pfade, **die es nicht gibt** – im Framework-Repositorium ist genau ein Pack installiert, dessen Laufzeitschicht existiert und damit unsichtbar ist (**`B02` eine Ebene höher**). Und **ihre eigene Wurzelliste war clientgebunden**: `LINK_ROOTS` führte wörtlich `.devin/`, `AGENTS.md`, `AGENTS.local.md` – **die Prüfung, die die Client-Bindung melden sollte, trug sie selbst** |
+| Und der dritte Grund? | 🔴 **Er ist beim Messen kleiner geworden, nicht größer** – das ist in diesem Projekt der seltenere Fall. Der Verdacht war eine Falschmeldung in einer Installation des anderen Packs; drei Zuschnitte sagen: nein. **`LINK_ROOTS` und `OPTIONAL_RUNTIME_RE` waren in derselben Richtung zu eng und haben einander gedeckt.** Die erste Enge verhinderte, dass die zweite je auffiel |
+| Was folgt daraus für den Befundkatalog? | **Eine neue Bauform:** neben *„die Zusage, die mehr verspricht als sie leistet"* steht jetzt *„zwei Stellen, die einander decken"*. Einzeln wäre jede aufgefallen; zusammen sahen sie aus wie ein Lauf ohne Befund. **Und eine Folge:** `OPTIONAL_RUNTIME_RE` ist **entfernt**, weil es unerreichbar geworden ist – eine Ausnahme, die nichts mehr ausnimmt, sieht wie Sorgfalt aus |
+| Womit wurden die Fundstellen ersetzt? | **Mit dem Begriff, nicht mit einem Platzhalter.** **Keiner der vierzehn Träger wird gerendert** – nachgelesen in `render_for_client` und den `shared_core`/`shared_seed`-Einträgen beider Manifeste. Ein `<SKILLS_DIR>` in `leitwerk-core/prompts/` bliebe für immer stehen, und `prompts/README.md` erklärt spitze Klammern als Overlay-Werte: **eine Marke mit zwei Bedeutungen** |
+| Was hat das gekostet? | **Benannt:** Die sechs Prompt-Vorlagen sind zum Kopieren gebaut, und „nach Abschnitt 5 der `SKILL.md` des Skills `fw-repo-analyze`" ist sperriger als ein Pfad. Und `G-14` hat sein Beispiel verloren: Der Grenzfall über zwei Dateinamen, die sich nur in der Schreibung unterscheiden, steht jetzt ohne die beiden Namen da |
+| Was ist nebenbei zugefallen? | **Beide Pack-Vorlagen wiesen die Laufzeitfassung an den falschen Ort** – in die Regelablage statt in die Quellablage `<pack>/runtime/`, wie `role-packs/README.md` es sagt und beide bestehenden Packs es halten. Wer der Vorlage wörtlich folgte, legte die Datei dorthin, wo `install.py --update` sie nie anfasst. **Die Fundstelle war clientgebunden *und* falsch; der Client war das Auffälligere von beidem** |
+| Wo stehen die Ausnahmen jetzt? | **Im Glossar, vollständig, mit Begründung je Gattung** – vorher standen sie im Kopfkommentar eines Erhebungsskripts **außerhalb** des Repositoriums. Vier Gattungen: Chronik (um dieses Dokument erweitert), Werkzeuge (`.py`), die Abbildungstabellen und **mit Frist** `build/`. **Eine Ausnahme, die nur im Quelltext einer Prüfung steht, ist keine Regel, sondern eine Voreinstellung** |
+| Und im Testkatalog? | **Dort gilt die Regel nur vor der letzten Zelle.** Der Ergebnisstatus nennt, was ein Lauf gelesen hat, und das gemessene Client Pack (D-117) – er ist Beleg, nicht Anweisung. **Dass der Zuschnitt nicht zu breit ist, belegt Sonde `48c`:** derselbe Pfad in einer anweisenden Spalte derselben Tabelle wird gemeldet |
+| Wie stark ist der Nachweis? | **So stark, wie er in diesem Projekt werden kann.** Der neue Validator gegen den **unberührten Vorstand 0.56.2** – `git archive`, Installation mit dem `install.py` des Vorstands – meldet **genau 17 Fundstellen in genau 14 Trägern**: die Aufzählung des Antrags, ohne Rest und ohne Überschuss |
+| Was bleibt offen? | **`K-52`:** fünfzehn Nennungen des **Produktnamens** in zehn Trägern, zwei davon im Titel. Das ist keine Lücke, sondern eine entschiedene Position (D-28), und Prüfung 48 findet Pfade, keine Namen |
+
+### Was 0.57.0 offen lässt
+
+- **`K-52` – die Produktnamen.** `onboarding/GUIDE.md` und `onboarding/QUICKSTART.md` tragen
+  einen Produktnamen im **Titel**; `prompts/README.md` führt die Bibliothek als „Vorlagen für
+  wiederkehrende Aufgaben mit <Produkt>" ein. D-28 erlaubt den Namen, *wo ein Produkt gemeint
+  ist* – **nicht, wo der Kern ein bestimmtes Werkzeug voraussetzt.** Zwei der zehn Träger
+  werden gerendert; dort hülfe `<CLIENT_NAME>` wirklich, in den übrigen acht nicht.
+- **`K-37` – die Versionszelle der Vorlagen.** Dieses Release hat die beiden Pack-Vorlagen
+  inhaltlich geändert und ihre Versionszelle **bewusst nicht** gehoben: Sie hat dieselbe
+  Bauform wie die Statuszelle, die 0.53.0 zum Ausfüllschlitz gemacht hat. Sie zu heben hieße,
+  `K-37` nebenbei zu entscheiden.
+- **Prüfung 48 prüft die Schreibweise, nicht die Sache** – derselbe Gegenpreis wie bei `K-40`.
+  Ein Kerntext, der ein Laufzeitverzeichnis in Prosa umschreibt, statt es zu schreiben, läuft
+  durch.
+- **Die Ausnahme für `build/` hat eine Frist und niemanden, der sie mahnt** außer der Zeile in
+  diesem Dokument bei `AP11`. **Das ist genau die Bauform, an der dieses Projekt schon
+  gescheitert ist** – ein Eintrag ohne Prüfung. Ihn zu prüfen hieße, die Frist maschinell zu
+  kennen; das ist nicht gebaut.
 
 ### Was 0.56.0 gebracht hat – vier Posten ohne Ziel-Release bekommen eines, und das Projekt einen neuen Namen
 

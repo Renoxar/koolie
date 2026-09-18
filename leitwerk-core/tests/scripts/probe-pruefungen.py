@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 47, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6 und 18 bis 48, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -3771,6 +3771,173 @@ gegenprobe("47b", "Ein Verlaufszusatz in Klammern bleibt zulaessig - verglichen 
 gegenprobe("47c", "Eine Steckbriefkopfzeile hinter einer Ueberschrift ist kein "
                   "Steckbrief und verlangt keinen Status", _47_tabelle_hinter_ueberschrift,
            M47_FEHLT)
+
+
+# --- 48: die Werkzeugneutralitaet des Kerns -----------------------------------------
+#
+# Die drei Gruende, aus denen Pruefung 12 die siebzehn Fundstellen nicht fand, sind hier
+# je eine Sonde: der Pfad des INSTALLIERTEN Packs (Grund 2 - er existiert und war damit
+# unsichtbar), der Pfad OHNE Backticks (Grund 1) und die anweisende Spalte des
+# Testkatalogs, deren letzte Zelle bewusst ausgenommen ist. Dazu die Sonde auf den
+# verlorenen Anker und drei Gegenproben - die Belegspalte, die Chronik und der
+# unberuehrte Bestand.
+#
+# Die Sonden legen NEUE Dateien an, statt bestehende zu verstellen: Ein Suchtext im
+# Bestand misst ab dem naechsten Release den Suchtext statt die Pruefung (die Lehre von
+# 46f). Welchen Pfad sie schreiben, LESEN sie aus den Manifesten - eine Sonde, die einen
+# Pfad raet, misst den geratenen Pfad.
+M48_PFAD = "gehört der Laufzeitschicht des Client Packs"
+M48_ANKER = "kein Client Pack mit runtime_placeholders gefunden"
+P48_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md".replace("/", os.sep)
+P48_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
+P48_KATALOGANKER = "| FW-AK-02 (Basis) |"
+P48_ROADMAPANKER = "#### Der Releaseplan bis 1.0.0 und darüber hinaus"
+
+
+def _48_marken(root: str) -> tuple:
+    """(Laufzeitschicht des installierten Packs, die des anderen) - aus den Manifesten.
+
+    Installiert ist das Pack, dessen Laufzeitverzeichnis im Baum wirklich liegt; genau
+    darauf beruht der zweite Grund, aus dem Pruefung 12 blind war.
+    """
+    base = P(root, "leitwerk-core", "clients")
+    verzeichnisse = []
+    for name in sorted(os.listdir(base)):
+        if name.startswith("_"):
+            continue
+        mp = os.path.join(base, name, "manifest.json")
+        if os.path.exists(mp):
+            verzeichnisse.append(json.loads(lies(mp))["runtime_dir"])
+    if len(verzeichnisse) < 2:
+        raise Praeparationsfehler(
+            "Weniger als zwei Client Packs mit manifest.json - die Sonden zu 48 "
+            "brauchen ein installiertes und ein nicht installiertes Pack")
+    installiert = [v for v in verzeichnisse if os.path.isdir(P(root, *v.split("/")))]
+    fremd = [v for v in verzeichnisse if v not in installiert]
+    if not installiert or not fremd:
+        raise Praeparationsfehler(
+            "Im Baum liegt keine oder jede Laufzeitschicht (%s) - die Sonden zu 48 "
+            "unterscheiden das installierte vom nicht installierten Pack"
+            % ", ".join(verzeichnisse))
+    return installiert[0], fremd[0]
+
+
+def _48_datei(root: str, name: str, inhalt: str) -> None:
+    """Eine neue Prompt-Datei mit vollstaendigem Steckbrief und der Inhaltszeile."""
+    schreib(P(root, ("leitwerk-core/prompts/" + name).replace("/", os.sep)),
+            "# Sondenvorlage\r\n\r\n"
+            "| Attribut | Wert |\r\n|---|---|\r\n"
+            "| ID | `FW-PR-014` |\r\n| Version | `0.1.0` |\r\n"
+            "| Status | `pilot` |\r\n"
+            "| Owner (Rolle) | `<FRAMEWORK_OWNER>` |\r\n\r\n"
+            + inhalt + "\r\n")
+
+
+def _48_installiertes_pack(root: str) -> None:
+    """Der Pfad des INSTALLIERTEN Packs in einem Kerntraeger - Grund 2 der Blindheit.
+
+    Pruefung 12 meldet nur Pfade, die es NICHT GIBT. Dieser hier existiert im Baum und
+    lief deshalb sechsundfuenfzig Releases lang durch.
+    """
+    installiert, _ = _48_marken(root)
+    _48_datei(root, "14-sonde-installiert.md",
+              "Ausgabeformat: Analyse nach `%s/skills/fw-repo-analyze/SKILL.md`."
+              % installiert)
+
+
+def _48_ohne_backticks(root: str) -> None:
+    """Derselbe Befund ohne Backticks - Grund 1 der Blindheit.
+
+    Zehn der siebzehn Fundstellen standen so: im Codeblock, in Prosa oder im
+    HTML-Kommentar. Die Heuristik von Pruefung 12 sieht nur Token in Backticks.
+    """
+    _, fremd = _48_marken(root)
+    _48_datei(root, "14-sonde-prosa.md",
+              "Die Regeln liegen unter %s/rules und werden bei Sitzungsbeginn geladen."
+              % fremd)
+
+
+def _48_anweisende_spalte(root: str) -> None:
+    """Ein Clientpfad in einer ANWEISENDEN Spalte des Testkatalogs wird gemeldet.
+
+    Die Ausnahme dieses Traegers gilt der LETZTEN Zelle (Ergebnisstatus, D-117). Wer
+    sie auf die Zeile ausdehnt, nimmt genau die Eingabezelle mit heraus, in der bis
+    0.56.2 'Passe AGENTS.md an' stand - der Zuschnitt, der den Gegenstand mitentfernt.
+    """
+    installiert, _ = _48_marken(root)
+    zeile_nach(P(root, P48_KATALOG), P48_KATALOGANKER,
+               "| FW-SO-01 | Sondenzeile | Sondenvorbedingung | Anweisung: lies %s/config "
+               "| Ablehnung | Zugriff | sitzung | offen |" % installiert)
+
+
+def _48_anker_verlieren(root: str) -> None:
+    """Ohne runtime_placeholders in den Manifesten hat die Pruefung keine Marken mehr.
+
+    Sie leitet sie von dort ab; geht der Schluessel verloren, faende sie nichts und
+    bestuende leise. Die Sonde belegt, dass sie das Fehlen selbst meldet (D-23).
+    """
+    base = P(root, "leitwerk-core", "clients")
+    getroffen = 0
+    for name in sorted(os.listdir(base)):
+        mp = os.path.join(base, name, "manifest.json")
+        if not os.path.exists(mp):
+            continue
+        ersetze(mp, ('"runtime_placeholders"', '"runtime_placeholders_alt"'))
+        getroffen += 1
+    if not getroffen:
+        raise Praeparationsfehler(
+            "Kein manifest.json unter clients/ - die Ankersonde zu 48 haette nichts "
+            "zu verstellen")
+
+
+def _48_belegspalte(root: str) -> None:
+    """Ein Clientpfad in der LETZTEN Zelle einer Testkatalogzeile bleibt zulaessig.
+
+    Der Ergebnisstatus nennt, was ein Lauf gelesen hat, und das gemessene Client Pack
+    (D-117). Ein Begriff statt des Pfads waere dort kein Beleg mehr.
+    """
+    _, fremd = _48_marken(root)
+    zeile_nach(P(root, P48_KATALOG), P48_KATALOGANKER,
+               "| FW-SO-02 | Sondenzeile | Sondenvorbedingung | Anweisung | Ablehnung "
+               "| Zugriff | sitzung | bestanden (der Lauf benennt `%s/rules/00-framework-core.md`) |"
+               % fremd)
+
+
+def _48_chronik(root: str) -> None:
+    """Ein Clientpfad in der Roadmap bleibt zulaessig - sie berichtet Erhebungen.
+
+    Dieselbe Begruendung wie bei den Protokollen: Wer einen Befundbericht glaettet,
+    macht aus einer richtigen Zeile eine unbelegbare.
+    """
+    installiert, fremd = _48_marken(root)
+    pfad = P(root, P48_ROADMAP)
+    schreib(pfad, lies(pfad).rstrip("\r\n") + "\r\n\r\n"
+            + "Sondennachtrag zur Erhebung: Der Lauf las %s/rules und legte seine "
+              "Ausgabe unter %s/skills ab.\r\n" % (installiert, fremd))
+
+
+sonde("48a", "Der Pfad des INSTALLIERTEN Packs in einem Kerntraeger wird gemeldet - "
+             "genau der Fall, den Pruefung 12 nie sah", _48_installiertes_pack, M48_PFAD)
+
+sonde("48b", "Ein Clientpfad ohne Backticks wird gemeldet - zehn der siebzehn "
+             "Fundstellen standen so", _48_ohne_backticks, M48_PFAD)
+
+sonde("48c", "Ein Clientpfad in einer anweisenden Spalte des Testkatalogs wird "
+             "gemeldet, obwohl die letzte Zelle ausgenommen ist", _48_anweisende_spalte,
+      M48_PFAD)
+
+sonde("48d", "Ohne runtime_placeholders in den Manifesten meldet Pruefung 48 den "
+             "verlorenen Gegenstand, statt leise zu bestehen", _48_anker_verlieren,
+      M48_ANKER)
+
+gegenprobe("48a", "Das unveraenderte Repositorium bleibt unbeanstandet - die siebzehn "
+                  "Fundstellen sind aufgeloest", None, M48_PFAD)
+
+gegenprobe("48b", "Ein Clientpfad in der Ergebnisstatuszelle des Testkatalogs bleibt "
+                  "zulaessig - dort ist er der Beleg", _48_belegspalte, M48_PFAD)
+
+gegenprobe("48c", "Ein Clientpfad in der Roadmap bleibt zulaessig - sie fuehrt die "
+                  "Erhebungen je Arbeitspaket", _48_chronik, M48_PFAD)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.2.1 |
+| Version | 0.2.2 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -16,11 +16,12 @@ Ein **Skill** ist eine versionierte, testbare, wiederverwendbare Arbeitsanweisun
 ## 2. Ablage und Dateien (normativ)
 
 ```text
-.devin/skills/<skill-name>/
-├── SKILL.md        # normativ: Frontmatter + Metadaten + Anweisung (wird vom Agenten geladen)
-├── EXAMPLES.md     # erläuternd: Positiv- und Negativbeispiele (synthetisch gekennzeichnet)
-├── TESTS.md        # Testfälle für den Testkatalog (mindestens ein Positiv- und ein Negativtest)
-└── CHANGELOG.md    # Änderungsverlauf des Skills
+Skill-Ablage der Laufzeitschicht
+└── <skill-name>/
+    ├── SKILL.md        # normativ: Frontmatter + Metadaten + Anweisung (wird vom Agenten geladen)
+    ├── EXAMPLES.md     # erläuternd: Positiv- und Negativbeispiele (synthetisch gekennzeichnet)
+    ├── TESTS.md        # Testfälle für den Testkatalog (mindestens ein Positiv- und ein Negativtest)
+    └── CHANGELOG.md    # Änderungsverlauf des Skills
 ```
 
 - Ablageort: die Skill-Ablage der Laufzeitschicht, je Skill ein Unterverzeichnis mit `SKILL.md`. Der konkrete Pfad und etwaige Alternativpfade stehen im Client Pack (`leitwerk-core/docs/RUNTIME_GLOSSARY.md`).

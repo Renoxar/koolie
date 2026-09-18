@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-GLOSSARY` |
-| Version | `0.1.1` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -17,9 +17,28 @@ Diese Datei legt die Begriffe fest, mit denen der Kern die Bestandteile der Lauf
 
 - Im **Kern** (`leitwerk-core/framework/`, `governance/`, `checklists/`, `prompts/`, `decision-trees/`, `onboarding/`, `docs/`, `templates/`, `examples/`, `tests/`) wird ausschließlich der **Begriff** verwendet.
 - In einem **Client Pack** (`leitwerk-core/clients/<client>/`) wird der **Pfad** verwendet – dort ist er richtig und notwendig.
-- In **historischen Dokumenten** (`CHANGELOG.md`, `governance/change-requests/`, `governance/DECISION_LOG.md`, `tests/protocols/`) bleiben genannte Pfade unverändert. Sie beschreiben einen vergangenen Zustand; ihn nachträglich zu glätten, würde die Nachvollziehbarkeit zerstören.
+- In **historischen Dokumenten** bleiben genannte Pfade unverändert. Sie beschreiben einen vergangenen Zustand; ihn nachträglich zu glätten, würde die Nachvollziehbarkeit zerstören.
 
-`leitwerk-core/tests/scripts/validate-framework.py` meldet Nennungen einer nicht installierten Laufzeitschicht als Warnung (Prüfung 12).
+### Die vier Ausnahmen, vollständig (D-128)
+
+Die Regel gilt für jeden Träger des Kerns. Ausgenommen ist genau, was hier steht – eine Ausnahme, die nur im Quelltext einer Prüfung stünde, wäre keine Regel, sondern eine Voreinstellung.
+
+| Gattung | Träger | Warum |
+|---|---|---|
+| **Chronik** | `CHANGELOG.md`, `governance/change-requests/`, `governance/DECISION_LOG.md`, `tests/protocols/`, **`docs/ROADMAP.md`** | Sie berichten einen vergangenen Stand. Die Roadmap gehört dazu, weil sie die Erhebungsergebnisse je Arbeitspaket und die Befundberichte je Release führt |
+| **Werkzeuge** | alle `.py` des Kerns | Ein Skript, das eine Installation herstellt oder prüft, **muss** Pfade nennen. `install.py` und `clientmap.py` lösen sie aus den Manifesten auf, die Prüfskripte stellen Installationen her |
+| **Abbildungstabellen** | diese Datei, `docs/PLACEHOLDER_REGISTRY.md`, `clients/` | Sie müssen beide Namen nennen; dort ist der Pfad der Inhalt |
+| **Mit Frist: `build/`** | die Quellen des Hauptdokuments | Das Hauptdokument ist über vierzig Releases zurück und wird mit `AP11` (~0.69.0) neu gesetzt. **Die Ausnahme fällt mit diesem Schritt**; sie steht dort in der Roadmap |
+
+**Eine Spalte statt einer Datei.** In `tests/TEST_CATALOG.md` ist die **letzte** Zelle einer Tabellenzeile der Ergebnisstatus. Ein Pfad dort nennt, was ein Lauf gelesen hat, und gehört zum gemessenen Client Pack (D-117) – er ist Beleg, nicht Anweisung. Die übrigen Spalten derselben Zeile stehen unter der Regel: Die Eingabezelle „Passe AGENTS.md an" war bis 0.56.2 eine davon. Denselben Zuschnitt – die letzte Zelle – benutzt Prüfung 46 für den Ergebnisstatus.
+
+### Was die Regel durchsetzt
+
+**Prüfung 48** hält jeden anweisenden Kernträger gegen die Laufzeitpfade **aller** Client Packs; die Marken stammen aus den `runtime_placeholders` der Manifeste, nicht aus einer gepflegten Liste. Ein neues Client Pack bringt seine Pfade damit selbst mit.
+
+> 🔴 **Von 0.31.0 bis 0.56.2 galt diese Regel und wurde von nichts durchgesetzt.** Siebzehn Fundstellen in vierzehn anweisenden Trägern nannten den Pfad genau eines Packs – darunter sechs Prompt-Vorlagen und mit Abschnitt 2 von `framework/core/08-skill-conventions.md` ein **normatives** Kernmodul, dessen Prosa zwei Zeilen tiefer richtig „die Skill-Ablage der Laufzeitschicht" sagte. **Prüfung 12 konnte sie nicht finden:** Sie liest nur Token in Backticks (zehn der siebzehn standen ohne), sie meldet nur Pfade, **die es nicht gibt** (im Framework-Repositorium ist genau ein Pack installiert, dessen Laufzeitschicht existiert und damit unsichtbar ist), und ihre eigene Wurzelliste war clientgebunden (`CR-2026-080`).
+
+**Prüfung 14** setzt die zweite Hälfte durch: Kein Client wird im Kern als **Handelnder** benannt (D-28). Der **Produktname** bleibt dort ausdrücklich zulässig, wo ein Produkt gemeint ist. Ob diese Erlaubnis zu weit reicht, ist **`K-52`** und nicht entschieden – Prüfung 48 findet Pfade, keine Produktnamen.
 
 ## Begriffe und ihre Entsprechungen
 
