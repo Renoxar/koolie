@@ -43,6 +43,7 @@
 | Externe Schnittstellen (abstrakt) | `<TBD: Typ und Richtung, z. B. „REST-Schnittstelle zu externem Fachverfahren (ausgehend)">` | keine Partnernamen, keine Adressen |
 | Architekturvorgaben (Dokument) | `<TBD: Pfad im Overlay-Dokumentenverzeichnis, Kontextklasse>` | siehe Abschnitt 19 |
 | Architekturentscheidungen (ADR-Ablage) | `<TBD: Pfad oder „nicht vorhanden">` | Der KI-Client liest ADRs nur lesend |
+| Änderungsschwelle (`CHANGE_SIZE_THRESHOLD`) | `<TBD: Zahl geänderter Dateien, ab der aufgeteilt oder die Kontrollstufe erhöht wird>` | Pflicht vor der Aktivierung. Sie steht hier und nicht im Ausnahmeregister: Eine Schwelle, die erst im Ausnahmefall entsteht, ist keine (D-160) |
 
 ## 3. Repository-Struktur
 
