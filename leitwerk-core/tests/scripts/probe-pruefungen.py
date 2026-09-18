@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 56, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 58, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -4846,6 +4846,142 @@ gegenprobe("55b", "Ein Pflichtplatzhalter, den das Register NICHT im Overlay ver
 buendel(sonden_platzhalterbindung,
         "Pruefung 55b und 56 an einer gefuellten claude-code-Installation: fehlende "
         "Bindung und gesperrter Traeger je eigens gemessen, dazu beide Gegenproben")
+
+
+# --- Pruefung 57: kein ungebundener Pflichtplatzhalter als Vorbedingung -------------
+#
+# Der gemessene Fall stammt aus dem Blatt des Role Packs: RE-001-N09 verlangte das
+# Uebungs-Overlay "ohne gesetztes <ISSUE_TRACKER>" - genau den Zustand, den Pruefung 55b
+# im aktiven Overlay als Fehler meldet. Beide entstanden im SELBEN Release.
+#
+# WARUM ZWEI GEGENPROBEN. Eine Pruefung, die auf einen Suchtext anschlaegt, belegt mit
+# einer Sonde nur, DASS sie meldet. Der Zuschnitt - Teilsatz statt Zelle - wird erst
+# durch das Paar belegt: 57b traegt dieselbe Verneinung in einem ANDEREN Teilsatz und
+# muss unbeanstandet bleiben. Ohne dieses Paar meldete die Pruefung jede Zelle mit, die
+# irgendwo ein "ohne" fuehrt, und niemand saehe es.
+M57_UNGEBUNDEN = "als nicht gesetzt ("
+
+P57_BLATT = ("leitwerk-core/framework/role-packs/requirements-engineering/skills/"
+             "role-re-ticket/TESTS.md").replace("/", os.sep)
+
+# Die berichtigte Fassung der Zelle - Anker beider Eingriffe.
+P57_HEUTE = "Übungs-Overlay, dessen `<ISSUE_TRACKER>` **gebunden** ist"
+
+
+def _57_ungebunden(root: str) -> None:
+    """Die Vorbedingung verlangt den Pflichtplatzhalter als nicht gesetzt."""
+    ersetze(P(root, P57_BLATT),
+            (P57_HEUTE, "Übungs-Overlay ohne gesetztes `<ISSUE_TRACKER>`, das"))
+
+
+def _57_anderer_teilsatz(root: str) -> None:
+    """Gegenprobe: dieselbe Verneinung, aber in einem anderen Teilsatz.
+
+    Sie belegt den Zuschnitt. Eine Pruefung, die die ganze Zelle durchsucht, meldet
+    diesen Fall mit - und waere damit zu breit.
+    """
+    ersetze(P(root, P57_BLATT),
+            (P57_HEUTE,
+             "Übungs-Overlay ohne gesetzte Kontrollstufe; `<ISSUE_TRACKER>` **gebunden**"))
+
+
+sonde("57a", "Eine Vorbedingung verlangt einen Pflichtplatzhalter als nicht gesetzt - "
+             "genau den Zustand, den Pruefung 55b im aktiven Overlay als Fehler meldet",
+      _57_ungebunden, M57_UNGEBUNDEN)
+
+gegenprobe("57a", "Das unveraenderte Repositorium bleibt unbeanstandet - keine "
+                  "Vorbedingung fordert einen ungebundenen Pflichtplatzhalter",
+           None, M57_UNGEBUNDEN)
+
+gegenprobe("57b", "Dieselbe Verneinung in einem anderen Teilsatz bleibt zulaessig - die "
+                  "Pruefung arbeitet auf Teilsaetzen und nicht auf ganzen Zellen",
+           _57_anderer_teilsatz, M57_UNGEBUNDEN)
+
+
+# --- Pruefung 58: Vollstaendigkeit des Decision-Record-Registers (D-169) -----------
+M58_FEHLT = "steht in keiner Registerzeile. Ein Register, das seinen Gegenstand"
+M58_FORM = "ist keine Kennung der Form D-NNN"
+M58_ANKER = "Prüfung 58 hat ihren Gegenstand verloren"
+P58_LOG = "leitwerk-core/governance/DECISION_LOG.md".replace("/", os.sep)
+P58_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
+# ZUSAMMENGESETZT, aus demselben Grund wie bei der Sonde zu Pruefung 50: Dieses Skript
+# liegt im Kern, und die Pruefung meldet jede dort GENANNTE Kennung ohne Registerzeile.
+# Stuende eine der beiden woertlich hier, muesste sie in die Ausnahmemenge - und dann
+# maesse die Sonde nichts. Auch der Kommentar nennt sie nicht.
+D58_SYNTH = "D-" + "993"
+D58_VERFEHLT = "D-" + "16" + "n"
+
+
+def _58_freie_kennung(root: str) -> None:
+    """Belegt, dass beide Sondenkennungen wirklich fehlen - sonst messen sie nichts."""
+    text = lies(P(root, P58_LOG))
+    for kennung in (D58_SYNTH, D58_VERFEHLT):
+        if ("| " + kennung + " |") in text:
+            raise Praeparationsfehler(
+                "%s steht bereits im Register - die Sonde zu 58 braucht eine freie "
+                "Kennung" % kennung)
+
+
+def _58_nennung_ohne_register(root: str) -> None:
+    """Eine Kennung wird in einem Kerntraeger genannt und steht in keiner Registerzeile."""
+    _58_freie_kennung(root)
+    pfad = P(root, P58_ROADMAP)
+    schreib(pfad, lies(pfad).rstrip("\r\n") + "\r\n\r\n"
+            + "Sondennachtrag: Die Begruendung steht im Entscheidungssatz (%s).\r\n"
+            % D58_SYNTH)
+
+
+def _58_form_verfehlt(root: str) -> None:
+    """Der gemessene Fall: eine Kennung mit Platzhalter statt Nummer.
+
+    Genau die Bauform, mit der die Registereintraege der Pruefungen 55 und 56
+    ausgeliefert worden sind - und die ein Muster mit abschliessender Wortgrenze
+    uebersieht.
+    """
+    _58_freie_kennung(root)
+    pfad = P(root, P58_ROADMAP)
+    schreib(pfad, lies(pfad).rstrip("\r\n") + "\r\n\r\n"
+            + "Sondennachtrag: Die Begruendung steht im Entscheidungssatz (%s).\r\n"
+            % D58_VERFEHLT)
+
+
+def _58_anker_verlieren(root: str) -> None:
+    """Ohne Registerzeilen hat Pruefung 58 keinen Gegenstand - und sagt es."""
+    pfad = P(root, P58_LOG)
+    text = lies(pfad)
+    neu = re.sub(r"(?m)^\|(\s*)D-(\d+)(\s*)\|", r"|\1DR-\2\3|", text)
+    if neu == text:
+        raise Praeparationsfehler(
+            "Keine Registerzeile der Form '| D-NNN |' gefunden - die Sonde zum "
+            "verlorenen Anker haette nichts entfernt")
+    schreib(pfad, neu)
+
+
+def _58_nennung_mit_register(root: str) -> None:
+    """Dieselbe Nennung MIT Registerzeile bleibt zulaessig - der erlaubte Fall."""
+    _58_nennung_ohne_register(root)
+    zeile_nach(P(root, P58_LOG), "| D-162 |",
+               "| %s | Sondenentscheidung | Sondenbegruendung | 2026-09-18 | "
+               "entschieden | Sondenweg |" % D58_SYNTH)
+
+
+sonde("58a", "Eine D-Kennung, die ein Kerntraeger nennt und das Register nicht fuehrt, "
+             "wird gemeldet - die Schwester des Falls von K-34 und K-55",
+      _58_nennung_ohne_register, M58_FEHLT)
+
+sonde("58b", "Eine Kennung mit Platzhalter statt Nummer wird gemeldet - genau die "
+             "Bauform, mit der zwei Registereintraege ausgeliefert worden sind",
+      _58_form_verfehlt, M58_FORM)
+
+sonde("58c", "Ohne Registerzeilen meldet Pruefung 58 den verlorenen Gegenstand, statt "
+             "leise zu bestehen", _58_anker_verlieren, M58_ANKER)
+
+gegenprobe("58a", "Das unveraenderte Repositorium bleibt unbeanstandet - jede genannte "
+                  "D-Kennung steht im Register", None, M58_FEHLT)
+
+gegenprobe("58b", "Dieselbe Nennung MIT Registerzeile bleibt zulaessig - gemessen wird "
+                  "das Fehlen der Zeile und nicht die Nennung", _58_nennung_mit_register,
+           M58_FEHLT)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

@@ -2,6 +2,134 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.64.0] - 2026-09-18
+
+**Die Herrichtung des Uebungsrepositoriums: vier der einundzwanzig Zellen trugen doch -
+und eine kippte durch die Abhilfe desselben Releases** (`CR-2026-089`, D-163 bis D-169,
+`K-66` erledigt, `K-68` neu).
+
+Der Releaseplan sah fuer 0.64.0 den fuenften Sitzungstest vor und fuer 0.65.0 die
+Herrichtung. **Die Reihenfolge ist getauscht, und der Grund ist eine Messung:** Vor dem
+ersten Handgriff sind die einundzwanzig Zellen von 0.63.0 gegen den heutigen Stand
+gehalten worden - zum achten Mal in Folge war der Durchgang vor dem Eingriff der
+billigste Befund des Releases. Kein Kontingent.
+
+### Was die Gegenpruefung ergeben hat
+
+| Zelle | Vermerk von 0.63.0 | Gemessen |
+|---|---|---|
+| `RE-001-P01` | „Kein Glossar im Bestand" | 🔴 **falsch** - `DOC-006`, im Overlay-Manifest registriert |
+| `RE-001-P04` | „nirgends gebunden" | 🔴 **beim Merge ueberholt** - D-160 desselben Releases hat gebunden |
+| `RE-001-N09` | Klasse C, „das ist der Ist-Zustand" | 🔴 **gekippt** - durch dieselbe Bindung |
+| `SK-006-P01` | „kein einziges Mal" | 🔴 **Beleg falsch** (fuenf Fundstellen), **Schluss richtig** |
+| die uebrigen 17 | Gegenstand fehlt | ✅ einzeln nachgemessen, bestaetigt |
+
+🔴 **Der Durchgang hat den falschen Bestand befragt** (D-165). Ein Uebungsrepositorium hat
+**zwei** Dokumentenablagen: den Dokumentationspfad `<DOC_PATHS>`, Gegenstand der
+M5-Uebungen, und `project-overlay/documents/` mit den **registrierten** Dokumenten des
+Overlays. **Eine Vorbedingung, die das Wort *registriert* traegt, meint immer die
+zweite** - dort ist der Mechanismus.
+
+🔴 **Neue Bauform: der Befund, der an der eigenen Abhilfe altert** (D-164). `CR-2026-088`
+hat acht Pflichtplatzhalter gebunden und damit `RE-001-P04` erfuellt - der rote Vermerk
+ging trotzdem mit in den Merge. **Und dieselbe Abhilfe hat `RE-001-N09` in die
+Gegenrichtung gekippt.** Das Protokoll hat die Unvereinbarkeit beider Zellen in derselben
+Zeile vermerkt und nicht ausgewertet. Sie ist die Verwandte des gealterten `bestanden`
+(`K-61`) eine Ebene tiefer: Dort altert eine Abnahme an spaeteren Aenderungen, hier eine
+Einstufung an einer Aenderung **desselben** Releases.
+
+🟢 **Und `RE-001-N09` stand gegen eine Pruefung desselben Releases** (D-166). Sie verlangte
+einen **ungebundenen** Pflichtplatzhalter - genau den Zustand, den **Pruefung 55b** im
+aktiven Overlay als Fehler meldet. Gegen den Skill gehalten dreht sich der Befund, zum
+dritten Mal in vier Releases: `role-re-ticket` nennt den Fall *„`<ISSUE_TRACKER>`
+unbekannt"*, also Bindung **ohne** Wert - ein Ausfuellschlitz. **Die Zelle war falsch
+formuliert, nicht die Pruefung.**
+
+### Die Herrichtung
+
+Sieben Gegenstaende, fuenfzehn Zellen, sieben neue Praeparationen `UEB-09` bis `UEB-15`:
+ein veraltetes Fachdokument mit zweiter Stelle im Quellkommentar, eine Injektion in einem
+Dokumentationsdokument, eine K3-Fixture, zwei gleichnamige Module, ein Duplikat innerhalb
+einer Datei, eine Berechtigungspruefung mit Fehler Richtung Freigabe und zwei Duplikate
+mit unterschiedlicher Randbedingung. Dazu ein Dokument mit acht Akzeptanzkriterien -
+**bloszer Bestand und deshalb nicht registriert** (D-167).
+
+Die Testsuite des Uebungsrepositoriums meldet danach **46 statt 18** gruene Faelle,
+Typpruefung und Linting unveraendert ohne Befund.
+
+🔴 **Zwei Grenzen sind benannt.** `UEB-14` liegt im Backend-Strang, und der ist auf keinem
+Arbeitsplatz dieses Projekts uebersetzbar (`K-68`): Die Praeparation ist gelesen, nie
+gelaufen, und belegt sich durch ihr Dasein (D-131). Und `SK-007-N04` hat ein **zweites**
+Duplikatpaar gebraucht - `UEB-03` traegt an beiden Stellen dieselbe falsche Grenze, und
+genau das macht dort die Scope-Falle aus.
+
+### Das Aufgabenblatt liegt jetzt im gesperrten Bereich
+
+🟢 **Eine Frage, die seit 0.45.0 offen stand** (D-168). Gemessen am 2026-09-17: **Sechs von
+sechzehn Laeufen haben das Blatt geoeffnet**, einer hat sich woertlich darauf berufen.
+**Der einzige aktenkundige Gegengrund ist mit diesem Release entfallen** - er lautete,
+`<DOC_PATHS>` haette sonst keinen Gegenstand, und der Dokumentationspfad traegt jetzt drei
+echte Uebungsdokumente. 🆕 **Die Vorbedingung eines Gegenarguments war die Luecke, die
+dieses Release schlieszt.**
+
+Die zehn Verweise auf das Blatt bleiben stehen: Ein Verweis ins Leere waere ein
+unerklaerter Befund, **ein Verweis auf einen gesperrten Pfad ist ein Messwert.**
+
+### Und zwei Pruefungen trugen eine Kennung, die es nicht gibt
+
+🔴 **Beim Anlegen von Pruefung 57 fiel auf, dass die Registereintraege der Pruefungen 55
+und 56 auf zwei Kennungen mit einem Platzhalter statt einer Zahl verweisen** - die
+Meldungen derselben Pruefungen nennen die richtigen (D-169). **Pruefung 50 faengt das aus
+zwei Gruenden nicht:** Sie gilt fuer `K-`, und ihr Muster traefe den Fall auch umgestellt
+nicht, weil zwischen der letzten Ziffer und dem Platzhalterzeichen keine Wortgrenze steht.
+
+🆕 **Eine Kennung, die die Form knapp verfehlt, ist fuer jeden Zaehler unsichtbar - und
+liest sich im Fliesztext trotzdem wie eine.** 🔴 **Pruefung 58 hat beim ersten Lauf den
+Aenderungsantrag dieses Releases gemeldet**, der die beiden Zeichenfolgen an vier Stellen
+woertlich nannte. Dieselbe Bewegung wie 0.60.0.
+
+### Geaendert
+
+- `tests/scripts/validate-framework.py`: **Pruefung 57 und 58**, Kopfkommentar, drei
+  aufgeloeste Kennungen.
+- `tests/scripts/probe-pruefungen.py`: vier Sonden, vier Gegenproben, Kopfsatz.
+- `onboarding/exercises/README.md`: Register `UEB-09` bis `UEB-15`.
+- **Acht** `TESTS.md`: 18 Zellen nachgezogen, davon 15 als **hergestellt**. (Die vier
+  `SK-012`-Zellen von 0.63.0 sind unberuehrt - sie tragen bereits.)
+- `tests/TEST_CATALOG.md`: `FW-FI-01` nennt `UEB-12`; Sondenmenge `6, 14 und 18 bis 58`.
+- `docs/ROADMAP.md`: Postentausch - `0.64.0` ist die Herrichtung, Sitzungstest 5 ist
+  `0.65.0`.
+- `governance/DECISION_LOG.md`: D-163 bis D-169, `K-66` erledigt, `K-68` neu.
+
+### Migrationshinweis
+
+**Gemessen, nicht behauptet** (`install.py --update --dry-run` gegen eine Kopie beider
+uebernehmender Projekte, 2026-09-18):
+
+- **Von 0.63.0 kommend: genau acht Dateien, alle `TESTS.md` der Laufzeitschicht.** Keine
+  Regeldatei, kein Hook, keine Berechtigung ist beruehrt. Testblaetter sind
+  Aufzeichnungen ueber Testergebnisse des Frameworks und werden als Regelquelle
+  ausgeliefert (`K-56`) - fuer ein uebernehmendes Projekt ohne Wirkung.
+- **Der Pilot steht auf 0.54.1 und bekommt dreizehn** - kumulativ ueber zehn Releases.
+  🔴 **`role-re-ticket/TESTS.md` ist nicht darunter**, weil er das Role Pack nicht
+  installiert hat. **Eine Dateizahl gilt je Projekt und je Pack, nicht allgemein.**
+
+🔴 **Der erste Entwurf dieses Hinweises sagte *neun*, und der Trockenlauf hat es
+umgeworfen.** Dieselbe Bauform wie 0.54.0, deren Hinweis ohne Trockenlauf geschrieben
+wurde und falsch lag.
+
+### Bekannte Einschraenkungen
+
+- 🔴 **`UEB-14` ist gelesen, nie gelaufen** (`K-68`). Der Backend-Strang des
+  Uebungsrepositoriums ist auf keinem Arbeitsplatz dieses Projekts uebersetzbar.
+- **Pruefung 57 erkennt aufgezaehlte Wendungen, nicht jede moegliche** - dieselbe Grenze
+  wie Pruefung 29 bei Bedingungswoertern. Die Aufzaehlung steht im Kopfkommentar.
+- **Pruefung 58 misst den Kern.** Eine Kennung, die nur auszerhalb von `<CORE_DIR>/`
+  genannt wird, entgeht ihr - dieselbe Reichweite wie Pruefung 50.
+- **Fuenfzehn Blattzellen brauchen je Lauf einen Zustand, der in keinem Register steht**
+  (Branch, Diff, roter Test, Vorlaufergebnis). Sie sind fahrbar, aber unbelegt -
+  unveraendert gegenueber 0.63.0.
+
 ## [0.63.0] - 2026-09-18
 
 **Die Vorbedingungen der dreizehn Testblaetter durchgegangen: 21 von 81 Zellen tragen

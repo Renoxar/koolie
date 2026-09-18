@@ -97,8 +97,8 @@ die Störung.**
 | **0.61.0** | *dieses Release:* **Die Grenzfälle gegen die Fassungen gehalten** – `FW-KO-05` ist zum ersten Mal gefahren: **fünf Abweichungen in vier Befunden, sieben Fundstellen** (13 von 18 prüfbaren Grenzfällen ohne Abweichung; zwei der zwanzig sind mit diesem Prüfmittel nicht prüfbar) – und **vier davon liegen in der Regelablage**, der Fassung, die sein eigener Auslöser nicht nannte. Die Overlay-Laufzeitfassung bot dreiunddreißig Releases lang einen Ausfüllschlitz für freigegebene Domains, den ihre eigene Quelle seit 0.33.0 auf „keine" festlegt (G-13); zwei Fassungen führten **Sicherheitskonfiguration** in einer Aufzählung mit Freigabefolge und stellten damit ein Delegationsverbot auf die freigebbare Seite (G-05/G-06, sechzig Releases); dieselbe Fassung ließ den Halbsatz weg, der die bereinigte Ableitung zulässt (G-02). **Prüfung 51 und 52** setzen es durch. Und der Releaseplan selbst hatte zwei Fehler – eine Zeile, die ihrer eigenen Zahl widersprach, und eine Kette, die um eins riss; **Prüfung 53** rechnet sie jetzt nach (`CR-2026-086`, D-148 bis D-153, `K-59` bis `K-61` neu) | – | nein |
 | ~~**0.62.0**~~ ✅ | **`FW-AK-01` gefahren: die Produktbeobachtung, ohne Kontingent** – 22 Quellen und beide Produkt-Changelogs abgeglichen, für `devin-desktop` zum ersten Mal vollständig. Dreizehn Befunde, ein VERIFY-Marker aufgelöst, Prüfung 54 (`CR-2026-087`, D-154 bis D-159, `K-62` bis `K-65`). **Die zweite `review`-Zelle des Bündels, nach `FW-KO-05` in 0.61.0** | Kriterium 2: **93 → 92** | nein |
 | ~~**0.63.0**~~ ✅ | **Die Vorbedingungen der dreizehn Testblätter durchgegangen** – 81 Zellen, **21 ohne Gegenstand**; dazu acht ungebundene Pflichtplatzhalter mit 65 Fundstellen in der geladenen Schicht. Prüfung 55 und 56 (`CR-2026-088`, D-160 bis D-162, `K-66`, `K-67`) | – | nein |
-| **0.64.0** | **Sitzungstest 5:** `FI` (3), `FW-KO-03`, `FW-PO-02`, `FW-AK-02` – **und `FW-SC-01` erneut**, über `/fw-change-small` ausgelöst (`K-55`, D-145). 🔴 **`RE` ist nicht dabei:** `FW-RE-01` ist eine Sammelzelle und gehört zum Posten der Testblätter (D-143). ⚠️ **Die beiden `review`-Zellen des Bündels sind heraus:** `FW-AK-01` ist mit 0.62.0 abgenommen, `FW-KO-05` mit 0.61.0 gefahren und noch offen (`K-59`) – **seine Zelle zählt deshalb weiter mit und steht beim Posten der Testblätter.** 🔴 **Der zentrale Katalog ist danach NICHT leer:** Die drei Sammelzellen bleiben, bis die Testblätter abgenommen sind (D-139, D-143) | Kriterium 2: **92 → 85** | ja |
-| **0.65.0** | **Die Herrichtung des Übungsrepositoriums** (`K-66`): die 21 Zellen ohne Gegenstand. Größter Posten `fw-docs-update` mit sechs von sechs. Jeder Gegenstand bekommt einen eigenen Entwurf und eine registrierte Präparation – nicht nebenbei (D-156) | – | nein |
+| ~~**0.64.0**~~ ✅ | **Die Herrichtung des Übungsrepositoriums** (`K-66`) – erledigt: Von den einundzwanzig Zellen **trugen vier bereits**, **fünfzehn sind hergerichtet** über sieben neue Präparationen `UEB-09` bis `UEB-15`, und **eine, die 0.63.0 als tragend geführt hat, war gekippt**. Das Aufgabenblatt liegt jetzt im gesperrten Bereich. Prüfung 57 und 58 (`CR-2026-089`, D-163 bis D-169, `K-66` erledigt, `K-68` neu) | – | nein |
+| **0.65.0** | **Sitzungstest 5:** `FI` (3), `FW-KO-03`, `FW-PO-02`, `FW-AK-02` – **und `FW-SC-01` erneut**, über `/fw-change-small` ausgelöst (`K-55`, D-145). 🟢 **`FW-FI-01` hat seit 0.64.0 einen registrierten Gegenstand** (`UEB-12`); bis dahin hieß seine Vorbedingung *„Übungsrepo"* und verlangte zwei Kandidatenmodule, die es nicht gab. 🔴 **`RE` ist nicht dabei:** `FW-RE-01` ist eine Sammelzelle und gehört zum Posten der Testblätter (D-143). ⚠️ **Die beiden `review`-Zellen des Bündels sind heraus:** `FW-AK-01` ist mit 0.62.0 abgenommen, `FW-KO-05` mit 0.61.0 gefahren und noch offen (`K-59`) – **seine Zelle zählt deshalb weiter mit und steht beim Posten der Testblätter.** 🔴 **Der zentrale Katalog ist danach NICHT leer:** Die drei Sammelzellen bleiben, bis die Testblätter abgenommen sind (D-139, D-143) | Kriterium 2: **92 → 85** | ja |
 | **0.66.0 bis ~0.70.0** | **Die dreizehn Testblätter**, je Bündel von zwei bis drei Skills. 81 Ergebniszellen, davon 15 allein im Blatt des Role Packs `requirements-engineering` – **dazu `FW-KO-05`, sobald `K-59` entschieden ist**, und zum Schluss die drei Sammelzellen `FW-NE-04` (nach 0.59.0 **55 von 58** `N`-Zellen offen), `FW-PO-03` (27 von 29 `P`-Zellen offen) **und `FW-RE-01`**, die nicht vor ihren Bestandteilen schließen können (D-139, D-143) | Kriterium 2: **85 → 0** | ja, mehrfach |
 | **~0.65.0** | **Die Quellenzuordnung je Matrixzeile** (`K-62`, D-156): **26 von 44** `[DOK]`-Zeilen nennen ihre Quelle nicht – 29 von 43 waren es vor 0.62.0 –, und ohne sie kostet jede Wiederholung von `FW-AK-01` denselben vollständigen Durchgang wie der erste. Jede Zuordnung muss **belegt** sein, nicht geraten – deshalb ein eigener Posten und keine Nebenarbeit | – | nein |
 | **~0.66.0** | **`AP2` zu Ende:** die vier sitzungsgebundenen Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Körbe `ask` und `allow`. **`X2` bleibt dauerhaft offen** (`K-20`) | Kriterium 1: **23 → ~19** | ja (Pack `devin-desktop`) |
@@ -148,9 +148,16 @@ einen Zuschnitt, der die technische Hälfte trennt (D-122).
 
 Verfahren Nr. 1 des Testkatalogs bindet **jeden** Sitzungstest an „das synthetische
 Übungsrepository mit aktivem Übungs-Overlay". Es steht seit dem 2026-09-15 auf dem Stand
-dieses Repositoriums, sein Validatorlauf ist grün, und die **sieben Präparationen sind
-angelegt und registriert** (`UEB-01` bis `UEB-07`; Prüfung 44 zählt beide Seiten nach).
-Der Weg steht in `tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`.
+dieses Repositoriums, sein Validatorlauf ist grün, und die **Präparationen sind angelegt
+und registriert** (Prüfung 44 zählt beide Seiten nach). Der Weg steht in
+`tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`.
+
+🔴 **Aus sieben sind fünfzehn geworden, und beide Male war der Anlass derselbe.** `UEB-08`
+kam mit 0.59.0 dazu (`FW-NE-02` verlangte einen roten Test und es gab keinen), `UEB-09`
+bis `UEB-15` mit 0.64.0: Der Durchgang durch alle dreizehn Testblätter hat gemessen, dass
+Blattzellen einen Zustand des Repositoriums verlangen, den niemand herstellte – **und alle
+standen als `offen`, also als fahrbar** (`CR-2026-089`, D-167). Der Weg steht in
+`tests/protocols/2026-09-18-herrichtung-uebungsrepositorium.md`.
 
 **Was dabei angefallen ist, war größer als die Aufgabe:** vierzehn Fehler nach dem Heben,
 darunter acht Exec-Freigaben bei drei Schlitzen; ein Hook, der einunddreißig Releases lang
@@ -162,11 +169,16 @@ Release erzeugt (`CR-2026-067`, Prüfungen 43 und 44).
 
 - **Auf dem Arbeitsplatz sind weder JDK noch Maven installiert** (gemessen). Der
   Backend-Strang des Übungsrepositoriums ist damit nicht ausführbar – und **dort liegt der
-  eingebaute Übungsfehler**. Der Frontend-Strang läuft (18 Tests grün).
-- **`docs/UEBUNGSAUFGABEN.md` liegt im lesbaren Bereich** und nennt die Auflösung der
-  Aufgaben A bis F. Ein KI-Client, der `docs/` liest, kennt sie, bevor er sucht. Die
-  sieben Präparationen sind deshalb im gesperrten Mentorenblatt geführt; ob das Aufgabenblatt
-  dorthin gehört, ist eine eigene Entscheidung (`<DOC_PATHS>` hätte dann keinen Gegenstand).
+  eingebaute Übungsfehler**. Der Frontend-Strang läuft (seit 0.64.0 **46** Tests grün, vorher
+  18). 🔴 **Seit 0.64.0 liegt dort außerdem eine Präparation** (`UEB-14`, `K-68`): Sie ist
+  gelesen, nie gelaufen, und belegt sich durch ihr Dasein (D-131).
+- 🟢 **Das Aufgabenblatt liegt seit 0.64.0 im gesperrten Bereich** (D-168). Es nennt die
+  Auflösung der Aufgaben A bis F, und **sechs von sechzehn Läufen hatten es geöffnet** –
+  einer hat sich wörtlich darauf berufen. Der einzige aktenkundige Gegengrund
+  (`<DOC_PATHS>` hätte sonst keinen Gegenstand) ist mit demselben Release entfallen: Der
+  Dokumentationspfad trägt jetzt drei echte Übungsdokumente. **Die Verweise auf das Blatt
+  bleiben stehen** – ein Verweis ins Leere wäre ein unerklärter Befund, ein Verweis auf
+  einen gesperrten Pfad ist ein Messwert.
 - **`FW-DS-01` braucht einen Entlastungslauf.** Der Schutz-Hook blockiert das Schreiben
   eines Textes mit Zugangsdatenmuster – gemessen auch mit ausdrücklich synthetischem Wert.
   Ein Lauf, in dem der Client den Köderinhalt nicht zitiert, belegt ohne diesen zweiten
