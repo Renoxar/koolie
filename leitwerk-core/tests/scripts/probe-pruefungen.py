@@ -3370,19 +3370,24 @@ M44_SPALTE_WEG = "führt keine Spalte"
 # gegenprobe() nimmt genau einen Suchtext - dieser faengt alle drei und jede kuenftige.
 M44_JEDE = "(D-93)"
 
-# Synthetische Kennungen. UEB-08 waere die naechste echte - deshalb nehmen die beiden
-# Defektsonden 98 und 99, und nur die Gegenprobe, die einen ZULAESSIGEN Zustand
-# herstellt, nimmt 08. Die Lehre von G-18 (2026-09-13): Eine synthetische Kennung, die
-# mit einer echten kollidieren kann, misst nicht mehr ihren Fall.
+# Synthetische Kennungen - alle drei hoch, und der Grund steht in der Geschichte dieser
+# Zeile: Bis 0.58.0 nahm die Gegenprobe "UEB-08", weil das die naechste FREIE Kennung
+# war. Mit 0.59.0 ist sie VERGEBEN worden (der rote Test, D-136) - und die Gegenprobe
+# haette eine zweite Registerzeile derselben Kennung erzeugt. `frei()` faengt das, aber
+# erst im Lauf. Die Lehre von G-18 (2026-09-13) gilt damit auch fuer die Kennung, die
+# heute noch frei ist: **Eine synthetische Kennung nimmt nie die naechste freie.**
 P44_UNREG = "UEB-99"
 P44_TOT = "UEB-98"
-P44_NEU = "UEB-08"
+P44_NEU = "UEB-97"
 
-P44_VORBEDINGUNG_ALT = "| FW-NE-01 (Basis) | Delegationsverbot | Übungsrepo |"
+# Der Anker ist mit 0.59.0 von `FW-NE-01` auf `FW-NE-03` gewandert: Die Vorbedingung
+# von `FW-NE-01` nennt seither die Gegenstelle (D-135) und passt nicht mehr. Gesucht
+# wird eine Vorbedingung OHNE Kennung - genau das ist der Fall, den 44a herstellt.
+P44_VORBEDINGUNG_ALT = "| FW-NE-03 | Bypass-Aufforderung | Übungsrepo |"
 # Sechs Spalten seit 0.58.0 - die Belegzelle ist die vierte (D-131). Eine neue Pruefung
 # kann eine bestehende Gegenprobe unvollstaendig machen; nachgezogen wird die GEGENPROBE.
 P44_REGISTERZEILE = ("| `%s` | **Synthetisch:** Eintrag der Gegenprobe | nirgends | "
-                     "Vorhandensein der Datei | nichts | `FW-NE-01` |")
+                     "Vorhandensein der Datei | nichts | `FW-NE-03` |")
 
 
 def _44_pfad(root: str, rel: str) -> str:
@@ -3418,10 +3423,10 @@ sonde("44c", "Der verlorene Anker - die Registerueberschrift ist umbenannt",
                             "### Übersicht der Präparationen")),
       M44_ANKER)
 
-gegenprobe("44a", "Auslieferungszustand: sieben registrierte, sieben gebrauchte "
+gegenprobe("44a", "Auslieferungszustand: acht registrierte, acht gebrauchte "
                   "Praeparationen", None, M44_JEDE)
 
-gegenprobe("44b", "Eine achte Praeparation, registriert MIT Belegzelle UND von "
+gegenprobe("44b", "Eine NEUNTE Praeparation, registriert MIT Belegzelle UND von "
                   "einem Testfall gebraucht - der zulaessige Weg",
            lambda root: (_44_register_zeile(root, P44_NEU),
                          _44_katalog_nennt(root, P44_NEU)),
