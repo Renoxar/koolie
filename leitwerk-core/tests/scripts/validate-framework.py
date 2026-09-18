@@ -262,8 +262,24 @@ Prüft (statisch, ohne laufenden KI-Client):
      mit einem PLATZHALTER statt einer Zahl; die Meldungen derselben Pruefungen nannten
      die richtigen. Zwischen Ziffer und Platzhalter steht keine Wortgrenze - eine
      Kennung, die die Form knapp verfehlt, ist fuer jeden Zaehler unsichtbar
+ 59. Der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171): Unter
+     --strict-overlay drei Gegenstaende. (a) Die Laufzeitfassung des Overlays NENNT
+     <EXCLUDED_PATHS>, bindet ihn also, statt seinen Wert einzusetzen - das ist 55b eine
+     Schicht tiefer. (b) Die Zeile, die ihn nennt, traegt dieselbe Globmenge wie die
+     Bindungszeile des Quell-Overlays; massgeblich ist die Quelle. (c) Jeder Glob der
+     Quelle hat im deny-Korb der Berechtigungsdatei eine Lese- UND eine Schreibsperre.
+     ANLASS: 0.63.0 hat die Sperre eines Overlays von .github/** auf .github/workflows/**
+     eingeengt, weil sie sonst die Merge-Request-Vorlage mitsperrt (D-161). Die Einengung
+     steht in der QUELLE; die beiden Traeger, die den Client wirklich binden, tragen
+     weiterhin den alten, weiteren Wert - unveraendert seit dem ersten Commit jenes
+     Repositoriums. Pruefung 56 sah es nicht, weil sie ueber die Bindungszeile der Quelle
+     aufloest; 55b nicht, weil sie die BINDUNG prueft und nicht den WERT; --strict-overlay
+     nicht, weil es allein den Status vergleicht (CR-2026-044 E4). GRENZE: geprueft wird
+     EIN Platzhalter - der einzige mit maschinell vergleichbarer Wertgestalt, der
+     zugleich zwei Schichten bindet. Und (c) prueft nur die Richtung Quelle -> Korb:
+     Ueberzaehliges bleibt zulaessig, wie schon bei Pruefung 42
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 58 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 59 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -4687,6 +4703,48 @@ UEB_KENNUNG = re.compile(r"\bUEB-\d{2}\b")
 # ihre Nummer: Eine Erkennungsregel fuer eine Dokumentstruktur gehoert an die Stellung,
 # nicht an eine Zaehlung, die die naechste eingeschobene Spalte verschiebt.
 UEB_BELEGSPALTE = "Wie sie belegt ist"
+# Gegenstand 4 (D-173). Die Spalten werden ueber ihre UEBERSCHRIFT gefunden, die
+# Testfallspalte des Registers ist die LETZTE. Der Zuschnitt trennt die Vorbedingung
+# von ihrer Geschichte am ersten Vermerkzeichen: Was davor steht, ist die Bedingung;
+# was dahinter steht, ist ihre Herkunft. FW-NE-02 nennt UEB-06 hinter dem Vermerk
+# ("UEB-08 verdraengt UEB-06"), ohne es zu verlangen - wer die ganze Zelle liest,
+# meldet diese Zeile mit.
+UEB_VORBEDINGUNGSSPALTE = "Vorbedingung"
+UEB_VERMERK_RE = re.compile("[\U0001F534\U0001F7E2\U0001F195⚠]")
+UEB_FALL_RE = re.compile(r"\b(?:FW|SK|RE)-[A-Z0-9-]+\b")
+
+
+def _vor_dem_vermerk(zelle: str) -> str:
+    """Der Teil einer Tabellenzelle vor dem ersten Vermerkzeichen."""
+    treffer = UEB_VERMERK_RE.search(zelle)
+    return zelle[:treffer.start()] if treffer else zelle
+
+
+def _ueb_gebraucht_je_vorbedingung(root: str) -> dict:
+    """{UEB-NN: {Testfallkennung}} - nur aus der Vorbedingungsspalte, vor dem Vermerk."""
+    raus: dict = {}
+    for rel in _ueb_katalogdateien(root):
+        pfad = os.path.join(root, *rel.split(os.sep))
+        if not os.path.exists(pfad):
+            continue
+        i_vb = -1
+        for zeile in read(pfad).splitlines():
+            if not zeile.lstrip().startswith("|"):
+                continue
+            if UEB_VORBEDINGUNGSSPALTE in zeile and "Prüfmethode" in zeile:
+                i_vb = _tabellenspalte(zeile, UEB_VORBEDINGUNGSSPALTE)
+                continue
+            if i_vb < 0:
+                continue
+            zellen = tabellenzellen(zeile)
+            if len(zellen) <= i_vb:
+                continue
+            fall = UEB_FALL_RE.match(zellen[0].strip("`* "))
+            if not fall:
+                continue
+            for kennung in UEB_KENNUNG.findall(_vor_dem_vermerk(zellen[i_vb])):
+                raus.setdefault(kennung, set()).add(fall.group(0))
+    return raus
 
 
 def _ueb_katalogdateien(root: str) -> list:
@@ -4740,6 +4798,36 @@ def check_praeparationsregister(root: str) -> None:
             f"Präparation, die niemand braucht, wird gepflegt und nicht benutzt; "
             f"entweder trägt ein Testfall sie in seine Vorbedingung ein, oder sie fällt "
             f"aus dem Register (D-93)")
+
+    # --- Gegenstand 4: die zeilenweise Deckung (D-173) ------------------------------
+    # Gegenstand 1 und 2 vergleichen MENGEN ueber die ganze Datei. Sie bestehen auch
+    # dann, wenn die Kennung in der Ergebniszelle statt in der Vorbedingung steht -
+    # und dann sagt genau die Spalte, die dem Laufenden sagt, was herzustellen ist,
+    # es nicht. 0.64.0 hat fuenfzehn Blattzellen hergerichtet und die Kennung dreimal
+    # nur in den gruenen Vermerk der Ergebniszelle geschrieben; die Gegenrichtung
+    # fehlte zweimal, und das vollstaendigere Register lag AUSSERHALB des
+    # Repositoriums (im Mentorenblatt des Uebungsrepositoriums).
+    zeilen_reg = [z for z in text.split(UEB_ANKER, 1)[1].split("\n")
+                  if z.strip().startswith("|")]
+    gebraucht_vb = _ueb_gebraucht_je_vorbedingung(root)
+    for zeile in zeilen_reg:
+        zellen = tabellenzellen(zeile)
+        treffer = UEB_KENNUNG.findall(zellen[0]) if zellen else []
+        if not treffer:
+            continue
+        kennung = treffer[0]
+        genannt = set(UEB_FALL_RE.findall(zellen[-1])) if len(zellen) > 1 else set()
+        misst = gebraucht_vb.get(kennung, set())
+        for fall in sorted(genannt - misst):
+            err(f"{KERN}/{UEB_REGISTER}: die Zeile {kennung} nennt den Testfall {fall}, "
+                f"dessen Vorbedingungszelle {kennung} nicht führt. Die Spalte, die sagt, "
+                f"was vor dem Lauf herzustellen ist, sagt es damit nicht – eine Nennung "
+                f"in der Ergebniszelle erreicht den Laufenden zu spät (D-93, D-173)")
+        for fall in sorted(misst - genannt):
+            err(f"{KERN}/{UEB_REGISTER}: der Testfall {fall} nennt {kennung} in seiner "
+                f"Vorbedingung, die Registerzeile {kennung} führt ihn aber nicht. Ein "
+                f"Register, das seinen Gegenstand nicht führt, ist eine Auswahl – und "
+                f"sie ist immer zu klein, nie zu groß (D-93, D-173)")
 
     # --- Gegenstand 3: die Belegzelle (D-131) --------------------------------------
     # UEB-06 stand dreizehn Releases lang im Register und stellte seinen Gegenstand
@@ -5447,6 +5535,48 @@ def _skills_ohne_modellaufruf(root: str) -> list:
     return namen
 
 
+# Gegenstand 2 (D-172). Die Uebungen und ihre Skills stammen aus der Uebungsdatei,
+# nicht aus einer gepflegten Liste: Wer eine Uebung um einen Schritt erweitert, soll
+# nicht daran denken muessen, eine Liste im Validator nachzuziehen.
+P49_UEBUNGSDATEI = KERN + "/onboarding/exercises/EXERCISES.md"
+P49_UEBUNG_RE = re.compile("Ü\\d[a-z]?")
+P49_UEBUNG_KOPF_RE = re.compile(r"^##\s+(Ü\d)\b")
+
+
+def _uebungsskills(root: str) -> dict:
+    """{UEn: [Skillnamen]} - abgeleitet aus den Abschnitten der Uebungsdatei.
+
+    Gelesen werden die Skillaufrufe der Form /name im Abschnitt einer Uebung. Die
+    Uebungsdatei schreibt sie durchgaengig so - sie beschreibt den Ablauf, den eine
+    PERSON geht, und genau das ist der Grund, aus dem ein Ausloeser, der sich auf sie
+    beruft, den Aufruf nicht verschweigen darf.
+    """
+    pfad = os.path.join(root, *P49_UEBUNGSDATEI.split("/"))
+    if not os.path.isfile(pfad):
+        err(f"{P49_UEBUNGSDATEI}: fehlt. Gegenstand 2 der Prüfung 49 leitet die Skills "
+            f"jeder Übung von dort ab und hat seinen Gegenstand verloren; er bestünde "
+            f"sonst leise (D-23, D-172)")
+        return {}
+    raus: dict = {}
+    aktuell = None
+    for zeile in read(pfad).splitlines():
+        kopf = P49_UEBUNG_KOPF_RE.match(zeile.strip())
+        if kopf:
+            aktuell = kopf.group(1)
+            raus.setdefault(aktuell, [])
+            continue
+        if aktuell is None:
+            continue
+        for treffer in re.findall(r"/(fw-[a-z0-9-]+)", zeile):
+            if treffer not in raus[aktuell]:
+                raus[aktuell].append(treffer)
+    if not raus:
+        err(f"{P49_UEBUNGSDATEI}: führt keinen Abschnitt der Form '## Ü<n> …'. "
+            f"Gegenstand 2 der Prüfung 49 hat seinen Anker verloren und bestünde sonst "
+            f"leise (D-23, D-172)")
+    return raus
+
+
 def _tabellenspalte(kopf: str, ueberschrift: str) -> int:
     """Index der Spalte mit dieser Ueberschrift - ueber die STELLUNG, nicht die Nummer.
 
@@ -5468,6 +5598,8 @@ def check_skillaufruf_im_katalog(root: str) -> None:
             f"Prüfung 49 leitet ihre Marken daraus ab und hat ihren Gegenstand verloren; "
             f"sie bestünde sonst leise (D-23)")
         return
+    uebungsskills = _uebungsskills(root)
+    alle_skills = sorted({s for liste in uebungsskills.values() for s in liste} | set(namen))
     dateien = [os.path.join(root, KERN, "tests", "TEST_CATALOG.md")]
     for basis in (os.path.join(root, KERN, "framework", "skills"),
                   os.path.join(root, KERN, "framework", "role-packs")):
@@ -5503,6 +5635,31 @@ def check_skillaufruf_im_katalog(root: str) -> None:
                         f"nicht-interaktiver Lauf bekommt eine Abweisung statt des Ablaufs. "
                         f"Schreibe '/{skill}' (D-146)")
                     break
+            # --- Gegenstand 2 (D-172): der Ausloeser, der eine UEBUNG nennt ---------
+            # Er nennt keinen Skill und erbt doch welche. FW-PO-02 verweist auf UE3,
+            # und UE3 geht durch vier Skills, die das Modell nicht waehlen darf.
+            # SCHMAL, und das ist Absicht: Gefragt wird, ob UEBERHAUPT ein
+            # ausdruecklicher Aufruf dasteht - nicht, ob es der richtige oder ob es
+            # alle sind. FW-SC-01 nennt UE3 und ruft bewusst nur deren dritten Schritt
+            # auf; eine Pruefung kann Zuschnitt nicht von Vergesslichkeit
+            # unterscheiden. Der erste Entwurf haette FW-SC-01 dreimal gemeldet.
+            # Ein ausdruecklicher Aufruf ist '/<skillname>', nicht irgendein Schraegstrich:
+            # Der Ausloeser von FW-PO-02 nennt einen PFAD, und der erste Entwurf hat
+            # '/onboarding' fuer einen Aufruf gehalten und nichts gemeldet.
+            if any(f"/{s}" in ausloeser for s in alle_skills):
+                continue
+            # Ue6c ist ein Teil von Ue6 - die Abschnittsueberschrift traegt nur die
+            # Ziffer, der Verweis zusaetzlich einen Buchstaben.
+            for uebung in sorted({t[:2] for t in P49_UEBUNG_RE.findall(ausloeser)}):
+                geerbt = sorted(set(uebungsskills.get(uebung, ())) & set(namen))
+                if not geerbt:
+                    continue
+                err(f"{rel}:{nr}: Der Auslöser nennt die Übung {uebung} und damit "
+                    f"deren Ablauf, der durch {', '.join(geerbt)} geht – Skills, deren "
+                    f"Quelle 'triggers' ohne '- model' führt. Der Auslöser enthält "
+                    f"keinen einzigen ausdrücklichen Aufruf; ein nicht-interaktiver "
+                    f"Lauf bekommt eine Abweisung statt des Ablaufs. Nenne den "
+                    f"Einstiegsschritt als '/name' (D-172)")
 
 
 # --- Pruefung 50 -------------------------------------------------------------------
@@ -6212,6 +6369,114 @@ def check_decisionregister(root: str) -> None:
                 f"und steht in keiner Registerzeile. Ein Register, das seinen Gegenstand "
                 f"nicht führt, ist keine Liste, sondern eine Auswahl (D-169)")
 
+# --- Pruefung 59: Der Overlay-Wert in der Schicht, die ihn durchsetzt ---------------
+#
+# ANLASS. Gemessen am 2026-09-18 am Uebungsrepositorium (CR-2026-090, Befund 3): 0.63.0
+# hat die Sperre von .github/** auf .github/workflows/** EINGEENGT, weil sie sonst die
+# Merge-Request-Vorlage mitsperrt - einen Traeger, den fw-mr-description ausdruecklich
+# als zulaessige Kontextquelle fuehrt (D-161). Die Einengung steht in
+# project-overlay/OVERLAY.md. Die beiden Traeger, die den Client WIRKLICH binden - die
+# Laufzeitfassung des Overlays und der deny-Korb der Berechtigungsdatei - tragen
+# weiterhin den alten, weiteren Wert. git log -S sagt: seit dem ersten Commit des
+# Repositoriums unveraendert.
+#
+# DREI PRUEFUNGEN SAHEN ES NICHT, JEDE AUS EINEM EIGENEN GRUND. Pruefung 56 loest ueber
+# die BINDUNGSZEILE DER QUELLE auf - sie liest genau den Traeger, der richtig ist.
+# Pruefung 55b fragt, ob der Platzhalter GEBUNDEN ist, nicht welchen WERT er traegt; ihr
+# eigener Kopfkommentar sagt seit 0.63.0 "Eine Bindung an den falschen Wert laeuft
+# durch." Und --strict-overlay vergleicht Quelle und Laufzeitfassung allein im STATUS -
+# der Abgleich der uebrigen Werte ist seit CR-2026-044 E4 offen.
+#
+# DREI GEGENSTAENDE:
+#   (a) Die Laufzeitfassung des Overlays NENNT <EXCLUDED_PATHS>. Ein Traeger, der den
+#       Wert nur einsetzt, ist fuer sich stimmig - und faellt niemandem auf. Das ist
+#       55b eine Schicht tiefer.
+#   (b) Die Zeile, die ihn nennt, traegt DIESELBE Globmenge wie die Bindungszeile der
+#       Quelle. Abweichung in beide Richtungen ist ein Fehler; die Quelle ist massgeblich.
+#   (c) Jeder Glob der Quelle hat im deny-Korb eine Lese- UND eine Schreibsperre.
+#
+# GRENZE, UND SIE IST GENANNT. Geprueft wird EIN Platzhalter. <EXCLUDED_PATHS> ist der
+# einzige, dessen Wert eine maschinell vergleichbare Gestalt hat - eine Globliste - und
+# der zugleich zwei Schichten bindet. Das ist eine Enthaltung, keine Stille.
+# ZWEITE GRENZE. (c) prueft nur die Richtung Quelle -> Korb. Ein ueberzaehliger Eintrag
+# bleibt zulaessig - dasselbe Argument, mit dem Pruefung 42 die vier Pfadschlitze
+# ausnimmt: dort ist Ueberzaehliges ohnehin erlaubt. Der gemessene Fall wird trotzdem
+# gefangen, weil .github/workflows/** im Korb FEHLT.
+P59_PLATZHALTER = "<EXCLUDED_PATHS>"
+
+
+def _p59_globs(zellentext: list) -> list:
+    """Die Globs einer Wertangabe - je Backtick-Token, an Kommas getrennt.
+
+    Die beiden uebernehmenden Projekte schreiben den Wert verschieden: eines als drei
+    Backtick-Token, das andere als eines mit Kommas darin. Wer nur das eine kennt,
+    vergleicht Zeichenketten statt Mengen.
+    """
+    raus = []
+    for token in zellentext:
+        for teil in token.split(","):
+            t = teil.strip()
+            if t and t not in raus:
+                raus.append(t)
+    return raus
+
+
+def check_overlay_wertabgleich(root: str, man: dict) -> None:
+    """Pruefung 59 (D-171): Der Overlay-Wert gilt in der Schicht, die ihn durchsetzt."""
+    overlay_pfad = os.path.join(root, "project-overlay", "OVERLAY.md")
+    if not os.path.isfile(overlay_pfad):
+        return  # Kandidatenphase - dieselbe Enthaltung wie Pruefung 42
+    quelle = _p59_globs(_p56_ausgeschlossen(read(overlay_pfad)))
+    if not quelle or any(TBD_RE.search(g) for g in quelle):
+        return  # noch nicht ausgefuellt - das meldet --check-overlay-ready
+    rel_rt = f"{man['pack_runtime_dir']}/20-project-overlay.md"
+    runtime_pfad = os.path.join(root, *rel_rt.split("/"))
+    if os.path.isfile(runtime_pfad):
+        text = read(runtime_pfad)
+        zeilen = [z for z in text.split("\n") if P59_PLATZHALTER in z]
+        if not zeilen:
+            err(f"{rel_rt}: nennt {P59_PLATZHALTER} nicht. Die Laufzeitfassung setzt den "
+                f"Wert damit ein, statt den Platzhalter zu binden – sie ist für sich "
+                f"stimmig, und niemand sieht, ob ihr Wert noch der des Quell-Overlays "
+                f"ist. Genau so hat eine Einengung aus 0.63.0 die Schicht nie erreicht, "
+                f"die sie durchsetzt (D-171)")
+        elif not TBD_RE.search(zeilen[0]):
+            # Ein Ausfuellschlitz in der Laufzeitfassung ist Sache von --strict-overlay,
+            # das ihn schon meldet - zwei Meldungen fuer einen Zustand sind eine zuviel.
+            ist = _p59_globs([t for t in re.findall(r"`([^`]+)`", zeilen[0])
+                              if t != P59_PLATZHALTER])
+            fehlt = [g for g in quelle if g not in ist]
+            zuviel = [g for g in ist if g not in quelle]
+            if fehlt or zuviel:
+                err(f"{rel_rt}: die ausgeschlossenen Pfade weichen vom Quell-Overlay ab – "
+                    f"dort fehlend: {', '.join(fehlt) or 'keine'}; dort nicht vorgesehen: "
+                    f"{', '.join(zuviel) or 'keine'}. Maßgeblich ist "
+                    f"project-overlay/OVERLAY.md; die Laufzeitfassung ist die Schicht, die "
+                    f"der Client lädt (D-171)")
+    rel_perm = man["permissions_file"]
+    perm_pfad = os.path.join(root, *rel_perm.split("/"))
+    if not os.path.isfile(perm_pfad):
+        return
+    try:
+        cfg = json.loads(read(perm_pfad))
+    except json.JSONDecodeError:
+        return  # check_config hat das bereits gemeldet
+    deny = [r for r in cfg.get("permissions", {}).get("deny", []) if isinstance(r, str)]
+    if any(P59_PLATZHALTER in r for r in deny):
+        return  # Schlitz noch ungefuellt - das ist Sache von --check-overlay-ready
+    praefix = man.get("permission_path_prefix", "")
+    werkzeuge = man.get("permission_tools", {})
+    for art in ("read", "write"):
+        for werkzeug in werkzeuge.get(art, ()):
+            for glob in quelle:
+                if any(f"{werkzeug}({p}{glob})" in deny for p in ("", praefix)):
+                    continue
+                err(f"{rel_perm}: der ausgeschlossene Pfad `{glob}` des Quell-Overlays hat "
+                    f"keine Regel {werkzeug}({glob}) im deny-Korb. Die Berechtigungsdatei "
+                    f"ist die Schicht, die technisch sperrt – ein Wert, der nur im Overlay "
+                    f"steht, sperrt nichts (D-171)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -6290,6 +6555,7 @@ def main() -> int:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
         check_ausgeschlossene_vorbedingung(root, man)
+        check_overlay_wertabgleich(root, man)
     if args.check_overlay_ready:
         check_overlay_ready(root, man)
     if args.mermaid:
