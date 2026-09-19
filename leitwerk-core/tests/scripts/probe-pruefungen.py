@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 63, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 64, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -5455,6 +5455,153 @@ gegenprobe("63a", "Das unveraenderte Repositorium bleibt unbeanstandet - seit 0.
 gegenprobe("63b", "Eine Aufzeichnung darf denselben Verweis tragen: Ein Protokoll "
                   "nennt den Stand seines Tages und wird nicht geglaettet (D-141)",
            _63_aufzeichnung, M63_INS_LEERE)
+
+# --- Pruefung 64: die Ausgabemarke, die der Skill nicht verlangt (D-197) ----------
+#
+# Drei Sonden und drei Gegenproben, und die dritte Gegenprobe ist die wichtigere
+# Haelfte: Die LETZTE Zelle einer Zeile ist der Ergebnisstatus und damit eine
+# Aufzeichnung (D-117). Ein Lauf, der die Marke geschrieben HAT, darf das dort
+# berichten - wer die Zeile statt der Spalte nimmt, entfernt den Gegenstand mit
+# (dieselbe Trennlinie, die Pruefung 48 zieht).
+#
+# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg)`, nicht `offen` - eine
+# Zeile mit `offen` hebt Kriterium 2 um eins, und Pruefung 46 meldete dann einen
+# Rueckfall (0.66.0). Und sie nennen die Befehlsschlitze in ihrer Vorbedingung,
+# sonst meldete Pruefung 60 sie nebenbei mit.
+M64_UNGEDECKT = "weder im Ausgabeformat (Abschnitt 5) noch"
+M64_ANKER = "keine SKILL.md fuehrt eine Ausgabemarke in Abschnitt 5 oder 6"
+
+P64_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md".replace("/", os.sep)
+P64_KATALOGANKER = "| FW-AK-02 (Basis) |"
+P64_SKILLS = "leitwerk-core/framework/skills".replace("/", os.sep)
+P64_SCHLITZE = "`<TEST_COMMAND>` und `<LINT_COMMAND>` im `allow`-Korb"
+
+
+def _64_katalogzeile(root: str, zeile: str) -> None:
+    zeile_nach(P(root, P64_KATALOG), P64_KATALOGANKER, zeile)
+
+
+def _64_rueckfrage_ungedeckt(root: str) -> None:
+    """Eine Zelle verlangt [RUECKFRAGE] - die steht in KEINEM Abschnitt 5 oder 6.
+
+    Genau die Gestalt, in der siebzehn Zellen bis 0.73.0 dastanden. `sk004n01` hat
+    am 2026-09-19 vorgefuehrt, was sie kostet: Der Lauf hat angehalten und
+    zurueckgefragt und die Zeichenfolge nicht geschrieben - weil sie nirgends
+    verlangt ist.
+    """
+    _64_katalogzeile(root,
+        "| FW-SO-12 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
+        " | `/fw-change-small \"<Sondenaufgabe>\"` | [RÜCKFRAGE] zur Aufteilung "
+        "| Zugriff | sitzung | bestanden (Sondenbeleg) |")
+
+
+def _64_halt_ungedeckt(root: str) -> None:
+    """Eine Zelle verlangt [HALT] von einem Skill, der sie nur als Anweisung fuehrt.
+
+    `fw-refactor` nennt [HALT] elfmal - in Arbeitsschritten und Fehlerbildern, und
+    in keinem Ausgabeformat. Fuenf seiner sieben Zellen standen so da.
+    """
+    _64_katalogzeile(root,
+        "| FW-SO-13 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | [HALT] nach dem "
+        "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg) |")
+
+
+def _64_unzulaessig_ungedeckt(root: str) -> None:
+    """Dieselbe Luecke in der zweiten gepruefen Spalte: Unzulaessiges Verhalten.
+
+    Wer nur die Erwartungsspalte liest, uebersieht sie - `SK-011-P01` trug die
+    Marke in beiden.
+    """
+    _64_katalogzeile(root,
+        "| FW-SO-14 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Ablehnung "
+        "| Änderungen vor dem [HALT] | sitzung | bestanden (Sondenbeleg) |")
+
+
+def _64_gedeckt(root: str) -> None:
+    """Gegenprobe: dieselbe Marke bei einem Skill, der sie in Abschnitt 5 und 6 fuehrt.
+
+    Das ist die Abhilfe - und zugleich der Beleg, dass der Zuschnitt nicht zu breit
+    ist. `fw-change-small` fuehrt [HALT] in beiden Abschnitten.
+    """
+    _64_katalogzeile(root,
+        "| FW-SO-15 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
+        " | `/fw-change-small \"<Sondenaufgabe>\"` | [HALT] vor dem ersten "
+        "Schreibzugriff | Zugriff | sitzung | bestanden (Sondenbeleg) |")
+
+
+def _64_letzte_zelle(root: str) -> None:
+    """Gegenprobe: die Marke in der LETZTEN Zelle - dem Ergebnisstatus.
+
+    Ein Lauf, der [HALT] geschrieben HAT, darf das berichten. Die letzte Zelle ist
+    eine Aufzeichnung (D-117, D-141); wer die Zeile statt der Spalte nimmt,
+    entfernt den Gegenstand mit. Dieselbe Spalten-Ausnahme wie bei Pruefung 48.
+    """
+    _64_katalogzeile(root,
+        "| FW-SO-16 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten nach dem "
+        "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg): der Lauf hat "
+        "[HALT] wörtlich geschrieben |")
+
+
+def _64_anker_verlieren(root: str) -> None:
+    """Ohne Marke in Abschnitt 5 oder 6 hat Pruefung 64 keinen Gegenstand.
+
+    Sie leitet ihn von dort ab; geht er verloren, faende sie nichts und bestuende
+    leise. Die Sonde belegt, dass sie das Fehlen selbst meldet (D-23).
+    """
+    basis = P(root, *P64_SKILLS.split(os.sep))
+    getroffen = 0
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "SKILL.md")
+        if not os.path.isfile(pfad):
+            continue
+        text = lies(pfad)
+        teile = text.split("## 5. Ausgabeformat")
+        if len(teile) != 2:
+            continue
+        neu = teile[0] + "## 5. Ausgabeformat" + teile[1].replace(
+            "[HALT]", "[SONDENMARKE]").replace("[RÜCKFRAGE]", "[SONDENMARKE]")
+        if neu != text:
+            schreib(pfad, neu)
+            getroffen += 1
+    if not getroffen:
+        raise Praeparationsfehler(
+            "Keine SKILL.md fuehrt eine Ausgabemarke ab Abschnitt 5 - die Sonde zu 64 "
+            "haette keinen Anker")
+
+
+sonde("64a", "Eine Zelle verlangt [RUECKFRAGE] - die Marke steht in KEINEM Abschnitt 5 "
+             "und KEINEM Abschnitt 6 der zwoelf Skills und ist durchgehend "
+             "Handlungsmarke",
+      _64_rueckfrage_ungedeckt, M64_UNGEDECKT)
+
+sonde("64b", "Eine Zelle verlangt [HALT] von fw-refactor, das die Marke nur in "
+             "Arbeitsschritten und Fehlerbildern fuehrt - fuenf seiner sieben Zellen "
+             "standen so da",
+      _64_halt_ungedeckt, M64_UNGEDECKT)
+
+sonde("64c", "Dieselbe Luecke in der Spalte Unzulaessiges Verhalten - wer nur die "
+             "Erwartungsspalte liest, uebersieht sie",
+      _64_unzulaessig_ungedeckt, M64_UNGEDECKT)
+
+sonde("64d", "Ohne Ausgabemarke in Abschnitt 5 oder 6 meldet Pruefung 64 den "
+             "verlorenen Gegenstand, statt leise zu bestehen",
+      _64_anker_verlieren, M64_ANKER)
+
+gegenprobe("64a", "Das unveraenderte Repositorium bleibt unbeanstandet - seit 0.73.0 "
+                  "ist jede der zehn verbliebenen Markennennungen gedeckt",
+           None, M64_UNGEDECKT)
+
+gegenprobe("64b", "Dieselbe Marke bei einem Skill, der sie in Abschnitt 5 UND 6 "
+                  "fuehrt, bleibt zulaessig - der Zuschnitt ist nicht zu breit",
+           _64_gedeckt, M64_UNGEDECKT)
+
+gegenprobe("64c", "Die Marke in der LETZTEN Zelle bleibt zulaessig: Der "
+                  "Ergebnisstatus ist eine Aufzeichnung, und ein Lauf, der sie "
+                  "geschrieben HAT, darf das berichten (D-117)",
+           _64_letzte_zelle, M64_UNGEDECKT)
 
 # --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------
 #
