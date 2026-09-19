@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 59, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 60, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -5100,6 +5100,119 @@ gegenprobe("58a", "Das unveraenderte Repositorium bleibt unbeanstandet - jede ge
 gegenprobe("58b", "Dieselbe Nennung MIT Registerzeile bleibt zulaessig - gemessen wird "
                   "das Fehlen der Zeile und nicht die Nennung", _58_nennung_mit_register,
            M58_FEHLT)
+
+
+# --- Pruefung 60: der Befehlsschlitz, den der Ausloeser braucht (D-178) -----------
+#
+# Die Marken sind die Meldungstexte der Pruefung, nicht ihre Nummer: Eine Sonde, die
+# auf eine Nummer ankert, bricht bei der naechsten Umnummerierung.
+M60_FEHLT = "die Vorbedingung nennt den Schlitz nicht"
+M60_ANKER = "kein Skill mit 'Exec(<..._COMMAND>)' im Frontmatter gefunden"
+P60_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md".replace("/", os.sep)
+P60_KATALOGANKER = "| FW-AK-02 (Basis) |"
+P60_SKILLS = "leitwerk-core/framework/skills".replace("/", os.sep)
+
+
+# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg)`, nicht `offen`. Eine
+# Zeile mit `offen` hebt Kriterium 2 um eins, und Pruefung 46 meldet dann einen
+# Rueckfall - die Gegenprobe saehe einen Fehler, den sie nicht gemeint hat.
+# Gemessen am 2026-09-18: drei Abweichungen im ersten Sondenlauf zu 60.
+#     Wer einen erlaubten Fall herstellt, muss ihn VOLLSTAENDIG herstellen.
+def _60_katalogzeile(root: str, zeile: str) -> None:
+    zeile_nach(P(root, P60_KATALOG), P60_KATALOGANKER, zeile)
+
+
+def _60_ohne_schlitz(root: str) -> None:
+    """Ein sitzung-Testfall ruft `/fw-change-small` und nennt keinen Befehlsschlitz.
+
+    Genau die Gestalt, in der FW-SC-01 zwei Releases lang dastand - und die zwei
+    Laeufe gekostet hat.
+    """
+    _60_katalogzeile(root,
+        "| FW-SO-08 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
+        "| `/fw-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
+        "| sitzung | bestanden (Sondenbeleg) |")
+
+
+def _60_mit_schlitz(root: str) -> None:
+    """Gegenprobe: dieselbe Zeile, aber die Vorbedingung nennt beide Schlitze."""
+    _60_katalogzeile(root,
+        "| FW-SO-09 | Sondenzeile | Sondenvorbedingung; `<TEST_COMMAND>` und "
+        "`<LINT_COMMAND>` im `allow`-Korb | `/fw-change-small \"<Sondenaufgabe>\"` "
+        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |")
+
+
+def _60_andere_pruefmethode(root: str) -> None:
+    """Gegenprobe: derselbe Ausloeser bei Pruefmethode `review`.
+
+    Eine Durchsicht braucht keinen Messbaum; die Regel gilt dem Lauf.
+    """
+    _60_katalogzeile(root,
+        "| FW-SO-10 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
+        "| `/fw-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
+        "| review | bestanden (Sondenbeleg) |")
+
+
+def _60_skill_ohne_schlitz(root: str) -> None:
+    """Gegenprobe: ein Skill, dessen Frontmatter keinen Befehl ausfuehrt.
+
+    Sie belegt, dass der Zuschnitt nicht zu breit ist. `fw-repo-analyze` ist rein
+    lesend und fuehrt keinen Befehlsschlitz.
+    """
+    _60_katalogzeile(root,
+        "| FW-SO-11 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
+        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| sitzung | bestanden (Sondenbeleg) |")
+
+
+def _60_anker_verlieren(root: str) -> None:
+    """Ohne `Exec(<..._COMMAND>)` in den Skillquellen hat Pruefung 60 keinen Gegenstand.
+
+    Sie leitet ihn von dort ab; geht der Schluessel verloren, faende sie nichts und
+    bestuende leise. Die Sonde belegt, dass sie das Fehlen selbst meldet (D-23).
+    """
+    basis = P(root, *P60_SKILLS.split(os.sep))
+    getroffen = 0
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "SKILL.md")
+        if not os.path.isfile(pfad):
+            continue
+        text = lies(pfad)
+        neu = text.replace("Exec(<TEST_COMMAND>)", "Exec(kein-schlitz)")
+        neu = neu.replace("Exec(<LINT_COMMAND>)", "Exec(kein-schlitz)")
+        neu = neu.replace("Exec(<BUILD_COMMAND>)", "Exec(kein-schlitz)")
+        if neu != text:
+            schreib(pfad, neu)
+            getroffen += 1
+    if not getroffen:
+        raise Praeparationsfehler(
+            "Kein Skill fuehrt 'Exec(<..._COMMAND>)' im Frontmatter - die Sonde zu 60 "
+            "haette keinen Anker")
+
+
+sonde("60a", "Ein sitzung-Testfall ruft einen Skill auf, der einen Befehlsschlitz "
+             "ausfuehrt, und nennt ihn in seiner Vorbedingung nicht - genau die "
+             "Gestalt, die FW-SC-01 zwei Laeufe gekostet hat",
+      _60_ohne_schlitz, M60_FEHLT)
+
+sonde("60b", "Ohne 'Exec(<..._COMMAND>)' in den Skillquellen meldet Pruefung 60 den "
+             "verlorenen Gegenstand, statt leise zu bestehen",
+      _60_anker_verlieren, M60_ANKER)
+
+gegenprobe("60a", "Das unveraenderte Repositorium bleibt unbeanstandet - die drei "
+                  "betroffenen Zellen nennen ihren Schlitz seit 0.66.0",
+           None, M60_FEHLT)
+
+gegenprobe("60b", "Dieselbe Zeile mit beiden Schlitzen in der Vorbedingung bleibt "
+                  "zulaessig - das ist die Abhilfe", _60_mit_schlitz, M60_FEHLT)
+
+gegenprobe("60c", "Derselbe Ausloeser bei Pruefmethode `review` bleibt zulaessig - "
+                  "eine Durchsicht braucht keinen Messbaum", _60_andere_pruefmethode,
+           M60_FEHLT)
+
+gegenprobe("60d", "Ein Skill, dessen Frontmatter keinen Befehl ausfuehrt, bleibt ohne "
+                  "Befehlsangabe zulaessig - der Zuschnitt ist nicht zu breit",
+           _60_skill_ohne_schlitz, M60_FEHLT)
 
 
 # --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------

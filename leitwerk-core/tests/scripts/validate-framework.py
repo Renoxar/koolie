@@ -279,7 +279,17 @@ Prüft (statisch, ohne laufenden KI-Client):
      zugleich zwei Schichten bindet. Und (c) prueft nur die Richtung Quelle -> Korb:
      Ueberzaehliges bleibt zulaessig, wie schon bei Pruefung 42
 
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 59 laeuft als eigenes
+ 60. Der Befehlsschlitz, den der Ausloeser braucht (D-178): Eine sitzung-Zelle, deren
+     Ausloeser einen Skill als /name aufruft, dessen Frontmatter einen Befehlsschlitz
+     AUSFUEHRT (Exec(<..._COMMAND>) unter permissions), nennt diesen Schlitz in ihrer
+     VORBEDINGUNG. ANLASS: FW-SC-01 ist am 2026-09-18 zum dritten Mal gefahren worden
+     und zum dritten Mal nicht abnehmbar gewesen - der Lauf hat NICHTS geaendert, weil
+     fw-change-small den Testbefehl VOR dem ersten Schreibzugriff verlangt und der
+     Befehl im Messbaum im ask-Korb stand; ask ist nicht-interaktiv eine Abweisung
+     (D-134). Derselbe Fehler kostete FW-PO-02 einen Durchgang. GRENZE: Geprueft wird
+     die NENNUNG des Schlitzes, nicht die Aussage darueber - die Pruefung faengt das
+     Vergessen, nicht den Irrtum. Und sie gilt nur fuer sitzung-Zellen
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 60 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6369,6 +6379,116 @@ def check_decisionregister(root: str) -> None:
                 f"und steht in keiner Registerzeile. Ein Register, das seinen Gegenstand "
                 f"nicht führt, ist keine Liste, sondern eine Auswahl (D-169)")
 
+# --- Pruefung 60: Der Befehlsschlitz, den der Ausloeser braucht ---------------------
+#
+# ANLASS. Gemessen am 2026-09-18 im fuenften Sitzungstest (CR-2026-091). `FW-SC-01`
+# ist zum dritten Mal gefahren worden und zum dritten Mal nicht abnehmbar gewesen -
+# diesmal aus einem neuen Grund: Der Lauf hat NICHTS geaendert. `fw-change-small`
+# verlangt in Schritt 4, den Testbefehl VOR dem ersten Schreibzugriff auszufuehren;
+# im Messbaum stand `<TEST_COMMAND>` im `ask`-Korb, und `ask` ist im
+# nicht-interaktiven Betrieb eine Abweisung (D-134). Der Lauf hat angehalten und
+# gefragt - regelkonform. Gemessen war der Korb, nicht die Scope-Treue.
+#
+#     Der Schreibzuschnitt deckt das SCHREIBEN, nicht das AUSFUEHREN.
+#
+# Derselbe Fehler hat im selben Release `FW-PO-02` einen Durchgang gekostet, und er
+# wiederholt sich bei jeder Wiederholung, weil die Zelle ihn nicht nennt. `FW-SC-02`
+# ist mit 0.59.0 abgenommen worden, weil sein Messbaum den Befehl freigab - seine
+# Zelle sagt es nicht, und wer sie ohne dieses Wissen wiederholt, faellt hinein.
+#
+# GEGENSTAND. Eine `sitzung`-Zelle, deren Ausloeser einen Skill als `/name` aufruft,
+# dessen Frontmatter einen Befehlsschlitz AUSFUEHRT (`Exec(<..._COMMAND>)` unter
+# `permissions`), muss diesen Schlitz in ihrer VORBEDINGUNG nennen.
+#
+# WARUM DAS FRONTMATTER UND NICHT DER FLIESSTEXT. `fw-plan` nennt `<TEST_COMMAND>`
+# in seinen Vorbedingungen und in seiner Teststrategie - es fuehrt den Befehl aber
+# nicht aus, sondern plant ihn. Ein Zuschnitt ueber den Fliesstext haette `FW-FI-02`
+# mitgemeldet, dessen Lauf am 2026-09-18 keinen einzigen Befehl gebraucht hat. Das
+# Frontmatter sagt, was der Skill TUT; der Fliesstext, wovon er redet.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird die NENNUNG des Schlitzes, nicht die
+# Aussage darueber. Eine Vorbedingung, die `<TEST_COMMAND>` nennt und etwas Falsches
+# darueber sagt, laeuft durch. Die Pruefung faengt das Vergessen, nicht den Irrtum.
+# ZWEITE GRENZE: Sie gilt nur fuer `sitzung`-Zellen. Ein `review` braucht keinen
+# Messbaum, und ein `skript` fuehrt seine Befehle selbst.
+P60_EXEC_RE = re.compile(r"Exec\((<[A-Z_]+_COMMAND>)\)")
+
+
+def _skills_mit_befehlsschlitz(root: str) -> dict:
+    """Skillname -> Liste der Befehlsschlitze, die sein Frontmatter ausfuehrt.
+
+    Abgeleitet aus den Skillquellen, nicht gepflegt: Wer einem Skill einen Befehl
+    hinzufuegt, soll nicht daran denken muessen, eine Liste im Validator nachzuziehen.
+    """
+    raus = {}
+    basen = [os.path.join(root, KERN, "framework", "skills"),
+             os.path.join(root, KERN, "framework", "role-packs")]
+    for basis in basen:
+        if not os.path.isdir(basis):
+            continue
+        for wurzel, _, files in os.walk(basis):
+            if "SKILL.md" not in files:
+                continue
+            text = read(os.path.join(wurzel, "SKILL.md"))
+            if not text.startswith("---"):
+                continue
+            ende = text.find("---", 3)
+            if ende < 0:
+                continue
+            schlitze = sorted(set(P60_EXEC_RE.findall(text[3:ende])))
+            if schlitze:
+                raus[os.path.basename(wurzel)] = schlitze
+    return raus
+
+
+def check_befehlsschlitz_in_vorbedingung(root: str) -> None:
+    """Pruefung 60 (D-178): Der Ausloeser braucht einen Befehl - die Zelle sagt es."""
+    skills = _skills_mit_befehlsschlitz(root)
+    if not skills:
+        err(f"{KERN}/framework/skills/: kein Skill mit 'Exec(<..._COMMAND>)' im "
+            f"Frontmatter gefunden – Prüfung 60 leitet ihren Gegenstand daraus ab und "
+            f"hat ihn verloren; sie bestünde sonst leise (D-23)")
+        return
+    dateien = [os.path.join(root, KERN, "tests", "TEST_CATALOG.md")]
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "TESTS.md" in files:
+                dateien.append(os.path.join(wurzel, "TESTS.md"))
+    for pfad in sorted(dateien):
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        i_vor = i_ein = i_pm = -1
+        for nr, zeile in enumerate(read(pfad).splitlines(), 1):
+            if not zeile.lstrip().startswith("|"):
+                continue
+            if "Prüfmethode" in zeile and "Eingabe" in zeile:
+                i_vor = _tabellenspalte(zeile, "Vorbedingung")
+                i_ein = _tabellenspalte(zeile, "Eingabe")
+                i_pm = _tabellenspalte(zeile, "Prüfmethode")
+                continue
+            if min(i_vor, i_ein, i_pm) < 0:
+                continue
+            zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+            if len(zellen) <= max(i_vor, i_ein, i_pm):
+                continue
+            if "sitzung" not in zellen[i_pm]:
+                continue
+            ausloeser, vorbedingung = zellen[i_ein], zellen[i_vor]
+            gebraucht = []
+            for skill, schlitze in skills.items():
+                if f"/{skill}" in ausloeser:
+                    gebraucht += schlitze
+            fehlend = sorted({s for s in gebraucht if s not in vorbedingung})
+            if fehlend:
+                err(f"{rel}:{nr}: Der Auslöser ruft einen Skill auf, der "
+                    f"{', '.join(fehlend)} ausführt – die Vorbedingung nennt den "
+                    f"Schlitz nicht. Steht der Befehl im Meßbaum im `ask`-Korb, hält "
+                    f"der Lauf regelkonform an, und gemessen ist der Korb statt des "
+                    f"Gegenstands (D-134, D-178)")
+
+
 # --- Pruefung 59: Der Overlay-Wert in der Schicht, die ihn durchsetzt ---------------
 #
 # ANLASS. Gemessen am 2026-09-18 am Uebungsrepositorium (CR-2026-090, Befund 3): 0.63.0
@@ -6551,6 +6671,7 @@ def main() -> int:
     check_pflichtplatzhalter(root)
     check_ungebundene_vorbedingung(root)
     check_decisionregister(root)
+    check_befehlsschlitz_in_vorbedingung(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
