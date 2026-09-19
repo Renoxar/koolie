@@ -23,6 +23,8 @@ Exit-Code 0 = bestanden, 1 = Befunde. Status: entwurf; die inhaltliche Bewertung
 from __future__ import annotations
 
 import argparse
+import io
+import json
 import os
 import re
 import sys
@@ -37,6 +39,65 @@ EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
 IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 INTERNAL_HOST_RE = re.compile(r"\b[a-z0-9-]+\.(?:internal|intra|corp|lan)\b", re.I)
 FINDING_RE = re.compile(r"[\w./-]+\.[A-Za-z0-9]+:\d+|nicht gefunden mit Suchmuster", re.I)
+
+
+def _kernverzeichnis(root: str) -> str | None:
+    """Das Kernverzeichnis des Baums - der Name ist nicht geraten, sondern gesucht."""
+    for name in sorted(os.listdir(root)):
+        if os.path.isfile(os.path.join(root, name, "clients", "_template", "manifest.json")) \
+                or os.path.isdir(os.path.join(root, name, "clients")):
+            if os.path.isdir(os.path.join(root, name, "framework")):
+                return os.path.join(root, name)
+    return None
+
+
+def skill_pfad(root: str, skill: str):
+    """Die SKILL.md des Skills - aus dem MANIFEST des installierten Packs.
+
+    Marken, Wurzeln und Ablagen gehoeren abgeleitet, nicht gepflegt (D-128, D-142). Bis
+    0.67.1 stand hier `.devin/skills/...` fest verdrahtet: In einem Messbaum mit dem Pack
+    `claude-code` fand dieses Werkzeug den Skill nicht - und es ist das zweite Pruefmittel
+    von drei Zellen der Testblaetter. Gemessen am 2026-09-19 im Aufbau zu Buendel 1.
+
+    Reihenfolge: installiertes Pack (Laufzeitablage im Baum vorhanden), sonst die QUELLE
+    des Kerns. Zwei installierte Packs sind ein unvollstaendiger Packwechsel und werden
+    gemeldet, nicht geraten.
+    """
+    kern = _kernverzeichnis(root)
+    gefunden = []
+    if kern:
+        packs = os.path.join(kern, "clients")
+        for name in sorted(os.listdir(packs)) if os.path.isdir(packs) else []:
+            if name.startswith("_"):
+                continue
+            manifest = os.path.join(packs, name, "manifest.json")
+            if not os.path.isfile(manifest):
+                continue
+            with io.open(manifest, encoding="utf-8") as fh:
+                man = json.load(fh)
+            laufzeit = man.get("runtime_dir")
+            ablage = (man.get("runtime_placeholders") or {}).get("<SKILLS_DIR>")
+            if not laufzeit or not ablage:
+                continue
+            if os.path.isdir(os.path.join(root, laufzeit)):
+                gefunden.append((name, ablage.replace("/", os.sep)))
+    if len(gefunden) > 1:
+        namen = ", ".join(n for n, _ in gefunden)
+        return None, (f"zwei Laufzeitablagen im Baum ({namen}) - ein Packwechsel ist "
+                      f"unvollstaendig; ohne eindeutiges Pack wird nicht geraten")
+    if gefunden:
+        pfad = os.path.join(root, gefunden[0][1], skill, "SKILL.md")
+        if os.path.exists(pfad):
+            return pfad, None
+        return None, (f"Skill nicht gefunden: {pfad} (Pack {gefunden[0][0]}, aus dem "
+                      f"Manifest aufgeloest)")
+    if kern:
+        quelle = os.path.join(kern, "framework", "skills", skill, "SKILL.md")
+        if os.path.exists(quelle):
+            return quelle, None
+        return None, f"kein Client Pack installiert, und die Quelle fehlt: {quelle}"
+    return None, (f"weder ein installiertes Client Pack noch ein Kernverzeichnis unter "
+                  f"{root} - ohne beides gibt es keine SKILL.md zum Vergleich")
 
 
 def normalize_heading(h: str) -> str:
@@ -61,9 +122,9 @@ def main() -> int:
     ap.add_argument("--root", default=os.getcwd())
     args = ap.parse_args()
 
-    skill_path = os.path.join(args.root, ".devin", "skills", args.skill, "SKILL.md")
-    if not os.path.exists(skill_path):
-        print(f"FEHLER   Skill nicht gefunden: {skill_path}")
+    skill_path, grund = skill_pfad(args.root, args.skill)
+    if skill_path is None:
+        print(f"FEHLER   {grund}")
         return 1
     skill_md = open(skill_path, encoding="utf-8").read()
     output = open(args.file, encoding="utf-8").read() if args.file else sys.stdin.read()

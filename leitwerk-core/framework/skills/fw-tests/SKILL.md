@@ -23,7 +23,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-006` |
 | Name | `fw-tests` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
@@ -102,7 +102,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Testerstellung – fw-tests v0.1.1
+## Testerstellung – fw-tests v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Komponente: <pfad-oder-symbol> · Fachliche Grundlage: <Akzeptanzkriterien | Dokumentation | Angabe der Bearbeiterin oder des Bearbeiters>

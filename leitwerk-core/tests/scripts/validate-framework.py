@@ -299,7 +299,15 @@ Prüft (statisch, ohne laufenden KI-Client):
      Umstellung meldete Pruefung 60 sofort ZWANZIG Zellen. GRENZE: Geprueft wird das
      erste Wort gegen eine feste Menge; ein Zusatz dahinter bleibt zulaessig. Nicht
      geprueft wird, ob das Wort das RICHTIGE ist
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 61 laeuft als eigenes
+ 62. Version der Ausgabevorlage (D-185): Keine SKILL.md nennt eine Versionsnummer
+     woertlich. Die Ausgabevorlage verweist auf den Steckbrief ("v<Version aus dem
+     Steckbrief>"), und der Client setzt sie beim Rendern ein. ANLASS: Gemessen am
+     2026-09-19 im ersten Buendellauf - dreizehn Traeger fuehrten eine woertliche
+     Version, ZEHN davon eine andere als ihr eigener Steckbrief. Die drei, die
+     uebereinstimmten, sind die drei, deren Version seit der Erstfassung nicht
+     gestiegen ist: Die Uebereinstimmung war Stillstand, nicht Pflege. Gefunden hat es
+     ein gemessener Lauf selbst, in einer Nebenbemerkung seines Ergebnisberichts
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 62 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6619,6 +6627,43 @@ def _p59_globs(zellentext: list) -> list:
     return raus
 
 
+# --- Pruefung 62: die Version der Ausgabevorlage (D-185) ---------------------------
+#
+# ANLASS. Der erste Buendellauf der Testblaetter (0.68.0) hat elf Sitzungslaeufe
+# gefahren; einer davon meldete in einer Nebenbemerkung, die Attributtabelle seines
+# Skills nenne Version 0.1.3 und der Kopf der Ausgabevorlage v0.1.1 - er hat die
+# hoehere genommen und es dazugeschrieben. Nachgezaehlt: 13 Traeger mit woertlicher
+# Version, 10 davon abweichend, 15 Fundstellen.
+#
+# DER ZUSCHNITT IST DIE GANZE DATEI, nicht nur Abschnitt 5. Die zweite Fundstelle
+# zweier Skills steht in der Zeile "| Erstellt mit | <skill> vX.Y.Z |" - derselbe
+# Fehler an einer Stelle, die ein Zuschnitt auf die Ueberschrift verfehlt haette.
+# Die Steckbriefzeile selbst traegt ihre Version OHNE das fuehrende `v` und faellt
+# deshalb nicht unter das Muster; sie ist die Quelle, nicht die Kopie.
+def check_skillversion_vorlage(root: str) -> None:
+    """Pruefung 62 (D-185): Keine SKILL.md nennt eine Version woertlich."""
+    dateien = []
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "SKILL.md" in files:
+                dateien.append(os.path.join(wurzel, "SKILL.md"))
+    gesehen = 0
+    for pfad in sorted(dateien):
+        gesehen += 1
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        text = read(pfad)
+        for nr, zeile in enumerate(text.splitlines(), 1):
+            for treffer in re.finditer(r"\bv\d+\.\d+\.\d+\b", zeile):
+                err(f"{rel}:{nr}: nennt die Version wörtlich ({treffer.group(0)}). Eine "
+                    f"Zahl, die gepflegt werden muss, wird nicht gepflegt – gemessen "
+                    f"waren zehn von dreizehn Trägern von ihrem eigenen Steckbrief "
+                    f"abgewichen. Die Vorlage verweist auf den Steckbrief (D-185)")
+    if gesehen == 0:
+        err(f"{KERN}/framework/: keine SKILL.md gefunden – Prüfung 62 hat ihren "
+            f"Gegenstand verloren; sie bestünde sonst leise (D-23)")
+
+
 def check_overlay_wertabgleich(root: str, man: dict) -> None:
     """Pruefung 59 (D-171): Der Overlay-Wert gilt in der Schicht, die ihn durchsetzt."""
     overlay_pfad = os.path.join(root, "project-overlay", "OVERLAY.md")
@@ -6750,6 +6795,7 @@ def main() -> int:
     check_ungebundene_vorbedingung(root)
     check_decisionregister(root)
     check_befehlsschlitz_in_vorbedingung(root)
+    check_skillversion_vorlage(root)
     check_pruefmittel_vokabular(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)

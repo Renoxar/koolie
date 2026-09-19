@@ -24,7 +24,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-005` |
 | Name | `fw-change-small` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -105,7 +105,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Änderungsumsetzung – fw-change-small v0.1.1
+## Änderungsumsetzung – fw-change-small v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Aufgabe: <Kurzfassung in eigenen Worten> · Referenz: <Ticket-Kennung, Plan oder „keine"> · Akzeptanzkriterien: <Liste> · Nicht-Ziele: <Liste oder „nicht benannt">

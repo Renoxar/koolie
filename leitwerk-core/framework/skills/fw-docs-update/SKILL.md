@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-011` |
 | Name | `fw-docs-update` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
@@ -98,7 +98,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Dokumentationsaktualisierung – fw-docs-update v0.1.1
+## Dokumentationsaktualisierung – fw-docs-update v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Dokument(e): <Pfade in <DOC_PATHS>> · Code-Bereich / Änderungsreferenz: <Pfade | Ergebnisbericht | Plan | aus Dokumentverweisen abgeleitet (Vorschlag)>

@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-002` |
 | Name | `fw-code-explain` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -89,7 +89,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Code-Erklärung – fw-code-explain v0.1.1
+## Code-Erklärung – fw-code-explain v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Einheit: <symbol oder pfad/datei:zeile–zeile> · Tiefe: <überblick|detail> · Leitfrage: <text oder „keine">
