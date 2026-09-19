@@ -330,7 +330,19 @@ Prüft (statisch, ohne laufenden KI-Client):
      Geprueft wird die Deckung, nicht die Formulierung; die LETZTE Zelle ist
      Ergebnisstatus und damit Aufzeichnung (D-117), dieselbe Spalten-Ausnahme wie
      bei Pruefung 48
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 64 laeuft als eigenes
+ 65. Der Ergebnisstatus ohne Beleg (D-202): Ein Ergebnisstatus ausserhalb von
+     `offen` nennt ein Protokoll unter tests/protocols/, und bei Pruefmethode
+     `sitzung` zusaetzlich das gemessene Client Pack mit Produktversion (D-117).
+     Das Statuswort selbst stammt aus dem Vokabular von TEST_CATALOG.md Punkt 4 -
+     abgeleitet aus jener Zeile, nicht gepflegt. ANLASS: Punkt 4 sagt "Ein
+     Ergebnisstatus ausser `offen` MUSS auf ein Protokoll verweisen", D-117
+     verlangt Pack und Version - und keine der vierundsechzig Pruefungen setzte es
+     durch. Gezaehlt am 2026-09-19 ueber alle 125 Ergebniszellen: NULL Verstoesse,
+     die Regel trug allein durch Sorgfalt. Gebaut wird sie in dem Release, das
+     achtzehn neue `bestanden` in einem Zug eintraegt. GRENZE: Geprueft wird die
+     NENNUNG, nicht ihre Richtigkeit - ein Verweis auf das falsche Protokoll und
+     eine Version, die nicht die gemessene ist, laufen durch
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 65 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6901,6 +6913,135 @@ def check_ausgabemarke_gedeckt(root: str) -> None:
                         f"Unrecht durch (D-197). Die Sache statt der Marke verlangen "
                         f"- oder die Marke in Abschnitt 5 beziehungsweise 6 aufnehmen")
 
+# --- Pruefung 65: Der Ergebnisstatus ohne Beleg -------------------------------------
+#
+# ANLASS. TEST_CATALOG.md Punkt 4 sagt: "Ein Ergebnisstatus ausser `offen` MUSS auf ein
+# Protokoll verweisen." D-117 sagt: "Ein Ergebnisstatus nennt das gemessene Client Pack
+# und dessen Produktversion." Beides steht normativ da - und KEINE der vierundsechzig
+# Pruefungen setzte es durch. Gezaehlt am 2026-09-19 ueber alle 125 Ergebniszellen des
+# zentralen Katalogs und der dreizehn Testblaetter: NULL Verstoesse. Die Regel trug
+# bisher allein durch die Sorgfalt derer, die sie eingetragen haben.
+#
+# WARUM SIE IN EINEM RELEASE GEBAUT WIRD, IN DEM SIE NICHTS FINDET. Dieses Release
+# traegt in einem Zug ACHTZEHN neue `bestanden` ein - der Zeitpunkt, an dem eine
+# ungezaehlte Belegpflicht rutscht. Die Bewegung ist die Umkehrung von Pruefung 60:
+# Dort hatte eine Pruefung zwei Releases lang keinen Gegenstand und meldete dann zwanzig
+# Zellen; hier ist der Gegenstand vollstaendig und soll es bleiben.
+#
+# DREI GEGENSTAENDE:
+#   (a) Das Statuswort stammt aus dem Vokabular von Punkt 4 - ABGELEITET aus jener
+#       Zeile, nicht gepflegt (dieselbe Regel wie bei Pruefung 61, 64 und 48).
+#   (b) Ein Status ausser `offen` nennt ein Protokoll unter tests/protocols/.
+#   (c) Ein Status ausser `offen` nennt bei Pruefmethode `sitzung` ein Client Pack mit
+#       Produktversion. Die Packkennungen kommen aus leitwerk-core/clients/, nicht aus
+#       einer Handliste - ein neues Pack bringt seine Kennung selbst mit (D-117).
+#
+# WARUM (c) NUR BEI `sitzung`. D-117 spricht von DYNAMISCHEN Tests. Ein Validatorlauf
+# (`skript`) misst das Repositorium und keinen Client, ein Dokumentenreview (`review`)
+# ebenso; beide brauchen kein Pack. Der Zusatz hinter dem Wort bleibt zulaessig
+# (`sitzung + validate-output.py`), deshalb wird auf ENTHALTENSEIN geprueft und nicht
+# auf das erste Wort - `skript+sitzung` traegt beide Methoden und damit beide Pflichten.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird die NENNUNG, nicht ihre Richtigkeit: Ein
+# Verweis auf ein Protokoll, das den Fall gar nicht behandelt, laeuft durch, und eine
+# Version, die nicht die gemessene ist, ebenso. Das bleibt review-Gegenstand (D-23) -
+# dieselbe Enthaltung, die Pruefung 61 fuer das RICHTIGE Pruefmittelwort zieht.
+P65_MARKE = "**Ergebnisstatus:**"
+P65_PROTOKOLL = re.compile(r"tests/protocols/[^\s`)]+\.md")
+
+
+def _p65_vokabular(root: str) -> list:
+    """Die zulaessigen Statuswoerter, abgeleitet aus TEST_CATALOG.md Punkt 4.
+
+    Nicht gepflegt: Wer das Vokabular dort erweitert, soll nicht daran denken muessen,
+    eine Liste im Validator nachzuziehen. Der Klammerzusatz ("(Referenz auf Befund)")
+    gehoert zur Erlaeuterung und nicht zum Wort.
+    """
+    pfad = os.path.join(root, KERN, "tests", "TEST_CATALOG.md")
+    if not os.path.isfile(pfad):
+        return []
+    for zeile in read(pfad).splitlines():
+        if P65_MARKE not in zeile:
+            continue
+        rest = zeile.split(P65_MARKE, 1)[1]
+        m = re.match(r"\s*(`[^`]+`(?:\s*/\s*`[^`]+`)*)", rest)
+        if not m:
+            return []
+        return [t.strip("` ").split("(")[0].strip() for t in m.group(1).split("/")]
+    return []
+
+
+def _p65_packkennungen(root: str) -> list:
+    """Die Kennungen der Client Packs - aus dem Verzeichnis, nicht aus einer Liste."""
+    return [k for k, _d, _m in _client_packs(root)]
+
+
+def check_ergebnisstatus_beleg(root: str) -> None:
+    """Pruefung 65 (D-202): Ein Ergebnisstatus ausser `offen` traegt seinen Beleg."""
+    vokabular = _p65_vokabular(root)
+    if not vokabular:
+        err(f"{KERN}/tests/TEST_CATALOG.md: das Vokabular des Ergebnisstatus ist unter "
+            f"Punkt 4 nicht mehr auffindbar - Pruefung 65 leitet es von dort ab und hat "
+            f"ihren Gegenstand verloren; sie bestuende sonst leise (D-23)")
+        return
+    packs = _p65_packkennungen(root)
+    pack_re = re.compile("(" + "|".join(re.escape(k) for k in packs) +
+                         r")[^|]{0,60}?\d+\.\d+\.\d+") if packs else None
+    dateien = [os.path.join(root, KERN, "tests", "TEST_CATALOG.md")]
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "TESTS.md" in files:
+                dateien.append(os.path.join(wurzel, "TESTS.md"))
+    gesehen = 0
+    for pfad in sorted(dateien):
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        i_pm = i_st = -1
+        for nr, zeile in enumerate(read(pfad).splitlines(), 1):
+            if not zeile.lstrip().startswith("|"):
+                continue
+            if "Ergebnisstatus" in zeile and "Prüfmethode" in zeile:
+                i_pm = _tabellenspalte(zeile, "Prüfmethode")
+                i_st = _tabellenspalte(zeile, "Ergebnisstatus")
+                continue
+            if min(i_pm, i_st) < 0:
+                continue
+            zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+            if len(zellen) <= max(i_pm, i_st) or not zellen[0]:
+                continue
+            if set(zellen[0]) <= set("-: "):
+                continue
+            # Die Betonung gehoert der Darstellung, nicht dem Wort.
+            status = zellen[i_st].lstrip("* ").strip()
+            if not status:
+                continue
+            gesehen += 1
+            wort = next((w for w in vokabular if status.startswith(w)), None)
+            if wort is None:
+                err(f"{rel}:{nr}: Ergebnisstatus beginnt nicht mit einem Wort des "
+                    f"Vokabulars ({', '.join(vokabular)}) - TEST_CATALOG.md Punkt 4 "
+                    f"fuehrt es abschliessend (D-202)")
+                continue
+            if wort == "offen":
+                continue
+            if not P65_PROTOKOLL.search(status):
+                err(f"{rel}:{nr}: Ergebnisstatus '{wort}' nennt kein Protokoll unter "
+                    f"{KERN}/tests/protocols/. TEST_CATALOG.md Punkt 4: 'Ein "
+                    f"Ergebnisstatus ausser offen MUSS auf ein Protokoll verweisen' - "
+                    f"ohne den Verweis ist die Abnahme eine Behauptung (D-202)")
+            if pack_re is not None and "sitzung" in zellen[i_pm] \
+                    and not pack_re.search(status):
+                err(f"{rel}:{nr}: Ergebnisstatus '{wort}' einer sitzung-Zelle nennt kein "
+                    f"Client Pack mit Produktversion. Ein Ergebnisstatus deckt kein "
+                    f"anderes Pack, und ohne die Version sagt er nicht, gegen welchen "
+                    f"Produktstand gemessen wurde (D-117, D-202)")
+    if gesehen == 0:
+        err(f"{KERN}/tests/: keine Zelle mit Ergebnisstatus gefunden - Pruefung 65 hat "
+            f"ihren Gegenstand verloren; sie bestuende sonst leise (D-23)")
+
+
 def check_overlay_wertabgleich(root: str, man: dict) -> None:
     """Pruefung 59 (D-171): Der Overlay-Wert gilt in der Schicht, die ihn durchsetzt."""
     overlay_pfad = os.path.join(root, "project-overlay", "OVERLAY.md")
@@ -7036,6 +7177,7 @@ def main() -> int:
     check_pruefmittel_vokabular(root)
     check_nummernverweis(root)
     check_ausgabemarke_gedeckt(root)
+    check_ergebnisstatus_beleg(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
