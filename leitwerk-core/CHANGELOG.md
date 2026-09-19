@@ -2,6 +2,72 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.70.0] - 2026-09-19
+
+**Die Vorbedingungen von Buendel 2 - die siebzehnte Praeparation und der Verweis, der ins
+Leere zeigt** (`CR-2026-096`, D-192, D-193).
+
+Der Releaseplan sah fuer dieses Release den zweiten Buendellauf vor. Vor dem ersten
+Handgriff sind die **achtzehn** Zellen von `fw-plan`, `fw-error-analyze` und
+`fw-bugfix-prepare` einzeln gegen den heutigen Stand des Uebungsrepositoriums gehalten
+worden - **zum dreizehnten Mal in Folge der billigste Befund des Releases.**
+
+### Befund 1: drei Zellen ohne Gegenstand
+
+`SK-008-P01`, `SK-008-P02` und `SK-008-N01` verlangen eine Uebungskomponente mit einem
+Randbedingungsfehler, **zu dem ein Stacktrace vorliegt**. Gemessen: Der ausfuehrbare Strang
+wirft an **genau zwei** Stellen, und beide sind Absicht - die Schluesselpruefung in
+`sortierung.ts` und das fehlende Wurzelelement in `main.tsx`. Der einzige eingebaute
+Randbedingungsfehler (`UEB-03`) **wirft nicht**: Er liefert ein falsches Ergebnis, und ein
+falsches Ergebnis hat keinen Stacktrace.
+
+**`UEB-17` stellt beide Haelften in einem Paar neuer Module her** - eines wirft, im anderen
+entsteht der Fehlerzustand. Damit hat auch `SK-008-P02` seinen Gegenstand: Symptomstelle
+und Entstehungsort liegen in verschiedenen Dateien.
+
+### Befund 2, und er ist groesser als das Buendel
+
+Drei der achtzehn Zellen erwarten eine Bereinigung *"nach `02-privacy.md` Abschnitt 3.3"*.
+**Abschnitt 3 jener Datei fuehrte zehn nummerierte REGELN und keine einzige
+Unterueberschrift.** Nachgezaehlt gegen den unberuehrten Vorstand: **30 Verweise in 15
+anweisenden Traegern** auf vier Nummern, die es als Abschnitt nicht gab (1.3, 3.3, 3.4,
+3.5).
+
+🔴 **Dieselbe Form bedeutete in derselben Datei zweierlei:** `Abschnitt 2.1` zeigte auf
+eine Ueberschrift, `Abschnitt 3.3` auf eine Listennummer. Und `05-working-model.md` fuehrt
+seine Querschnittsregeln laengst als `### 3.1` bis `### 3.6`. **Das Zielmodul war der
+Ausreisser, nicht die dreissig Verweise** - deshalb sind die Ueberschriften nachgezogen und
+**kein einziger der fuenfzehn Traeger angefasst** worden.
+
+🔴 **Und die erste Zaehlung war wieder zu klein:** Vier Testblaetter nennen ihr Ziel als
+blossen Dateinamen. Wer nur den vollen Pfad sucht, zaehlt **25 statt 30**.
+
+### Pruefung 63
+
+Nennt ein anweisender Traeger des Kerns eine Datei und dahinter `Abschnitt N[.M]`, fuehrt
+das Ziel eine Ueberschrift mit genau dieser Nummer. Beide Ausdrucksformen, `bis`-Spannen
+aufgeloest; Aufzeichnungen sind ausgenommen (D-141) - und ihre Liste ist keine neue,
+sondern `NEUTRAL_CHRONIK`. **Drei Sonden und zwei Gegenproben**, darunter eine, die belegt,
+dass ein Protokoll denselben Verweis tragen darf.
+
+### Migrationshinweise
+
+**Genau eine Datei je uebernehmendem Projekt**, gemessen mit dem `leitwerk-core` des
+Arbeitsbaums gegen eine vorher auf 0.69.0 gehobene Kopie:
+
+```
+Core aktualisiert (1):
+  <client>/skills/fw-error-analyze/TESTS.md
+```
+
+Die Kernmodule (`framework/core/02-privacy.md`) und der Pruefapparat werden von
+`install.py` nicht geschrieben - sie kommen mit dem Verzeichnis `leitwerk-core/` selbst.
+
+Kumulativ gemessen: gegen das Uebungsrepositorium im Stand **0.66.0** sind es **39**
+Dateien, gegen den Piloten im Stand **0.54.1** nur **37** - obwohl er weiter zurueck
+liegt. Der Grund ist das Role Pack, das der Pilot nicht installiert hat.
+🔴 **Eine Dateizahl gilt je Projekt, je Pack und je Stand**, nicht allgemein.
+
 ## [0.69.0] - 2026-09-19
 
 **Der Pruefapparat bekommt einen Filter - die Schleife wird kuerzer, der Nachweis nicht**
