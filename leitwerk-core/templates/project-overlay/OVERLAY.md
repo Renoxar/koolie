@@ -74,7 +74,7 @@ Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten E
 | CI/CD-Konfiguration | `<CI_CONFIG_PATHS>` | `<TBD: z. B. .gitlab-ci.yml, .github/workflows/**, Jenkinsfile>` | wird in `<PERMISSIONS_FILE>` als `Write`-deny eingetragen |
 | Quality-Gate-Konfiguration | `<QUALITY_GATE_CONFIG_PATHS>` | `<TBD: z. B. Linter-, Coverage-, Analyse-Konfigurationsdateien>` | `Write`-deny |
 
-Diese Werte werden in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overlay.md` übernommen. Bei Widerspruch gilt die restriktivere Angabe.
+Diese Werte MÜSSEN in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overlay.md` übernommen werden; die Laufzeitfassung **bindet** den Platzhalter, statt seinen Wert einzusetzen (D-160). **Weicht ein Träger ab, ist das ein Befund und kein Auslegungsfall:** Maßgeblich ist diese Datei. Bis die Abweichung behoben ist, gilt die restriktivere Angabe – sie ist ein Notbehelf, keine Entscheidung, und der Widerspruch wird gemeldet. **Prüfung 59 des Validators findet ihn für `<EXCLUDED_PATHS>`; für die übrigen Platzhalter findet ihn keine Prüfung.**
 
 > **Eine Lesesperre und eine Schreibsperre sind zwei verschiedene Dinge.** `<EXCLUDED_PATHS>` wird in der Berechtigungsdatei zu einer `read`- **und** einer `write`-Verweigerung; die Strukturpfade des Frameworks stehen dort ausschließlich als `write`-Verweigerung, bei `read allow **`. Wer sie in `<EXCLUDED_PATHS>` einträgt, erzeugt eine Lesesperre auf die eigenen Regeldateien – und der KI-Client kann dann die Anweisungen nicht mehr laden, die er befolgen soll. **Prüfung 28 des Validators findet diesen Fall.** Ein Schreibschutz ist kein Leseverbot (D-55).
 
