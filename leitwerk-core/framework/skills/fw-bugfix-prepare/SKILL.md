@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-009` |
 | Name | `fw-bugfix-prepare` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -105,7 +105,7 @@ triggers:
 ### Verwender und gleichartige Stellen
 | Einheit | Verwender (Fundstelle) | Von der Korrektur betroffen | Gleiches Fehlermuster (Suchmuster, Fundstelle) → getrennte Aufgabe |
 
-### Plan (Struktur exakt nach leitwerk-core/templates/PLAN_TEMPLATE.md)
+### Plan
 ## Änderungsplan: Fix <Kurztitel> (<Ticket-Referenz oder Platzhalter>)
 | Attribut | Wert |
 | Erstellt mit | fw-bugfix-prepare v<Version aus dem Steckbrief> |

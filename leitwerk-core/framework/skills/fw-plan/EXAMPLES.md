@@ -17,7 +17,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Methodennamen s
 - Grundlage: fw-change-analyze (Sitzungsausgabe; Fundstellen stichprobenartig erneut gelesen)
 - Scope der Umsetzung: src/ordering/domain, src/ordering/api, test/ordering · Nicht berührt: src/reporting, db/migrations (in <READ_ONLY_PATHS>)
 
-### Plan (Struktur exakt nach leitwerk-core/templates/PLAN_TEMPLATE.md)
+### Plan
 ## Änderungsplan: Fehlerkennung je Feld in der Bestellprüfung (keine Referenz)
 | Bestätigungsstatus | entwurf |
 ### 2. Ist-Zustand (Befunde mit Fundstellen)

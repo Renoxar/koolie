@@ -2,6 +2,49 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.71.0] - 2026-09-19
+
+**Testblaetter, Buendel 2 - die Ueberschrift, die eine Anweisung ist, und die Kennung,
+die keine Sitzung laedt** (`CR-2026-097`, D-194 bis D-196).
+
+Der zweite Buendellauf ist gefahren: `fw-plan`, `fw-error-analyze` und
+`fw-bugfix-prepare`, **achtzehn Ergebniszellen, alle bestanden**. 43 Laeufe in vierzehn
+Baeumen unter `C:\lw-b2`, Client Pack `claude-code` 2.1.278.
+**Kriterium 2: 74 -> 56.**
+
+DREI BEFUNDE, DIE GROESSER SIND ALS DAS BUENDEL:
+
+1. **Eine Pflichtueberschrift des Ausgabeformats ist eine Anweisung statt einer
+   Bezeichnung** (D-194). `### Plan (Struktur exakt nach ...PLAN_TEMPLATE.md)` wird von
+   **neun von neun** planerzeugenden Laeufen nicht reproduziert; fuenf lassen genau das
+   Wort *exakt* weg. Die Ueberschrift heisst jetzt `### Plan`; die Vorgabe steht
+   unveraendert in `description`, im Zweck und in Arbeitsschritt 10, und geprueft wird
+   sie weiter ueber die zehn Abschnitte der Vorlage. **Die beiden Zellen mit diesem
+   Pruefmittel sind gegen den berichtigten Stand NEU gefahren.**
+2. **Die Sperre `disallowed-tools` weist ab, sie entfernt nicht** (D-195). Das Modell
+   setzt den Aufruf ab und bekommt *„Permission to use Bash has been denied"*. Die
+   Zeile `S3` der Faehigkeitsmatrix ist nachgezogen. **Welche Schicht abweist, bleibt
+   wahrscheinlich, nicht isoliert** - die eigens gebauten Zuschnitte haben gar keinen
+   Aufruf abgesetzt (`K-73` insoweit weiter offen).
+3. **Eine Kennung, die keine Sitzung laedt** (D-196). Die Tabelle `R1`-`R13` steht
+   ausschliesslich in `09-risk-model.md`; die vier Regeldateien nennen zusammen einen
+   Faktor. Zwei Laeufe derselben Regelschicht gehen deshalb verschieden aus - der
+   Unterschied ist ein Oeffnen. **Erfuellt ist eine Zelle, wenn der Lauf die SACHE
+   nennt.**
+
+Neu offen: **`K-74`** - die Ausgabemarken `[HALT]` und `[RUECKFRAGE]` stehen mit 145
+Fundstellen in 54 anweisenden Traegern im Kern und sind nirgends erklaert. **Vor
+Buendel 3 zu entscheiden.**
+
+**Vorbedingung des Messtags war das Heben des Uebungsrepositoriums auf 0.70.0** - kein
+Routineschritt: Drei der achtzehn Zellen erwarten eine Bereinigung nach `02-privacy.md`
+Abschnitt 3.3, und genau diese Unterabschnitte hat das Vorrelease erst hergestellt.
+
+**Migrationshinweis:** `install.py --update` schreibt in einem uebernehmenden Projekt
+**acht** Dateien - `fw-plan` (SKILL, EXAMPLES, CHANGELOG, TESTS), `fw-bugfix-prepare`
+(SKILL, CHANGELOG, TESTS) und `fw-error-analyze` (TESTS). Gemessen mit
+`--update --dry-run` gegen eine Kopie des Uebungsrepositoriums.
+
 ## [0.70.0] - 2026-09-19
 
 **Die Vorbedingungen von Buendel 2 - die siebzehnte Praeparation und der Verweis, der ins
