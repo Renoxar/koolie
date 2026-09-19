@@ -2,6 +2,34 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.72.0] - 2026-09-19
+
+**Zwei Anforderungen an die Auslieferung - die Installationsbibliothek und das
+frameworkeigene Unterverzeichnis** (`CR-2026-098`, `K-75` neu).
+
+Eine Planaenderung ohne Messung und ohne Kontingent. Der Mensch hat zwei Anforderungen
+gestellt, die nicht betreffen, was das Framework sagt, sondern **wie es in ein
+Zielprojekt kommt**.
+
+1. **Neuer Posten `1.3.0`: die Auslieferung als Installationsbibliothek.** Ein
+   Zielprojekt bekommt das Framework heute als Kopie des ganzen Repositoriums - mit
+   Tests, Aenderungsantraegen und Protokollen. Dieser Weg **bleibt**; daneben tritt ein
+   Installer, dem man Projektpfad, Client und Overlay nennt, und ein **waehlbarer
+   Lieferumfang**. Der Posten steht nach `1.2.0`, weil er den Uebernahmeweg aendert und
+   `1.1.0` und `1.2.0` neue Traeger mit Pfaden anlegen.
+2. **Die Umbenennung zieht das Framework zusaetzlich in ein Unterverzeichnis.**
+   `koolie-core/` und `project-overlay/` liegen kuenftig unter `.koolie/` statt im
+   Wurzelverzeichnis. **Kein eigener Posten, sondern Teil von `~0.68.0`** - D-127
+   verschiebt das Kernverzeichnis ohnehin, und wer beides trennt, fasst jede Fundstelle
+   zweimal an. `<CORE_DIR>` bekommt damit erstmals einen Schraegstrich.
+
+**`K-50` ist damit faktisch mit ja beantwortet, aber noch nicht entschieden:** Ein Umzug
+ist kein Update. **`K-75`** fuehrt die sieben offenen Entscheidungen; zwei davon haben
+eine Frist, weil sie in die Umbenennung gehoeren.
+
+**Migrationshinweis:** keiner - dieses Release aendert keinen ausgelieferten
+Laufzeittraeger.
+
 ## [0.71.0] - 2026-09-19
 
 **Testblaetter, Buendel 2 - die Ueberschrift, die eine Anweisung ist, und die Kennung,
