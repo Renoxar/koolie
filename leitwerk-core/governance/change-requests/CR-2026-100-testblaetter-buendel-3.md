@@ -69,7 +69,7 @@ Laufs** – und stand seit ihrer Erstfassung als `offen`, also als fahrbar.
 
 | | Zellen | Zuschnitt |
 |---|---|---|
-| 🟢 zurechenbar | **4** | **alle vier `ohneskill`** |
+| 🟢 zurechenbar | **4** | **drei `ohneskill`, eine `k3`** (berichtigt mit `0.74.1`) |
 | 🔴 zur Hälfte | 2 | Regelschicht |
 | 🔴 nicht | **12** | Regelschicht |
 
