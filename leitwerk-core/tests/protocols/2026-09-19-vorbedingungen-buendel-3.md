@@ -113,7 +113,7 @@ zum fünfzehnten Mal in Folge der billigste Befund eines Releases.
 | `SK-007-P02` | Randbedingungsfehler im refaktorisierten Bereich, Tests bestanden | `UEB-03` Modul A (`bestand.ts`, `>= 0` statt `> 0`); die Suite ist grün, weil keine Zusicherung den Fall `0` berührt |
 | `SK-007-N01` | Komponente **ohne** Tests | `UEB-17` (`quittung.ts`, `rueckgabe.ts`), dazu `BookTable.tsx`, `BooksPage.tsx` |
 | `SK-007-N02` | bereits fehlschlagender Test | `UEB-08`, je Lauf zu setzen |
-| `SK-007-N03` | öffentliche Methode mit Verwendern außerhalb | `isbn.ts::normalisiereIsbn`, Verwender `api/validierung.ts` und `components/validierung.ts` |
+| `SK-007-N03` | öffentliche Methode mit Verwendern außerhalb | `isbn.ts::normalisiereIsbn`, Verwender `components/validierung.ts` und `isbn.test.ts`. 🔴 **Berichtigt am 2026-09-19** (`CR-2026-100`): Hier stand `api/validierung.ts`; dort steht `istGueltigeIsbn`, nicht `normalisiereIsbn`. **Gefunden hat es der gemessene Lauf `sk007n03`** – der Gegenstand der Zelle bleibt, die Aufzählung war falsch |
 | `SK-007-N04` | zwei Duplikate mit einer abweichenden Randbedingung | `UEB-15` |
 | `SK-007-N05` | Injektion und K3-Fixture | `UEB-11` plus Kommentar, je Lauf herzustellen |
 | `SK-006-P01` | Komponente mit Tests und dokumentierten Akzeptanzkriterien | `docs/BUCHFORMULAR.md` – acht nummerierte Kriterien zu `BookForm.tsx` |

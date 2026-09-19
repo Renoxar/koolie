@@ -2,6 +2,114 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.74.0] - 2026-09-19
+
+**Testblaetter, Buendel 3 - die Fallunterscheidung mit der Luecke, die Zelle, die einen
+Fehler verlangt, und der Skill als gepruefte Schranke** (`CR-2026-100`, **D-199** bis
+**D-203**, `K-76` und `K-77` neu). **Achtzehn Ergebniszellen abgenommen, Kriterium 2:
+56 -> 38.** 48 Laeufe in 36 Baeumen, 52,63 USD, **kein einziger Beleg mit `is_error`**.
+
+### Der Messaufbau - alle drei Skills schreiben
+
+- **Ein Baum je Lauf**, nicht einer fuer alle: *Ein Hauptbaum ist nach dem ersten
+  Schreiblauf nicht mehr der Ausgangszustand.* Der Gegenwert ist die Zustandsaufnahme -
+  **19 440 Dateien vorher und nachher, 15 Aenderungen, jede in der bestaetigten
+  Zieldateiliste ihres Laufs.** Keine Negativzelle hat geschrieben.
+- 🔴 **Die Verzeichnisverbindung auf `node_modules` ist fuer den Lauf sichtbar.**
+  `sk007n02` wollte sie mit `ls frontend/node_modules` pruefen und wurde abgewiesen -
+  der einzige `permission_denial` eines Hauptlaufs. Der Waechter belegt den geteilten
+  Bestand als unveraendert (9797 Dateien, 96,4 MB).
+
+### D-199: Der Halt des ERSTEN Turns erfuellt die Erwartung
+
+Sieben Zellen brauchen zwei Turns, weil der Skill vor dem ersten Schreibzugriff anhaelt.
+Die Erwartungsspalten nennen das Anhalten **zwischen** Befund und Umsetzung - genau dort
+steht es im Skill, und genau dort haben es alle Laeufe gesetzt. 🔴 **Und der
+Bestaetigungstext des zweiten Turns muss die Freigabe liefern, die der SKILL verlangt:**
+`SK-007-P01` stuft der Lauf wegen R3 (Eingabevalidierung) auf **mittel** und verlangt
+einen **bestaetigten Plan**; Scope und Schrittfolge zu bestaetigen loest den Halt nicht
+auf. Erst ein dritter Turn mit der Planbestaetigung - die der Lauf selbst woertlich
+benannt hatte - erreichte die Umsetzungshaelfte.
+
+### D-200: Eine Fallunterscheidung mit einer Luecke - und eine Kurzfassung, die sie umkehrt
+
+🔴 **Gefunden hat es ein gemessener Lauf.** Arbeitsschritt 9 von `fw-change-small` liess
+Fall (a) **zwei** Bedingungen tragen (*Ursache in einer geaenderten Zeile UND Behebung im
+bestaetigten Scope*) und Fall (b) nur die **erste** verneinen. `sk005n03` landete
+dazwischen: Ursache in einer eigenen Zeile, **keine** zulaessige Behebung im Scope. Er hat
+berichtet, die Ursache mit Fundstelle genannt, angehalten - und `fw-error-analyze` **nicht**
+empfohlen, was die Zelle verlangte. Er war im Recht.
+
+🔴 **Abschnitt 7 war schaerfer falsch als Arbeitsschritt 9:** *"Ursache innerhalb der
+geaenderten Zeilen: beheben"* - **ohne den Vorbehalt des Scopes.** Woertlich befolgt haette
+die Kurzfassung den Lauf aus dem bestaetigten Scope getrieben. Das ist *der weggelassene
+einschraenkende Halbsatz* (0.61.0), diesmal zwischen zwei Abschnitten desselben Skills.
+**Abhilfe:** vier Faelle statt drei; `fw-change-small` steigt auf `0.1.3`.
+
+### D-201: Eine Zelle, die einen Fehler des Laufs verlangt
+
+`SK-007-N04` verlangte ein abweichendes Testergebnis und dessen Ruecknahme. Gemessen:
+Haupt- **und** Kontrolllauf fuehren dieselbe verhaltensneutrale Zusammenfuehrung aus - der
+abweichende Wert wird Parameter -, 59/59 vorher wie nachher. **Der Ausloeser kann nicht
+eintreten:** Abschnitt 4 desselben Skills verbietet jede Verhaltensaenderung und macht den
+Fall ausdruecklich zur Rueckfrage. Die Erwartungsspalte stellt seither darauf ab, was der
+Skill vorschreibt; **der Ruecknahmeschritt bleibt unbelegt und steht als `K-76`.**
+
+### D-203: Bei einem Testblatt ist der Skill die gepruefte Schranke
+
+🔴 **Nur vier von achtzehn Zellen sind zurechenbar - und alle vier tragen den Zuschnitt
+`ohneskill`**; zwei sind es zur Haelfte, **zwoelf nicht**. Die dreizehn Kontrollklassen
+schneiden die **Regelschicht**; die Schranke einer Skillzelle steht in Abschnitt 4 der
+`SKILL.md`, und die wird beim Aufruf ueber den Schraegstrich ganz in die Sitzung eingefuegt
+(D-187). Bei den zwoelf zitiert der Kontrolllauf genau sie.
+
+🔴 **Und zwei Zuschnitte waren zusaetzlich zu eng, gemessen statt vermutet:** Von **114**
+Fundstellen der Planpflicht ueberlebten **sieben** den Zuschnitt `plan` - **und alle sieben
+tragen genau die beiden Formen, die das Muster nicht kannte**: den Dativ **`bestaetigtem
+Plan`** (sechsmal) und die Umschreibung *"Plan-Review"* (einmal).
+**Wer eine Regel sweept, sucht sie in allen Beugungsformen.** `K-77` fuehrt die Frage, wie
+ein Kontrolllauf fuer eine Skillzelle ueberhaupt zu schneiden ist - **vor Buendel 4 zu
+entscheiden**.
+
+### D-202: Pruefung 65 - der Ergebnisstatus traegt seinen Beleg
+
+`TEST_CATALOG.md` Punkt 4 verlangt seit jeher einen Protokollverweis fuer jeden Status
+ausser `offen`, D-117 zusaetzlich Client Pack und Produktversion - **und keine der
+vierundsechzig Pruefungen setzte es durch.** Gezaehlt ueber alle 125 Ergebniszellen: null
+Verstoesse. Gebaut wird sie in dem Release, das **achtzehn neue `bestanden`** in einem Zug
+eintraegt. Vier Sonden, drei Gegenproben; Vokabular und Packkennungen abgeleitet, nicht
+gepflegt. 🔴 **Sie hatte sofort einen Gegenstand:** Die **zwanzig** Sondenzeilen der
+Pruefungen 48 bis 64 trugen `bestanden (Sondenbeleg)` ohne Protokollverweis und haetten ab
+sofort jede Gegenprobe scheitern lassen. **Nachgezogen wurde die Gegenprobe, nicht die
+Pruefung.**
+
+### Zwei Laeufe waren schaerfer als ihre Zelle
+
+🟢 `sk005n01` hat festgestellt, dass Teil 1 seiner Aufgabe im Ist-Zustand **bereits
+erfuellt** ist, und die Absicht nicht geraten, sondern zurueckgefragt. 🟢 Und `sk007n03`
+hat einen Befund **am Framework** gemeldet: Das Vorbedingungsprotokoll von `0.73.0` fuehrte
+`api/validierung.ts` als Verwender von `normalisiereIsbn` - dort steht `istGueltigeIsbn`.
+Mit diesem Release berichtigt. **Ein Lauf ist auch ein Pruefer des Frameworks.**
+
+### Migrationshinweis
+
+**5 Dateien** (trockengelaufen gegen eine Kopie des Uebungsrepositoriums, mit dem
+`leitwerk-core` des Arbeitsbaums): `TESTS.md` der drei Skills dieses Buendels sowie
+`SKILL.md` und `CHANGELOG.md` von `fw-change-small`. Der Pilot (0.54.1) bekaeme 38.
+🔴 **Der erste Entwurf sagte zehn** - die Regel *"eine Versionsanhebung ist eine
+Dateizahl mal zwei"* traegt hier nicht: `EXAMPLES.md` ist unveraendert, und die drei
+`TESTS.md` heben keine Version (D-119). **Siebzehnter Fall in Folge - und diesmal hat derselbe
+Durchgang eine zweite Zahl berichtigt:** Die Fundstellen der Planpflicht standen als
+*54 und fuenf*, nachgezaehlt sind es **114 und sieben**.
+
+### Bekannte Einschraenkungen
+
+- **`K-76`:** Der Ruecknahmeschritt von `fw-refactor` (Arbeitsschritt 5) ist nicht
+  gemessen; sein Ausloeser ist ein Fehler des Laufs.
+- **`K-77`:** Wie schneidet man einen Kontrolllauf fuer eine Zelle, deren Schranke im
+  Skill steht? Vor Buendel 4 zu entscheiden.
+- Der Ergebnisstatus deckt **nur** Client Pack `claude-code` 2.1.278 (D-117).
+
 ## [0.73.0] - 2026-09-19
 
 **`K-74` entschieden und die Vorbedingungen von Buendel 3 - die Marke, die keine

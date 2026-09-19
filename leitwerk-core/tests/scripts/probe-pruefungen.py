@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 64, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 65, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -4143,7 +4143,7 @@ def _48_belegspalte(root: str) -> None:
     _, fremd = _48_marken(root)
     zeile_nach(P(root, P48_KATALOG), P48_KATALOGANKER,
                "| FW-SO-02 | Sondenzeile | Sondenvorbedingung | Anweisung | Ablehnung "
-               "| Zugriff | sitzung | bestanden (der Lauf benennt `%s/rules/00-framework-core.md`) |"
+               "| Zugriff | sitzung | bestanden (`leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278 - der Lauf benennt `%s/rules/00-framework-core.md`) |"
                % fremd)
 
 
@@ -4280,7 +4280,7 @@ def _49_ausdruecklicher_aufruf(root: str) -> None:
     """Derselbe Skill als `/name` bleibt zulaessig - das ist der Aufruf selbst."""
     _49_katalogzeile(root,
         "| FW-SO-04 | Sondenzeile | Sondenvorbedingung | `/%s` mit Sondenaufgabe "
-        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |"
         % _49_skill_ohne_modell(root))
 
 
@@ -4291,7 +4291,7 @@ def _49_modellaufrufbar(root: str) -> None:
     """
     _49_katalogzeile(root,
         "| FW-SO-05 | Sondenzeile | Sondenvorbedingung | %s mit Sondenaufgabe "
-        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |"
         % _49_skill_mit_modell(root))
 
 
@@ -4304,7 +4304,7 @@ def _49_andere_spalte(root: str) -> None:
     """
     _49_katalogzeile(root,
         "| FW-SO-06 | Sondenzeile | Sondenvorbedingung | Sondenaufgabe "
-        "| Der Lauf nennt %s als zustaendig | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        "| Der Lauf nennt %s als zustaendig | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |"
         % _49_skill_ohne_modell(root))
 
 
@@ -4315,7 +4315,7 @@ def _49_andere_pruefmethode(root: str) -> None:
     """
     _49_katalogzeile(root,
         "| FW-SO-07 | Sondenzeile | Sondenvorbedingung | %s mit Sondenaufgabe "
-        "| Ablehnung | Zugriff | review | bestanden (Sondenbeleg) |"
+        "| Ablehnung | Zugriff | review | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |"
         % _49_skill_ohne_modell(root))
 
 
@@ -4366,7 +4366,7 @@ def _49_uebung_mit_einem_aufruf(root: str) -> None:
     """Dieselbe Uebung, aber ein Schritt ausdruecklich aufgerufen - der Fall FW-SC-01."""
     _49_katalogzeile(root,
         "| FW-SO-09 | Sondenzeile | Sondenvorbedingung | Ü3-Änderung, ausgelöst über "
-        "`/%s` | Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |"
+        "`/%s` | Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |"
         % _49_skill_ohne_modell(root))
 
 
@@ -4375,7 +4375,7 @@ def _49_uebung_ohne_gesperrten_skill(root: str) -> None:
     _49_katalogzeile(root,
         "| FW-SO-10 | Sondenzeile | Sondenvorbedingung | Ü1 aus "
         "`leitwerk-core/onboarding/exercises/EXERCISES.md` | Ablehnung | Zugriff "
-        "| sitzung | bestanden (Sondenbeleg) |")
+        "| sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _49_uebungsanker_verlieren(root: str) -> None:
@@ -5157,7 +5157,7 @@ P60_KATALOGANKER = "| FW-AK-02 (Basis) |"
 P60_SKILLS = "leitwerk-core/framework/skills".replace("/", os.sep)
 
 
-# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg)`, nicht `offen`. Eine
+# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg, <Protokoll>; Client Pack <Kennung> <Version>)`, nicht `offen`. Eine
 # Zeile mit `offen` hebt Kriterium 2 um eins, und Pruefung 46 meldet dann einen
 # Rueckfall - die Gegenprobe saehe einen Fehler, den sie nicht gemeint hat.
 # Gemessen am 2026-09-18: drei Abweichungen im ersten Sondenlauf zu 60.
@@ -5175,7 +5175,7 @@ def _60_ohne_schlitz(root: str) -> None:
     _60_katalogzeile(root,
         "| FW-SO-08 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
         "| `/fw-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
-        "| sitzung | bestanden (Sondenbeleg) |")
+        "| sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _60_mit_schlitz(root: str) -> None:
@@ -5183,7 +5183,7 @@ def _60_mit_schlitz(root: str) -> None:
     _60_katalogzeile(root,
         "| FW-SO-09 | Sondenzeile | Sondenvorbedingung; `<TEST_COMMAND>` und "
         "`<LINT_COMMAND>` im `allow`-Korb | `/fw-change-small \"<Sondenaufgabe>\"` "
-        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg) |")
+        "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _60_andere_pruefmethode(root: str) -> None:
@@ -5194,7 +5194,7 @@ def _60_andere_pruefmethode(root: str) -> None:
     _60_katalogzeile(root,
         "| FW-SO-10 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
         "| `/fw-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
-        "| review | bestanden (Sondenbeleg) |")
+        "| review | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _60_skill_ohne_schlitz(root: str) -> None:
@@ -5206,7 +5206,7 @@ def _60_skill_ohne_schlitz(root: str) -> None:
     _60_katalogzeile(root,
         "| FW-SO-11 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
         "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
-        "| sitzung | bestanden (Sondenbeleg) |")
+        "| sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _60_anker_verlieren(root: str) -> None:
@@ -5285,7 +5285,7 @@ def _61_fremdes_wort(root: str) -> None:
     _61_katalogzeile(root,
         "| FW-SO-12 | Sondenzeile | Sondenvorbedingung "
         "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
-        "| manuell | bestanden (Sondenbeleg) |")
+        "| manuell | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _61_fremdes_wort_im_blatt(root: str) -> None:
@@ -5293,7 +5293,7 @@ def _61_fremdes_wort_im_blatt(root: str) -> None:
     zeile_nach(P(root, P61_BLATT), P61_BLATTANKER,
         "| SK-001-S99 | Sondenzeile | Sondenvorbedingung "
         "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
-        "| manuell | bestanden (Sondenbeleg) |")
+        "| manuell | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _61_zulaessiger_zusatz(root: str) -> None:
@@ -5302,7 +5302,7 @@ def _61_zulaessiger_zusatz(root: str) -> None:
         "| FW-SO-13 | Sondenzeile | Sondenvorbedingung "
         "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
         "| sitzung + Skript `validate-output.py --skill fw-repo-analyze` "
-        "| bestanden (Sondenbeleg) |")
+        "| bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _61_skript_und_review(root: str) -> None:
@@ -5313,10 +5313,10 @@ def _61_skript_und_review(root: str) -> None:
     """
     _61_katalogzeile(root,
         "| FW-SO-14 | Sondenzeile | Sondenvorbedingung | Sondeneingabe "
-        "| Ablehnung | Zugriff | skript+sitzung | bestanden (Sondenbeleg) |")
+        "| Ablehnung | Zugriff | skript+sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
     _61_katalogzeile(root,
         "| FW-SO-15 | Sondenzeile | Sondenvorbedingung | Sondeneingabe "
-        "| Ablehnung | Zugriff | review | bestanden (Sondenbeleg) |")
+        "| Ablehnung | Zugriff | review | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 sonde("61a", "Eine Katalogzeile mit dem Wort `manuell` - dem Wort, das 87 Blattzellen "
@@ -5464,7 +5464,7 @@ gegenprobe("63b", "Eine Aufzeichnung darf denselben Verweis tragen: Ein Protokol
 # berichten - wer die Zeile statt der Spalte nimmt, entfernt den Gegenstand mit
 # (dieselbe Trennlinie, die Pruefung 48 zieht).
 #
-# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg)`, nicht `offen` - eine
+# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg, <Protokoll>; Client Pack <Kennung> <Version>)`, nicht `offen` - eine
 # Zeile mit `offen` hebt Kriterium 2 um eins, und Pruefung 46 meldete dann einen
 # Rueckfall (0.66.0). Und sie nennen die Befehlsschlitze in ihrer Vorbedingung,
 # sonst meldete Pruefung 60 sie nebenbei mit.
@@ -5492,7 +5492,7 @@ def _64_rueckfrage_ungedeckt(root: str) -> None:
     _64_katalogzeile(root,
         "| FW-SO-12 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
         " | `/fw-change-small \"<Sondenaufgabe>\"` | [RÜCKFRAGE] zur Aufteilung "
-        "| Zugriff | sitzung | bestanden (Sondenbeleg) |")
+        "| Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _64_halt_ungedeckt(root: str) -> None:
@@ -5504,7 +5504,7 @@ def _64_halt_ungedeckt(root: str) -> None:
     _64_katalogzeile(root,
         "| FW-SO-13 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
         " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | [HALT] nach dem "
-        "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg) |")
+        "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _64_unzulaessig_ungedeckt(root: str) -> None:
@@ -5516,7 +5516,7 @@ def _64_unzulaessig_ungedeckt(root: str) -> None:
     _64_katalogzeile(root,
         "| FW-SO-14 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
         " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Ablehnung "
-        "| Änderungen vor dem [HALT] | sitzung | bestanden (Sondenbeleg) |")
+        "| Änderungen vor dem [HALT] | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _64_gedeckt(root: str) -> None:
@@ -5528,7 +5528,7 @@ def _64_gedeckt(root: str) -> None:
     _64_katalogzeile(root,
         "| FW-SO-15 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
         " | `/fw-change-small \"<Sondenaufgabe>\"` | [HALT] vor dem ersten "
-        "Schreibzugriff | Zugriff | sitzung | bestanden (Sondenbeleg) |")
+        "Schreibzugriff | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _64_letzte_zelle(root: str) -> None:
@@ -5541,7 +5541,7 @@ def _64_letzte_zelle(root: str) -> None:
     _64_katalogzeile(root,
         "| FW-SO-16 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
         " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten nach dem "
-        "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg): der Lauf hat "
+        "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg, `leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278): der Lauf hat "
         "[HALT] wörtlich geschrieben |")
 
 
@@ -5602,6 +5602,138 @@ gegenprobe("64c", "Die Marke in der LETZTEN Zelle bleibt zulaessig: Der "
                   "Ergebnisstatus ist eine Aufzeichnung, und ein Lauf, der sie "
                   "geschrieben HAT, darf das berichten (D-117)",
            _64_letzte_zelle, M64_UNGEDECKT)
+
+# --- Pruefung 65: der Ergebnisstatus ohne Beleg (D-202) ---------------------------
+#
+# Vier Sonden und drei Gegenproben. Die zweite Gegenprobe traegt die Trennlinie: Eine
+# `review`-Zelle braucht KEIN Client Pack. D-117 spricht von DYNAMISCHEN Tests; ein
+# Dokumentenreview misst keinen Client, und wer die Pflicht auf jede Zelle zieht,
+# verlangt eine Angabe, die es nicht gibt.
+#
+# 🔴 Die eingefuegten Zeilen tragen `bestanden (Sondenbeleg, <Protokoll>; Client Pack
+# <Kennung> <Version>)`, nicht `offen` - eine Zeile mit `offen` hebt Kriterium 2 um
+# eins, und Pruefung 46 meldete dann einen Rueckfall (0.66.0). Und sie nennen die
+# Befehlsschlitze in ihrer Vorbedingung, sonst meldete Pruefung 60 sie nebenbei mit.
+M65_KEIN_PROTOKOLL = "nennt kein Protokoll unter"
+M65_KEIN_PACK = "nennt kein Client Pack mit Produktversion"
+M65_VOKABULAR = "beginnt nicht mit einem Wort des Vokabulars"
+M65_ANKER = "das Vokabular des Ergebnisstatus ist unter Punkt 4 nicht mehr auffindbar"
+
+P65_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md".replace("/", os.sep)
+P65_KATALOGANKER = "| FW-AK-02 (Basis) |"
+P65_SCHLITZE = "`<TEST_COMMAND>` und `<LINT_COMMAND>` im `allow`-Korb"
+P65_PROTOKOLL = "`leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`"
+P65_PACK = "Client Pack `claude-code` 2.1.278"
+
+
+def _65_katalogzeile(root: str, zeile: str) -> None:
+    zeile_nach(P(root, P65_KATALOG), P65_KATALOGANKER, zeile)
+
+
+def _65_ohne_protokoll(root: str) -> None:
+    """Ein `bestanden` ohne Protokollverweis - die Gestalt, die Punkt 4 verbietet.
+
+    Punkt 4 sagt das seit der Erstfassung des Katalogs, und keine Pruefung hat es
+    bis 0.74.0 durchgesetzt. Eine Abnahme ohne Beleg ist eine Behauptung.
+    """
+    _65_katalogzeile(root,
+        "| FW-SO-17 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        "| sitzung | bestanden (Sondenbeleg ohne Protokollverweis) |")
+
+
+def _65_ohne_pack(root: str) -> None:
+    """Ein `bestanden` einer sitzung-Zelle mit Protokoll, aber ohne Pack und Version.
+
+    Das ist die Haelfte, die D-117 traegt: Ein Ergebnisstatus DECKT KEIN ANDERES
+    PACK. Ohne die Version sagt er nicht, gegen welchen Produktstand gemessen wurde -
+    und genau das ist am 2026-09-18 an einer vierzig Releases alten Zelle
+    aufgefallen (D-113).
+    """
+    _65_katalogzeile(root,
+        "| FW-SO-18 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        "| sitzung | bestanden (" + P65_PROTOKOLL + ") |")
+
+
+def _65_fremdes_wort(root: str) -> None:
+    """Ein Statuswort, das im Vokabular von Punkt 4 nicht steht.
+
+    Dieselbe Bauform wie beim Pruefmittelwort `manuell` (D-181): ein Wort, das fuer
+    jeden Leser richtig aussieht und fuer jeden Zaehler ein Fremdwort ist.
+    """
+    _65_katalogzeile(root,
+        "| FW-SO-19 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        "| sitzung | geprüft (" + P65_PROTOKOLL + "; " + P65_PACK + ") |")
+
+
+def _65_anker_verlieren(root: str) -> None:
+    """Ohne die Vokabularzeile von Punkt 4 hat Pruefung 65 keinen Gegenstand.
+
+    Sie leitet es von dort ab statt es zu pflegen; geht die Zeile verloren, faende
+    sie nichts und bestuende leise. Die Sonde belegt, dass sie das Fehlen selbst
+    meldet (D-23).
+    """
+    pfad = P(root, P65_KATALOG)
+    text = lies(pfad)
+    if "**Ergebnisstatus:**" not in text:
+        raise Praeparationsfehler(
+            "TEST_CATALOG.md fuehrt die Marke '**Ergebnisstatus:**' nicht mehr - die "
+            "Sonde zu 65 haette keinen Anker")
+    schreib(pfad, text.replace("**Ergebnisstatus:**", "**Status des Ergebnisses:**", 1))
+
+
+def _65_review_ohne_pack(root: str) -> None:
+    """Gegenprobe: eine review-Zelle mit Protokoll, aber ohne Pack - zulaessig.
+
+    Das ist die Trennlinie, und sie belegt, dass der Zuschnitt nicht zu breit ist:
+    D-117 spricht von dynamischen Tests. Ein Dokumentenreview misst keinen Client.
+    """
+    _65_katalogzeile(root,
+        "| FW-SO-20 | Sondenzeile | Sondenvorbedingung | Abgleich zweier Fassungen "
+        "| keine Abweichung | Abweichung | review | bestanden (" +
+        P65_PROTOKOLL + ") |")
+
+
+def _65_vollstaendig(root: str) -> None:
+    """Gegenprobe: der vollstaendige Fall - Protokoll, Pack und Version.
+
+    Er belegt, dass die Pruefung einen richtig belegten Status durchlaesst; ohne
+    ihn wuesste niemand, ob sie ueberhaupt etwas durchlaesst.
+    """
+    _65_katalogzeile(root,
+        "| FW-SO-21 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
+        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        "| sitzung | bestanden (" + P65_PROTOKOLL + "; " + P65_PACK + ") |")
+
+
+sonde("65a", "Ein `bestanden` ohne Protokollverweis - Punkt 4 verlangt ihn seit der "
+             "Erstfassung, und keine Pruefung hat es durchgesetzt",
+      _65_ohne_protokoll, M65_KEIN_PROTOKOLL)
+
+sonde("65b", "Ein `bestanden` einer sitzung-Zelle ohne Client Pack und Produktversion "
+             "- ein Ergebnisstatus deckt kein anderes Pack (D-117)",
+      _65_ohne_pack, M65_KEIN_PACK)
+
+sonde("65c", "Ein Statuswort ausserhalb des Vokabulars von Punkt 4 - dieselbe Bauform "
+             "wie das Pruefmittelwort `manuell` (D-181)",
+      _65_fremdes_wort, M65_VOKABULAR)
+
+sonde("65d", "Ohne die Vokabularzeile unter Punkt 4 meldet Pruefung 65 den verlorenen "
+             "Gegenstand, statt leise zu bestehen",
+      _65_anker_verlieren, M65_ANKER)
+
+gegenprobe("65a", "Das unveraenderte Repositorium bleibt unbeanstandet - alle 125 "
+                  "Ergebniszellen tragen ihren Beleg",
+           None, M65_KEIN_PROTOKOLL)
+
+gegenprobe("65b", "Eine review-Zelle ohne Client Pack bleibt zulaessig: D-117 spricht "
+                  "von DYNAMISCHEN Tests, ein Dokumentenreview misst keinen Client",
+           _65_review_ohne_pack, M65_KEIN_PACK)
+
+gegenprobe("65c", "Der vollstaendige Fall - Protokoll, Pack und Version - laeuft durch",
+           _65_vollstaendig, M65_KEIN_PROTOKOLL)
 
 # --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------
 #
