@@ -2,6 +2,49 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.69.0] - 2026-09-19
+
+**Der Pruefapparat bekommt einen Filter - die Schleife wird kuerzer, der Nachweis nicht**
+(`CR-2026-095`, D-191).
+
+Gemessen am 2026-09-19: `probe-pruefungen.py` faehrt **238 Einheiten, rund 2300 s
+Rechenzeit, 290 s Wanduhr** - und das **zweimal je Release** (D-49). Jede Einheit legt
+eine eigene Kopie des Repositoriums an und faehrt den **ganzen** Validator, um **eine**
+Meldung zu sehen.
+
+🔴 **Der Schaden ist nicht die Rechenzeit, sondern die Gewohnheit:** Ein Werkzeug, das vor
+jedem Zwischenschritt fuenf Minuten kostet, wird seltener gefahren, als es soll. **Der
+Nachweis nach D-23 ist nicht wertvoll, weil er existiert, sondern weil er gefahren wird.**
+
+### Was neu ist
+
+- `--nur 44,62` faehrt die Einheiten, deren Kennung mit einer der Marken **beginnt**.
+- `--liste` zeigt alle Einheiten mit Art, Kennung und Satz.
+- **Eine Marke ohne Treffer ist ein Abbruch**, kein leerer Lauf - sonst meldete ein
+  Tippfehler "alle bestanden".
+- **Selbstprobe F1/F2** auf sechs gebauten Kennungen: Auswahl am Anfang der Kennung, ohne
+  Ruecksicht auf Grossschreibung.
+
+🔴 **Der Teillauf sagt dreimal, dass er keiner ist** - im Kopf, in der Ergebniszeile und
+im Abschlusssatz. Die Bauform, gegen die das steht, hat dieses Projekt schon einmal
+bezahlt: *Die Null durch Konstruktion* (0.59.1) sieht genauso aus wie eine gemessene Null.
+
+### Gemessen
+
+Derselbe Gegenstand in **8,0 s statt 293 s**. Und der erste Teillauf hat sich sofort
+getragen: Er meldete zwei Abweichungen, weil der neue Kopfkommentar `D-191` nannte und der
+Decision Record noch nicht eingetragen war.
+
+### Vertagt
+
+Die Kopie **je Bahn** statt je Einheit und ein `--nur-pruefung` im Validator. Beide senken
+den **vollen** Lauf, und der laeuft zweimal je Release - nicht zwanzigmal am Tag.
+
+### Migrationshinweis
+
+**Keiner.** Der Prueffapparat wird nicht ausgeliefert; `install.py` schreibt
+`leitwerk-core/tests/` nicht in ein uebernehmendes Projekt.
+
 ## [0.68.0] - 2026-09-19
 
 **Testblaetter, Buendel 1 - elf Ergebniszellen, und vier Befunde, die groesser sind als

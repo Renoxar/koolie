@@ -75,20 +75,28 @@ def argumente(argv: list) -> tuple:
     Datei. Er ist der Rueckfallweg, wenn ein Befund sich nur seriell zeigt.
     """
     pfad, bahnen, rest = ".", BAHNEN_VORGABE, list(argv)
+    nur, liste = [], False
     while rest:
         wort = rest.pop(0)
         if wort == "--bahnen":
             if not rest or not rest[0].isdigit() or int(rest[0]) < 1:
                 sys.exit("--bahnen erwartet eine Zahl ab 1")
             bahnen = int(rest.pop(0))
+        elif wort == "--nur":
+            if not rest or rest[0].startswith("--"):
+                sys.exit("--nur erwartet Kennungen, durch Komma getrennt (z. B. --nur 44,62)")
+            nur = [x.strip().lower() for x in rest.pop(0).split(",") if x.strip()]
+        elif wort == "--liste":
+            liste = True
         elif wort.startswith("--"):
-            sys.exit("Unbekannter Schalter: %s (bekannt ist nur --bahnen N)" % wort)
+            sys.exit("Unbekannter Schalter: %s (bekannt sind --bahnen N, --nur A,B "
+                     "und --liste)" % wort)
         else:
             pfad = wort
-    return os.path.abspath(pfad), bahnen
+    return os.path.abspath(pfad), bahnen, nur, liste
 
 
-QUELLE, BAHNEN = argumente(sys.argv[1:])
+QUELLE, BAHNEN, NUR, LISTE = argumente(sys.argv[1:])
 VALIDATOR = "leitwerk-core/tests/scripts/validate-framework.py"
 
 
@@ -5518,6 +5526,67 @@ buendel(selbstprobe_beschreibungen,
         "Satz und ein Absatz in einer Zeile fallen beide auf")
 
 
+# --- Der Filter: eine Schleife ist kein Abnahmelauf (D-191) -----------------------
+#
+# ANLASS. Der Lauf faehrt 237 Einheiten, jede mit eigener Kopie des Repositoriums und
+# eigenem Validatorlauf - rund 2300 s Rechenzeit, und zweimal je Release (D-49). Wer
+# eine einzelne Pruefung aendert, bezahlte bis 0.68.0 den ganzen Apparat, um eine
+# Meldung zu sehen. Ein Werkzeug, das vor jedem Schritt fuenf Minuten kostet, wird
+# seltener gefahren, als es soll.
+#
+# 🔴 DIE GEFAHR IST NICHT DIE GESCHWINDIGKEIT, SONDERN DIE VERWECHSLUNG. Ein Teillauf,
+# der aussieht wie ein Abnahmelauf, ist die Bauform "die Null durch Konstruktion"
+# (0.59.1): gruen, weil nichts gefahren wurde. Deshalb sagt der Teillauf es dreimal -
+# im Kopf, in der Ergebniszeile und im Abschlusssatz - und D-23 bleibt unberuehrt: Die
+# Sonde existiert weiter, gekuerzt wird die SCHLEIFE, nicht der Nachweis.
+def waehle(einheiten: list, nur: list) -> list:
+    """Die Einheiten, deren Kennung mit einer der genannten Marken beginnt.
+
+    `--nur 44` nimmt 44a bis 44f, `--nur 62,48b` nimmt beide Blocke der Pruefung 62 und
+    genau eine Gegenprobe. Verglichen wird kleingeschrieben und am ANFANG der Kennung:
+    Eine Marke, die nichts trifft, ist ein Abbruch und kein leerer Lauf - sonst meldete
+    ein Tippfehler "alle bestanden".
+    """
+    if not nur:
+        return list(einheiten)
+    gewaehlt, ohne_treffer = [], []
+    for marke in nur:
+        treffer = [e for e in einheiten if e.kennung.lower().startswith(marke)]
+        if not treffer:
+            ohne_treffer.append(marke)
+        for e in treffer:
+            if e not in gewaehlt:
+                gewaehlt.append(e)
+    if ohne_treffer:
+        sys.exit("--nur: keine Einheit zu %s (bekannt: %s ... ; --liste zeigt alle)"
+                 % (", ".join(ohne_treffer),
+                    ", ".join(e.kennung for e in einheiten[:6])))
+    return [e for e in einheiten if e in gewaehlt]
+
+
+def selbstprobe_filter() -> None:
+    """Der Filter waehlt, was er soll - und nichts daneben."""
+    class Muster:
+        def __init__(self, kennung):
+            self.kennung = kennung
+    proben = [Muster(k) for k in ("6", "44a", "44b", "62a", "62b", "B1")]
+    faelle = [
+        ([], 6, "ohne --nur laeuft alles"),
+        (["44"], 2, "--nur 44 nimmt 44a und 44b"),
+        (["62", "b1"], 3, "--nur 62,b1 nimmt drei Einheiten, Grossschreibung egal"),
+        (["6"], 2, "--nur 6 nimmt 6 UND 62a? nein - nur was mit 6 beginnt"),
+    ]
+    for marken, erwartet, satz in faelle[:3]:
+        melde("SELBSTPROBE", "F1", len(waehle(proben, marken)) == erwartet, satz)
+    getroffen = [e.kennung for e in waehle(proben, ["6"])]
+    melde("SELBSTPROBE", "F2", getroffen == ["6", "62a", "62b"],
+          "Eine Marke trifft am Anfang der Kennung, nicht auf die ganze: 6 nimmt auch 62a")
+
+
+buendel(selbstprobe_filter,
+        "Der Filter dieses Laufs an sechs gebauten Kennungen - er waehlt am Anfang der "
+        "Kennung, ohne Ruecksicht auf Grossschreibung")
+
 # --- Der Laeufer ------------------------------------------------------------------
 
 def bahnfolge(einheiten: list) -> list:
@@ -5586,12 +5655,38 @@ def auswertung(einheiten: list, wanduhr: float, bahnen: int) -> None:
              else " (Faktor %s)" % zahl(rechenzeit / wanduhr)))
 
 
+if LISTE:
+    for e in EINHEITEN:
+        print("%-11s %-6s %s" % (e.art, e.kennung, e.satz))
+    print("---")
+    print("%d Einheiten. Auswahl mit --nur <Kennung>[,<Kennung>...]" % len(EINHEITEN))
+    sys.exit(0)
+
+_GEWAEHLT = waehle(EINHEITEN, NUR)
+_TEILLAUF = len(_GEWAEHLT) != len(EINHEITEN)
+if _TEILLAUF:
+    print("=" * 78)
+    print("TEILLAUF: %d von %d Einheiten (--nur %s)"
+          % (len(_GEWAEHLT), len(EINHEITEN), ",".join(NUR)))
+    print("Das ist KEIN Abnahmelauf. Vor dem Merge laeuft der volle Apparat, und zwar")
+    print("in beiden Kodierungsumgebungen (D-23, D-49, D-191).")
+    print("=" * 78)
+    print()
+
 _beginn = time.perf_counter()
-fehler = fahren(EINHEITEN, BAHNEN)
+fehler = fahren(_GEWAEHLT, BAHNEN)
 _wanduhr = time.perf_counter() - _beginn
 
 print()
-print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
-      else f"{fehler} Abweichung(en)")
-auswertung(EINHEITEN, _wanduhr, BAHNEN)
+if _TEILLAUF:
+    print("Ergebnis (TEILLAUF, %d von %d Einheiten): %s"
+          % (len(_GEWAEHLT), len(EINHEITEN),
+             "alle gewaehlten Einheiten bestanden" if not fehler
+             else "%d Abweichung(en)" % fehler))
+else:
+    print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
+          else f"{fehler} Abweichung(en)")
+auswertung(_GEWAEHLT, _wanduhr, BAHNEN)
+if _TEILLAUF:
+    print("TEILLAUF - der Nachweis nach D-23 steht erst nach dem vollen Lauf.")
 sys.exit(1 if fehler else 0)
