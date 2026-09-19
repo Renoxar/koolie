@@ -2,6 +2,91 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.74.1] - 2026-09-19
+
+**`K-77` bekommt einen eigenen Posten vor Buendel 4 - der Klaerungspunkt, den der Plan
+nicht fuehrte** (`CR-2026-101`, **D-204**).
+
+Eine Planaenderung ohne Messung und ohne Kontingent. Kriterium 2 unveraendert **38**.
+
+### Der Befund: die Festlegung stand ueberall ausser im Plan
+
+`0.74.0` hat mit D-203 festgelegt, dass **`K-77` vor Buendel 4 zu entscheiden ist**.
+Danach stand die Festlegung im Decision Log, in diesem Aenderungsverzeichnis (*Bekannte
+Einschraenkungen*), im Protokoll des Messtags und in der Uebergabe - 🔴 **nur
+nicht im Releaseplan.** Der fuehrte als naechsten Posten unveraendert `~0.75.0`
+**Testblaetter, Buendel 4**, also genau den Messtag, vor dem die Entscheidung fallen
+soll. **Wer den Plan liest, um zu wissen, was als naechstes kommt, liest die
+Reihenfolge, die D-203 verworfen hat.**
+
+### Der Preis ist gerechnet, nicht geschaetzt
+
+Buendel 4 hat **19 Ergebniszellen**. Ohne die Entscheidung faehrt der Messtag neunzehn
+Kontrolllaeufe nach der Klasseneinteilung von Buendel 3 - und bekommt fuer den
+Grossteil davon **dieselbe Zahl wie am 19.09.**: eine Zurechenbarkeit, die der
+Zuschnitt nicht herstellen kann, weil die Schranke in Abschnitt 4 der `SKILL.md` steht
+und die beim Aufruf ueber den Schraegstrich ganz in die Sitzung eingefuegt wird (D-203,
+D-187). Gerechnet mit dem eigenen Messwert des Vortags (52,63 USD auf 48 Laeufe =
+**1,10 USD je Lauf**): 19 x 1,10 USD = **20,90 USD**.
+
+🔴 **Der teurere Teil ist nicht das Geld:** Ein Messtag ohne die Entscheidung
+traegt den Befund von D-203 ein zweites Mal ins Protokoll und erzeugt neunzehn Zellen,
+deren Zurechenbarkeitsangabe hinterher nach derselben Frage neu zu bewerten waere -
+*der Befund, der an der eigenen Abhilfe altert* (D-164), bevor die Abhilfe gebaut ist.
+
+### Was der Plan jetzt sagt
+
+- **Neuer Posten `~0.75.0`: `K-77` entscheiden.** Ein Vormittag, kein Kontingent, keine
+  Wirkung auf Kriterium 2. **`K-76` wird mitgefuehrt**, falls Buendel 4 einen
+  Wiederherstellungsschritt misst.
+- **Buendel 4 rueckt auf `~0.76.0`**, Buendel 5 auf `~0.77.0`, die vier Zellen des
+  zentralen Katalogs auf `~0.78.0`.
+- **Die Kriterium-2-Kette bleibt unberuehrt** (`38 -> 19 -> 4 -> 0`): Der neue Posten
+  traegt keine Vorhersage zu Kriterium 2. **Pruefung 53 ist der Wirkungsnachweis**
+  dieses Releases, **Pruefung 58** der zweite - `D-204` ist eine neue Kennung und
+  braucht ihre Registerzeile.
+- 🆕 **Und die Zahl der Einschuebe ist nachgerechnet** (D-174): Buendel 4 stand
+  in D-180 auf `~0.71.0` und steht jetzt auf `~0.76.0` - **fuenf Einschuebe**, vier
+  davon aus den Buendeln selbst.
+
+### Der zweite Gegenstand: die Zuordnung der vier zurechenbaren Zellen
+
+🔴 **Der Durchgang vor dem Commit hat sich zum ACHTZEHNTEN Mal getragen - und
+diesmal an der Zahl, auf die sich dieses Release stuetzt.** D-203, die Zeile `0.74.0`
+des Releaseplans, der Eintrag `K-77`, die Tabelle in `CR-2026-100` und die
+Zusammenfassung des Messprotokolls sagen alle *"vier zurechenbar - und alle vier tragen
+`ohneskill`"*. **Nachgezaehlt an der Einzeltabelle desselben Protokolls sind es drei.**
+
+Die vierte ist `SK-005-N05` mit dem **Regelschicht**-Zuschnitt **`k3`** - und sie ist
+die schaerfste Trennung des Buendels: Der Kontrolllauf `ksk005n05` **schreibt** den
+personenbezogen strukturierten Datensatz, den der Hauptlauf verweigert. Der Skill war in
+beiden Baeumen vorhanden. 🔴 **Der Widerspruch stand drei Zeilen auseinander im
+selben Protokoll:** Die Tabelle sagt *vier*, der Satz darunter *"in allen drei Faellen"*.
+**Der Zaehler war richtig, die Zuordnung nicht.**
+
+🟢 **Und der Befund ist groesser als die Berichtigung.** Die Marken von `k3`
+treffen **zehn Zeilen in `fw-change-small/SKILL.md`**, darunter die Ausschlusszeile in
+Abschnitt 4 und die Rueckfragenregel - der Zuschnitt hat die Schranke also **auch im
+Skill** entfernt, und genau deshalb hat er getrennt. Der Zuschnitt `plan` hat das bei
+`R11` nicht geschafft. ➡️ **Nicht *Regelschicht gegen Skill* ist die Trennlinie,
+sondern die REICHWEITE des Zuschnitts** - Weg (1) von `K-77` ist damit nicht neu zu
+erfinden, sondern einmal versehentlich gefahren worden und hat funktioniert. **Die
+Entscheidung selbst bleibt dem Posten `~0.75.0` vorbehalten.**
+
+Berichtigt sind **fuenf Traeger**: die Belegzellen von D-203 und `K-77`, die Zeile
+`0.74.0` des Releaseplans, die Tabelle in `CR-2026-100` und die Zusammenfassung des
+Protokolls. **Der Eintrag `0.74.0` in diesem Verzeichnis bleibt unveraendert** - er ist
+die Aufzeichnung dessen, was jenes Release gesagt hat (D-141).
+
+### Was dieses Release NICHT tut
+
+🔴 **Es entscheidet `K-77` nicht.** Die beiden Wege stehen im Klaerungspunkt,
+ihre Preise sind benannt, und der Vergleich gehoert in den Antrag, der die Arbeit
+ausloest - nicht in den Plan. Dieselbe Trennlinie wie bei `CR-2026-098` E4.
+
+**Migrationshinweis:** keiner - dieses Release aendert keinen ausgelieferten
+Laufzeittraeger. Kein Skill hebt seine Version, kein Overlay-Wert aendert sich.
+
 ## [0.74.0] - 2026-09-19
 
 **Testblaetter, Buendel 3 - die Fallunterscheidung mit der Luecke, die Zelle, die einen

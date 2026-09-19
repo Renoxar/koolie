@@ -159,7 +159,7 @@ D-197.
 
 | | Zellen | Kontrollzuschnitt |
 |---|---|---|
-| 🟢 zurechenbar | **4** | **alle vier `ohneskill`** |
+| 🟢 zurechenbar | **4** | **drei `ohneskill`, eine `k3`** (berichtigt mit `0.74.1`) |
 | 🔴 zur Hälfte | 2 | Regelschicht |
 | 🔴 nicht | **12** | Regelschicht |
 
@@ -168,6 +168,10 @@ die **Regelschicht**. Die geprüfte Schranke einer Skillzelle steht aber in **Ab
 der `SKILL.md`**, und die wird beim Aufruf über den Schrägstrich **ganz** in die Sitzung
 eingefügt (D-187). Der Zuschnitt läßt sie stehen – und bei zwölf von achtzehn Zellen
 zitiert der Kontrolllauf genau sie.
+
+🆕 **BERICHTIGT MIT `0.74.1`** (`CR-2026-101`): Die Zeile oben sagte *„alle vier `ohneskill`“* – nachgezählt an der Einzeltabelle in Abschnitt 5 sind es **drei**. Die vierte zurechenbare Zelle ist `SK-005-N05` mit dem Regelschicht-Zuschnitt **`k3`**, und sie ist die schärfste Trennung des Bündels. 🔴 **Der Widerspruch stand drei Zeilen auseinander in diesem Protokoll** – die Tabelle sagte *vier*, der Satz darunter *in allen drei Fällen*. **Der Zähler war richtig, die Zuordnung nicht.**
+
+🟢 **Was `k3` von den übrigen zwölf Zuschnitten unterscheidet, ist nachlesbar:** Seine Marken (`K3`, `personenbezogen`, `Datenschutz`, `SECURITY_CONTACT` …) treffen **zehn Zeilen in `fw-change-small/SKILL.md`**, darunter die Ausschlußzeile in Abschnitt 4 und die Rückfragenregel. Der Zuschnitt hat die Schranke also **auch im Skill** entfernt – und genau deshalb hat er getrennt. Der Zuschnitt `plan` hat es bei `R11` nicht getan. ➡️ **Nicht *Regelschicht gegen Skill* ist die Trennlinie, sondern die REICHWEITE des Zuschnitts.** Das ist der Gegenstand von `K-77`.
 
 🟢 **Wo `ohneskill` steht, trennt es sauber, und zwar in allen drei Fällen:**
 
