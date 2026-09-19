@@ -2,6 +2,83 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.76.0] - 2026-09-19
+
+**Die Vorbedingungen von Buendel 4 - der Messbaum hat keine Historie**
+(`CR-2026-103`, **D-206**, **D-207**, `K-78` neu). Durchgang vor dem Messtag, ohne
+Kontingent. Kriterium 2 unveraendert **38**.
+
+### Die zweite Frage zuerst: hat ein Release seit 0.73.0 den Gegenstand angefasst?
+
+🟢 **Nein.** `git log 0373f1f..HEAD` ueber die drei Skillverzeichnisse ist leer;
+`fw-mr-description` steht auf `0.1.4`, `fw-review-support` auf `0.1.5`, `fw-docs-update`
+auf `0.1.3`. Die Releases 0.74.0 bis 0.75.0 haben `fw-change-small` und die Blaetter von
+Buendel **3** angefasst. Eine Ausnahme beruehrt die Protokollfuehrung, nicht den
+Gegenstand: `0.75.0` hat `TEST_CATALOG.md` Punkt 4 um die Zurechenbarkeitsangabe
+erweitert.
+
+### 🔴 Sechs von neunzehn tragen - und der teuerste Befund liegt am Messapparat
+
+**Zwoelf der neunzehn Zellen rufen ihren Skill mit `<DEFAULT_BRANCH>` auf** und verlangen
+einen Diff gegen einen Branch. Der Messbaum entsteht aus `git archive HEAD | tar -x` -
+**kein `.git`, kein Branch, kein Diff**. Fuer Buendel 1 bis 3 war das richtig (D-141);
+fuer Buendel 4 ist die Historie der Gegenstand. 🟢 **Die Vorlage liegt vor:**
+`k3-bauen.py` legt seit dem 17.09. ein echtes Git-Repositorium an (D-206).
+
+| Zellen | Befund |
+|---|---|
+| `SK-011-P01` bis `-N04` (6) | 🟢 **tragen** - `UEB-09`, `UEB-10`, `UEB-02` liegen seit 0.64.0 |
+| `SK-012` (6) und `SK-010` (7) | 🔴 **tragen nicht**, zwei davon zur Haelfte |
+
+### 🔴 Eine Praeparation kann in der Git-Historie liegen (D-207)
+
+Zwei Zellen verlangen einen **Commit-Betreff mit Anweisung**, eine dritte die
+**Autorenangaben**. Alle zwanzig registrierten Praeparationen sind Dateizustaende mit
+einem Pfad; eine Historienpraeparation hat keinen, sie hat eine Commitkennung.
+
+🔴 **Und der Befund an `SK-012-N04` ist groesser als die Zelle:** Die Historie
+fuehrt **33 Commits eines Autors mit echtem Namen und echter E-Mail-Adresse** - der
+Messbaum reichte dem Client also echte Personendaten, um zu pruefen, ob er sie
+verschweigt. Dieselbe Bauform wie D-179, eine Ebene tiefer. **Die Autoren eines
+Messbaums sind seither synthetisch.**
+
+### 🔴 Artefakte eines Laufs - die sechste und siebte Wiederholung (`K-78`)
+
+Fuenf Zellen verlangen **Ergebnisberichte**, einen **bestaetigten Plan** oder einen
+**Bericht mit einer synthetisch falschen Fundstelle**. 🔴 **Und der vorhandene
+Plan traegt nicht - er ist das Gegenteil:** `UEB-18` ist in 0.73.0 als *Plan **ohne** die
+zweite Datei* gebaut worden, eigens fuer den Abweichungsfall `SK-005-P02`. Ein Plan, der
+die zweite Datei verschweigt, macht aus einem Positivfall einen Abweichungsfall.
+➡️ **Eine Praeparation, die fuer eine Zelle gebaut wurde, ist fuer eine andere
+nicht schon deshalb brauchbar, weil ihr Titel passt.**
+
+### Was sonst noch fehlt
+
+- **Kein Test mit reiner Mock-Verifikation** (`SK-010-P01`): gemessen `books.test.ts`
+  6 von 12 Zusicherungen, `BookForm.test.tsx` 2 von 12 - beide pruefen daneben echtes
+  Verhalten.
+- **Keine Datei in `<EXCLUDED_PATHS>` mit Secret-Muster** (`SK-012-N03`): `deploy/` fuehrt
+  genau `README.md`; `UEB-02` traegt das Muster, liegt aber ausserhalb der Sperre.
+- **Nur ein lokaler Branch** - `SK-010-N04` verlangt zwei.
+- **Das Uebungsrepositorium steht auf 0.74.0** und ist auf 0.75.0 zu heben (3 Dateien).
+
+### Die Herrichtung ist ein eigener Posten
+
+🔴 **In diesem Release wird nichts hergerichtet**, und das ist Absicht: 0.63.0
+(Durchgang) und 0.64.0 (Herrichtung) waren getrennt, **und die Herrichtung fand damals
+vier Zellen, die schon trugen**. Wer beides in einem Zug tut, prueft seine eigene Arbeit
+im selben Atemzug.
+
+**Migrationshinweis:** **2 Dateien** fuer das Uebungsrepositorium
+(`fw-mr-description/TESTS.md`, `fw-review-support/TESTS.md`); der Pilot bekaeme 38. Keine
+Versionsanhebung (D-119).
+
+### Bekannte Einschraenkungen
+
+- **`K-78`** offen: wie die Ergebnisberichte entstehen, ohne ihre eigene Loesung
+  mitzuliefern.
+- **`K-76`** bleibt offen.
+
 ## [0.75.0] - 2026-09-19
 
 **`K-77` entschieden - der Zuschnitt folgt der Schranke, und der Waechter prueffte mit
