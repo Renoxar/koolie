@@ -317,7 +317,20 @@ Prüft (statisch, ohne laufenden KI-Client):
      Nummern, die es als Abschnitt nicht gab. Dieselbe Form bedeutete in DERSELBEN
      Datei zweierlei - `Abschnitt 2.1` war eine Ueberschrift. Aufzeichnungen sind
      ausgenommen (D-141); ihre Liste ist keine neue, sondern NEUTRAL_CHRONIK
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 63 laeuft als eigenes
+ 64. Die Ausgabemarke, die der Skill nicht verlangt (D-197): Nennt die Spalte
+     Erwartetes oder Unzulaessiges Verhalten einer Zelle eine Ausgabemarke
+     ([HALT], [RUECKFRAGE]), fuehrt der im Ausloeser aufgerufene Skill sie in
+     Abschnitt 5 (Ausgabeformat) oder Abschnitt 6 (Qualitaetskriterien). ANLASS:
+     Ausgezaehlt am 2026-09-19 nach dem ABSCHNITT, in dem die Marke steht -
+     [RUECKFRAGE] steht in KEINEM Abschnitt 5 und KEINEM Abschnitt 6 der zwoelf
+     Skills und ist durchgehend Handlungsmarke; [HALT] ist Ausgabemarke in genau
+     dreien. 18 Nennungen in 17 Zellen verlangten mehr, als ihr Skill vorschreibt,
+     und ein gemessener Lauf hatte es vorgefuehrt: sk004n01 schrieb [HALT] und
+     [RUECKFRAGE] nicht - richtig, denn nur die erste ist verlangt. GRENZE:
+     Geprueft wird die Deckung, nicht die Formulierung; die LETZTE Zelle ist
+     Ergebnisstatus und damit Aufzeichnung (D-117), dieselbe Spalten-Ausnahme wie
+     bei Pruefung 48
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 64 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6767,6 +6780,127 @@ def check_nummernverweis(root: str) -> None:
                         f"anweisenden Traegern zeigten ins Leere (D-193)")
 
 
+# --- Pruefung 64: Die Ausgabemarke, die der Skill nicht verlangt --------------------
+#
+# ANLASS (D-197). `K-74` hat am 2026-09-19 gezaehlt, dass `[HALT]` und `[RUECKFRAGE]`
+# mit 145 Fundstellen im Kern stehen und in keinem Glossar erklaert sind. Die
+# Entscheidung dazu hat einen groesseren Befund freigelegt, und zwar durch eine
+# Frage, die die Zaehlung nicht gestellt hatte: In WELCHEM Abschnitt steht die Marke?
+#
+#     `[RUECKFRAGE]` steht in KEINEM Abschnitt 5 und in KEINEM Abschnitt 6 der
+#     zwoelf Skills. Sie ist durchgehend HANDLUNGSMARKE - "Fall X | [RUECKFRAGE]"
+#     heisst `frage zurueck`, nicht `schreibe die Zeichenfolge`.
+#
+# `[HALT]` ist beides, je nach Skill: Ausgabemarke in `fw-plan`, `fw-bugfix-prepare`
+# und `fw-change-small` (Abschnitt 5 UND 6), Handlungsmarke in den uebrigen neun.
+# Und wo sie Abnahmekriterium ist, sagt Abschnitt 6 "ist ERKENNBAR", nicht "woertlich".
+#
+# GEMESSEN HAT ES EIN LAUF. `sk004n01` (Buendel 2, 2026-09-19) schrieb `[HALT]`
+# woertlich - Abschnitt 6 von `fw-plan` sagt "der Skill endet mit [HALT]" - und
+# `[RUECKFRAGE]` nicht. Der Lauf hat sich richtig verhalten; die Zelle verlangte mehr,
+# als ihr Skill vorschreibt. Ueber alle dreizehn Blaetter: 18 Nennungen in 17 Zellen
+# ungedeckt, 10 gedeckt.
+#
+# GEGENSTAND. Nennt die Spalte "Erwartetes Verhalten" oder "Unzulaessiges Verhalten"
+# einer Zelle eine Ausgabemarke, fuehrt der im Ausloeser aufgerufene Skill sie in
+# Abschnitt 5 (Ausgabeformat) oder Abschnitt 6 (Qualitaetskriterien).
+#
+# WARUM ABSCHNITT 5 UND 6 UND NICHT 3 ODER 7. Abschnitt 3 (Arbeitsschritte) und
+# Abschnitt 7 (Fehlerbehandlung) sagen, WAS ZU TUN IST; Abschnitt 5 und 6 sagen, WAS
+# IN DER ANTWORT STEHEN MUSS. Ein Zuschnitt ueber die ganze Datei haette jede Zelle
+# durchgelassen und nichts gemessen - die Marke steht ja irgendwo in jedem Skill.
+# Das ist die Trennlinie von Pruefung 60 an einer zweiten Stelle: Dort sagt das
+# FRONTMATTER, was der Skill tut, und der Fliesstext, wovon er redet.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird die DECKUNG, nicht die Formulierung.
+# Eine Zelle, die die Sache umschreibt und dabei etwas Falsches sagt, laeuft durch.
+# ZWEITE GRENZE: Die LETZTE Zelle einer Zeile ist der Ergebnisstatus und damit eine
+# Aufzeichnung (D-117, D-141) - ein Lauf, der die Marke geschrieben HAT, darf das
+# dort berichten. Dieselbe Spalten-Ausnahme, die Pruefung 48 zieht.
+P64_MARKEN = {
+    "[HALT]": re.compile(r"\[HALT\]"),
+    "[RÜCKFRAGE]": re.compile(r"\[R(?:Ü|UE)CKFRAGE\]"),
+}
+
+
+def _p64_skillabschnitte(root: str) -> dict:
+    """Skillname -> Menge der Marken, die Abschnitt 5 oder 6 seiner SKILL.md fuehrt.
+
+    Abgeleitet aus den Skillquellen, nicht gepflegt (dieselbe Regel wie bei
+    Pruefung 60 und 48): Wer eine Marke in ein Ausgabeformat aufnimmt, soll nicht
+    daran denken muessen, eine Liste im Validator nachzuziehen.
+    """
+    raus = {}
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        if not os.path.isdir(basis):
+            continue
+        for wurzel, _, files in os.walk(basis):
+            if "SKILL.md" not in files:
+                continue
+            text = read(os.path.join(wurzel, "SKILL.md")).replace("\r\n", "\n")
+            rumpf, aktuell = [], None
+            for zeile in text.split("\n"):
+                m = re.match(r"^##\s+(\d+)\.\s", zeile)
+                if m:
+                    aktuell = int(m.group(1))
+                elif aktuell in (5, 6):
+                    rumpf.append(zeile)
+            gefuehrt = {n for n, mu in P64_MARKEN.items() if mu.search("\n".join(rumpf))}
+            raus[os.path.basename(wurzel)] = gefuehrt
+    return raus
+
+
+def check_ausgabemarke_gedeckt(root: str) -> None:
+    """Pruefung 64 (D-197): Die Zelle verlangt nur, was ihr Skill als Ausgabe fuehrt."""
+    skills = _p64_skillabschnitte(root)
+    if not any(skills.values()):
+        err(f"{KERN}/framework/skills/: keine SKILL.md fuehrt eine Ausgabemarke in "
+            f"Abschnitt 5 oder 6 - Pruefung 64 leitet ihren Gegenstand daraus ab und "
+            f"hat ihn verloren; sie bestuende sonst leise (D-23)")
+        return
+    dateien = [os.path.join(root, KERN, "tests", "TEST_CATALOG.md")]
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "TESTS.md" in files:
+                dateien.append(os.path.join(wurzel, "TESTS.md"))
+    for pfad in sorted(dateien):
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        i_ein = i_erw = i_unz = -1
+        for nr, zeile in enumerate(read(pfad).splitlines(), 1):
+            if not zeile.lstrip().startswith("|"):
+                continue
+            if "Erwartetes Verhalten" in zeile and "Eingabe" in zeile:
+                i_ein = _tabellenspalte(zeile, "Eingabe")
+                i_erw = _tabellenspalte(zeile, "Erwartetes Verhalten")
+                i_unz = _tabellenspalte(zeile, "Unzulässiges Verhalten")
+                continue
+            if min(i_ein, i_erw, i_unz) < 0:
+                continue
+            zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+            if len(zellen) <= max(i_ein, i_erw, i_unz):
+                continue
+            # Die letzte Zelle ist der Ergebnisstatus - eine Aufzeichnung (D-117)
+            pruefbar = " ".join(z for i, z in enumerate(zellen)
+                               if i in (i_erw, i_unz) and i != len(zellen) - 1)
+            gefuehrt = set()
+            for skill, marken in skills.items():
+                if f"/{skill}" in zellen[i_ein]:
+                    gefuehrt |= marken
+            for name, muster in P64_MARKEN.items():
+                if muster.search(pruefbar) and name not in gefuehrt:
+                    err(f"{rel}:{nr}: verlangt die Ausgabemarke {name}, die der "
+                        f"aufgerufene Skill weder im Ausgabeformat (Abschnitt 5) noch "
+                        f"in den Qualitaetskriterien (Abschnitt 6) fuehrt. Dort steht "
+                        f"sie als Anweisung, nicht als Ausgabe - die Zelle verlangt "
+                        f"damit mehr, als der Skill vorschreibt, und ein Lauf, der "
+                        f"anhaelt ohne die Zeichenfolge zu schreiben, faellt zu "
+                        f"Unrecht durch (D-197). Die Sache statt der Marke verlangen "
+                        f"- oder die Marke in Abschnitt 5 beziehungsweise 6 aufnehmen")
+
 def check_overlay_wertabgleich(root: str, man: dict) -> None:
     """Pruefung 59 (D-171): Der Overlay-Wert gilt in der Schicht, die ihn durchsetzt."""
     overlay_pfad = os.path.join(root, "project-overlay", "OVERLAY.md")
@@ -6901,6 +7035,7 @@ def main() -> int:
     check_skillversion_vorlage(root)
     check_pruefmittel_vokabular(root)
     check_nummernverweis(root)
+    check_ausgabemarke_gedeckt(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-GLOSSARY` |
-| Version | `0.3.0` |
+| Version | `0.4.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -81,6 +81,36 @@ Zwei Beispiele, in denen der Begriff gleich und die Wirkung verschieden ist:
 
 - Die **Regelablage** enthält bei beiden Packs dieselben Regeltexte, und beide Clients laden sie von sich aus. Verschieden ist die **Bedingungssprache**: `devin-desktop` kennt die Ladetrigger der Kernquelle, `claude-code` kennt nur die Bindung an Dateimuster (`paths`) und lädt alles Übrige unbedingt. Der Kern beschreibt deshalb, *was* eine Regel bewirkt, nicht *wann* sie geladen wird; die Abbildung der Ladetrigger steht im Manifest des Packs unter `rule_triggers`.
 - Die **Hook-Konfiguration** ist bei `devin-desktop` eine eigene Datei, bei `claude-code` ein Abschnitt der Berechtigungsdatei. Ein Kerntext, der „die Hook-Datei" nennt, wäre schon wieder clientgebunden.
+
+## Ausgabemarken: `[HALT]` und `[RÜCKFRAGE]`
+
+Die beiden Marken standen von 0.9.0 bis 0.72.0 in den Skills des Kerns, **ohne dass ein
+Kernmodul oder ein Glossar sie erklärt hätte** – ausgezählt am 2026-09-19: `[HALT]` 101
+Fundstellen in 32 anweisenden Trägern, `[RÜCKFRAGE]` 54 in 23 (`K-74`). Sie stehen hier,
+weil drei Ergebniszellen sie zum Abnahmekriterium gemacht hatten.
+
+| Marke | Was sie bedeutet | Wo sie gilt |
+|---|---|---|
+| `[HALT]` | Der Skill **unterbricht** und legt vor, was er vorhat oder gefunden hat; er fährt erst nach ausdrücklicher Bestätigung fort. Was zu bestätigen ist und durch wen, sagt die Kontrollstufe | In `fw-plan`, `fw-bugfix-prepare` und `fw-change-small` **auch als Ausgabemarke** – dort steht sie im Ausgabeformat (Abschnitt 5) und in den Qualitätskriterien (Abschnitt 6). In den übrigen neun Skills nur als **Handlungsmarke** in Arbeitsschritten und Fehlerbildern |
+| `[RÜCKFRAGE]` | Der Skill **fragt zurück**, in der Form aus Abschnitt 4 seiner `SKILL.md`: Unklarheit benennen → Auswirkung erklären → konkrete Frage stellen → betroffenen Punkt als offen kennzeichnen | **Ausschließlich als Handlungsmarke.** Sie steht in keinem Abschnitt 5 und in keinem Abschnitt 6 der zwölf Skills |
+
+### Der Unterschied ist nicht kosmetisch, und er ist gemessen (D-197)
+
+Eine **Handlungsmarke** sagt, *was zu tun ist*: `| Kontrollstufe nicht angegeben \| [RÜCKFRAGE] |`
+heißt *frage zurück*, nicht *schreibe die Zeichenfolge*. Eine **Ausgabemarke** sagt, *was in
+der Antwort stehen muss* – und nur dort, wo Abschnitt 5 oder 6 sie führt, ist sie das.
+
+> 🔴 **Ein Lauf hat den Unterschied vorgeführt, bevor er benannt war.** Am 2026-09-19 hat
+> `sk004n01` `[HALT]` wörtlich geschrieben – Abschnitt 6 von `fw-plan` sagt *„der Skill endet
+> mit [HALT]"* – und `[RÜCKFRAGE]` **nicht**, obwohl er zurückgefragt hat und zwar genau in
+> der verlangten Form. **Zwei Marken desselben Bestands, zwei Ergebnisse, und der Lauf hatte
+> in beiden recht.** Die Ergebniszelle verlangte die zweite Marke trotzdem: **18 Nennungen in
+> 17 Zellen** verlangten eine Marke, die ihr Skill nicht als Ausgabe vorschreibt.
+
+**Auch wo die Marke Abnahmekriterium ist, verlangt sie kein Zeichen.** Abschnitt 6 von
+`fw-change-small` sagt *„der [HALT] vor dem ersten Schreibzugriff ist **erkennbar**"* – nicht
+*„wörtlich geschrieben"*. **Prüfung 64** setzt seither durch, dass eine Ergebniszelle die
+Marke nur dort verlangt, wo ihr Skill sie führt; sonst verlangt sie die **Sache**.
 
 ## Nummernschema der Regelablage
 

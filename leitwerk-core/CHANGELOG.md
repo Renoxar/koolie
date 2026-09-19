@@ -2,6 +2,98 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.73.0] - 2026-09-19
+
+**`K-74` entschieden und die Vorbedingungen von Buendel 3 - die Marke, die keine
+Ausgabemarke ist, und die Vorbedingung aus einem fremden Strang** (`CR-2026-099`,
+**D-197**, **D-198**). Herrichtung vor dem Messtag, ohne Kontingent. Kriterium 2
+unveraendert **56**.
+
+### `K-74`: die Frage, die die Zaehlung nicht gestellt hatte
+
+`K-74` hatte gezaehlt, dass `[HALT]` und `[RUECKFRAGE]` breit im Kern stehen und
+nirgends erklaert sind. Die entscheidende Frage war eine dritte und stand in keiner
+Fassung des Klaerungspunkts: **In WELCHEM Abschnitt steht die Marke?**
+
+- 🔴 **`[RUECKFRAGE]` ist gar keine Ausgabemarke.** Sie steht in **keinem** Abschnitt 5
+  (Ausgabeformat) und **keinem** Abschnitt 6 (Qualitaetskriterien) der zwoelf Skills -
+  durchgehend Handlungsmarke: `| Kontrollstufe nicht angegeben \| [RUECKFRAGE] |` heisst
+  *frage zurueck*, nicht *schreibe die Zeichenfolge*.
+- 🔴 **`[HALT]` ist beides, je nach Skill** - Ausgabemarke in `fw-plan`,
+  `fw-bugfix-prepare` und `fw-change-small`, Handlungsmarke in den uebrigen neun. Und wo
+  sie Abnahmekriterium ist, sagt Abschnitt 6 *"ist ERKENNBAR"*, nicht *"woertlich"*.
+- 🔴 **Ein gemessener Lauf hatte es vorgefuehrt, bevor es benannt war:** `sk004n01` aus
+  Buendel 2 schrieb `[HALT]` und `[RUECKFRAGE]` nicht, **obwohl er zurueckfragte** - in
+  genau der verlangten Form. **Der Lauf hatte in beidem recht; die Zelle verlangte mehr,
+  als ihr Skill vorschreibt.**
+- **Gemessen ueber alle dreizehn Blaetter: 18 Nennungen in 17 Zellen ungedeckt**, zehn
+  gedeckt. In Buendel 3 sind **9 von 13** ungedeckt - alle sechs Nennungen von
+  `fw-refactor`, beide von `fw-tests` und eine von `fw-change-small`.
+- ⚠️ **Und die Zaehlung von `K-74` war wieder zu klein:** nachgezaehlt `[HALT]` **101**
+  statt 92 Fundstellen, `[RUECKFRAGE]` **54** statt 52.
+
+**Abhilfe:** Die Zelle verlangt die Marke woertlich nur dort, wo Abschnitt 5 oder 6 ihres
+Skills sie fuehrt, sonst die **Sache**. Beide Marken sind in `docs/RUNTIME_GLOSSARY.md`
+erklaert (Version `0.3.0` -> `0.4.0`), `tests/TEST_CATALOG.md` Punkt 4 sagt, was eine
+Zelle verlangen darf, und **Pruefung 64** haelt Zelle und Skill gegeneinander - vier
+Sonden, drei Gegenproben.
+
+**Warum hier die Zelle geaendert wird, wo D-196 genau das verworfen hat:** Bei D-196
+traegt die geladene Schicht die Kennung **gar nicht**, die Erwartung ist unerfuellbar,
+und eine Regel muss jede kuenftige Zelle mit abdecken. Hier steht die Marke **in** der
+geladenen Schicht (die `SKILL.md` wird ganz eingefuegt, D-187), nur als Anweisung statt
+als Ausgabe - **der Widerspruch liegt zwischen Zelle und Skill und ist damit maschinell
+pruefbar.**
+
+### Die achtzehn Vorbedingungen: fuenfzehn tragen, drei nicht
+
+Zum **fuenfzehnten Mal in Folge** der billigste Befund eines Releases, und alle drei
+fielen **vor** dem ersten Lauf an.
+
+- **`SK-005-P02`** verlangt einen **bestaetigten Plan** - ein Artefakt eines LAUFS, die
+  fuenfte Wiederholung nach `UEB-06`, `UEB-07`, `UEB-08` und `UEB-17` (D-192). 🔴 **Ihn
+  durch einen `fw-plan`-Lauf herstellen zu lassen traegt nicht:** Ein guter Plan nennt
+  beide Dateien, und dann hat die Zelle keinen Gegenstand mehr. -> **`UEB-18`**
+- **`SK-005-N03`** verlangt einen Fehlschlag, der **durch** die Aenderung entsteht und
+  dessen Ursache **ausserhalb** der bestaetigten Zieldateiliste liegt. `UEB-08` ist schon
+  im Ausgangsstand rot und trifft den **anderen** Zweig von Arbeitsschritt 9. ->
+  **`UEB-19`**
+- **`SK-006-N01`** verlangt den Sichtbarkeits- oder Konstruktorfall. 🔴 **Eine neue
+  Bauform: Eine Vorbedingung kann ihre Sprache aus einem anderen Strang nehmen.** Im
+  ausfuehrbaren Strang gibt es den Fall **nicht** - das Testwerkzeug erreicht jedes
+  Verhalten ueber Modul- und Zeitattrappen, ohne Produktivcode anzufassen, und ein Lauf
+  haette zu Recht widersprochen. -> **`UEB-20`**, im Backend-Strang, belegt durch ihr
+  Dasein wie `UEB-14`
+
+🟢 **Nachgemessen statt uebernommen:** Frontend-Suite des Uebungsrepositoriums **51 gruen**
+(nach den Praeparationen 59), Lint Exit 0, `UEB-06` gibt seinen Wartungshinweis in der
+Testausgabe aus. **Und `UEB-19` ist durch ein PAAR belegt**, nicht durch ihr Dasein: ohne
+die Verlagerung 59 gruen, mit ihr genau eine fehlschlagende Zusicherung
+(`expected 'mahnung' to be 'erinnerung'`), Ursache in `mahnsaetze.ts`.
+
+### Was fuer den Messtag daraus folgt
+
+🔴 **Der Aufbau von Buendel 3 unterscheidet sich von Buendel 1 und 2: Alle drei Skills
+SCHREIBEN.** Ein Hauptbaum fuer alle Laeufe traegt hier nicht - *ein Hauptbaum ist nach
+dem ersten Schreiblauf nicht mehr der Ausgangszustand.* Jeder Hauptlauf braucht seinen
+eigenen Baum. Und `<TEST_COMMAND>` und `<LINT_COMMAND>` stehen im `ask`-Korb des
+Uebungsrepositoriums; der Messaufbau muss beide in `allow` stellen, und das ist eine
+**ausgewiesene Abweichung des Zuschnitts** (D-134, D-178). **Pruefung 60 hat hier zum
+ersten Mal einen Gegenstand.**
+
+**Migrationshinweis: 10 Dateien, alle `TESTS.md`** - trockengelaufen mit
+`install.py --update --dry-run` gegen eine Kopie beider uebernehmender Projekte, mit dem
+`leitwerk-core` des **Arbeitsbaums**. 🟢 **Zum ersten Mal ist die Dateizahl NICHT mal
+zwei:** Dieses Release hebt keine Skillversion - eine Aenderung an einer `TESTS.md` ist
+keine Aenderung des Traegers im Sinne der Versionspflicht (D-119), und kein
+Aenderungsverlauf wandert mit. **Ein Projekt, das weiter zurueck steht, sieht mehr:** Das
+Uebungsrepositorium (0.70.0) bekommt 15, der Pilot (0.54.1) 38.
+
+**Bekannte Einschraenkung:** `UEB-20` liegt im Backend-Strang, der auf keinem
+Arbeitsplatz dieses Projekts uebersetzbar ist (`K-68`). Sie belegt sich durch ihr Dasein;
+der Testfall braucht den Lauf nicht, sein erwartetes Verhalten ist ein Unterlassen **vor**
+dem ersten Schreibzugriff.
+
 ## [0.72.0] - 2026-09-19
 
 **Zwei Anforderungen an die Auslieferung - die Installationsbibliothek und das
