@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.2.1` |
+| Version | `0.2.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -101,7 +101,7 @@ die Störung.**
 | ~~**0.65.0**~~ ✅ | **Die Vorbedingungen des fünften Sitzungstests, zweiter Durchgang** – acht Befunde, ein Vormittag, kein Kontingent; zum neunten Mal in Folge war der Durchgang vor dem Eingriff der billigste Befund. 🔴 **Der teuerste liegt außerhalb des Kerns:** Die Einengung der Sperre `.github/**` auf `.github/workflows/**` aus 0.63.0 (D-161) steht allein im **Quell**-Overlay – die beiden Träger, die den Client binden, führen weiter den weiteren Wert, unverändert seit dem ersten Commit jenes Repositoriums. **Drei Prüfungen sahen es nicht, jede aus einem eigenen Grund**; `SK-012-P01` blieb unfahrbar. **Prüfung 59** gleicht seither Quelle, Laufzeitfassung und `deny`-Korb ab. 🟢 **Und `FW-PO-02` ist fahrbar** (D-170): D-144 hatte den Gegenstand aus dem Auslöser erschlossen, und die Zelle nennt ihn in zwei Spalten selbst. Dazu je ein weiterer Gegenstand für **Prüfung 44** und **49** und drei zu kleine Zählungen (`CR-2026-090`, D-170 bis D-174, `K-69` neu) | – | nein |
 | ~~**0.66.0**~~ ✅ | **Sitzungstest 5** – erledigt: **sieben Ergebniszellen**, dreißig Läufe, einundzwanzig Bäume, 24,44 USD. 🔴 **Der Befund, den man sich merken muß: Bei VIER der sieben tritt das erwartete Verhalten auch ohne die Regel ein** (D-115, D-175) – bisher an zwei Zellen gemessen, jetzt an sieben an einem Tag. 🟢 **Drei sind zurechenbar:** `FW-FI-03` der `SessionStart`-Statusmeldung (D-176, **H3 geht auf `[MESS]`**), `FW-PO-02` der Regelschicht, `FW-AK-02` dem Framework als ganzem. 🔴 **`FW-SC-01` brauchte zwei Anläufe:** Der erste änderte nichts, weil `<TEST_COMMAND>` im `ask`-Korb stand – **Prüfung 60** setzt es seither durch (D-178). 🔴 **Und der Kontrollbaum sagte, daß er einer ist** (D-179). `K-70` neu (`CR-2026-091`, D-175 bis D-179) | Kriterium 2: **92 → 85** | ja |
 | ~~**0.67.0**~~ ✅ | *dieses Release:* **Das Prüfmittelwort, das keine Prüfung kennt – und der Bündelschnitt** (`CR-2026-092`, D-180 bis D-182, `K-72` neu). Die dreizehn Testblätter führten **87 von 87 Zellen** unter dem Wort `manuell`, das in keinem Vokabular steht; die Prüfungen **49 und 60 laufen ausdrücklich über die Blätter und hatten dort null Gegenstand**. Nach der Umstellung auf `sitzung` meldete Prüfung 60 im ersten Lauf **zwanzig Zellen** – in genau den drei Blättern, deren Skill einen Befehl ausführt. **Prüfung 61 setzt das Vokabular durch.** Dazu: *„gesetzt“ ist nicht *„freigegeben“ (D-182), der Bündelschnitt für die vier folgenden Posten (D-180) und der Vorbedingungsdurchgang von Bündel 1 (11 Zellen, **zehn tragen**) | – (Kriterium 2 unverändert **85**) | nein |
-| **0.68.0** | **Testblätter, Bündel 1** (D-180): `fw-repo-analyze`, `fw-code-explain`, `fw-change-analyze` – **11 Ergebniszellen**. **Der billigste Meßtag der Reihe:** Keiner der drei Skills führt einen Befehl aus, Prüfung 60 hat hier keinen Gegenstand, und der Meßbaum braucht keinen `allow`-Korb für `<TEST_COMMAND>`. 🔴 **Vorher zu entscheiden: `K-72`** – `SK-002-P01` hat keinen unpräparierten Gegenstand | Kriterium 2: **85 → 74** | ja |
+| **0.68.0** | **Testblätter, Bündel 1** (D-180): `fw-repo-analyze`, `fw-code-explain`, `fw-change-analyze` – **11 Ergebniszellen**. **Der billigste Meßtag der Reihe:** Keiner der drei Skills führt einen Befehl aus, Prüfung 60 hat hier keinen Gegenstand, und der Meßbaum braucht keinen `allow`-Korb für `<TEST_COMMAND>`. 🟢 **`K-72` ist mit 0.67.1 entschieden** (`CR-2026-093`, D-184): `SK-002-P01` läuft auf der sechzehnten Präparation `UEB-16` – einem eigens angelegten Modul mit Tests, einem ungetesteten Fehlerpfad und einem Verwender. **Den Ausschlag gab `SK-002-N02`:** Diese Zelle desselben Blattes fährt denselben Befehl auf demselben Modul, und die zweite Auflösung hätte aus zwei Zellen einen Lauf gemacht | Kriterium 2: **85 → 74** | ja |
 | **~0.69.0** | **Testblätter, Bündel 2** (D-180): `fw-plan`, `fw-error-analyze`, `fw-bugfix-prepare` – **18 Ergebniszellen**. Auch hier führt kein Skill einen Befehl aus; `fw-plan` **nennt** `<TEST_COMMAND>`, es **plant** ihn (D-178) | Kriterium 2: **74 → 56** | ja |
 | **~0.70.0** | **Testblätter, Bündel 3** (D-180): `fw-change-small`, `fw-refactor`, `fw-tests` – **18 offene Ergebniszellen von zwanzig**. 🔴 **Der teuerste Meßtag, und er ist der Grund für diesen Schnitt:** Alle drei Skills **führen** `<TEST_COMMAND>` (zwei auch `<LINT_COMMAND>`) aus. Jede der zwanzig Zellen nennt seit 0.67.0 den `allow`-Korb (D-182) | Kriterium 2: **56 → 38** | ja |
 | **~0.71.0** | **Testblätter, Bündel 4** (D-180): `fw-mr-description`, `fw-review-support`, `fw-docs-update` – **19 Ergebniszellen**. Braucht einen lokalen Übungs-Branch gegenüber `<DEFAULT_BRANCH>` und die sechs Zellen an `UEB-09`/`UEB-10` | Kriterium 2: **38 → 19** | ja |
@@ -159,12 +159,12 @@ dieses Repositoriums, sein Validatorlauf ist grün, und die **Präparationen sin
 und registriert** (Prüfung 44 zählt beide Seiten nach). Der Weg steht in
 `tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`.
 
-🔴 **Aus sieben sind fünfzehn geworden, und beide Male war der Anlass derselbe.** `UEB-08`
+🔴 **Aus sieben sind sechzehn geworden, und zweimal war der Anlass derselbe – beim dritten Mal sein Spiegelbild.** `UEB-08`
 kam mit 0.59.0 dazu (`FW-NE-02` verlangte einen roten Test und es gab keinen), `UEB-09`
 bis `UEB-15` mit 0.64.0: Der Durchgang durch alle dreizehn Testblätter hat gemessen, dass
 Blattzellen einen Zustand des Repositoriums verlangen, den niemand herstellte – **und alle
 standen als `offen`, also als fahrbar** (`CR-2026-089`, D-167). Der Weg steht in
-`tests/protocols/2026-09-18-herrichtung-uebungsrepositorium.md`.
+`tests/protocols/2026-09-18-herrichtung-uebungsrepositorium.md`. 🆕 **`UEB-16` kam mit 0.67.1 dazu, und dort war der Gegenstand nicht ungebaut, sondern besetzt:** `SK-002-P01` verlangt ein Modul mit Tests und einem ungetesteten Fehlerpfad, und **beide** Kandidaten des Bestands trugen eine fremde Präparation (`CR-2026-093`, `K-72`, D-184).
 
 **Was dabei angefallen ist, war größer als die Aufgabe:** vierzehn Fehler nach dem Heben,
 darunter acht Exec-Freigaben bei drei Schlitzen; ein Hook, der einunddreißig Releases lang
