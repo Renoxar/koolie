@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-003` |
 | Name | `fw-change-analyze` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -88,7 +88,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Änderungsanalyse – fw-change-analyze v0.1.1
+## Änderungsanalyse – fw-change-analyze v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Aufgabe: <Kurzfassung in eigenen Worten> · Referenz: <Kennung oder „keine">

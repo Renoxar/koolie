@@ -24,7 +24,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-007` |
 | Name | `fw-refactor` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -101,7 +101,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Refactoring-Protokoll – fw-refactor v0.1.1
+## Refactoring-Protokoll – fw-refactor v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Bereich: <pfad-oder-symbol> · Ziel: <refactoring-ziel> · Unverändert bleiben: <Verhalten, Schnittstellen, Verwender>

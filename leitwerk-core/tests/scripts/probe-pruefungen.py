@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 61, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 62, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -5329,6 +5329,60 @@ gegenprobe("61b", "`sitzung` mit Zusatz bleibt zulaessig - geprueft wird das ers
 gegenprobe("61c", "`skript+sitzung` und `review` bleiben zulaessig - der Zuschnitt ist "
                   "nicht auf `sitzung` verengt", _61_skript_und_review, M61_FREMD)
 
+
+# --- Pruefung 62: die Version der Ausgabevorlage (D-185) --------------------------
+#
+# Die Pruefung ist entstanden, weil ein GEMESSENER LAUF sie veranlasst hat: Im ersten
+# Buendellauf der Testblaetter meldete ein Lauf in einer Nebenbemerkung, die
+# Attributtabelle seines Skills nenne 0.1.3 und der Kopf der Ausgabevorlage v0.1.1.
+#
+# ZWEI SONDEN, WEIL DIE FUNDSTELLE ZWEI GESTALTEN HAT: die Kopfzeile der Vorlage und
+# die Zeile "Erstellt mit". Eine Sonde auf die Ueberschrift allein haette die zweite
+# nicht getroffen - und genau sie trugen zwei Skills doppelt.
+M62_WOERTLICH = "nennt die Version wörtlich"
+
+P62_SKILL = "leitwerk-core/framework/skills/fw-code-explain/SKILL.md".replace("/", os.sep)
+P62_PLAN = "leitwerk-core/framework/skills/fw-plan/SKILL.md".replace("/", os.sep)
+P62_SCHLITZ = "v<Version aus dem Steckbrief>"
+
+
+def _62_kopfzeile(root: str) -> None:
+    """Die Kopfzeile der Ausgabevorlage traegt wieder eine woertliche Version."""
+    ersetze(P(root, P62_SKILL),
+            ("## Code-Erklärung – fw-code-explain " + P62_SCHLITZ,
+             "## Code-Erklärung – fw-code-explain v9.9.9", 1))
+
+
+def _62_erstellt_mit(root: str) -> None:
+    """Die zweite Gestalt: die Zeile `Erstellt mit` im Ergebnisbericht."""
+    ersetze(P(root, P62_PLAN),
+            ("| Erstellt mit | fw-plan " + P62_SCHLITZ + " |",
+             "| Erstellt mit | fw-plan v9.9.9 |", 1))
+
+
+def _62_zweiter_schlitz(root: str) -> None:
+    """Gegenprobe: der Schlitz darf mehrfach stehen - geprueft wird die ZAHL."""
+    ersetze(P(root, P62_SKILL),
+            ("## Code-Erklärung – fw-code-explain " + P62_SCHLITZ,
+             "## Code-Erklärung – fw-code-explain " + P62_SCHLITZ
+             + " (Vorlage " + P62_SCHLITZ + ")", 1))
+
+
+sonde("62a", "Die Kopfzeile der Ausgabevorlage traegt wieder eine woertliche Version - "
+             "genau der Stand vor 0.68.0 in zehn von dreizehn Traegern",
+      _62_kopfzeile, M62_WOERTLICH)
+
+sonde("62b", "Dieselbe Zahl in der Zeile `Erstellt mit` - die zweite Gestalt, die ein "
+             "Zuschnitt auf die Ueberschrift verfehlt haette",
+      _62_erstellt_mit, M62_WOERTLICH)
+
+gegenprobe("62a", "Das unveraenderte Repositorium bleibt unbeanstandet - dreizehn "
+                  "Traeger verweisen seit 0.68.0 auf ihren Steckbrief",
+           None, M62_WOERTLICH)
+
+gegenprobe("62b", "Der Schlitz darf mehrfach in einer Zeile stehen - geprueft wird die "
+                  "woertliche ZAHL, nicht der Buchstabe v",
+           _62_zweiter_schlitz, M62_WOERTLICH)
 
 # --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------
 #

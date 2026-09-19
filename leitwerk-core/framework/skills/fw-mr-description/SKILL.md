@@ -29,7 +29,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
@@ -107,7 +107,7 @@ triggers:
 ## 5. Ausgabeformat
 
 ```markdown
-## Merge-Request-Beschreibung – fw-mr-description v0.1.1
+## Merge-Request-Beschreibung – fw-mr-description v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Änderungssatz: <Branch gegenüber <DEFAULT_BRANCH> | Commit-Bereich | Arbeitskopie> · Dateien: <Anzahl> · Nicht gelesen (ausgeschlossen): <Liste | keine>

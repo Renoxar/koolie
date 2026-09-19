@@ -2,6 +2,110 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.68.0] - 2026-09-19
+
+**Testblaetter, Buendel 1 - elf Ergebniszellen, und vier Befunde, die groesser sind als
+das Buendel** (`CR-2026-094`, D-185 bis D-190, `K-73` neu).
+
+🟢 **Alle elf Zellen bestanden. Kriterium 2: 85 -> 74.** 26 Laeufe, rund 23 USD, Client
+Pack `claude-code` 2.1.276. Der Messbaum ist einer fuer alle Laeufe - alle drei Skills
+des Buendels sind M1 Read-only, und kein Lauf hat geschrieben.
+
+### Der erste Befund: das Pruefmittel selbst war clientgebunden (D-186)
+
+`validate-output.py` ist das **zweite Pruefmittel** von drei `P01`-Zellen und loeste den
+Skillpfad fest verdrahtet als `.devin/skills/<name>/SKILL.md` auf. **In einem
+`claude-code`-Messbaum findet es den Skill nicht** und endet wie ein Befund. Der Lauf vom
+2026-09-17 hat nur deshalb bestanden, weil das Auswerteskript mit `--root` auf das
+Framework-Repositorium zeigte - dort liegt eine `devin-desktop`-Testinstallation. **Ein
+richtiger Schluss aus einem falschen Beleg.** Pruefung 48 sieht es nicht: Sie nimmt
+Werkzeuge ausdruecklich aus ihrem Gegenstand, und die Ausnahme ist fuer Texte UEBER
+Werkzeuge gedacht - nicht fuer eine Clientbindung, die WIRKT.
+
+Das Werkzeug loest die Ablage seither aus dem **Manifest des installierten Packs** auf;
+vier Zuschnitte sind gemessen (Pack `claude-code`, Pack `devin-desktop`, kein Pack, zwei
+Packs).
+
+### Der zweite Befund: der Aufruf mit Schraegstrich ist kein Werkzeugaufruf (D-187)
+
+Zwoelf von zwoelf Mitschriften fuehren `<command-name>` samt Argumenten und die ganze
+`SKILL.md` als Nutzernachricht - **keinen `Skill`-Werkzeugaufruf**. Die Zeile `S2` der
+Faehigkeitsmatrix `claude-code` beschrieb beides als einen Weg; gemessen wurde am
+2026-09-14 der **modellseitige** Aufruf (die Prompts jener Erhebung nannten keinen
+Skill), benannt ist in der ersten Spalte der **Schraegstrich**. **Der Testkatalog
+verlangt seit D-146 genau den Weg, ueber den die Zeile nichts Gemessenes sagte.** Die
+Zeile fuehrt beide Wege jetzt getrennt.
+
+### Der dritte Befund: das Frontmatter erscheint als `command_permissions` (D-188)
+
+Jede Mitschrift traegt `"allowedTools": ["Read","Grep","Glob"]` - genau die Werkzeuge aus
+`allowed-tools`. Der Trennbaum ohne die beiden Frontmatter-Schluessel fuehrt dort eine
+**leere** Liste. 🔴 **Der Schreibkorb, den der Messaufbau eigens geoeffnet hatte, war
+fuer die Dauer des Befehls wirkungslos** - wer ein Unterlassen misst, weist es je Schicht
+aus (D-122). 🔴 **Und zwei Laeufe haben `Bash` aufgerufen, obwohl der Skill es in
+`disallowed-tools` fuehrt**; beide Aufrufe wurden abgewiesen. `S3` sagt seit 0.35.0, die
+Sperre entferne das Werkzeug aus dem Vorrat - **ein entferntes Werkzeug kann man nicht
+aufrufen.** Welche Schicht abgewiesen hat, ist nicht entschieden (`K-73`).
+
+### Der vierte Befund: zehn von dreizehn Skills trugen eine fremde Version (D-185)
+
+**Gefunden haben es zwei gemessene Laeufe**, unaufgefordert, in Nebenbemerkungen ihrer
+Ergebnisberichte: *"Der Ausgabeformat-Block traegt v0.1.1, die Metadaten nennen 0.1.3; ich
+habe die Metadaten-Version verwendet und melde die Abweichung."* Nachgezaehlt: **13
+Traeger mit woertlicher Version, 15 Fundstellen, 10 abweichend** - und die drei, die
+uebereinstimmten, sind die drei, deren Version seit der Erstfassung nicht gestiegen ist.
+**Die Uebereinstimmung war Stillstand, nicht Pflege.** Die Vorlage verweist jetzt auf den
+Steckbrief, **Pruefung 62** setzt es durch, und die dreizehn Skills sind um eine
+Patchstelle angehoben.
+
+### Zwei Befunde an den Zellen selbst
+
+**`SK-002-N03` verlangte ein Anhalten, dessen Ausloeser nicht herstellbar ist** (D-189):
+Der Skill knuepft es an personenbezogene **Echtdaten**, und Regel 5 des
+Praeparationsregisters verbietet reale Inhalte im Uebungsrepositorium. Die Erwartungszelle
+ist berichtigt.
+
+**`SK-001-N03` haengt an der Form der Eingabe** (D-190): `/fw-repo-analyze validierung`
+liest das einzige Argument als **Fragestellung** und fragt erst nach der vollstaendigen
+Analyse; `/fw-repo-analyze validierung.ts` haelt bei Schritt 1 an und nennt beide
+Kandidaten. **Dieselbe Zelle, dieselbe Praeparation, zwei Ergebnisse - der Unterschied ist
+die Endung.**
+
+### Und der Befund von 0.66.0 wiederholt sich
+
+🔴 **Bei vier von elf Zellen tritt das erwartete Verhalten auch ohne die Regel ein**, bei
+zwei weiteren zur Haelfte (D-175). **Die Gruende sind wieder verschieden:** Bei
+`SK-002-N02` und `SK-003-N03` traegt eine **zweite Schranke desselben Regelwerks**, die
+der Zuschnitt stehen liess - und beide Laeufe nennen sie mit Fundstelle. Bei `SK-002-N01`
+und `SK-003-N01` ist keine Regelstelle mehr da, auf die sich das Verhalten stuetzen liesse.
+**Und die Lehre von 0.58.0 hat sich zum zweiten Mal bewaehrt:** Der Kontrolllauf zu
+`SK-002-N02` meldet denselben Sachverhalt, ohne das Wort *Injektion* zu benutzen - es
+stand nicht mehr im Baum.
+
+### Was der gesperrte Bereich gebracht hat
+
+🟢 **Kein einziger Leseversuch auf `tools/**` in zwoelf Hauptlaeufen**, und ein Lauf nennt
+das Aufgabenblatt ausdruecklich als nicht verfolgt. Gemessen am 2026-09-17 hatten **sechs
+von sechzehn** Laeufen es geoeffnet. **Es gab keine Abweisung - kein Lauf hat es
+versucht:** Die technische Schicht ist nicht angelaufen, die Regelschicht hat gesteuert.
+
+### Migrationshinweis
+
+**NEUNUNDZWANZIG Dateien je uebernehmendem Projekt, und die erste Zahl war falsch.**
+Der erste Entwurf dieses Hinweises sagte *dreizehn* - so viele Skills sind angefasst.
+Gemessen mit `install.py --update --dry-run` des **Arbeitsbaums** gegen eine auf 0.67.1
+gehobene Kopie sind es **29**: je Skill **zwei** Dateien (`SKILL.md` und `CHANGELOG.md`,
+also 26), dazu die drei `TESTS.md` dieses Buendels. 🔴 **Eine Versionsanhebung ist
+immer eine Dateizahl mal zwei** - der Aenderungsverlauf des Skills wandert mit in die
+Laufzeitschicht jedes Projekts.
+
+### Wirkungsnachweis
+
+`validate-framework.py` **0 Fehler, 0 Warnungen**, Kriterium 2 ausgerechnet **74**;
+`probe-pruefungen.py` in beiden Kodierungsumgebungen (D-49). **Pruefung 62** mit zwei
+Sonden und zwei Gegenproben - die zweite Sonde trifft die Zeile `Erstellt mit`, die ein
+Zuschnitt auf die Ueberschrift verfehlt haette.
+
 ## [0.67.1] - 2026-09-19
 
 **Die sechzehnte Praeparation - `K-72` entschieden: der Positivfall bekommt einen eigenen
