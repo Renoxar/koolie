@@ -289,7 +289,17 @@ Prüft (statisch, ohne laufenden KI-Client):
      (D-134). Derselbe Fehler kostete FW-PO-02 einen Durchgang. GRENZE: Geprueft wird
      die NENNUNG des Schlitzes, nicht die Aussage darueber - die Pruefung faengt das
      Vergessen, nicht den Irrtum. Und sie gilt nur fuer sitzung-Zellen
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 60 laeuft als eigenes
+ 61. Das Pruefmittelwort stammt aus dem Vokabular (D-181): Das erste Wort der Spalte
+     Pruefmethode ist skript, sitzung oder review - im zentralen Katalog und in den
+     dreizehn Testblaettern. ANLASS: Die Blaetter fuehrten bis 0.67.0 das Wort manuell,
+     87 von 87 Zellen. Es steht in keinem Vokabular; es ist das ADJEKTIV aus der
+     Definition von sitzung, zum Methodennamen befoerdert, und jedes Blatt erklaerte es
+     im eigenen Vorspann. Die Pruefungen 49 und 60 laufen ausdruecklich ueber die
+     Blaetter und filtern auf sitzung - beide hatten dort NULL Gegenstand. Nach der
+     Umstellung meldete Pruefung 60 sofort ZWANZIG Zellen. GRENZE: Geprueft wird das
+     erste Wort gegen eine feste Menge; ein Zusatz dahinter bleibt zulaessig. Nicht
+     geprueft wird, ob das Wort das RICHTIGE ist
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 61 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6489,6 +6499,74 @@ def check_befehlsschlitz_in_vorbedingung(root: str) -> None:
                     f"Gegenstands (D-134, D-178)")
 
 
+# --- Pruefung 61: Das Pruefmittelwort stammt aus dem Vokabular ----------------------
+#
+# ANLASS (D-181). Die dreizehn Testblaetter fuehrten bis 0.67.0 das Wort `manuell` -
+# 87 von 87 Zellen. Im Vokabular von TEST_CATALOG.md Punkt 3 steht es nicht; es ist das
+# ADJEKTIV aus der Definition von `sitzung` ("manuelle KI-Testsitzung nach Testblatt"),
+# zum Methodennamen befoerdert. Jedes Blatt erklaerte es in seinem eigenen Vorspann -
+# und damit war es fuer jeden Leser richtig und fuer jeden Zaehler unsichtbar.
+#
+# WAS DAS GEKOSTET HAT, IST GEMESSEN. Zwei Pruefungen laufen ausdruecklich ueber die
+# dreizehn Blaetter und filtern auf `sitzung`: Pruefung 49 (D-146, seit 0.60.0) und
+# Pruefung 60 (D-178, seit 0.66.0). Beide hatten dort NULL Gegenstand. Nach der
+# Umstellung meldete Pruefung 60 beim ersten Lauf ZWANZIG Zellen - in genau den drei
+# Blaettern, deren Skill einen Befehl ausfuehrt (fw-change-small, fw-refactor, fw-tests).
+# Das ist die Bauform "Die Regel als Ausfuellschlitz" (0.61.0) eine Ebene hoeher: Nicht
+# die Regel stand in zwei Ausdrucksformen, sondern ihr GEGENSTAND.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird das ERSTE WORT der Zelle gegen eine feste
+# Menge. Ein Zusatz dahinter bleibt zulaessig - der zentrale Katalog fuehrt
+# "sitzung + `validate-output.py`" und "skript+sitzung", die Blaetter
+# "sitzung + Skript `validate-output.py --skill ...`". Nicht geprueft wird, ob das Wort
+# das RICHTIGE ist; die Pruefung faengt ein fremdes Vokabular, nicht einen Irrtum.
+P61_VOKABULAR = ("skript", "sitzung", "review")
+
+
+def check_pruefmittel_vokabular(root: str) -> None:
+    """Pruefung 61 (D-181): Das Pruefmittelwort stammt aus dem Vokabular des Katalogs."""
+    dateien = [os.path.join(root, KERN, "tests", "TEST_CATALOG.md")]
+    for basis in (os.path.join(root, KERN, "framework", "skills"),
+                  os.path.join(root, KERN, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "TESTS.md" in files:
+                dateien.append(os.path.join(wurzel, "TESTS.md"))
+    gesehen = 0
+    for pfad in sorted(dateien):
+        if not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        i_pm = -1
+        for nr, zeile in enumerate(read(pfad).splitlines(), 1):
+            if not zeile.lstrip().startswith("|"):
+                continue
+            if "Prüfmethode" in zeile and "Eingabe" in zeile:
+                i_pm = _tabellenspalte(zeile, "Prüfmethode")
+                continue
+            if i_pm < 0:
+                continue
+            zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+            if len(zellen) <= i_pm or not zellen[0]:
+                continue
+            if set(zellen[0]) <= set("-:"):
+                continue
+            wert = zellen[i_pm]
+            if not wert:
+                continue
+            gesehen += 1
+            # Das erste Wort, abgeschnitten an Leerzeichen und am Pluszeichen.
+            kopf = wert.split(" ")[0].split("+")[0].strip()
+            if kopf in P61_VOKABULAR:
+                continue
+            err(f"{rel}:{nr}: Prüfmittel '{kopf}' steht nicht im Vokabular "
+                f"({', '.join(P61_VOKABULAR)}). Zwei Prüfungen filtern auf `sitzung` und "
+                f"verlieren mit einem fremden Wort ihren Gegenstand, ohne es zu melden "
+                f"(D-146, D-178, D-181)")
+    if gesehen == 0:
+        err(f"{KERN}/tests/: keine Zelle mit Prüfmethode gefunden – Prüfung 61 hat ihren "
+            f"Gegenstand verloren; sie bestünde sonst leise (D-23)")
+
+
 # --- Pruefung 59: Der Overlay-Wert in der Schicht, die ihn durchsetzt ---------------
 #
 # ANLASS. Gemessen am 2026-09-18 am Uebungsrepositorium (CR-2026-090, Befund 3): 0.63.0
@@ -6672,6 +6750,7 @@ def main() -> int:
     check_ungebundene_vorbedingung(root)
     check_decisionregister(root)
     check_befehlsschlitz_in_vorbedingung(root)
+    check_pruefmittel_vokabular(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
