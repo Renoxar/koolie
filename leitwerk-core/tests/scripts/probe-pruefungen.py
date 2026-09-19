@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 60, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 61, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -344,8 +344,18 @@ class Einheit:
             _ORT.einheit = None
 
     def ausgeben(self) -> None:
+        # 🔴 KODIERUNGSFEST, UND DER ANLASS IST GEMESSEN (2026-09-19, CR-2026-092):
+        # Bricht eine Praeparation, nennt die Meldung ihren Suchtext - und der stammt
+        # aus einem Traeger mit echten Sonderzeichen. In der cp1252-Umgebung, die D-49
+        # ausdruecklich verlangt, hat ein einziges '→' den GANZEN Lauf mit einem
+        # UnicodeEncodeError abgebrochen, nach 53 von 61 Pruefungen. Der Apparat konnte
+        # seinen eigenen Befund dort nicht berichten.
         for zeile in self.zeilen:
-            print(zeile)
+            try:
+                print(zeile)
+            except UnicodeEncodeError:
+                kodierung = getattr(sys.stdout, "encoding", None) or "ascii"
+                print(zeile.encode(kodierung, "backslashreplace").decode(kodierung))
 
 
 def eintragen(art: str, kennung: str, satz: str, arbeit) -> None:
@@ -4647,20 +4657,46 @@ P53_ROADMAP = "leitwerk-core/docs/ROADMAP.md".replace("/", os.sep)
 P53_UEBERSCHRIFT = "#### Der Releaseplan bis 1.0.0 und darüber hinaus"
 # Genau der Fehler, den 0.60.0 gemergt hat: Die Zelle wurde aus dem Posten genommen, seine
 # Zahl nachgezogen - und die des Folgepostens blieb stehen.
-P53_KETTENGLIED = "| Kriterium 2: **85 → 0** | ja, mehrfach |"
 P53_KETTE_SUCH = "Kriterium 2: **"
+P53_GLIED_RE = re.compile(r"Kriterium 2: \*\*(\d+) → (\d+)\*\*")
+
+
+# 🔴 DER ANKER IST ABGELEITET, NICHT GEPFLEGT - UND DAS ZUM DRITTEN MAL IN DREI
+# RELEASES. Bis 0.67.0 stand er hier als feste Zeichenkette ("**85 → 0**"), also auf
+# dem Inhalt EINES Postens. 0.63.0 hat dieselbe Bauform schon einmal an Gegenprobe 53b
+# behoben und den Fall im Kopfkommentar dort beschrieben - die beiden SONDEN blieben
+# gepflegt. Der Umbau des Releaseplans in 0.67.0 (ein Posten wird zu sieben) hat 53a
+# prompt fallen lassen: "Praeparation gebrochen".
+#     Eine Abhilfe gilt fuer die Stelle, an der sie eingetragen wird, nicht fuer die
+#     Bauform. Wer eine findet, sucht ihre Geschwister im selben Block.
+def _53_letztes_glied(root: str) -> str:
+    """Die LETZTE Kettenzeile des Plans - sie schliesst die Kette und endet bei null."""
+    text = lies(P(root, P53_ROADMAP))
+    kette = [z for z in text.replace("\r\n", "\n").split("\n")
+             if P53_KETTE_SUCH in z and P53_GLIED_RE.search(z)]
+    if not kette:
+        raise Praeparationsfehler(
+            "ROADMAP.md: keine Zeile mit einer Kriterium-2-Kette gefunden - die Sonde "
+            "zu 53 haette keinen Anker")
+    return kette[-1]
 
 
 def _53_kette_reissen(root: str) -> None:
     """Der Stand vor 0.61.0: Der Folgeposten beginnt um eins unter dem Vorgaengerende."""
-    ersetze(P(root, P53_ROADMAP),
-            (P53_KETTENGLIED, "| Kriterium 2: **84 → 0** | ja, mehrfach |"))
+    glied = _53_letztes_glied(root)
+    m = P53_GLIED_RE.search(glied)
+    kaputt = P53_GLIED_RE.sub(
+        "Kriterium 2: **%d → %s**" % (int(m.group(1)) - 1, m.group(2)), glied)
+    ersetze(P(root, P53_ROADMAP), (glied, kaputt))
 
 
 def _53_null_verfehlen(root: str) -> None:
     """Ein Plan, der nicht bei null ankommt, fuehrt nicht bis 1.0.0."""
-    ersetze(P(root, P53_ROADMAP),
-            (P53_KETTENGLIED, "| Kriterium 2: **85 → 4** | ja, mehrfach |"))
+    glied = _53_letztes_glied(root)
+    m = P53_GLIED_RE.search(glied)
+    kaputt = P53_GLIED_RE.sub(
+        "Kriterium 2: **%s → %d**" % (m.group(1), int(m.group(2)) + 1), glied)
+    ersetze(P(root, P53_ROADMAP), (glied, kaputt))
 
 
 def _53_anker_verlieren(root: str) -> None:
@@ -5213,6 +5249,85 @@ gegenprobe("60c", "Derselbe Ausloeser bei Pruefmethode `review` bleibt zulaessig
 gegenprobe("60d", "Ein Skill, dessen Frontmatter keinen Befehl ausfuehrt, bleibt ohne "
                   "Befehlsangabe zulaessig - der Zuschnitt ist nicht zu breit",
            _60_skill_ohne_schlitz, M60_FEHLT)
+
+
+# --- Pruefung 61: das Pruefmittelwort stammt aus dem Vokabular (D-181) ------------
+#
+# ANLASS. Die dreizehn Testblaetter trugen bis 0.67.0 das Wort `manuell` - 87 von 87
+# Zellen -, und es steht in keinem Vokabular. Die Pruefungen 49 und 60 filtern auf
+# `sitzung` und hatten dort NULL Gegenstand; nach der Umstellung meldete 60 zwanzig
+# Zellen. Die Sonden treffen beide Orte, an denen das Wort steht: den zentralen
+# Katalog und ein Blatt. Die Gegenproben belegen den zulaessigen Zusatz - ohne sie
+# stuende nur fest, dass die Pruefung etwas meldet, nicht dass sie den richtigen
+# Zuschnitt hat.
+M61_FREMD = "steht nicht im Vokabular"
+M61_ANKER = "keine Zelle mit Prüfmethode gefunden"
+P61_KATALOG = "leitwerk-core/tests/TEST_CATALOG.md".replace("/", os.sep)
+P61_KATALOGANKER = "| FW-AK-02 (Basis) |"
+P61_BLATT = "leitwerk-core/framework/skills/fw-repo-analyze/TESTS.md".replace("/", os.sep)
+P61_BLATTANKER = "| SK-001-N03 |"
+
+
+def _61_katalogzeile(root: str, zeile: str) -> None:
+    zeile_nach(P(root, P61_KATALOG), P61_KATALOGANKER, zeile)
+
+
+def _61_fremdes_wort(root: str) -> None:
+    """Eine Katalogzeile mit dem Wort `manuell` - genau der Stand vor 0.67.0."""
+    _61_katalogzeile(root,
+        "| FW-SO-12 | Sondenzeile | Sondenvorbedingung "
+        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| manuell | bestanden (Sondenbeleg) |")
+
+
+def _61_fremdes_wort_im_blatt(root: str) -> None:
+    """Dasselbe Wort in einem der dreizehn Blaetter - dort stand es 87-mal."""
+    zeile_nach(P(root, P61_BLATT), P61_BLATTANKER,
+        "| SK-001-S99 | Sondenzeile | Sondenvorbedingung "
+        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| manuell | bestanden (Sondenbeleg) |")
+
+
+def _61_zulaessiger_zusatz(root: str) -> None:
+    """Gegenprobe: `sitzung` mit Zusatz - die Schreibweise beider Bestaende."""
+    _61_katalogzeile(root,
+        "| FW-SO-13 | Sondenzeile | Sondenvorbedingung "
+        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| sitzung + Skript `validate-output.py --skill fw-repo-analyze` "
+        "| bestanden (Sondenbeleg) |")
+
+
+def _61_skript_und_review(root: str) -> None:
+    """Gegenprobe: die beiden uebrigen Woerter des Vokabulars bleiben zulaessig.
+
+    Ohne sie belegte der Lauf nur, dass `sitzung` durchkommt - der Zuschnitt waere
+    dann zu eng, und niemand saehe es.
+    """
+    _61_katalogzeile(root,
+        "| FW-SO-14 | Sondenzeile | Sondenvorbedingung | Sondeneingabe "
+        "| Ablehnung | Zugriff | skript+sitzung | bestanden (Sondenbeleg) |")
+    _61_katalogzeile(root,
+        "| FW-SO-15 | Sondenzeile | Sondenvorbedingung | Sondeneingabe "
+        "| Ablehnung | Zugriff | review | bestanden (Sondenbeleg) |")
+
+
+sonde("61a", "Eine Katalogzeile mit dem Wort `manuell` - dem Wort, das 87 Blattzellen "
+             "trugen und das zwei Pruefungen ihren Gegenstand kostete",
+      _61_fremdes_wort, M61_FREMD)
+
+sonde("61b", "Dasselbe Wort in einem der dreizehn Testblaetter: Die Pruefung liest "
+             "beide Bestaende, nicht nur den zentralen Katalog",
+      _61_fremdes_wort_im_blatt, M61_FREMD)
+
+gegenprobe("61a", "Das unveraenderte Repositorium bleibt unbeanstandet - alle 125 "
+                  "Zellen tragen seit 0.67.0 ein Wort des Vokabulars",
+           None, M61_FREMD)
+
+gegenprobe("61b", "`sitzung` mit Zusatz bleibt zulaessig - geprueft wird das erste "
+                  "Wort, nicht die ganze Zelle", _61_zulaessiger_zusatz, M61_FREMD)
+
+gegenprobe("61c", "`skript+sitzung` und `review` bleiben zulaessig - der Zuschnitt ist "
+                  "nicht auf `sitzung` verengt", _61_skript_und_review, M61_FREMD)
 
 
 # --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------

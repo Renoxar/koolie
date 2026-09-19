@@ -2,6 +2,158 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.67.0] - 2026-09-19
+
+**Das Pruefmittelwort, das keine Pruefung kennt - 87 Blattzellen, zwei Pruefungen ohne
+Gegenstand, und der Buendelschnitt fuer die naechsten fuenf Posten** (`CR-2026-092`,
+D-180 bis D-182, `K-72` neu).
+
+Der Releaseplan sah fuer dieses Release den ersten Buendellauf der dreizehn Testblaetter
+vor. Der Durchgang durch die Vorbedingungen stand davor - **zum zehnten Mal in Folge war
+er der billigste Befund**, und diesmal ist er beim Abzaehlen der Buendel auf zwei Befunde
+gestossen, die groesser sind als das Buendel. **Kriterium 2 bleibt bei 85; bewegt wird es
+mit 0.68.0.**
+
+### Der Befund: 87 von 87 Blattzellen tragen ein Wort, das in keinem Vokabular steht
+
+`tests/TEST_CATALOG.md` Punkt 3 nennt drei Pruefmethoden: `skript`, `sitzung`, `review`.
+Die dreizehn Testblaetter fuehrten keine davon - sie fuehrten `manuell`, in allen 87
+Zellen. **Das Wort ist nicht erfunden, und genau das macht es unsichtbar:** Es ist das
+Adjektiv aus der Definition von `sitzung` (*"manuelle KI-Testsitzung nach Testblatt"*),
+zum Methodennamen befoerdert - und jedes der dreizehn Blaetter erklaerte es im eigenen
+Vorspann. Fuer jeden Leser war es damit richtig, fuer jeden Zaehler ein Fremdwort.
+
+**Zwei Pruefungen laufen ausdruecklich ueber die dreizehn Blaetter und filtern auf
+`sitzung`:** Pruefung 49 (D-146, seit 0.60.0) und Pruefung 60 (D-178, seit 0.66.0). Beide
+hatten dort **null Gegenstand**. Sie bauen ihre Dateiliste aus den Blaettern auf, lesen
+jede Zeile und ueberspringen jede einzelne - ein Lauf, der so endet, ist von einem Lauf
+ohne Befund nicht zu unterscheiden.
+
+**Der Wirkungsnachweis ist der Validatorlauf zwischen den beiden Eingriffen:** Nach der
+Umstellung auf `sitzung` und VOR der Ergaenzung der Vorbedingungen meldete Pruefung 60
+**zwanzig Zellen** - sieben in `fw-change-small`, sieben in `fw-refactor`, sechs in
+`fw-tests`, also in genau den drei Blaettern, deren Skill einen Befehl ausfuehrt.
+**Pruefung 60 ist die teuerste Lehre des Vorgaengerreleases** und hatte dort, wo sie
+gebraucht wird, keinen Gegenstand.
+
+Das ist die Bauform *"Die Regel als Ausfuellschlitz"* (0.61.0) eine Ebene hoeher: Dort
+stand dieselbe REGEL in zwei Ausdrucksformen, hier steht ihr GEGENSTAND in zweien.
+**Pruefung 61 setzt das Vokabular seither durch** - im zentralen Katalog und in den
+dreizehn Blaettern, mit zwei Sonden und drei Gegenproben.
+
+### Der zweite Befund: "gesetzt" ist nicht "freigegeben" (D-182)
+
+Die Vorspaenne der drei betroffenen Blaetter nannten die Befehlsschlitze seit ihrer
+Erstfassung - als *"aktives Uebungs-Overlay (... `<TEST_COMMAND>`, `<LINT_COMMAND>` ...
+gesetzt)"*. **Gesetzt waren sie auch am 2026-09-18, als `FW-SC-01` zum dritten Mal nichts
+geaendert hat**: Sie standen im `ask`-Korb, und `ask` ist im nicht-interaktiven Betrieb
+eine Abweisung (D-134). Eine Bindung sagt, dass der Platzhalter einen Wert hat; ein Korb
+sagt, ob der Lauf ihn ausfuehren darf. Jede der zwanzig Zellen nennt ab sofort den Korb.
+
+### Der dritte Befund: der Posten war seit 0.56.0 arithmetisch unerfuellbar (D-180)
+
+Der Plan fuehrte *"0.67.0 bis ~0.70.0 - Die dreizehn Testblaetter, je Buendel von zwei bis
+drei Skills"*. Vier Nummern, dreizehn Blaetter: Bei hoechstens drei Blaettern je Buendel
+sind es **fuenf** Buendel. Pruefung 53 rechnet die Kriterium-2-Kette der Posten nach, nicht
+den Inhalt eines Postens gegen seine eigene Nummernspanne.
+
+**Der neue Schnitt folgt dem Befehlsschlitz und nicht dem Alphabet:**
+
+| Posten | Buendel | Zellen |
+|---|---|---|
+| `0.68.0` | `fw-repo-analyze`, `fw-code-explain`, `fw-change-analyze` | 11 - **kein Skill fuehrt einen Befehl aus** |
+| `~0.69.0` | `fw-plan`, `fw-error-analyze`, `fw-bugfix-prepare` | 18 - ebenfalls ohne Befehl |
+| `~0.70.0` | `fw-change-small`, `fw-refactor`, `fw-tests` | 18 von 20 - **alle drei fuehren einen aus** |
+| `~0.71.0` | `fw-mr-description`, `fw-review-support`, `fw-docs-update` | 19 |
+| `~0.72.0` | `role-re-ticket` | 15 |
+| `~0.73.0` | `FW-KO-05` und die drei Sammelzellen | 4 |
+
+### Der Vorbedingungsdurchgang von Buendel 1 - zehn von elf tragen
+
+Offen bleibt `SK-002-P01` (`K-72`): Die Zelle verlangt eine Uebungsmethode mit Tests UND
+einem ungetesteten Fehlerpfad. **Von acht Modulen mit Tests ist genau EINES unpraepariert**
+(`BookForm.tsx`), und es hat keinen Fehlerpfad; die beiden Module mit einem ungetesteten
+Fehlerpfad tragen `UEB-05` beziehungsweise `UEB-03`. Das ist D-137 eine Ebene hoeher: Dort
+verdraengt eine Praeparation den Gegenstand einer anderen Praeparation, hier den einer
+ZELLE. `K-72` ist vor `0.68.0` zu entscheiden.
+
+**Der Durchgang vor dem Commit hat dabei einen eigenen Fehler gefangen - zum elften Mal in
+Folge:** Der erste Entwurf fuehrte `isbn.ts` und `gebuehren.ts` als unpraepariert; sie sind
+`UEB-13` und `UEB-15`. Der Irrtum kam daher, dass der Durchgang das Register des Frameworks
+las, und dort stehen die Pfade des BEISPIELAUFBAUS - die tatsaechlichen Orte fuehrt
+`tools/mentorenblatt/PRAEPARATIONEN.md` des Uebungsrepositoriums. Der Schluss traegt
+trotzdem und wird schaerfer. *Ein richtiger Schluss aus einem falschen Beleg ist kein
+Glueck, sondern eine ungesicherte Stelle* (0.64.0).
+
+### Zwei Befunde aus dem ersten Sondenlauf (D-183)
+
+Der erste Abnahmelauf in der cp1252-Umgebung ist abgebrochen - nach 53 von 61 Pruefungen,
+mit einem UnicodeEncodeError. Darin stecken zwei voneinander unabhaengige Befunde.
+
+**Der Anker von Sonde 53a und 53b war gepflegt, nicht abgeleitet.** `P53_KETTENGLIED`
+stand als feste Zeichenkette auf dem Inhalt EINES Postens des Releaseplans; dieses Release
+macht aus dem einen Posten sieben, und die Sonde meldete "Praeparation gebrochen".
+Dieselbe Bauform zum dritten Mal in drei Releases: 0.63.0 hat sie an Gegenprobe 53b
+behoben und den Fall dort im Kopfkommentar beschrieben - die beiden Sonden desselben
+Blocks blieben gepflegt, vier Zeilen entfernt. **Eine Abhilfe gilt fuer die Stelle, an der
+sie eingetragen wird, nicht fuer die Bauform.** Beide Sonden leiten den Anker jetzt ab.
+
+**Der Pruefapparat konnte seinen eigenen Befund in cp1252 nicht berichten.** Die Meldung
+"Praeparation gebrochen" nennt ihren Suchtext, und der stammt aus einem Traeger mit echten
+Sonderzeichen: Ein einziges Pfeilzeichen hat den ganzen Lauf abgebrochen - in genau der
+Kodierungsumgebung, die D-49 seit sechsunddreissig Releases verlangt. Der Schaden ist
+groesser als der Anlass: Die gebrochene Sonde war der Befund, der Abbruch hat acht
+Pruefungen ungefahren gelassen. Die Abhilfe steht in `Einheit.ausgeben()`, weil dort jeder
+Text vorbeigeht, der aus einem Traeger stammt; `Einheit.fahren()` faengt seit jeher jede
+Ausnahme der ARBEIT - die AUSGABE lag ausserhalb. **Wer einen Lauf in zwei
+Kodierungsumgebungen verlangt, prueft auch seinen Berichtsweg in beiden.**
+
+### Geaendert
+
+- **Die dreizehn `TESTS.md`:** 87 Pruefmittelzellen von `manuell` auf `sitzung`, 13
+  Vorspaenne auf das Vokabular des Katalogs verwiesen.
+- **20 Vorbedingungen** in `fw-change-small`, `fw-refactor` und `fw-tests` nennen den
+  Befehlsschlitz **und den `allow`-Korb**; die drei Vorspaenne sagen, warum.
+- `tests/TEST_CATALOG.md`: Das Vokabular ist als abschliessend bezeichnet und gilt fuer
+  die Blaetter; Sondenmenge `6, 14 und 18 bis 61`.
+- `tests/scripts/validate-framework.py`: **Pruefung 61**, Registereintrag, Sondenmenge.
+- `tests/scripts/probe-pruefungen.py`: Sonden 61a/61b, Gegenproben 61a bis 61c; abgeleiteter Anker fuer die Sonden 53a und 53b, kodierungsfeste Ausgabe (D-183).
+- `docs/ROADMAP.md`: Releaseplan mit dem Buendelschnitt (sieben Zeilen statt einer), die
+  Tilde-Anmerkung um den siebten Einschub ergaenzt.
+- `governance/DECISION_LOG.md`: D-180 bis D-183, `K-72` neu.
+- `tests/protocols/2026-09-19-pruefmittelwort-und-buendelschnitt.md` (neu).
+- Artefaktversionen: `tests/TEST_CATALOG.md` auf `0.4.6`, `docs/ROADMAP.md` auf `0.2.1`.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner.** Dieses Release faesst Testkatalog, Testblaetter, Pruefapparat und Roadmap an -
+**keinen ausgelieferten Laufzeittraeger**. `install.py --update` schreibt nichts Neues.
+Wie bei 0.66.0 gilt: Das ist die Ausnahme, nicht die Regel - der Trockenlauf gegen eine
+Kopie beider uebernehmender Projekte gehoert trotzdem zum naechsten Migrationshinweis.
+
+### Abnahme
+
+| Lauf | Ergebnis |
+|---|---|
+| `validate-framework.py` gegen den fertigen Baum | 0 Fehler, 0 Warnungen |
+| `probe-pruefungen.py`, cp1252, 8 Bahnen | alle Sonden und Gegenproben bestanden, 233 Einheiten |
+| `probe-pruefungen.py`, utf-8, 8 Bahnen | alle Sonden und Gegenproben bestanden, 233 Einheiten |
+| `probe-pruefungen.py --bahnen 1` (`K-71`) | alle Sonden und Gegenproben bestanden |
+| Abnahmelauf gegen den FERTIGEN Baum, beide Kodierungsumgebungen | alle Sonden und Gegenproben bestanden, je 233 Einheiten |
+
+### Bekannte Einschraenkungen
+
+- **`K-72` ist offen und hat eine Frist:** `SK-002-P01` ist ohne Entscheidung nicht
+  abnehmbar, und die Zelle gehoert zu Buendel 1.
+- **`K-71` bleibt offen, und der verlangte Lauf hat ihn nicht geschlossen.** Der
+  einbahnige Lauf ist gefahren und gruen - **er grenzt die Nebenlaeufigkeit trotzdem nicht
+  ein, weil auch die beiden achtbahnigen Laeufe gruen sind.** Eine Wechselwirkung der acht
+  Bahnen erklaert keine Abweichung, die bei acht Bahnen zweimal ausbleibt. Stand: einmal
+  beobachtet, in vier Laeufen nicht reproduziert. Eine nicht reproduzierte Beobachtung
+  wird nicht dadurch erklaert, dass man sie oft genug nicht wiederholt.
+- Pruefung 61 prueft das erste Wort gegen eine feste Menge, **nicht ob es das richtige
+  ist**. Sie faengt ein fremdes Vokabular, nicht einen Irrtum.
+
 ## [0.66.0] - 2026-09-18
 
 **Der fuenfte Sitzungstest: sieben Zellen abgenommen - und bei vieren tritt das erwartete
