@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-004` |
 | Name | `fw-plan` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -100,7 +100,7 @@ triggers:
 - Grundlage: <fw-change-analyze, Referenz | verkürzte Analyse in dieser Sitzung>
 - Scope der Umsetzung: <Pfade in <ALLOWED_PATHS>> · Nicht berührt: <Pfade>
 
-### Plan (Struktur exakt nach leitwerk-core/templates/PLAN_TEMPLATE.md)
+### Plan
 ## Änderungsplan: <Kurztitel> (<Ticket-Referenz oder Platzhalter>)
 | Attribut | Wert |
 | Erstellt mit | fw-plan v<Version aus dem Steckbrief> |
