@@ -6,14 +6,22 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.6 |
+| Version | 0.1.7 |
 | Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
 
-1. Jeder Inhalt, der dem KI-Client als Kontext bereitgestellt wird (geöffnete Dateien, per Erwähnung eingebundene Dateien, Suchergebnisse, Befehlsausgaben, eingefügter Text, Inhalte aus MCP-Werkzeugen, Inhalte in Spaces), verlässt den Arbeitsplatz und wird über die Infrastruktur des Anbieters und dessen Modellanbieter verarbeitet (Annahme A-04; Anbieterdokumentation: Opt-out aus Modelltraining auf kostenpflichtigen Plänen, danach Zero Data Retention bei den Modellanbietern; Enterprise-Kunden: kein Training ohne schriftliche Zustimmung `[DOK]`).
-2. Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
-3. Bis zum Vorliegen dieser Prüfung gilt die restriktivste Auslegung: Nur Kontextklasse K0 und K1 (Abschnitt 2) dürfen bereitgestellt werden, und nur, wenn die Organisation die Nutzung des Werkzeugs grundsätzlich freigegeben hat.
+### 1.1 Bereitgestellter Kontext verlässt den Arbeitsplatz
+
+Jeder Inhalt, der dem KI-Client als Kontext bereitgestellt wird (geöffnete Dateien, per Erwähnung eingebundene Dateien, Suchergebnisse, Befehlsausgaben, eingefügter Text, Inhalte aus MCP-Werkzeugen, Inhalte in Spaces), verlässt den Arbeitsplatz und wird über die Infrastruktur des Anbieters und dessen Modellanbieter verarbeitet (Annahme A-04; Anbieterdokumentation: Opt-out aus Modelltraining auf kostenpflichtigen Plänen, danach Zero Data Retention bei den Modellanbietern; Enterprise-Kunden: kein Training ohne schriftliche Zustimmung `[DOK]`).
+
+### 1.2 Vertragliche und technische Bedingungen sind organisationsspezifisch
+
+Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
+
+### 1.3 Bis zur Prüfung gilt die restriktivste Auslegung
+
+Bis zum Vorliegen dieser Prüfung gilt die restriktivste Auslegung: Nur Kontextklasse K0 und K1 (Abschnitt 2) dürfen bereitgestellt werden, und nur, wenn die Organisation die Nutzung des Werkzeugs grundsätzlich freigegeben hat.
 
 ## 2. Kontextklassen (normativ)
 
@@ -46,16 +54,45 @@ Die folgenden Kategorien sind **unbedingt** ausgeschlossen. Eine Freigabe nach A
 
 ## 3. Bereitstellungsregeln (normativ)
 
-1. **Aufgabenbezug:** Es wird nur der Kontext bereitgestellt, der für die konkrete Aufgabe erforderlich ist. Ganze Verzeichnisbäume, vollständige Ticketsysteme oder ganze Wikis DÜRFEN NICHT pauschal eingebunden werden.
-2. **Aktualität:** Veraltete Dokumente SOLLEN nicht bereitgestellt werden; ist ein Dokument im Manifest als veraltet markiert, DARF es NICHT verwendet werden.
-3. **Bereinigung vor Bereitstellung:** K2-Inhalte werden vor der Bereitstellung bereinigt: Personen durch Rollen, Organisationen durch Platzhalter, Adressen und Kennungen durch `<PLACEHOLDER>`, Fallbeschreibungen durch abstrahierte Sachverhalte ersetzt. Die bereinigte Fassung wird nicht in das Repository übernommen (Ebene E).
-4. **Tickets:** Aus `<ISSUE_TRACKER>` werden nur Titel, technische Beschreibung und Akzeptanzkriterien übernommen – nach Prüfung auf personenbezogene Daten und vertrauliche Inhalte. Kommentarverläufe, Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden.
-5. **Befehlsausgaben und Logs:** Vor der Weitergabe an den KI-Client werden Befehlsausgaben und Logauszüge auf personenbezogene Daten, Secrets und Hostnamen geprüft. Das Werkzeug selbst wird angewiesen, vermutete Secrets oder personenbezogene Daten in Ausgaben nicht zu wiederholen (Wurzel-Anweisungsdatei).
-6. **Testdaten:** der KI-Client arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
-7. **Externe Quellen:** Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). **Eine Freigabe je Domain ist nicht vorgesehen** und war es nie: In der Berechtigungskonfiguration gewinnt `deny`, eine zusätzliche `allow`-Regel hebt das generelle Verbot nicht auf, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht einmal ausdrückbar. Wer externen Abruf braucht, ersetzt die Verbotsregel über einen Änderungsantrag (`leitwerk-core/framework/core/03-security.md` Abschnitt 4, D-59); bis dahin wird freigegebene Dokumentation lokal bereitgestellt.
-8. **MCP-Werkzeuge:** Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Die Bestätigungspflicht vor einem MCP-Aufruf DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist; **ob der Client sie von sich aus stellt, führt sein Client Pack in der Fähigkeitsmatrix** (`[DOK]` bei `devin-desktop`).
-9. **Spaces und geteilter Kontext:** Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
-10. **Persönliche Regeln:** Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht. Dies ist eine Regel **an den Menschen**, keine Rangaussage: Welchen Rang eine Anweisungsquelle außerhalb des Repositoriums hat – nämlich keinen –, regelt Regel 2.6 der Prioritätshierarchie (D-34). Welche Quellen ein Client kennt und was davon abgeschaltet ist, führt sein Client Pack im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts".
+### 3.1 Aufgabenbezug
+
+Es wird nur der Kontext bereitgestellt, der für die konkrete Aufgabe erforderlich ist. Ganze Verzeichnisbäume, vollständige Ticketsysteme oder ganze Wikis DÜRFEN NICHT pauschal eingebunden werden.
+
+### 3.2 Aktualität
+
+Veraltete Dokumente SOLLEN nicht bereitgestellt werden; ist ein Dokument im Manifest als veraltet markiert, DARF es NICHT verwendet werden.
+
+### 3.3 Bereinigung vor Bereitstellung
+
+K2-Inhalte werden vor der Bereitstellung bereinigt: Personen durch Rollen, Organisationen durch Platzhalter, Adressen und Kennungen durch `<PLACEHOLDER>`, Fallbeschreibungen durch abstrahierte Sachverhalte ersetzt. Die bereinigte Fassung wird nicht in das Repository übernommen (Ebene E).
+
+### 3.4 Tickets
+
+Aus `<ISSUE_TRACKER>` werden nur Titel, technische Beschreibung und Akzeptanzkriterien übernommen – nach Prüfung auf personenbezogene Daten und vertrauliche Inhalte. Kommentarverläufe, Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden.
+
+### 3.5 Befehlsausgaben und Logs
+
+Vor der Weitergabe an den KI-Client werden Befehlsausgaben und Logauszüge auf personenbezogene Daten, Secrets und Hostnamen geprüft. Das Werkzeug selbst wird angewiesen, vermutete Secrets oder personenbezogene Daten in Ausgaben nicht zu wiederholen (Wurzel-Anweisungsdatei).
+
+### 3.6 Testdaten
+
+der KI-Client arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
+
+### 3.7 Externe Quellen
+
+Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). **Eine Freigabe je Domain ist nicht vorgesehen** und war es nie: In der Berechtigungskonfiguration gewinnt `deny`, eine zusätzliche `allow`-Regel hebt das generelle Verbot nicht auf, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht einmal ausdrückbar. Wer externen Abruf braucht, ersetzt die Verbotsregel über einen Änderungsantrag (`leitwerk-core/framework/core/03-security.md` Abschnitt 4, D-59); bis dahin wird freigegebene Dokumentation lokal bereitgestellt.
+
+### 3.8 MCP-Werkzeuge
+
+Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Die Bestätigungspflicht vor einem MCP-Aufruf DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist; **ob der Client sie von sich aus stellt, führt sein Client Pack in der Fähigkeitsmatrix** (`[DOK]` bei `devin-desktop`).
+
+### 3.9 Spaces und geteilter Kontext
+
+Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
+
+### 3.10 Persönliche Regeln
+
+Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRFEN NICHT Kontext einbinden, der über die Freigaben des Overlays hinausgeht. Dies ist eine Regel **an den Menschen**, keine Rangaussage: Welchen Rang eine Anweisungsquelle außerhalb des Repositoriums hat – nämlich keinen –, regelt Regel 2.6 der Prioritätshierarchie (D-34). Welche Quellen ein Client kennt und was davon abgeschaltet ist, führt sein Client Pack im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts".
 
 ## 4. Freigabeverfahren für K2-Inhalte (normativ)
 

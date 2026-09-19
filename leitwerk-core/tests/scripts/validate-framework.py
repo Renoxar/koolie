@@ -307,7 +307,17 @@ Prüft (statisch, ohne laufenden KI-Client):
      uebereinstimmten, sind die drei, deren Version seit der Erstfassung nicht
      gestiegen ist: Die Uebereinstimmung war Stillstand, nicht Pflege. Gefunden hat es
      ein gemessener Lauf selbst, in einer Nebenbemerkung seines Ergebnisberichts
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 62 laeuft als eigenes
+ 63. Der Nummernverweis, der ins Leere zeigt (D-193): Nennt ein anweisender
+     Traeger des Kerns eine Datei und dahinter `Abschnitt N` oder `Abschnitt N.M`,
+     fuehrt das Ziel eine Ueberschrift mit genau dieser Nummer. ANLASS: Der
+     Vorbedingungsdurchgang von Buendel 2 hat gemessen, dass drei Zellen eine
+     Bereinigung "nach 02-privacy.md Abschnitt 3.3" erwarten - und dass Abschnitt 3
+     jener Datei zehn nummerierte REGELN fuehrte und keine einzige Unterueberschrift.
+     Gegen den unberuehrten Vorstand: 30 Verweise in 15 anweisenden Traegern auf vier
+     Nummern, die es als Abschnitt nicht gab. Dieselbe Form bedeutete in DERSELBEN
+     Datei zweierlei - `Abschnitt 2.1` war eine Ueberschrift. Aufzeichnungen sind
+     ausgenommen (D-141); ihre Liste ist keine neue, sondern NEUTRAL_CHRONIK
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 63 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6664,6 +6674,99 @@ def check_skillversion_vorlage(root: str) -> None:
             f"Gegenstand verloren; sie bestünde sonst leise (D-23)")
 
 
+# --- Pruefung 63: der Nummernverweis, der ins Leere zeigt (D-193) ------------------
+#
+# ANLASS. Der Vorbedingungsdurchgang von Buendel 2 (0.70.0) hat die achtzehn Zellen
+# gegen den Bestand gehalten. Drei davon erwarten eine Bereinigung "nach
+# 02-privacy.md Abschnitt 3.3" - und Abschnitt 3 jener Datei fuehrte zehn nummerierte
+# REGELN und keine einzige Unterueberschrift. Nachgezaehlt gegen den unberuehrten
+# Vorstand: 30 Verweise in 15 anweisenden Traegern auf vier Nummern (1.3, 3.3, 3.4,
+# 3.5), die es als Abschnitt nicht gab.
+#
+# DIE FORM HATTE IN DERSELBEN DATEI ZWEI BEDEUTUNGEN. `Abschnitt 2.1` zeigte auf eine
+# Ueberschrift, `Abschnitt 3.3` auf eine Listennummer, und 05-working-model.md fuehrt
+# seine Querschnittsregeln laengst als `### 3.1` bis `### 3.6`. Das ZIELMODUL war der
+# Ausreisser, nicht die dreissig Verweise: 0.70.0 hat die Ueberschriften nachgezogen
+# und keinen der fuenfzehn Traeger angefasst. Eine Marke mit zwei Bedeutungen taugt
+# weder als Bedingung noch als Entlastung.
+#
+# ZWEI AUSDRUCKSFORMEN, UND DIE ERSTE ZAEHLUNG KANNTE NUR EINE. Vier Testblaetter
+# nennen das Ziel als blossen Dateinamen (`02-privacy.md`), nicht mit vollem Pfad -
+# wer nur den vollen Pfad sucht, zaehlt 25 statt 30. Ein blosser Dateiname wird
+# aufgeloest, wenn er im Kern GENAU EINMAL vorkommt; bei mehreren Treffern
+# (README.md, TESTS.md, SKILL.md) wird nicht geraten.
+#
+# EINE bis-SPANNE IST MEHR ALS IHRE ENDEN. "Abschnitt 3.3 bis 3.5" nennt auch 3.4;
+# wer nur die genannten Zahlen prueft, uebersieht die Mitte.
+#
+# AUFZEICHNUNGEN SIND AUSGENOMMEN (D-141), und die Liste dafuer ist keine neue:
+# NEUTRAL_CHRONIK und NEUTRAL_FRIST. Ein Protokoll nennt den Stand seines Tages, und
+# ein Aenderungsantrag den Gegenstand seines Eingriffs; beide nachtraeglich zu
+# glaetten, zerstoerte die Nachvollziehbarkeit.
+P63_VERWEIS = re.compile(
+    r"`(?P<pfad>[A-Za-z0-9_./-]*\.md)`[^`\n]{0,90}?Abschnitt\s+"
+    r"(?P<nummern>\d+(?:\.\d+)?(?:\s*(?:und|bis|,)\s*\d+(?:\.\d+)?)*)")
+P63_UEBERSCHRIFT = re.compile(r"^#{2,6}\s+(\d+(?:\.\d+)*)\.?\s", re.M)
+P63_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_FRIST
+
+
+def _p63_nummern(roh: str) -> list:
+    """Die genannten Nummern, bis-Spannen innerhalb desselben Abschnitts aufgeloest."""
+    teile = re.split(r"\s*(und|bis|,)\s*", roh)
+    werte, i = [teile[0]], 1
+    while i + 1 < len(teile):
+        verbinder, naechste = teile[i], teile[i + 1]
+        a, b = werte[-1].split("."), naechste.split(".")
+        if verbinder == "bis" and len(a) == 2 and len(b) == 2 and a[0] == b[0] \
+                and int(b[1]) > int(a[1]):
+            werte += ["%s.%d" % (a[0], k) for k in range(int(a[1]) + 1, int(b[1]) + 1)]
+        else:
+            werte.append(naechste)
+        i += 2
+    return werte
+
+
+def check_nummernverweis(root: str) -> None:
+    """Pruefung 63 (D-193): Ein Nummernverweis zeigt auf eine Ueberschrift des Ziels."""
+    kopf: dict = {}
+    nach_name: dict = {}
+    for path in iter_text_files(root):
+        if not path.endswith(".md"):
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        if not rel.startswith(KERN + "/"):
+            continue
+        nach_name.setdefault(os.path.basename(rel), []).append(rel)
+        kopf[rel] = {m.group(1) for m in P63_UEBERSCHRIFT.finditer(read(path))}
+    if not kopf:
+        err(f"{KERN}/: keine Markdown-Traeger gefunden - Pruefung 63 hat ihren "
+            f"Gegenstand verloren; sie bestuende sonst leise (D-23)")
+        return
+    for rel in sorted(kopf):
+        if rel.startswith(P63_AUSNAHMEN) or os.path.basename(rel) in NEUTRAL_CHRONIK_BASENAMES:
+            continue
+        pfad = os.path.join(root, rel.replace("/", os.sep))
+        for i, zeile in enumerate(read(pfad).splitlines(), 1):
+            for m in P63_VERWEIS.finditer(zeile):
+                genannt = m.group("pfad")
+                if genannt.startswith(KERN + "/"):
+                    ziel = genannt if genannt in kopf else None
+                else:
+                    kandidaten = nach_name.get(os.path.basename(genannt), [])
+                    ziel = kandidaten[0] if len(kandidaten) == 1 else None
+                if ziel is None:
+                    continue
+                for num in _p63_nummern(m.group("nummern")):
+                    if num in kopf[ziel]:
+                        continue
+                    err(f"{rel}:{i}: verweist auf '{ziel}' Abschnitt {num} - diese "
+                        f"Nummer fuehrt dort keine Ueberschrift. Ein Nummernverweis "
+                        f"zeigt auf einen Abschnitt, nicht auf eine Listennummer; "
+                        f"dieselbe Form bedeutete in 02-privacy.md einmal das eine und "
+                        f"einmal das andere, und dreissig Verweise in fuenfzehn "
+                        f"anweisenden Traegern zeigten ins Leere (D-193)")
+
+
 def check_overlay_wertabgleich(root: str, man: dict) -> None:
     """Pruefung 59 (D-171): Der Overlay-Wert gilt in der Schicht, die ihn durchsetzt."""
     overlay_pfad = os.path.join(root, "project-overlay", "OVERLAY.md")
@@ -6797,6 +6900,7 @@ def main() -> int:
     check_befehlsschlitz_in_vorbedingung(root)
     check_skillversion_vorlage(root)
     check_pruefmittel_vokabular(root)
+    check_nummernverweis(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

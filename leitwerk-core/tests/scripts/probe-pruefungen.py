@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 62, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 63, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -5391,6 +5391,70 @@ gegenprobe("62a", "Das unveraenderte Repositorium bleibt unbeanstandet - dreizeh
 gegenprobe("62b", "Der Schlitz darf mehrfach in einer Zeile stehen - geprueft wird die "
                   "woertliche ZAHL, nicht der Buchstabe v",
            _62_zweiter_schlitz, M62_WOERTLICH)
+
+
+# --- Pruefung 63: der Nummernverweis, der ins Leere zeigt (D-193) ------------------
+#
+# Drei Sonden, weil der Gegenstand drei Gestalten hat: der Verweis mit vollem Pfad,
+# der Verweis mit blossem Dateinamen (vier Testblaetter nennen ihr Ziel so - wer nur
+# den vollen Pfad sucht, zaehlt 25 statt 30) und die MITTE einer bis-Spanne.
+#
+# Die zweite Gegenprobe ist die wichtigere: Eine Aufzeichnung darf denselben Verweis
+# tragen, ohne gemeldet zu werden. Ein Protokoll nennt den Stand seines Tages (D-141).
+M63_INS_LEERE = "diese Nummer fuehrt dort keine Ueberschrift"
+
+P63_PROMPT = "leitwerk-core/prompts/02-impact-analysis.md".replace("/", os.sep)
+P63_BLATT = "leitwerk-core/framework/skills/fw-error-analyze/TESTS.md".replace("/", os.sep)
+P63_ZIEL = "leitwerk-core/framework/core/02-privacy.md".replace("/", os.sep)
+P63_PROTOKOLL = ("leitwerk-core/tests/protocols/2026-09-19-testblaetter-buendel-1.md"
+                 .replace("/", os.sep))
+
+
+def _63_voller_pfad(root: str) -> None:
+    """Ein anweisender Traeger nennt eine Nummer, die das Ziel nicht fuehrt."""
+    ersetze(P(root, P63_PROMPT),
+            ("02-privacy.md` Abschnitt 3.3 und 3.4",
+             "02-privacy.md` Abschnitt 3.3 und 3.11", 1))
+
+
+def _63_blosser_name(root: str) -> None:
+    """Dieselbe Luecke in der zweiten Ausdrucksform - ohne Pfad, nur Dateiname."""
+    ersetze(P(root, P63_BLATT),
+            ("`02-privacy.md` Abschnitt 3.3 angefordert",
+             "`02-privacy.md` Abschnitt 3.11 angefordert", 1))
+
+
+def _63_spannenmitte(root: str) -> None:
+    """Die MITTE einer bis-Spanne: `3.3 bis 3.5` nennt auch 3.4."""
+    ersetze(P(root, P63_ZIEL), ("### 3.4 Tickets", "### 3.4a Tickets", 1))
+
+
+def _63_aufzeichnung(root: str) -> None:
+    """Eine Aufzeichnung traegt denselben Verweis - und bleibt unbeanstandet."""
+    zeile_nach(P(root, P63_PROTOKOLL), "# Protokoll",
+               "\nGemessen gegen `leitwerk-core/framework/core/02-privacy.md` "
+               "Abschnitt 3.11 - der Stand jenes Tages.")
+
+
+sonde("63a", "Ein anweisender Traeger nennt `02-privacy.md` Abschnitt 3.11 - die "
+             "Nummer fuehrt dort keine Ueberschrift",
+      _63_voller_pfad, M63_INS_LEERE)
+
+sonde("63b", "Dieselbe Luecke im blossen Dateinamen: vier Testblaetter nennen ihr Ziel "
+             "ohne Pfad, und wer nur den Pfad sucht, zaehlt 25 statt 30",
+      _63_blosser_name, M63_INS_LEERE)
+
+sonde("63c", "Die MITTE einer bis-Spanne: faellt die Ueberschrift 3.4 weg, muss "
+             "`Abschnitt 3.3 bis 3.5` sie trotzdem vermissen",
+      _63_spannenmitte, M63_INS_LEERE)
+
+gegenprobe("63a", "Das unveraenderte Repositorium bleibt unbeanstandet - seit 0.70.0 "
+                  "loesen alle dreissig Nummernverweise auf",
+           None, M63_INS_LEERE)
+
+gegenprobe("63b", "Eine Aufzeichnung darf denselben Verweis tragen: Ein Protokoll "
+                  "nennt den Stand seines Tages und wird nicht geglaettet (D-141)",
+           _63_aufzeichnung, M63_INS_LEERE)
 
 # --- Pruefung 59: der Overlay-Wert in der Schicht, die ihn durchsetzt (D-171) ------
 #
