@@ -2,6 +2,93 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.67.1] - 2026-09-19
+
+**Die sechzehnte Praeparation - `K-72` entschieden: der Positivfall bekommt einen eigenen
+Gegenstand** (`CR-2026-093`, D-184).
+
+`K-72` war der letzte offene Punkt vor dem ersten Buendellauf und hatte eine Frist: `vor
+0.68.0`. Er lautete - `SK-002-P01` verlangt eine Uebungsmethode **mit Tests und einem
+ungetesteten Fehlerpfad**, und im Uebungsrepositorium traegt jeder Kandidat dafuer bereits
+eine **fremde** Praeparation. **Kriterium 2 bleibt bei 85.**
+
+### Der Bestand vor dem Eingriff, nachgezaehlt - und diesmal haelt die Zahl
+
+Acht Module des ausfuehrbaren Strangs haben Tests. **Sieben sind Gegenstand einer
+Praeparation** (eines nur ueber seine Testdatei), genau **zwei** haben einen ungetesteten
+Fehlerpfad - `books.ts` den `catch`-Zweig, `bestand.ts` den `vergriffen`-Zweig -, und
+**beide sind praepariert**. Das einzige freie Modul mit Tests, `BookForm.tsx`, hat keinen
+Fehlerpfad. **Der Bestand war fuer Positiv- und Negativfall zugleich zu klein.**
+
+### Den Ausschlag gab eine Zelle desselben Blattes
+
+Die zweite vorgelegte Aufloesung - `SK-002-P01` auf `books.ts` fahren und den
+Injektionsbefund als erwartete Nebenwirkung ins Protokoll nehmen - sieht billig aus und ist
+es nicht: **`SK-002-N02` faehrt denselben Befehl (`/fw-code-explain <uebungsmethode>
+detail`) auf demselben Modul.** Positiv- und Negativfall waeren nicht benachbart, sondern
+**identisch**; ein Fehlschlag waere keinem der beiden Gegenstaende zurechenbar. Das ist die
+Abwaegung von D-137 eine Ebene hoeher: Dort verdraengt eine Praeparation den Gegenstand
+einer anderen Praeparation, hier den einer **Zelle**.
+
+**Und die dritte Aufloesung ist keine.** Die Zelle ist gegen den Skill gehalten worden
+(D-161): `SKILL.md` Schritt 8 verlangt, nicht getestete Pfade als Beobachtung zu listen,
+und die Erwartungszelle nennt denselben Gegenstand woertlich. Eine Vorbedingung, die den
+ungetesteten Fehlerpfad nicht mehr fordert, macht die Erwartung unerfuellbar - **die
+Bauform "die Regel mit leerer Schnittmenge"**. Zu klein war der Bestand, nicht die Zelle.
+
+### `UEB-16` - und sie liegt in einem NEUEN Modul
+
+`BookForm.tsx` zur Praeparation zu machen waere die kuerzeste Loesung und die schlechtere:
+Der Vorrat waere verbraucht, und eine Formularkomponente hat ausser der Seite, die sie
+einbindet, keine Verwender - die Erwartungszelle verlangt aber Verwender mit Fundstellen.
+**Ein neues Modul vergroessert den Bestand, statt ihn zu verbrauchen.**
+
+Im Uebungsrepositorium (ausserhalb dieses Repositoriums) sind angelegt:
+`frontend/src/api/sortierung.ts` mit `sortiereBuecher` (drei Vergleichsfunktionen,
+sortierte Kopie, **ein** Fehlerpfad), `frontend/src/api/sortierung.test.ts` mit fuenf
+Zusicherungen - **keine auf den Wurf** - und der Verwender in
+`frontend/src/pages/BooksPage.tsx`. **Das Modul traegt sonst nichts:** keinen Koeder, kein
+Duplikat, keine falsche Grenze. Es ist die erste Praeparation dieses Repositoriums, die zu
+dem Zweck angelegt ist, einen **Positiv**fall zu tragen.
+
+### Der Nachweis ist ein Paar, weil ein Fehlen sich nicht selbst belegt (D-131)
+
+Die Dateien belegen den Fehlerpfad; sein Ungetestetsein ist ein **Fehlen**. Vor dem
+Fehlerzweig ist deshalb eine Markenausgabe eingesetzt und die Suite zweimal gefahren
+worden: **ohne zusaetzliche Zusicherung erscheint die Marke kein einziges Mal** (51 gruen),
+**mit einer eingefuegten Zusicherung auf denselben Zweig erscheint sie** (52 gruen). Ohne
+den zweiten Lauf waere der erste wertlos - eine Marke, die nicht erscheint, sieht genauso
+aus wie eine, die nie eingebaut wurde. Beides ist zurueckgenommen; `test`, `typecheck` und
+`lint` sind gruen (neun Dateien, 51 Tests).
+
+### Migrationshinweis - EINE Datei, und sie ist gemessen
+
+**Nicht keiner.** Ein Release, das einen ausgelieferten Traeger anfasst, kann keine Null
+haben - und dieses fasst einen an: die Vorbedingungszelle in
+`framework/skills/fw-code-explain/TESTS.md`. Der Trockenlauf mit dem `leitwerk-core` des
+**Arbeitsbaums** (nicht `git archive HEAD`, siehe 0.59.1) gegen eine Kopie, die vorher auf
+0.67.0 gehoben wurde, meldet:
+
+| Ausgangsstand des Projekts | `--update --dry-run` | welche Dateien |
+|---|---|---|
+| **0.67.0** | 0 angelegt, **1 aktualisiert** | `<client>/skills/fw-code-explain/TESTS.md` |
+| Uebungsrepositorium, Stand 0.66.0 | 0 angelegt, **13 aktualisiert** | die dreizehn `TESTS.md` (kumulativ mit 0.67.0) |
+| Pilot `otp-generator`, Stand 0.54.1 | 0 angelegt, **17 aktualisiert** | zwoelf `TESTS.md` plus die Plan-Skill-Dateien aus 0.57.1; `role-re-ticket` fehlt, weil der Pilot das Pack nicht installiert hat |
+
+**Der Pilot bekaeme jetzt 17 und nicht mehr dreizehn** - die Zahl eines
+Migrationshinweises gilt je Projekt, je Pack **und je Stand**. Und die eine Datei des
+ersten Falls ist wieder ein Testblatt: **Eine Aufzeichnung wird als Regelquelle
+ausgeliefert** (`K-56`, unveraendert offen).
+
+### Wirkungsnachweis
+
+`validate-framework.py` **0 Fehler, 0 Warnungen** gegen den fertigen Baum;
+`probe-pruefungen.py` in beiden Kodierungsumgebungen (D-49). **Pruefung 44 ist der
+Wirkungsnachweis dieses Releases, und beide Richtungen sind gemessen:** Registerzeile ohne
+Kennung in der Zelle meldet **zwei** Fehler (Gegenstand 2 und Gegenstand 4, D-173),
+Kennung in der Zelle ohne Registerzeile meldet die Gegenrichtung. Kein Eingriff am
+Pruefapparat, also keine neue Sonde.
+
 ## [0.67.0] - 2026-09-19
 
 **Das Pruefmittelwort, das keine Pruefung kennt - 87 Blattzellen, zwei Pruefungen ohne
