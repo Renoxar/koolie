@@ -2,6 +2,148 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.77.0] - 2026-09-19
+
+**Die Herrichtung fuer Buendel 4 - `K-78` entschieden, und der Waechter meldet vier
+unfertige Zuschnitte** (`CR-2026-104`, **D-208**, **D-209**, **D-210**). Herrichtung vor
+dem Messtag, ohne Kontingent, ohne Modelllauf. Kriterium 2 unveraendert **38**.
+
+### `K-78` ist beantwortet: die Artefakte eines Laufs entstehen von Hand (D-208)
+
+Fuenf Zellen verlangen Artefakte, die es nur nach einem Lauf gibt - Ergebnisberichte,
+einen bestaetigten Plan und einen Bericht mit **falscher** Fundstelle. Drei Wege standen
+im Klaerungspunkt; gewaehlt ist der erste, und der Grund ist ein aktenkundiger:
+
+🔴 **Ein vorgeschalteter Lauf kann `SK-010-P02` gar nicht herstellen - ein guter Lauf
+erzeugt keine falsche Fundstelle.** Dasselbe Argument hat `UEB-18` gegen einen
+`fw-plan`-Lauf entschieden (D-198). Deshalb werden sie von Hand geschrieben, und der
+Waechter gegen den Loesungsverrat (`VERRAT_RE` in `praeparationen.py`) laeuft ueber jede
+Quelle, bevor sie eingespielt wird.
+
+**Die falsche Angabe ist eine falsche DATEI, keine falsche Zeilennummer:** Eine
+Zeilennummer verschiebt sich mit jeder spaeteren Aenderung und kann unbemerkt richtig
+werden; eine nicht existierende Datei prueft keine Tiefe. Der Bericht traegt daneben
+eine **richtige** Fundstelle - sonst misst die Zelle Misstrauen statt Pruefung.
+
+**Und `SK-012-P01` bekommt einen eigenen Plan** (`UEB-24`, zwei Zieldateien). `UEB-18`
+bleibt unberuehrt: Jener nennt mit Absicht eine Datei zu wenig und traegt damit den
+Abweichungsfall `SK-005-P02`, der in Buendel 3 bestanden ist.
+
+### Acht Praeparationen - und die erste, die nicht in einer Datei liegt
+
+| Kennung | Gattung | Gegenstand |
+|---|---|---|
+| `UEB-21` | Datei | Test mit **reiner** Mock-Verifikation: drei Zusicherungen, alle auf die Attrappe |
+| `UEB-22` | Datei | Betriebsvorgabe **in** `<EXCLUDED_PATHS>` mit Secret-Muster |
+| `UEB-23` | Datei | Nicht definiertes Symbol - gemessen: **ein** Aufruf, keine Definition im ganzen Baum |
+| `UEB-24` | Datei | Bestaetigter Plan mit **beiden** Zieldateien |
+| `UEB-25` | Datei | **Zwei** Ergebnisberichte zu demselben Aenderungssatz |
+| `UEB-26` | Datei | Ergebnisbericht mit falscher Fundstelle |
+| `UEB-27` | **Historie** | Commit-Betreff mit Anweisung |
+| `UEB-28` | **Historie + Datei** | Commit-Betreff **und** gleichlautender Code-Kommentar |
+
+🔴 **`UEB-27` ist die erste Praeparation dieses Frameworks ohne Pfad** (D-207). Ihre
+Belegzelle nennt einen Commit, nicht eine Datei.
+
+🟢 **Und eine, die wie eine Praeparation aussieht, bekommt keine Kennung** (D-209): die
+**synthetischen Autoren** der Historie. D-207 nennt sie in einem Atemzug mit den
+Betreffzeilen; die Trennlinie zieht aber D-167 - *eine Praeparation bekommt, wessen
+Entfernung einen Testfall unfahrbar macht*. Mit echten Autoren waere `SK-012-N04` weiter
+fahrbar, nur eben falsch gebaut. Sie sind eine **Auflage an den Messaufbau**, kein
+Koeder, und ein Waechter des Baumbaus setzt sie durch.
+
+### Der Messbaum hat jetzt eine Historie
+
+`historie-bauen-b4.py` legt je Zelle ein echtes Git-Repositorium an: `main`, die
+Uebungs-Branches, die die Zelle braucht, praeparierte Commits, drei synthetische Autoren
+unter `example.invalid`. **Gefahren an allen dreizehn Zellen** - 13 Zellen, 6
+Uebungs-Branches, 12 Ersetzungen, je Ersetzung ein Waechter auf die Trefferzahl.
+
+Ein Baum je Zelle und nicht einer fuer alle: `SK-012-P02` verlangt denselben Branch
+**ohne** Ergebnisbericht, und `SK-010-N04` („mehrdeutige Basis") braucht genau **zwei**
+Branches, nicht sechs.
+
+### 🔴 Der Gegendurchgang vor dem Commit hat zwei Zahlen umgeworfen
+
+**Zum neunzehnten Mal in Folge traegt er.** Beide Befunde liegen an den synthetischen
+Berichten, und beide fielen vor dem Commit:
+
+1. Die Berichte nannten *„51 bestanden"* und *„54 bestanden"* - die Zahl aus der
+   Uebergabe. **Gemessen steht die Suite bei 59.** Eine Zahl, die der Lauf in zwei
+   Sekunden widerlegen kann, macht aus einem Positivfall einen Befund. **Eine Zahl, die
+   man nicht gezaehlt hat, ist erfunden - auch in einer Praeparation.**
+2. 🔴 **Und der schwerere:** Der zweite Ergebnisbericht war als Schreiblauf gebaut und
+   nannte eine **dritte** Datei als Zieldatei - die der Uebungs-Branch gar nicht aendert.
+   Der bestaetigte Plan nennt **zwei**, und die Zelle verlangt **zwei**. Ein Lauf haette
+   den Berichtseintrag ohne Diff korrekt als Abweichung gemeldet **und damit aus dem
+   Positivfall `SK-012-P01` genau den Abweichungsfall gemacht, fuer den `UEB-18` gebaut
+   ist.** Der zweite Bericht ist seither eine Abdeckungsanalyse in M1, ohne geschriebenen
+   Pfad. ➡️ **Eine Praeparation, die ihren eigenen Fall ueberzeichnet, kippt ihn ins
+   Gegenteil.**
+
+**Gegengeprueft:** Der Aenderungssatz von `SK-010-P02` ist einmal eingespielt und
+gefahren worden - **60 bestanden**, genau die Zahl, die `UEB-26` nennt; danach
+zurueckgenommen, Arbeitsbaum unveraendert.
+
+### 🔴 Der teuerste Befund: vier von fuenf Zuschnitten waren unfertig (D-210)
+
+Die fuenf fehlenden Stammmuster sind in `k-bauen-b3.py` nachgetragen - und ein
+Stammmuster, das zum ersten Mal laeuft, wird **einmal gegen den ungeschnittenen Baum
+gemessen**:
+
+| Klasse | erster Entwurf | nach Einengung des Musters | nach Nachtrag am Schnitt |
+|---|---|---|---|
+| `n03` | 9 | 8 | **0** |
+| `injk3` | 0 | 0 | **0** |
+| `halt` | 13 | 13 | **0** |
+| `konf` | 68 | 37 | **0** |
+| `risiko` | **747** | 0 | **0** |
+
+**Zwei der Zahlen kamen vom Muster, zwei vom Schnitt.** `Kontrollstufe\w*` traf jedes
+Ausgabeformat des Frameworks, `vermute\w*` den *vermuteten Bereich* - eine EINGABE von
+`fw-change-analyze`, nicht die Schranke. Das ist der Fehler, den der Kopfkommentar seit
+0.75.0 am Beispiel `Freigabe\w*` beschreibt, zweimal wiederholt.
+
+🔴 **Der Rest war echt, und er lag am teuersten Ort:** `nicht belegbar` stand
+**fuenfmal** in `fw-mr-description/SKILL.md` und **dreimal** in
+`fw-review-support/SKILL.md` - in genau den beiden Skills, die Buendel 4 misst. Ein
+Kontrolllauf haette die geprueffte Schranke weiter mitgefuehrt und eine Null gemeldet,
+die keine ist. **D-205 eine Ebene weiter: Der Zuschnitt erfasst seine Schranke auch in
+der `SKILL.md` des gemessenen Skills.**
+
+### Was NICHT geschehen ist
+
+Kein Lauf, keine Messung, keine Zelle abgenommen. **Kriterium 2 bleibt 38**, und jede der
+dreizehn Ergebniszellen beginnt weiter mit `offen`.
+
+### Aenderungen
+
+- `governance/DECISION_LOG.md`: **D-208**, **D-209**, **D-210** neu; **`K-78` erledigt**
+- `onboarding/exercises/README.md`: `UEB-21` bis `UEB-28` neu; `UEB-02` und `UEB-18`
+  bekommen je einen weiteren Testfall; ein vierter Absatz zu den Zustaenden des
+  Messbaums
+- `framework/skills/fw-mr-description/TESTS.md`, `framework/skills/fw-review-support/TESTS.md`:
+  dreizehn Vorbedingungs- und Ergebniszellen; **kein Versionsheben** (D-119)
+- `tests/protocols/2026-09-19-herrichtung-buendel-4.md`: neu
+- `docs/ROADMAP.md`: Posten `0.77.0` erledigt; 🟢 **neu: der Restweg bis 1.0.0 als
+  Zahl** - drei Messtage, zwei Sitzungen fuer Kriterium 1, eine fuer die Umbenennung
+- Ausserhalb des Repositoriums: acht Praeparationen im Uebungsrepositorium,
+  `leitwerk-erhebungen-2026-09-19-b4/` neu, fuenf Stammmuster in `k-bauen-b3.py`
+
+### Migrationshinweis
+
+**Zwei Dateien** (`fw-mr-description/TESTS.md`, `fw-review-support/TESTS.md`) fuer das
+Uebungsrepositorium; der Pilot bekaeme mehr, er steht auf `0.54.1`. Keine
+Versionsanhebung eines Skills (D-119).
+
+### Bekannte Einschraenkungen
+
+- **Die Zellen von Buendel 4 sind hergerichtet, nicht gefahren.** Ob die Praeparationen
+  tragen, sagt erst der Messtag (`~0.78.0`).
+- `UEB-25` und `UEB-26` sind Prosa. Der Waechter sieht, **dass** keine Kennung und kein
+  Erwartungswort darin steht - nicht, **ob** ein Bericht seinen Fall verraet, wo er ihn
+  in eigenen Worten erklaert. Dieselbe Enthaltung wie bei der Belegspalte.
+
 ## [0.76.0] - 2026-09-19
 
 **Die Vorbedingungen von Buendel 4 - der Messbaum hat keine Historie**
