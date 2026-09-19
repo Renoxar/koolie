@@ -2,6 +2,114 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.75.0] - 2026-09-19
+
+**`K-77` entschieden - der Zuschnitt folgt der Schranke, und der Waechter prueffte mit
+dem Schnittmuster** (`CR-2026-102`, **D-205**; `K-77` erledigt).
+
+Ohne Kontingent, ohne Modelllauf. Kriterium 2 unveraendert **38**.
+
+### Die Praemisse von D-203 haelt nicht
+
+D-203 stuetzt sich auf **eine** Messung (Buendel 3) und auf einen Satz ueber Buendel 2:
+*"In Buendel 2 war jede Zelle mit `ohneskill` zurechenbar und keine mit einem
+Regelschicht-Zuschnitt scharf."* 🔴 **Beide Haelften sind an der Ergebnistabelle
+desselben Protokolls widerlegt.** Ausgezaehlt ueber die drei Buendel:
+
+| Buendel | Zellen | zurechenbar | davon `ohneskill` | davon **Regelschicht** |
+|---|---|---|---|---|
+| 1 | 11 | 6 | 4 | 2 |
+| 2 | 18 | **17** | 5 | **12** |
+| 3 | 18 | 4 | 3 | 1 |
+| **Summe** | **47** | **27** | **12** | **15** |
+
+**15 der 27 zurechenbaren Zellen sind ueber einen Regelschicht-Zuschnitt zurechenbar** -
+mehr als ueber `ohneskill`. Und `SK-004-N01` (Buendel 2, `kn03`) ist ausdruecklich
+*scharf*.
+
+### 🔴 Der Befund: der Waechter prueffte mit dem Schnittmuster
+
+`k-bauen-b3.py` schneidet nach den `ZEILE`-Mustern einer Klasse und prueft danach mit
+ihren `MARKEN`. **Die `MARKEN` sind in allen acht geprueften Klassen eine Teilmenge der
+`ZEILE`-Muster.** Der Waechter sucht weniger, als der Schnitt entfernt - er kann per
+Konstruktion nichts finden, was das Schnittmuster nicht kannte. *Die Null durch
+Konstruktion* (0.59.1), angewandt auf den Waechter des Zuschnitts.
+
+| Klasse | Schnitt trifft | Waechter trifft | laesst der Schnitt stehen |
+|---|---|---|---|
+| `sc1` | 258 | 224 | **23** |
+| `plan` | 211 | 131 | **17** |
+| `test` | 187 | 100 | **15** |
+| `befund` | 86 | 74 | **14** |
+| `k3`, `inj`, `testnachweis`, `abw` | | | **0** |
+
+🟢 **Und damit faellt die Bilanz von Buendel 3 an der richtigen Linie
+auseinander:** Unter den fuenf Zellen mit **vollstaendigem** Zuschnitt ist eine
+zurechenbar (scharf) und eine halb; unter den **neun** mit unvollstaendigem **keine
+einzige**. Die einzige Regelschicht-Klasse, die je getrennt hat (`k3`), ist eine der
+vollstaendigen. Die achtzehnte Zelle traegt den Kombinationszuschnitt `injk3`, fuer den
+kein Stammmuster vorliegt - sie ist **ungeprueft**.
+
+🔴 **Die Schwaeche war benannt und ist trotzdem als Beleg verwendet worden.** Der
+Kopfkommentar desselben Skripts sagt seit der Erhebung `s4`: *"Ein gruener Waechter
+belegt NICHT, dass die Schranke weg ist."* Drei Buendelprotokolle fuehren ihn trotzdem
+als Beleg des Zuschnitts.
+
+### D-205: der Zuschnitt folgt der Schranke, nicht der Schicht
+
+1. **Ein Zuschnitt erfasst seine Schranke in allen Schichten** - Quelle, Laufzeitfassung,
+   Hook (D-176) **und `SKILL.md`** - und in allen Formen: Beugungsformen (D-203),
+   Vorzeichen (0.66.0), Ausfuellschlitze (0.61.0), Diagrammknoten.
+2. **Der Waechter benutzt ein anderes, weiteres Muster als der Schnitt.**
+3. **Meldet er Reste, ist der Zuschnitt unfertig** - die Zelle traegt dann
+   **`Zurechenbarkeit nicht erhoben`** mit Grund statt `nicht zurechenbar`. Ein *nicht
+   zurechenbar* behauptet, das Framework wirke nicht; *nicht erhoben* sagt, dass der
+   Aufbau es nicht trennen konnte.
+
+**Zwoelf Ergebniszellen von Buendel 3 sind nachgezogen:** neun auf `Zurechenbarkeit nicht
+erhoben`, **drei bleiben `nicht zurechenbar` - und sind es zum ersten Mal belegt**
+(`SK-005-N04`, `SK-007-N01`, `SK-006-N03`; null Restfundstellen). 🟢 **Das sind
+die ersten drei Zellen des Projekts, bei denen D-175 nicht nur behauptet ist.** Der
+Ergebnisstatus aendert sich nicht (D-115), Kriterium 2 bleibt **38**.
+
+### Weg (2) ist verworfen - mit 27 zu 0
+
+Der zweite Weg des Klaerungspunkts haette je Zelle einen Lauf gespart, bei Buendel 4 rund
+21 USD. **Haette er seit Buendel 1 gegolten, waere keine der 27 zurechenbaren Zellen
+erhoben worden** - darunter die siebzehn von Buendel 2 und die schaerfste Trennung von
+Buendel 3.
+
+### Am Werkzeug (ausserhalb des Repositoriums)
+
+`k-bauen-b3.py` hat einen **Stammwaechter**: Er prueft mit den Stammmustern der Klasse,
+bricht ab und loescht den Baum. Fuer eine Klasse ohne Stammmuster bricht das Skript
+**vor** dem Kopieren ab; `--ohne-stammwaechter` ist eine ausgewiesene Abweichung des
+Zuschnitts und gehoert ins Protokoll. **Stammmuster liegen fuer acht der dreizehn Klassen
+vor.** 🆕 Der erste Entwurf fuer `plan` meldete **307** Zeilen - ein blosses
+`Freigabe\w*` traf jede *"Freigabeinstanz"*; eingeengt und **jede Meldung gelesen**
+(0.63.0).
+
+**Migrationshinweis:** **3 Dateien** fuer das Uebungsrepositorium, alle `TESTS.md`; der
+Pilot bekaeme **38**. Trockengelaufen gegen Kopien beider uebernehmender Projekte, mit dem
+`leitwerk-core` des Arbeitsbaums. Keine Versionsanhebung, also auch hier nicht
+*"Dateizahl mal zwei"* (D-119).
+
+🔴 **Der Durchgang vor dem Commit hat sich zum NEUNZEHNTEN Mal getragen, und
+diesmal an zwei eigenen Zahlen:** Die Bilanztabelle deckte **17 der 18** Zellen von
+Buendel 3 - `injk3` fiel heraus -, und die Vokabularzahlen stammten aus einem groben
+`grep`. Sauber gezaehlt tragen die Ergebniszellen **acht verschiedene Formeln fuer
+dieselbe Angabe, verteilt auf 42 Zellen**.
+
+### Bekannte Einschraenkungen
+
+- **`K-76`** bleibt offen: Der Ruecknahmeschritt von `fw-refactor` ist nicht gemessen.
+- **Fuenf Kontrollklassen ohne Stammmuster** (`n03`, `injk3`, `halt`, `konf`, `risiko`) -
+  der erste Handgriff beim Aufbau von Buendel 4.
+- **Das Vokabular der Zurechenbarkeitsangabe wird von keiner Pruefung durchgesetzt**,
+  ebensowenig die Uebereinstimmung einer Buendelaussage mit der Ergebnistabelle ihres
+  Protokolls. Beides erwogen und vertagt (`CR-2026-102` E4); der zweite Befund ist in zwei
+  Tagen zweimal aufgetreten - **beim dritten Mal wird er Pruefgegenstand.**
+
 ## [0.74.1] - 2026-09-19
 
 **`K-77` bekommt einen eigenen Posten vor Buendel 4 - der Klaerungspunkt, den der Plan
