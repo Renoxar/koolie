@@ -570,17 +570,57 @@ def read(path: str) -> str:
         return fh.read()
 
 
-def _walk_text_files(start: str):
+def _gitignore_namen(root: str) -> set:
+    """Die DATEINAMEN, die die .gitignore der Wurzel als nicht zu teilend fuehrt.
+
+    🔴 WARUM DER VALIDATOR SIE UEBERSPRINGT (D-215, CR-2026-106): Was nicht
+    eingecheckt wird, ist kein Bestandteil des Repositoriums - und eine Pruefung,
+    die es trotzdem meldet, prueft am Gegenstand vorbei. Gemessen am 2026-09-20:
+    Die lokale Beilage der Uebergabe traegt Servername und Konto, steht in der
+    .gitignore, und der Validator meldete gegen sie zwei Fehler. Sie existiert
+    gerade deshalb, damit diese Angaben NICHT im Repositorium stehen.
+
+    🔴 BEWUSST NUR EINFACHE DATEINAMEN, keine Muster und keine Pfade. Ein
+    `*`-Muster oder ein Verzeichnis liesse sich hier eintragen, um eine echte
+    Pruefung stillzulegen - `leitwerk-core/**` wuerde den halben Kern
+    ausblenden, und niemand saehe es. Ein Dateiname trifft eine Datei, und die
+    Liste ist kurz genug zum Lesen. Zeilen mit `/`, `*`, `?`, `[` oder `!`
+    werden ignoriert.
+    """
+    pfad = os.path.join(root, ".gitignore")
+    namen = set()
+    if not os.path.isfile(pfad):
+        return namen
+    # `read` ist die Leseroutine dieses Moduls; ein eigener `io`-Import waere ein
+    # zweiter Weg zum selben Zweck.
+    try:
+        roh = read(pfad)
+    except OSError:
+        return namen
+    for zeile in roh.splitlines():
+        z = zeile.strip()
+        if not z or z.startswith("#"):
+            continue
+        if any(c in z for c in "/*?[!"):
+            continue
+        namen.add(z)
+    return namen
+
+
+def _walk_text_files(start: str, ignoriert: set = frozenset()):
     for dirpath, dirnames, filenames in os.walk(start):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
         for fn in filenames:
+            if fn in ignoriert:
+                continue
             ext = os.path.splitext(fn)[1]
             if ext in TEXT_EXT or fn in ("VERSION", ".gitignore"):
                 yield os.path.join(dirpath, fn)
 
 
 def iter_text_files(root: str):
-    yield from _walk_text_files(root)
+    ignoriert = _gitignore_namen(root)
+    yield from _walk_text_files(root, ignoriert)
     # 'build' steht in SKIP_DIRS, weil dort die Erzeugnisse eines Projekts liegen. Die
     # handgeschriebenen Quellen des Hauptdokuments liegen aber darunter und gehoeren
     # geprueft - gerade weil aus ihnen ein Lieferbestandteil entsteht. Vier Backticks
@@ -589,7 +629,7 @@ def iter_text_files(root: str):
     # Es fuehrt eigene Marker in spitzen Klammern, die keine Framework-Platzhalter sind.
     doc = os.path.join(root, KERN, "build", "doc")
     if os.path.isdir(doc):
-        yield from _walk_text_files(doc)
+        yield from _walk_text_files(doc, ignoriert)
 
 
 def parse_frontmatter(text: str):

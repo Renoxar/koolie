@@ -2,6 +2,58 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.78.1] - 2026-09-20
+
+**Die Uebergabe wird eingecheckt - und das Framework haelt seine eigene
+Datenschutzregel zum ersten Mal an sich selbst ein** (`CR-2026-106`, **D-214**,
+**D-215**).
+Strukturaenderung, ohne Kontingent, ohne Messung. Kriterium 2 unveraendert **38**.
+
+Die Uebergabe lag ausserhalb des Repositoriums und war nicht versioniert. Von
+einem anderen Arbeitsplatz aus gab es sie damit nicht, und alte Staende mussten
+von Hand gesichert werden. Sie steht jetzt als `UEBERGABE.md` in der Wurzel.
+
+### 🔴 Warum sie so nicht einscheckbar war - gemessen mit einer Probekopie
+
+| Fundstelle | Befund |
+|---|---|
+| zweimal | `FW-CONTENT-IP` - die Adresse des Git-Servers |
+| einmal | **`FW-CONTENT-SECRET`** - *Verbindungszeichenfolge mit Anmeldedaten*, die Push-URL mit eingebettetem Token |
+| dreimal | `FW-CONTENT-URL` ausserhalb der Allowlist |
+| viermal | der Benutzername in Arbeitsplatzpfaden (ohne Validatorbefund, aber ein Personenbezug) |
+
+**3 Fehler, 3 Warnungen.** Nach der Bereinigung **0/0** - und der Unterschied ist
+der eigentliche Gegenbeweis: Die Pruefung trifft ihren Gegenstand, sie schweigt
+nicht bloss.
+
+🔴 **Der Befund hinter dem Befund:** Das Framework verlangt von **jedem** Overlay
+*keine Secrets, keine Personen, keine internen Adressen* und setzt es mit vier
+Pruefungen durch. **Seine eigene Uebergabe hielt die Regel nicht ein - sie konnte
+es nicht, weil sie nie geprueft wurde.** *Eine Regel, die fuer den eigenen Bestand
+nicht gilt, ist eine Zusage an andere.*
+
+🔴 **Und die eigene Vorabmessung war zu klein.** Sie suchte Zugangsdaten in der
+Form `token=` und meldete **null**; der Validator fand die **URL-Form**
+eine URL, die das Token vor dem Hostnamen traegt. ➡️ **Wer prueft, ob ein Text ein Secret traegt, nimmt
+die Pruefung, die es spaeter meldet - nicht eine eigene.**
+
+### Wo, wie und unter welchem Namen
+
+- **`UEBERGABE.md` in der Wurzel**, nicht unter `leitwerk-core/`: Das Heben ersetzt
+  dort **das ganze Verzeichnis**, und die Uebergabe laege danach im Piloten und im
+  Uebungsrepositorium.
+- **`UEBERGABE.local.md`** traegt Servername, Konto und Pfade und steht in der
+  `.gitignore` - **dieselbe Konvention wie `AGENTS.local.md`**, die es im Framework
+  schon gibt. Die Vorlage `UEBERGABE.local.md.example` ist eingecheckt.
+- **Keine neuen Platzhalter.** Einer fuer den Servernamen oder den Arbeitsbereich staende nicht im
+  `PLACEHOLDER_REGISTRY.md` und erzeugten je eine Warnung; der Text nennt deshalb
+  nicht den Wert, sondern seinen Ort.
+
+### Migrationshinweis
+
+**Keiner.** Die neuen Dateien liegen in der Wurzel; `install.py` schreibt dort
+nichts und kopiert von dort nichts.
+
 ## [0.78.0] - 2026-09-20
 
 **Der Messapparat fuer Buendel 4 - und die Zusage, die ihr eigener Waechter nicht

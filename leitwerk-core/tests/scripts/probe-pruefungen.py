@@ -932,6 +932,35 @@ gegenprobe("6", "Dokumentationsadresse, Dokumentations-IP und Allowlist-URL blei
            _b03_erlaubte_faelle, "FW-CONTENT-")
 
 
+def _gitignore_beilage(root: str) -> None:
+    """Eine ignorierte Datei mit einem Befund - und eine gleichartige daneben.
+
+    🔴 Der Gegenstand von D-215: Was die `.gitignore` als einfachen Dateinamen
+    fuehrt, ist nicht eingecheckt und damit kein Bestandteil des Repositoriums.
+    Gemessen am 2026-09-20 an der lokalen Beilage der Uebergabe, die Servername
+    und Konto traegt und deshalb ueberhaupt existiert.
+    """
+    gi = os.path.join(root, ".gitignore")
+    alt = io.open(gi, encoding="utf-8", newline="").read()
+    daten = (alt.rstrip("\r\n") + "\r\nPROBE-IGNORIERT.md\r\n").encode("utf-8")
+    io.open(gi, "wb").write(daten)
+    # Die ignorierte Datei traegt einen Befund, der ohne D-215 gemeldet wuerde.
+    inhalt = ("# Probe\r\n\r\nServer: 10.11.12.13\r\n").encode("utf-8")
+    io.open(os.path.join(root, "PROBE-IGNORIERT.md"), "wb").write(inhalt)
+
+
+def _gitignore_nicht_gefuehrt(root: str) -> None:
+    """Dieselbe Datei unter einem Namen, den die .gitignore NICHT fuehrt."""
+    inhalt = ("# Probe\r\n\r\nServer: 10.11.12.13\r\n").encode("utf-8")
+    io.open(os.path.join(root, "PROBE-GEFUEHRT.md"), "wb").write(inhalt)
+
+
+sonde("6i", "Eine NICHT ignorierte Datei mit IP-Adresse wird weiter gemeldet",
+      _gitignore_nicht_gefuehrt, "FW-CONTENT-IP")
+gegenprobe("6i", "Eine in der .gitignore gefuehrte Datei wird uebersprungen "
+                 "(D-215)",
+           _gitignore_beilage, "FW-CONTENT-IP")
+
 def sonde_hook_zusatzmuster() -> None:
     """Dieselbe Regel im ausgelieferten Hook - ohne Validatorlauf, weil keiner noetig ist.
 
