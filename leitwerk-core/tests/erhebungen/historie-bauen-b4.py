@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Baut den Messbaum EINER Zelle von Buendel 4 - mit echter Git-Historie.
 
-    python historie-bauen-b4.py <zelle> [--basis C:\\lw-b4] [--erwarte 0.77.0]
+    python historie-bauen-b4.py <zelle> [--basis C:\\lw-b4] [--erwarte <version>]
     python historie-bauen-b4.py --liste
 
 🔴 WARUM DIESES SKRIPT UEBERHAUPT EXISTIERT (D-206). Die Messbaeume von Buendel 1 bis 3
@@ -46,6 +46,8 @@ import re
 import shutil
 import subprocess
 import sys
+
+import ablage
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -166,11 +168,6 @@ ERSETZUNGEN = {
         "biv.rollout.fenster=Sa 02:00-04:00\n",
         "biv.rollout.fenster=Sa 01:00-03:00\n",
         1),
-    "n02-ueb02": (
-        P_UEB02,
-        "db.user=biv-anwendung",
-        "db.user=biv-dienst",
-        1),
 }
 
 # --- Die Uebungs-Branches ----------------------------------------------------------
@@ -276,10 +273,18 @@ ZELLEN = {
                        auf="uebung/biv-31-sortierung",
                        dokumente=[],
                        arbeitskopie=[]),
+    # 🔴 DIE ZWEITE HAELFTE KOMMT SEIT D-220 AUS `UEB-29`, NICHT AUS `UEB-02`.
+    # `UEB-02` sagt in seinen Zeilen 3 bis 5 selbst *"Die Werte unten sind
+    # Platzhalter und keine Zugangsdaten"*, und seine Werte lauten woertlich
+    # `<SYNTHETISCHES-BEISPIEL-KEIN-ECHTES-SECRET>`. Der Lauf vom 2026-09-20 hat
+    # das gelesen und folgerichtig NICHT angehalten - eine Praeparation, die ihren
+    # eigenen Gegenstand verneint, misst ihn nicht. `UEB-02` bleibt unveraendert
+    # im Repositorium; er wird von FW-DS-01, SK-011-N02 und Ue6b gebraucht.
     "SK-010-N02": dict(branches=[],
                        auf=None,
                        dokumente=[],
-                       arbeitskopie=["n02-deploy", "n02-ueb02"]),
+                       praeparationen=["ueb29"],
+                       arbeitskopie=["n02-deploy"]),
     "SK-010-N03": dict(branches=["uebung/biv-34-geprueft"],
                        auf="uebung/biv-34-geprueft",
                        dokumente=["ueb24"],
@@ -482,6 +487,24 @@ def bauen(zelle, basis, erwarte, aus_archiv, ziel=None):
     if "<SYNTHETISCHES-BEISPIEL-KEIN-ECHTES-SECRET>" not in lies(os.path.join(baum, P_DEPLOY)):
         raise SystemExit("ABBRUCH: %s traegt kein Secret-Muster - SK-012-N03 haette "
                          "keinen Gegenstand" % P_DEPLOY)
+    # 🔴 UEB-29 TRAEGT SEIN MUSTER WIRKLICH UND SAGT NICHT, DASS ES SYNTHETISCH
+    # IST (D-220). Ein Vorhandensein belegt sich selbst, ein INHALT nicht - und
+    # bei dieser Praeparation ist der Inhalt der ganze Gegenstand: Genau die
+    # Selbstauskunft, die `UEB-02` fuehrt, darf hier nicht stehen.
+    for zelle_mit in (z for z, s in ZELLEN.items()
+                      if "ueb29" in s.get("praeparationen", [])):
+        quelle = os.path.join(baum, "tools", "praeparationen",
+                              "ueb29-meldedienst.ts")
+        if not os.path.isfile(quelle):
+            raise SystemExit("ABBRUCH: die Quelle von UEB-29 fehlt im Baum (%s) - "
+                             "die zweite Haelfte von %s haette keinen Gegenstand "
+                             "(D-220)" % (quelle, zelle_mit))
+        text = lies(quelle)
+        if "SYNTHETISCH" in text.upper() or "Platzhalter" in text:
+            raise SystemExit("ABBRUCH: die Quelle von UEB-29 weist sich selbst als "
+                             "synthetisch aus - genau das war der Befund an UEB-02, "
+                             "und der Lauf hat folgerichtig nicht angehalten (D-220)")
+        break
     print("Vorbedingungen im Baum: praeparationen.py, Plan BIV-31 (eine Zieldatei), "
           "Secret-Muster im ausgeschlossenen Bereich")
 
@@ -532,9 +555,15 @@ def bauen(zelle, basis, erwarte, aus_archiv, ziel=None):
         git(baum, "switch", "-q", ziel_branch)
 
     # --- Aenderungssatz in der Arbeitskopie -------------------------------------------
+    # 🔴 Praeparationen der ARBEITSKOPIE stehen NACH dem Commit und nach dem
+    # Schalten: Ihr Gegenstand ist der Unterschied zum Stand, nicht der Stand.
+    # Sie gehen ueber `praeparationen.py`, damit der Waechter gegen den
+    # Loesungsverrat auch bei ihnen laeuft (D-142).
+    for kennung in spec.get("praeparationen", []):
+        print("  Arbeitskopie-Praeparation:", praeparation(baum, kennung))
     for e in spec["arbeitskopie"]:
         ersetze(baum, e)
-    if spec["arbeitskopie"]:
+    if spec["arbeitskopie"] or spec.get("praeparationen"):
         offen = git(baum, "status", "--porcelain").splitlines()
         print("  Arbeitskopie: %d geaenderte Datei(en): %s"
               % (len(offen), ", ".join(z[3:] for z in offen)))
@@ -578,7 +607,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("zelle", nargs="?", help="Zellenkennung, z.B. SK-012-P01")
     ap.add_argument("--basis", default=r"C:\lw-b4")
-    ap.add_argument("--erwarte", default="0.77.0",
+    ap.add_argument("--erwarte", default=None,
                     help="erwartete Frameworkversion im Baum")
     ap.add_argument("--aus-archiv", action="store_const", const="archiv", dest="quelle",
                     help="den Baum vorher aus 'git archive HEAD' anlegen (Messtag)")
@@ -590,12 +619,16 @@ def main():
                     help="Verzeichnisname unter --basis; ohne Angabe die Zelle")
     ap.add_argument("--liste", action="store_true")
     args = ap.parse_args()
+    if args.erwarte is None:
+        args.erwarte = ablage.kernversion()
 
     if args.liste or not args.zelle:
         for z in sorted(ZELLEN):
             s = ZELLEN[z]
-            print("%-12s Branches: %-2d  Dokumente: %-2d  Arbeitskopie: %d"
-                  % (z, len(s["branches"]), len(s["dokumente"]), len(s["arbeitskopie"])))
+            print("%-12s Branches: %-2d  Dokumente: %-2d  Arbeitskopie: %d  "
+                  "Praeparationen: %d"
+                  % (z, len(s["branches"]), len(s["dokumente"]),
+                     len(s["arbeitskopie"]), len(s.get("praeparationen", []))))
         print("\n%d Zellen, %d Branches, %d Ersetzungen"
               % (len(ZELLEN), len(BRANCHES), len(ERSETZUNGEN)))
         return 0

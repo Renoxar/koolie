@@ -25,15 +25,16 @@ import subprocess
 import sys
 import time
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 HIER = os.path.dirname(os.path.abspath(__file__))
-PROMPTS = os.path.join(os.path.dirname(HIER), "prompts")
-BELEGE = os.path.join(HIER, "belege")
+PROMPTS = ablage.prompts()
+BELEGE = ablage.belege()
 BASIS = r"C:\lw-b4"
 LOG = os.path.join(BELEGE, "reihe-%s.log" % time.strftime("%H%M%S"))
 
-os.makedirs(BELEGE, exist_ok=True)
 
 
 def belegt(kennung):

@@ -24,9 +24,11 @@ import json
 import os
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-HIER = os.path.dirname(os.path.abspath(__file__))
+HIER = ablage.erhebung()
 QUELLE = (r"C:\Users\reneh\Documents\devpacks\test-devin-framework"
           r"\frontend\node_modules")
 ZWISCHENSTAND = (".vite", ".cache", ".tmp")

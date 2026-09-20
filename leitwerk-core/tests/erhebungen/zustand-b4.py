@@ -23,9 +23,11 @@ import json
 import os
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-HIER = os.path.dirname(os.path.abspath(__file__))
+HIER = ablage.erhebung()
 B = r"C:\lw-b4"
 TEILE = [os.path.join("frontend", "src"), os.path.join("backend", "src"),
          "api-contracts", "docs", ".claude", "leitwerk-core", ".github",

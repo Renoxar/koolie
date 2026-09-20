@@ -2,6 +2,148 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.79.2] - 2026-09-20
+
+**Der Vorbedingungsdurchgang des Nachlaufs – sieben Befunde, keiner kostet Kontingent**
+(`CR-2026-110`, **D-224** bis **D-228**, `K-83` entschieden, `K-84` neu, **Prüfung
+69**). Kriterium 2: **30 → 32** – zwei Zellen werden geöffnet, keine geschlossen.
+
+> 🔴 **Der erste Aufwärtsschritt in einer neun Schritte langen monotonen Kette, und er
+> ist gewollt.** *Ein Zähler, der nur fallen kann, sagt nichts darüber, ob seine Nullen
+> noch gelten.*
+
+### 🔴 Der teuerste Befund: der Meßapparat schrieb ins Repositorium (D-224)
+
+D-222 hat die Skripte mit `0.79.0` in den Kern geholt und ihre Belege ausdrücklich
+draußen gelassen. **Fünf Skripte legten ihre Belege aber neben sich ab** –
+`os.path.dirname(os.path.abspath(__file__))` –, dazu zwei für die Prompts und zwei für
+die Zustandsaufnahmen. Solange sie daneben lagen, war das richtig; **seit dem Umzug
+zeigt derselbe Ausdruck hinein**, und `lauf.py` legt das Verzeichnis selbst an.
+
+Der Nachlauf hätte **44 Belegdateien samt Sitzungsmitschriften mit Werkzeugeingaben**
+versioniert – genau das, was D-222 verworfen hat, **ohne daß jemand es entschieden
+hätte.**
+
+> *Wer einen Apparat umzieht, zieht seine relativen Pfade mit um – oder er verschiebt
+> ihr Ziel, ohne es zu merken.*
+
+**Zwei Hälften eines Gegenstands:** `ablage.py` verlangt die Erhebungsablage als Angabe
+(`LW_ERHEBUNG`) und weist einen Pfad **im** Repositorium ab; **Prüfung 69** meldet jede
+Datei, die dort dennoch liegt.
+
+🟢 **Wirkungsnachweis als Paar – und der zweite Fall ist der eigentliche:** Ein
+Präfixvergleich auf der Zeichenkette hätte das Geschwisterverzeichnis
+`…\devpacks\leitwerk-erhebungen-2026-09-20-b4n` als Kind von `…\devpacks\leitwerk`
+gelesen. Das ist **D-219 eine Ebene tiefer**; der Wächter vergleicht mit
+`os.path.commonpath`.
+
+### 🔴 Drei Wächter derselben Vorbedingung, drei Sollwerte, keiner stimmte (D-225)
+
+`umgebungen-bauen-b4.py` und `baeume-b4.py` führten `--erwarte 0.78.0`,
+`historie-bauen-b4.py` führte `0.77.0` – das Übungsrepositorium stand auf `0.78.2`, der
+Kern auf `0.79.1`. **Der dritte Wert wäre im normalen Pfad nie befragt worden**, weil
+`baeume-b4.py` seinen eigenen durchreicht: *ein Sollwert, der nur in einer unbenutzten
+Voreinstellung steht, ist eine Falle für den nächsten, der das Skript einzeln aufruft.*
+
+Der Sollstand ist seither die Version **dieses** Kerns (`ablage.kernversion()`). 🟢
+**Nebenwirkung, gewollt:** Damit beantwortet der Wächter die erste Frage jedes
+Vorbedingungsdurchgangs – *hat ein Release den Gegenstand der Messung angefaßt?* – von
+selbst.
+
+### 🟢 `K-83` war längst entschieden – das Werkzeug kannte es nur im Kommentar (D-226)
+
+D-120 schließt mit *„Für Fund-Testfälle bleibt die erste Form nach D-116 die einzige
+zulässige."* `auswerten-b4.py` druckte `W` und `T` für alle neunzehn Zellen gleich. Die
+Gattung steht jetzt **je Marke** im Code, das Urteil **je Lauf**.
+
+🟢 **Wirkungsnachweis an den 50 Belegen des Meßtags, ohne einen einzigen neuen Lauf:**
+Die Probe meldet den Hauptlauf von `SK-012-P01` rot – und mit ihm zehn der zwölf
+ungemessenen Zellen. **Sie hätte D-218 aus den Belegen abgelesen.** Sieben der acht
+abgenommenen Zellen bleiben grün.
+
+🔴 **Und sie hat gleich ihren eigenen zweiten Befund geliefert:** Je **Turn** geurteilt
+wäre `SK-011-N03` rot – der erste Turn nennt `Generator`, der zweite nicht. **Eine
+abgenommene Zelle, ohne daß ein Lauf etwas versäumt hätte.** Bei `fw-docs-update` trägt
+der erste Turn den Halt und der zweite die Umsetzung; das ist der dritte Teil von D-218
+an einer neuen Stelle.
+
+### 🔴 Die Norm, die seit acht Releases niemand gelesen hatte (D-227, `K-84`)
+
+`08-skill-conventions.md` Abschnitt 7 ist normativ: *„Jede Versionsänderung erfordert
+die erneute Ausführung der Testfälle in `TESTS.md`."*
+
+**`0.79.0` hat `fw-review-support` auf `0.1.6` und `fw-mr-description` auf `0.1.5`
+gehoben – in demselben Commit, der `SK-010-P02` und `SK-012-N04` abgenommen hat.** Die
+Läufe fanden gegen `0.1.5` und `0.1.4` statt. **Beide Zellen gehen auf `offen`** und
+fahren im Nachlauf mit.
+
+🔴 **Und der Befund reicht weiter.** Gemessen gegen die Git-Historie in
+**Commit**-Auflösung – die Tagesauflösung trennt ihn nicht, weil Lauf und Anhebung in
+demselben Release liegen: **acht von dreizehn Skills**, zusammen **35 bestandene
+Zellen**. Wörtlich angewandt ginge Kriterium 2 nicht auf 32, sondern auf rund **63**.
+Das ist **`K-84`** und wird hier **nicht** entschieden.
+
+🔴 **Die Bauform sieht jedesmal wie Sorgfalt aus:** Ein Meßtag findet einen Mangel am
+Skill, das Release behebt ihn und hebt die Version – und macht damit die Abnahme
+ungültig, die es im selben Zug einträgt. **D-119 hat den Kreis für die Gegenrichtung
+schon benannt** und ihn nur für das *Eintragen* aufgelöst, nicht für das *Beheben*.
+
+### 🔴 Zwei Proben, die ihren Gegenstand verloren hatten
+
+- **`SK-010-N04`:** Ihre Berührungsmarken waren die beiden Branchnamen – und seit
+  D-219 darf der Skill Branchnamen **nicht auflisten**. *Eine Probe, die verlangt, was
+  die geprüfte Schranke verbietet, kann nur rot sein.* Neue Marken: `git status`
+  (`fund`) und `git branch` (`unterlassen`).
+- **`SK-010-N02`:** Ihre zweite Marke zeigte auf `UEB-02`, der sich selbst als
+  *„Platzhalter und keine Zugangsdaten"* ausweist (D-220). Neue Marke: die Quelldatei
+  von **`UEB-29`**, die mit diesem Release gebaut ist.
+
+### 🔴 Die Zahlen von `K-82` stimmten nicht
+
+| Angabe | gemessen |
+|---|---|
+| Kriterium 2 bei **31** | **30** |
+| **sieben** abgenommene Zellen | **acht** |
+| **zwölf** ungemessene Zellen | **elf** |
+| **24 Läufe**, *„zwei davon mit zweitem Turn"* | keine der elf gehört zu `fw-docs-update`, und nur dieser Skill schreibt – **22** |
+
+Mit D-227 und dem `konf`-Kontrollauf von `SK-011-N04` sind es **28 Läufe, rund 34 USD**.
+
+### 🔴 Der siebte Befund: zwei Zähler desselben Bestands (D-228)
+
+Der Trockenlauf des Apparats hat ihn geliefert: Die Gegenzählung meldete **101 089
+284** Bytes gegen die 101 089 283 aus `0.79.1` – ein Byte, und es gehört dem
+**Prüfmittel** (`node_modules/.vite/vitest/results.json`). `node-waechter.py` weist
+solche Pfade seit seinem Bau gesondert aus, `baeume_loeschen.py` zählte roh.
+
+🔴 **Am Meßtag hätte der Wächter angeschlagen, wo nichts geschehen ist:**
+`<TEST_COMMAND>` steht im `allow`-Korb, also darf jeder Lauf das Prüfmittel starten.
+➡️ *Ein Wächter über einen geteilten Bestand muß wissen, wer außer dem Prüfling noch
+hineinschreibt.* **Stabiler Stand seither: 9797 Dateien / 101 088 634 Bytes, dazu eine
+Zwischenstandsdatei – berichtet, nicht geprüft.**
+
+### Migrationshinweis
+
+🟢 **Für übernehmende Projekte: die Laufzeitwirkung ist NULL.** Dieses Release faßt den
+Prüfapparat, den Meßapparat, zwei Ergebniszellen und die Governance an – **keinen
+ausgelieferten Laufzeitträger.** Die Skripte unter `<CORE_DIR>/tests/erhebungen/`
+liefert `install.py` nicht aus, wie `probe-pruefungen.py` auch.
+
+⚠️ **Zwei `TESTS.md` ändern sich** (`fw-review-support`, `fw-mr-description`) – je eine
+Ergebniszelle, die von `bestanden` auf `offen` geht. Sie heben keine Version (D-119) und
+wandern nach `K-56` in die Laufzeitschicht jedes übernehmenden Projekts.
+
+🔴 **Wer den Meßapparat benutzt, setzt ab sofort `LW_ERHEBUNG`** – ohne die Angabe
+bricht jedes Skript ab, das eine Belegablage braucht.
+
+### Bekannte Einschränkungen
+
+- **`K-84` ist offen** und betrifft 35 bestandene Zellen in acht Skills. Bis zur
+  Entscheidung stehen sie unverändert auf `bestanden`; nur die beiden Zellen von Bündel
+  4 sind geöffnet.
+- **Prüfung 69 sieht nur, was schon geschrieben ist.** Den Wächter davor trägt
+  `ablage.py`.
+
 ## [0.79.1] - 2026-09-20
 
 **Der Aufraeumer stirbt an seiner eigenen Erfolgsmeldung** (`CR-2026-109`, **D-223**,

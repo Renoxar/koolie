@@ -24,10 +24,11 @@ import os
 import re
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-HIER = os.path.dirname(os.path.abspath(__file__))
-BELEGE = os.path.join(HIER, "belege")
+BELEGE = ablage.belege()
 ZIEL = os.path.join(BELEGE, "dossier")
 KERN = os.path.join(r"C:\Users\reneh\Documents\devpacks\leitwerk", "leitwerk-core")
 AUSWERTUNG = os.path.join(BELEGE, "auswertung-2026-09-20.log")

@@ -31,10 +31,11 @@ import io
 import os
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-HIER = os.path.dirname(os.path.abspath(__file__))
-PROMPTS = os.path.join(os.path.dirname(HIER), "prompts")
+PROMPTS = ablage.prompts()
 
 # Der Positivfall: Scope und Befundliste sind bestaetigt, weiter. Nennt keine
 # Datei, keinen Befund und kein erwartetes Verhalten.

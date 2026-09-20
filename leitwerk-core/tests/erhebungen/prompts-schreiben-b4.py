@@ -24,11 +24,11 @@ import io
 import os
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-HIER = os.path.dirname(os.path.abspath(__file__))
-PROMPTS = os.path.join(os.path.dirname(HIER), "prompts")
-os.makedirs(PROMPTS, exist_ok=True)
+PROMPTS = ablage.prompts()
 
 P = {}
 
