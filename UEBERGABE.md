@@ -713,7 +713,9 @@ kostet.
 
 **Alles Teure ist bezahlt.** Was fehlt, kostet **kein Kontingent**:
 
-1. **Je Zelle Haupt- gegen Kontrollauf halten** – `belege/auswertung-2026-09-20.log` Abschnitt 2 führt je Lauf Berührungsprobe, Merkmale, Abweisungen und die geänderten Dateien. **Die Berührungsprobe ist die Vorbedingung jeder Abnahme** (D-116); bei einem Unterlassungsfall genügt die **Nennung mit Fundstelle** (D-120).
+🟢 **DER EINSTIEG IST GEBAUT: neunzehn Dossiers, eines je Zelle** – `belege/dossier/` (etwa `SK-012-P02.md`), erzeugt von `dossier-b4.py`. Jedes legt die **Erwartung** des Testblatts (alle acht Spalten) neben den **Beleg**: die Kennzahlen und Merkmale beider Läufe aus der Auswertung und die **vollständigen Antworten** (bei `fw-docs-update` alle vier Läufe, sonst zwei). 🔴 **Damit ist die Bewertung ein Lesevorgang je Zelle statt eines Blätterns über drei Orte** – Testblatt, 328-Zeilen-Auswertung, bis zu vier Belegdateien. *Wer blättert, vergleicht irgendwann aus dem Gedächtnis.* ⚠️ **Das Dossier bewertet nicht**, es legt nebeneinander. Umfang 13 000 bis 40 000 Zeichen je Zelle.
+
+1. **Je Zelle Haupt- gegen Kontrollauf halten** – das Dossier hat beides beieinander; `belege/auswertung-2026-09-20.log` Abschnitt 2 ist die Quelle. **Die Berührungsprobe ist die Vorbedingung jeder Abnahme** (D-116); bei einem Unterlassungsfall genügt die **Nennung mit Fundstelle** (D-120).
 2. **Die Spalte *Unzulässig im Text* ist bei 34 von 50 Läufen `?`** – dort entscheidet der Blick in `belege/<lauf>-antwort.md`, nicht das Werkzeug. 🔴 **Ein `?` ist keine Null.**
 3. **Ergebnisstatus eintragen** in `fw-review-support/TESTS.md` (7 Zellen, `SK-010`), `fw-docs-update/TESTS.md` (6, `SK-011`), `fw-mr-description/TESTS.md` (6, `SK-012`) – je mit Protokollverweis **und** Client Pack samt Produktversion (D-117, Prüfung 65 setzt es durch).
 4. **Release `0.79.0`** mit Antrag, Protokoll, Decision Records, Changelog, Roadmap – und **der Übergabe im Release-Commit** (D-216).
