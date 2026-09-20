@@ -29,7 +29,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
@@ -71,7 +71,7 @@ triggers:
 
 **Zulässige Kontextquellen:** Ausgaben der freigegebenen Git-Befehle (Dateipfade, Diff-Inhalte, Commit-Betreffzeilen); geänderte Dateien im Arbeitsbereich; Ergebnisberichte, bestätigter Plan und Ergebnis von `fw-review-support`; `<MR_TEMPLATE_PATH>`; `leitwerk-core/templates/MR_AI_DISCLOSURE.md`; Datei `leitwerk-core/VERSION` und Overlay-Version (für die Langform); Overlay-Dokumente der Klasse K1 laut Manifest.
 
-**Zulässige Befehlsformen (abschließend):** `git status`; `git diff --stat <basis>`; `git diff --name-only <basis>`; `git diff <basis> -- <pfad>`; `git log --format=%h%x20%s <basis>..HEAD`; `git show --format=%h%x20%s --stat <commit>`. Für Arbeitskopie und Index gelten dieselben Formen ohne Basis beziehungsweise mit `--cached`. Optionen, die Autoren-, E-Mail- oder Zeitstempelfelder ausgeben, DÜRFEN NICHT verwendet werden.
+**Zulässige Befehlsformen (abschließend):** `git status`; `git diff --stat <basis>`; `git diff --name-only <basis>`; `git diff <basis> -- <pfad>`; `git log --format=%h%x20%s <basis>..HEAD`; `git show --format=%h%x20%s --stat <commit>`. Für Arbeitskopie und Index gelten dieselben Formen ohne Basis beziehungsweise mit `--cached`. Optionen, die Autoren-, E-Mail- oder Zeitstempelfelder ausgeben, DÜRFEN NICHT verwendet werden. **`git branch` steht nicht in dieser Liste und ist auch nicht freigegeben:** Die Berechtigungsdatei sperrt jede Form dieses Befehls über ein Präfix, dessen Gegenstand das Löschen eines Branches ist (`<PERMISSIONS_FILE>`). Vorhandene Branchnamen kann der Skill deshalb **nicht auflisten**; wo unten eine Kandidatenliste verlangt ist, nennt er diese Grenze und bittet um den Branchnamen.
 
 **Ausgeschlossene Informationen:** K3 gemäß `leitwerk-core/framework/core/02-privacy.md`; Inhalte aus `<EXCLUDED_PATHS>` (auch wenn sie im Diff enthalten sind); Autoren-, E-Mail- und Zeitstempelangaben aus der Git-Historie; Ticketinhalte über die Kennung hinaus, Kommentare, Anhänge, Kundenkommunikation; Prompts mit K2- oder K3-Inhalten; Sitzungsprotokolle mit Umgebungsdetails (nur Referenz).
 
@@ -79,7 +79,7 @@ triggers:
 
 ## 3. Arbeitsschritte
 
-1. Aufgabe wiedergeben: Änderungssatz und Basis, Kontrollstufe (Faktor) und daraus die Vermerkform, vorliegende Grundlagen (Ergebnisberichte, Plan, Review-Unterstützung, Ticketkennung), Projektvorlage. Fehlt die Basis oder passen mehrere Branches: [RÜCKFRAGE] mit Kandidatenliste. Fehlt die Kontrollstufe: [RÜCKFRAGE] – ohne Stufe keine Vermerkform. Ist `<MR_TEMPLATE_PATH>` gesetzt und lesbar: Abschnittsstruktur und Pflichtfelder der Vorlage übernehmen und die Inhalte der Schritte 3 bis 8 zuordnen; Felder ohne belegbaren Inhalt als `<TBD: …>` belassen; ohne Vorlage gilt die Struktur aus Abschnitt 5 (Hinweis im Ergebnis).
+1. Aufgabe wiedergeben: Änderungssatz und Basis, Kontrollstufe (Faktor) und daraus die Vermerkform, vorliegende Grundlagen (Ergebnisberichte, Plan, Review-Unterstützung, Ticketkennung), Projektvorlage. Fehlt die Basis oder passen mehrere Branches: [RÜCKFRAGE] mit Kandidatenliste. **Die Kandidatenliste führt Arbeitskopie, Index und die aus `git status` erkennbare Position; Branchnamen kann der Skill nicht auflisten (Abschnitt 2) – er nennt diese Grenze ausdrücklich und bittet um den Branchnamen.** Fehlt die Kontrollstufe: [RÜCKFRAGE] – ohne Stufe keine Vermerkform. Ist `<MR_TEMPLATE_PATH>` gesetzt und lesbar: Abschnittsstruktur und Pflichtfelder der Vorlage übernehmen und die Inhalte der Schritte 3 bis 8 zuordnen; Felder ohne belegbaren Inhalt als `<TBD: …>` belassen; ohne Vorlage gilt die Struktur aus Abschnitt 5 (Hinweis im Ergebnis).
 2. Änderungssatz ermitteln: `git status`, `git diff --name-only <basis>`, `git diff --stat <basis>`; bei Branch-Diff `git log --format=%h%x20%s <basis>..HEAD`. Dateien in `<EXCLUDED_PATHS>` oder mit Secret-Mustern (`.env*`, `*.pem`, `*.key`, `*secret*`) nicht lesen, als „im Änderungssatz, nicht gelesen (ausgeschlossen)" listen und als Hinweis für das Review führen. Mehr als `<CHANGE_SIZE_THRESHOLD>` Dateien: Hinweis auf Aufteilung oder Stufe hoch (Q8).
 3. Diff je Datei lesen (`git diff <basis> -- <pfad>`) und Änderungen je Bereich (Modul, Verzeichnis, Schicht) beschreiben – was geändert wurde, nicht warum es „besser" sei; Schnittstellen-, Schema-, Konfigurations-, Abhängigkeits- und Teständerungen gesondert benennen; jede Aussage mit Datei und Fundstelle. Enthält ein Diff-Ausschnitt vermutete Secrets oder personenbezogene Echtdaten: [HALT] – nur Fundstelle nennen, Inhalt nicht wiedergeben, Meldung an `<SECURITY_CONTACT>` empfehlen.
 4. Abgleich mit den Ergebnisberichten: geänderte Dateien gegen die dort genannten Änderungen prüfen; Dateien im Diff ohne Bericht und Berichtseinträge ohne Diff als Abweichung ausweisen; mehrere Ziele im Änderungssatz (Q1) melden und Aufteilung vorschlagen.
@@ -159,7 +159,7 @@ triggers:
 
 | Situation | Verhalten |
 |---|---|
-| Diff-Basis fehlt, ist mehrdeutig oder der Arbeitsbereich ist kein Git-Repository; Kontrollstufe nicht benannt | [RÜCKFRAGE] mit Kandidatenliste; keine Annahme über Basis, Branch oder Stufe; kein Vermerk ohne Stufe |
+| Diff-Basis fehlt, ist mehrdeutig oder der Arbeitsbereich ist kein Git-Repository; Kontrollstufe nicht benannt | [RÜCKFRAGE] mit Kandidatenliste (Arbeitskopie, Index, Position aus `git status`); die Grenze „Branchnamen nicht auflistbar" ausdrücklich nennen; keine Annahme über Basis, Branch oder Stufe; kein Vermerk ohne Stufe |
 | Git-Befehl nicht freigegeben oder fehlgeschlagen | Unverändertes Ergebnis berichten; nicht mit anderen Befehlen umgehen; anhalten |
 | Ergebnisbericht fehlt, ab Stufe mittel Plan fehlt oder Diff und Bericht widersprechen sich | Testnachweis und Vermerkfelder als `<TBD: …>`; Abweichung ausweisen; [RÜCKFRAGE]; nichts ergänzen |
 | Mehr als `<CHANGE_SIZE_THRESHOLD>` Dateien oder mehrere Ziele im Änderungssatz | Entwurf liefern; Aufteilung vorschlagen (Q1, Q8); Hinweis im Entwurf |
