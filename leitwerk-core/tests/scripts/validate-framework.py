@@ -376,7 +376,21 @@ Prüft (statisch, ohne laufenden KI-Client):
      statt eines Menschen. ENTHALTUNG: Ohne UEBERGABE.md meldet diese Pruefung
      nichts - die Uebergabe ist ein Traeger des QUELLrepositoriums und wird in kein
      Projekt installiert; in einer Installation hat sie keinen Gegenstand
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 67 laeuft als eigenes
+ 68. Das Praefix, das mehr sperrt als sein Befehl (D-219): Jede exec-Regel in
+     framework/runtime/permissions.json, deren `prefix` kuerzer ist als ihr
+     `command`, traegt ein Feld `_uebererfasst` mit der Begruendung. ANLASS, und er
+     ist gemessen: Der Eintrag { command: "git branch -D", prefix: "git branch" }
+     nennt als Gegenstand das LOESCHEN eines Branches und sperrt ueber sein Praefix
+     auch das blosse AUFLISTEN. Das erklaert alle 25 Abweisungen des Messtags vom
+     2026-09-20 (23 von 50 Laeufen; elf davon tragen `git branch`) - und es macht zwei
+     Skills eine Zusage unmoeglich, die sie in Arbeitsschritt 1 und in ihrer
+     Fehlerbehandlung selbst vorschreiben: eine Kandidatenliste vorhandener
+     Branches. Vier der 29 exec-Regeln erfassen ueber, und KEINE hat es bisher
+     gesagt. 🔴 Der Waechter in clientmap.py prueft nur, ob das Praefix ein Praefix
+     des Befehls IST - nicht, ob es mehr trifft. GRENZE, und sie steht hier:
+     Geprueft wird die NENNUNG, nicht ihre Richtigkeit; eine Begruendung, die nicht
+     traegt, laeuft durch. Dieselbe Enthaltung wie bei Pruefung 65
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 68 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -7281,6 +7295,77 @@ def check_uebergabestand(root: str) -> None:
             f"offener Antrag – beantwortet git (D-216)")
 
 
+# --- Pruefung 68: Das Praefix, das mehr sperrt als sein Befehl ----------------------
+#
+# ANLASS, UND ER IST GEMESSEN. permissions.json fuehrt je exec-Regel einen `command`
+# (die woertliche Form) und optional einen `prefix` (die Form fuer Clients, die ueber
+# ein Praefix sperren). Ist der `prefix` kuerzer, sperrt die Regel MEHR, als ihr
+# Befehl nennt. Am 2026-09-20 hat genau das gekostet: Der Eintrag mit dem command
+# "git branch -D" traegt den prefix "git branch" und sperrt damit auch das blosse
+# Auflisten. Gemessen ueber 50 Laeufe des vierten Testblattbuendels: 25 Abweisungen
+# in 23 Laeufen, elf davon auf "git branch" - und zwei Skills schreiben in
+# Arbeitsschritt 1 und in ihrer Fehlerbehandlung eine Kandidatenliste vorhandener
+# Branches vor, die sie damit nicht liefern koennen (D-219).
+#
+# WARUM DIE SPERRE TROTZDEM BLEIBT, UND WARUM DAS EINE PRUEFUNG BRAUCHT. Der
+# allow-Korb dieser Datei ist praefixbasiert, und clientmap.py verbietet dort ein
+# kuerzeres Praefix als der Befehl ("bei allow waere das eine Lockerung"). Er traegt
+# deshalb bisher ausschliesslich Verben OHNE schreibende Form - git status, diff,
+# log, show, blame. `git branch` waere das erste mit einer. Die Uebererfassung ist
+# hier also GEWOLLT; was fehlte, war, dass sie irgendwo steht. Eine Schranke, die
+# mehr sperrt als sie sagt, ist die Schwester des wiederkehrenden Befundtyps dieses
+# Projekts mit umgekehrtem Vorzeichen - und sie faellt niemandem auf, weil ein
+# ueberschiessendes Verbot wie Sorgfalt aussieht.
+#
+# DER WAECHTER, DER ES NICHT SAH. clientmap.py prueft, ob der prefix ein Praefix des
+# command IST - sonst waere die Praefixform "nicht nachweislich breiter als die
+# woertliche". Er prueft die Richtung, nicht das Mass. Das ist D-205 an vierter
+# Stelle: ein Muster, das seinen Gegenstand enthaelt und mehr.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird die NENNUNG, nicht ihre Richtigkeit: Eine
+# Begruendung, die nicht traegt, laeuft durch - dieselbe Enthaltung, die Pruefung 65
+# fuer den Protokollverweis zieht und Pruefung 61 fuer das Pruefmittelwort.
+P68_FELD = "_uebererfasst"
+
+
+def check_praefix_uebererfassung(root: str) -> None:
+    """Pruefung 68 (D-219): Ein Praefix, das mehr sperrt als sein Befehl, sagt es."""
+    rel = f"{KERN}/framework/runtime/permissions.json"
+    pfad = os.path.join(root, KERN, "framework", "runtime", "permissions.json")
+    if not os.path.isfile(pfad):
+        return  # Pruefung 1 und 39 melden die fehlende Kernquelle bereits
+    try:
+        quelle = json.loads(read(pfad))
+    except ValueError:
+        return  # Pruefung 39 meldet die unlesbare Datei bereits
+    exec_regeln = 0
+    for korb in ("deny", "ask", "allow"):
+        eintraege = quelle.get(korb)
+        if not isinstance(eintraege, list):
+            continue
+        for regel in eintraege:
+            if not isinstance(regel, dict) or regel.get("tool") != "exec":
+                continue
+            exec_regeln += 1
+            befehl = str(regel.get("command", "")).strip()
+            praefix = str(regel.get("prefix", befehl)).strip()
+            if not befehl or praefix == befehl:
+                continue
+            if str(regel.get(P68_FELD, "")).strip():
+                continue
+            err(f"{rel}: die {korb}-Regel `{befehl}` sperrt über das Präfix "
+                f"`{praefix}` mehr, als ihr Befehl nennt – und sagt es nicht. Ein "
+                f"Feld `{P68_FELD}` mit der Begründung gehört dazu: Genau diese "
+                f"Bauform hat am 2026-09-20 fünfundzwanzig Abweisungen erzeugt und "
+                f"zwei Skills eine Zusage unmöglich gemacht, die sie selbst "
+                f"vorschreiben. Eine Schranke, die mehr sperrt als sie sagt, ist "
+                f"nicht weniger ein Befund als eine, die weniger hält (D-219)")
+    if exec_regeln == 0:
+        err(f"{rel}: keine einzige exec-Regel gefunden – Prüfung 68 rechnet ihre "
+            f"Präfixe gegen ihre Befehle und hat ihren Gegenstand verloren; sie "
+            f"bestünde sonst leise (D-23)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -7363,6 +7448,7 @@ def main() -> int:
     check_ergebnisstatus_beleg(root)
     check_verirrtes_steuerzeichen(root)
     check_uebergabestand(root)
+    check_praefix_uebererfassung(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

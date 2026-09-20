@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 67, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 68, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6019,6 +6019,98 @@ gegenprobe("67a", "Das unveraenderte Repositorium bleibt unbeanstandet - Titelze
 
 gegenprobe("67b", "Ohne UEBERGABE.md meldet Pruefung 67 nichts - die Enthaltung jeder Installation, hier einmal gemessen",
            _67_ohne_uebergabe, M67_STAND)
+
+
+# --- 68: das Praefix, das mehr sperrt als sein Befehl (D-219) ----------------------
+#
+# Die dritte Sonde ist die Ankersonde: Ohne exec-Regel haette Pruefung 68 nichts zu
+# rechnen und bestuende leise. Die zweite Gegenprobe belegt den ZUSCHNITT - eine
+# Regel, deren Praefix ihrem Befehl gleicht, erfasst nicht ueber und wird nicht
+# gemeldet, auch ohne Begruendungsfeld. Ohne dieses Paar waere nicht zu unterscheiden,
+# ob die Pruefung die Uebererfassung sucht oder jede Regel ohne Feld.
+M68 = "mehr, als ihr Befehl nennt"
+M68_ANKER = "keine einzige exec-Regel gefunden"
+P68_PERM = "leitwerk-core/framework/runtime/permissions.json".replace("/", os.sep)
+
+
+def _68_laden(root: str) -> dict:
+    return json.loads(lies(P(root, P68_PERM)))
+
+
+def _68_schreiben(root: str, daten: dict) -> None:
+    schreib(P(root, P68_PERM), json.dumps(daten, indent=2, ensure_ascii=False))
+
+
+def _68_feld_entfernen(root: str) -> None:
+    """Der gemessene Fall: die Begruendung an der git-branch-Regel faellt weg."""
+    daten = _68_laden(root)
+    getroffen = 0
+    for regel in daten.get("deny", []):
+        if regel.get("tool") == "exec" and "_uebererfasst" in regel:
+            del regel["_uebererfasst"]
+            getroffen += 1
+    if getroffen == 0:
+        raise Praeparationsfehler(
+            "keine exec-Regel mit Begruendungsfeld - die Sonde zu 68 haette keinen "
+            "Anker; entweder erfasst keine Regel mehr ueber, dann gehoert die Sonde "
+            "weg, oder das Feld heisst anders")
+    _68_schreiben(root, daten)
+
+
+def _68_neue_regel(root: str) -> None:
+    """Eine ZWEITE Stelle: eine neue Regel mit kuerzerem Praefix und ohne Feld.
+
+    Sie belegt, dass die Pruefung an der Bauform haengt und nicht an einer Zeile.
+    """
+    daten = _68_laden(root)
+    daten.setdefault("deny", []).append(
+        {"tool": "exec", "command": "sondenbefehl --loeschen",
+         "prefix": "sondenbefehl"})
+    _68_schreiben(root, daten)
+
+
+def _68_ohne_exec(root: str) -> None:
+    """Ankersonde: keine exec-Regel mehr - der verlorene Gegenstand."""
+    daten = _68_laden(root)
+    for korb in ("deny", "ask", "allow"):
+        daten[korb] = [r for r in daten.get(korb, []) if r.get("tool") != "exec"]
+    _68_schreiben(root, daten)
+
+
+def _68_praefix_gleich_befehl(root: str) -> None:
+    """Gegenprobe: eine Regel OHNE Uebererfassung und ohne Feld - kein Befund.
+
+    🔴 WER EINEN ERLAUBTEN FALL HERSTELLT, MUSS IHN VOLLSTAENDIG HERSTELLEN
+    (0.66.0). Eine neue Regel in der Kernquelle macht die lokale Testinstallation
+    unvollstaendig, und der Abgleich der Berechtigungsdatei meldet die fehlende
+    Regel - einen Fehler, den diese Gegenprobe nicht gemeint hat. Der gerenderte
+    Eintrag gehoert deshalb mit.
+    """
+    daten = _68_laden(root)
+    daten.setdefault("deny", []).append(
+        {"tool": "exec", "command": "sondenbefehl"})
+    _68_schreiben(root, daten)
+    inst = P(root, ".devin", "config.json")
+    if os.path.isfile(inst):
+        konf = json.loads(lies(inst))
+        konf["permissions"]["deny"].append("Exec(sondenbefehl)")
+        schreib(inst, json.dumps(konf, indent=2, ensure_ascii=False))
+
+
+sonde("68a", "Eine exec-Regel sperrt ueber ihr Praefix mehr, als ihr Befehl nennt, und sagt es nicht - der Eintrag, der 25 Abweisungen erzeugt hat",
+      _68_feld_entfernen, M68)
+
+sonde("68b", "Dieselbe Bauform an einer ZWEITEN Stelle: eine neu eingefuegte Regel mit kuerzerem Praefix wird ebenso gemeldet",
+      _68_neue_regel, M68)
+
+sonde("68c", "Ohne exec-Regel meldet Pruefung 68 den verlorenen Gegenstand, statt leise zu bestehen",
+      _68_ohne_exec, M68_ANKER)
+
+gegenprobe("68a", "Das unveraenderte Repositorium bleibt unbeanstandet - alle vier uebererfassenden Regeln tragen ihre Begruendung",
+           None, M68)
+
+gegenprobe("68b", "Eine Regel, deren Praefix ihrem Befehl gleicht, wird NICHT gemeldet - auch ohne Begruendungsfeld; gemessen wird die Uebererfassung, nicht das fehlende Feld",
+           _68_praefix_gleich_befehl, M68)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
