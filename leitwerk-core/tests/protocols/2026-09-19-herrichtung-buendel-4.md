@@ -60,7 +60,8 @@ die Zelle unfahrbar macht.**
 ## 4. Der Meßbaum mit echter Historie – gemessen
 
 `historie-bauen-b4.py` baut je Zelle einen Baum: `git init`, `main`, die Übungs-Branches
-der Zelle, präparierte Commits, drei synthetische Autoren unter `example.invalid`.
+der Zelle, präparierte Commits, synthetische Autoren unter `example.invalid`.
+🔴 *(Hier stand „drei synthetische Autoren". Gemessen am 2026-09-20 an allen dreizehn Bäumen führt kein Baum drei, und acht führen genau einen; die Zusage ist mit `0.78.0` zurückgenommen – `CR-2026-105`, D-211. Eine Aufzeichnung wird nicht umgeschrieben, eine falsche Zahl aber berichtigt.)*
 **Gefahren an allen dreizehn Zellen** (Trockenlauf aus dem **Arbeitsbaum**, nicht aus
 `git archive HEAD` – sonst mäße er den committeten Stand gegen sich selbst, 0.59.1):
 
