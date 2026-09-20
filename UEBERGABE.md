@@ -1,4 +1,4 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.79.0 (2026-09-20)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.79.1 (2026-09-20)
 
 > 🔴 **ZUERST LESEN: BÜNDEL 4 IST AUSGEWERTET – ACHT VON NEUNZEHN ZELLEN, WEIL DER MEßBAUM AUF `main` STAND** (Abschnitt 0.35). **Kriterium 2: 38 → 30, nicht 19.** `historie-bauen-b4.py` baut die Übungs-Branches richtig und schaltet nach jedem zurück auf `main` – und bleibt dort. Gemessen an **allen 38 Bäumen**: `HEAD` auf `main`, Arbeitskopie sauber, und zwölf Zellen rufen ihren Skill mit `<DEFAULT_BRANCH>` als Diff-Basis auf. **Der Vorbedingungsdurchgang von `0.78.0` hat geprüft, ob der Branch DA ist; der Lauf braucht, daß er AUSGECHECKT ist** (**D-218**). 🟢 **Und zehn Läufe trafen einen leeren Änderungssatz, ohne den Entwurf aus den Berichten zu erfinden** – zehnmal Halt, Rückfrage, `<TBD>`. 🔴 **DER NÄCHSTE SCHRITT IST DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`): gerechnet 24 Läufe, rund **29 USD**, und er kostet zum ersten Mal seit Bündel 4 wieder Kontingent. 🟢 **Der Apparat ist repariert und mit zwei Wirkungsnachweisen belegt**, und er liegt seit diesem Release **versioniert** in `leitwerk-core/tests/erhebungen/` (**D-222**).
 >
@@ -964,7 +964,7 @@ Validator wandert trotzdem mit und gilt dort ebenso.
 
 ## 1. Lage
 
-`main` = **0.79.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.79.1**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün.
 🟡 **KRITERIUM 2 STEHT BEI 30** – **vier** Testblatt-Bündel sind gefahren, **55 von 66 Zellen bestanden**. 🔴 **Bündel 4 hat acht von neunzehn gebracht statt neunzehn**, weil der Meßbaum auf `main` stand (0.35, D-218) – der erste Schritt dieser Reihe, der hinter seiner Zusage zurückblieb. **Noch ein Nachlauf, ein Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
@@ -1013,7 +1013,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.79.0**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.79.1**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | Overlay **`0.78.0`**, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**. 🟢 **Achtundzwanzig Präparationen** (`UEB-01` bis `UEB-28`) – 🔴 **davon neun NICHT dauerhaft im Repositorium:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26` und `UEB-28` je **Meßbaum** (Quellen in `tools/praeparationen/`), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
@@ -1122,7 +1122,7 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0** | 🟢 **ERLEDIGT mit `0.77.0` (Herrichtung) und `0.78.0` (Meßapparat, Vorbedingungsdurchgang)** – *(Stand 0.76.0:)* **DIE HERRICHTUNG FÜR BÜNDEL 4** (`~0.77.0`, `CR-2026-103`, D-206, D-207): der Meßbaum mit **echter Historie** (`git init`, zwei Übungs-Branches, präparierte Commits, **synthetische Autoren** – `k3-bauen.py` ist die Vorlage), zwei Historienpräparationen, vier Dateipräparationen und das Heben des Übungsrepositoriums auf `0.75.0`. **Dazu `K-78` entscheiden:** wie die Ergebnisberichte entstehen, ohne ihre eigene Lösung mitzuliefern | eine Sitzung, **kein Kontingent** | –. **Ohne sie sind zwölf der neunzehn Zellen von Bündel 4 nicht fahrbar** |
 | **0** | 🟢 **ERLEDIGT mit `0.78.2`** – **`K-80` entscheiden, bevor das nächste Release gebaut wird** (`CR-2026-107`, D-216, D-217). Die Übergabe steht jetzt im Release-Commit, die Antragsnummer ist heraus, Prüfung 66 und 67 setzen durch, was prüfbar ist | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **38**) |
 | **0a** | 🟢 **`K-77` ist entschieden** (`0.75.0`, D-205) und `K-76` bleibt offen – fällig, sobald wieder ein Wiederherstellungsschritt gemessen wird | – | – |
-| **0b** | 🔴 **DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`, D-218): `SK-012-P01`, `-P02`, `-N01`, `-N02`, `-N03`; `SK-010-P01`, `-N01`, `-N02`, `-N03`, `-N04`, `-N05`. **Gerechnet, nicht gemessen:** 24 Läufe, rund **29 USD** bei 1,22 USD je Lauf. 🔴 **Er muß NACH den Abhilfen von `0.79.0` laufen** – `SK-010-N04` mißt seither die **Grenze** statt der Branchliste (D-219), und `UEB-29` ist entschieden und **noch nicht gebaut** (D-220). 🟢 **Was nicht noch einmal bezahlt werden muß:** die acht abgenommenen Zellen, die sechzehn vollständigen Kontrollzuschnitte und die Kontrollzählung. 🟢 **Der Apparat ist repariert und mit zwei Wirkungsnachweisen belegt** und liegt versioniert in `leitwerk-core/tests/erhebungen/`; die Bäume stehen noch unter `C:\lw-b4`. **Drei Fragen vorher** (`K-82`): `UEB-29` bauen? `konf` statt `risiko` für zwei Zellen (D-221)? Bestehende oder frische Bäume? | eine Sitzung, **~29 USD** | **Kriterium 2: 30 → 19** |
+| **0b** | 🔴 **DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`, D-218): `SK-012-P01`, `-P02`, `-N01`, `-N02`, `-N03`; `SK-010-P01`, `-N01`, `-N02`, `-N03`, `-N04`, `-N05`. **Gerechnet, nicht gemessen:** 24 Läufe, rund **29 USD** bei 1,22 USD je Lauf. 🔴 **Er muß NACH den Abhilfen von `0.79.0` laufen** – `SK-010-N04` mißt seither die **Grenze** statt der Branchliste (D-219), und `UEB-29` ist entschieden und **noch nicht gebaut** (D-220). 🟢 **Was nicht noch einmal bezahlt werden muß:** die acht abgenommenen Zellen, die sechzehn vollständigen Kontrollzuschnitte und die Kontrollzählung. 🟢 **Der Apparat ist repariert und mit zwei Wirkungsnachweisen belegt** und liegt versioniert in `leitwerk-core/tests/erhebungen/`. 🔴 **Die Meßbäume sind gelöscht** (2026-09-20, nach dem Merge): 46 Bäume, 38 Verbindungen einzeln gelöst, geteilter Bestand gegengezählt unverändert. Der Nachlauf baut neu. **Drei Fragen vorher** (`K-82`): `UEB-29` bauen? `konf` statt `risiko` für zwei Zellen (D-221)? Bestehende oder frische Bäume? | eine Sitzung, **~29 USD** | **Kriterium 2: 30 → 19** |
 | **0c** | **Testblätter, Bündel 5** – `role-re-ticket`, **15 Zellen**, das größte Einzelblatt und das einzige außerhalb des Kerns; braucht ein eigenes Pack | eine Sitzung | **Kriterium 2: 19 → 4** |
 | **0d** | **Die letzten vier Zellen des zentralen Katalogs** – `FW-KO-05` (sobald `K-59` entschieden ist) und die drei Sammelzellen `FW-NE-04`, `FW-PO-03`, `FW-RE-01`; sie können nicht vor ihren Bestandteilen schließen (D-139, D-143) | eine Sitzung | **Kriterium 2: 4 → 0** |
 | **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.66.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
@@ -1567,6 +1567,22 @@ ist Pflichtpfad, ohne dass der Übernahmeleitfaden es erwähnt; das Secret-Muste
   Rauschen in einem Änderungssatz von sechs.** Der Lauf hat es selbst als Befund
   mittlerer Schwere gemeldet und zur Abhilfe geraten. ➡️ **Ein Meßapparat, der den
   Gegenstand unlesbar macht, wird mitgemessen** – D-213 eine Ebene tiefer.
+- 🆕 **EIN WERKZEUG PRÜFT SEINEN BERICHTSWEG IN BEIDEN KODIERUNGSUMGEBUNGEN**
+  (0.79.1, D-223). `baeume_loeschen.py` hat 46 Bäume gelöscht, gegengezählt – und
+  ist an seiner **Erfolgsmeldung** gestorben, einem `print` mit Ampel-Emoji ohne
+  `sys.stdout.reconfigure`. Es war das einzige der siebzehn Skripte ohne diese
+  Zeile und das einzige, das nie in beiden Umgebungen gelaufen ist. 🟢 **Und die
+  naheliegende Verschärfung ist gemessen und widerlegt:** Die **Abbruch**meldung
+  trägt dasselbe Zeichen und stirbt **nicht** – Python schreibt `SystemExit` mit
+  `backslashreplace` auf stderr, `print` mit `strict` auf stdout. **Der wichtige
+  Bericht trägt, der harmlose nicht.** ➡️ *Den eigenen Lösungsvorschlag
+  gegenprüfen, nicht nur den Befund.*
+- 🆕 **WER EINE AUFRÄUMAUFGABE HAT, FÜHRT SIE VOR DER ÜBERGABE AUS** (0.79.1).
+  Die Übergabe von `0.79.0` stand richtig im Release-Commit (D-216) und hat einen
+  Zustand behauptet, den das Aufräumen eine Viertelstunde später aufgehoben hat:
+  *„die Bäume stehen noch"*. **Das ist D-216 in der Sache statt in der Form** –
+  nicht die Reihenfolge von Übergabe und Commit, sondern die von Übergabe und
+  Aufräumen.
 - 🆕 **DIE ZUSTANDSAUFNAHME LIEGT NACH BÄUMEN, DIE BELEGE NACH LÄUFEN** (0.79.0). Ein
   zweiter Turn heißt `sk011p01t1`, sein Baum aber `sk011p01`; der Präfixvergleich traf
   nie, **und jeder erste Turn meldete „nichts geändert", ohne daß es gemessen war.**

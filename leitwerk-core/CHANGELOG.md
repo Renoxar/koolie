@@ -2,6 +2,64 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.79.1] - 2026-09-20
+
+**Der Aufraeumer stirbt an seiner eigenen Erfolgsmeldung** (`CR-2026-109`, **D-223**,
+`K-82` berichtigt). Berichtigung nach einem gemessenen Fehlschlag, kein Kontingent.
+Kriterium 2 unveraendert **30**.
+
+### Was passiert ist
+
+`baeume_loeschen.py loeschen` hat nach dem Merge von `0.79.0` getan, was es soll: **46
+Baeume geloescht, 38 Verzeichnisverbindungen einzeln geloest, geteilter Bestand
+unberuehrt** (9798 Dateien / 101 089 283 Bytes vor und nach dem Loeschen, auf Datei und
+Byte gleich). **Und ist danach an seiner letzten Zeile gestorben** - einem `print` mit
+Ampel-Emoji, ohne `sys.stdout.reconfigure(encoding="utf-8")`, in der Umgebung ohne
+`PYTHONIOENCODING`.
+
+Das Skript entstand am Messtag und ist **nie in der anderen Kodierungsumgebung
+gefahren worden**; mit `0.79.0` ist es in den Kern gewandert. ➡️ **Wer einen Lauf in
+zwei Kodierungsumgebungen verlangt, prueft auch seinen BERICHTSWEG in beiden** (0.67.0
+an einem neuen Ort).
+
+🟢 **Ausgezaehlt ueber alle siebzehn Skripte unter `tests/erhebungen/`: genau eines
+betroffen** - das juengste.
+
+### 🟢 Die Verschaerfung, die gemessen und widerlegt wurde
+
+Die Abbruchmeldung desselben Skripts traegt dasselbe Zeichen - die Meldung, die kommt,
+wenn 9798 Dateien des Uebungsrepositoriums mitgeloescht worden waeren.
+
+| Weg | ohne `PYTHONIOENCODING` |
+|---|---|
+| `print(...)` auf **stdout** | `UnicodeEncodeError`, exit 1 |
+| `SystemExit(...)` auf **stderr** | Meldung kommt an, nur das Zeichen ist escapet, exit 1 |
+
+**Python schreibt `SystemExit` mit `backslashreplace`, `print` mit `strict`.** Der
+wichtige Bericht traegt, der harmlose nicht. *Den eigenen Loesungsvorschlag
+gegenpruefen, nicht nur den Befund.*
+
+### `K-82` berichtigt
+
+Der Klaerungspunkt sagte *„die Baeume stehen noch"*; sie sind seit dem Aufraeumlauf
+geloescht, und seine dritte Frage (bestehende oder frische Baeume?) entfaellt. 🔴 **Die
+Uebergabe von `0.79.0` stand richtig im Release-Commit und hat einen Zustand
+behauptet, den ein Vorgang NACH dem Merge aufgehoben hat.** ➡️ **Wer eine
+Aufraeumaufgabe hat, fuehrt sie VOR der Uebergabe aus, die den Zustand danach
+beschreibt.**
+
+### Wirkungsnachweis
+
+Probebasis mit einem Wegwerfbaum, `loeschen` ohne `PYTHONIOENCODING`: **Vorstand**
+`UnicodeEncodeError` und exit 1, **behobener Stand** vier Ausgabezeilen samt Ampel und
+exit 0, Gegenzaehlung unveraendert. 🔴 **`zaehlen` taugt als Gegenprobe nicht** - der
+Zweig kehrt vor der Ampelzeile zurueck; *eine Gegenprobe, die den Gegenstand nicht
+erreicht, besteht immer.*
+
+### Migrationshinweis
+
+**Keine.** `tests/erhebungen/` wird von `install.py` in kein Projekt geschrieben.
+
 ## [0.79.0] - 2026-09-20
 
 **Testblaetter, Buendel 4 - acht von neunzehn, weil der Messbaum auf `main` stand**
