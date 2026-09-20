@@ -1,4 +1,4 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.78.0 (2026-09-20)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.78.1 (2026-09-20)
 
 > 🟢 **ZUERST LESEN: Abschnitt 0.31 – der Meßapparat für Bündel 4 steht, und der Vorbedingungsdurchgang ist gefahren. Neunzehn von neunzehn Vorbedingungen tragen** – erstmals belegt gegen den **committeten** Stand. Kriterium 2 steht unverändert bei **38**; `main` ist **0.78.0**, alles gemergt (PR #92 bis #96), kein offener PR, kein Restbranch. 🔴 **Vier Befunde, alle vor dem ersten Lauf und alle ohne Kontingent:** die Zusage *drei synthetische Autoren* stimmte nie (**D-211**), der Apparat lag nicht unverändert bereit (**D-212**), zehn Overlay-Werte stehen in keiner bindenden Schicht (**`K-79`**) – und **die Reihenfolge der README baute das Rauschen ein: 79 Einträge in `git status` gegen 2** (**D-213**).
 >
@@ -686,9 +686,69 @@ kostet.
 
 ---
 
+### 0.32 `0.78.1`: Die Übergabe liegt jetzt hier – und das Framework prüft sich zum ersten Mal selbst
+
+> 🟢 **DIESE DATEI IST EINGECHECKT** (`CR-2026-106`, **D-214**, **D-215**).
+> Ohne Kontingent, ohne Messung. Kriterium 2 unverändert 38.
+
+**Der Anlass war praktisch:** Von einem anderen Arbeitsplatz aus gab es die Übergabe
+nicht, und alte Stände mußten von Hand gesichert werden. Sie liegt jetzt als
+`UEBERGABE.md` in der **Wurzel** – nicht unter `leitwerk-core/`, weil das Heben dort
+**das ganze Verzeichnis** ersetzt und sie danach im Piloten und im Übungsrepositorium
+läge.
+
+🔴 **DER PREIS WAR EINE BEREINIGUNG, UND SIE WAR KEIN FORMFEHLER** (D-214).
+Gemessen mit einer Probekopie in der Wurzel: **3 Fehler und 3 Warnungen** – zwei
+`FW-CONTENT-IP`, eine `FW-CONTENT-SECRET` (*Verbindungszeichenfolge mit
+Anmeldedaten*, die Push-URL mit eingebettetem Token) und drei URLs außerhalb der
+Allowlist; dazu vier Fundstellen des Benutzernamens in Arbeitsplatzpfaden. Nach der
+Bereinigung **0/0**. ➡️ **Der Unterschied ist der eigentliche Gegenbeweis:** Die
+Prüfung trifft ihren Gegenstand, sie schweigt nicht bloß.
+
+🔴 **Der Befund hinter dem Befund:** Das Framework verlangt von **jedem**
+Overlay *„keine Secrets, keine Personen, keine internen Adressen“* und setzt es mit
+vier Prüfungen durch. **Seine eigene Übergabe hielt die Regel nicht ein – sie konnte
+es nicht, weil sie nie geprüft wurde.** *Eine Regel, die für den eigenen Bestand nicht
+gilt, ist eine Zusage an andere.*
+
+🔴 **UND DER VALIDATOR LAS DIE `.gitignore` NICHT** (D-215). Die lokale Beilage
+`UEBERGABE.local.md` trägt Servername und Konto, steht in der `.gitignore` – und
+wurde trotzdem geprüft. **Sie existiert gerade deshalb, damit diese Angaben nicht im
+Repositorium stehen.** Dieselbe Lücke galt für `AGENTS.local.md`; sie fiel nur nicht
+auf, weil es die Datei hier nicht gibt. 🔴 **Bewußt nur einfache Dateinamen,
+keine Muster und keine Pfade** – ein Muster ließe sich eintragen, um eine echte
+Prüfung stillzulegen, und niemand sähe es. **Sonde 6i und Gegenprobe 6i** belegen den
+Zuschnitt als Paar (D-23).
+
+🔴 **Drei eigene Fehler, unterwegs gefallen und behoben – alle drei Wiederholungen:**
+
+1. **Die Vorabmessung war zu klein.** Sie suchte Zugangsdaten als `token=` und meldete
+   **null**; der Validator fand die **URL-Form**. ➡️ **Wer prüft, ob ein Text ein
+   Secret trägt, nimmt die Prüfung, die es später meldet – nicht eine eigene.**
+2. **Antrag, Decision Log und Changelog zitierten den Mustertext wörtlich** und
+   lösten damit denselben Befund aus. *Wer einen Formfehler beschreibt, schreibt ihn
+   nicht hin* – zum zweiten Mal nach `0.77.0`.
+3. 🔴 **Das `Edit`-Werkzeug stellte `validate-framework.py` von CRLF auf LF um**
+   (7240 Zeilen). Fünf Sonden meldeten `[Praeparation gebrochen]`, weil die
+   Präparation von Prüfung 40 nach `
+` splittet. **Das Arbeitswissen führt die
+   Regel für das `Write`-Werkzeug; sie gilt für `Edit` genauso.** 🟢 Die Sonden
+   haben es **laut** gemeldet, nicht leise bestanden.
+
+🟢 **Abnahme:** Validator 0/0; Sondenlauf **342 Einheiten** in beiden
+Kodierungsumgebungen, keine ohne `OK` (350,1 s und 354,0 s). PR #97 gemergt, Branch
+gelöscht, `main` = **0.78.1**. Das Übungsrepositorium ist gehoben – **null Dateien
+angefaßt**, weil dieses Release keinen ausgelieferten Laufzeitträger berührt; der
+Validator wandert trotzdem mit und gilt dort ebenso.
+
+⚠️ **Die alte `devpacks/leitwerk-UEBERGABE.md` ist ein Verweis**, keine Kopie –
+*zwei Fassungen desselben Dokuments driften, und zwar schnell.*
+
+---
+
 ## 1. Lage
 
-`main` = **0.78.0**, alles gemergt (PR #84 bis **#96**), **kein offener PR, kein Restbranch**,
+`main` = **0.78.1**, alles gemergt (PR #84 bis **#97**), **kein offener PR, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün (je rund 296 s Wanduhr).
 🟢 **KRITERIUM 2 STEHT BEI 38** – **drei** Testblatt-Bündel sind gefahren, **alle 47 Zellen bestanden** (`0.68.0`: elf Zellen, 26 Läufe, rund 23 USD; `0.71.0`: achtzehn Zellen, 43 Läufe, 48,47 USD). 🔴 **Noch drei Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
