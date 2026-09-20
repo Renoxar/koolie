@@ -744,6 +744,8 @@ Validator wandert trotzdem mit und gilt dort ebenso.
 ⚠️ **Die alte `devpacks/leitwerk-UEBERGABE.md` ist ein Verweis**, keine Kopie –
 *zwei Fassungen desselben Dokuments driften, und zwar schnell.*
 
+🔴 **Und ein Punkt, den dieses Release selbst aufgeworfen hat (`K-80`):** Abschnitt 0.32 ist **nach** dem Merge entstanden und direkt auf `main` committet worden – eine Abweichung vom Verfahren, die aus der **Reihenfolge** folgt: Die Übergabe wird geschrieben, wenn das Release schon gemergt ist. Solange sie außerhalb lag, war das folgenlos; jetzt heißt es, daß `main` das Release trägt, aber nicht die Übergabe dazu. ⚠️ **Der eine echte Konflikt sind die PR-Nummern** – fünf Stellen, und die Nummer kennt man vor dem Anlegen des PR nicht. **Nicht entschieden, bewußt:** Der Punkt gehört vor das nächste Release, nicht in dieses.
+
 ---
 
 ## 1. Lage
@@ -841,7 +843,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 |---|---|
 | Änderungsantrag | **`CR-2026-106`** |
 | Decision Record | **`D-214`** |
-| Klärungspunkt | **`K-80`** |
+| Klärungspunkt | **`K-81`** |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-29`** |
 
