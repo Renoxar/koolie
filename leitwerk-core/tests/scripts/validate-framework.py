@@ -342,7 +342,41 @@ Prüft (statisch, ohne laufenden KI-Client):
      achtzehn neue `bestanden` in einem Zug eintraegt. GRENZE: Geprueft wird die
      NENNUNG, nicht ihre Richtigkeit - ein Verweis auf das falsche Protokoll und
      eine Version, die nicht die gemessene ist, laufen durch
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 65 laeuft als eigenes
+ 66. Das verirrte Steuerzeichen (D-217): Kein Textraeger traegt einen
+     Wagenruecklauf ohne folgenden Zeilenvorschub. Er ist im Text unsichtbar - und
+     er nimmt git die Normalisierung der Zeilenenden: Ein Traeger mit einem
+     einzelnen CR gilt als BINAER und wird weder von core.autocrlf noch von einem
+     text=auto einer .gitattributes angefasst. ANLASS: Der Nachtrag zur Uebergabe
+     vom 2026-09-20 setzte ein echtes CR dorthin, wo die zwei Zeichen einer
+     Escape-Folge gemeint waren - in genau dem Satz, der den CRLF-Befund von 0.78.1
+     beschreibt. Der Blob stand danach auf CRLF gegen 426 von 440 LF-Traegern, und
+     der Commit schrieb 1981 von 1983 Zeilen neu. Ausgezaehlt ueber den Bestand: 14
+     Traeger mit verirrtem CR - und genau diese 14 sind die 14, die git nicht
+     normalisiert hat, die Deckung ist vollstaendig. 🔴 KEINE DER 65 AELTEREN
+     PRUEFUNGEN KONNTE ES SEHEN: `read` oeffnet im Universal-Newline-Modus, dort ist
+     jedes CR schon ein Zeilenvorschub, bevor eine Pruefung hinsieht. Diese liest
+     Bytes. GRENZE: Gemessen wird das Zeichen, nicht die Zeilenende-Form eines
+     Traegers - welche Form gilt, entscheidet kein Validator (K-81)
+ 67. Die Uebergabe nennt den Stand, den VERSION fuehrt (D-216): DREI GEGENSTAENDE.
+     (a) Die Titelzeile von UEBERGABE.md nennt genau die Version aus
+     <CORE_DIR>/VERSION. (b) Jede Lagezeile im Fliesstext, die `main` eine
+     Version zuschreibt, nennt dieselbe - die Konvention dazu ist eine Zeile
+     lang und braucht keine Ausnahmeliste: DEN ZWEIGNAMEN TRAEGT NUR EINE
+     AUSSAGE UEBER DEN JETZIGEN STAND, ein Chronikabschnitt sagt `das Release`. (c) Die Uebergabe nennt keine Nummer
+     eines Merge Requests. 🔴 (b) IST DER GEMESSENE FALL, UND (a) HAETTE IHN
+     NICHT GEFANGEN: Der Nachtrag vom 2026-09-20 hob Titelzeile und Abschnitt 1
+     und liess den KOPFBLOCK auf dem Vorstand stehen. Der Gegenbeweis gegen den
+     unberuehrten Stand hat es gezeigt - die erste Fassung dieser Pruefung meldete
+     dort nur die Antragsnummern. ANLASS:
+     K-80. Bis 0.78.1 entstand die Uebergabe NACH dem Merge; der Nachtrag hob die
+     Titelzeile und Abschnitt 1 und liess den Kopfblock auf dem Vorstand stehen -
+     zwei Staende in einem Dokument, keine Stunde nach dem Release. Die Nummer des
+     Merge Requests war der einzige Grund, ueberhaupt nach dem Merge zu schreiben;
+     sie entfaellt, und was bleibt, ist eine Zahl, die eine Pruefung nachrechnet
+     statt eines Menschen. ENTHALTUNG: Ohne UEBERGABE.md meldet diese Pruefung
+     nichts - die Uebergabe ist ein Traeger des QUELLrepositoriums und wird in kein
+     Projekt installiert; in einer Installation hat sie keinen Gegenstand
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 67 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -7138,6 +7172,115 @@ def check_overlay_wertabgleich(root: str, man: dict) -> None:
                     f"steht, sperrt nichts (D-171)")
 
 
+# --- Pruefung 66: das verirrte Steuerzeichen ---------------------------------------
+#
+# GEGENSTAND ist ein Wagenruecklauf, dem kein Zeilenvorschub folgt. Er rendert nicht,
+# er druckt nicht, und keine Leseroutine dieses Apparats gibt ihn heraus.
+#
+# 🔴 WARUM ER TROTZDEM ETWAS KAPUTT MACHT (D-217, CR-2026-107): git stuft einen
+# Traeger mit einem einzelnen CR als BINAER ein und normalisiert seine Zeilenenden
+# deshalb NICHT - weder ueber core.autocrlf noch ueber ein text=auto in einer
+# .gitattributes. Gemessen am 2026-09-20 in einem eigens dafuer gebauten
+# Repositorium, beide Faelle nebeneinander: Die Datei ohne verirrtes CR liegt danach
+# als LF im Blob, die mit ihm unveraendert als CRLF.
+# ➡️ DIE REGEL FUER ZEILENENDEN GREIFT BEI GENAU DEN DATEIEN NICHT, DIE SIE BRAUCHEN.
+# Im Bestand war die Deckung vollstaendig: 14 Traeger mit verirrtem CR und 14 Traeger,
+# deren Blob git nicht normalisiert hat - dieselben 14 von 440 Texttraegern.
+#
+# 🔴 UND KEINE DER 65 AELTEREN PRUEFUNGEN KONNTE ES SEHEN. `read` oeffnet im
+# Universal-Newline-Modus; dort ist jedes CR bereits ein Zeilenvorschub, bevor eine
+# Pruefung es zu Gesicht bekommt. Diese liest deshalb Bytes. Eine Pruefung, die ihren
+# Gegenstand an der eigenen Leseroutine verliert, ist die stillste Bauform von D-23.
+VERIRRTES_CR = re.compile(bytes([13]) + b'(?!' + bytes([10]) + b')')
+
+
+def check_verirrtes_steuerzeichen(root: str) -> None:
+    """Pruefung 66 (D-217): Kein Textraeger traegt ein CR ohne folgenden LF."""
+    geprueft = 0
+    for path in iter_text_files(root):
+        try:
+            with open(path, "rb") as fh:
+                roh = fh.read()
+        except OSError:
+            continue
+        if b"\x00" in roh[:8000]:
+            continue
+        geprueft += 1
+        treffer = VERIRRTES_CR.findall(roh)
+        if not treffer:
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        stelle = VERIRRTES_CR.search(roh).start()
+        err(f"{rel}: {len(treffer)} verirrte(s) Steuerzeichen - Wagenrücklauf ohne "
+            f"folgenden Zeilenvorschub, das erste an Byte {stelle}. Es ist unsichtbar "
+            f"und nimmt git die Normalisierung: Ein solcher Träger gilt als binär, "
+            f"landet unverändert im Repositorium und lässt den nächsten Commit die "
+            f"ganze Datei neu schreiben (D-217)")
+    if not geprueft:
+        err(f"{KERN}/: keine einzige Textdatei gelesen – Prüfung 66 hat ihren "
+            f"Gegenstand verloren und bestünde sonst leise (D-23)")
+
+
+# --- Pruefung 67: die Uebergabe nennt den Stand ------------------------------------
+#
+# Sie ist die pruefbare Haelfte von D-216. Die REIHENFOLGE - Uebergabe im
+# Release-Commit, nicht danach - sieht ein Validator nicht; was er sieht, ist die
+# Zahl, die durch die falsche Reihenfolge veraltet. Deshalb steht hier der Stand und
+# nicht der Ablauf.
+#
+# 🔴 UND DESHALB IST (b) KEINE KOSMETIK: Die Nummer des Merge Requests war der
+# einzige Wert der Uebergabe, den man vor dem Anlegen des Antrags nicht kennt - also
+# der einzige Grund, ueberhaupt nach dem Merge zu schreiben. Faellt sie, faellt der
+# Grund. Eine Pruefung, die sie fernhaelt, haelt die Reihenfolge.
+UEBERGABE_DATEI = "UEBERGABE.md"
+UEBERGABE_TITEL = re.compile(r"^#\s.*?\bStand\s+(\d+\.\d+\.\d+)", re.M)
+UEBERGABE_MR_NUMMER = re.compile(r"#\d")
+# `main` ist **0.78.2** / `main` = **0.78.2** - die beiden Schreibweisen, in denen
+# die Uebergabe eine Lage BEHAUPTET. Eine Jahreszahl oder eine Version in einem
+# Chronikabschnitt trifft das Muster nicht: Es verlangt den Backtick-Namen des
+# Zweigs davor, und den traegt nur eine Aussage ueber den JETZIGEN Stand.
+UEBERGABE_LAGE = re.compile(r"`main`\s*(?:ist|=)\s*\**(\d+\.\d+\.\d+)")
+
+
+def check_uebergabestand(root: str) -> None:
+    """Pruefung 67 (D-216): Die Uebergabe nennt den Stand und keine MR-Nummer."""
+    pfad = os.path.join(root, UEBERGABE_DATEI)
+    if not os.path.isfile(pfad):
+        # Enthaltung, und sie ist strukturell: Die Uebergabe ist ein Traeger des
+        # Quellrepositoriums (D-214) und wird in kein Projekt installiert. In einer
+        # Installation hat diese Pruefung keinen Gegenstand - nicht einen fehlenden.
+        return
+    vpfad = os.path.join(root, KERN, "VERSION")
+    if not os.path.isfile(vpfad):
+        return  # Pruefung 1 meldet die fehlende Pflichtdatei bereits
+    stand = read(vpfad).strip()
+    text = read(pfad)
+    m = UEBERGABE_TITEL.search(text)
+    if not m:
+        err(f"{UEBERGABE_DATEI}: keine Titelzeile der Form `# … Stand X.Y.Z` – Prüfung "
+            f"67 hält sie gegen {KERN}/VERSION und hat ohne sie ihren Gegenstand "
+            f"verloren (D-216)")
+        return
+    if m.group(1) != stand:
+        err(f"{UEBERGABE_DATEI}: die Titelzeile nennt den Stand {m.group(1)}, {KERN}/VERSION "
+            f"führt {stand}. Die Übergabe gehört in den Release-Commit; steht sie "
+            f"daneben, trägt `main` das Release und nicht die Übergabe dazu (D-216)")
+    for lage in set(UEBERGABE_LAGE.findall(text)):
+        if lage != stand:
+            err(f"{UEBERGABE_DATEI}: eine Lagezeile schreibt `main` den Stand "
+                f"{lage} zu, {KERN}/VERSION führt {stand}. Das ist der gemessene "
+                f"Fall vom 2026-09-20: Der Nachtrag nach dem Merge hebt den "
+                f"Abschnitt, den er schreibt, und lässt den Kopfblock stehen "
+                f"(D-216)")
+    nummern = UEBERGABE_MR_NUMMER.findall(text)
+    if nummern:
+        err(f"{UEBERGABE_DATEI}: {len(nummern)} Nennung(en) einer Merge-Request-Nummer "
+            f"(`#` mit folgender Ziffer). Sie ist vor dem Anlegen des Antrags nicht "
+            f"bekannt und war der einzige Grund, die Übergabe nach dem Merge zu "
+            f"schreiben; die Aussage, auf die es ankommt – alles gemergt, kein "
+            f"offener Antrag – beantwortet git (D-216)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -7218,6 +7361,8 @@ def main() -> int:
     check_nummernverweis(root)
     check_ausgabemarke_gedeckt(root)
     check_ergebnisstatus_beleg(root)
+    check_verirrtes_steuerzeichen(root)
+    check_uebergabestand(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

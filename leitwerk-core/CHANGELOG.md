@@ -2,6 +2,94 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.78.2] - 2026-09-20
+
+**K-80 entschieden: Die Uebergabe steht im Release-Commit - und ein unsichtbares
+Zeichen nimmt git die Normalisierung der Zeilenenden** (`CR-2026-107`, **D-216**,
+**D-217**, `K-81` neu).
+Verfahrensaenderung mit zwei neuen Pruefungen, ohne Kontingent, ohne Messung am
+Client. Kriterium 2 unveraendert **38**.
+
+### Die drei Fragen von K-80, beantwortet
+
+| Frage | Antwort |
+|---|---|
+| Wandert die Uebergabe in den Release-Commit? | **Ja.** Sie steht vor Branch und Commit, nicht in einem Nachtrag danach |
+| Entfaellt die Nummer des Merge Requests aus ihr? | **Ja**, an allen fuenf Stellen (sieben Nummern) |
+| Gilt dasselbe fuer das Protokoll? | **Nein, kein Sonderfall noetig** - es stand ohnehin schon vor dem Commit |
+
+🔴 **Abschnitt 4 des Entwicklungsprofils fuehrte die Uebergabe ueberhaupt nicht** -
+sieben Schritte von Befund bis Merge, und der Traeger, der die naechste Sitzung
+traegt, kam darin nicht vor. Er steht jetzt als Schritt 7.
+
+### 🔴 Der Befund, der den Anlass ueberholt hat: das verirrte Steuerzeichen
+
+Der Nachtrag von `0.78.1` schrieb ein **echtes** Wagenruecklauf-Zeichen dorthin, wo
+die zwei Zeichen einer Escape-Folge gemeint waren - in genau dem Satz, der den
+CRLF-Befund jenes Releases beschreibt. *Wer einen Formfehler beschreibt, schreibt
+ihn nicht hin* - zum vierten Mal.
+
+**Gemessen in einem eigens gebauten Repositorium, beide Faelle nebeneinander:** git
+stuft einen Traeger mit einem einzelnen `CR` als **binaer** ein und normalisiert
+seine Zeilenenden **nicht** - weder ueber `core.autocrlf` noch ueber ein
+`text=auto`. ➡️ **Die Regel fuer Zeilenenden greift bei genau den Dateien nicht, die
+sie brauchen.**
+
+| Gezaehlt ueber 440 versionierte Texttraeger (dazu eine Binaerdatei) | Zahl |
+|---|---|
+| auf LF | 426 |
+| gemischt | 11 |
+| auf CRLF | 3 |
+| **mit verirrtem Zeichen** | **14 - dieselben 14** (16 Fundstellen) |
+
+🔴 **Und keine der 65 vorhandenen Pruefungen konnte es sehen.** Die Leseroutine des
+Validators oeffnet im Universal-Newline-Modus; dort ist jedes `CR` bereits ein
+Zeilenvorschub. **Ein solcher Traeger hat die volle Abnahme von `0.78.1`
+bestanden** - Validator 0/0, 342 Sondeneinheiten in beiden Kodierungsumgebungen.
+*Eine Pruefung, die ihren Gegenstand an der eigenen Leseroutine verliert, ist die
+stillste Bauform von D-23.*
+
+### Neu: Pruefung 66 und 67
+
+- **Pruefung 66** (D-217): Kein Textraeger traegt einen Wagenruecklauf ohne
+  folgenden Zeilenvorschub. Sie liest **Bytes**. Zwei Sonden, zwei Gegenproben - die
+  zweite stellt einen Traeger durchgehend auf LF und belegt, dass das **Zeichen**
+  gemessen wird und nicht die **Form** (`K-81`).
+- **Pruefung 67** (D-216): **Drei Gegenstaende** - die Titelzeile von
+  `UEBERGABE.md` nennt den Stand aus `leitwerk-core/VERSION`, jede Lagezeile,
+  die `main` eine Version zuschreibt, nennt dieselbe, und die Uebergabe nennt
+  keine Antragsnummer. Vier Sonden, zwei Gegenproben; die zweite Gegenprobe
+  belegt die **Enthaltung** - ohne `UEBERGABE.md` meldet sie nichts, und genau
+  so laeuft sie in jeder Installation.
+
+🔴 **Der zweite Gegenstand ist nachtraeglich dazugekommen, und der Grund
+gehoert hierher:** Die erste Fassung sah nur die Titelzeile - und der
+Gegenbeweis gegen den unberuehrten Stand zeigte, dass sie den GEMESSENEN Fall
+nicht gefangen haette; dort stimmten Titelzeile und `VERSION`, falsch war der
+Kopfblock. ➡️ *Eine Pruefung, die aus einem Befund entsteht, gehoert gegen
+genau diesen Befund gehalten, bevor sie eingebaut wird.* Beim ersten Lauf hat
+sie zwei echte Altlasten gemeldet: die Lagetabelle der Uebergabe stand fuenfzehn
+Releases zurueck, die Abnahmezeile daneben auf 63 Pruefungen und 243
+Einheiten.
+
+### Abnahme
+
+Validator **0 Fehler, 0 Warnungen**. Sondenlauf in **beiden**
+Kodierungsumgebungen (D-49): **269 Einheiten, 368 Meldezeilen, keine ohne
+`OK`**; die Ausgaben oberhalb der Trennlinie sind **zeilengleich**.
+
+### Migrationshinweis
+
+**Keiner fuer Overlays.** Pruefung 66 gilt in jedem uebernehmenden Projekt und kann
+dort Traeger melden, die ein verirrtes Steuerzeichen tragen; die Abhilfe ist das
+Entfernen des Zeichens. Pruefung 67 enthaelt sich, wo es keine `UEBERGABE.md` gibt -
+also in jeder Installation.
+
+### Bekannte Einschraenkung
+
+Welche Zeilenende-Form im Repositorium gilt, ist **nicht** entschieden (`K-81`).
+Gemessen ist nur, dass eine `.gitattributes` den Befund nicht geloest haette.
+
 ## [0.78.1] - 2026-09-20
 
 **Die Uebergabe wird eingecheckt - und das Framework haelt seine eigene

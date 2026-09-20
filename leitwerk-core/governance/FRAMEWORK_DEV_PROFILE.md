@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-DEV` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | das Quellrepositorium dieses Frameworks – **nicht** für ein Projekt, das ein Release anwendet |
@@ -73,7 +73,8 @@ Die Reihenfolge ist der Änderungsprozess des Frameworks, nicht ein Betriebsmodu
    gescheiterter Aufräumer ist eine Abweichung wie jede andere (D-96).
 6. **Bericht** als Protokoll unter `tests/protocols/`. Das ist der Berichtspfad dieses
    Repositoriums; eine Analyse oder ein Review legt ihr Ergebnis dort ab.
-7. **Freigabe und Merge führt der Mensch aus** (V1, V2). Der KI-Client schlägt Commit-Nachricht und
+7. **Übergabe** fortschreiben – im Quellrepositorium `UEBERGABE.md` in der Wurzel (D-214). Sie gehört in den **Release-Commit**, nicht in einen Nachtrag danach: Alles, was sie braucht, liegt nach Schritt 5 und 6 vor. **Eine Nummer des Merge Requests steht nicht darin** – sie ist der einzige Wert, den man vor dem Anlegen des Antrags nicht kennt, und damit der einzige Grund, überhaupt nach dem Merge zu schreiben; *alles gemergt, kein offener Antrag* ist die Aussage, auf die es ankommt, und `git` beantwortet sie. Prüfung 67 hält die Titelzeile gegen `<CORE_DIR>/VERSION` (D-216).
+8. **Freigabe und Merge führt der Mensch aus** (V1, V2). Der KI-Client schlägt Commit-Nachricht und
    Merge-Request-Beschreibung vor.
 
 V10 bleibt unberührt: Eine Änderung an Framework-Regeln, Overlay oder Berechtigungsdatei ist

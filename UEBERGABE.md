@@ -1,6 +1,8 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.78.1 (2026-09-20)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.78.2 (2026-09-20)
 
-> 🟢 **ZUERST LESEN: Abschnitt 0.31 – der Meßapparat für Bündel 4 steht, und der Vorbedingungsdurchgang ist gefahren. Neunzehn von neunzehn Vorbedingungen tragen** – erstmals belegt gegen den **committeten** Stand. Kriterium 2 steht unverändert bei **38**; `main` ist **0.78.0**, alles gemergt (PR #92 bis #96), kein offener PR, kein Restbranch. 🔴 **Vier Befunde, alle vor dem ersten Lauf und alle ohne Kontingent:** die Zusage *drei synthetische Autoren* stimmte nie (**D-211**), der Apparat lag nicht unverändert bereit (**D-212**), zehn Overlay-Werte stehen in keiner bindenden Schicht (**`K-79`**) – und **die Reihenfolge der README baute das Rauschen ein: 79 Einträge in `git status` gegen 2** (**D-213**).
+> 🟢 **ZUERST LESEN: Abschnitt 0.33 – `K-80` ist entschieden.** Die Übergabe steht ab sofort **im Release-Commit** statt daneben, die Nummer des Merge Requests **entfällt** aus ihr, und **zwei neue Prüfungen** setzen durch, was daran prüfbar ist. `main` ist **0.78.2**, alles gemergt, **kein offener Antrag, kein Restbranch**. 🔴 **Drei Befunde, alle ohne Kontingent – und alle aus dem Nachtrag von `0.78.1` selbst:** der Kopfblock dieser Datei nannte keine Stunde nach dem Release einen anderen Stand als ihr Abschnitt 1 (**D-216**); **ein einziges unsichtbares Zeichen nimmt git die Normalisierung der Zeilenenden** – vierzehn Träger tragen es, und es sind **genau die vierzehn**, die git nicht normalisiert hat (**D-217**); und **keine der 65 vorhandenen Prüfungen konnte es sehen**, weil die Leseroutine des Validators es verschluckt.
+>
+> 🟢 **Abschnitt 0.31 – der Meßapparat für Bündel 4 steht, und der Vorbedingungsdurchgang ist gefahren. Neunzehn von neunzehn Vorbedingungen tragen** – erstmals belegt gegen den **committeten** Stand. Kriterium 2 steht unverändert bei **38**. 🔴 **Vier Befunde, alle vor dem ersten Lauf und alle ohne Kontingent:** die Zusage *drei synthetische Autoren* stimmte nie (**D-211**), der Apparat lag nicht unverändert bereit (**D-212**), zehn Overlay-Werte stehen in keiner bindenden Schicht (**`K-79`**) – und **die Reihenfolge der README baute das Rauschen ein: 79 Einträge in `git status` gegen 2** (**D-213**).
 >
 > 🟢 **DER NÄCHSTE SCHRITT IST JETZT DER MEßTAG VON BÜNDEL 4** (`~0.79.0`, 19 Zellen, Kriterium 2: 38 → 19) – **und der Vorbedingungsdurchgang davor ist gefahren: neunzehn von neunzehn tragen** (`0.78.0`, Abschnitt 0.31). Der Meßbaum hat eine echte Git-Historie, der Meßapparat steht vollständig (zehn Skripte, 50 Prompts, vierzehn Kontrollklassen), und das Übungsrepositorium steht auf `0.78.0`. 🔴 **Der Apparat ist gebaut, aber als Ganzes noch nicht gefahren** – der erste vollständige Aufbau gehört an den Anfang des Meßtags.
 >
@@ -534,8 +536,8 @@ ist.** (3) Und die dritte Zahl war die eigene: *„siebenmal"* war aus einer mit
 sechs Trägern berichtigt.
 
 🟢 **Abnahme:** Validator 0/0; Sondenlauf **voll in beiden Kodierungsumgebungen, je 340
-Einheiten, keine ohne `OK`** (302,3 s und 316,0 s). **PR #95 ist gemergt, der Branch
-gelöscht, `main` = 0.77.0.** Das Übungsrepositorium ist auf `0.77.0` gehoben – fünf
+Einheiten, keine ohne `OK`** (302,3 s und 316,0 s). **Das Release ist gemergt, der Branch
+gelöscht, das Release steht auf 0.77.0.** Das Übungsrepositorium ist auf `0.77.0` gehoben – fünf
 Dateien, vorhergesagt und getroffen –, seine Suite steht unverändert bei **59 grün**.
 Die neunzehn Trockenlaufbäume unter `C:\lw-b4` sind gelöscht; `C:\lw-b1`, `C:\lw-b2`
 und `C:\lw-s5` stehen weiter (Belege früherer Meßtage).
@@ -686,6 +688,42 @@ kostet.
 
 ---
 
+### 0.33 `0.78.2`: `K-80` entschieden – die Übergabe steht im Release-Commit, und ein unsichtbares Zeichen nimmt git die Normalisierung
+
+> 🟢 **`K-80` IST ENTSCHIEDEN** (`CR-2026-107`, **D-216**, **D-217**, `K-81` neu, **Prüfung 66 und 67** neu).
+> Ohne Kontingent, ohne Lauf am Client. Kriterium 2 unverändert 38.
+
+**Die Antwort auf die drei Fragen von `K-80`:** **(1) Ja** – die Übergabe wandert in den Release-Commit. **(2) Ja** – die Nummer des Merge Requests entfällt aus ihr, an allen fünf Stellen (sieben Nummern). **(3) Nein, kein Sonderfall nötig:** Das Protokoll stand ohnehin schon vor dem Commit; die Übergabe war der Nachzügler, weil sie bis `0.78.1` **außerhalb** lag. 🔴 **Abschnitt 4 des Entwicklungsprofils führte sie überhaupt nicht** – sieben Schritte von Befund bis Merge, und der Träger, der die nächste Sitzung trägt, kam darin nicht vor. Jetzt steht er dort als Schritt 7, zwischen Bericht und Freigabe.
+
+🔴 **BEFUND 1: DER KOPFBLOCK DIESER DATEI NANNTE EINEN ANDEREN STAND ALS IHR ABSCHNITT 1** (D-216). Gemessen am 2026-09-20: Titelzeile und Abschnitt 1 standen auf `0.78.1`, der Kopfblock auf `0.78.0` – **derselbe Satz, der die Lage erklärt, war beim Lesen schon falsch.** Der Grund ist die Reihenfolge und nicht die Sorgfalt: Der Nachtrag nach dem Merge hebt den Abschnitt, den er schreibt, und den Kopf vergißt er. Die Titelzeile stand **im Release-Commit selbst** auf `0.78.0`, weil das Release zum Zeitpunkt des Commits noch nicht seine eigene Nummer trug. ➡️ **Die Nummer des Merge Requests war der einzige Wert, den man vor dem Anlegen des Antrags nicht kennt – also der einzige Grund, überhaupt nach dem Merge zu schreiben. Fällt sie, fällt der Grund.** Prüfung 67 rechnet seither die Titelzeile gegen `leitwerk-core/VERSION` und weist eine Antragsnummer in der Übergabe ab.
+
+🔴 **BEFUND 2, DER TEUERSTE: EIN EINZELNES WAGENRÜCKLAUF-ZEICHEN NIMMT GIT DIE NORMALISIERUNG** (D-217). Der Nachtrag von `0.78.1` schrieb ein **echtes** Steuerzeichen dorthin, wo die zwei Zeichen einer Escape-Folge gemeint waren – und zwar in genau dem Satz, der den CRLF-Befund jenes Releases beschreibt. **Zum vierten Mal:** *Wer einen Formfehler beschreibt, schreibt ihn nicht hin.* 🔴 **Die Wirkung ist keine Kosmetik:** git stuft einen Träger mit einem einzelnen `CR` als **binär** ein und normalisiert seine Zeilenenden **nicht** – weder über `core.autocrlf` noch über ein `text=auto` in einer `.gitattributes`. **Gemessen in einem eigens dafür gebauten Repositorium, beide Fälle nebeneinander:** die Datei ohne verirrtes Zeichen liegt danach als LF im Blob, die mit ihm unverändert als CRLF. ➡️ **DIE REGEL FÜR ZEILENENDEN GREIFT BEI GENAU DEN DATEIEN NICHT, DIE SIE BRAUCHEN.**
+
+🟢 **Und die Deckung ist vollständig – das ist der eigentliche Beleg.** Ausgezählt über den Bestand: **426 Träger auf LF, 11 gemischt, 3 auf CRLF** – und **14 Träger mit einem verirrten Zeichen**, zusammen 16 Fundstellen. Es sind **dieselben 14 von 440 Textträgern** (dazu eine Binärdatei). Zwei Bauformen: elf Anträge und eine Fähigkeitsmatrix tragen es am Zeilenende einer Tabellenzeile (**Typ A, vierzehn Fundstellen in zwölf Trägern**, aus der Zeit um `0.26.0`), die Übergabe und `CR-2026-106` in dem Satz über die Escape-Folge (**Typ B, zwei Fundstellen**).
+
+🔴 **BEFUND 3: KEINE DER 65 PRÜFUNGEN KONNTE ES SEHEN – UND EINE DAVON HAT DEN TRÄGER SOGAR ABGENOMMEN.** Die Leseroutine des Validators öffnet im Universal-Newline-Modus; dort ist jedes `CR` bereits ein Zeilenvorschub, bevor eine Prüfung hinsieht. **Der Typ-B-Fall in `CR-2026-106` stand im Release selbst** und hat die volle Abnahme bestanden: Validator 0/0, 342 Sondeneinheiten in beiden Kodierungsumgebungen, keine ohne `OK`. ➡️ **Die Antwort auf `K-80` allein hätte ihn nicht gefangen** – die Reihenfolge erklärt Befund 1, nicht Befund 2. Prüfung 66 liest deshalb **Bytes**. *Eine Prüfung, die ihren Gegenstand an der eigenen Leseroutine verliert, ist die stillste Bauform von D-23.*
+
+⚠️ **Der Preis der Berichtigung ist gemessen und wird getragen:** Sechzehn Zeichen weniger, und git normalisiert die vierzehn Träger – **3744 Zeilen neu, 3746 gelöscht**. Deshalb steht die Berichtigung in einem **eigenen Commit** vor dem Release-Commit: Ein Release, dessen Diff aus 3700 Zeilen Rauschen um vierzig Zeilen Inhalt besteht, ist D-213 an einer neuen Stelle. Wer `git blame` auf einen der vierzehn Träger braucht, nimmt jenen Commit mit `--ignore-rev` heraus.
+
+🔴 **BEFUND 4, UND ER TRAF DIE EIGENE ABHILFE: DER GEGENBEWEIS HAT DEN ZUSCHNITT VON PRÜFUNG 67 WIDERLEGT.** Die erste Fassung prüfte die **Titelzeile** gegen `VERSION` – und gegen den unberührten Stand von `0.78.1` meldete sie dort **nichts**: Titelzeile und `VERSION` stimmten überein, falsch war der **Kopfblock**. ➡️ *Eine Prüfung, die aus einem Befund entsteht, gehört gegen genau diesen Befund gehalten, bevor sie eingebaut wird.* Sie hat seither einen zweiten Gegenstand – **jede Lagezeile, die `main` eine Version zuschreibt** – und beim ersten Lauf **zwei echte Altlasten** gemeldet:
+
+| Fundstelle in Abschnitt 1 | stand da | wirklich |
+|---|---|---|
+| Lagetabelle, Zeile *Framework* | Zweigstand **0.66.0** | **0.78.2** – **fünfzehn Releases** sind darüber hinweggegangen |
+| Abnahmezeile daneben | Prüfapparat **63**, **243 Einheiten** | **67** Prüfungen, **269** Einheiten |
+
+🔴 **Und die Zeile oben schreibt den Zweignamen nicht aus – mit ihm hätte Prüfung 67 diesen Abschnitt selbst gemeldet.** *Wer einen Formfehler beschreibt, schreibt ihn nicht hin* – zum **fünften** Mal, und diesmal hat die neue Prüfung es beim Schreiben gefangen statt ein Leser nach dem Merge.
+
+🟢 **Und statt einer Ausnahmeliste trägt diese Datei jetzt eine Konvention:** **`main` sagt nur die Lage** – ein Chronikabschnitt sagt *das Release*. Drei Sätze sind umformuliert. *Eine Ausnahmeliste wächst; eine Konvention bleibt eine Zeile.*
+
+🟡 **`K-81` neu, und bewußt nicht jetzt entschieden:** Welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt, steht nirgends – `core.autocrlf` ist eine Einstellung **dieses Arbeitsplatzes**, und seit D-214 ist der zweite Arbeitsplatz der ausdrückliche Anlaß der ganzen Datei. Eine `.gitattributes` wäre die Antwort. 🔴 **Sie kommt nicht vor dem Meßtag:** `git archive` baut die Meßbäume von Bündel 4, und eine Zeilenende-Regel kann deren Inhalt ändern – dieselbe Begründung wie bei `K-79`. **Gemessen ist außerdem, daß sie den Befund nicht gelöst hätte:** Ein `text=auto` läßt einen Träger mit verirrtem Zeichen genauso unberührt wie `core.autocrlf`.
+
+🟢 **Abnahme:** Validator 0/0; Sondenlauf in beiden Kodierungsumgebungen: **269 Einheiten, 368 Meldezeilen, keine ohne `OK`**, oberhalb der Trennlinie **zeilengleich** (316,3 s und 311,9 s) – zehn Einheiten sind neu. ⚠️ **Eine Zahl aus der Abnahme von `0.78.1` läßt sich nicht reproduzieren:** Dort stehen *„342 Einheiten“*; zu jenem Stand führte der Apparat **259 Einheiten** und meldete **358 Zeilen**. Nicht weiterverfolgt, nur festgehalten. 🟢 **Das Übungsrepositorium:** Der Trockenlauf gegen den **Arbeitsbaum** meldet **0 angelegt, 0 aktualisiert, 64 unverändert** – dieses Release faßt keinen ausgelieferten Laufzeitträger an. 🔴 **Das Heben selbst folgt dem Commit**, weil es mit `git archive HEAD` arbeitet – **das ist die eine Stelle, an der die neue Reihenfolge eine Vorhersage in die Übergabe schreibt statt einer Tatsache.** Sie ist gemessen, nicht geschätzt. Prüfung 67 enthält sich dort, weil es keine Übergabe gibt; Prüfung 66 gilt ebenso.
+
+⚠️ **Nebenbei, ohne Abhilfe:** **Acht der zwölf zuletzt eingetragenen Zeilen** des Decision Logs stehen in ASCII-Umschrift; über den ganzen Bestand sind es fünfzehn von 295. Die Regel aus Abschnitt 5 verlangt für `governance/` echte Umlaute. Nicht berichtigt, nur gezählt.
+
+---
+
 ### 0.32 `0.78.1`: Die Übergabe liegt jetzt hier – und das Framework prüft sich zum ersten Mal selbst
 
 > 🟢 **DIESE DATEI IST EINGECHECKT** (`CR-2026-106`, **D-214**, **D-215**).
@@ -735,21 +773,21 @@ Zuschnitt als Paar (D-23).
    haben es **laut** gemeldet, nicht leise bestanden.
 
 🟢 **Abnahme:** Validator 0/0; Sondenlauf **342 Einheiten** in beiden
-Kodierungsumgebungen, keine ohne `OK` (350,1 s und 354,0 s). PR #97 gemergt, Branch
-gelöscht, `main` = **0.78.1**. Das Übungsrepositorium ist gehoben – **null Dateien
+Kodierungsumgebungen, keine ohne `OK` (350,1 s und 354,0 s). Das Release ist gemergt, Branch
+gelöscht, das Release steht auf **0.78.1**. Das Übungsrepositorium ist gehoben – **null Dateien
 angefaßt**, weil dieses Release keinen ausgelieferten Laufzeitträger berührt; der
 Validator wandert trotzdem mit und gilt dort ebenso.
 
 ⚠️ **Die alte `devpacks/leitwerk-UEBERGABE.md` ist ein Verweis**, keine Kopie –
 *zwei Fassungen desselben Dokuments driften, und zwar schnell.*
 
-🔴 **Und ein Punkt, den dieses Release selbst aufgeworfen hat (`K-80`):** Abschnitt 0.32 ist **nach** dem Merge entstanden und direkt auf `main` committet worden – eine Abweichung vom Verfahren, die aus der **Reihenfolge** folgt: Die Übergabe wird geschrieben, wenn das Release schon gemergt ist. Solange sie außerhalb lag, war das folgenlos; jetzt heißt es, daß `main` das Release trägt, aber nicht die Übergabe dazu. ⚠️ **Der eine echte Konflikt sind die PR-Nummern** – fünf Stellen, und die Nummer kennt man vor dem Anlegen des PR nicht. **Nicht entschieden, bewußt:** Der Punkt gehört vor das nächste Release, nicht in dieses.
+🔴 **Und ein Punkt, den dieses Release selbst aufgeworfen hat (`K-80`):** Abschnitt 0.32 ist **nach** dem Merge entstanden und direkt auf `main` committet worden – eine Abweichung vom Verfahren, die aus der **Reihenfolge** folgt: Die Übergabe wird geschrieben, wenn das Release schon gemergt ist. Solange sie außerhalb lag, war das folgenlos; jetzt heißt es, daß `main` das Release trägt, aber nicht die Übergabe dazu. ⚠️ **Der eine echte Konflikt sind die PR-Nummern** – fünf Stellen, und die Nummer kennt man vor dem Anlegen des PR nicht. **Nicht entschieden, bewußt:** Der Punkt gehört vor das nächste Release, nicht in dieses. 🟢 **Mit `0.78.2` ist er entschieden** – siehe 0.33 und D-216.
 
 ---
 
 ## 1. Lage
 
-`main` = **0.78.1**, alles gemergt (PR #84 bis **#97**), **kein offener PR, kein Restbranch**,
+`main` = **0.78.2**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün (je rund 296 s Wanduhr).
 🟢 **KRITERIUM 2 STEHT BEI 38** – **drei** Testblatt-Bündel sind gefahren, **alle 47 Zellen bestanden** (`0.68.0`: elf Zellen, 26 Läufe, rund 23 USD; `0.71.0`: achtzehn Zellen, 43 Läufe, 48,47 USD). 🔴 **Noch drei Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
@@ -796,7 +834,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.66.0**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.78.2**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | Overlay **`0.78.0`**, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**. 🟢 **Achtundzwanzig Präparationen** (`UEB-01` bis `UEB-28`) – 🔴 **davon neun NICHT dauerhaft im Repositorium:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26` und `UEB-28` je **Meßbaum** (Quellen in `tools/praeparationen/`), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
@@ -806,11 +844,11 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 | Meßapparat Bündel 4 | `devpacks/leitwerk-erhebungen-2026-09-19-b4/` | **zehn Skripte, 50 Prompts, eigene README.** Gebaut mit `0.77.0` (Baumbau) und `0.78.0` (der Rest). 🔴 **Noch keine Belege** – der Meßtag ist nicht gefahren. Reihenfolge: archivieren → Packwechsel → `install.py` → Körbe → [Zuschnitt] → **Historie** → `node_modules` (D-213) |
 | Belege 0.59.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s4/` | **zwanzig Läufe** (zwölf gewertet, acht in drei Verworfen-Ablagen), neun Skripte, sechs Prompts |
 
-**Abnahme:** Der Prüfapparat steht bei **63**, Sondenmenge **`6, 14 und 18 bis 63`** – ausgerechnet, nicht gepflegt. **243 Einheiten**, Laufzeit rund **300 s** Wanduhr auf 8 Bahnen (Faktor 7,9). 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
+**Abnahme:** Der Prüfapparat steht bei **67**, Sondenmenge **`6, 14 und 18 bis 67`** – ausgerechnet, nicht gepflegt. **243 Einheiten**, Laufzeit rund **300 s** Wanduhr auf 8 Bahnen (Faktor 7,9). 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
 
 ### 🟢 Was mit `0.66.0` erledigt ist – und was daran neu gelernt wurde
 
-- **PR #82 ist gemergt, der Branch gelöscht, `main` = 0.66.0, Arbeitsbaum sauber.**
+- **Das Release ist gemergt, der Branch gelöscht, es steht auf 0.66.0, Arbeitsbaum sauber.**
 - **Das Übungsrepositorium ist gehoben** – und die gemessene Laufzeitwirkung ist
   **null**: `install.py --update` meldet *0 angelegt, 0 aktualisiert, 64 unverändert*.
   Dieses Release hat Testkatalog, Prüfapparat, eine Fähigkeitsmatrix und die
@@ -840,9 +878,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-106`** |
-| Decision Record | **`D-214`** |
-| Klärungspunkt | **`K-81`** |
+| Änderungsantrag | **`CR-2026-108`** |
+| Decision Record | **`D-218`** |
+| Klärungspunkt | **`K-82`** |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-29`** |
 
@@ -855,7 +893,7 @@ gepflegt.** Wer sie braucht, zählt sie: `grep -o 'D-[0-9]\{3\}' governance/DECI
 🔴 **`UEB-08` war bis 0.58.0 die synthetische Kennung der Gegenprobe 44b und ist jetzt
 echt.** Die Gegenprobe steht auf `UEB-97`. **Eine synthetische Kennung nimmt nie die nächste
 freie** – sonst kollidiert sie beim ersten echten Bedarf.
-**Offene Klärungspunkte:** 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
+**Offene Klärungspunkte:** 🟢 **`K-80` ist mit 0.78.2 entschieden** (D-216). 🔴 **Neu aus 0.78.2: `K-81`** (welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt – `core.autocrlf` ist eine Einstellung des Arbeitsplatzes, nicht des Repositoriums; **nicht vor dem Meßtag**, weil `git archive` die Meßbäume baut). 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
 K-37, K-38, K-39, K-40, K-41, K-42, K-43, K-44, K-45, K-46, **K-47, K-48, K-49** (aus 0.55.0) und **K-50** (aus 0.56.0); **K-51** (aus 0.56.2). 🆕 **`K-73` ist mit 0.71.0 beantwortet, soweit er sich beantworten ließ** (D-195): **Die Sperre weist ab, sie entfernt nicht** – das Modell setzt den Aufruf ab. **Welche Schicht abweist, bleibt wahrscheinlich, nicht isoliert:** Die eigens gebauten Zuschnitte haben gar keinen Aufruf abgesetzt. 🔴 **Neu aus 0.71.0: `K-74`** (die Ausgabemarken `[HALT]` und `[RÜCKFRAGE]` stehen mit **145 Fundstellen in 54 anweisenden Trägern** im Kern und sind in keinem Kernmodul und keinem Glossar erklärt – **vor Bündel 3 zu entscheiden**). 🔴 **Neu aus 0.72.0: `K-75`** (sieben Entscheidungen zur Auslieferung als Installationsbibliothek und zum Unterverzeichnis `.koolie/`; **zwei davon haben eine Frist**, weil sie in die Umbenennung gehören). 🟢 **`K-72` ist mit 0.67.1 erledigt** (D-184). 🆕 **Neu aus 0.59.0/0.59.1: `K-54`** (die Laufzeitschicht kennt den Ausnahmeprozess nicht und verbietet zugleich unbedingt jede Lockerung – ein Lauf hat daraufhin eine registrierte Ausnahme für unwirksam erklärt), **`K-55`** (wie baut man eine Scope-Falle, die ein regelkonform lesender Lauf überhaupt antrifft?) und **`K-56`** (ein Testblatt ist eine Aufzeichnung und wird als Regelquelle ausgeliefert). **`K-52` ist mit 0.57.1 erledigt** (D-129), **`K-53` mit 0.59.0** (D-140), **`K-55` mit 0.60.0** (D-145). 🔴 **Neu aus 0.60.0: `K-57`** (neun von zwölf `fw-*`-Skills sind für das Modell gesperrt – der Standardarbeitsablauf ist im nicht-interaktiven Betrieb nur erreichbar, wenn der Prompt jeden Skill nennt, und dann mißt man den Prompt) und **`K-58`** (Abschnitt 17 sagt *du darfst*; ein Lauf hat daraus *untersagt* gemacht – die Werkzeugmeldung schlug den Regeltext). **Und `K-34` und `K-55` standen überhaupt nicht im Register**, obwohl sie in sieben beziehungsweise sechs Trägern genannt wurden – Prüfung 50 fängt das jetzt. 🔴 **Neu aus 0.61.0: `K-59`** (der zweite Einsatzkontext steht in drei der sechs anweisenden Fassungen nicht – jede Sitzung an diesem Framework steht in ihm, und die Texte, die sie lädt, sagen *nur lesend*), **`K-60`** (ob ein KI-Client die zwanzig Grenzfälle wirklich so einstuft, mißt kein Testfall – `FW-KO-05` prüft die Texte) und **`K-61`** (ein `bestanden` eines Konsistenztests altert mit jeder Änderung an seinem Gegenstand: `FW-KO-02` steht seit dem 10.09. auf `bestanden`, und drei der vier Befunde von 0.61.0 liegen in seinem Gegenstand). 🟢 **`K-66` ist mit 0.64.0 erledigt** (D-163 bis D-168). 🔴 **Neu aus 0.65.0: `K-69`** (der Wertabgleich zwischen Quell-Overlay und geladener Schicht deckt **einen** Platzhalter; `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` haben dieselbe Gestalt und sind **ungeprüft, nicht geprüft-und-gut** – hängt an `K-67`). 🔴 **Neu aus 0.64.0: `K-68`** (der Backend-Strang des Übungsrepositoriums ist auf keinem Arbeitsplatz dieses Projekts übersetzbar – `UEB-14` und zwei Zellen hängen daran; sie ist gelesen, nie gelaufen). 🔴 **Aus 0.63.0: `K-66`** (21 von 81 Blattzellen haben keinen Gegenstand – `fw-docs-update` vollständig; Herrichtung ist eigener Posten `0.65.0`) und **`K-67`** (die Overlay-Vorlage kennt drei Formen, einen Platzhalter zu binden, und eine davon ist *gar nicht*). 🔴 **Neu aus 0.67.0: `K-72`** (`SK-002-P01` verlangt eine Übungsmethode mit Tests **und** einem ungetesteten Fehlerpfad – von acht Modulen mit Tests ist **genau eines unpräpariert** (`BookForm.tsx`), und es hat keinen Fehlerpfad; die beiden mit einem tragen `UEB-05` beziehungsweise `UEB-03`. **Das ist D-137 eine Ebene höher:** Dort verdrängt eine Präparation den Gegenstand einer anderen Präparation, hier den einer **Zelle**. 🔴 **Vor `0.68.0` zu entscheiden** – entweder eine sechzehnte Präparation oder die ausdrückliche Feststellung, daß die Zelle auf `books.ts` gefahren wird und der Injektionsbefund im Protokoll als erwartete Nebenwirkung steht). 🆕 **`K-71` ist nicht geschlossen, aber beantwortet, soweit er sich beantworten ließ:** Der verlangte einbahnige Lauf ist gefahren und grün – **er grenzt die Nebenläufigkeit trotzdem nicht ein, weil auch die beiden achtbahnigen Läufe desselben Tages grün sind.** Stand: einmal beobachtet, in vier Läufen nicht reproduziert. 🔴 **Neu aus 0.62.0: `K-62`** (26 von 44 `[DOK]`-Zeilen der Fähigkeitsmatrizen nennen ihre Quelle nicht – ohne sie kostet jede Wiederholung von `FW-AK-01` denselben vollen Durchgang; eigener Posten `~0.65.0`), **`K-63`** (die Kontoquelle der Skills bei `claude-code` ist standardmäßig an und aus der ausgelieferten Datei **nicht** abschaltbar – die neue Bauform des Releases), **`K-64`** (die organisationsseitige Skillquelle von `devin-desktop`, *„Indexed repos"*, liegt außerhalb jeder Datei des Frameworks – zugleich der erste dokumentierte Datenpunkt zu `X2`/`K-20`) und **`K-65`** (der clientseitige Schalter für fremde Agentenprotokolle ist entfallen; die Freigabezeile des Overlays bleibt als **organisatorische Auflage** ohne technische Seite).
 
 ---
@@ -903,6 +941,7 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | # | Was | Aufwand | Wirkung auf D-11 |
 |---|---|---|---|
 | **0** | 🟢 **ERLEDIGT mit `0.77.0` (Herrichtung) und `0.78.0` (Meßapparat, Vorbedingungsdurchgang)** – *(Stand 0.76.0:)* **DIE HERRICHTUNG FÜR BÜNDEL 4** (`~0.77.0`, `CR-2026-103`, D-206, D-207): der Meßbaum mit **echter Historie** (`git init`, zwei Übungs-Branches, präparierte Commits, **synthetische Autoren** – `k3-bauen.py` ist die Vorlage), zwei Historienpräparationen, vier Dateipräparationen und das Heben des Übungsrepositoriums auf `0.75.0`. **Dazu `K-78` entscheiden:** wie die Ergebnisberichte entstehen, ohne ihre eigene Lösung mitzuliefern | eine Sitzung, **kein Kontingent** | –. **Ohne sie sind zwölf der neunzehn Zellen von Bündel 4 nicht fahrbar** |
+| **0** | 🟢 **ERLEDIGT mit `0.78.2`** – **`K-80` entscheiden, bevor das nächste Release gebaut wird** (`CR-2026-107`, D-216, D-217). Die Übergabe steht jetzt im Release-Commit, die Antragsnummer ist heraus, Prüfung 66 und 67 setzen durch, was prüfbar ist | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **38**) |
 | **0a** | 🟢 **`K-77` ist entschieden** (`0.75.0`, D-205) und `K-76` bleibt offen – fällig, sobald wieder ein Wiederherstellungsschritt gemessen wird | – | – |
 | **0b** | **Testblätter, Bündel 4** (`~0.79.0`, D-180): `fw-mr-description`, `fw-review-support`, `fw-docs-update` – **19 Ergebniszellen**. Braucht einen lokalen Übungs-Branch gegenüber `<DEFAULT_BRANCH>` und die sechs Zellen an `UEB-09`/`UEB-10`. 🟢 **DER VORBEDINGUNGSDURCHGANG IST GEFAHREN** (`0.78.0`, `CR-2026-105`): **neunzehn von neunzehn tragen**, vier Befunde, kein Kontingent. *(Hier stand: „vor dem Meßtag die Vorbedingungen durchgehen – sechzehnmal in Folge der billigste Befund".)* dazu prüfen, ob eines der Releases seit `0.73.0` den **Gegenstand der Messung** angefaßt hat, und das Übungsrepositorium heben. 🟢 **Der Aufbau von Bündel 3 ist wiederverwendbar** und liegt in `leitwerk-erhebungen-2026-09-19-b3/skripte/`: `stand-b3.py` sagt den Stand in einem Befehl, `reihe-b3.py` fährt nur, was fehlt | eine Sitzung | **Kriterium 2: 38 → 19.** Gemessene Rechenwerte aus Bündel 3: **1,10 USD und 115 s je Lauf**; ohne Schreib-Skills eher die Werte von Bündel 2 (1,13 USD, 170 s) |
 | **0c** | **Testblätter, Bündel 5** – `role-re-ticket`, **15 Zellen**, das größte Einzelblatt und das einzige außerhalb des Kerns; braucht ein eigenes Pack | eine Sitzung | **Kriterium 2: 19 → 4** |
@@ -1022,9 +1061,11 @@ ist Pflichtpfad, ohne dass der Übernahmeleitfaden es erwähnt; das Secret-Muste
 > Befund mit Fundstelle → **Gegenprüfung (D-23)** → Änderungsantrag mit „Vorlage zur Entscheidung"
 > (jede Ermessensfrage einzeln, mit Auflösung **und Preis**) → Entscheidung in Abschnitt 6 plus
 > Decision Record → Umsetzung mit **Wirkungsnachweis und Gegenbeweis gegen den Vorstand** → Validator
-> und Sondenlauf in **beiden** Kodierungsumgebungen → Protokoll → Branch, Commit, PR, Merge.
+> und Sondenlauf in **beiden** Kodierungsumgebungen → Protokoll → **Übergabe** → Branch, Commit, PR, Merge.
 
 **Die Entscheidungsfragen vorlegen, bevor gebaut wird** – hat sich viermal bewährt.
+
+🔴 **Die Übergabe gehört in den Release-Commit** (D-216, seit 0.78.2). Sie steht **vor** Branch und Commit, nicht danach – alles, was sie braucht, liegt nach dem Sondenlauf vor. **Eine Nummer eines Merge Requests steht nicht darin**; sie ist der einzige Wert, den man vorher nicht kennt, und *alles gemergt, kein offener Antrag* beantwortet `git`. **Prüfung 67 rechnet die Titelzeile gegen `leitwerk-core/VERSION`** und weist eine Antragsnummer ab.
 
 ### Wirkungsnachweise
 
@@ -1613,6 +1654,7 @@ gebraucht. Das Projekt arbeitet so: Sitzung im Wurzelordner (`devpacks/`), Repos
 ### Werkzeug und Fallstricke beim Patchen
 
 - `devpacks/leitwerk-ed.py` – zeilenendungserhaltende Textersetzung, bricht bei falscher Trefferzahl ab.
+- 🔴 **EIN EINZELNES `CR` MACHT EINE DATEI FÜR GIT ZU EINER BINÄRDATEI** (0.78.2, D-217). Ein Wagenrücklauf ohne folgenden Zeilenvorschub rendert nicht und druckt nicht – **und git normalisiert den Träger danach nicht mehr**, weder über `core.autocrlf` noch über ein `text=auto`. Der nächste Commit schreibt dann **die ganze Datei** neu. **Wer über Steuerzeichen schreibt, schreibt sie nicht hin:** Im Quelltext gehört der Backslash hin, nicht das Zeichen. 🟢 **Prüfung 66 fängt es seither** – sie liest **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt und 65 Prüfungen genau daran blind waren. **Nachsehen mit** `re.findall(chr(13) + '(?!' + chr(10) + ')', bytes)`.
 - 🆕 **EINEN MEßBAUM MIT VERZEICHNISVERBINDUNGEN LÖSCHT MAN IN ZWEI SCHRITTEN** (0.74.1).
   Jeder Baum von Bündel 3 trug eine `mklink /J`-Verbindung auf das **gemeinsame**
   `node_modules` des Übungsrepositoriums. **Ein rekursives Löschen, das der Verbindung
