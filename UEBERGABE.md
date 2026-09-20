@@ -1,6 +1,8 @@
 # Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.78.2 (2026-09-20)
 
-> 🟢 **ZUERST LESEN: Abschnitt 0.33 – `K-80` ist entschieden.** Die Übergabe steht ab sofort **im Release-Commit** statt daneben, die Nummer des Merge Requests **entfällt** aus ihr, und **zwei neue Prüfungen** setzen durch, was daran prüfbar ist. `main` ist **0.78.2**, alles gemergt, **kein offener Antrag, kein Restbranch**. 🔴 **Drei Befunde, alle ohne Kontingent – und alle aus dem Nachtrag von `0.78.1` selbst:** der Kopfblock dieser Datei nannte keine Stunde nach dem Release einen anderen Stand als ihr Abschnitt 1 (**D-216**); **ein einziges unsichtbares Zeichen nimmt git die Normalisierung der Zeilenenden** – vierzehn Träger tragen es, und es sind **genau die vierzehn**, die git nicht normalisiert hat (**D-217**); und **keine der 65 vorhandenen Prüfungen konnte es sehen**, weil die Leseroutine des Validators es verschluckt.
+> 🔴 **ZUERST LESEN: DER MEßTAG VON BÜNDEL 4 IST GEFAHREN UND NOCH NICHT AUSGEWERTET** (Abschnitt 0.34). **50 von 50 Läufen gültig, kein Fehllauf, 61,19 USD, 5838 s** – die Belege liegen vollständig. 🔴 **Was fehlt, ist die Bewertung der neunzehn Zellen und das Release `0.79.0`;** Kriterium 2 steht deshalb noch bei **38**. 🔴 **Und die Belege liegen unversioniert in einem Verzeichnis, dessen zehn Geschwister heute im Papierkorb lagen** – siehe 0.34, Befund 1. 🟢 **Sechs Befunde fielen beim ersten vollständigen Aufbau, alle vor dem ersten bezahlten Lauf und alle ohne Kontingent** – darunter einer, der neunzehn Kontrollbäume auf dem Hauptbaum gemessen hätte (rund 21 USD für eine Zahl, die nichts belegt).
+>
+> 🟢 **Abschnitt 0.33 – `K-80` ist entschieden.** Die Übergabe steht ab sofort **im Release-Commit** statt daneben, die Nummer des Merge Requests **entfällt** aus ihr, und **zwei neue Prüfungen** setzen durch, was daran prüfbar ist. `main` ist **0.78.2**, alles gemergt, **kein offener Antrag, kein Restbranch**. 🔴 **Drei Befunde, alle ohne Kontingent – und alle aus dem Nachtrag von `0.78.1` selbst:** der Kopfblock dieser Datei nannte keine Stunde nach dem Release einen anderen Stand als ihr Abschnitt 1 (**D-216**); **ein einziges unsichtbares Zeichen nimmt git die Normalisierung der Zeilenenden** – vierzehn Träger tragen es, und es sind **genau die vierzehn**, die git nicht normalisiert hat (**D-217**); und **keine der 65 vorhandenen Prüfungen konnte es sehen**, weil die Leseroutine des Validators es verschluckt.
 >
 > 🟢 **Abschnitt 0.31 – der Meßapparat für Bündel 4 steht, und der Vorbedingungsdurchgang ist gefahren. Neunzehn von neunzehn Vorbedingungen tragen** – erstmals belegt gegen den **committeten** Stand. Kriterium 2 steht unverändert bei **38**. 🔴 **Vier Befunde, alle vor dem ersten Lauf und alle ohne Kontingent:** die Zusage *drei synthetische Autoren* stimmte nie (**D-211**), der Apparat lag nicht unverändert bereit (**D-212**), zehn Overlay-Werte stehen in keiner bindenden Schicht (**`K-79`**) – und **die Reihenfolge der README baute das Rauschen ein: 79 Einträge in `git status` gegen 2** (**D-213**).
 >
@@ -688,6 +690,57 @@ kostet.
 
 ---
 
+### 0.34 Der Meßtag von Bündel 4 – gefahren, nicht ausgewertet (Zwischenstand)
+
+> 🔴 **KEIN RELEASE.** Die Läufe sind gefahren und die Belege gesichert; die Bewertung der neunzehn Zellen, das Eintragen der Ergebnisstatus und das Release `0.79.0` stehen aus. **Kriterium 2 bleibt bis dahin bei 38.**
+
+#### Was gefahren ist
+
+| | |
+|---|---|
+| Läufe | **50 von 50 gültig**, kein Fehllauf (`is_error` durchgehend falsch) |
+| Kosten | **61,19 USD**, Mittel **1,22 USD** je Lauf (Schätzung war 1,10) |
+| Laufzeit | **5838 s**, Mittel **117 s** je Lauf |
+| Bäume | 38 (19 Haupt-, 19 Kontrolläufe) plus acht Klassenbasen, alle unter `C:\lw-b4` |
+| Kontrollzählung | **0** – die sachfremde `CLAUDE.md` lag in keinem Lauf im Kontext |
+| `node_modules` | **unberührt** – 9797 Dateien / 96,4 MB vor und nach der Reihe |
+| Abweisungen | **25** in 23 Läufen, sämtlich `Bash` (`git branch -a`, `git status`, `ls`) |
+| Schreibende Bäume | **10** – ausschließlich `sk011*`/`ksk011*`, je eine Datei (`docs/BESTANDSAUSKUNFT.md`). **Nur `fw-docs-update` schreibt** – wie vorhergesagt |
+
+**Die Belege:** `devpacks/leitwerk-erhebungen-2026-09-19-b4/skripte/belege/` – 203 Dateien, je Lauf Antwort, Ergebnis-JSON, stdout und Transkript, dazu `auswertung-2026-09-20.log` (328 Zeilen, drei Abschnitte: Kennzahlen je Lauf, Merkmale je Zelle, Kontrollzählung).
+
+#### 🔴 WIEDERAUFNAHMEPUNKT: die Bewertung der neunzehn Zellen
+
+**Alles Teure ist bezahlt.** Was fehlt, kostet **kein Kontingent**:
+
+1. **Je Zelle Haupt- gegen Kontrollauf halten** – `belege/auswertung-2026-09-20.log` Abschnitt 2 führt je Lauf Berührungsprobe, Merkmale, Abweisungen und die geänderten Dateien. **Die Berührungsprobe ist die Vorbedingung jeder Abnahme** (D-116); bei einem Unterlassungsfall genügt die **Nennung mit Fundstelle** (D-120).
+2. **Die Spalte *Unzulässig im Text* ist bei 34 von 50 Läufen `?`** – dort entscheidet der Blick in `belege/<lauf>-antwort.md`, nicht das Werkzeug. 🔴 **Ein `?` ist keine Null.**
+3. **Ergebnisstatus eintragen** in `fw-review-support/TESTS.md` (7 Zellen, `SK-010`), `fw-docs-update/TESTS.md` (6, `SK-011`), `fw-mr-description/TESTS.md` (6, `SK-012`) – je mit Protokollverweis **und** Client Pack samt Produktversion (D-117, Prüfung 65 setzt es durch).
+4. **Release `0.79.0`** mit Antrag, Protokoll, Decision Records, Changelog, Roadmap – und **der Übergabe im Release-Commit** (D-216).
+5. **Aufräumen zum Schluß:** `trust-b4.py entfernen`, dann `baeume_loeschen.py loeschen` – es löst **jede Verzeichnisverbindung einzeln** und zählt den geteilten Bestand gegen (9798 Dateien / 101 089 283 Bytes).
+
+#### 🔴 Sechs Befunde beim ersten vollständigen Aufbau – alle ohne Kontingent
+
+Die Übergabe hatte es vorhergesagt: *„Der Apparat ist gebaut, aber als Ganzes nicht gefahren – und wenn dort etwas bricht, ist das ein Befund, der nichts kostet.“* **Es brach an sechs Stellen.**
+
+🔴 **BEFUND 1: ALLE ELF ERHEBUNGSABLAGEN BIS AUF EINE LAGEN IM PAPIERKORB.** Der erste Befehl brach ab: `cc-overlay-fuellen.py` nicht gefunden. Der Apparat von Bündel 4 hängt an **fünf** Skripten aus `…-b3/skripte/` – und `lauf.py` wurde im **eigenen** Verzeichnis gesucht, wo es nie lag. ➡️ **Das ist D-212 eine Ebene höher:** *Ein Meßapparat, der ein Nachbarverzeichnis braucht, ist so haltbar wie dieses Verzeichnis.* **Abhilfe:** `…-b3` aus dem Papierkorb geholt, die fünf Skripte nach `b4/skripte/` übernommen, beide Aufrufe auf das eigene Verzeichnis umgehängt. ⚠️ **Wichtig für Donnerstag:** In `…-b3/skripte/belege/` liegen die aufgezeichneten Belege, die der Foliensatz als Rückfall je Vorführstation nennt. 🔴 **Die übrigen neun Ablagen liegen weiterhin im Papierkorb** – wer sie braucht, holt sie dort.
+
+🔴 **BEFUND 2: DIE WERKZEUGAUSGABE NANNTE BÜNDEL 3.** Fünfzehn Stellen in vier Skripten. Eine davon war mehr als ein Etikett: *„50 Läufe (18 Zellen, davon 7 mit zweitem Turn)“* – Bündel 4 hat **19 Zellen, davon 6**, und **2·18+2·7 ergibt ebenso 50 wie 2·19+2·6**. Die Sollmenge war abgeleitet und richtig, ihre Beschreibung gepflegt und falsch (**D-204 an einer neuen Stelle**). 🔴 **Der erste Anlauf der Abhilfe war selbst der Befund:** Die neue Ableitung zählte **Laufkennungen** und nannte sie Zellen – *38 Zellen, davon 12*. Richtig gezählt, falsch benannt, eine Ebene weiter.
+
+🔴 **BEFUND 3: DER `.devin`-WÄCHTER TRAF EINE DATEI DES KERNS.** Der Baumbau brach am ersten Baum ab – *„die Historie führt `.devin/`“* –, **und der Baum war richtig gebaut**: Gefunden wurde `leitwerk-core/clients/devin-desktop/root-template/.devin/README.md`. Gegenstand ist ein Überbleibsel in der **Wurzel**, also ein Pfad, der mit `.devin/` **beginnt**. ➡️ **D-205 an einer dritten Stelle:** ein Wächter, dessen Muster seinen Gegenstand **enthält und mehr**.
+
+🔴 **BEFUND 4, DER SCHWERSTE: DER KONTROLLBAUM WURDE AUS DEM FERTIGEN HAUPTBAUM GEBAUT UND LÖSCHTE IHN DABEI.** `historie-bauen-b4.py` baute **immer** in `<basis>\<zelle>` – im Verzeichnis des Hauptbaums –, und `baeume-b4.py` verschob das Ergebnis anschließend nach `ksk…`. Gemessen: `ksk010n01` trug den **Hauptbaum** statt der Klassenbasis, `sk010n01` gab es nicht mehr; `ksk010n02` brach ab, weil die Ersetzung im schon präparierten Baum **null** Treffer hat. 🟢 **Der Wächter hat es laut gemeldet** – ohne ihn wären neunzehn Kontrollbäume gefahren worden, die den **Hauptbaum** messen: rund **21 USD für eine Zahl, die nichts belegt.** 🔴 **Der Quelltextkommentar beschrieb die Falle und löste sie nicht** (*„er würde den Hauptbaum überschreiben – deshalb wird er dort gebaut und hierher verschoben“*). ➡️ **Ein Baumbau bekommt sein Ziel gesagt;** ein Ziel, das aus dem Namen der Zelle abgeleitet wird, kennt den Unterschied zwischen Haupt- und Kontrollauf nicht. **Abhilfe:** `--ziel`, und es wird nichts mehr verschoben.
+
+🔴 **BEFUND 5: DAS SCHNITTMUSTER VON `sc1` WAR ENGER ALS SEIN STAMMMUSTER.** Der Stammwächter meldete **39 Restfundstellen**: Geschnitten wurde `\bScope\b` und *außerhalb des Auftrags*, geprüft wird `\bScope\w*` und *außerhalb des (Auftrags|Scopes)* – **`Scopes` kam im Schnitt gar nicht vor.** ➡️ **D-205 mit umgekehrtem Vorzeichen:** Dort prüft der Wächter **mit** dem Schnittmuster und ist immer grün; hier prüft er **weiter**, als geschnitten wird, und meldet zu Recht. `sc1` war nicht unter den fünf Klassen von `0.77.0`, weil Bündel 3 sie gefahren hat, **bevor es den Stammwächter gab**.
+
+🟡 **BEFUND 6: DER AUFRÄUMER STIRBT AN DEN OBJEKTDATEIEN VON GIT.** `shutil.rmtree` bricht mit `WinError 5` ab – `.git/objects/**` ist schreibgeschützt –, und der Baum bleibt **halb gelöscht** stehen. Der neue Aufräumer `baeume_loeschen.py` trägt einen `onexc`-Haken. 🟢 **Gegengezählt wie 0.74.1 es verlangt:** 9798 Dateien / 101 089 283 Bytes vor und nach dem Löschen von 21 Bäumen mit 18 einzeln gelösten Verbindungen.
+
+#### Was am Apparat geändert wurde – er liegt unversioniert
+
+🔴 **Sechs Skripte sind angefaßt** (`stand-b4.py`, `reihe-b4.py`, `trust-b4.py`, `zustand-b4.py`, `baeume-b4.py`, `historie-bauen-b4.py`, `k-bauen-b3.py`), fünf übernommen, eines neu (`baeume_loeschen.py`). **Nichts davon ist versioniert.** *Der Apparat, der 61 USD gemessen hat, liegt in einem Verzeichnis, dessen Geschwister heute im Papierkorb lagen.* ➡️ **Das gehört in `0.79.0` entschieden:** ob die Erhebungsablagen in ein Repositorium wandern.
+
+---
+
 ### 0.33 `0.78.2`: `K-80` entschieden – die Übergabe steht im Release-Commit, und ein unsichtbares Zeichen nimmt git die Normalisierung
 
 > 🟢 **`K-80` IST ENTSCHIEDEN** (`CR-2026-107`, **D-216**, **D-217**, `K-81` neu, **Prüfung 66 und 67** neu).
@@ -791,7 +844,8 @@ Validator wandert trotzdem mit und gilt dort ebenso.
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün (je rund 296 s Wanduhr).
 🟢 **KRITERIUM 2 STEHT BEI 38** – **drei** Testblatt-Bündel sind gefahren, **alle 47 Zellen bestanden** (`0.68.0`: elf Zellen, 26 Läufe, rund 23 USD; `0.71.0`: achtzehn Zellen, 43 Läufe, 48,47 USD). 🔴 **Noch drei Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
-🟡 **UND DER MESSTAG VON BÜNDEL 3 LÄUFT GERADE:** `0.73.0` hat `K-74` entschieden und die Vorbedingungen hergerichtet (Abschnitt 0.24 **im Archiv**), der Meßaufbau steht (0.25), **alle 25 Hauptläufe sind gefahren und siebzehn Kontrollläufe fehlen** (0.26). **Kriterium 2 geht auf 38, sobald die Zellen abgenommen sind.**
+🔴 **DER MEßTAG VON BÜNDEL 4 IST GEFAHREN – 50 von 50 Läufen gültig, kein Fehllauf, 61,19 USD.** Die Belege liegen vollständig; **die Bewertung der neunzehn Zellen und das Release `0.79.0` stehen aus**, und deshalb steht Kriterium 2 weiter bei 38. Siehe 0.34 – dort steht auch, was der erste vollständige Aufbau des Apparats an **sechs** Stellen gefunden hat.
+🟡 **Der Meßtag von Bündel 3 lief davor:** `0.73.0` hat `K-74` entschieden und die Vorbedingungen hergerichtet (Abschnitt 0.24 **im Archiv**), der Meßaufbau steht (0.25), **alle 25 Hauptläufe sind gefahren und siebzehn Kontrollläufe fehlen** (0.26). **Kriterium 2 geht auf 38, sobald die Zellen abgenommen sind.**
 
 **Drei Releases an einem Tag:**
 
@@ -841,7 +895,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 | Belege 0.54.0 | `devpacks/leitwerk-erhebungen-2026-09-17/` | 73 Belegdateien, acht Skripte, sechzehn Prompts, eigene README |
 | Belege 0.58.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s3/` | elf Läufe, sieben Skripte, fünf Prompts, eigene README |
 | Belege 0.66.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s5/` | **dreißig Läufe**, einundzwanzig Bäume, elf Skripte, zehn Prompts, eigene README |
-| Meßapparat Bündel 4 | `devpacks/leitwerk-erhebungen-2026-09-19-b4/` | **zehn Skripte, 50 Prompts, eigene README.** Gebaut mit `0.77.0` (Baumbau) und `0.78.0` (der Rest). 🔴 **Noch keine Belege** – der Meßtag ist nicht gefahren. Reihenfolge: archivieren → Packwechsel → `install.py` → Körbe → [Zuschnitt] → **Historie** → `node_modules` (D-213) |
+| Meßapparat **und Belege** Bündel 4 | `devpacks/leitwerk-erhebungen-2026-09-19-b4/` | 🔴 **203 Belegdateien aus 50 Läufen (61,19 USD), unversioniert.** Sechs Skripte am 2026-09-20 berichtigt, fünf aus `…-b3` übernommen, `baeume_loeschen.py` neu |
 | Belege 0.59.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s4/` | **zwanzig Läufe** (zwölf gewertet, acht in drei Verworfen-Ablagen), neun Skripte, sechs Prompts |
 
 **Abnahme:** Der Prüfapparat steht bei **67**, Sondenmenge **`6, 14 und 18 bis 67`** – ausgerechnet, nicht gepflegt. **243 Einheiten**, Laufzeit rund **300 s** Wanduhr auf 8 Bahnen (Faktor 7,9). 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
@@ -943,7 +997,7 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0** | 🟢 **ERLEDIGT mit `0.77.0` (Herrichtung) und `0.78.0` (Meßapparat, Vorbedingungsdurchgang)** – *(Stand 0.76.0:)* **DIE HERRICHTUNG FÜR BÜNDEL 4** (`~0.77.0`, `CR-2026-103`, D-206, D-207): der Meßbaum mit **echter Historie** (`git init`, zwei Übungs-Branches, präparierte Commits, **synthetische Autoren** – `k3-bauen.py` ist die Vorlage), zwei Historienpräparationen, vier Dateipräparationen und das Heben des Übungsrepositoriums auf `0.75.0`. **Dazu `K-78` entscheiden:** wie die Ergebnisberichte entstehen, ohne ihre eigene Lösung mitzuliefern | eine Sitzung, **kein Kontingent** | –. **Ohne sie sind zwölf der neunzehn Zellen von Bündel 4 nicht fahrbar** |
 | **0** | 🟢 **ERLEDIGT mit `0.78.2`** – **`K-80` entscheiden, bevor das nächste Release gebaut wird** (`CR-2026-107`, D-216, D-217). Die Übergabe steht jetzt im Release-Commit, die Antragsnummer ist heraus, Prüfung 66 und 67 setzen durch, was prüfbar ist | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **38**) |
 | **0a** | 🟢 **`K-77` ist entschieden** (`0.75.0`, D-205) und `K-76` bleibt offen – fällig, sobald wieder ein Wiederherstellungsschritt gemessen wird | – | – |
-| **0b** | **Testblätter, Bündel 4** (`~0.79.0`, D-180): `fw-mr-description`, `fw-review-support`, `fw-docs-update` – **19 Ergebniszellen**. Braucht einen lokalen Übungs-Branch gegenüber `<DEFAULT_BRANCH>` und die sechs Zellen an `UEB-09`/`UEB-10`. 🟢 **DER VORBEDINGUNGSDURCHGANG IST GEFAHREN** (`0.78.0`, `CR-2026-105`): **neunzehn von neunzehn tragen**, vier Befunde, kein Kontingent. *(Hier stand: „vor dem Meßtag die Vorbedingungen durchgehen – sechzehnmal in Folge der billigste Befund".)* dazu prüfen, ob eines der Releases seit `0.73.0` den **Gegenstand der Messung** angefaßt hat, und das Übungsrepositorium heben. 🟢 **Der Aufbau von Bündel 3 ist wiederverwendbar** und liegt in `leitwerk-erhebungen-2026-09-19-b3/skripte/`: `stand-b3.py` sagt den Stand in einem Befehl, `reihe-b3.py` fährt nur, was fehlt | eine Sitzung | **Kriterium 2: 38 → 19.** Gemessene Rechenwerte aus Bündel 3: **1,10 USD und 115 s je Lauf**; ohne Schreib-Skills eher die Werte von Bündel 2 (1,13 USD, 170 s) |
+| **0b** | 🔴 **DIE LÄUFE SIND GEFAHREN, DIE AUSWERTUNG FEHLT** (2026-09-20, Abschnitt 0.34): 50 von 50 gültig, 61,19 USD, Belege vollständig. **Was fehlt, kostet kein Kontingent** – neunzehn Zellen bewerten, Ergebnisstatus eintragen, `0.79.0` bauen. *(Stand davor:)* **Testblätter, Bündel 4** (`~0.79.0`, D-180): `fw-mr-description`, `fw-review-support`, `fw-docs-update` – **19 Ergebniszellen**. Braucht einen lokalen Übungs-Branch gegenüber `<DEFAULT_BRANCH>` und die sechs Zellen an `UEB-09`/`UEB-10`. 🟢 **DER VORBEDINGUNGSDURCHGANG IST GEFAHREN** (`0.78.0`, `CR-2026-105`): **neunzehn von neunzehn tragen**, vier Befunde, kein Kontingent. *(Hier stand: „vor dem Meßtag die Vorbedingungen durchgehen – sechzehnmal in Folge der billigste Befund".)* dazu prüfen, ob eines der Releases seit `0.73.0` den **Gegenstand der Messung** angefaßt hat, und das Übungsrepositorium heben. 🟢 **Der Aufbau von Bündel 3 ist wiederverwendbar** und liegt in `leitwerk-erhebungen-2026-09-19-b3/skripte/`: `stand-b3.py` sagt den Stand in einem Befehl, `reihe-b3.py` fährt nur, was fehlt | eine Sitzung | **Kriterium 2: 38 → 19.** Gemessene Rechenwerte aus Bündel 3: **1,10 USD und 115 s je Lauf**; ohne Schreib-Skills eher die Werte von Bündel 2 (1,13 USD, 170 s) |
 | **0c** | **Testblätter, Bündel 5** – `role-re-ticket`, **15 Zellen**, das größte Einzelblatt und das einzige außerhalb des Kerns; braucht ein eigenes Pack | eine Sitzung | **Kriterium 2: 19 → 4** |
 | **0d** | **Die letzten vier Zellen des zentralen Katalogs** – `FW-KO-05` (sobald `K-59` entschieden ist) und die drei Sammelzellen `FW-NE-04`, `FW-PO-03`, `FW-RE-01`; sie können nicht vor ihren Bestandteilen schließen (D-139, D-143) | eine Sitzung | **Kriterium 2: 4 → 0** |
 | **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.66.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
