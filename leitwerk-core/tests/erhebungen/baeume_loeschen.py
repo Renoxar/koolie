@@ -12,6 +12,16 @@ import shutil
 import stat
 import sys
 
+# 🔴 DER BERICHTSWEG GEHOERT IN BEIDE KODIERUNGSUMGEBUNGEN (D-223). Ohne diese
+# Zeile stirbt `print` an der eigenen Ampelzeile, sobald PYTHONIOENCODING nicht
+# gesetzt ist - gemessen am 2026-09-20, NACH dem Loeschen von 46 Baeumen und
+# nach der Gegenzaehlung. 🟢 Gemessen ist auch die andere Haelfte, und sie ging
+# anders aus als vermutet: Die ABBRUCHmeldung traegt, weil Python die
+# SystemExit-Meldung mit `backslashreplace` auf stderr schreibt - `print` auf
+# stdout schreibt mit `strict`. Der wichtige Bericht kam durch, der harmlose
+# nicht.
+sys.stdout.reconfigure(encoding="utf-8")
+
 BASIS = r"C:\lw-b4"
 QUELLE = os.path.join(r"C:\Users\reneh\Documents\devpacks\test-devin-framework",
                       "frontend", "node_modules")
