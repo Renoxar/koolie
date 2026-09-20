@@ -111,5 +111,5 @@ ausdrückliche Erwähnung. Gemeldet wird hier eine Möglichkeit, kein beobachtet
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E4 wie vorgelegt: **Weg A** – der erklärende Text verlässt die Regelablage und geht in die Laufzeit-README eine Ebene höher auf; die Änderung gilt für **beide** Packs, auch wenn die Wirkung bei `claude-code` unerhoben ist (K-26); die Prüfung auf Nicht-Regeltexte in der Vorlage der Regelablage wird aufgenommen; K-25 wird nur erfasst. Migrationshinweis erforderlich – `install.py --update` löscht die alte Datei nicht. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E4 wie vorgelegt: **Weg A** – der erklärende Text verlässt die Regelablage und geht in die Laufzeit-README eine Ebene höher auf; die Änderung gilt für **beide** Packs, auch wenn die Wirkung bei `claude-code` unerhoben ist (K-26); die Prüfung auf Nicht-Regeltexte in der Vorlage der Regelablage wird aufgenommen; K-25 wird nur erfasst. Migrationshinweis erforderlich – `install.py --update` löscht die alte Datei nicht. Ziel-Release 0.26.0 |
 | Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |

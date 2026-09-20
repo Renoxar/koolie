@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 65, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 67, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -5869,6 +5869,156 @@ def sonden_overlay_wertabgleich() -> None:
 buendel(sonden_overlay_wertabgleich,
         "Pruefung 59 an einer gefuellten claude-code-Installation: Bindung, Wert und "
         "deny-Korb je eigens gemessen, dazu die Gegenprobe des nachgezogenen Baums")
+
+
+# --- 66: das verirrte Steuerzeichen (D-217) --------------------------------------
+#
+# Die Sonden setzen das Zeichen in den beiden Bauformen, in denen es gemessen wurde:
+# am Ende eines Traegers und am Zeilenende einer Tabellenzeile - dort sassen dreizehn
+# der vierzehn Fundstellen. Sie schreiben mit `schreib`, also ohne Umsetzung der
+# Zeilenenden; eine Sonde, die ihren eigenen Gegenstand normalisiert, misst nichts.
+#
+# 🔴 DIE ZWEITE GEGENPROBE IST DIE WICHTIGERE. Sie stellt einen Traeger durchgehend
+# auf LF - also auf die ANDERE Zeilenende-Form - und belegt damit, dass Pruefung 66
+# das verirrte ZEICHEN misst und nicht die Form. Ohne sie waere aus der Meldung nicht
+# zu erkennen, ob hier eine Zeichenpruefung steht oder eine Formatvorschrift, die
+# niemand entschieden hat (K-81).
+M66 = "verirrte(s) Steuerzeichen"
+P66_TRAEGER = "leitwerk-core/OWNERS.md".replace("/", os.sep)
+P66_ANTRAG = ("leitwerk-core/governance/change-requests/"
+              "CR-2026-027-zeichenlimit-einstufung.md").replace("/", os.sep)
+
+
+def _66_am_ende(root: str) -> None:
+    """Ein einzelnes CR am Ende eines Kerntraegers - die stillste Fundstelle."""
+    pfad = P(root, P66_TRAEGER)
+    schreib(pfad, lies(pfad) + chr(13))
+
+
+def _66_in_der_tabelle(root: str) -> None:
+    """Dieselbe Bauform wie vierzehn der sechzehn gemessenen Fundstellen.
+
+    Ein CR unmittelbar vor dem Zeilenumbruch einer Tabellenzeile. Es rendert nicht,
+    es faellt in keinem Diff auf - und es hat elf Antraege dieses Verzeichnisses
+    von der Normalisierung ausgenommen.
+    """
+    pfad = P(root, P66_ANTRAG)
+    text = lies(pfad)
+    marke = "| Umsetzung |"
+    if marke not in text:
+        raise Praeparationsfehler(
+            "CR-2026-027 fuehrt die Zeile '%s' nicht mehr - die Sonde zu 66 haette "
+            "keinen Anker" % marke)
+    schreib(pfad, text.replace(marke, chr(13) + marke, 1))
+
+
+def _66_auf_lf(root: str) -> None:
+    """Gegenprobe: ein Traeger durchgehend auf LF - die andere Form, kein Befund."""
+    pfad = P(root, P66_TRAEGER)
+    schreib(pfad, lies(pfad).replace(chr(13) + chr(10), chr(10)))
+
+
+sonde("66a", "Ein einzelnes CR am Ende eines Kerntraegers - unsichtbar im Text und genug, damit git die Zeilenenden nicht mehr normalisiert",
+      _66_am_ende, M66)
+
+sonde("66b", "Dasselbe Zeichen am Zeilenende einer Tabellenzeile - die Bauform von vierzehn der sechzehn gemessenen Fundstellen",
+      _66_in_der_tabelle, M66)
+
+gegenprobe("66a", "Das unveraenderte Repositorium bleibt unbeanstandet - seit dieser Berichtigung traegt kein Traeger mehr ein verirrtes CR",
+           None, M66)
+
+gegenprobe("66b", "Ein Traeger durchgehend auf LF wird NICHT gemeldet: gemessen wird das verirrte Zeichen, nicht die Zeilenende-Form",
+           _66_auf_lf, M66)
+
+
+# --- 67: die Uebergabe nennt den Stand (D-216) ------------------------------------
+#
+# Die dritte Sonde ist die Ankersonde: Ohne Titelzeile mit Stand faende Pruefung 67
+# nichts und bestuende leise. Die zweite Gegenprobe ist die ENTHALTUNG - ohne
+# UEBERGABE.md meldet sie nichts, und genau so laeuft sie in jeder Installation. Sie
+# steht hier, weil eine Enthaltung, die niemand gemessen hat, von einer Pruefung, die
+# ihren Gegenstand verloren hat, nicht zu unterscheiden ist.
+M67_STAND = "die Titelzeile nennt den Stand"
+M67_NUMMER = "Nennung(en) einer Merge-Request-Nummer"
+M67_ANKER = "keine Titelzeile der Form"
+M67_LAGE = "eine Lagezeile schreibt `main` den Stand"
+P67_UEBERGABE = "UEBERGABE.md"
+
+
+def _67_titelzeile(root: str, ersatz: str) -> None:
+    """Die erste Zeile der Uebergabe durch eine andere ersetzen."""
+    pfad = P(root, P67_UEBERGABE)
+    text = lies(pfad)
+    erste = text.split(chr(10), 1)[0]
+    if not erste.startswith("# "):
+        raise Praeparationsfehler(
+            "UEBERGABE.md beginnt nicht mit einer Ueberschrift - die Sonde zu 67 "
+            "haette keinen Anker")
+    schreib(pfad, text.replace(erste, ersatz, 1))
+
+
+def _67_falscher_stand(root: str) -> None:
+    """Ein Stand, den VERSION nicht fuehrt - genau der Fall vom 2026-09-20."""
+    _67_titelzeile(root, "# Uebergabe: Sondenfassung - Stand 9.9.9 (Sondendatum)")
+
+
+def _67_ohne_stand(root: str) -> None:
+    """Ankersonde: eine Titelzeile ohne Standangabe."""
+    _67_titelzeile(root, "# Uebergabe: Sondenfassung ohne Standangabe")
+
+
+def _67_mr_nummer(root: str) -> None:
+    """Eine Nummer eines Merge Requests - die Zahl, die vor dem Merge niemand kennt."""
+    pfad = P(root, P67_UEBERGABE)
+    text = lies(pfad)
+    schreib(pfad, text + chr(10) + "Sondenzeile: alles gemergt, Antrag "
+            + chr(35) + "4711 ist durch." + chr(10))
+
+
+def _67_ohne_uebergabe(root: str) -> None:
+    """Gegenprobe: keine Uebergabe - die Lage jeder Installation.
+
+    Die Uebergabe ist ein Traeger des Quellrepositoriums (D-214); `install.py`
+    schreibt sie nirgendwo hin. Die Enthaltung ist damit strukturell und nicht eine
+    Pruefung, die ihren Gegenstand verloren hat.
+    """
+    os.remove(P(root, P67_UEBERGABE))
+
+
+sonde("67a", "Die Titelzeile der Uebergabe nennt einen anderen Stand als VERSION - genau der Zustand, den der Nachtrag nach dem Merge hinterliess",
+      _67_falscher_stand, M67_STAND)
+
+sonde("67b", "Eine Nummer eines Merge Requests in der Uebergabe - der einzige Wert, den man vor dem Anlegen des Antrags nicht kennt",
+      _67_mr_nummer, M67_NUMMER)
+
+def _67_lagezeile(root: str) -> None:
+    """Der gemessene Fall: die Titelzeile stimmt, eine Lagezeile nicht.
+
+    Genau so sah UEBERGABE.md am 2026-09-20 aus - Titelzeile und Abschnitt 1 auf
+    dem neuen Stand, der Kopfblock auf dem alten. Die erste Fassung von Pruefung
+    67 hat es NICHT gemeldet; der Gegenbeweis gegen den Vorstand hat es gezeigt.
+    """
+    pfad = P(root, P67_UEBERGABE)
+    text = lies(pfad)
+    marke = "`main` = **"
+    if marke not in text:
+        raise Praeparationsfehler(
+            "UEBERGABE.md fuehrt keine Lagezeile '%s' mehr - die Sonde zu 67d "
+            "haette keinen Anker" % marke)
+    schreib(pfad, text.replace(marke, "`main` = **9.9.9** statt **", 1))
+
+
+sonde("67c", "Ohne Standangabe in der Titelzeile meldet Pruefung 67 den verlorenen Gegenstand, statt leise zu bestehen",
+      _67_ohne_stand, M67_ANKER)
+
+sonde("67d", "Die Titelzeile stimmt und eine Lagezeile nicht - der gemessene Fall, den die erste Fassung dieser Pruefung durchgelassen hat",
+      _67_lagezeile, M67_LAGE)
+
+gegenprobe("67a", "Das unveraenderte Repositorium bleibt unbeanstandet - Titelzeile und VERSION nennen denselben Stand",
+           None, M67_STAND)
+
+gegenprobe("67b", "Ohne UEBERGABE.md meldet Pruefung 67 nichts - die Enthaltung jeder Installation, hier einmal gemessen",
+           _67_ohne_uebergabe, M67_STAND)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

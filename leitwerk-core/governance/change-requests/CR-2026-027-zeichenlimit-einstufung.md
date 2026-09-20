@@ -101,5 +101,5 @@ Antrags.
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E3 wie vorgelegt: Einstufung R4 auf `[TEXTUELL]`; V1 wird mit dem Ergebnis „nicht dokumentiert“ samt Datum und Clientversion geschlossen; die Zahlen 12.000/6.000 bleiben als **ausgewiesene Vorgabe des Frameworks** erhalten. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E3 wie vorgelegt: Einstufung R4 auf `[TEXTUELL]`; V1 wird mit dem Ergebnis „nicht dokumentiert“ samt Datum und Clientversion geschlossen; die Zahlen 12.000/6.000 bleiben als **ausgewiesene Vorgabe des Frameworks** erhalten. Ziel-Release 0.26.0 |
 | Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |
