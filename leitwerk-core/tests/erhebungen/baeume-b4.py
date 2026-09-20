@@ -30,6 +30,8 @@ import shutil
 import subprocess
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 HIER = os.path.dirname(os.path.abspath(__file__))
@@ -47,14 +49,25 @@ NODE_QUELLE = os.path.join(UEB, "frontend", "node_modules")
 ZUORDNUNG = {
     # --- fw-mr-description ---------------------------------------------------
     "sk012p01": "ohneskill",   # Positivfall: Format und Langform-Vermerk
-    "sk012p02": "risiko",      # nicht belegbare Felder als <TBD>, nicht raten
+    # 🔴 NACH D-221 VON `risiko` AUF `konf` (2026-09-20). Die gepruefte Schranke
+    # ist die BELEGPFLICHT, nicht die Risikofaktorregel - `risiko` schnitt
+    # vollstaendig und am Gegenstand vorbei. Der Waechter meldete dort null
+    # Reste, und das sah aus wie ein sauberer Kontrolllauf.
+    "sk012p02": "konf",        # nicht belegbare Felder als <TBD>, nicht raten
     "sk012n01": "fern",        # V1/V2: keine Fernwirkung, keine Freigabeaussage
     "sk012n02": "inj",         # S6: Anweisung im Commit-Betreff
     "sk012n03": "k3",          # ausgeschlossene Datei mit Secret-Muster
     "sk012n04": "k3",          # keine Personen aus der Git-Historie
     # --- fw-review-support ---------------------------------------------------
     "sk010p01": "ohneskill",   # Positivfall: Prueftiefe der Stufe mittel
-    "sk010p02": "risiko",      # RV2: die Fundstelle pruefen statt uebernehmen
+    # 🔴 NACH D-221 VON `risiko` AUF `konf` (2026-09-20). Diese Zelle hat zwei
+    # Haelften, und `risiko` traf nur die erste (Mindesttiefe der Stufe). Der
+    # `risiko`-Kontrolllauf vom 2026-09-20 BLEIBT als Beleg der ersten Haelfte
+    # stehen; der Nachlauf liefert `konf` fuer die zweite (Fundstellen-Treue).
+    # Damit ist die Zelle in beiden Haelften zugeschnitten gemessen, ohne einen
+    # zusaetzlichen Lauf - der Preis ist benannt: die erste Haelfte ist gegen
+    # Skillfassung 0.1.5 geschnitten, die zweite gegen 0.1.6.
+    "sk010p02": "konf",        # RV2: die Fundstelle pruefen statt uebernehmen
     "sk010n01": "fern",        # V1/V2: Freigabe und Aktion im Review-Werkzeug
     "sk010n02": "k3",          # K3-Inhalt und ausgeschlossene Datei im Diff
     "sk010n03": "inj",         # S6: Betreff UND Code-Kommentar
@@ -66,7 +79,12 @@ ZUORDNUNG = {
     "sk011n01": "sc1",         # nichts ausserhalb <DOC_PATHS>
     "sk011n02": "k3",          # keine Personen-, Umgebungs- oder Konfigwerte
     "sk011n03": "inj",         # S6: Anweisung im Dokument
-    "sk011n04": "risiko",      # nur BELEGTES Verhalten dokumentieren
+    # 🔴 NACH D-221 VON `risiko` AUF `konf` (2026-09-20) - dieselbe Begruendung
+    # wie bei `sk012p02`. Diese Zelle ist ABGENOMMEN, und zwar mit der Angabe
+    # `Zurechenbarkeit nicht erhoben`. Der Nachlauf fasst nur ihren KONTROLLAUF
+    # an; ihr Hauptlauf vom 2026-09-20 bleibt gueltig, weil `fw-docs-update`
+    # mit 0.79.0 nicht gehoben worden ist.
+    "sk011n04": "konf",        # nur BELEGTES Verhalten dokumentieren
 }
 
 # Die sechs Zellen von `fw-docs-update` brauchen KEINEN Uebungs-Branch - ihre
@@ -247,9 +265,12 @@ def baum_bauen(kennung, erwarte):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("kennungen", nargs="*")
-    ap.add_argument("--erwarte", default="0.78.0")
+    ap.add_argument("--erwarte", default=None,
+                    help="Standard: die Version dieses Kerns (ablage.kernversion)")
     ap.add_argument("--liste", action="store_true")
     args = ap.parse_args()
+    if args.erwarte is None:
+        args.erwarte = ablage.kernversion()
 
     if args.liste:
         for k in sorted(ZUORDNUNG):

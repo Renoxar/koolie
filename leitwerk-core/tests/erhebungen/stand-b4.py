@@ -20,10 +20,11 @@ import json
 import os
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
-S = os.path.dirname(os.path.abspath(__file__))
-BEL = os.path.join(S, "belege")
+BEL = ablage.belege(anlegen=False)
 PROMPTS = os.path.join(os.path.dirname(S), "prompts")
 BAEUME = r"C:\lw-b4"
 

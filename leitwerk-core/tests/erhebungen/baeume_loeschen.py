@@ -27,17 +27,35 @@ QUELLE = os.path.join(r"C:\Users\reneh\Documents\devpacks\test-devin-framework",
                       "frontend", "node_modules")
 
 
+# Das Pruefmittel schreibt seinen Zwischenstand unterhalb von node_modules -
+# `vitest` legt `.vite/vitest/results.json` bei JEDEM Lauf neu an, und
+# `umgebungen-bauen-b4.py` faehrt den Testbefehl vor jedem Messtag im Messbaum.
+# 🔴 GEMESSEN am 2026-09-20 beim Trockenlauf des Apparats: 101 089 284 Bytes
+# gegen die 101 089 283, die `0.79.1` als den Bestand fuehrt - ein Byte, und es
+# gehoert dem Pruefmittel. `node-waechter.py` weist solche Pfade seit seinem Bau
+# gesondert aus; dieser Zaehler tat es nicht, und damit sagten zwei Zaehler
+# desselben Gegenstands Verschiedenes.
+ZWISCHENSTAND = (".vite", ".cache", ".tmp")
+
+
 def bestand(pfad):
-    n = b = 0
+    """(Dateien, Bytes, Zwischenstandsdateien) - der Zwischenstand zaehlt NICHT mit."""
+    n = b = z = 0
     for dirpath, dirnames, filenames in os.walk(pfad):
+        rel = os.path.relpath(dirpath, pfad).replace("\\", "/")
+        ist_zwischen = any(teil in rel.split("/") for teil in ZWISCHENSTAND)
         for fn in filenames:
             p = os.path.join(dirpath, fn)
             try:
-                b += os.path.getsize(p)
-                n += 1
+                groesse = os.path.getsize(p)
             except OSError:
-                pass
-    return n, b
+                continue
+            if ist_zwischen:
+                z += 1
+                continue
+            b += groesse
+            n += 1
+    return n, b, z
 
 
 def verbindungen(wurzel):
@@ -62,7 +80,8 @@ def _junction(pfad):
 def main():
     was = sys.argv[1] if len(sys.argv) > 1 else "zaehlen"
     vorher = bestand(QUELLE)
-    print("node_modules vorher: %d Dateien / %d Bytes" % vorher)
+    print("node_modules vorher: %d Dateien / %d Bytes (dazu %d "
+          "Zwischenstandsdateien des Pruefmittels)" % vorher)
     if was != "loeschen":
         return 0
     if not os.path.isdir(BASIS):
@@ -82,8 +101,12 @@ def main():
         print("geloescht:", name)
     print("Verbindungen einzeln geloest:", gesamt)
     nachher = bestand(QUELLE)
-    print("node_modules nachher: %d Dateien / %d Bytes" % nachher)
-    if nachher != vorher:
+    print("node_modules nachher: %d Dateien / %d Bytes (dazu %d "
+          "Zwischenstandsdateien des Pruefmittels)" % nachher)
+    # Verglichen werden Dateizahl und Bytes OHNE den Zwischenstand. Der dritte
+    # Wert wird berichtet, nicht geprueft: Er aendert sich bei jedem Testlauf,
+    # und ein Waechter, der ihn mitrechnet, schlaegt an, wo nichts geschehen ist.
+    if nachher[:2] != vorher[:2]:
         raise SystemExit("🔴 ABBRUCH: der geteilte Bestand hat sich geaendert!")
     print("🟢 geteilter Bestand unberuehrt")
     return 0

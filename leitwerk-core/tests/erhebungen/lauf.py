@@ -24,6 +24,8 @@ import subprocess
 import sys
 import time
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 argv = sys.argv[1:]
@@ -34,9 +36,7 @@ if "--resume" in argv:
     argv = argv[:i] + argv[i + 2:]
 kennung, cwd, promptdatei = argv[0], argv[1], argv[2]
 
-ZIEL = os.path.dirname(os.path.abspath(__file__))
-BELEGE = os.path.join(ZIEL, "belege")
-os.makedirs(BELEGE, exist_ok=True)
+BELEGE = ablage.belege()
 
 prompt = io.open(promptdatei, encoding="utf-8").read().strip()
 

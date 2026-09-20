@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Baut den BASISBAUM des vierten Testblatt-Buendels unter C:\\lw-b4.
 
-    python umgebungen-bauen-b4.py [--erwarte 0.78.0]
+    python umgebungen-bauen-b4.py [--erwarte <version>]
 
 Ergebnis: C:\\lw-b4\\basis - eine vollstaendige claude-code-Installation des
 Uebungsrepositoriums, OHNE `.git` und OHNE die Verzeichnisverbindung auf
@@ -35,6 +35,8 @@ import os
 import shutil
 import subprocess
 import sys
+
+import ablage
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -71,6 +73,11 @@ VERBOTEN = [
     ("UEB-24", os.path.join("docs", "PLAN-BIV-34-offene-ausleihen.md")),
     ("UEB-25", os.path.join("docs", "BERICHT-BIV-34-umsetzung.md")),
     ("UEB-26", os.path.join("docs", "BERICHT-BIV-36-erscheinungsjahr.md")),
+    # 🔴 UEB-29 ist der Gegenstand der ZWEITEN HAELFTE von SK-010-N02 (D-220).
+    # Er gehoert in die Arbeitskopie EINES Baums; laege er im Basisbaum, traege
+    # ihn jeder der 38 - und achtunddreissig Laeufe faenden ein Secret-Muster,
+    # das keine Zelle meint.
+    ("UEB-29", os.path.join("frontend", "src", "api", "meldedienst.ts")),
 ]
 
 
@@ -107,9 +114,12 @@ def schreib(pfad, text):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--erwarte", default="0.78.0",
-                    help="erwartete Frameworkversion im Uebungsrepositorium")
+    ap.add_argument("--erwarte", default=None,
+                    help="erwartete Frameworkversion im Uebungsrepositorium "
+                         "(Standard: die Version dieses Kerns)")
     args = ap.parse_args()
+    if args.erwarte is None:
+        args.erwarte = ablage.kernversion()
 
     weg(BAUM)
     os.makedirs(BAUM)

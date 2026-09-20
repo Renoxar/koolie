@@ -390,7 +390,21 @@ Prüft (statisch, ohne laufenden KI-Client):
      des Befehls IST - nicht, ob es mehr trifft. GRENZE, und sie steht hier:
      Geprueft wird die NENNUNG, nicht ihre Richtigkeit; eine Begruendung, die nicht
      traegt, laeuft durch. Dieselbe Enthaltung wie bei Pruefung 65
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 68 laeuft als eigenes
+ 69. Der Messapparat schreibt nicht in das Repositorium (D-222): In
+     <CORE_DIR>/tests/erhebungen/ liegen Werkzeuge - Skripte und eine README -,
+     sonst nichts. ANLASS, und er kostete nichts, weil er vor dem Lauf kam: D-222
+     hat die Skripte mit 0.79.0 hierher geholt und ihre Belege ausdruecklich
+     draussen gelassen; fuenf von ihnen legten ihre Belege aber neben SICH ab
+     (os.path.dirname(os.path.abspath(__file__)) + "belege"). Solange sie daneben
+     lagen, war das richtig - seither zeigt derselbe Ausdruck HINEIN, und lauf.py
+     legt das Verzeichnis selbst an. Der Nachlauf haette seine Sitzungsmitschriften
+     versioniert, ohne dass jemand es entschieden haette. Geprueft wird nicht der
+     Quelltext, sondern das ERGEBNIS: eine Belegdatei oder Zustandsaufnahme an
+     diesem Ort ist der Befund, gleich welcher Ausdruck sie erzeugt hat. GRENZE,
+     und sie steht hier: Diese Pruefung sieht nur, was schon geschrieben IST; den
+     Waechter davor traegt ablage.py, der die Erhebungsablage als Angabe verlangt
+     und einen Pfad im Repositorium abweist
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 69 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -7366,6 +7380,68 @@ def check_praefix_uebererfassung(root: str) -> None:
             f"bestünde sonst leise (D-23)")
 
 
+# --- Pruefung 69: Der Messapparat schreibt nicht in das Repositorium ----------------
+#
+# ANLASS, UND ER IST GEMESSEN - ER KOSTETE NICHTS, WEIL ER VOR DEM LAUF KAM. D-222
+# hat die Skripte der Erhebungen mit 0.79.0 ins Repositorium geholt und ihre Belege
+# ausdruecklich DRAUSSEN gelassen: "203 Dateien, darunter fuenfzig
+# Sitzungstranskripte mit Werkzeugeingaben; sie sind AUFZEICHNUNG, nicht Anweisung".
+# Fuenf dieser Skripte legten ihre Belege aber schlicht NEBEN SICH ab:
+#
+#     BELEGE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "belege")
+#
+# Solange das Skript daneben lag, war das richtig. Seit es im Kern liegt, zeigt
+# derselbe Ausdruck HINEIN - und lauf.py legt das Verzeichnis selbst an. Ein
+# Nachlauf haette die Mitschriften seiner Laeufe versioniert, ohne dass jemand es
+# entschieden haette. Gefunden am 2026-09-20 im Vorbedingungsdurchgang des
+# Nachlaufs, vor dem ersten bezahlten Lauf.
+#
+#   Wer einen Apparat umzieht, zieht seine relativen Pfade mit um - oder er
+#   verschiebt ihr Ziel, ohne es zu merken.
+#
+# WAS GEPRUEFT WIRD, UND WARUM SO. Nicht die Quelltexte (ein Zaehler, der Ausdruecke
+# liest, prueft die Schreibweise statt der Sache, D-223), sondern das ERGEBNIS: In
+# <CORE_DIR>/tests/erhebungen/ liegen Skripte und eine README - sonst nichts. Eine
+# Belegdatei, eine Zustandsaufnahme oder ein Promptverzeichnis dort ist der Befund
+# selbst, unabhaengig davon, welcher Ausdruck sie erzeugt hat.
+#
+# GRENZE, UND SIE STEHT HIER. Die Pruefung sieht nur, was schon geschrieben IST.
+# Den Wächter davor traegt `ablage.py`: Er verlangt die Erhebungsablage als Angabe
+# und weist einen Pfad im Repositorium ab. Zwei Haelften desselben Gegenstands -
+# dieselbe Aufteilung wie bei D-205 zwischen Schnitt und Waechter.
+P69_ERLAUBT_DATEI = (".py", ".md")
+
+
+def check_erhebungen_sauber(root: str) -> None:
+    """Pruefung 69 (D-222): In der Erhebungsablage des Kerns liegen nur Werkzeuge."""
+    rel = f"{KERN}/tests/erhebungen"
+    ordner = os.path.join(root, KERN, "tests", "erhebungen")
+    if not os.path.isdir(ordner):
+        return  # ein uebernehmendes Projekt bekommt diese Ablage nicht ausgeliefert
+    gesehen = 0
+    for name in sorted(os.listdir(ordner)):
+        pfad = os.path.join(ordner, name)
+        if os.path.isdir(pfad):
+            if name == "__pycache__":
+                continue
+            err(f"{rel}/{name}/: ein VERZEICHNIS in der Erhebungsablage des Kerns. "
+                f"Hier liegen Werkzeuge; Belege, Prompts und Zustandsaufnahmen sind "
+                f"Aufzeichnung und gehoeren neben das Repositorium (D-222). Die "
+                f"Ablage wird ueber LW_ERHEBUNG gesagt, nicht abgeleitet")
+            continue
+        gesehen += 1
+        if not name.endswith(P69_ERLAUBT_DATEI):
+            err(f"{rel}/{name}: keine Datei der zugelassenen Art "
+                f"({', '.join(P69_ERLAUBT_DATEI)}) in der Erhebungsablage des "
+                f"Kerns. Eine Belegdatei, ein Ergebnis-JSON oder eine "
+                f"Zustandsaufnahme ist hier der Befund selbst - unabhaengig davon, "
+                f"welcher Ausdruck sie erzeugt hat (D-222)")
+    if gesehen == 0:
+        err(f"{rel}: kein einziges Werkzeug gefunden – Prüfung 69 zaehlt den Inhalt "
+            f"dieser Ablage und hat ihren Gegenstand verloren; sie bestuende sonst "
+            f"leise (D-23)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -7438,6 +7514,7 @@ def main() -> int:
     check_releaseplan_kette(root)
     check_zusatzschluessel(root, man)
     check_pflichtplatzhalter(root)
+    check_erhebungen_sauber(root)
     check_ungebundene_vorbedingung(root)
     check_decisionregister(root)
     check_befehlsschlitz_in_vorbedingung(root)

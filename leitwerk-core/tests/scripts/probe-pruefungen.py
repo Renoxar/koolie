@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 68, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 69, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6108,6 +6108,62 @@ sonde("68c", "Ohne exec-Regel meldet Pruefung 68 den verlorenen Gegenstand, stat
 
 gegenprobe("68a", "Das unveraenderte Repositorium bleibt unbeanstandet - alle vier uebererfassenden Regeln tragen ihre Begruendung",
            None, M68)
+
+
+# --- 69: der Messapparat schreibt nicht in das Repositorium (D-222) ----------------
+#
+# Zwei Formen desselben Gegenstands: die Belegdatei (69a) und das Verzeichnis, das
+# `lauf.py` selbst anlegen wuerde (69b). Die dritte ist die Ankersonde - eine leere
+# Erhebungsablage haette nichts zu zaehlen und bestuende leise. Die Gegenprobe
+# belegt den ZUSCHNITT: Eine weitere .py-Datei ist ein WERKZEUG und wird NICHT
+# gemeldet; ohne sie waere nicht zu unterscheiden, ob die Pruefung die Art der
+# Datei prueft oder jede Neuerung.
+M69 = "Erhebungsablage des Kerns"
+M69_ANKER = "kein einziges Werkzeug gefunden"
+P69_ORDNER = "leitwerk-core/tests/erhebungen".replace("/", os.sep)
+
+
+def _69_beleg(root: str) -> None:
+    """Der gemessene Fall: ein Ergebnis-JSON eines Laufs landet im Repositorium."""
+    schreib(P(root, P69_ORDNER, "sk010n02-ergebnis.json"), '{"is_error": false}')
+
+
+def _69_verzeichnis(root: str) -> None:
+    """Die zweite Form: das Belegverzeichnis, das lauf.py selbst anlegen wuerde."""
+    os.makedirs(P(root, P69_ORDNER, "belege"), exist_ok=True)
+    schreib(P(root, P69_ORDNER, "belege", "sk010n02-antwort.md"), "Antwort")
+
+
+def _69_leer(root: str) -> None:
+    """Ankersonde: keine Werkzeuge mehr - der verlorene Gegenstand."""
+    ordner = P(root, P69_ORDNER)
+    if not os.path.isdir(ordner):
+        raise Praeparationsfehler(
+            "die Erhebungsablage fehlt - die Sonde zu 69 haette keinen Anker")
+    for name in os.listdir(ordner):
+        ziel = os.path.join(ordner, name)
+        if os.path.isfile(ziel):
+            os.remove(ziel)
+        else:
+            shutil.rmtree(ziel)
+
+
+def _69_weiteres_werkzeug(root: str) -> None:
+    """Gegenprobe: ein weiteres Skript ist ein Werkzeug und kein Befund."""
+    schreib(P(root, P69_ORDNER, "sondenwerkzeug.py"), "# nichts" + chr(10))
+
+
+sonde("69a", "Ein Ergebnis-JSON in der Erhebungsablage des Kerns wird gemeldet - der Fall, den die fuenf relativen Pfade nach dem Umzug erzeugt haetten",
+      _69_beleg, M69)
+
+sonde("69b", "Dieselbe Bauform als VERZEICHNIS: das Belegverzeichnis, das lauf.py selbst anlegen wuerde, wird ebenso gemeldet",
+      _69_verzeichnis, M69)
+
+sonde("69c", "Ohne ein einziges Werkzeug meldet Pruefung 69 den verlorenen Gegenstand, statt leise zu bestehen",
+      _69_leer, M69_ANKER)
+
+gegenprobe("69a", "Ein weiteres .py-Skript ist ein Werkzeug und wird NICHT gemeldet - die Pruefung haengt an der Art der Datei, nicht an ihrer Neuheit",
+           _69_weiteres_werkzeug, M69)
 
 gegenprobe("68b", "Eine Regel, deren Praefix ihrem Befehl gleicht, wird NICHT gemeldet - auch ohne Begruendungsfeld; gemessen wird die Uebererfassung, nicht das fehlende Feld",
            _68_praefix_gleich_befehl, M68)

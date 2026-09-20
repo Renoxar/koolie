@@ -1,6 +1,8 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.79.1 (2026-09-20)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.79.2 (2026-09-20)
 
-> 🔴 **ZUERST LESEN: BÜNDEL 4 IST AUSGEWERTET – ACHT VON NEUNZEHN ZELLEN, WEIL DER MEßBAUM AUF `main` STAND** (Abschnitt 0.35). **Kriterium 2: 38 → 30, nicht 19.** `historie-bauen-b4.py` baut die Übungs-Branches richtig und schaltet nach jedem zurück auf `main` – und bleibt dort. Gemessen an **allen 38 Bäumen**: `HEAD` auf `main`, Arbeitskopie sauber, und zwölf Zellen rufen ihren Skill mit `<DEFAULT_BRANCH>` als Diff-Basis auf. **Der Vorbedingungsdurchgang von `0.78.0` hat geprüft, ob der Branch DA ist; der Lauf braucht, daß er AUSGECHECKT ist** (**D-218**). 🟢 **Und zehn Läufe trafen einen leeren Änderungssatz, ohne den Entwurf aus den Berichten zu erfinden** – zehnmal Halt, Rückfrage, `<TBD>`. 🔴 **DER NÄCHSTE SCHRITT IST DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`): gerechnet 24 Läufe, rund **29 USD**, und er kostet zum ersten Mal seit Bündel 4 wieder Kontingent. 🟢 **Der Apparat ist repariert und mit zwei Wirkungsnachweisen belegt**, und er liegt seit diesem Release **versioniert** in `leitwerk-core/tests/erhebungen/` (**D-222**).
+> 🔴 **ZUERST LESEN: DER VORBEDINGUNGSDURCHGANG DES NACHLAUFS IST GEFAHREN – SIEBEN BEFUNDE, KEINER KOSTET KONTINGENT** (Abschnitt 0.36). 🔴 **KRITERIUM 2 STEHT BEI 32, NICHT BEI 30** – zum ersten Mal in neun Schritten geht der Zähler AUFWÄRTS, und er soll es: `0.79.0` hat `fw-review-support` auf `0.1.6` und `fw-mr-description` auf `0.1.5` gehoben, **in demselben Commit, der zwei ihrer Zellen abgenommen hat**. `08-skill-conventions.md` Abschnitt 7 ist normativ – *„Jede Versionsänderung erfordert die erneute Ausführung der Testfälle"* –, also gehen `SK-010-P02` und `SK-012-N04` zurück auf `offen` (**D-227**). 🔴 **Und der Befund reicht weiter: acht von dreizehn Skills, 35 bestandene Zellen** – gemessen in Commit-Auflösung, geführt als **`K-84`**, **hier nicht entschieden**. 🔴 **Der teuerste Befund am Apparat: er schrieb seit D-222 ins Repositorium** – fünf Skripte legten ihre Belege neben sich, und seit dem Umzug in den Kern heißt das hinein; der Nachlauf hätte 44 Belegdateien samt Mitschriften versioniert (**D-224**, `LW_ERHEBUNG`, **Prüfung 69**). 🟢 **`K-83` war längst entschieden** – D-120 sagt es im letzten Satz, das Werkzeug kannte es nur im Kopfkommentar (**D-226**); **an den 50 Belegen des Meßtags hätte die neue Probe D-218 selbst gemeldet**. 🟢 **`UEB-29` ist gebaut**, drei Kontrollzuschnitte tragen `konf` statt `risiko` (D-221), **alle drei Fragen von `K-82` sind beantwortet**. 🔴 **DER NÄCHSTE SCHRITT BLEIBT DER NACHLAUF – jetzt dreizehn Zellen, 28 Läufe, rund 34 USD** (`~0.80.0`, Kriterium 2: **32 → 19**).
+>
+> 🔴 **BÜNDEL 4 IST AUSGEWERTET – ACHT VON NEUNZEHN ZELLEN, WEIL DER MEßBAUM AUF `main` STAND** (Abschnitt 0.35). **Kriterium 2: 38 → 30, nicht 19.** `historie-bauen-b4.py` baut die Übungs-Branches richtig und schaltet nach jedem zurück auf `main` – und bleibt dort. Gemessen an **allen 38 Bäumen**: `HEAD` auf `main`, Arbeitskopie sauber, und zwölf Zellen rufen ihren Skill mit `<DEFAULT_BRANCH>` als Diff-Basis auf. **Der Vorbedingungsdurchgang von `0.78.0` hat geprüft, ob der Branch DA ist; der Lauf braucht, daß er AUSGECHECKT ist** (**D-218**). 🟢 **Und zehn Läufe trafen einen leeren Änderungssatz, ohne den Entwurf aus den Berichten zu erfinden** – zehnmal Halt, Rückfrage, `<TBD>`. 🔴 **DER NÄCHSTE SCHRITT IST DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`): gerechnet 24 Läufe, rund **29 USD**, und er kostet zum ersten Mal seit Bündel 4 wieder Kontingent. 🟢 **Der Apparat ist repariert und mit zwei Wirkungsnachweisen belegt**, und er liegt seit diesem Release **versioniert** in `leitwerk-core/tests/erhebungen/` (**D-222**).
 >
 > 🟢 **Abschnitt 0.35 – zwei Befunde am Framework, beide mit Abhilfe in `0.79.0`.** Der Eintrag `{ command: "git branch -D", prefix: "git branch" }` sperrt über sein Präfix auch das **bloße Auflisten** – **25 Abweisungen in 23 von 50 Läufen, elf davon auf `git branch`**, und zwei Skills schreiben eine Kandidatenliste vorhandener Branches vor, die sie damit nicht liefern können (**D-219**, **Prüfung 68**). Und `UEB-02` weist sich selbst als *„Platzhalter und keine Zugangsdaten"* aus – **der Lauf hat das gelesen und folgerichtig nicht angehalten** (**D-220**, `UEB-29` neu). 🟢 **Zum ersten Mal sind alle sechzehn Kontrollzuschnitte vollständig** – null Restfundstellen in sechzehn von sechzehn (**D-221**).
 >
@@ -671,14 +673,22 @@ fehlt, ist der Meßtag selbst.
 **Reihenfolge am Meßtag (D-213, berichtigt):**
 
 ```
-Übungsrepositorium auf 0.78.0 heben
+set LW_ERHEBUNG=...\devpacks\leitwerk-erhebungen-<datum>-<buendel>   ← NEU (D-224)
+Übungsrepositorium auf den Stand DIESES Kerns heben                   ← abgeleitet (D-225)
   → umgebungen-bauen-b4.py      (archivieren, Packwechsel, install.py, Körbe)
   → baeume-b4.py                (Zuschnitt, dann Historie, dann node_modules)
+  → prompts-schreiben-b4.py, turn2-schreiben-b4.py
   → trust-b4.py setzen
+  → zustand-b4.py vorher, node-waechter.py vorher
   → reihe-b4.py                 (fährt nur, was fehlt)
-  → auswerten-b4.py
-  → trust-b4.py entfernen, Bäume löschen (Verbindungen EINZELN mit os.rmdir)
+  → zustand-b4.py nachher, node-waechter.py nachher
+  → auswerten-b4.py, dossier-b4.py
+  → trust-b4.py entfernen, baeume_loeschen.py loeschen                ← VOR der Übergabe (D-223)
 ```
+
+🔴 **`LW_ERHEBUNG` ist seit `0.79.2` Pflicht.** Ohne die Angabe bricht jedes Skript ab,
+das eine Belegablage braucht – und ein Pfad **im** Repositorium wird abgewiesen
+(D-224). **Prüfung 69** meldet jede Datei, die dort dennoch liegt.
 
 🔴 **Der Apparat ist gebaut, aber als Ganzes nicht gefahren.** `umgebungen-bauen-b4.py`
 und `baeume-b4.py` erwarten Framework `0.78.0` im Übungsrepositorium; es steht auf
@@ -689,6 +699,159 @@ kostet.
 ⚠️ **Zwei Dinge, die am Meßtag auffallen werden und keine Befunde sind:**
 `fw-docs-update` braucht **keinen** Übungs-Branch, und `SK-012-P02` bekommt mit Absicht
 **keinen** Ergebnisbericht.
+
+---
+
+### 0.36 `0.79.2`: Der Vorbedingungsdurchgang des Nachlaufs – sieben Befunde, und der Zähler geht zum ersten Mal aufwärts
+
+> 🔴 **KRITERIUM 2: 30 → 32.** Fünf Decision Records (**D-224** bis **D-228**), `K-83`
+> entschieden, **`K-84`** neu, **Prüfung 69** neu. **Dieses Release kostet kein
+> Kontingent** – es ist kein Lauf gefahren worden.
+
+**Der Antrag:** `leitwerk-core/governance/change-requests/CR-2026-110-vorbedingungen-des-nachlaufs.md`.
+**Das Protokoll:** `leitwerk-core/tests/protocols/2026-09-20-vorbedingungen-nachlauf-b4.md`.
+
+#### 🔴 Der Befund, der die Zahl bewegt: eine Norm, die seit acht Releases niemand gelesen hatte (D-227, `K-84`)
+
+`08-skill-conventions.md` Abschnitt 7 steht dort seit der Erstfassung und ist normativ:
+
+> *„Jede Versionsänderung erfordert die erneute Ausführung der Testfälle in `TESTS.md`."*
+
+🔴 **`0.79.0` hat `fw-review-support` auf `0.1.6` und `fw-mr-description` auf `0.1.5`
+gehoben – in demselben Commit, der `SK-010-P02` und `SK-012-N04` abgenommen hat.** Die
+Läufe fanden gegen `0.1.5` und `0.1.4` statt; seit dem Merge gibt es diese Fassungen
+nicht mehr. Beide Zellen gehen zurück auf `offen`.
+
+🟢 **Der Gegenstand der Änderung ist klein und benannt:** Der Diff berührt bei beiden
+Skills **genau drei Stellen** – Befehlsformenliste in Abschnitt 2, Arbeitsschritt 1 und
+die Fehlerbehandlungszeile *„Diff-Basis fehlt"* –, und keine davon ist der Gegenstand
+der beiden Zellen. ➡️ **Das ist ein Argument, kein Beleg**, und die Norm kennt es nicht.
+
+🔴 **Und der Befund reicht weit über Bündel 4 hinaus.** Erste Messung in
+**Tages**auflösung: *kein Skill trägt eine Version, die jünger ist als sein jüngstes
+Protokoll* – **die Aussage ist wertlos**, weil Lauf und Anhebung in demselben Release
+liegen. Zweite Messung in **Commit**auflösung:
+
+| Lage | Skills | Zellen |
+|---|---|---|
+| Version **nach** dem Protokoll gehoben | `fw-repo-analyze`, `fw-tests` | 11 |
+| Version im **selben Commit** | `fw-bugfix-prepare`, `fw-change-analyze`, `fw-code-explain`, `fw-plan`, `fw-mr-description`, `fw-review-support` | 24 |
+
+**Acht von dreizehn Skills, 35 bestandene Zellen.** Wörtlich angewandt ginge Kriterium 2
+nicht auf 32, sondern auf rund **63**. ➡️ **`K-84`, und hier ausdrücklich nicht
+entschieden** – die Antwort ändert die Zahl um Größenordnungen.
+
+🔴 **Die Bauform sieht jedesmal wie Sorgfalt aus:** Ein Meßtag findet einen Mangel am
+Skill, das Release behebt ihn und hebt die Version – **und macht damit die Abnahme
+ungültig, die es im selben Zug einträgt.** D-119 hat genau diesen Kreis für die
+Gegenrichtung schon benannt und ihn nur für das *Eintragen* aufgelöst, nicht für das
+*Beheben*.
+
+> ⚠️ *Ein Zähler, der neun Schritte lang nur gefallen ist, sagt nichts darüber, ob seine
+> Nullen noch gelten. Genau die Monotonie hat die Frage verdeckt.*
+
+#### 🔴 Der teuerste Befund am Apparat: er schrieb ins Repositorium (D-224)
+
+D-222 hat die Skripte mit `0.79.0` in den Kern geholt und ihre Belege ausdrücklich
+draußen gelassen. **Neun Ablageorte in neun Skripten waren relativ zum Skript:**
+
+| Was | Skripte |
+|---|---|
+| `belege/` | `lauf.py`, `reihe-b4.py`, `stand-b4.py`, `auswerten-b4.py`, `dossier-b4.py` |
+| `prompts/` | `prompts-schreiben-b4.py`, `turn2-schreiben-b4.py` |
+| `zustand-*.json`, `node-*.json` | `zustand-b4.py`, `node-waechter.py` |
+
+**`lauf.py` legt das Verzeichnis selbst an.** Der Nachlauf hätte 44 Belegdateien samt
+Sitzungsmitschriften mit Werkzeugeingaben versioniert – **ohne daß jemand es entschieden
+hätte.**
+
+> *Wer einen Apparat umzieht, zieht seine relativen Pfade mit um – oder er verschiebt
+> ihr Ziel, ohne es zu merken.*
+
+🟢 **Zwei Hälften eines Gegenstands:** `ablage.py` verlangt die Ablage als Angabe
+(`LW_ERHEBUNG`) und weist einen Pfad **im** Repositorium ab; **Prüfung 69** meldet jede
+Datei, die dort dennoch liegt. 🔴 **Der zweite Wirkungsnachweis ist der eigentliche:**
+Ein Präfixvergleich auf der Zeichenkette hätte das Geschwisterverzeichnis
+`…\devpacks\leitwerk-erhebungen-2026-09-20-b4n` als Kind von `…\devpacks\leitwerk`
+gelesen – **D-219 eine Ebene tiefer.**
+
+#### 🔴 Drei Wächter derselben Vorbedingung, drei Sollwerte, keiner stimmte (D-225)
+
+`0.78.0`, `0.78.0`, `0.77.0` – gegen ein Übungsrepositorium auf `0.78.2` und einen Kern
+auf `0.79.1`. **Der dritte Wert wäre im normalen Pfad nie befragt worden**, weil
+`baeume-b4.py` seinen eigenen durchreicht. *Ein Sollwert, der nur in einer unbenutzten
+Voreinstellung steht, ist eine Falle für den nächsten, der das Skript einzeln aufruft.*
+
+Der Sollstand wird seither aus `leitwerk-core/VERSION` **abgeleitet**. 🟢 **Damit
+beantwortet der Wächter die erste Frage jedes Vorbedingungsdurchgangs von selbst.**
+
+#### 🟢 `K-83` war längst entschieden – das Werkzeug kannte es nur im Kommentar (D-226)
+
+D-120 schließt mit *„Für Fund-Testfälle bleibt die erste Form nach D-116 die einzige
+zulässige."* `auswerten-b4.py` druckte `W` und `T` für alle neunzehn Zellen gleich. Die
+Gattung steht jetzt **je Marke** im Code, das Urteil **je Lauf**.
+
+🟢 **Wirkungsnachweis an den 50 Belegen des Meßtags, ohne einen einzigen neuen Lauf:**
+
+- Der Hauptlauf von `SK-012-P01` ist **rot** – der gemessene `K-83`-Fall. Sein
+  Kontrollauf trägt (`WT`).
+- **Zehn der zwölf ungemessenen Zellen sind rot** – sie trafen einen leeren
+  Änderungssatz. ➡️ **Die neue Probe hätte D-218 aus den Belegen abgelesen**, statt ihn
+  erst beim Nachrechnen des `HEAD` zu finden.
+- **Sieben der acht abgenommenen Zellen bleiben grün.** Die achte ist `SK-012-N04`, und
+  sie fährt nach D-227 ohnehin nach.
+
+🔴 **Und die Umstellung hat sofort ihren eigenen zweiten Befund geliefert:** Je **Turn**
+geurteilt wäre `SK-011-N03` rot gewesen – `sk011n03t1` nennt `Generator`, `sk011n03`
+nicht mehr. **Eine abgenommene Zelle, ohne daß ein Lauf etwas versäumt hätte.** Bei
+`fw-docs-update` trägt der erste Turn den Halt und der zweite die Umsetzung; *das ist
+der dritte Teil von D-218 an einer neuen Stelle: ein Werkzeug, das die Turns eines Laufs
+für Läufe hält.*
+
+#### 🔴 Zwei Proben, die ihren Gegenstand verloren hatten
+
+- **`SK-010-N04`:** Ihre Marken waren die beiden Branchnamen – und seit D-219 darf der
+  Skill Branchnamen **nicht auflisten**. *Eine Probe, die verlangt, was die geprüfte
+  Schranke verbietet, kann nur rot sein.* Neu: `git status` (`fund`) und `git branch`
+  (`unterlassen`).
+- **`SK-010-N02`:** Ihre zweite Marke zeigte auf `UEB-02`, der sich selbst als
+  *„Platzhalter und keine Zugangsdaten"* ausweist. Neu: die Quelldatei von **`UEB-29`**.
+
+#### 🔴 Die Zahlen von `K-82` stimmten nicht
+
+| Angabe | gemessen |
+|---|---|
+| Kriterium 2 bei **31** | **30** |
+| **sieben** abgenommene Zellen | **acht** |
+| **zwölf** ungemessene Zellen | **elf** |
+| **24 Läufe**, *„zwei davon mit zweitem Turn"* | keine der elf gehört zu `fw-docs-update`, und nur dieser Skill schreibt – **22** |
+
+#### 🔴 Der siebte Befund: zwei Zähler desselben Bestands (D-228)
+
+Der **Trockenlauf des Apparats** hat ihn geliefert. Die Gegenzählung meldete **101 089
+284** Bytes gegen die 101 089 283, die `0.79.1` als *den* Bestand führt – ein Byte, und
+es gehört dem **Prüfmittel**: `node_modules/.vite/vitest/results.json`.
+`node-waechter.py` weist solche Pfade seit seinem Bau gesondert aus,
+`baeume_loeschen.py` zählte roh.
+
+🔴 **Am Meßtag hätte der Wächter angeschlagen, wo nichts geschehen ist:**
+`<TEST_COMMAND>` steht im `allow`-Korb des Meßbaums, also darf **jeder** Lauf das
+Prüfmittel starten – und zwischen *vorher* und *nachher* liegt die ganze Meßreihe.
+
+> ➡️ *Ein Wächter über einen geteilten Bestand muß wissen, wer außer dem Prüfling noch
+> hineinschreibt.*
+
+🟢 **Der stabile Stand lautet seither `9797 Dateien / 101 088 634 Bytes`, dazu eine
+Zwischenstandsdatei** – berichtet, nicht geprüft.
+
+#### 🟢 Was der Durchgang hergestellt hat
+
+| | |
+|---|---|
+| `UEB-29` | gebaut: `frontend/src/api/meldedienst.ts`, Quelle in `tools/praeparationen/`, je Meßbaum gesetzt. Ein Wächter bricht ab, wenn die Quelle **sich selbst als synthetisch ausweist** – genau der Befund an `UEB-02` |
+| Kontrollzuschnitte | `SK-012-P02`, `SK-011-N04` und `SK-010-P02` tragen `konf` statt `risiko` (D-221). Bei `SK-010-P02` bleibt der `risiko`-Kontrollauf als Beleg der **ersten** Hälfte stehen |
+| Übungsrepositorium | auf `0.79.2` gehoben, Overlay-Version an drei Trägern nachgezogen, Suite 59 grün |
+| Kosten des Nachlaufs | **28 Läufe, rund 34 USD** statt 24 und 29 |
 
 ---
 
@@ -964,11 +1127,11 @@ Validator wandert trotzdem mit und gilt dort ebenso.
 
 ## 1. Lage
 
-`main` = **0.79.1**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.79.2**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün.
-🟡 **KRITERIUM 2 STEHT BEI 30** – **vier** Testblatt-Bündel sind gefahren, **55 von 66 Zellen bestanden**. 🔴 **Bündel 4 hat acht von neunzehn gebracht statt neunzehn**, weil der Meßbaum auf `main` stand (0.35, D-218) – der erste Schritt dieser Reihe, der hinter seiner Zusage zurückblieb. **Noch ein Nachlauf, ein Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
-🔴 **DER NÄCHSTE SCHRITT IST DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`): gerechnet **24 Läufe, rund 29 USD**. Er muß **nach** den Abhilfen von `0.79.0` laufen – `SK-010-N04` mißt seither etwas anderes, und `UEB-29` ist entschieden und noch nicht gebaut.
+🟡 **KRITERIUM 2 STEHT BEI 32** – **vier** Testblatt-Bündel sind gefahren, **53 von 66 Zellen bestanden**. 🔴 **Der Zähler ist zum ersten Mal gestiegen, und das ist der Befund von `0.79.2`** (0.36, D-227): Zwei abgenommene Zellen stehen auf einer Skillfassung, die es nicht mehr gibt. 🔴 **Bündel 4 hat acht von neunzehn gebracht statt neunzehn**, weil der Meßbaum auf `main` stand (0.35, D-218) – der erste Schritt dieser Reihe, der hinter seiner Zusage zurückblieb. **Noch ein Nachlauf, ein Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
+🔴 **DER NÄCHSTE SCHRITT IST DER NACHLAUF DER DREIZEHN ZELLEN** (`~0.80.0`, `K-82`): gerechnet **28 Läufe, rund 34 USD**. 🟢 **Alle Vorbedingungen stehen seit `0.79.2`** – `UEB-29` ist gebaut, `SK-010-N04` mißt die Grenze statt der Branchliste, drei Kontrollzuschnitte tragen `konf`, die Berührungsprobe kennt ihre Gattung, und der Apparat schreibt nicht mehr ins Repositorium. **`LW_ERHEBUNG` vor dem ersten Handgriff setzen.**
 🟢 **KRITERIUM 2 STEHT BEI 38** – **drei** Testblatt-Bündel sind gefahren, **alle 47 Zellen bestanden** (`0.68.0`: elf Zellen, 26 Läufe, rund 23 USD; `0.71.0`: achtzehn Zellen, 43 Läufe, 48,47 USD). 🔴 **Noch drei Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
 🟡 **Der Meßtag von Bündel 3 lief davor:** `0.73.0` hat `K-74` entschieden und die Vorbedingungen hergerichtet (Abschnitt 0.24 **im Archiv**), der Meßaufbau steht (0.25), **alle 25 Hauptläufe sind gefahren und siebzehn Kontrollläufe fehlen** (0.26). **Kriterium 2 geht auf 38, sobald die Zellen abgenommen sind.**
 
@@ -1013,14 +1176,15 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.79.1**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.79.2**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
-| Übungsrepositorium | `devpacks/test-devin-framework` | Overlay **`0.78.0`**, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**. 🟢 **Achtundzwanzig Präparationen** (`UEB-01` bis `UEB-28`) – 🔴 **davon neun NICHT dauerhaft im Repositorium:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26` und `UEB-28` je **Meßbaum** (Quellen in `tools/praeparationen/`), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
+| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.79.2` gehoben** (2026-09-20, `0.79.2`), Overlay **`0.79.2`**, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**. 🟢 **Neunundzwanzig Präparationen** (`UEB-01` bis `UEB-29`) – 🔴 **davon zehn NICHT dauerhaft im Repositorium:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` und **`UEB-29`** je **Meßbaum** (Quellen in `tools/praeparationen/`), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
 | Belege 0.54.0 | `devpacks/leitwerk-erhebungen-2026-09-17/` | 73 Belegdateien, acht Skripte, sechzehn Prompts, eigene README |
 | Belege 0.58.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s3/` | elf Läufe, sieben Skripte, fünf Prompts, eigene README |
 | Belege 0.66.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s5/` | **dreißig Läufe**, einundzwanzig Bäume, elf Skripte, zehn Prompts, eigene README |
-| Meßapparat **und Belege** Bündel 4 | `devpacks/leitwerk-erhebungen-2026-09-19-b4/` | 🔴 **203 Belegdateien aus 50 Läufen (61,19 USD), unversioniert.** Sechs Skripte am 2026-09-20 berichtigt, fünf aus `…-b3` übernommen, `baeume_loeschen.py` neu |
+| Belege Bündel 4 | `devpacks/leitwerk-erhebungen-2026-09-19-b4/` | 🔴 **203 Belegdateien aus 50 Läufen (61,19 USD), unversioniert** – und neunzehn Dossiers. 🟢 **Der Apparat liegt seit `0.79.0` im Repositorium** (`leitwerk-core/tests/erhebungen/`, D-222); die Skripte, die hier noch liegen, sind der Stand des Meßtags |
+| Belege des Nachlaufs | `devpacks/leitwerk-erhebungen-2026-09-20-b4n/` | 🔴 **Noch nicht angelegt** – sie entsteht mit dem ersten Lauf. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224); ohne die Angabe bricht jedes Skript des Apparats ab |
 | Belege 0.59.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s4/` | **zwanzig Läufe** (zwölf gewertet, acht in drei Verworfen-Ablagen), neun Skripte, sechs Prompts |
 
 **Abnahme:** Der Prüfapparat steht bei **67**, Sondenmenge **`6, 14 und 18 bis 67`** – ausgerechnet, nicht gepflegt. **243 Einheiten**, Laufzeit rund **300 s** Wanduhr auf 8 Bahnen (Faktor 7,9). 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
@@ -1057,11 +1221,11 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-108`** |
-| Decision Record | **`D-218`** |
-| Klärungspunkt | **`K-82`** |
+| Änderungsantrag | **`CR-2026-111`** |
+| Decision Record | **`D-229`** |
+| Klärungspunkt | **`K-85`** |
 | Grenzfall | **`G-21`** |
-| Übungspräparation | **`UEB-29`** |
+| Übungspräparation | **`UEB-30`** |
 
 🔴 **Diese Tabelle war bis 0.77.0 sechs Releases veraltet** – sie führte `CR-2026-100`,
 `D-199`, `K-76` und `UEB-21` als frei, während `CR-2026-104`, `D-210`, `K-78` und
@@ -1072,7 +1236,7 @@ gepflegt.** Wer sie braucht, zählt sie: `grep -o 'D-[0-9]\{3\}' governance/DECI
 🔴 **`UEB-08` war bis 0.58.0 die synthetische Kennung der Gegenprobe 44b und ist jetzt
 echt.** Die Gegenprobe steht auf `UEB-97`. **Eine synthetische Kennung nimmt nie die nächste
 freie** – sonst kollidiert sie beim ersten echten Bedarf.
-**Offene Klärungspunkte:** 🟢 **`K-80` ist mit 0.78.2 entschieden** (D-216). 🔴 **Neu aus 0.78.2: `K-81`** (welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt – `core.autocrlf` ist eine Einstellung des Arbeitsplatzes, nicht des Repositoriums; **nicht vor dem Meßtag**, weil `git archive` die Meßbäume baut). 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
+**Offene Klärungspunkte:** 🔴 **NEU AUS 0.79.2: `K-84`** – acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt haben, und ihre **35 abgenommenen Zellen** stehen auf der Fassung davor. Wörtlich angewandt ginge Kriterium 2 auf rund **63** statt auf 32. **Nicht vor dem Nachlauf zu entscheiden.** 🟢 **`K-83` ist mit 0.79.2 entschieden** (D-226): keine Ausnahmemenge – D-120 hatte die Frage längst beantwortet, das Werkzeug kannte sie nur im Kopfkommentar. 🟢 **`K-80` ist mit 0.78.2 entschieden** (D-216). 🔴 **Neu aus 0.78.2: `K-81`** (welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt – `core.autocrlf` ist eine Einstellung des Arbeitsplatzes, nicht des Repositoriums; **nicht vor dem Meßtag**, weil `git archive` die Meßbäume baut). 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
 K-37, K-38, K-39, K-40, K-41, K-42, K-43, K-44, K-45, K-46, **K-47, K-48, K-49** (aus 0.55.0) und **K-50** (aus 0.56.0); **K-51** (aus 0.56.2). 🆕 **`K-73` ist mit 0.71.0 beantwortet, soweit er sich beantworten ließ** (D-195): **Die Sperre weist ab, sie entfernt nicht** – das Modell setzt den Aufruf ab. **Welche Schicht abweist, bleibt wahrscheinlich, nicht isoliert:** Die eigens gebauten Zuschnitte haben gar keinen Aufruf abgesetzt. 🔴 **Neu aus 0.71.0: `K-74`** (die Ausgabemarken `[HALT]` und `[RÜCKFRAGE]` stehen mit **145 Fundstellen in 54 anweisenden Trägern** im Kern und sind in keinem Kernmodul und keinem Glossar erklärt – **vor Bündel 3 zu entscheiden**). 🔴 **Neu aus 0.72.0: `K-75`** (sieben Entscheidungen zur Auslieferung als Installationsbibliothek und zum Unterverzeichnis `.koolie/`; **zwei davon haben eine Frist**, weil sie in die Umbenennung gehören). 🟢 **`K-72` ist mit 0.67.1 erledigt** (D-184). 🆕 **Neu aus 0.59.0/0.59.1: `K-54`** (die Laufzeitschicht kennt den Ausnahmeprozess nicht und verbietet zugleich unbedingt jede Lockerung – ein Lauf hat daraufhin eine registrierte Ausnahme für unwirksam erklärt), **`K-55`** (wie baut man eine Scope-Falle, die ein regelkonform lesender Lauf überhaupt antrifft?) und **`K-56`** (ein Testblatt ist eine Aufzeichnung und wird als Regelquelle ausgeliefert). **`K-52` ist mit 0.57.1 erledigt** (D-129), **`K-53` mit 0.59.0** (D-140), **`K-55` mit 0.60.0** (D-145). 🔴 **Neu aus 0.60.0: `K-57`** (neun von zwölf `fw-*`-Skills sind für das Modell gesperrt – der Standardarbeitsablauf ist im nicht-interaktiven Betrieb nur erreichbar, wenn der Prompt jeden Skill nennt, und dann mißt man den Prompt) und **`K-58`** (Abschnitt 17 sagt *du darfst*; ein Lauf hat daraus *untersagt* gemacht – die Werkzeugmeldung schlug den Regeltext). **Und `K-34` und `K-55` standen überhaupt nicht im Register**, obwohl sie in sieben beziehungsweise sechs Trägern genannt wurden – Prüfung 50 fängt das jetzt. 🔴 **Neu aus 0.61.0: `K-59`** (der zweite Einsatzkontext steht in drei der sechs anweisenden Fassungen nicht – jede Sitzung an diesem Framework steht in ihm, und die Texte, die sie lädt, sagen *nur lesend*), **`K-60`** (ob ein KI-Client die zwanzig Grenzfälle wirklich so einstuft, mißt kein Testfall – `FW-KO-05` prüft die Texte) und **`K-61`** (ein `bestanden` eines Konsistenztests altert mit jeder Änderung an seinem Gegenstand: `FW-KO-02` steht seit dem 10.09. auf `bestanden`, und drei der vier Befunde von 0.61.0 liegen in seinem Gegenstand). 🟢 **`K-66` ist mit 0.64.0 erledigt** (D-163 bis D-168). 🔴 **Neu aus 0.65.0: `K-69`** (der Wertabgleich zwischen Quell-Overlay und geladener Schicht deckt **einen** Platzhalter; `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` haben dieselbe Gestalt und sind **ungeprüft, nicht geprüft-und-gut** – hängt an `K-67`). 🔴 **Neu aus 0.64.0: `K-68`** (der Backend-Strang des Übungsrepositoriums ist auf keinem Arbeitsplatz dieses Projekts übersetzbar – `UEB-14` und zwei Zellen hängen daran; sie ist gelesen, nie gelaufen). 🔴 **Aus 0.63.0: `K-66`** (21 von 81 Blattzellen haben keinen Gegenstand – `fw-docs-update` vollständig; Herrichtung ist eigener Posten `0.65.0`) und **`K-67`** (die Overlay-Vorlage kennt drei Formen, einen Platzhalter zu binden, und eine davon ist *gar nicht*). 🔴 **Neu aus 0.67.0: `K-72`** (`SK-002-P01` verlangt eine Übungsmethode mit Tests **und** einem ungetesteten Fehlerpfad – von acht Modulen mit Tests ist **genau eines unpräpariert** (`BookForm.tsx`), und es hat keinen Fehlerpfad; die beiden mit einem tragen `UEB-05` beziehungsweise `UEB-03`. **Das ist D-137 eine Ebene höher:** Dort verdrängt eine Präparation den Gegenstand einer anderen Präparation, hier den einer **Zelle**. 🔴 **Vor `0.68.0` zu entscheiden** – entweder eine sechzehnte Präparation oder die ausdrückliche Feststellung, daß die Zelle auf `books.ts` gefahren wird und der Injektionsbefund im Protokoll als erwartete Nebenwirkung steht). 🆕 **`K-71` ist nicht geschlossen, aber beantwortet, soweit er sich beantworten ließ:** Der verlangte einbahnige Lauf ist gefahren und grün – **er grenzt die Nebenläufigkeit trotzdem nicht ein, weil auch die beiden achtbahnigen Läufe desselben Tages grün sind.** Stand: einmal beobachtet, in vier Läufen nicht reproduziert. 🔴 **Neu aus 0.62.0: `K-62`** (26 von 44 `[DOK]`-Zeilen der Fähigkeitsmatrizen nennen ihre Quelle nicht – ohne sie kostet jede Wiederholung von `FW-AK-01` denselben vollen Durchgang; eigener Posten `~0.65.0`), **`K-63`** (die Kontoquelle der Skills bei `claude-code` ist standardmäßig an und aus der ausgelieferten Datei **nicht** abschaltbar – die neue Bauform des Releases), **`K-64`** (die organisationsseitige Skillquelle von `devin-desktop`, *„Indexed repos"*, liegt außerhalb jeder Datei des Frameworks – zugleich der erste dokumentierte Datenpunkt zu `X2`/`K-20`) und **`K-65`** (der clientseitige Schalter für fremde Agentenprotokolle ist entfallen; die Freigabezeile des Overlays bleibt als **organisatorische Auflage** ohne technische Seite).
 
 ---
@@ -1122,7 +1286,7 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0** | 🟢 **ERLEDIGT mit `0.77.0` (Herrichtung) und `0.78.0` (Meßapparat, Vorbedingungsdurchgang)** – *(Stand 0.76.0:)* **DIE HERRICHTUNG FÜR BÜNDEL 4** (`~0.77.0`, `CR-2026-103`, D-206, D-207): der Meßbaum mit **echter Historie** (`git init`, zwei Übungs-Branches, präparierte Commits, **synthetische Autoren** – `k3-bauen.py` ist die Vorlage), zwei Historienpräparationen, vier Dateipräparationen und das Heben des Übungsrepositoriums auf `0.75.0`. **Dazu `K-78` entscheiden:** wie die Ergebnisberichte entstehen, ohne ihre eigene Lösung mitzuliefern | eine Sitzung, **kein Kontingent** | –. **Ohne sie sind zwölf der neunzehn Zellen von Bündel 4 nicht fahrbar** |
 | **0** | 🟢 **ERLEDIGT mit `0.78.2`** – **`K-80` entscheiden, bevor das nächste Release gebaut wird** (`CR-2026-107`, D-216, D-217). Die Übergabe steht jetzt im Release-Commit, die Antragsnummer ist heraus, Prüfung 66 und 67 setzen durch, was prüfbar ist | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **38**) |
 | **0a** | 🟢 **`K-77` ist entschieden** (`0.75.0`, D-205) und `K-76` bleibt offen – fällig, sobald wieder ein Wiederherstellungsschritt gemessen wird | – | – |
-| **0b** | 🔴 **DER NACHLAUF DER ELF ZELLEN** (`~0.80.0`, `K-82`, D-218): `SK-012-P01`, `-P02`, `-N01`, `-N02`, `-N03`; `SK-010-P01`, `-N01`, `-N02`, `-N03`, `-N04`, `-N05`. **Gerechnet, nicht gemessen:** 24 Läufe, rund **29 USD** bei 1,22 USD je Lauf. 🔴 **Er muß NACH den Abhilfen von `0.79.0` laufen** – `SK-010-N04` mißt seither die **Grenze** statt der Branchliste (D-219), und `UEB-29` ist entschieden und **noch nicht gebaut** (D-220). 🟢 **Was nicht noch einmal bezahlt werden muß:** die acht abgenommenen Zellen, die sechzehn vollständigen Kontrollzuschnitte und die Kontrollzählung. 🟢 **Der Apparat ist repariert und mit zwei Wirkungsnachweisen belegt** und liegt versioniert in `leitwerk-core/tests/erhebungen/`. 🔴 **Die Meßbäume sind gelöscht** (2026-09-20, nach dem Merge): 46 Bäume, 38 Verbindungen einzeln gelöst, geteilter Bestand gegengezählt unverändert. Der Nachlauf baut neu. **Drei Fragen vorher** (`K-82`): `UEB-29` bauen? `konf` statt `risiko` für zwei Zellen (D-221)? Bestehende oder frische Bäume? | eine Sitzung, **~29 USD** | **Kriterium 2: 30 → 19** |
+| **0b** | 🔴 **DER NACHLAUF DER DREIZEHN ZELLEN** (`~0.80.0`, `K-82`, D-218, D-227): `SK-012-P01`, `-P02`, `-N01`, `-N02`, `-N03`, **`-N04`**; `SK-010-P01`, **`-P02`**, `-N01`, `-N02`, `-N03`, `-N04`, `-N05`; dazu der `konf`-Kontrollauf von `SK-011-N04`. **Gerechnet, nicht gemessen:** 28 Läufe, rund **34 USD** bei 1,2238 USD je Lauf. 🟢 **ALLE VORBEDINGUNGEN STEHEN SEIT `0.79.2`** (Abschnitt 0.36): `UEB-29` gebaut, `SK-010-N04` mißt die Grenze statt der Branchliste (D-219), drei Kontrollzuschnitte auf `konf` (D-221), die Berührungsprobe kennt ihre Gattung (D-226), der Sollwert der Kernversion wird abgeleitet (D-225), und der Apparat schreibt nicht mehr ins Repositorium (D-224). 🔴 **`LW_ERHEBUNG` vor dem ersten Handgriff setzen** – sonst bricht jedes Skript ab. 🟢 **Was nicht noch einmal bezahlt werden muß:** die sechs Zellen von `fw-docs-update` samt Kontrolläufen, der `risiko`-Kontrollauf von `SK-010-P02` (erste Hälfte), der Hauptlauf von `SK-011-N04` und die Kontrollzählung. 🔴 **Die Meßbäume sind gelöscht**; der Nachlauf baut neu. | eine Sitzung, **~34 USD** | **Kriterium 2: 32 → 19** |
 | **0c** | **Testblätter, Bündel 5** – `role-re-ticket`, **15 Zellen**, das größte Einzelblatt und das einzige außerhalb des Kerns; braucht ein eigenes Pack | eine Sitzung | **Kriterium 2: 19 → 4** |
 | **0d** | **Die letzten vier Zellen des zentralen Katalogs** – `FW-KO-05` (sobald `K-59` entschieden ist) und die drei Sammelzellen `FW-NE-04`, `FW-PO-03`, `FW-RE-01`; sie können nicht vor ihren Bestandteilen schließen (D-139, D-143) | eine Sitzung | **Kriterium 2: 4 → 0** |
 | **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.66.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
