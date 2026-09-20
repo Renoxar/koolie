@@ -730,8 +730,7 @@ Zuschnitt als Paar (D-23).
    nicht hin* – zum zweiten Mal nach `0.77.0`.
 3. 🔴 **Das `Edit`-Werkzeug stellte `validate-framework.py` von CRLF auf LF um**
    (7240 Zeilen). Fünf Sonden meldeten `[Praeparation gebrochen]`, weil die
-   Präparation von Prüfung 40 nach `
-` splittet. **Das Arbeitswissen führt die
+   Präparation von Prüfung 40 nach `\r\n` splittet. **Das Arbeitswissen führt die
    Regel für das `Write`-Werkzeug; sie gilt für `Edit` genauso.** 🟢 Die Sonden
    haben es **laut** gemeldet, nicht leise bestanden.
 

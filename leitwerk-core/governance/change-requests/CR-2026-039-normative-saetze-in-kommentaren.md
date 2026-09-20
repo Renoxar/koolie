@@ -120,5 +120,5 @@ Agentenprofile ist es nicht erhoben.
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E4 wie vorgelegt: Der normative Satz wandert in den **Fließtext** der Wurzel-Anweisungsdatei statt ersatzlos zu entfallen; die übrigen Kommentarinhalte (Ebene, Version, Owner, Ladeverhalten) bleiben als Auskunft an den Menschen; **Prüfung 23** meldet normative Schlüsselwörter in HTML-Kommentaren der Laufzeitartefakte; K-28 wird **nach** der Umsetzung erhoben. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E4 wie vorgelegt: Der normative Satz wandert in den **Fließtext** der Wurzel-Anweisungsdatei statt ersatzlos zu entfallen; die übrigen Kommentarinhalte (Ebene, Version, Owner, Ladeverhalten) bleiben als Auskunft an den Menschen; **Prüfung 23** meldet normative Schlüsselwörter in HTML-Kommentaren der Laufzeitartefakte; K-28 wird **nach** der Umsetzung erhoben. Ziel-Release 0.26.0 |
 | Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |

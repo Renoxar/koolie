@@ -77,8 +77,7 @@ gefahren.
 🔴 **Der erste Abnahmelauf ist gefallen, und der Grund gehoert ins Protokoll:**
 Fuenf Einheiten meldeten `[Praeparation gebrochen]` - **das `Edit`-Werkzeug hatte
 `validate-framework.py` von CRLF auf LF umgestellt**, alle 7240 Zeilen, und die
-Praeparation von Pruefung 40 splittet nach `
-`. Das Arbeitswissen fuehrt die Regel
+Praeparation von Pruefung 40 splittet nach `\r\n`. Das Arbeitswissen fuehrt die Regel
 fuer das `Write`-Werkzeug (*Dateien aus dem `Write`-Werkzeug sind LF und muessen nach
 dem Anlegen umgestellt werden*); **sie gilt fuer `Edit` genauso, und das stand dort
 nicht.** 🟢 **Die Sonden haben es laut gemeldet, nicht leise bestanden.**

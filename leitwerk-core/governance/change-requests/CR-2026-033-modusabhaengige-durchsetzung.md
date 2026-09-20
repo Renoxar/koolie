@@ -127,5 +127,5 @@ stattfinden dürfte – als Testnachweis zulässig, als Betriebszustand nicht.
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E5 wie vorgelegt: Die Einstufungen bleiben `[TECHNISCH]`, die Bedingung kommt als **Vorbemerkung** in den B-Block; keine eigene Matrixspalte; die Klassendefinition in `clients/README.md` wird präzisiert; T7 nennt künftig die technische Gegenmaßnahme; keine neue Prüfung; der Bypass-Lauf für `claude-code` wird als Folgearbeit in AP2 geführt und im Protokoll als Testnachweis ausgewiesen. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E5 wie vorgelegt: Die Einstufungen bleiben `[TECHNISCH]`, die Bedingung kommt als **Vorbemerkung** in den B-Block; keine eigene Matrixspalte; die Klassendefinition in `clients/README.md` wird präzisiert; T7 nennt künftig die technische Gegenmaßnahme; keine neue Prüfung; der Bypass-Lauf für `claude-code` wird als Folgearbeit in AP2 geführt und im Protokoll als Testnachweis ausgewiesen. Ziel-Release 0.26.0 |
 | Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |

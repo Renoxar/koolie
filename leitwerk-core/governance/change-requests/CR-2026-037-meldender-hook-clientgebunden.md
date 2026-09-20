@@ -129,5 +129,5 @@ Nachweis an einer Installation – denselben, der für H3 aussteht.
 | Entscheidung | **angenommen** |
 | Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | E1 bis E5 wie vorgelegt: Projektverzeichnis und Regelablage kommen als **Argumente** aus der Abbildung; der Regelablage-Kandidat bleibt erhalten; Prüfung 21 gilt eng für die Hook-Skripte, die Rückfallabbildung des Validators bleibt ausgenommen; D-30 wird fortgeschrieben statt ersetzt; der Nachweis für H3 bleibt getrennt und Teil von AP2. Ziel-Release 0.26.0 |
+| Auflagen | E1 bis E5 wie vorgelegt: Projektverzeichnis und Regelablage kommen als **Argumente** aus der Abbildung; der Regelablage-Kandidat bleibt erhalten; Prüfung 21 gilt eng für die Hook-Skripte, die Rückfallabbildung des Validators bleibt ausgenommen; D-30 wird fortgeschrieben statt ersetzt; der Nachweis für H3 bleibt getrennt und Teil von AP2. Ziel-Release 0.26.0 |
 | Umsetzung | **mit Release 0.26.0** – Einzelheiten und Nachweise in `leitwerk-core/CHANGELOG.md` |
