@@ -2,6 +2,127 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.78.0] - 2026-09-20
+
+**Der Messapparat fuer Buendel 4 - und die Zusage, die ihr eigener Waechter nicht
+pruefen konnte** (`CR-2026-105`, **D-211**, **D-212**, **D-213**, `K-79` neu).
+Vorbedingungsdurchgang und Herrichtung des Apparats, ohne Kontingent, ohne
+Modelllauf. Kriterium 2 unveraendert **38**.
+
+### Der Durchgang: neunzehn von neunzehn tragen - und der Beleg ist neu
+
+Der Baumbau ist an allen dreizehn Zellen mit `--aus-archiv` gefahren worden, also
+gegen den **committeten** Stand des gehobenen Uebungsrepositoriums. Alle dreizehn
+melden `OK`. 🟢 **Das konnte `0.77.0` nicht belegen** - jenes Release fuhr aus dem
+Arbeitsbaum, weil das Repositorium noch nicht gehoben war, und hat die Enthaltung
+benannt. **Der Weg des Messtags ist damit zum ersten Mal belegt.**
+
+Kein Release seit `0.76.0` hat den Gegenstand angefasst: `0.77.0` hat nur die
+beiden `TESTS.md` angefasst (die Herrichtungsvermerke), **`SKILL.md` und
+`EXAMPLES.md` aller drei Skills sind unberuehrt**, die Versionen stehen
+unveraendert auf `0.1.4`, `0.1.5` und `0.1.3`.
+
+### 🔴 Die Zusage "drei synthetische Autoren" ist zurueckgenommen (D-211)
+
+Gemessen an allen dreizehn Baeumen: **kein Baum fuehrt drei Autoren, acht fuehren
+genau einen** - darunter `SK-012-N04`, die einzige Zelle, fuer die die Mehrzahl
+der Gegenstand ist. Der Basis-Commit laeuft immer unter dem ersten Autor, und der
+Uebungs-Branch jener Zelle traegt denselben.
+
+🔴 **Und der Waechter konnte es nicht merken.** `waechter_autoren()` prueft die
+**Domaene** und gibt die Zahl der **Commits** zurueck; seine Meldung lautete
+*"Waechter Autoren: 2 Commit(s)"*. Aus dieser Zeile haben drei Traeger die Zusage
+abgelesen. **Das ist D-205 an einer zweiten Stelle:** Dort prueffte ein Waechter
+mit dem Schnittmuster, hier mit einem anderen Gegenstand als dem der Zusage - in
+beiden Faellen ist er gruen. ➡️ **Eine Werkzeugausgabe, deren Ueberschrift etwas
+anderes zaehlt als ihr Wert, ist die Quelle der naechsten erfundenen Zahl.** Er
+meldet seither beides getrennt: `2 Commit(s), 1 Autor(en)`.
+
+**Dreizehn Stellen in zehn Dateien berichtigt.** Der Preis ist benannt und wird
+getragen: `SK-012-N04` misst etwas Schmaleres, als ihre Eingabe fragt - die
+Mehrzahl laeuft bei einem Namen ins Leere. Der Testfall bleibt fahrbar, **weil
+sein erwartetes Verhalten ein Unterlassen ist**, und ein Unterlassen laesst sich
+an einem Namen so gut verletzen wie an dreien. `D-207` und `D-209` sind nicht
+betroffen - sie sagen *synthetische Autoren* ohne Zahl.
+
+### 🔴 Der Apparat lag nicht unveraendert bereit (D-212)
+
+README und Wiederaufnahmepunkt sagten, Packwechsel, Baeume je Lauf,
+Kontrollzuschnitte und node-Waechter laegen unveraendert in `b3/skripte/`.
+**Gezaehlt: von fuenfzehn Skripten tragen sechs, neun nicht.** `baeume-b3.py`
+kannte in seiner `ZUORDNUNG` **keine einzige Zelle von Buendel 4**;
+`umgebungen-bauen-b3.py` hat keine Parameter und waechtert Praeparationen von
+Buendel 3; **die Prompts der neunzehn Zellen gab es nicht.**
+
+➡️ **Ein Messapparat zerfaellt in zwei Haelften - eine, die den GEGENSTAND kennt
+(Klassen, Waechter, Laeufer), und eine, die die ZELLEN kennt (Zuordnung, Prompts,
+Auswertung). Nur die erste reist mit.**
+
+**Neun Skripte gebaut**, dazu eine **vierzehnte Kontrollklasse**: `SK-012-N01` und
+`SK-010-N01` pruefen V1 und V2 - keine Fernwirkung, keine Freigabeaussage -, und
+dafuer gab es keine. Die Klasse heisst `fern`; ihr Stammmuster ist nach **D-210**
+einmal gegen den ungeschnittenen Baum gemessen und **gelesen** worden. 🔴
+`Freigabe\w*` (502 Zeilen in 102 Dateien) und `freigegeben` (190 in 76) sind
+ausdruecklich **nicht** darin: Gelesen meinen sie die Freigabe **an** den Agenten
+(Kontextfreigabe, Overlay-Freigabe), nicht die Freigabeaussage **des** Agenten -
+zwei Bedeutungen desselben Wortes, und genau das Beispiel, das der Kopfkommentar
+seit `0.75.0` fuehrt. Der erste Lauf entfernte **206 Zeilen in 85 Traegern**,
+beide Waechter gruen; **12 davon in `fw-mr-description/SKILL.md` und 9 in
+`fw-review-support/SKILL.md`** - in genau den beiden Skills, die das Buendel misst.
+
+### 🔴 Der teuerste Befund: die Reihenfolge baute das Rauschen ein (D-213)
+
+Die README schrieb vor: *archivieren -> Historie -> Packwechsel*. In dieser
+Reihenfolge committet der Baumbau den Stand **vor** dem Packwechsel - und
+`.devin/` ist im Uebungsrepositorium **versioniert** (508 getrackte Dateien).
+**Gemessen an `SK-010-P02`, beide Wege am selben Baum:**
+
+| Reihenfolge | `git status --short` |
+|---|---|
+| wie die README sagte | **79 Eintraege** - 73 geloeschte `.devin/`-Dateien, 4 untrackte, **2** geaenderte |
+| Packwechsel zuerst | **2 Eintraege** - genau der Aenderungssatz |
+
+**Zwei Zellen verlieren damit ihren Gegenstand** (`SK-010-P02` und `SK-010-N02`
+verlangen einen Aenderungssatz in der Arbeitskopie), **und zwoelf messen Rauschen
+mit.** 🔴 **Der schwerere Teil ist D-179 an einer neuen Stelle:** *Ein
+Kontrollbaum darf nicht sagen, dass er einer ist.* Dort war es ein Kommentar in
+einer Konfigurationsdatei, hier sind es 73 geloeschte Regeldateien eines fremden
+Client Packs - **und jede der neunzehn Zellen liest `git status`.**
+
+➡️ **Wer einen Messbaum mit Historie baut, fragt nicht nur, was in den DATEIEN
+steht, sondern was der ERSTE COMMIT enthaelt.** Die Abhilfe ist eine Reihenfolge,
+kein Eingriff: Der Baumbau kennt den Modus *bestehender Baum* seit `0.77.0` und
+hat ihn nie gebraucht. Der Zuschnitt gehoert aus demselben Grund vor das
+`git init`, die `node_modules`-Verbindung danach.
+
+### 🔴 Zehn Overlay-Werte stehen in keiner bindenden Schicht (`K-79`)
+
+Die Wertetabelle des Quell-Overlays fuehrt zehn Namen; **die Laufzeitfassung
+bindet keinen einzigen davon**, sondern vier andere. Darunter `<DEFAULT_BRANCH>` -
+**Argument von zwoelf der neunzehn Zellen** - und `<MR_TEMPLATE_PATH>`, das
+`fw-mr-description` Abschnitt 2 als Vorbedingung nennt. 🟢 **Die Zellen bleiben
+fahrbar:** Die Laufzeitfassung benennt die Detailfassung, und `project-overlay/`
+ist schreibgesperrt, aber lesbar (D-55).
+
+**Vor dem Messtag ausdruecklich NICHT gebunden:** Eine Bindung unmittelbar vor der
+Messung aenderte den Messgegenstand, und Buendel 1 bis 3 sind ohne sie gefahren.
+**Und die Frage ist selbst ein Messwert** - genau der, den `K-69` offen haelt.
+`auswerten-b4.py` fuehrt dafuer das Merkmal `Detailfassung gelesen`.
+
+### Was NICHT geschehen ist
+
+Kein Lauf, keine Messung, keine Zelle abgenommen. **Kriterium 2 bleibt 38.** Der
+Messtag von Buendel 4 steht auf `~0.79.0`. 🟢 **`K-76` ist fuer dieses Buendel
+nicht einschlaegig** - gemessen, nicht angenommen: Keiner der drei Skills kennt
+einen Ruecknahme- oder Wiederherstellungsschritt.
+
+### Migrationshinweis
+
+**Eine Datei** (`fw-mr-description/TESTS.md`) fuer das Uebungsrepositorium, keine
+Versionsanhebung (D-119). Sein eigener Traeger
+`tools/mentorenblatt/PRAEPARATIONEN.md` wird von Hand nachgezogen - er ist kein
+Kerndokument und reist nicht mit `install.py`.
+
 ## [0.77.0] - 2026-09-19
 
 **Die Herrichtung fuer Buendel 4 - `K-78` entschieden, und der Waechter meldet vier
@@ -55,8 +176,9 @@ Koeder, und ein Waechter des Baumbaus setzt sie durch.
 ### Der Messbaum hat jetzt eine Historie
 
 `historie-bauen-b4.py` legt je Zelle ein echtes Git-Repositorium an: `main`, die
-Uebungs-Branches, die die Zelle braucht, praeparierte Commits, drei synthetische Autoren
-unter `example.invalid`. **Gefahren an allen dreizehn Zellen** - 13 Zellen, 6
+Uebungs-Branches, die die Zelle braucht, praeparierte Commits, synthetische Autoren
+unter `example.invalid`. *(Die Zahl „drei" ist mit 0.78.0 zurueckgenommen -
+CR-2026-105, D-211: kein Baum fuehrt drei, acht fuehren genau einen.)* **Gefahren an allen dreizehn Zellen** - 13 Zellen, 6
 Uebungs-Branches, 12 Ersetzungen, je Ersetzung ein Waechter auf die Trefferzahl.
 
 Ein Baum je Zelle und nicht einer fuer alle: `SK-012-P02` verlangt denselben Branch
