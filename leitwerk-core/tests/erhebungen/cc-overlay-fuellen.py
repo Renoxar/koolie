@@ -28,10 +28,12 @@ import os
 import re
 import sys
 
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
 
 CC = os.path.abspath(sys.argv[1])
-DD = r"C:\Users\reneh\Documents\devpacks\test-devin-framework"
+DD = ablage.uebungsrepositorium()           # D-231: gesagt, nicht im Quelltext
 
 OVERLAY = os.path.join(DD, "project-overlay", "OVERLAY.md")
 DEVIN_CONF = os.path.join(DD, ".devin", "config.json")

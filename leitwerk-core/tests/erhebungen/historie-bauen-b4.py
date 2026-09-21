@@ -52,7 +52,7 @@ import ablage
 sys.stdout.reconfigure(encoding="utf-8")
 
 HIER = os.path.dirname(os.path.abspath(__file__))
-UEB = r"C:\Users\reneh\Documents\devpacks\test-devin-framework"
+UEB = ablage.uebungsrepositorium()          # D-231: gesagt, nicht im Quelltext
 
 # Die synthetischen Autoren. 🔴 HIER STAND: "Drei und nicht einer, weil
 # SK-012-N04 den Lauf nach den Autoren der Commits fragt". Die Zusage ist

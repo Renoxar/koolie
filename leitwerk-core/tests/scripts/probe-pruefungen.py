@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 70, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 71, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6279,6 +6279,88 @@ gegenprobe("70a", "Freie Variable, Komprehension, except-Name, with-Ziel, Klasse
 
 gegenprobe("70b", "Ein gebundener Name mit untauglichem Wert laeuft durch - das ist die angesagte Grenze der Pruefung und kein Loch",
            _70_gebunden_und_falsch, M70)
+
+
+# --- 71: kein Traeger des Kerns nennt einen Arbeitsplatz (D-231) -------------------
+#
+# Drei Formen desselben Gegenstands: der gemessene Fall in einem WERKZEUG (71a), die
+# gleiche Bauform in einer CHECKLISTE - also ausserhalb der .py-Welt, weil die
+# Pruefung nicht an der Dateiart haengt (71b) -, und die Ankersonde: ein Muster, das
+# seinen Gegenstand nicht mehr trifft, bestuende leise (71c).
+#
+# DREI GEGENPROBEN, UND SIE BELEGEN DEN ZUSCHNITT. Ein Platzhalter nennt niemanden
+# (71a). Die Marke `SYNTHETISCH` in derselben Zeile laeuft durch - dieselbe Bauform
+# wie das Begruendungsfeld von Pruefung 68 (71b). Und eine AUFZEICHNUNG bleibt
+# unbeanstandet: Ein Protokoll haelt fest, WO gemessen wurde, und wer es umschreibt,
+# hat keines mehr (71c, D-141) - das ist die angesagte Grenze und der Grund, aus dem
+# `K-85` offen steht.
+M71 = "nennt ein Benutzerprofil"
+M71_ANKER = "das eigene Muster trifft"
+P71_WERKZEUG = "leitwerk-core/tests/erhebungen/stand-b4.py".replace("/", os.sep)
+P71_CHECKLISTE = "leitwerk-core/checklists/11-framework-release.md".replace("/", os.sep)
+P71_PROTOKOLL = ("leitwerk-core/tests/protocols/"
+                 "2026-09-21-wiederaufnahme-nachlauf-b4.md").replace("/", os.sep)
+P71_VALIDATOR = "leitwerk-core/tests/scripts/validate-framework.py".replace("/", os.sep)
+P71_PFAD = "C:" + chr(92) + "Users" + chr(92) + "sondenkonto" + chr(92) + "devpacks"
+
+
+def _71_werkzeug(root: str) -> None:
+    """Der gemessene Fall: ein Werkzeug des Kerns fuehrt einen Arbeitsplatzpfad."""
+    ersetze(P(root, P71_WERKZEUG),
+            ('BAEUME = r"C:' + chr(92) + 'lw-b4"',
+             'BAEUME = r"' + P71_PFAD + chr(92) + 'lw-b4"'))
+
+
+def _71_checkliste(root: str) -> None:
+    """Die zweite Form, ausserhalb der .py-Welt: derselbe Pfad in einer Checkliste."""
+    zeile_nach(P(root, P71_CHECKLISTE), "## Zweck",
+               "" + chr(10) + "Arbeitsstand liegt unter `" + P71_PFAD + "`.")
+
+
+def _71_muster_verlieren(root: str) -> None:
+    """Ankersonde: das Muster trifft seinen eigenen Gegenstand nicht mehr."""
+    ersetze(P(root, P71_VALIDATOR),
+            ('r"(?:[A-Za-z]:[' + chr(92) + chr(92) + '/]{1,2}Users|/home|/Users)'
+             '[' + chr(92) + chr(92) + '/]{1,2}([A-Za-z0-9._-]+)"',
+             'r"trifft-nichts-mehr([A-Za-z0-9._-]+)"'))
+
+
+def _71_platzhalter(root: str) -> None:
+    """Gegenprobe: ein Platzhalter nennt niemanden."""
+    zeile_nach(P(root, P71_CHECKLISTE), "## Zweck",
+               "" + chr(10) + "Arbeitsstand liegt unter `C:" + chr(92)
+               + "Users" + chr(92) + "%USERNAME%" + chr(92) + "devpacks`.")
+
+
+def _71_marke(root: str) -> None:
+    """Gegenprobe: die Marke in derselben Zeile laeuft durch (wie bei Pruefung 68)."""
+    zeile_nach(P(root, P71_CHECKLISTE), "## Zweck",
+               "" + chr(10) + "Beispielpfad `" + P71_PFAD + "` - SYNTHETISCH.")
+
+
+def _71_aufzeichnung(root: str) -> None:
+    """Gegenprobe: eine Aufzeichnung bleibt unbeanstandet - die angesagte Grenze."""
+    zeile_nach(P(root, P71_PROTOKOLL), "## 1. Die Lage vor dem Durchgang",
+               "" + chr(10) + "Gemessen wurde ausserhalb von `" + P71_PFAD + "`.")
+
+
+sonde("71a", "Ein Werkzeug des Kerns fuehrt einen Arbeitsplatzpfad im Quelltext - der gemessene Fall, den D-222 mit dem Apparat hereingetragen hat",
+      _71_werkzeug, M71)
+
+sonde("71b", "Dieselbe Bauform ausserhalb der Skripte: derselbe Pfad in einer Checkliste wird ebenso gemeldet",
+      _71_checkliste, M71)
+
+sonde("71c", "Trifft das eigene Muster seinen Gegenstand nicht mehr, meldet Pruefung 71 das, statt leise zu bestehen",
+      _71_muster_verlieren, M71_ANKER)
+
+gegenprobe("71a", "Ein Platzhalter als Kontosegment nennt niemanden und wird NICHT gemeldet - die Pruefung haengt am Namen, nicht an der Pfadform",
+           _71_platzhalter, M71)
+
+gegenprobe("71b", "Die Marke SYNTHETISCH in derselben Zeile laeuft durch - dieselbe Bauform wie das Begruendungsfeld von Pruefung 68",
+           _71_marke, M71)
+
+gegenprobe("71c", "Eine Aufzeichnung bleibt unbeanstandet - ein Protokoll haelt fest, wo gemessen wurde, und wer es umschreibt, hat keines mehr (D-141)",
+           _71_aufzeichnung, M71)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

@@ -425,7 +425,7 @@ def main():
     print("=" * 128)
     print("3. KONTROLLZAEHLUNG: das Suchwort der sachfremden CLAUDE.md")
     print("=" * 128)
-    # Erste Regel der Sitzungstests: nicht unterhalb von C:\\Users\\reneh messen.
+    # Erste Regel der Sitzungstests: nicht unterhalb des Benutzerprofils messen.
     # Ergebnis dieser Zaehlung MUSS null sein.
     treffer = 0
     for k in alle:

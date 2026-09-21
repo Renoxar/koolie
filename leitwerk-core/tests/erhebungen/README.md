@@ -16,6 +16,31 @@ in kein Projekt geschrieben – wie `tests/scripts/probe-pruefungen.py` auch.
 | **Hier:** die Skripte | Baumbau, Zuschnitte, Lauf, Auswertung, Dossiers, Aufräumen |
 | **Nicht hier:** die Belege | Antworten, Ergebnis-JSON, stdout und Sitzungsmitschriften je Lauf, dazu die **Prompts** und die **Zustandsaufnahmen**. Sie sind **Aufzeichnung**, nicht Anweisung (dieselbe Trennlinie wie D-141), und liegen neben dem Repositorium. **Jedes Protokoll nennt den Ablageort seiner Belege** |
 
+## 🔴 Zwei Pfade werden gesagt – `LW_ERHEBUNG` und `LW_UEBUNG`
+
+**Vor jedem Lauf zu setzen:**
+
+```
+set LW_ERHEBUNG=C:\...\devpacks\leitwerk-erhebungen-<datum>-<buendel>   # SYNTHETISCH
+set LW_UEBUNG=C:\...\devpacks\<uebungsrepositorium>                     # SYNTHETISCH
+```
+
+🔴 **`LW_UEBUNG` gibt es seit `0.79.4` und aus demselben Grund wie `LW_ERHEBUNG`**
+(**D-231**): **Neun Werkzeuge dieses Apparats trugen einen Arbeitsplatzpfad im
+Quelltext – mit dem Kontonamen einer natürlichen Person.** Solange sie neben dem
+Repositorium lagen, stand das in einer unversionierten Ablage; **mit D-222 sind sie
+hineingewandert und haben die Pfade mitgebracht.** **Prüfung 71** meldet seither jeden
+absoluten Pfad in ein Benutzerprofil, dessen Kontosegment kein Platzhalter ist und
+dessen Zeile keine Begründung trägt.
+
+> *Wer einen Apparat umzieht, zieht seine Arbeitsplatzpfade mit um – und veröffentlicht
+> sie, ohne es zu entscheiden.*
+
+⚠️ **Ausgenommen sind Aufzeichnungen** (`tests/protocols/`,
+`governance/change-requests/`): Sie halten fest, **wo** gemessen wurde, und ein
+Protokoll, das man umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den
+Kontonamen weiter – das ist **`K-85`** und nicht entschieden.
+
 ## 🔴 Die Ablage wird gesagt, nicht abgeleitet – `LW_ERHEBUNG`
 
 **Vor jedem Lauf zu setzen**, sonst bricht jedes Skript ab, das eine
@@ -57,7 +82,7 @@ dieselbe Lehre wie `--ziel` beim Baumbau (D-218).
 | `cc-overlay-fuellen.py` | füllt eine frische Installation aus dem versionierten Projektbestand |
 | `prompts-schreiben-b4.py`, `turn2-schreiben-b4.py` | schreiben die Prompts; Haupt- und Kontrollprompt sind **wörtlich gleich** |
 | `auswerten-b4.py` | Kennzahlen, Berührungsprobe, Merkmale, Kontrollzählung |
-| `dossier-b4.py` | legt je Zelle die **Erwartung** des Testblatts neben den **Beleg** des Laufs |
+| `dossier-b4.py` | legt je Zelle die **Erwartung** des Testblatts neben den **Beleg** des Laufs – und **fährt die Auswertung dafür selbst** (D-232) |
 | `zustand-b4.py`, `node-waechter.py` | Zustandsaufnahme vor und nach der Reihe; Gegenzählung des geteilten Bestands |
 | `umgebungen-bauen-b4.py`, `trust-b4.py` | Umgebungen und Vertrauenseinträge |
 | `baeume_loeschen.py` | löst **jede Verzeichnisverbindung einzeln**, dann `shutil.rmtree` mit `onexc`-Haken |
@@ -120,6 +145,22 @@ lagen beide **auf dem Weg**, den der Wiederaufnahmepunkt vorschreibt:
    (`ablage.sollmenge()`), und ein Prompt ohne Baum wird **genannt**.
 
    > *Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt von gestern.*
+
+### Die zwei Befunde beim Bau der Dossiers (2026-09-21)
+
+1. 🔴 **Neun Werkzeuge nannten einen Arbeitsplatz** (**D-231**, **Prüfung 71**) – siehe
+   oben. **Achtzehn Träger** trugen den Kontonamen vor dem Eingriff, **acht Werkzeuge**
+   und **zehn Aufzeichnungen**; danach **null Werkzeuge**.
+   🟢 **Und Prüfung 70 hat dabei ihren ersten echten Fang gemacht:** Die Umstellung
+   ließ in drei Werkzeugen den Aufruf `ablage.…` ohne den Import stehen – **drei
+   `NameError`, gemeldet vom Validator, bevor ein Lauf sie fand.**
+
+2. 🔴 **`dossier-b4.py` wartete auf ein Datum** (**D-232**). Es nannte
+   `auswertung-2026-09-20.log` im Quelltext und brach am 21. ab – *obwohl die
+   Auswertung gefahren war*. Es fährt sie seither selbst.
+
+   > *Ein Werkzeug, das die Ausgabe eines anderen beim Namen nennt, wartet auf den
+   > Tag, an dem jemand diesen Namen anders wählt.*
 
 ## Vor jedem Meßtag
 

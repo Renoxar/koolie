@@ -22,7 +22,9 @@ oder ein Lauf, der beides gelesen hat.
 import io
 import os
 import re
+import subprocess
 import sys
+import time
 
 import ablage
 
@@ -30,8 +32,24 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 BELEGE = ablage.belege()
 ZIEL = os.path.join(BELEGE, "dossier")
-KERN = os.path.join(r"C:\Users\reneh\Documents\devpacks\leitwerk", "leitwerk-core")
-AUSWERTUNG = os.path.join(BELEGE, "auswertung-2026-09-20.log")
+KERN = os.path.join(ablage.WURZEL, "leitwerk-core")   # D-231: abgeleitet
+# 🔴 DIE AUSWERTUNG WIRD GEFAHREN, NICHT GESUCHT (D-232). Hier stand der
+# Dateiname `auswertung-2026-09-20.log` - ein DATUM im Quelltext, und damit
+# dieselbe Bauform wie die drei `--erwarte`-Sollwerte von D-225: Er stimmte
+# fuer den Messtag, fuer den er geschrieben wurde, und fuer keinen danach. Der
+# Nachlauf hat am 2026-09-21 ausgewertet, und dieses Werkzeug brach ab mit
+# "erst auswerten-b4.py" - obwohl die Auswertung gefahren war.
+#
+#   Ein Werkzeug, das die Ausgabe eines anderen beim Namen nennt, wartet auf
+#   den Tag, an dem jemand diesen Namen anders waehlt.
+#
+# Das Dossier faehrt die Auswertung deshalb SELBST und legt ihr Protokoll mit
+# dem Datum DIESES Laufes neben die Belege. Damit kann ein Dossier auch nicht
+# mehr aus einem alten Protokoll gebaut werden, ohne dass es auffaellt.
+AUSWERTEN = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         "auswerten-b4.py")
+AUSWERTUNG = os.path.join(BELEGE, "auswertung-%s.log"
+                          % time.strftime("%Y-%m-%d"))
 
 BLAETTER = {
     "SK-010": "fw-review-support",
@@ -60,11 +78,23 @@ def blattzeilen():
     return zeilen
 
 
+def auswertung_fahren():
+    """Faehrt `auswerten-b4.py` und legt sein Protokoll neben die Belege."""
+    umg = dict(os.environ, PYTHONIOENCODING="utf-8")
+    p = subprocess.run([sys.executable, AUSWERTEN], capture_output=True,
+                       text=True, encoding="utf-8", errors="replace", env=umg)
+    text = (p.stdout or "") + (p.stderr or "")
+    if p.returncode != 0:
+        raise SystemExit("ABBRUCH: auswerten-b4.py endete mit Exit %d:%s%s"
+                         % (p.returncode, chr(10), text[-1500:]))
+    io.open(AUSWERTUNG, "w", encoding="utf-8", newline="").write(text)
+    print("Auswertung gefahren:", AUSWERTUNG)
+    return text
+
+
 def auswertungsbloecke():
     """Je Zelle der Block aus Abschnitt 2 der Auswertung."""
-    if not os.path.isfile(AUSWERTUNG):
-        raise SystemExit("ABBRUCH: %s fehlt - erst auswerten-b4.py" % AUSWERTUNG)
-    text = lies(AUSWERTUNG)
+    text = auswertung_fahren()
     bloecke = {}
     teile = re.split(r"\n--- (SK-\d{3}-[A-Z]\d{2}) ", text)
     for i in range(1, len(teile) - 1, 2):
