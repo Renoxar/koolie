@@ -78,15 +78,27 @@ def kosten(kennung):
 def main():
     kennungen = sys.argv[1:]
     if not kennungen:
-        # 🔴 Ein `-t2`-Prompt ist KEINE eigene Kennung, sondern der zweite Turn
-        # seiner Zelle - er hat keinen eigenen Baum und wird unten aus dem
-        # Prompt-Verzeichnis geholt. Wer ihn mitzaehlt, bricht an einem Baum ab,
-        # den es nie gab. `stand-b4.py` leitet die Sollmenge richtig ab.
-        # Eine NACHMESSUNG (`n<kennung>`) faehrt einen weiteren Turn im Baum ihrer
-        # Zelle und wird von Hand angestossen - sie hat keinen eigenen Baum.
-        namen = sorted(x[:-4] for x in os.listdir(PROMPTS)
-                       if x.endswith(".txt") and not x.endswith("-t2.txt")
-                       and not x.startswith("n"))
+        # 🔴 DER ZUSCHNITT KOMMT AUS DEN MESSBAEUMEN (D-230). Bis 0.79.2 stand hier
+        # eine Auflistung des Promptverzeichnisses. Der Nachlauf von Buendel 4 hat
+        # dort die fuenfzig Prompts des Messtags geerbt und schuldet vierzehn
+        # Zellen - und weil `sk011n01` in ihm keinen Baum hat, brach dieses Skript
+        # am 2026-09-21 an eben diesem Baum ab und fuhr KEINEN EINZIGEN Lauf.
+        # Gerettet hat den Nachlauf allein die Kennungsliste im
+        # Wiederaufnahmepunkt, die sich selbst als "Vorsicht, keine Pflicht"
+        # ausweist. Ein Prompt ohne Baum ist eine Zelle einer anderen Erhebung; er
+        # wird GENANNT und nicht stillschweigend uebergangen.
+        # Ein `-t2`-Prompt ist keine eigene Kennung, sondern der zweite Turn seiner
+        # Zelle - er hat keinen eigenen Baum. Eine NACHMESSUNG (`n<kennung>`) faehrt
+        # einen weiteren Turn im Baum ihrer Zelle und wird von Hand angestossen.
+        namen, _zwei, ohne_baum = ablage.sollmenge(PROMPTS, BASIS)
+        if ohne_baum:
+            print("nicht im Zuschnitt dieser Erhebung (Prompt vorhanden, kein "
+                  "Messbaum): %s" % " ".join(ohne_baum))
+        if not namen:
+            raise SystemExit(
+                "ABBRUCH: unter %s steht kein einziger Messbaum - es gibt nichts zu "
+                "fahren. Erst `umgebungen-bauen-b4.py`, dann `baeume-b4.py` "
+                "(D-230)." % BASIS)
         # Hauptlaeufe zuerst, danach die Kontrollaeufe
         kennungen = [k for k in namen if not k.startswith("k")] + \
                     [k for k in namen if k.startswith("k")]

@@ -404,7 +404,22 @@ Prüft (statisch, ohne laufenden KI-Client):
      und sie steht hier: Diese Pruefung sieht nur, was schon geschrieben IST; den
      Waechter davor traegt ablage.py, der die Erhebungsablage als Angabe verlangt
      und einen Pfad im Repositorium abweist
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 69 laeuft als eigenes
+ 70. Jedes Werkzeug des Kerns nennt nur Namen, die es gibt (D-229): Jede .py-Datei
+     unter <CORE_DIR>/ laedt als Symboltabelle, und kein Name wird gelesen, der
+     nirgends gebunden ist - weder als Zuweisung noch als Import, Parameter oder
+     eingebauter Name. ANLASS, und er kostete nichts, weil er vor dem Lauf kam: Der
+     Wiederaufnahmepunkt des Nachlaufs fuehrte stand-b4.py als Befehl 1 von 4. Das
+     Skript brach beim Import mit NameError ab - zwei Vorkommen eines Namens S, der
+     mit dem Umzug nach D-222 verschwunden war, weil er den Ablageort NEBEN dem
+     Skript trug. Seit 0.79.0 war es damit tot, und keine der 69 Pruefungen sah es:
+     Pruefung 45 prueft den Bytecode auf Abwesenheit, Pruefung 69 die ART der
+     Dateien in der Erhebungsablage - dass eine davon LAEUFT, prueft keine.
+     GRENZE, und sie steht hier: Geprueft wird der Name, nicht der Wert. Ein Modul,
+     das einen Namen bindet und ihn falsch belegt, laeuft durch - dieselbe
+     Enthaltung, die Pruefung 68 zur Begruendung sagt. Ein Lauf des Werkzeugs
+     bliebe der staerkere Nachweis; er kostet Kontingent und legt Dateien an,
+     diese Pruefung nicht
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 70 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -418,12 +433,14 @@ Status des Skripts: entwurf. Es prüft Struktur, nicht Semantik; die semantische
 from __future__ import annotations
 
 import argparse
+import builtins
 import json
 import os
 import re
 import shlex
 import shutil
 import subprocess
+import symtable
 import sys
 import tempfile
 
@@ -7442,6 +7459,131 @@ def check_erhebungen_sauber(root: str) -> None:
             f"leise (D-23)")
 
 
+# --- Pruefung 70: Jedes Werkzeug des Kerns nennt nur Namen, die es gibt -------------
+#
+# ANLASS, UND ER IST GEMESSEN - ER KOSTETE NICHTS, WEIL ER VOR DEM LAUF KAM. Der
+# Wiederaufnahmepunkt des halb gefahrenen Messtags fuehrte `stand-b4.py` als Befehl 1
+# von 4 auf: das Skript, dessen Kopfkommentar sagt "EINE ZAHL IN EINER UEBERGABE IST
+# EINE MOMENTAUFNAHME, DIESES SKRIPT IST DER STAND". Es brach beim Import ab:
+#
+#     PROMPTS = os.path.join(os.path.dirname(S), "prompts")
+#
+# `S` trug bis D-222 den Ablageort NEBEN dem Skript. Der Umzug in den Kern hat ihn
+# entfernt und zwei Lesestellen stehen lassen - eine im Modulrumpf, eine in `main()`.
+# Seit 0.79.0 war das Werkzeug damit tot, und der Befund lag genau auf dem Weg der
+# Wiederaufnahme. Gefunden am 2026-09-21, vor dem ersten bezahlten Kontrollauf.
+#
+#   Ein Werkzeug, das niemand faehrt, verfaellt lautlos - und der Tag, an dem es
+#   gebraucht wird, ist der Tag, an dem es fehlt.
+#
+# WARUM KEINE DER 69 ES SAH, UND DAS IST DER EIGENTLICHE BEFUND. Pruefung 45 prueft,
+# dass KEIN Bytecode versioniert ist - also die Abwesenheit einer Datei. Pruefung 69
+# prueft die ART der Dateien in der Erhebungsablage - .py und .md, sonst nichts. Der
+# Apparat hatte damit zwei Waechter ueber seinen Ablageort und keinen einzigen
+# darueber, ob seine Werkzeuge laufen.
+#
+# WAS GEPRUEFT WIRD, UND WARUM SO. Nicht `import` - das fuehrt den Modulrumpf aus,
+# und Werkzeuge dieses Kerns brechen dabei mit Absicht ab (`ablage.py` ohne
+# LW_ERHEBUNG), waehrend `lauf.py` sein Belegverzeichnis anlegen wuerde: genau das,
+# was D-222 verworfen hat. Eine Pruefung, die ihren Gegenstand veraendert, misst ihn
+# nicht. Geprueft wird deshalb die SYMBOLTABELLE, die der Interpreter selbst baut:
+# Sie kennt jede Bindung und jeden Gueltigkeitsbereich - Modul, Funktion, Klasse,
+# Komprehension - und sagt je Name, ob er zugewiesen, importiert, Parameter, frei
+# oder global ist. Ein global gelesener Name, den weder der Modulrumpf noch die
+# eingebauten Namen binden, ist ein NameError, der auf seinen Lauf wartet.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird der NAME, nicht der WERT. Wer `S = None`
+# schreibt und `os.path.dirname(S)` aufruft, laeuft durch - dieselbe Enthaltung wie
+# bei Pruefung 68. Und ein Lauf des Werkzeugs bliebe der staerkere Nachweis; er
+# kostet Kontingent und legt Dateien an, diese Pruefung nicht.
+P70_EINGEBAUT = frozenset(dir(builtins))
+
+
+def _p70_offene_namen(quelle: str, name: str) -> list:
+    """Die global gelesenen Namen einer Quelle, die nirgends gebunden sind."""
+    top = symtable.symtable(quelle, name, "exec")
+    modul = {sym.get_name() for sym in top.get_symbols()
+             if sym.is_assigned() or sym.is_imported() or sym.is_parameter()}
+    offen = []
+
+    def geh(tab) -> None:
+        for sym in tab.get_symbols():
+            n = sym.get_name()
+            if not sym.is_referenced():
+                continue
+            if sym.is_assigned() or sym.is_imported() or sym.is_parameter():
+                continue
+            # Die Modulglobalen, die der Interpreter selbst setzt (__file__,
+            # __name__, und was eine Python-Fassung sonst hinzufuegt). Ohne diese
+            # Ausnahme meldete die Pruefung zwoelf Werkzeuge dieses Kerns, und alle
+            # zwoelf laufen - ein Waechter, der bei jedem Lauf meldet, wird
+            # abgeschaltet.
+            if n.startswith("__") and n.endswith("__"):
+                continue
+            if n in P70_EINGEBAUT or n in modul:
+                continue
+            # Nur, was im Modulrumpf steht oder ausdruecklich global gelesen wird.
+            # Eine freie Variable aus einer umschliessenden Funktion ist gebunden,
+            # nur nicht hier - `is_global()` unterscheidet das.
+            if tab is top or sym.is_global():
+                offen.append((tab.get_name(), n))
+        for kind in tab.get_children():
+            geh(kind)
+
+    geh(top)
+    return offen
+
+
+def check_werkzeugnamen(root: str) -> None:
+    """Pruefung 70 (D-229): Kein Werkzeug des Kerns liest einen Namen, den es nicht gibt."""
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return
+    apparat = os.path.join(kern, "tests", "erhebungen")
+    im_apparat = 0
+    for basis, ordner, dateien in os.walk(kern):
+        ordner[:] = [o for o in ordner if o != "__pycache__"]
+        for name in sorted(dateien):
+            if not name.endswith(".py"):
+                continue
+            pfad = os.path.join(basis, name)
+            rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+            if basis == apparat:
+                im_apparat += 1
+            try:
+                with open(pfad, encoding="utf-8") as f:
+                    quelle = f.read()
+            except (OSError, UnicodeDecodeError) as e:
+                err(f"{rel}: nicht lesbar ({e}) - ein Werkzeug des Kerns, das sich "
+                    f"nicht lesen laesst, laeuft auch nicht (D-229)")
+                continue
+            try:
+                offen = _p70_offene_namen(quelle, name)
+            except SyntaxError as e:
+                err(f"{rel}: laedt nicht - {e.msg} (Zeile {e.lineno}). Ein Werkzeug "
+                    f"des Kerns, das der Interpreter nicht uebersetzt, ist tot, und "
+                    f"es faellt erst an dem Tag auf, an dem es gebraucht wird (D-229)")
+                continue
+            for bereich, offener in offen:
+                wo = "im Modulrumpf" if bereich == name else f"in `{bereich}`"
+                err(f"{rel}: der Name `{offener}` wird {wo} gelesen und nirgends "
+                    f"gebunden - weder als Zuweisung noch als Import, Parameter "
+                    f"oder eingebauter Name. Das ist ein NameError, der auf seinen "
+                    f"Lauf wartet; genau so war `stand-b4.py` seit dem Umzug nach "
+                    f"D-222 tot (D-229)")
+    # DER ANKER, UND ER HAENGT AM MESSAPPARAT, NICHT AM KERN. Ein Anker `keine
+    # einzige .py-Datei im Kern` waere durch Konstruktion nie erreichbar: Dieses
+    # Skript ist selbst eine, und ohne es laeuft keine Pruefung. Eine Null durch
+    # Konstruktion sieht aus wie eine gemessene Null (0.59.1). Erreichbar - und der
+    # Gegenstand, um den es geht - ist der Messapparat: Steht seine Ablage und ist
+    # kein Werkzeug mehr darin, hat diese Pruefung den Anlass verloren, aus dem sie
+    # entstanden ist, und bestuende leise.
+    if os.path.isdir(apparat) and im_apparat == 0:
+        err(f"{KERN}/tests/erhebungen/: kein einziges Werkzeug geprueft - Pruefung "
+            f"70 hat den Gegenstand verloren, aus dem sie entstanden ist; sie "
+            f"bestuende sonst leise (D-23, D-229)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -7526,6 +7668,7 @@ def main() -> int:
     check_verirrtes_steuerzeichen(root)
     check_uebergabestand(root)
     check_praefix_uebererfassung(root)
+    check_werkzeugnamen(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

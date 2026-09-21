@@ -1,6 +1,10 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.79.2 (2026-09-20)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.79.3 (2026-09-21)
 
-> 🔴 **ZUERST LESEN, VOR ALLEM ANDEREN: DER MESSTAG IST ANGEFAHREN UND ZUR HÄLFTE GEFAHREN.** Am 2026-09-20 ist das **Wochenkontingent** ausgegangen. 🟢 **Es ist nichts verloren und nichts halb:** Die Reihe fährt Haupt- vor Kontrolläufen, und der Bruch liegt genau dazwischen – **alle dreizehn Hauptläufe sind gefahren und gültig** (12,53 USD, `is_error` bei keinem), es fehlen **genau die fünfzehn Kontrolläufe** (gerechnet rund 18,40 USD). 🔴 **Der Meßtag ist NICHT aufgeräumt:** 27 Meßbäume unter `C:\lw-b4` samt sieben Kontrollbasen, 35 Vertrauenseinträge und die Zustandsaufnahme *vorher* stehen noch – **mit Absicht, denn die Kontrolläufe brauchen ihre Bäume.** ➡️ **Der Wiederaufnahmepunkt steht vollständig in `devpacks/leitwerk-erhebungen-2026-09-20-b4n/WIEDERAUFNAHME.md`** – vier Befehle, und `reihe-b4.py` fährt von sich aus nur, was fehlt. ⚠️ **Dieser Absatz ist ein Nachtrag NACH dem Release-Commit** – dieselbe Bauform, die D-223 beanstandet hat, hier aber unvermeidbar: Der Vorgang, der den Zustand geändert hat, kam nach dem Merge und ließ sich nicht vorziehen.
+> 🟢 **ZUERST LESEN, VOR ALLEM ANDEREN: DER NACHLAUF VON BÜNDEL 4 IST VOLLSTÄNDIG GEFAHREN.** Alle **28 Läufe** liegen als gültige Belege vor, `is_error` bei keinem, zusammen **28,38 USD**. 🔴 **DER MEßTAG IST NICHT AUFGERÄUMT:** 27 Meßbäume unter `C:\lw-b4` samt sieben Kontrollbasen, 35 Vertrauenseinträge und die Zustandsaufnahme *vorher* stehen noch – **mit Absicht, denn die Auswertung braucht ihre Bäume.** ➡️ **DER NÄCHSTE SCHRITT IST DIE AUSWERTUNG** (`~0.80.0`, `K-82`): `zustand-b4.py nachher`, `node-waechter.py nachher`, `auswerten-b4.py`, `dossier-b4.py` – **vierzehn Ergebniszellen, Kriterium 2: 32 → 19**. 🔴 **Und erst danach aufräumen** (`trust-b4.py entfernen`, `baeume_loeschen.py loeschen`), und zwar **vor** der Übergabe, die den Zustand danach beschreibt (D-223). Die Belegablage steht in `devpacks/leitwerk-erhebungen-2026-09-20-b4n/`; **`LW_ERHEBUNG` vor dem ersten Handgriff setzen.**
+>
+> 🔴 **DER APPARAT LAG TOT AUF DEM WEG DER WIEDERAUFNAHME – ZWEI BEFUNDE, KEINER KOSTET KONTINGENT** (Abschnitt 0.37). **Von den vier Befehlen des Wiederaufnahmepunkts startete der erste nicht:** `stand-b4.py` brach seit `0.79.0` mit `NameError` ab – zwei Lesestellen eines Namens, den der Umzug nach D-222 entfernt hat –, **elf Tage und drei Releases lang**, und **keine der 69 Prüfungen konnte es sehen** (**D-229**, **Prüfung 70**). 🔴 **Und der nächste Befehl hätte keinen einzigen Lauf gefahren:** Die Sollmenge kam aus dem Promptverzeichnis, das die fünfzig Prompts des Meßtags trägt – gemeldet **35 Fehlbestände und rund 37 USD**, fällig fünfzehn und rund achtzehn (**D-230**). *Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt von gestern.*
+>
+> ⚠️ **Der bisherige erste Absatz, jetzt Geschichte: DER MEßTAG WAR ANGEFAHREN UND ZUR HÄLFTE GEFAHREN.** Am 2026-09-20 ist das **Wochenkontingent** ausgegangen. 🟢 **Es ist nichts verloren und nichts halb:** Die Reihe fährt Haupt- vor Kontrolläufen, und der Bruch liegt genau dazwischen – **alle dreizehn Hauptläufe sind gefahren und gültig** (12,53 USD, `is_error` bei keinem), es fehlen **genau die fünfzehn Kontrolläufe** (gerechnet rund 18,40 USD). 🔴 **Der Meßtag ist NICHT aufgeräumt:** 27 Meßbäume unter `C:\lw-b4` samt sieben Kontrollbasen, 35 Vertrauenseinträge und die Zustandsaufnahme *vorher* stehen noch – **mit Absicht, denn die Kontrolläufe brauchen ihre Bäume.** ➡️ **Der Wiederaufnahmepunkt steht vollständig in `devpacks/leitwerk-erhebungen-2026-09-20-b4n/WIEDERAUFNAHME.md`** – vier Befehle, und `reihe-b4.py` fährt von sich aus nur, was fehlt. ⚠️ **Dieser Absatz ist ein Nachtrag NACH dem Release-Commit** – dieselbe Bauform, die D-223 beanstandet hat, hier aber unvermeidbar: Der Vorgang, der den Zustand geändert hat, kam nach dem Merge und ließ sich nicht vorziehen.
 >
 > 🔴 **DER VORBEDINGUNGSDURCHGANG DES NACHLAUFS IST GEFAHREN – SIEBEN BEFUNDE, KEINER KOSTET KONTINGENT** (Abschnitt 0.36). 🔴 **KRITERIUM 2 STEHT BEI 32, NICHT BEI 30** – zum ersten Mal in neun Schritten geht der Zähler AUFWÄRTS, und er soll es: `0.79.0` hat `fw-review-support` auf `0.1.6` und `fw-mr-description` auf `0.1.5` gehoben, **in demselben Commit, der zwei ihrer Zellen abgenommen hat**. `08-skill-conventions.md` Abschnitt 7 ist normativ – *„Jede Versionsänderung erfordert die erneute Ausführung der Testfälle"* –, also gehen `SK-010-P02` und `SK-012-N04` zurück auf `offen` (**D-227**). 🔴 **Und der Befund reicht weiter: acht von dreizehn Skills, 35 bestandene Zellen** – gemessen in Commit-Auflösung, geführt als **`K-84`**, **hier nicht entschieden**. 🔴 **Der teuerste Befund am Apparat: er schrieb seit D-222 ins Repositorium** – fünf Skripte legten ihre Belege neben sich, und seit dem Umzug in den Kern heißt das hinein; der Nachlauf hätte 44 Belegdateien samt Mitschriften versioniert (**D-224**, `LW_ERHEBUNG`, **Prüfung 69**). 🟢 **`K-83` war längst entschieden** – D-120 sagt es im letzten Satz, das Werkzeug kannte es nur im Kopfkommentar (**D-226**); **an den 50 Belegen des Meßtags hätte die neue Probe D-218 selbst gemeldet**. 🟢 **`UEB-29` ist gebaut**, drei Kontrollzuschnitte tragen `konf` statt `risiko` (D-221), **alle drei Fragen von `K-82` sind beantwortet**. 🔴 **DER NÄCHSTE SCHRITT BLEIBT DER NACHLAUF – jetzt dreizehn Zellen, 28 Läufe, rund 34 USD** (`~0.80.0`, Kriterium 2: **32 → 19**).
 >
@@ -1127,13 +1131,109 @@ Validator wandert trotzdem mit und gilt dort ebenso.
 
 ---
 
+### 0.37 `0.79.3`: Der Apparat lag tot auf dem Weg der Wiederaufnahme
+
+> 🔴 **Zwei Befunde, und beide liegen auf dem Weg, den der Wiederaufnahmepunkt
+> vorschreibt.** Von seinen **vier** Befehlen startete der erste nicht, und der vierte
+> hätte in seiner argumentlosen Form **keinen einzigen Lauf** gefahren. **D-229**,
+> **D-230**, **Prüfung 70** neu. **Kriterium 2 unverändert bei 32** – dieser Durchgang
+> schließt keine Zelle und öffnet keine. **Kein Kontingent für die Befunde.**
+
+**Der Antrag:** `leitwerk-core/governance/change-requests/CR-2026-111-der-apparat-auf-dem-weg-der-wiederaufnahme.md`.
+**Das Protokoll:** `leitwerk-core/tests/protocols/2026-09-21-wiederaufnahme-nachlauf-b4.md`.
+
+#### 🔴 Befehl 1 von 4 startete seit `0.79.0` nicht (D-229)
+
+```
+python leitwerk-core\tests\erhebungen\stand-b4.py
+→ NameError: name 'S' is not defined
+```
+
+**`S` trug bis D-222 den Ablageort neben dem Skript.** Der Umzug in den Kern hat den
+Namen entfernt und **zwei** Lesestellen stehen lassen – eine im Modulrumpf, eine in
+`main()`; die zweite fiel erst nach der Berichtigung der ersten. **Elf Tage und drei
+Releases lang war das Werkzeug tot** – ausgerechnet das, dessen Kopfkommentar sagt
+*„EINE ZAHL IN EINER ÜBERGABE IST EINE MOMENTAUFNAHME, dieses Skript ist der Stand"*.
+
+> *Ein Werkzeug, das niemand fährt, verfällt lautlos – und der Tag, an dem es gebraucht
+> wird, ist der Tag, an dem es fehlt.*
+
+🔴 **Der eigentliche Befund: keine der 69 Prüfungen konnte es sehen.**
+
+| Prüfung | Gegenstand | Sieht sie es? |
+|---|---|---|
+| **45** | unter `leitwerk-core/` ist kein Bytecode versioniert | nein – die **Abwesenheit** einer Datei |
+| **69** | in der Erhebungsablage liegen nur `.py` und `.md` | nein – die **Art** der Dateien |
+| *keine* | ob eines dieser `.py` **startet** | – |
+
+Der Apparat hatte zwei Wächter über seinen **Ablageort** und keinen einzigen darüber,
+ob seine Werkzeuge **laufen**.
+
+**Prüfung 70** baut zu jeder `.py` unter `<CORE_DIR>/` die **Symboltabelle**, die der
+Interpreter selbst anlegt, und meldet jeden global gelesenen Namen, den weder der
+Modulrumpf noch die eingebauten Namen binden – dazu jede Quelle, die er nicht
+übersetzt. **Nicht importiert wird:** Das führte den Modulrumpf aus, `ablage.py` bräche
+ohne `LW_ERHEBUNG` mit Absicht ab und `lauf.py` legte sein Belegverzeichnis im
+Repositorium an – genau das, was D-222 verworfen hat. *Eine Prüfung, die ihren
+Gegenstand verändert, mißt ihn nicht.*
+
+🟢 **Gemessen gegen den gesamten Kern, vor der Berichtigung: ein Befund aus zwanzig
+`.py`-Dateien.** Zwölf nennen Modulglobale wie `__file__`; sie laufen, und die Prüfung
+schweigt über sie. *Ein Wächter, der bei jedem Lauf meldet, wird abgeschaltet.*
+
+⚠️ **Grenze, angesagt:** Geprüft wird der **Name**, nicht der **Wert**. `S = None` und
+`os.path.dirname(S)` läuft durch – dieselbe Enthaltung wie bei Prüfung 68, und
+Gegenprobe `70b` hält sie fest.
+
+#### 🔴 Der nächste Befehl hätte keinen einzigen Lauf gefahren (D-230)
+
+`stand-b4.py` schließt mit `NAECHSTER BEFEHL: python reihe-b4.py`. Genau dieser Aufruf
+**ohne Argumente** bricht ab: `ABBRUCH: der Baum C:\lw-b4\sk011n01 fehlt`.
+
+Der Nachlauf mißt **vierzehn Zellen / 28 Läufe**; sein Promptverzeichnis trägt die
+**fünfzig** Prompts des Meßtags, weil `prompts-schreiben-b4.py` alle schreibt und keine
+Zelle kennt. Beide Skripte leiteten ihre Sollmenge **aus diesem Verzeichnis** ab:
+
+| | gemeldet | fällig |
+|---|---|---|
+| Sollmenge | **50 Läufe / 19 Zellen** | 28 / 14 |
+| Fehlbestand | **35** | 15 |
+| Restkosten | **rund 37 USD** | rund 18 USD |
+| `reihe-b4.py` ohne Argumente | **Abbruch, 0 Läufe** | 15 Läufe |
+
+🔴 **Gerettet hat den Nachlauf allein die Kennungsliste im Wiederaufnahmepunkt – und
+sie weist sich selbst als *„Vorsicht, keine Pflicht"* aus.** Wer dem Apparat gefolgt
+wäre statt der Liste, hätte einen Abbruch bekommen; wer seiner Zahl gefolgt wäre, hätte
+das Doppelte veranschlagt und das Kontingent danach bemessen.
+
+> *Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt von gestern.*
+
+**Die Sollmenge kommt seither aus den Meßbäumen** (`ablage.sollmenge()`): `baeume-b4.py`
+legt genau die an, die der Zuschnitt nennt. Die Ableitung steht **einmal** im Apparat
+und wird von `stand-b4.py` und `reihe-b4.py` gemeinsam benutzt – *zwei Zähler desselben
+Gegenstands zählen dasselbe* (D-228). Ein Prompt **ohne** Baum wird **namentlich
+genannt**; bei **null** Bäumen bricht `reihe-b4.py` ab, und `stand-b4.py` sagt
+ausdrücklich, daß sein Stand dann keine Aussage über die Vollständigkeit ist.
+
+Das ist dieselbe Bauform wie D-224 (`LW_ERHEBUNG`) und D-218 (`--ziel`), eine Ebene
+weiter: **Ein Ort, der aus der Umgebung erschlossen wird, gehört dem, der ihn zuletzt
+gefüllt hat.**
+
+⚠️ **Der Preis, benannt:** Die fünfzehn Kontrolläufe dieses Nachlaufs sind **vor** der
+Abhilfe gefahren worden, mit der Kennungsliste des Wiederaufnahmepunkts – die Bäume,
+Vertrauenseinträge und die Zustandsaufnahme *vorher* standen seit dem Vortag, und jede
+Stunde Verzug war eine Stunde, in der etwas davon verlorengehen konnte. Der
+Wirkungsnachweis zu D-230 steht deshalb am **Stand**, nicht an der Reihe.
+
+---
+
 ## 1. Lage
 
-`main` = **0.79.2**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.79.3**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün.
 🟡 **KRITERIUM 2 STEHT BEI 32** – **vier** Testblatt-Bündel sind gefahren, **53 von 66 Zellen bestanden**. 🔴 **Der Zähler ist zum ersten Mal gestiegen, und das ist der Befund von `0.79.2`** (0.36, D-227): Zwei abgenommene Zellen stehen auf einer Skillfassung, die es nicht mehr gibt. 🔴 **Bündel 4 hat acht von neunzehn gebracht statt neunzehn**, weil der Meßbaum auf `main` stand (0.35, D-218) – der erste Schritt dieser Reihe, der hinter seiner Zusage zurückblieb. **Noch ein Nachlauf, ein Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
-🔴 **DER NÄCHSTE SCHRITT IST DER NACHLAUF DER DREIZEHN ZELLEN** (`~0.80.0`, `K-82`): gerechnet **28 Läufe, rund 34 USD**. 🟢 **Alle Vorbedingungen stehen seit `0.79.2`** – `UEB-29` ist gebaut, `SK-010-N04` mißt die Grenze statt der Branchliste, drei Kontrollzuschnitte tragen `konf`, die Berührungsprobe kennt ihre Gattung, und der Apparat schreibt nicht mehr ins Repositorium. **`LW_ERHEBUNG` vor dem ersten Handgriff setzen.**
+🟢 **DER NACHLAUF IST GEFAHREN – 28 VON 28 LÄUFEN GÜLTIG, 28,38 USD, `is_error` BEI KEINEM** (2026-09-21). Die fünfzehn Kontrolläufe dieses Tages kosteten **15,85 USD** gegen rund 18,40 gerechnet. 🔴 **DER NÄCHSTE SCHRITT IST DIE AUSWERTUNG** (`~0.80.0`, `K-82`): `zustand-b4.py nachher`, `node-waechter.py nachher`, `auswerten-b4.py`, `dossier-b4.py` – **vierzehn Ergebniszellen, Kriterium 2: 32 → 19**. 🔴 **Erst danach aufräumen** (`trust-b4.py entfernen`, `baeume_loeschen.py loeschen`), und zwar **vor** der Übergabe (D-223). 🔴 **`LW_ERHEBUNG` vor dem ersten Handgriff setzen.**
 🟢 **KRITERIUM 2 STEHT BEI 38** – **drei** Testblatt-Bündel sind gefahren, **alle 47 Zellen bestanden** (`0.68.0`: elf Zellen, 26 Läufe, rund 23 USD; `0.71.0`: achtzehn Zellen, 43 Läufe, 48,47 USD). 🔴 **Noch drei Bündel und die vier Sammelzellen** – siehe Abschnitt 3.
 🟡 **Der Meßtag von Bündel 3 lief davor:** `0.73.0` hat `K-74` entschieden und die Vorbedingungen hergerichtet (Abschnitt 0.24 **im Archiv**), der Meßaufbau steht (0.25), **alle 25 Hauptläufe sind gefahren und siebzehn Kontrollläufe fehlen** (0.26). **Kriterium 2 geht auf 38, sobald die Zellen abgenommen sind.**
 
@@ -1178,7 +1278,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.79.2**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.79.3**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.79.2` gehoben** (2026-09-20, `0.79.2`), Overlay **`0.79.2`**, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**. 🟢 **Neunundzwanzig Präparationen** (`UEB-01` bis `UEB-29`) – 🔴 **davon zehn NICHT dauerhaft im Repositorium:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` und **`UEB-29`** je **Meßbaum** (Quellen in `tools/praeparationen/`), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
@@ -1288,7 +1388,7 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0** | 🟢 **ERLEDIGT mit `0.77.0` (Herrichtung) und `0.78.0` (Meßapparat, Vorbedingungsdurchgang)** – *(Stand 0.76.0:)* **DIE HERRICHTUNG FÜR BÜNDEL 4** (`~0.77.0`, `CR-2026-103`, D-206, D-207): der Meßbaum mit **echter Historie** (`git init`, zwei Übungs-Branches, präparierte Commits, **synthetische Autoren** – `k3-bauen.py` ist die Vorlage), zwei Historienpräparationen, vier Dateipräparationen und das Heben des Übungsrepositoriums auf `0.75.0`. **Dazu `K-78` entscheiden:** wie die Ergebnisberichte entstehen, ohne ihre eigene Lösung mitzuliefern | eine Sitzung, **kein Kontingent** | –. **Ohne sie sind zwölf der neunzehn Zellen von Bündel 4 nicht fahrbar** |
 | **0** | 🟢 **ERLEDIGT mit `0.78.2`** – **`K-80` entscheiden, bevor das nächste Release gebaut wird** (`CR-2026-107`, D-216, D-217). Die Übergabe steht jetzt im Release-Commit, die Antragsnummer ist heraus, Prüfung 66 und 67 setzen durch, was prüfbar ist | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **38**) |
 | **0a** | 🟢 **`K-77` ist entschieden** (`0.75.0`, D-205) und `K-76` bleibt offen – fällig, sobald wieder ein Wiederherstellungsschritt gemessen wird | – | – |
-| **0b** | 🔴 **DER NACHLAUF DER DREIZEHN ZELLEN** (`~0.80.0`, `K-82`, D-218, D-227): `SK-012-P01`, `-P02`, `-N01`, `-N02`, `-N03`, **`-N04`**; `SK-010-P01`, **`-P02`**, `-N01`, `-N02`, `-N03`, `-N04`, `-N05`; dazu der `konf`-Kontrollauf von `SK-011-N04`. **Gerechnet, nicht gemessen:** 28 Läufe, rund **34 USD** bei 1,2238 USD je Lauf. 🟢 **ALLE VORBEDINGUNGEN STEHEN SEIT `0.79.2`** (Abschnitt 0.36): `UEB-29` gebaut, `SK-010-N04` mißt die Grenze statt der Branchliste (D-219), drei Kontrollzuschnitte auf `konf` (D-221), die Berührungsprobe kennt ihre Gattung (D-226), der Sollwert der Kernversion wird abgeleitet (D-225), und der Apparat schreibt nicht mehr ins Repositorium (D-224). 🔴 **`LW_ERHEBUNG` vor dem ersten Handgriff setzen** – sonst bricht jedes Skript ab. 🟢 **Was nicht noch einmal bezahlt werden muß:** die sechs Zellen von `fw-docs-update` samt Kontrolläufen, der `risiko`-Kontrollauf von `SK-010-P02` (erste Hälfte), der Hauptlauf von `SK-011-N04` und die Kontrollzählung. 🔴 **BERICHTIGT am 2026-09-20:** Hier stand *„die Meßbäume sind gelöscht; der Nachlauf baut neu"*. **Der Meßtag ist angefahren** – 27 Bäume, sieben Kontrollbasen und 35 Vertrauenseinträge **stehen**, dreizehn Hauptläufe sind bezahlt und gültig, fünfzehn Kontrolläufe fehlen. **Nicht aufräumen vor der Auswertung.** Alles Weitere in `devpacks/leitwerk-erhebungen-2026-09-20-b4n/WIEDERAUFNAHME.md`. | eine Sitzung, **~18,40 USD Rest** | **Kriterium 2: 32 → 19** | eine Sitzung, **~34 USD** | **Kriterium 2: 32 → 19** |
+| **0b** | 🟢 **DER NACHLAUF IST GEFAHREN, DIE AUSWERTUNG STEHT AUS** (`~0.80.0`, `K-82`, D-218, D-227). **28 von 28 Läufen gültig, `is_error` bei keinem, 28,38 USD** – dreizehn Hauptläufe am 2026-09-20 (12,53 USD), fünfzehn Kontrolläufe am 2026-09-21 (15,85 USD gegen rund 18,40 gerechnet). 🔴 **WAS JETZT ZU TUN IST:** `zustand-b4.py nachher`, `node-waechter.py nachher`, `auswerten-b4.py`, `dossier-b4.py` – dann die Auswertung als Release. 🔴 **Der Meßtag ist NICHT aufgeräumt:** 27 Bäume, acht Kontrollbasen und 35 Vertrauenseinträge stehen, **mit Absicht** – die Auswertung braucht sie. **Aufgeräumt wird vor der Übergabe** (D-223). 🔴 **`LW_ERHEBUNG` vor dem ersten Handgriff setzen.** Drei Läufe tragen `permission_denials` > 0 (`ksk010p01`: 2, `ksk012n03`: 1) – Gegenstand der Auswertung. Belegablage: `devpacks/leitwerk-erhebungen-2026-09-20-b4n/` | eine Sitzung, **kein Kontingent** – die 28 Läufe sind bezahlt | **Kriterium 2: 32 → 19** |
 | **0c** | **Testblätter, Bündel 5** – `role-re-ticket`, **15 Zellen**, das größte Einzelblatt und das einzige außerhalb des Kerns; braucht ein eigenes Pack | eine Sitzung | **Kriterium 2: 19 → 4** |
 | **0d** | **Die letzten vier Zellen des zentralen Katalogs** – `FW-KO-05` (sobald `K-59` entschieden ist) und die drei Sammelzellen `FW-NE-04`, `FW-PO-03`, `FW-RE-01`; sie können nicht vor ihren Bestandteilen schließen (D-139, D-143) | eine Sitzung | **Kriterium 2: 4 → 0** |
 | **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.66.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |

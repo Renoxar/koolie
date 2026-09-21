@@ -25,7 +25,7 @@ import ablage
 sys.stdout.reconfigure(encoding="utf-8")
 
 BEL = ablage.belege(anlegen=False)
-PROMPTS = os.path.join(os.path.dirname(S), "prompts")
+PROMPTS = ablage.prompts(anlegen=False)
 BAEUME = r"C:\lw-b4"
 
 
@@ -40,29 +40,15 @@ def ergebnis(k):
 
 
 def main():
-    # Soll-Menge aus den Prompts ableiten: eine Kennung mit `-t2.txt` hat ZWEI
-    # Laeufe - `<k>t1` (der Halt) und `<k>` (die Umsetzung).
-    einfach, zwei = set(), set()
-    for x in sorted(os.listdir(PROMPTS)):
-        if not x.endswith(".txt"):
-            continue
-        n = x[:-4]
-        # 🔴 Eine NACHMESSUNG (`n<kennung>`) gehoert nicht zur Sollmenge des Messtags.
-        # Sie faehrt einen weiteren Turn im Baum ihrer Zelle und hat keinen eigenen
-        # Baum; wer sie mitzaehlt, meldet einen Fehlbestand, den es nicht gibt.
-        # Praezedenz: `nsk004p01` und `nsk009p01` aus Buendel 2.
-        if n.startswith("n"):
-            continue
-        if n.endswith("-t2"):
-            zwei.add(n[:-3])
-        else:
-            einfach.add(n)
-    soll = []
-    for k in sorted(einfach):
-        if k in zwei:
-            soll += [k + "t1", k]
-        else:
-            soll.append(k)
+    # 🔴 DIE SOLLMENGE KOMMT AUS DEN MESSBAEUMEN, NICHT AUS DEM PROMPTVERZEICHNIS
+    # (D-230). Bis 0.79.2 stand die Ableitung hier und las das Promptverzeichnis;
+    # der Nachlauf hat dort die fuenfzig Prompts des Messtags geerbt und schuldet
+    # vierzehn Zellen. Dieses Skript meldete 35 Fehlbestaende und rund 37 USD, wo
+    # fuenfzehn und rund achtzehn faellig waren. Die Ableitung steht jetzt EINMAL
+    # in `ablage.sollmenge()` und wird von `reihe-b4.py` mitbenutzt - zwei Zaehler
+    # desselben Gegenstands zaehlen dasselbe (D-228).
+    einfach, zwei, ohne_baum = ablage.sollmenge(PROMPTS, BAEUME)
+    soll = ablage.laeufe(einfach, zwei)
 
     gut, fehlt, fehlerhaft = [], [], []
     usd = sek = 0.0
@@ -89,7 +75,7 @@ def main():
     # getrennt (38 und 12). Die Zelle bekommt man, indem man das fuehrende `k`
     # des Kontrollaufs abstreift - dieselbe Ableitung, eine Ebene tiefer.
     zellen = {k[1:] if k.startswith("k") else k for k in einfach}
-    zellen2 = {k[1:] if k.startswith("k") else k for k in zwei}
+    zellen2 = {k[1:] if k.startswith("k") else k for k in zwei if k in einfach}
     print("Soll:        %3d Laeufe - %d Zellen je Haupt- und Kontrollauf, %d "
           "davon mit zweitem Turn"
           % (len(soll), len(zellen), len(zellen2)))
@@ -118,9 +104,20 @@ def main():
     print("Baeume unter %s: %d" % (BAEUME, len(vorhanden)))
     if not vorhanden:
         print("🔴 KEINE BAEUME - erst `umgebungen-bauen-b4.py`, dann `baeume-b4.py`.")
+        print("   Ohne Baeume ist die Sollmenge LEER und dieser Stand keine Aussage")
+        print("   ueber die Vollstaendigkeit der Reihe (D-230).")
+    # 🔴 Was NICHT stillschweigend uebergangen wird: Prompts ohne Baum. Sie sind der
+    # Zuschnitt einer anderen Erhebung - und genau sie haben `reihe-b4.py` ohne
+    # Argumente abbrechen lassen, bevor ein einziger Lauf fuhr (D-230).
+    if ohne_baum:
+        print()
+        print("Nicht im Zuschnitt dieser Erhebung (Prompt vorhanden, kein Messbaum): %d"
+              % len(ohne_baum))
+        print("  " + "\n  ".join(" ".join(ohne_baum[i:i + 6])
+                                 for i in range(0, len(ohne_baum), 6)))
     for pflicht, was in (("zustand-vorher.json", "Zustandsaufnahme VORHER"),
                          ("node-vorher.json", "node_modules-Waechter VORHER")):
-        da = os.path.isfile(os.path.join(S, pflicht))
+        da = os.path.isfile(os.path.join(ablage.erhebung(), pflicht))
         print("%-28s %s" % (was + ":", "liegt vor" if da else "🔴 FEHLT"))
 
     print()

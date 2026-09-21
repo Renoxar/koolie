@@ -2,6 +2,96 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.79.3] - 2026-09-21
+
+**Der Apparat lag tot auf dem Weg der Wiederaufnahme – zwei Befunde, keiner kostet
+Kontingent** (`CR-2026-111`, **D-229**, **D-230**, **Prüfung 70**). Kriterium 2
+unverändert bei **32** – dieser Durchgang schließt keine Zelle und öffnet keine.
+
+> 🔴 **Von den vier Befehlen des Wiederaufnahmepunkts startete der erste nicht, und der
+> vierte hätte in seiner argumentlosen Form keinen einzigen Lauf gefahren.**
+
+### 🔴 Befehl 1 von 4 startete seit `0.79.0` nicht (D-229)
+
+```
+python leitwerk-core\tests\erhebungen\stand-b4.py
+→ NameError: name 'S' is not defined
+```
+
+**`S` trug bis D-222 den Ablageort neben dem Skript.** Der Umzug in den Kern hat den
+Namen entfernt und **zwei** Lesestellen stehen lassen – eine im Modulrumpf, eine in
+`main()`; die zweite fiel erst nach der Berichtigung der ersten. **Elf Tage und drei
+Releases lang war das Werkzeug tot**, und der Tag seiner Wiederaufnahme war der Tag, an
+dem es auffiel.
+
+> *Ein Werkzeug, das niemand fährt, verfällt lautlos – und der Tag, an dem es gebraucht
+> wird, ist der Tag, an dem es fehlt.*
+
+🔴 **Der eigentliche Befund: keine der 69 Prüfungen konnte es sehen.** Prüfung 45 prüft
+die **Abwesenheit** von Bytecode, Prüfung 69 die **Art** der Dateien in der
+Erhebungsablage. Der Apparat hatte zwei Wächter über seinen **Ablageort** und keinen
+einzigen darüber, ob seine Werkzeuge **laufen**.
+
+**Prüfung 70** baut zu jeder `.py` unter `<CORE_DIR>/` die **Symboltabelle**, die der
+Interpreter selbst anlegt, und meldet jeden global gelesenen Namen, den weder der
+Modulrumpf noch die eingebauten Namen binden – dazu jede Quelle, die er nicht
+übersetzt. **Nicht importiert wird:** Das führte den Modulrumpf aus, und `lauf.py`
+legte dabei sein Belegverzeichnis im Repositorium an – genau das, was D-222 verworfen
+hat. *Eine Prüfung, die ihren Gegenstand verändert, mißt ihn nicht.*
+
+🟢 **Gemessen gegen den gesamten Kern, vor der Berichtigung:** **ein** Befund aus
+zwanzig `.py`-Dateien. Zwölf nennen Modulglobale wie `__file__`; sie laufen, und die
+Prüfung schweigt über sie.
+
+⚠️ **Grenze, angesagt:** Geprüft wird der **Name**, nicht der **Wert**. Wer `S = None`
+schreibt und `os.path.dirname(S)` aufruft, läuft durch – dieselbe Enthaltung wie bei
+Prüfung 68, und Gegenprobe `70b` hält sie fest.
+
+### 🔴 Der nächste Befehl hätte keinen einzigen Lauf gefahren (D-230)
+
+`stand-b4.py` schließt mit `NAECHSTER BEFEHL: python reihe-b4.py`. Genau dieser Aufruf
+**ohne Argumente** bricht ab: `ABBRUCH: der Baum C:\lw-b4\sk011n01 fehlt`.
+
+Der Nachlauf mißt **vierzehn Zellen / 28 Läufe**; sein Promptverzeichnis trägt die
+**fünfzig** Prompts des Meßtags, weil `prompts-schreiben-b4.py` alle schreibt und keine
+Zelle kennt. Beide Skripte leiteten ihre Sollmenge **aus diesem Verzeichnis** ab:
+
+| | gemeldet | fällig |
+|---|---|---|
+| Sollmenge | **50 Läufe / 19 Zellen** | 28 / 14 |
+| Fehlbestand | **35** | 15 |
+| Restkosten | **rund 37 USD** | rund 18 USD |
+| `reihe-b4.py` ohne Argumente | **Abbruch, 0 Läufe** | 15 Läufe |
+
+🔴 **Gerettet hat den Nachlauf allein die Kennungsliste im Wiederaufnahmepunkt – und
+sie weist sich selbst als *„Vorsicht, keine Pflicht"* aus.**
+
+> *Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt von gestern.*
+
+**Die Sollmenge kommt seither aus den Meßbäumen** (`ablage.sollmenge()`): `baeume-b4.py`
+legt genau die Bäume an, die der Zuschnitt nennt. Die Ableitung steht **einmal** im
+Apparat und wird von `stand-b4.py` und `reihe-b4.py` gemeinsam benutzt – *zwei Zähler
+desselben Gegenstands zählen dasselbe* (D-228). Ein Prompt **ohne** Baum wird
+**namentlich genannt**, nicht stillschweigend übergangen; bei **null** Bäumen bricht
+`reihe-b4.py` ab, und `stand-b4.py` sagt ausdrücklich, daß sein Stand dann keine
+Aussage über die Vollständigkeit der Reihe ist.
+
+Das ist dieselbe Bauform wie D-224 (`LW_ERHEBUNG`) und D-218 (`--ziel`), eine Ebene
+weiter: **Ein Ort, der aus der Umgebung erschlossen wird, gehört dem, der ihn zuletzt
+gefüllt hat.**
+
+### Migrationshinweise für Overlays
+
+**Keine.** Beide Änderungen betreffen ausschließlich den Meß- und Prüfapparat des
+Quellrepositoriums; `install.py` schreibt keines dieser Skripte in ein Projekt.
+
+### Bekannte Einschränkungen
+
+- Prüfung 70 prüft den **Namen**, nicht den **Wert**.
+- Der Zuschnitt einer Erhebung hängt jetzt an einem Zustand **außerhalb** des
+  Repositoriums (den Meßbäumen). Nach `baeume_loeschen.py` ist die Sollmenge leer;
+  beide Skripte sagen es an dieser Stelle.
+
 ## [0.79.2] - 2026-09-20
 
 **Der Vorbedingungsdurchgang des Nachlaufs – sieben Befunde, keiner kostet Kontingent**
