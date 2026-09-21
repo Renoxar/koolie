@@ -24,7 +24,7 @@ DIE ABLAGE WIRD GESAGT, NICHT ABGELEITET - dieselbe Lehre wie `--ziel` beim
 Baumbau (D-218). Ein Standardwert im Quelltext waere eine gepflegte Zahl: Er
 stimmt fuer die Erhebung, fuer die er geschrieben wurde, und fuer keine danach.
 
-    set LW_ERHEBUNG=C:\\Users\\...\\devpacks\\leitwerk-erhebungen-2026-09-20-b4n
+    set LW_ERHEBUNG=C:\\Users\\...\\devpacks\\leitwerk-erhebungen-2026-09-20-b4n   # SYNTHETISCH
 
 Fehlt die Angabe, bricht jedes Skript ab, das eine Belegablage braucht. Ein
 Abbruch ist billiger als ein Beleg am falschen Ort.
@@ -93,6 +93,47 @@ def kernversion():
     p = os.path.join(WURZEL, "leitwerk-core", "VERSION")
     with open(p, encoding="utf-8") as f:
         return f.read().strip()
+
+
+UMGEBUNG_UEBUNG = "LW_UEBUNG"
+
+
+def uebungsrepositorium():
+    """Der Pfad des Uebungsrepositoriums - GESAGT, nicht im Quelltext.
+
+    🔴 DER ANLASS IST GEMESSEN (2026-09-21, D-231). Acht Werkzeuge dieses Kerns
+    trugen einen Arbeitsplatzpfad im Quelltext, und der Pfad enthaelt den
+    Kontonamen einer natuerlichen Person:
+
+        UEB = r"C:\\Users\\<konto>\\Documents\\devpacks\\test-devin-framework"   # SYNTHETISCH
+
+    Solange der Apparat NEBEN dem Repositorium lag, stand das in einer
+    unversionierten Ablage. **Mit D-222 ist er hineingewandert und hat den Pfad
+    mitgebracht** - in genau das Repositorium, dessen Overlay-Manifest *"keine
+    Secrets, keine Personen, keine internen Adressen"* verlangt und fuer das
+    `0.78.1` eigens `UEBERGABE.local.md` eingefuehrt hat. **Keine der siebzig
+    Pruefungen sah es**: Pruefung 6 kennt Secret-Muster, E-Mail-Adressen,
+    IP-Adressen und Hostnamen - keinen Benutzerprofilpfad.
+
+      Wer einen Apparat umzieht, zieht seine Arbeitsplatzpfade mit um - und
+      veroeffentlicht sie, ohne es zu entscheiden.
+
+    Dieselbe Loesung wie bei D-224: Der Ort wird gesagt. Ein Standardwert waere
+    wieder ein Arbeitsplatz im Quelltext.
+    """
+    wert = os.environ.get(UMGEBUNG_UEBUNG, "").strip().strip('"')
+    if not wert:
+        raise SystemExit(
+            "ABBRUCH: %s ist nicht gesetzt.\n"
+            "Das Uebungsrepositorium liegt NEBEN diesem Repositorium, und sein\n"
+            "Pfad gehoert keinem Quelltext - er wird gesagt (D-231):\n"
+            "    set %s=<Pfad des Uebungsrepositoriums>"
+            % (UMGEBUNG_UEBUNG, UMGEBUNG_UEBUNG))
+    wert = os.path.abspath(wert)
+    if not os.path.isdir(wert):
+        raise SystemExit(
+            "ABBRUCH: %s zeigt mit %r auf kein Verzeichnis." % (UMGEBUNG_UEBUNG, wert))
+    return wert
 
 
 def belege(anlegen=True):

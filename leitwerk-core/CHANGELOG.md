@@ -2,6 +2,85 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.79.4] - 2026-09-21
+
+**Der Arbeitsplatz im Kern – zwei Befunde, keiner kostet Kontingent** (`CR-2026-112`,
+**D-231**, **D-232**, **`K-85`** neu, **Prüfung 71**). Kriterium 2 unverändert bei
+**32**.
+
+### 🔴 Neun Werkzeuge des Kerns nannten einen Arbeitsplatz (D-231)
+
+```python
+KERN = os.path.join(r"C:\Users\<konto>\Documents\devpacks\leitwerk", "leitwerk-core")
+```
+
+**Acht Werkzeuge** des Meßapparats führten einen Pfad dieses Arbeitsplatzes im
+Quelltext, ein neuntes im Kommentar – und der Pfad enthält den **Kontonamen einer
+natürlichen Person**. Solange der Apparat **neben** dem Repositorium lag, stand das in
+einer unversionierten Ablage. **Mit D-222 ist er hineingewandert und hat die Pfade
+mitgebracht** – in dasselbe Repositorium, für das `0.78.1` eigens `UEBERGABE.local.md`
+eingeführt hat, weil eine Übergabe mit Servername und Konto den Validator mit drei
+Fehlern und drei Warnungen beantwortet.
+
+> *Wer einen Apparat umzieht, zieht seine Arbeitsplatzpfade mit um – und veröffentlicht
+> sie, ohne es zu entscheiden.*
+
+🔴 **Keine der siebzig Prüfungen sah es.** Prüfung 6 kennt Secret-Muster,
+E-Mail-Adressen, IP-Adressen, interne Hostnamen und URLs außerhalb der Allowlist – **ein
+Pfad in ein Benutzerprofil ist nichts davon und trägt trotzdem den Namen eines
+Menschen.**
+
+**Abhilfe, zwei Formen:** Das Übungsrepositorium wird **gesagt** (`LW_UEBUNG`,
+dieselbe Form wie `LW_ERHEBUNG` nach D-224), das Repositorium selbst **abgeleitet**
+(`ablage.WURZEL`). **Prüfung 71** meldet jeden absoluten Pfad in ein Benutzerprofil,
+dessen Kontosegment kein Platzhalter ist und dessen Zeile keine Begründung trägt –
+dieselbe Bauform wie das Feld `_uebererfasst` von Prüfung 68.
+
+**Gemessen:** **18 Träger** vor dem Eingriff (acht Werkzeuge, zehn Aufzeichnungen),
+**null Werkzeuge** danach.
+
+⚠️ **Die Grenze ist gesagt:** `tests/protocols/` und `governance/change-requests/` sind
+ausgenommen – sie halten fest, **wo** gemessen wurde, und ein Protokoll, das man
+umschreibt, ist keines mehr (D-141). **Zehn von ihnen tragen den Kontonamen weiter; das
+ist `K-85` und hier nicht entschieden.**
+
+### 🟢 Prüfung 70 hat ihren ersten echten Fang gemacht – am Eingriff selbst
+
+Die Umstellung ließ in drei Werkzeugen (`zaehlen46.py`, `baeume_loeschen.py`,
+`cc-overlay-fuellen.py`) den Aufruf `ablage.…` stehen, **ohne den Import**. Der
+Validator meldete **drei `NameError`, bevor ein Lauf sie fand** – genau der Fall, für
+den die Prüfung einen Tag zuvor entstanden ist, und genau die Bauform, an der
+`stand-b4.py` elf Tage lang tot war.
+
+### 🔴 Ein Werkzeug wartete auf ein Datum (D-232)
+
+```
+ABBRUCH: …\belege\auswertung-2026-09-20.log fehlt - erst auswerten-b4.py
+```
+
+**Die Auswertung war gefahren** – nur eben am 21. Der Dateiname stand als Zeichenkette
+im Quelltext von `dossier-b4.py`. Das ist die Bauform von D-225 (drei
+`--erwarte`-Sollwerte, keiner stimmte) und D-153 (*eine Zahl, die gepflegt werden muß,
+wird nicht gepflegt*), diesmal als **Datum**.
+
+> *Ein Werkzeug, das die Ausgabe eines anderen beim Namen nennt, wartet auf den Tag, an
+> dem jemand diesen Namen anders wählt.*
+
+`dossier-b4.py` fährt die Auswertung seither **selbst** und legt ihr Protokoll mit dem
+Datum **dieses** Laufes neben die Belege. 🟢 **Nebenwirkung, gewollt:** Ein Dossier kann
+nicht mehr aus einer veralteten Auswertung entstehen.
+
+### Migrationshinweise für Overlays
+
+**Keine.** Beide Änderungen betreffen ausschließlich den Meß- und Prüfapparat des
+Quellrepositoriums; `install.py` schreibt keines dieser Skripte in ein Projekt.
+
+### Bekannte Einschränkungen
+
+- Prüfung 71 nimmt Aufzeichnungen aus; **zehn** tragen den Kontonamen weiter (`K-85`).
+- Fünf Werkzeuge des Apparats brauchen ab sofort `LW_UEBUNG`; ohne die Angabe brechen
+  sie ab.
+
 ## [0.79.3] - 2026-09-21
 
 **Der Apparat lag tot auf dem Weg der Wiederaufnahme – zwei Befunde, keiner kostet

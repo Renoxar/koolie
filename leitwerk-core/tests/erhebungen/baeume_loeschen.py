@@ -12,6 +12,8 @@ import shutil
 import stat
 import sys
 
+import ablage
+
 # 🔴 DER BERICHTSWEG GEHOERT IN BEIDE KODIERUNGSUMGEBUNGEN (D-223). Ohne diese
 # Zeile stirbt `print` an der eigenen Ampelzeile, sobald PYTHONIOENCODING nicht
 # gesetzt ist - gemessen am 2026-09-20, NACH dem Loeschen von 46 Baeumen und
@@ -23,7 +25,7 @@ import sys
 sys.stdout.reconfigure(encoding="utf-8")
 
 BASIS = r"C:\lw-b4"
-QUELLE = os.path.join(r"C:\Users\reneh\Documents\devpacks\test-devin-framework",
+QUELLE = os.path.join(ablage.uebungsrepositorium(),   # D-231
                       "frontend", "node_modules")
 
 

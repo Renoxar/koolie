@@ -419,7 +419,25 @@ Prüft (statisch, ohne laufenden KI-Client):
      Enthaltung, die Pruefung 68 zur Begruendung sagt. Ein Lauf des Werkzeugs
      bliebe der staerkere Nachweis; er kostet Kontingent und legt Dateien an,
      diese Pruefung nicht
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 70 laeuft als eigenes
+ 71. Kein Traeger des Kerns nennt einen Arbeitsplatz (D-231): Ein absoluter Pfad in
+     ein Benutzerprofil - C:\\Users\\<konto>, /home/<konto>, /Users/<konto> - wird
+     gemeldet, sofern das Kontosegment kein Platzhalter ist und die Zeile keine
+     Begruendung traegt. ANLASS, und er ist gemessen: Neun Werkzeuge des
+     Messapparats fuehrten
+     C:\\Users\\<konto>\\Documents\\devpacks\\test-devin-framework im Quelltext -
+     mit dem Kontonamen einer natuerlichen Person. Solange der Apparat NEBEN dem
+     Repositorium lag, stand das in einer unversionierten Ablage; mit D-222 ist er
+     hineingewandert und hat den Pfad mitgebracht - in genau das Repositorium, fuer
+     das 0.78.1 eigens UEBERGABE.local.md eingefuehrt hat, weil eine Uebergabe mit
+     Servername und Konto den Validator mit drei Fehlern beantwortet. Keine der
+     siebzig Pruefungen sah es: Pruefung 6 kennt Secret-Muster, E-Mail-Adressen,
+     IP-Adressen und Hostnamen - keinen Benutzerprofilpfad. GRENZE, und sie steht
+     hier: Aufzeichnungen sind ausgenommen - tests/protocols/ und
+     governance/change-requests/ halten fest, WO gemessen wurde, und ein Protokoll,
+     das man umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den
+     Kontonamen weiter; was daraus folgt, ist als K-85 geführt und hier nicht
+     entschieden
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 71 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -3228,7 +3246,7 @@ HOOK_UMSCHLAEGE = {
     # Aufgezeichnet, nicht angenommen: die Felder stammen aus den AP2-Mitschriften beider
     # Packs (leitwerk-erhebungen-2026-09-12 bzw. lw-tech). Der Unterschied ist der Punkt:
     # Nur eines der beiden Schemata fuehrt transcript_path und cwd.
-    "claude-code": {"session_id": "s", "transcript_path": "/home/u/.claude/projects/p/s.jsonl",
+    "claude-code": {"session_id": "s", "transcript_path": "/home/u/.claude/projects/p/s.jsonl",  # SYNTHETISCH: Sondeneingabe, kein Arbeitsplatz (D-231)
                     "cwd": "/projekt", "permission_mode": "default",
                     "hook_event_name": "PreToolUse", "tool_use_id": "t"},
     "devin-desktop": {"session_id": "s", "prompt_id": "p", "hook_event_name": "PreToolUse",
@@ -7584,6 +7602,88 @@ def check_werkzeugnamen(root: str) -> None:
             f"bestuende sonst leise (D-23, D-229)")
 
 
+# --- Pruefung 71: Kein Traeger des Kerns nennt einen Arbeitsplatz -------------------
+#
+# ANLASS, UND ER IST GEMESSEN. Am 2026-09-21, beim Bauen der Dossiers des Nachlaufs,
+# brach `dossier-b4.py` ab - und im selben Blick fiel auf, was in seiner Zeile 33 stand:
+#
+#     KERN = os.path.join(r"C:\Users\<konto>\Documents\devpacks\leitwerk", ...)
+#
+# Neun Werkzeuge des Messapparats fuehrten einen Pfad dieses Arbeitsplatzes, acht davon
+# mit dem Ziel `...\devpacks\test-devin-framework`. Solange der Apparat NEBEN dem
+# Repositorium lag, stand das in einer unversionierten Ablage. Mit D-222 ist er
+# HINEINgewandert und hat die Pfade mitgebracht - in dasselbe Repositorium, fuer das
+# `0.78.1` eigens `UEBERGABE.local.md` eingefuehrt hat, weil eine Uebergabe mit
+# Servername und Konto den Validator mit drei Fehlern und drei Warnungen beantwortet.
+#
+#   Wer einen Apparat umzieht, zieht seine Arbeitsplatzpfade mit um - und
+#   veroeffentlicht sie, ohne es zu entscheiden.
+#
+# WARUM KEINE DER SIEBZIG ES SAH. Pruefung 6 kennt Secret-Muster, E-Mail-Adressen,
+# IP-Adressen, interne Hostnamen und URLs ausserhalb der Allowlist. Ein Pfad in ein
+# Benutzerprofil ist nichts davon - und er traegt trotzdem den Namen eines Menschen.
+#
+# WAS GEPRUEFT WIRD, UND WARUM SO. Ein absoluter Pfad in ein Benutzerprofil, dessen
+# Kontosegment KEIN Platzhalter ist. `<KONTO>`, `%USERNAME%` und `$HOME` laufen durch -
+# sie nennen niemanden. Eine Zeile mit der Marke `SYNTHETISCH` laeuft ebenso durch:
+# Dieselbe Bauform wie das Feld `_uebererfasst` von Pruefung 68 - wer einen solchen
+# Pfad braucht, sagt es in derselben Zeile, statt dass die Pruefung raet.
+#
+# GRENZE, UND SIE STEHT HIER: AUFZEICHNUNGEN SIND AUSGENOMMEN. `tests/protocols/` und
+# `governance/change-requests/` halten fest, WO gemessen wurde; ein Protokoll, das man
+# umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den Kontonamen weiter.
+# Was daraus folgt, ist `K-85` und hier NICHT entschieden - die Pruefung schweigt
+# darueber, statt es durch ihren Zuschnitt stillschweigend zu entscheiden.
+P71_MUSTER = re.compile(
+    r"(?:[A-Za-z]:[\\/]{1,2}Users|/home|/Users)[\\/]{1,2}([A-Za-z0-9._-]+)")
+P71_AUSNAHME_ORDNER = (f"{KERN}/tests/protocols/",
+                       f"{KERN}/governance/change-requests/")
+P71_MARKE = "SYNTHETISCH"
+# Die Selbstprobe des Musters: Ohne sie koennte ein Ausdruck, der nichts mehr trifft,
+# still bestehen - eine Null durch Konstruktion sieht aus wie eine gemessene Null
+# (0.59.1). Der Anker haengt deshalb am MUSTER, nicht am Bestand: Der Bestand kann
+# nicht verschwinden, solange dieses Skript selbst im Kern liegt.
+P71_SELBSTPROBE = ("C:" + chr(92) + "Users" + chr(92) + "kontoname" + chr(92) + "x",  # SYNTHETISCH
+                   "/home/kontoname/x",  # SYNTHETISCH
+                   "/Users/kontoname/x")  # SYNTHETISCH
+
+
+def check_arbeitsplatzpfad(root: str) -> None:
+    """Pruefung 71 (D-231): Kein Traeger des Kerns nennt einen Arbeitsplatz."""
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return
+    for probe in P71_SELBSTPROBE:
+        if not P71_MUSTER.search(probe):
+            err(f"Pruefung 71: das eigene Muster trifft {probe!r} nicht mehr - sie "
+                f"haette ihren Gegenstand verloren und bestuende leise (D-23, D-231)")
+            return
+    for pfad in iter_text_files(root):
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        if not rel.startswith(f"{KERN}/"):
+            continue
+        if rel.startswith(P71_AUSNAHME_ORDNER):
+            continue
+        text = read(pfad)
+        for zeile in text.splitlines():
+            if P71_MARKE in zeile:
+                continue
+            for m in P71_MUSTER.finditer(zeile):
+                konto = m.group(1)
+                # Ein Platzhalter nennt niemanden. Die drei Schreibweisen, die
+                # dieses Repositorium und die beiden Betriebssysteme kennen.
+                davor = zeile[:m.start(1)]
+                if (konto.startswith(("<", "%", "$"))
+                        or davor.endswith(("<", "%", "$", "{"))
+                        or konto.upper() in ("USER", "USERNAME", "USERPROFILE")):
+                    continue
+                err(f"{rel}: der Pfad {m.group(0)!r} nennt ein Benutzerprofil mit "
+                    f"dem Kontosegment {konto!r}. Ein Arbeitsplatz gehoert nicht in "
+                    f"den Kern - der Ort wird gesagt (LW_ERHEBUNG, LW_UEBUNG) oder "
+                    f"abgeleitet (ablage.WURZEL). Ein Platzhalter oder die Marke "
+                    f"{P71_MARKE} in derselben Zeile laeuft durch (D-231)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -7669,6 +7769,7 @@ def main() -> int:
     check_uebergabestand(root)
     check_praefix_uebererfassung(root)
     check_werkzeugnamen(root)
+    check_arbeitsplatzpfad(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

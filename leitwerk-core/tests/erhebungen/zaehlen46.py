@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 """Zaehlt Kriterium 2 mit der Regel von Pruefung 46 selbst - Zelle fuer Zelle."""
 import io, os, sys
+
+import ablage
+
 sys.stdout.reconfigure(encoding="utf-8")
-ROOT = r"C:\Users\reneh\Documents\devpacks\leitwerk"
+ROOT = ablage.WURZEL                        # D-231: abgeleitet, nicht im Quelltext
 KERN = os.path.join(ROOT, "leitwerk-core")
 AUSSER = ("build/", "CHANGELOG.md", "governance/change-requests/", "tests/protocols/")
 

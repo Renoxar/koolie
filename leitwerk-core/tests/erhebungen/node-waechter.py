@@ -29,8 +29,8 @@ import ablage
 sys.stdout.reconfigure(encoding="utf-8")
 
 HIER = ablage.erhebung()
-QUELLE = (r"C:\Users\reneh\Documents\devpacks\test-devin-framework"
-          r"\frontend\node_modules")
+# D-231: der Pfad wird gesagt, nicht im Quelltext gefuehrt.
+QUELLE = os.path.join(ablage.uebungsrepositorium(), "frontend", "node_modules")
 ZWISCHENSTAND = (".vite", ".cache", ".tmp")
 
 

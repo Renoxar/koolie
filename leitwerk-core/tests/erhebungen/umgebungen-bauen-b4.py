@@ -43,7 +43,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 HIER = os.path.dirname(os.path.abspath(__file__))
 B3 = os.path.join(os.path.dirname(os.path.dirname(HIER)),
                   "leitwerk-erhebungen-2026-09-19-b3", "skripte")
-UEB = r"C:\Users\reneh\Documents\devpacks\test-devin-framework"
+UEB = ablage.uebungsrepositorium()          # D-231: gesagt, nicht im Quelltext
 BASIS = r"C:\lw-b4"
 BAUM = os.path.join(BASIS, "basis")
 NODE_QUELLE = os.path.join(UEB, "frontend", "node_modules")
