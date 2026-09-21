@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 69, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 70, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6167,6 +6167,118 @@ gegenprobe("69a", "Ein weiteres .py-Skript ist ein Werkzeug und wird NICHT gemel
 
 gegenprobe("68b", "Eine Regel, deren Praefix ihrem Befehl gleicht, wird NICHT gemeldet - auch ohne Begruendungsfeld; gemessen wird die Uebererfassung, nicht das fehlende Feld",
            _68_praefix_gleich_befehl, M68)
+
+
+# --- 70: jedes Werkzeug des Kerns nennt nur Namen, die es gibt (D-229) -------------
+#
+# Drei Formen desselben Gegenstands: der gemessene NameError (70a), die Quelle, die
+# der Interpreter gar nicht erst uebersetzt (70b), und die Ankersonde - ein
+# Messapparat ohne ein einziges Werkzeug haette nichts zu pruefen und bestuende leise
+# (70c). 70a setzt den Defekt WOERTLICH so, wie er am 2026-09-21 gefunden wurde: den
+# Ablageort NEBEN dem Skript, den D-222 mit dem Umzug entfernt hat.
+#
+# ZWEI GEGENPROBEN, UND SIE BELEGEN DEN ZUSCHNITT. Die Pruefung haengt an der
+# BINDUNG, nicht an der Schreibweise: Ein Werkzeug, das freie Variablen einer
+# umschliessenden Funktion liest, eine Komprehension fuehrt, `__file__` nennt und
+# einen Namen erst im `except`-Zweig bindet, ist gebunden und wird nicht gemeldet
+# (70a). Und ein Name, der GEBUNDEN und falsch belegt ist, laeuft durch - das ist die
+# angesagte Grenze, nicht ein Loch (70b).
+M70 = "NameError, der auf seinen Lauf wartet"
+M70_SYNTAX = "laedt nicht"
+M70_ANKER = "kein einziges Werkzeug geprueft"
+P70_STAND = "leitwerk-core/tests/erhebungen/stand-b4.py".replace("/", os.sep)
+P70_APPARAT = "leitwerk-core/tests/erhebungen".replace("/", os.sep)
+
+
+def _70_verschwundener_name(root: str) -> None:
+    """Der gemessene Fall: der Ablageort neben dem Skript, nach dem Umzug (D-222)."""
+    ersetze(P(root, P70_STAND),
+            ("PROMPTS = ablage.prompts(anlegen=False)",
+             'PROMPTS = os.path.join(os.path.dirname(S), "prompts")'))
+
+
+def _70_uebersetzt_nicht(root: str) -> None:
+    """Die zweite Form: ein Werkzeug, das der Interpreter nicht uebersetzt."""
+    schreib(P(root, P70_APPARAT, "sondenwerkzeug.py"),
+            "# -*- coding: utf-8 -*-" + chr(10) + "def offen(:" + chr(10))
+
+
+def _70_apparat_ohne_werkzeug(root: str) -> None:
+    """Ankersonde: die Ablage steht, kein Werkzeug mehr darin."""
+    ordner = P(root, P70_APPARAT)
+    if not os.path.isdir(ordner):
+        raise Praeparationsfehler(
+            "die Erhebungsablage fehlt - die Sonde zu 70 haette keinen Anker")
+    geloescht = 0
+    for name in os.listdir(ordner):
+        ziel = os.path.join(ordner, name)
+        if os.path.isfile(ziel) and name.endswith(".py"):
+            os.remove(ziel)
+            geloescht += 1
+    if geloescht == 0:
+        raise Praeparationsfehler(
+            "in der Erhebungsablage lag kein einziges .py - der Anker traegt nicht")
+
+
+def _70_gebundene_namen(root: str) -> None:
+    """Gegenprobe: jede Bindungsform, die es gibt - und keine davon ist ein Befund."""
+    schreib(P(root, P70_APPARAT, "sondenwerkzeug.py"), chr(10).join([
+        "# -*- coding: utf-8 -*-",
+        "import os",
+        "",
+        "WURZEL = os.path.dirname(os.path.abspath(__file__))",
+        "",
+        "",
+        "def aussen(grenze):",
+        "    rest = [x for x in os.listdir(WURZEL) if x > grenze]",
+        "",
+        "    def innen():",
+        "        return grenze, rest",
+        "",
+        "    try:",
+        "        zahl = int(grenze)",
+        "    except ValueError as fehler:",
+        "        zahl = len(str(fehler))",
+        "    with open(os.path.join(WURZEL, grenze)) as quelle:",
+        "        inhalt = quelle.read()",
+        "    return innen(), zahl, inhalt",
+        "",
+        "",
+        "class Traeger(object):",
+        "    feld = WURZEL",
+        "",
+        "    def hol(self):",
+        "        return self.feld",
+        "",
+    ]))
+
+
+def _70_gebunden_und_falsch(root: str) -> None:
+    """Gegenprobe: der Name IST gebunden - der Wert taugt nicht. Die angesagte Grenze."""
+    schreib(P(root, P70_APPARAT, "sondenwerkzeug.py"), chr(10).join([
+        "# -*- coding: utf-8 -*-",
+        "import os",
+        "",
+        "S = None",
+        "PROMPTS = os.path.join(os.path.dirname(S), 'prompts')",
+        "",
+    ]))
+
+
+sonde("70a", "Der gemessene Fall: der Ablageort neben dem Skript ist mit D-222 verschwunden, seine zwei Lesestellen nicht - stand-b4.py war seit 0.79.0 tot",
+      _70_verschwundener_name, M70)
+
+sonde("70b", "Dieselbe Bauform eine Stufe frueher: ein Werkzeug des Kerns, das der Interpreter nicht einmal uebersetzt, wird gemeldet",
+      _70_uebersetzt_nicht, M70_SYNTAX)
+
+sonde("70c", "Ohne ein einziges Werkzeug im Messapparat meldet Pruefung 70 den verlorenen Gegenstand, statt leise zu bestehen",
+      _70_apparat_ohne_werkzeug, M70_ANKER)
+
+gegenprobe("70a", "Freie Variable, Komprehension, except-Name, with-Ziel, Klassenfeld und __file__ sind gebunden und werden NICHT gemeldet - die Pruefung haengt an der Bindung",
+           _70_gebundene_namen, M70)
+
+gegenprobe("70b", "Ein gebundener Name mit untauglichem Wert laeuft durch - das ist die angesagte Grenze der Pruefung und kein Loch",
+           _70_gebunden_und_falsch, M70)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

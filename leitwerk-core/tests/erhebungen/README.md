@@ -62,7 +62,7 @@ dieselbe Lehre wie `--ziel` beim Baumbau (D-218).
 | `umgebungen-bauen-b4.py`, `trust-b4.py` | Umgebungen und Vertrauenseinträge |
 | `baeume_loeschen.py` | löst **jede Verzeichnisverbindung einzeln**, dann `shutil.rmtree` mit `onexc`-Haken |
 | `zaehlen46.py` | zählt Kriterium 2 mit der Regel von Prüfung 46 |
-| `ablage.py` | sagt allen anderen, **wo** Belege, Prompts und Zustandsaufnahmen liegen – und **welche Kernversion** das Übungsrepositorium tragen muß |
+| `ablage.py` | sagt allen anderen, **wo** Belege, Prompts und Zustandsaufnahmen liegen, **welche Kernversion** das Übungsrepositorium tragen muß – und **welche Zellen eine Erhebung schuldet** (`sollmenge()`, D-230) |
 
 ## Die drei Wächter, die es seit 0.79.0 gibt
 
@@ -96,9 +96,37 @@ Sie kosteten nichts, weil sie vor dem ersten bezahlten Lauf kamen:
    erste Turn den Halt und der zweite die Umsetzung (dieselbe Bauform wie der
    dritte Teil von D-218).
 
+## Die zwei Befunde der Wiederaufnahme (2026-09-21)
+
+Sie kosteten nichts, weil sie vor dem ersten bezahlten Kontrollauf kamen – und sie
+lagen beide **auf dem Weg**, den der Wiederaufnahmepunkt vorschreibt:
+
+1. 🔴 **`stand-b4.py` startete seit `0.79.0` nicht** (**D-229**). Zwei Lesestellen
+   eines Namens, den der Umzug nach D-222 entfernt hat – `NameError` beim Import, und
+   das Skript stand als **Befehl 1 von 4** im Wiederaufnahmepunkt. **Keine der 69
+   Prüfungen konnte es sehen:** Prüfung 45 prüft die *Abwesenheit* von Bytecode,
+   Prüfung 69 die *Art* der Dateien hier – daß eine davon **läuft**, prüfte keine.
+   **Prüfung 70** baut seither zu jeder `.py` des Kerns die Symboltabelle.
+
+   > *Ein Werkzeug, das niemand fährt, verfällt lautlos – und der Tag, an dem es
+   > gebraucht wird, ist der Tag, an dem es fehlt.*
+
+2. 🔴 **Die Sollmenge kam aus dem Promptverzeichnis** (**D-230**). Der Nachlauf mißt
+   vierzehn Zellen, sein Promptverzeichnis trägt die fünfzig Prompts des Meßtags.
+   `stand-b4.py` meldete **35 Fehlbestände und rund 37 USD**, fällig waren fünfzehn
+   und rund achtzehn – und `reihe-b4.py` **ohne Argumente**, der Befehl, den
+   `stand-b4.py` selbst als nächsten nennt, brach am ersten Baum ab, den es in dieser
+   Erhebung nie gab. Die Sollmenge kommt seither aus den **Meßbäumen**
+   (`ablage.sollmenge()`), und ein Prompt ohne Baum wird **genannt**.
+
+   > *Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt von gestern.*
+
 ## Vor jedem Meßtag
 
 - **Das Prüfmittel einmal im Meßbaum laufen lassen** – nicht danach (0.68.0).
+- **Jedes Werkzeug einmal aufrufen, das der Ablauf nennt** – `stand-b4.py` stand
+  elf Tage lang im Ablauf und startete nicht (D-229). Prüfung 70 nimmt das ab,
+  aber nur für die Namen, nicht für die Werte.
 - **Den Apparat als Ganzes einmal fahren.** Beim ersten vollständigen Aufbau von
   Bündel 4 brach er an **sechs** Stellen, und alle sechs kosteten nichts.
 - **Nicht unterhalb des Arbeitsbereichs messen** – dort liegt eine sachfremde

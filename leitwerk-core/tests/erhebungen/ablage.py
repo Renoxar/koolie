@@ -111,6 +111,66 @@ def prompts(anlegen=True):
     return p
 
 
+def sollmenge(promptordner, baumordner):
+    """Die Kennungen, die DIESE Erhebung schuldet - und die, die sie nicht schuldet.
+
+    🔴 DER ANLASS IST GEMESSEN (2026-09-21, D-230). Der Nachlauf von Buendel 4 misst
+    vierzehn Zellen. Sein Promptverzeichnis traegt die **fuenfzig** Prompts des
+    Messtags, weil `prompts-schreiben-b4.py` sie alle schreibt und keine Zelle
+    kennt. `stand-b4.py` leitete seine Sollmenge daraus ab und meldete am halb
+    gefahrenen Nachlauf **35 fehlende Laeufe und rund 37 USD** - faellig waren
+    fuenfzehn und rund achtzehn. Und `reihe-b4.py` ohne Argumente - der Befehl, den
+    `stand-b4.py` selbst als naechsten nennt - brach am ersten Baum ab, den es in
+    dieser Erhebung nie gab, und fuhr **keinen einzigen** Lauf.
+
+    Die Sollmenge kommt deshalb aus den **Messbaeumen**: `baeume-b4.py` legt genau
+    die Baeume an, die der Zuschnitt dieser Erhebung nennt. Ein Prompt ohne Baum ist
+    eine Zelle einer anderen Erhebung - derselbe Grund, aus dem `LW_ERHEBUNG` gesagt
+    wird (D-224) und `--ziel` beim Baumbau (D-218): **Ein Ort, der aus der Umgebung
+    erschlossen wird, gehoert dem, der ihn zuletzt gefuellt hat.**
+
+      Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt von gestern.
+
+    Gibt zwei sortierte Listen zurueck: die Kennungen mit Baum (ein `-t2.txt` ist
+    kein eigener Eintrag - er ist der zweite Turn seiner Zelle) und die Prompts ohne
+    Baum, die die Aufrufer NENNEN muessen, statt sie stillschweigend zu uebergehen.
+    """
+    einfach, zwei = set(), set()
+    for x in sorted(os.listdir(promptordner)):
+        if not x.endswith(".txt"):
+            continue
+        n = x[:-4]
+        # 🔴 Eine NACHMESSUNG (`n<kennung>`) gehoert nicht zur Sollmenge. Sie faehrt
+        # einen weiteren Turn im Baum ihrer Zelle und hat keinen eigenen Baum; wer
+        # sie mitzaehlt, meldet einen Fehlbestand, den es nicht gibt. Praezedenz:
+        # `nsk004p01` und `nsk009p01` aus Buendel 2.
+        if n.startswith("n"):
+            continue
+        if n.endswith("-t2"):
+            zwei.add(n[:-3])
+        else:
+            einfach.add(n)
+    vorhanden = set()
+    if os.path.isdir(baumordner):
+        vorhanden = {x for x in os.listdir(baumordner)
+                     if os.path.isdir(os.path.join(baumordner, x))}
+    mit, ohne = [], []
+    for k in sorted(einfach):
+        (mit if k in vorhanden else ohne).append(k)
+    return mit, zwei, ohne
+
+
+def laeufe(zellen, zwei):
+    """Die Laufkennungen einer Zellmenge - eine Zelle mit zweitem Turn hat ZWEI."""
+    aus = []
+    for k in zellen:
+        if k in zwei:
+            aus += [k + "t1", k]
+        else:
+            aus.append(k)
+    return aus
+
+
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     print("Kernversion:    ", kernversion())
