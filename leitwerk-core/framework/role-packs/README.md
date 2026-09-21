@@ -35,6 +35,24 @@ cp leitwerk-core/framework/role-packs/<pack>/runtime/30-role-<pack>.md <Regelabl
 cp -r leitwerk-core/framework/role-packs/<pack>/skills/* <Skill-Ablage>/    # falls vorhanden
 ```
 
+🔴 **Und ein dritter Schritt, den diese Anleitung bis `0.81.0` nicht nannte: der
+Skill gehört in die Berechtigungsdatei.** Je kopiertem Skill kommt ein Eintrag der
+Form `<Werkzeug>(<skillname>)` hinzu – welches Werkzeug, sagt `permission_tools.skill`
+im Manifest des Client Packs (bei `claude-code` `Skill`, bei `devin-desktop` ist das
+Feld leer, weil dort keine Schreibweise bekannt ist, D-89).
+
+**Warum das nicht in `framework/runtime/permissions.json` steht:** Eine Regel dort
+trägt **jede** Installation, auch die, die das Pack nicht aktiviert hat – und eine
+Vorabfreigabe für einen Skill, den es nicht gibt, ist eine Zusage ohne Gegenstand
+(Prüfung 39, D-81). Die Aktivierung ist eine Projektentscheidung (Punkt 4), also
+gehört der Eintrag zu ihr.
+
+**Was ohne ihn geschieht, ist gemessen** (2026-09-21, D-238): Der Aufruf fällt in den
+Rückfragekorb und im rückfragefreien Betrieb in die Abweisung; die Sitzung liest die
+`SKILL.md` dann ersatzweise als Datei – **ohne die Werkzeugbeschränkung des Skills.**
+🟢 **Prüfung 72 setzt es seither durch**, in beide Richtungen: ein Skill ohne Eintrag
+und ein Eintrag ohne Skill werden beide gemeldet.
+
 `leitwerk-core/install.py` nimmt diesen Schritt bewusst nicht vorweg: **Die Aktivierung eines Packs ist eine Projektentscheidung** (Punkt 4), kein Installationsschritt. Kein Pack ist nach einer Erstinstallation aktiv – auch nicht das Referenzpack `software-development`.
 
 Einmal aktiviert, gehören die kopierten Bestandteile aber zum Aktualisierungsumfang: `install.py --update` bringt sie auf den Stand des Releases, `--check` meldet lokale Abweichungen. Die Unterscheidung ist also: *ob* ein Pack aktiv ist, entscheidet das Projekt – *was* darin steht, ist Framework-Inhalt.
