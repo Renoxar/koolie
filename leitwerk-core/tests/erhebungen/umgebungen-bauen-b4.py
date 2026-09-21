@@ -37,6 +37,7 @@ import subprocess
 import sys
 
 import ablage
+import packaktivierung
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -46,6 +47,9 @@ B3 = os.path.join(os.path.dirname(os.path.dirname(HIER)),
 UEB = ablage.uebungsrepositorium()          # D-231: gesagt, nicht im Quelltext
 BASIS = r"C:\lw-b4"
 BAUM = os.path.join(BASIS, "basis")
+# Das Client Pack des Messbaums - einmal genannt; Regel-, Skillablage und
+# Berechtigungsdatei leitet `packaktivierung.py` aus seinem Manifest ab.
+CLIENT = "claude-code"
 NODE_QUELLE = os.path.join(UEB, "frontend", "node_modules")
 
 SCHREIBKORB = "Edit(frontend/src/**)"
@@ -101,6 +105,27 @@ def lauf(befehl, cwd=None, pruefen=True):
         print((p.stderr or "")[-2000:])
         raise SystemExit("ABBRUCH: %r -> Exit %d" % (befehl, p.returncode))
     return p.stdout or ""
+
+
+def zuschnitt():
+    """Die Zellen dieser Erhebung - aus dem Baumbau, nicht aus einer Liste.
+
+    `baeume-b4.py` traegt die Zuordnung Zelle -> Kontrollklasse und ist damit
+    die einzige Stelle, die den Zuschnitt kennt. Sie wird gefragt, nicht
+    nachgebaut - dieselbe Trennung wie beim Aufruf von `k-bauen-b3.py`.
+    """
+    p = subprocess.run([sys.executable,
+                        os.path.join(HIER, "baeume-b4.py"), "--zellen"],
+                       capture_output=True, text=True, encoding="utf-8",
+                       errors="replace")
+    if p.returncode != 0:
+        raise SystemExit("ABBRUCH: baeume-b4.py --zellen -> Exit %d\n%s"
+                         % (p.returncode, (p.stderr or "")[-800:]))
+    zellen = [z.strip() for z in (p.stdout or "").splitlines() if z.strip()]
+    if not zellen:
+        raise SystemExit("ABBRUCH: der Zuschnitt ist leer - der Waechter ueber "
+                         "die Skillmenge haette nichts zu pruefen (D-23)")
+    return zellen
 
 
 def lies(pfad):
@@ -171,6 +196,30 @@ def main():
     lauf([sys.executable, os.path.join(HIER, "cc-overlay-fuellen.py"), BAUM])
     print("Packwechsel auf claude-code, Overlay gefuellt")
 
+    # --- 3b. DIE AKTIVIERUNG DER PACKS (D-237) --------------------------------
+    # 🔴 DER TEUERSTE BEFUND VON 0.81.0, UND ER HAETTE 30 BIS 37 USD GEKOSTET.
+    # `git archive HEAD` bringt ein aktiviertes Pack mit, der Packwechsel
+    # loescht es, und `install.py` legt nur die Skills des KERNS an - "die
+    # Aktivierung eines Packs ist eine Projektentscheidung, kein
+    # Installationsschritt" (framework/role-packs/README.md). Fuer Buendel 4
+    # war das folgenlos, weil alle drei gemessenen Skills im Kern liegen;
+    # Buendel 5 misst den einzigen, der es nicht tut.
+    #
+    # Die Menge kommt aus dem ZUSCHNITT, nicht aus einer Liste: Fuer Buendel 4
+    # ist sie leer und dieser Block tut nichts.
+    #
+    # ⚠️ PREIS, BENANNT: Aktiviert wird, was die Messung BRAUCHT. Das Overlay
+    # des Uebungsrepositoriums fuehrt daneben `software-development` als aktiv;
+    # dieses Pack traegt keinen Skill, keine Zelle dieses Blattes nennt es, und
+    # es fehlte auch in allen 38 Baeumen von Buendel 4 (K-44).
+    skills, packs = ablage.skillmenge(zuschnitt())
+    for _art, pack in packs:
+        bericht = packaktivierung.aktivieren(BAUM, CLIENT, pack)
+        print("Pack aktiviert: %s - Laufzeitfassung %s, Skills %s, Korb %s"
+              % (pack, ", ".join(bericht["regeln"]) or "keine",
+                 ", ".join(bericht["skills"]) or "keine",
+                 ", ".join(bericht["nachgetragen"]) or "unveraendert"))
+
     # --- 4. Die ausgewiesenen Abweichungen des Zuschnitts -------------------------
     pfad = os.path.join(BAUM, ".claude", "settings.json")
     d = json.loads(lies(pfad))
@@ -240,11 +289,34 @@ def main():
     if not any(x.startswith("Skill") for k in p for x in p[k]):
         raise SystemExit("ABBRUCH: kein Skill-Eintrag in der Berechtigungsdatei")
 
-    skills = sorted(os.listdir(os.path.join(BAUM, ".claude", "skills")))
-    for name in ("fw-mr-description", "fw-review-support", "fw-docs-update"):
-        if name not in skills:
-            raise SystemExit("ABBRUCH: Skill %s fehlt - er ist der Gegenstand "
-                             "dieses Buendels" % name)
+    # 🔴 DER WAECHTER NENNT DIE SKILLS NICHT MEHR BEIM NAMEN (D-237). Bis
+    # 0.81.0 stand hier das Tripel von Buendel 4 woertlich - und alle drei
+    # liegen auch im Baum von Buendel 5. Er haette geschwiegen, waehrend der
+    # gemessene Skill fehlte und fuenfzehn Zellen gegen einen Baum gelaufen
+    # waeren, in dem ihr Gegenstand nicht existiert.
+    #
+    #   Vier Buendel lang war "installiert" dasselbe wie "vorhanden". Beim
+    #   fuenften nicht mehr - und der Waechter prueft die Namen des vierten.
+    im_baum = sorted(os.listdir(os.path.join(BAUM, ".claude", "skills")))
+    for name in skills:
+        if name not in im_baum:
+            raise SystemExit("ABBRUCH: Skill %s fehlt im Messbaum - er ist der "
+                             "Gegenstand dieser Erhebung, abgeleitet aus dem "
+                             "Zuschnitt (D-237)" % name)
+    # Und der DRITTE Teil der Aktivierung: der Korbeintrag (D-238, Pruefung 72).
+    # Ein Skill ohne ihn faellt in den Rueckfragekorb und im rueckfragefreien
+    # Betrieb in die Abweisung; die Sitzung liest die SKILL.md dann ersatzweise
+    # als Datei, OHNE die Werkzeugbeschraenkung des Skills (D-81).
+    korbtext = lies(pfad)
+    for name in im_baum:
+        if "Skill(%s)" % name not in korbtext:
+            raise SystemExit("ABBRUCH: Skill(%s) fehlt in der "
+                             "Berechtigungsdatei - %d Skills im Baum, und "
+                             "dieser steht in keinem Korb (D-238)"
+                             % (name, len(im_baum)))
+    print("Skills im Baum: %d, alle im Korb genannt; gemessen wird: %s"
+          % (len(im_baum), ", ".join(skills)))
+    skills = im_baum
 
     for kennung, verboten in VERBOTEN:
         if os.path.exists(os.path.join(BAUM, verboten)):

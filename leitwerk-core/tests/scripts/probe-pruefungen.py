@@ -2581,6 +2581,40 @@ def sonden_berechtigungskoerbe() -> None:
               "Befehlsschlitz mit Praefixzeichen gefuellt - der Fall des Piloten")
         schreib(pfad, ausgang)
 
+        # --- 37h und Gegenprobe 37c: die Skillfreigabe eines aktivierten Packs ----
+        #
+        # 🔴 ZWEI PRUEFUNGEN DESSELBEN REPOSITORIUMS STANDEN GEGENEINANDER
+        # (2026-09-21, D-243). Pruefung 72 verlangt seit `0.81.0` zu jedem Skill der
+        # Installation einen Korbeintrag - der dritte Teil der Aktivierung eines
+        # Packs (D-238). Pruefung 37 hielt genau diesen Eintrag fuer eine Ausweitung,
+        # weil die Kernquelle ihn nicht erzeugt. Damit war D-238 in keinem Projekt
+        # umsetzbar, ohne den eigenen Validator rot zu faerben.
+        #
+        # Das PAAR belegt den Zuschnitt: Ein Eintrag auf einen Skill, der in der
+        # Ablage liegt, ist keine Ausweitung; derselbe Eintrag auf einen Namen ohne
+        # Skill bleibt einer.
+        skillablage = os.path.join(root, ".claude", "skills")
+        quelle = os.path.join(root, "leitwerk-core", "framework", "role-packs",
+                              "requirements-engineering", "skills", "role-re-ticket")
+        shutil.copytree(quelle, os.path.join(skillablage, "role-re-ticket"))
+        _37_schreiben(root, lambda d: _37_dazu(d, "allow", "Skill(role-re-ticket)"))
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "37c", MELDUNG_ZUVIEL not in aus,
+              "Vollstaendig aktiviertes Role Pack - Skill in der Ablage UND im Korb, "
+              "und Pruefung 37 schweigt dazu")
+        if MELDUNG_ZUVIEL in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "settings.json" in z)[:400])
+        schreib(pfad, ausgang)
+
+        _37_schreiben(root, lambda d: _37_dazu(d, "allow", "Skill(role-gibt-es-nicht)"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "37h", MELDUNG_ZUVIEL in aus,
+              "Dieselbe Schreibweise auf einen Namen ohne Skill in der Ablage bleibt "
+              "eine Ausweitung - der Zuschnitt haengt an der Ablage, nicht am Wort")
+        schreib(pfad, ausgang)
+        shutil.rmtree(os.path.join(skillablage, "role-re-ticket"))
+
         # --- 37g: der verlorene Anker ----------------------------------------------
         cm = os.path.join(root, "leitwerk-core", "clientmap.py")
         quelle = lies(cm)
@@ -2595,9 +2629,9 @@ def sonden_berechtigungskoerbe() -> None:
 
 
 buendel(sonden_berechtigungskoerbe,
-        "Sieben Eingriffe in die Berechtigungsdatei einer echten Installation, jeder einzeln "
+        "Neun Eingriffe in die Berechtigungsdatei einer echten Installation, jeder einzeln "
         "zurueckgesetzt: geloeschte, verengte und ergaenzte Regeln, geleerter ask-Korb, "
-        "Praefixzeichen")
+        "Praefixzeichen und die Skillfreigabe eines aktivierten Packs")
 
 # --- 38: Eine Quelle, ein Vokabular, eine Richtung (CR-2026-062, D-78 bis D-80) ----
 #

@@ -31,6 +31,7 @@ import subprocess
 import sys
 
 import ablage
+import packaktivierung
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -40,6 +41,9 @@ B3 = os.path.join(os.path.dirname(os.path.dirname(HIER)),
 UEB = ablage.uebungsrepositorium()          # D-231: gesagt, nicht im Quelltext
 BASIS = r"C:\lw-b4"
 QUELLE = os.path.join(BASIS, "basis")
+# Das Client Pack des Messbaums. Es steht hier EINMAL; `packaktivierung.py`
+# leitet Regel-, Skillablage und Berechtigungsdatei aus seinem Manifest ab.
+CLIENT = "claude-code"
 NODE_QUELLE = os.path.join(UEB, "frontend", "node_modules")
 
 # Kennung -> Kontrollklasse. Die Klasse schneidet die SCHRANKE, die die Zelle
@@ -101,6 +105,18 @@ AUTOR = ("A. Beispiel", "a.beispiel@example.invalid")
 ERLAUBTE_DOMAENE = "example.invalid"
 
 
+def packmenge():
+    """Die Packs, die DIESE Erhebung misst - abgeleitet aus dem Zuschnitt.
+
+    🔴 NICHT BEIM NAMEN GENANNT (D-237). `umgebungen-bauen-b4.py` fuehrte die
+    drei Skills von Buendel 4 woertlich, und alle drei lagen auch im Baum von
+    Buendel 5 - der Waechter haette geschwiegen, waehrend der gemessene Skill
+    fehlte. Die Menge kommt jetzt aus `ZUORDNUNG` ueber die Testblaetter des
+    Frameworks (`ablage.skillmenge`).
+    """
+    return ablage.skillmenge(sorted(ZUORDNUNG))[1]
+
+
 def weg(pfad):
     def onexc(func, p, exc):
         os.chmod(p, 0o700)
@@ -147,81 +163,25 @@ def klassenbasis(klasse):
     if os.path.isdir(ziel):
         return ziel
     print("--- Kontrollbasis %s ---" % klasse)
-    if klasse == "ohneskill":
+    if klasse in ("ohneskill", "ohnepack"):
         kopieren(QUELLE, ziel)
-        # 🔴 DER ZUSCHNITT SCHNEIDET JEDEN TRAEGER DES SKILLS, NICHT NUR DAS
-        # KOMMANDO (D-234). Bis 0.79.4 wurde allein `.claude/skills/` geleert -
-        # und der Messbaum traegt das FRAMEWORK, in dem der Skill seine
-        # kanonische Fassung hat. Gemessen am 2026-09-21 an drei Kontrollaeufen
-        # derselben Klasse, mit drei verschiedenen Ausgaengen:
-        #
-        #   ksk012p01   las `leitwerk-core/framework/skills/fw-mr-description/
-        #               SKILL.md` und arbeitete den Ablauf VON HAND NACH
-        #   ksk010p01   las das Subagentenprofil `.claude/agents/fw-reviewer.md`
-        #   ksk011p01t1 sah nur unter `.claude/skills/`, fand nichts und
-        #               arbeitete nach den Regeln
-        #
-        # Ein Zuschnitt, der davon abhaengt, wohin der Lauf schaut, ist keiner.
-        #
-        # 🔴 UND DIE DREI ORTE WAREN IMMER NOCH ZU WENIG (D-239, 2026-09-21).
-        # Buendel 5 misst `role-re-ticket`, den einzigen Skill dieses Frameworks
-        # ausserhalb des Kerns. Er liegt unter
-        # `leitwerk-core/framework/role-packs/<pack>/skills/` - und das ist keiner
-        # der drei Orte. Wortgleich auf den Baum von Buendel 5 angewandt blieb
-        # GENAU EINE SKILL.md stehen, und es war die des gemessenen Skills.
-        # Der Stammwaechter unten haette abgebrochen; der Zuschnitt waere nicht
-        # falsch gefahren, sondern gar nicht.
-        #
-        #   Wer eine zu enge Stelle findet, sucht die zweite in derselben
-        #   Richtung. D-234 eine Ebene tiefer, drei Tage spaeter.
-        #
-        # Die Orte werden seither ABGELEITET, nicht genannt: jede `skills/`-Ablage
-        # unter `framework/role-packs/` und `framework/tech-packs/` kommt hinzu.
-        # Ein gepflegter Ort ist eine gepflegte Zahl (D-153) - und der naechste
-        # Pack-Skill kaeme ohne diese Ableitung wieder durch.
-        orte = [os.path.join(".claude", "skills"),
-                os.path.join(".claude", "agents"),
-                os.path.join("leitwerk-core", "framework", "skills")]
-        for art in ("role-packs", "tech-packs"):
-            basis = os.path.join(ziel, "leitwerk-core", "framework", art)
-            if not os.path.isdir(basis):
-                continue
-            for pack in sorted(os.listdir(basis)):
-                if os.path.isdir(os.path.join(basis, pack, "skills")):
-                    orte.append(os.path.join("leitwerk-core", "framework", art,
-                                             pack, "skills"))
-        for unter in orte:
-            ablage = os.path.join(ziel, unter)
-            if not os.path.isdir(ablage):
-                raise SystemExit("ABBRUCH: %s fehlt im Zuschnitt ohneskill - "
-                                 "der Gegenstand ist nicht da, wo er sein "
-                                 "muesste (D-234)" % unter)
-            for name in sorted(os.listdir(ablage)):
-                weg(os.path.join(ablage, name))
-            if os.listdir(ablage):
-                raise SystemExit("ABBRUCH: %s ist nicht leer" % unter)
-        # Der Stammwaechter: KEINE Skillfassung mehr im Baum, an keiner Stelle.
-        # Ein Praefixvergleich auf `.claude/` haette `leitwerk-core/` nie
-        # gesehen - deshalb sucht er ueber den ganzen Baum.
-        rest = []
-        for basis, ordner, dateien in os.walk(ziel):
-            ordner[:] = [o for o in ordner if o != ".git"]
-            for d in dateien:
-                if d == "SKILL.md":
-                    rest.append(os.path.relpath(os.path.join(basis, d), ziel))
-        if rest:
-            raise SystemExit("ABBRUCH: %d Skillfassung(en) stehen noch im "
-                             "Zuschnitt ohneskill: %s (D-234)"
-                             % (len(rest), ", ".join(sorted(rest)[:5])))
-        for pflicht in ("CLAUDE.md",
-                        os.path.join(".claude", "rules",
-                                     "00-framework-core.md"),
-                        os.path.join("leitwerk-core", "checklists",
-                                     "04-review-ai-code.md")):
-            if not os.path.isfile(os.path.join(ziel, pflicht)):
-                raise SystemExit("ABBRUCH: %s fehlt - die Regelschicht ist "
-                                 "mitgefallen" % pflicht)
-        print("  keine SKILL.md mehr im Baum, Regelschicht und Checklisten stehen")
+        # 🔴 `ohnepack` GEHT VORAN, NICHT HINTERHER (K-87, D-242). Die drei
+        # Teile der Aktivierung werden aus dem PACKVERZEICHNIS abgeleitet -
+        # welche Laufzeitfassung, welche Skills, welcher Korbeintrag. Liefe
+        # der Skillschnitt zuerst, waere das Verzeichnis leer und der
+        # Korbeintrag bliebe stehen: ein Zuschnitt, der seinen eigenen
+        # Gegenstand vorher wegnimmt, findet ihn nicht mehr.
+        if klasse == "ohnepack":
+            for _art, pack in packmenge():
+                bericht = packaktivierung.entfernen(ziel, CLIENT, pack)
+                print("  Pack %s: %d Traeger entfernt, %d Korbeintrag(e) "
+                      "gestrichen" % (pack, len(bericht["entfernt"]),
+                                      len(bericht["gestrichen"])))
+        # Der Schnitt selbst steht seit 0.82.0 in `packaktivierung.py` - beide
+        # Klassen fahren denselben Code, und der Wirkungsnachweis faehrt ihn auch.
+        anzahl = packaktivierung.skillschnitt(ziel)
+        print("  keine SKILL.md mehr im Baum (%d Ablagen geleert), Regelschicht "
+              "und Checklisten stehen" % anzahl)
     else:
         zwischen = ziel + "-roh"
         kopieren(QUELLE, zwischen)
@@ -278,8 +238,10 @@ def baum_bauen(kennung, erwarte):
     if kern in OHNE_BRANCH:
         minimale_historie(ziel, kennung)
     else:
-        # Zellenkennung zurueckuebersetzen: sk012p01 -> SK-012-P01
-        zelle = "%s-%s-%s" % (kern[:2].upper(), kern[2:5], kern[5:].upper())
+        # Zellenkennung zurueckuebersetzen - die Umsetzung steht seit 0.82.0
+        # in `ablage`, weil zwei Werkzeuge sie fuehrten und eines davon gar
+        # nicht (`dossier-b4.py`).
+        zelle = ablage.zellkennung(kern)
         aus = lauf([sys.executable, os.path.join(HIER, "historie-bauen-b4.py"),
                     zelle, "--basis", BASIS, "--erwarte", erwarte,
                     "--ziel", kennung])
@@ -328,9 +290,18 @@ def main():
     ap.add_argument("--erwarte", default=None,
                     help="Standard: die Version dieses Kerns (ablage.kernversion)")
     ap.add_argument("--liste", action="store_true")
+    ap.add_argument("--zellen", action="store_true",
+                    help="nur die Kennungen des Zuschnitts, eine je Zeile - "
+                         "die Quelle, aus der der Baumbau seine Skillmenge "
+                         "ableitet (D-237)")
     args = ap.parse_args()
     if args.erwarte is None:
         args.erwarte = ablage.kernversion()
+
+    if args.zellen:
+        for k in sorted(ZUORDNUNG):
+            print(k)
+        return 0
 
     if args.liste:
         for k in sorted(ZUORDNUNG):
@@ -341,6 +312,10 @@ def main():
               % (len(ZUORDNUNG), len(klassen), " ".join(klassen)))
         print("%d Baeume: %d Hauptlaeufe + %d Kontrollaeufe"
               % (2 * len(ZUORDNUNG), len(ZUORDNUNG), len(ZUORDNUNG)))
+        skills, packs = ablage.skillmenge(sorted(ZUORDNUNG))
+        print("gemessene Skills (abgeleitet): %s" % ", ".join(skills))
+        print("dafuer zu aktivierende Packs:  %s"
+              % (", ".join("%s/%s" % p for p in packs) or "keine"))
         return 0
 
     if not os.path.isdir(QUELLE):

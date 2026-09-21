@@ -948,7 +948,8 @@ def check_config(root: str, man: dict) -> None:
 # (PRIORITY_HIERARCHY.md Regel 2.1), in zwei Saetzen:
 #   Fehlt eine erzeugte Regel, ist es ein Fehler - in jedem Korb.
 #   Steht eine Regel zu viel, entscheidet der Korb: in deny zulaessig (Verschaerfung),
-#   in ask und allow ein Fehler (Ausweitung) - abzueglich der Platzhalterschlitze.
+#   in ask und allow ein Fehler (Ausweitung) - abzueglich der Platzhalterschlitze
+#   UND der Skillfreigaben aktivierter Packs (D-243, siehe skillfreigaben()).
 PROJEKTPLATZHALTER = re.compile(r"<[A-Z][A-Z0-9_]*>")
 
 
@@ -1006,6 +1007,49 @@ def soll_korbregeln(root: str, man: dict) -> dict | None:
         return None
 
 
+def installierte_skills(root: str, man: dict) -> set:
+    """Die Skills, die in DIESER Installation liegen - abgeleitet aus der Ablage."""
+    rel = man.get("skills_dir")
+    if not rel:
+        return set()
+    ablage = os.path.join(root, *rel.split("/"))
+    if not os.path.isdir(ablage):
+        return set()
+    return {n for n in os.listdir(ablage)
+            if os.path.isfile(os.path.join(ablage, n, "SKILL.md"))}
+
+
+def skillfreigaben(root: str, man: dict) -> set:
+    """Die Korbeintraege, die einen Skill DIESER Installation beim Namen nennen.
+
+    \U0001F534 ZWEI PRUEFUNGEN DESSELBEN REPOSITORIUMS STANDEN GEGENEINANDER, UND DAS
+    IST GEMESSEN (2026-09-21, Herrichtung von Buendel 5). Pruefung 72 verlangt seit
+    `0.81.0` zu jedem Skill der Installation einen Eintrag der Berechtigungsdatei -
+    das ist der dritte Teil der Aktivierung eines Packs (D-238). Pruefung 37 hielt
+    denselben Eintrag fuer eine AUSWEITUNG, weil die Kernquelle ihn nicht erzeugt:
+    Am Messbaum von Buendel 5 meldete sie `Skill(role-re-ticket)` als eine Regel zu
+    viel im allow-Korb.
+
+    Damit war die Abhilfe von D-238 in keinem Projekt umsetzbar, ohne den eigenen
+    Validator rot zu faerben - und `0.81.0` hat das nicht gesehen, weil es den
+    Korbeintrag beim Messen noch gar nicht gab.
+
+      Wer eine Pruefung baut, die etwas VERLANGT, fragt, ob eine andere desselben
+      Repositoriums es VERBIETET.
+
+    Ein solcher Eintrag ist keine Ausweitung: Pruefung 72 deckt beide Richtungen ab -
+    ein Skill ohne Eintrag und ein Eintrag ohne Skill werden beide gemeldet. Was
+    bleibt, ist genau die Menge, die das Projekt durch seine Aktivierung entschieden
+    hat, und die Menge wird aus der Skillablage ABGELEITET, nicht gepflegt.
+    """
+    werkzeuge = tuple(w for w in (man.get("permission_tools") or {}).get("skill") or ()
+                      if isinstance(w, str))
+    if not werkzeuge:
+        return set()
+    namen = installierte_skills(root, man)
+    return {f"{w}({n})" for w in werkzeuge for n in namen}
+
+
 def check_berechtigungskoerbe(root: str, man: dict) -> None:
     """Pruefung 37: Was die Kernquelle erzeugt, steht in der installierten Datei.
 
@@ -1042,6 +1086,7 @@ def check_berechtigungskoerbe(root: str, man: dict) -> None:
     exec_werkzeuge = tuple(man.get("permission_tools", {}).get("exec", ()))
     praefixzeichen = (man.get("permission_exec_suffix", ":*")
                       if man.get("permission_exec_match") == "prefix" else None)
+    skillkorb = skillfreigaben(root, man)
 
     for korb in ("deny", "ask", "allow"):
         ist = [r for r in perms.get(korb, []) if isinstance(r, str)]
@@ -1055,6 +1100,10 @@ def check_berechtigungskoerbe(root: str, man: dict) -> None:
         if korb == "deny":
             # Eine zusaetzliche deny-Regel ist eine Verschaerfung und deshalb zulaessig.
             continue
+        # Der Korbeintrag eines aktivierten Pack- oder Projektskills ist keine
+        # Ausweitung, sondern der dritte Teil seiner Aktivierung - Pruefung 72
+        # verlangt ihn und deckt beide Richtungen ab (D-238, D-243).
+        zusatz = [r for r in zusatz if r not in skillkorb]
         # Gedeckt wird ein Ueberschuss nur von den Schlitzen, die NICHT mehr
         # woertlich dastehen - ein woertlich vorhandener Schlitz ist ungefuellt.
         offen = [s for s in schlitze if s not in ungefuellt]
