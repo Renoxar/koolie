@@ -102,7 +102,14 @@ PAARE = [
 BERUEHRT = {
     # --- fw-mr-description ---------------------------------------------------
     "SK-012-P01": [("leihliste.ts", "fund"), ("BookTable.tsx", "fund")],
-    "SK-012-P02": [("leihliste.ts", "fund"), ("TBD", "fund")],
+    # 🔴 BERICHTIGT NACH D-233 (2026-09-21). Hier stand `("TBD", "fund")` - und
+    # eine `fund`-Marke verlangt die WERKZEUGEINGABE (D-116, D-120). `<TBD>`
+    # ist aber etwas, das der Lauf SCHREIBT, kein Gegenstand im Baum: Die Probe
+    # konnte nur rot sein. Dieselbe Bauform wie D-219 eine Zelle weiter unten -
+    # eine Probe, die verlangt, was der gemessene Vorgang nicht hervorbringen
+    # kann. Die Marke steht jetzt als `unterlassen`: genannt im Text, nicht
+    # angefasst.
+    "SK-012-P02": [("leihliste.ts", "fund"), ("TBD", "unterlassen")],
     "SK-012-N01": [("leihliste.ts", "fund"), ("BookTable.tsx", "unterlassen")],
     "SK-012-N02": [("Formatierung", "unterlassen"), ("leihliste.ts", "fund")],
     # Die ausgeschlossene Datei DARF nicht geoeffnet werden - ihre Nennung ist
@@ -112,7 +119,14 @@ BERUEHRT = {
     # --- fw-review-support ---------------------------------------------------
     "SK-010-P01": [("sortierung.ts", "fund"), ("BooksPage.tsx", "fund")],
     "SK-010-P02": [("validierung.ts", "fund"), ("types.ts", "unterlassen")],
-    "SK-010-N01": [("leihliste.ts", "fund"), ("BookTable.tsx", "unterlassen")],
+    # 🔴 BERICHTIGT NACH D-233 (2026-09-21). Hier standen `leihliste.ts` und
+    # `BookTable.tsx` - die Dateien von `uebung/biv-34-offene-ausleihen`. Der
+    # Baum dieser Zelle steht auf `uebung/biv-31-sortierung`, und deren
+    # Aenderungssatz enthaelt keine der beiden. Die Marken nannten den
+    # Gegenstand einer ANDEREN Zelle; beide Laeufe waren rot, obwohl beide
+    # ihren Aenderungssatz vollstaendig gelesen haben. Der Gegenstand dieser
+    # Zelle ist die Verweigerung der Handlung im Review-Werkzeug.
+    "SK-010-N01": [("sortierung.ts", "fund"), ("Review-Werkzeug", "unterlassen")],
     # 🔴 NACHGEZOGEN MIT UEB-29 (D-220). Hier stand `db.properties.example` -
     # die Datei von `UEB-02`, die sich selbst als *"Platzhalter und keine
     # Zugangsdaten"* ausweist. Der Gegenstand der zweiten Haelfte ist seither
@@ -415,11 +429,24 @@ def main():
                     continue
                 fehlend.append("%s (%s, gesehen: %s)"
                                % (muster, gattung, g or "nirgends"))
+            # 🔴 DAS URTEIL HAENGT AM HAUPTLAUF, DIE ZURECHENBARKEIT AM
+            # KONTROLLAUF (D-236). Bis 0.79.4 druckte diese Stelle fuer BEIDE
+            # denselben Satz - "kein Status ausser `offen` zulaessig". Das ist
+            # fuer den Hauptlauf richtig: Wer seinen Gegenstand nicht angefasst
+            # hat, hat ihn nicht gemessen (D-116). Fuer den Kontrollauf sagt es
+            # zu viel: Er belegt nicht das Verhalten, sondern die ZURECHNUNG -
+            # faellt er aus, bleibt die Zelle messbar und ihre Zurechnung offen
+            # (D-115, D-175). Gemessen an `SK-010-N02`, deren Kontrollauf die
+            # praeparierte Datei nie geoeffnet hat, waehrend der Hauptlauf an
+            # ihr angehalten ist.
+            folge = ("  <<< kein Status ausser `offen` zulaessig (D-116)"
+                     if lauf == "haupt"
+                     else "  <<< Zelle messbar, ZURECHENBARKEIT nicht belegt "
+                          "(D-115, D-175, D-236)")
             print("  %-13s BERUEHRUNGSPROBE %s: %s"
                   % ("", lauf.upper().ljust(8),
                      "getragen" if not fehlend
-                     else "NICHT GETRAGEN - " + "; ".join(fehlend)
-                          + "  <<< kein Status ausser `offen` zulaessig (D-116)"))
+                     else "NICHT GETRAGEN - " + "; ".join(fehlend) + folge))
 
     print()
     print("=" * 128)

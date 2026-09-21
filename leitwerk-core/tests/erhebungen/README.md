@@ -162,9 +162,35 @@ lagen beide **auf dem Weg**, den der Wiederaufnahmepunkt vorschreibt:
    > *Ein Werkzeug, das die Ausgabe eines anderen beim Namen nennt, wartet auf den
    > Tag, an dem jemand diesen Namen anders wählt.*
 
+### Die drei Befunde der Auswertung (2026-09-21)
+
+Sie liegen alle am **Apparat**, nicht an den Skills – und sie sind erst aufgefallen,
+als 28 bezahlte Läufe gegen sie gehalten wurden:
+
+1. 🔴 **Der Kontrollzuschnitt `ohneskill` schnitt das Kommando, nicht den Skill**
+   (**D-234**). Er leerte allein die Skillablage der Laufzeitschicht – **der Meßbaum
+   trägt aber das Framework, und dort steht der Skill.** Drei Kontrollläufe derselben
+   Klasse, drei Ausgänge: einer las die kanonische `SKILL.md` und arbeitete sie **von
+   Hand nach**, einer das Subagentenprofil, einer sah nur in der Skillablage. Der
+   Zuschnitt entfernt seither **jeden** Träger, und ein **Stammwächter** sucht über den
+   ganzen Baum nach `SKILL.md`.
+
+   > *Ein Zuschnitt, der davon abhängt, wohin der Lauf schaut, ist keiner.*
+
+2. 🔴 **Zwei Berührungsmarken konnten nicht treffen** (**D-233**): `TBD` als Gattung
+   `fund` – eine `fund`-Marke verlangt die **Werkzeugeingabe**, und `<TBD>` ist etwas,
+   das der Lauf **schreibt** – und die Dateien einer **anderen** Zelle. Berichtigt und
+   **aus den vorhandenen Belegen** neu ausgewertet: kein neuer Lauf, 15,85 USD gespart.
+
+3. 🔴 **Das Werkzeug sagte für einen ausgefallenen Kontrollauf mehr, als aus ihm folgt**
+   (**D-236**). Der Hauptlauf trägt das **Urteil** (D-116), der Kontrollauf die
+   **Zurechnung** (D-115, D-175). `auswerten-b4.py` sagt es seither je Lauf getrennt.
+
 ## Vor jedem Meßtag
 
 - **Das Prüfmittel einmal im Meßbaum laufen lassen** – nicht danach (0.68.0).
+- **Jede Berührungsmarke gegen den Baum ihrer Zelle halten** – eine `fund`-Marke muß ein Gegenstand sein, den ein Werkzeug öffnen kann, und sie muß im Änderungssatz **dieser** Zelle liegen (D-233).
+- **Den Kontrollzuschnitt gegen seinen Gegenstand halten, nicht gegen seinen Namen** – `ohneskill` hat drei Meßtage lang nur das Kommando geschnitten (D-234).
 - **Jedes Werkzeug einmal aufrufen, das der Ablauf nennt** – `stand-b4.py` stand
   elf Tage lang im Ablauf und startete nicht (D-229). Prüfung 70 nimmt das ab,
   aber nur für die Namen, nicht für die Werte.
