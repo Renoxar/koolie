@@ -149,19 +149,53 @@ def klassenbasis(klasse):
     print("--- Kontrollbasis %s ---" % klasse)
     if klasse == "ohneskill":
         kopieren(QUELLE, ziel)
-        ablage = os.path.join(ziel, ".claude", "skills")
-        namen = sorted(os.listdir(ablage))
-        for name in namen:
-            weg(os.path.join(ablage, name))
-        if os.listdir(ablage):
-            raise SystemExit("ABBRUCH: die Skillablage ist nicht leer")
+        # 🔴 DER ZUSCHNITT SCHNEIDET JEDEN TRAEGER DES SKILLS, NICHT NUR DAS
+        # KOMMANDO (D-234). Bis 0.79.4 wurde allein `.claude/skills/` geleert -
+        # und der Messbaum traegt das FRAMEWORK, in dem der Skill seine
+        # kanonische Fassung hat. Gemessen am 2026-09-21 an drei Kontrollaeufen
+        # derselben Klasse, mit drei verschiedenen Ausgaengen:
+        #
+        #   ksk012p01   las `leitwerk-core/framework/skills/fw-mr-description/
+        #               SKILL.md` und arbeitete den Ablauf VON HAND NACH
+        #   ksk010p01   las das Subagentenprofil `.claude/agents/fw-reviewer.md`
+        #   ksk011p01t1 sah nur unter `.claude/skills/`, fand nichts und
+        #               arbeitete nach den Regeln
+        #
+        # Ein Zuschnitt, der davon abhaengt, wohin der Lauf schaut, ist keiner.
+        for unter in (os.path.join(".claude", "skills"),
+                      os.path.join(".claude", "agents"),
+                      os.path.join("leitwerk-core", "framework", "skills")):
+            ablage = os.path.join(ziel, unter)
+            if not os.path.isdir(ablage):
+                raise SystemExit("ABBRUCH: %s fehlt im Zuschnitt ohneskill - "
+                                 "der Gegenstand ist nicht da, wo er sein "
+                                 "muesste (D-234)" % unter)
+            for name in sorted(os.listdir(ablage)):
+                weg(os.path.join(ablage, name))
+            if os.listdir(ablage):
+                raise SystemExit("ABBRUCH: %s ist nicht leer" % unter)
+        # Der Stammwaechter: KEINE Skillfassung mehr im Baum, an keiner Stelle.
+        # Ein Praefixvergleich auf `.claude/` haette `leitwerk-core/` nie
+        # gesehen - deshalb sucht er ueber den ganzen Baum.
+        rest = []
+        for basis, ordner, dateien in os.walk(ziel):
+            ordner[:] = [o for o in ordner if o != ".git"]
+            for d in dateien:
+                if d == "SKILL.md":
+                    rest.append(os.path.relpath(os.path.join(basis, d), ziel))
+        if rest:
+            raise SystemExit("ABBRUCH: %d Skillfassung(en) stehen noch im "
+                             "Zuschnitt ohneskill: %s (D-234)"
+                             % (len(rest), ", ".join(sorted(rest)[:5])))
         for pflicht in ("CLAUDE.md",
                         os.path.join(".claude", "rules",
-                                     "00-framework-core.md")):
+                                     "00-framework-core.md"),
+                        os.path.join("leitwerk-core", "checklists",
+                                     "04-review-ai-code.md")):
             if not os.path.isfile(os.path.join(ziel, pflicht)):
                 raise SystemExit("ABBRUCH: %s fehlt - die Regelschicht ist "
                                  "mitgefallen" % pflicht)
-        print("  %d Skillverzeichnisse entfernt, Regelschicht steht" % len(namen))
+        print("  keine SKILL.md mehr im Baum, Regelschicht und Checklisten stehen")
     else:
         zwischen = ziel + "-roh"
         kopieren(QUELLE, zwischen)

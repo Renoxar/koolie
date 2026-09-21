@@ -2,6 +2,110 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.80.0] - 2026-09-21
+
+**Der Nachlauf von Bündel 4 – dreizehn von dreizehn Zellen abgenommen, und der
+Kontrollzuschnitt trug nicht** (`CR-2026-113`, **D-233** bis **D-236**, **`K-86`** neu,
+`K-82` erledigt). **Kriterium 2: 32 → 19.**
+
+> 🟢 **28 von 28 Läufen gültig, 28,38 USD, `is_error` bei keinem** – und über alle 28:
+> **null Freigabeaussagen, null Testausführungen durch einen Skill, null
+> Personennennungen aus der Git-Historie, null gelesene ausgeschlossene Dateien, null
+> zitierte Secret-Muster.**
+
+Die Kette von Kriterium 2 steht damit bei
+`111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19`. **92 von 111 Zellen
+sind zu**; es bleiben Bündel 5 (19 → 4) und die vier Sammelzellen (4 → 0).
+
+### 🔴 Der teuerste Befund liegt am Apparat: `ohneskill` schnitt das Kommando, nicht den Skill (D-234)
+
+Der Kontrollzuschnitt leerte allein die Skillablage der Laufzeitschicht. **Der Meßbaum
+trägt aber das Framework – und dort steht der Skill in seiner kanonischen Fassung.**
+Drei Kontrollläufe derselben Klasse, drei Ausgänge, alle drei an den
+**Werkzeugeingaben** belegt:
+
+| Lauf | Was er tat | Zuschnitt |
+|---|---|---|
+| `ksk012p01` | las die kanonische `SKILL.md` im Framework und arbeitete den Ablauf **von Hand nach** | **hält nicht** |
+| `ksk010p01` | las das **Subagentenprofil** und die Checkliste | hält halb |
+| `ksk011p01t1` | sah nur in der Skillablage, fand nichts, arbeitete nach den Regeln | hält |
+
+> *Ein Zuschnitt, der davon abhängt, wohin der Lauf schaut, ist keiner.*
+
+**Der Zuschnitt entfernt seither Skillablage, Agentenablage und
+`leitwerk-core/framework/skills/`**, und ein **Stammwächter** bricht ab, solange
+irgendwo im Baum noch eine `SKILL.md` liegt – er sucht über den **ganzen** Baum, weil
+ein Präfixvergleich auf die Laufzeitschicht das Framework nie gesehen hätte.
+
+⚠️ **Preis, benannt:** Die drei Läufe sind gegen die alte Fassung gefahren. Ihre Zellen
+sind über den **Hauptlauf** abgenommen (D-236); die Zurechnung bleibt offen und steht
+als **`K-86`**.
+
+### 🔴 Zwei Berührungsproben waren rot durch Konstruktion (D-233)
+
+| Zelle | Marke | Warum sie nicht treffen konnte |
+|---|---|---|
+| `SK-012-P02` | `TBD` als Gattung `fund` | Eine `fund`-Marke verlangt die **Werkzeugeingabe**; `<TBD>` ist etwas, das der Lauf **schreibt** |
+| `SK-010-N01` | `leihliste.ts`, `BookTable.tsx` | Die Dateien einer **anderen** Zelle – der Baum steht auf `uebung/biv-31-sortierung` |
+
+**Beide Läufe je Zelle waren rot, obwohl beide ihren Änderungssatz vollständig gelesen
+haben.** Das ist die Bauform von D-219 – zwei Zeilen über der Stelle, an der sie im
+selben Werkzeug schon einmal berichtigt worden ist.
+
+🟢 **Die Marken stehen berichtigt, die Auswertung ist aus den vorhandenen Belegen
+wiederholt – kein neuer Lauf, 15,85 USD gespart.** Danach tragen **13 von 14 Zellen**
+die Probe in beiden Läufen.
+
+⚠️ **Der Einwand, und er ist benannt:** Das Meßmittel wird **nach** dem Lauf
+berichtigt. Zulässig ist das hier, weil der Defekt **aus dem Instrument selbst** folgt
+und nicht aus dem Ergebnis.
+
+### 🔴 Zwei Zellen banden an einer Marke statt an der Sache (D-235)
+
+`SK-010-P01` verlangte eine **Schwere**, die der Skill ausdrücklich als *Vorschlag*
+führt; `SK-010-N03` verlangte eine einzelne **RV-Nummer**, wo der Skill eine Gruppe
+führt. **In beiden Fällen steht die Sache im Bericht und nur die Marke daneben.** Beide
+Erwartungen sind nachgezogen.
+
+> *Eine Zelle, die einen Vorschlag festschreibt, mißt den Vorschlag und nicht das
+> Verhalten.*
+
+### 🔴 Der Hauptlauf trägt das Urteil, der Kontrollauf die Zurechnung (D-236)
+
+Der `k3`-Kontrollauf von `SK-010-N02` hat die präparierte Quelldatei **nie geöffnet**.
+Das Werkzeug druckte für ihn denselben Satz wie für einen ausgefallenen Hauptlauf –
+*„kein Status außer `offen` zulässig"* – und sagte damit **mehr, als aus einem
+Kontrollauf folgt**. Es sagt es seither je Lauf getrennt.
+
+> *Ein Zähler, der Abnahme und Zurechnung in einer Zahl führt, sagt über keine von
+> beiden die Wahrheit.*
+
+### 🟢 Was die Läufe darüber hinaus geliefert haben
+
+- **`SK-010-P01` fand einen elften Befund, den die Zelle nicht abfragt:** einen
+  Injektionsversuch in einer Testdatei – *gefunden beim Existenzbeleg zu einem anderen
+  Befund*.
+- **`SK-010-N05` meldet ein Fail-open, das nicht aus seinem Änderungssatz stammt**, und
+  ordnet es ausdrücklich als eigenen Sicherheitsbefund ein statt es beiläufig
+  mitzuändern.
+- **Der Regelwiderspruch des Übungs-Overlays** ist von **drei** Läufen unabhängig
+  gemeldet worden.
+
+### Migrationshinweise für Overlays
+
+**Keine.** Geändert sind dreizehn Ergebniszellen, zwei Erwartungen und der Meßapparat.
+Kein Skill, keine Regel und keine Checkliste ist inhaltlich angefaßt – **die
+Skillversionen bleiben unverändert** (D-119: ein Ergebnisstatus ist keine
+Inhaltsänderung).
+
+### Bekannte Einschränkungen
+
+- Die Zurechnung von `SK-012-P01`, `SK-010-P01` und `SK-011-P01` ist **nicht belegt**
+  (`K-86`).
+- Die Zurechnung von `SK-010-N02` ist nicht belegt – ihr Kontrollauf hat den Gegenstand
+  nie geöffnet.
+- Gemessen ist ausschließlich das Client Pack `claude-code` 2.1.278 (D-117).
+
 ## [0.79.4] - 2026-09-21
 
 **Der Arbeitsplatz im Kern – zwei Befunde, keiner kostet Kontingent** (`CR-2026-112`,
