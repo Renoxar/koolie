@@ -33,9 +33,14 @@ Jedes Pack legt seine Laufzeitfassung unter `<pack>/runtime/30-role-<pack>.md` a
 # ihre Entsprechung je Pack steht in leitwerk-core/docs/RUNTIME_GLOSSARY.md.
 cp leitwerk-core/framework/role-packs/<pack>/runtime/30-role-<pack>.md <Regelablage>/
 cp -r leitwerk-core/framework/role-packs/<pack>/skills/* <Skill-Ablage>/    # falls vorhanden
+python leitwerk-core/install.py --update    # bringt die Laufzeitfassung in die Form des Client Packs
 ```
 
-🔴 **Und ein dritter Schritt, den diese Anleitung bis `0.81.0` nicht nannte: der
+🔴 **Der dritte Befehl ist kein Nachklapp, und das ist gemessen** (2026-09-21, D-244). `cp` legt die **Quellform** ab – YAML-Frontmatter mit `description` und `trigger`. Ein Client, der für Regeldateien eine **eigene Bedingungssprache** führt, wertet diese Felder nicht aus (`claude-code`: nur `paths`, `K-18`); der Validator meldete am Meßbaum von Bündel 5 **zwei Fehler** an genau dieser Datei, und die Ladebedingung `model_decision` war nirgends abgebildet. `install.py` kann die Abbildung seit `0.14.0` – `ist_regelquelle()` führt die Laufzeitfassungen aktivierter Packs ausdrücklich auf –, **aber nur, wenn man ihn danach laufen läßt.** Für `devin-desktop` ist Quellform gleich Zielform; dort war der fehlende Befehl folgenlos, und deshalb ist er acht Releases lang niemandem aufgefallen.
+
+> *Ein Werkzeug, das eine Abbildung kann, und eine Anleitung, die „kopieren“ sagt: Die Anleitung gewinnt, weil sie gelesen wird.*
+
+🔴 **Und ein weiterer Schritt, den diese Anleitung bis `0.81.0` nicht nannte: der
 Skill gehört in die Berechtigungsdatei.** Je kopiertem Skill kommt ein Eintrag der
 Form `<Werkzeug>(<skillname>)` hinzu – welches Werkzeug, sagt `permission_tools.skill`
 im Manifest des Client Packs (bei `claude-code` `Skill`, bei `devin-desktop` ist das

@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | RP-RE |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 | Status | pilot |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
@@ -141,6 +141,8 @@ Aufgabenbeschreibungen und Ticketinhalte sind in der Regel **K2** (`leitwerk-cor
 3. Skill kopieren:
    `leitwerk-core/framework/role-packs/requirements-engineering/skills/role-re-ticket/`
    → `role-re-ticket/` in der Skill-Ablage
+3a. `python leitwerk-core/install.py --update` ausführen – er bringt die kopierte Laufzeitfassung in die Form des installierten Client Packs. 🔴 **Ohne diesen Schritt steht dort die Quellform**, und ein Client mit eigener Bedingungssprache wertet Felder aus, die er für Regeldateien nicht kennt (`K-18`, gemessen 2026-09-21: zwei Validatorfehler).
+3b. Den Skill in die **Berechtigungsdatei** eintragen – `<Werkzeug>(role-re-ticket)` nach `permission_tools.skill` des Client Packs. 🔴 **Ohne den Eintrag fällt der Aufruf in den Rückfragekorb und im rückfragefreien Betrieb in die Abweisung**; die Sitzung liest die `SKILL.md` dann ersatzweise als Datei, ohne die Werkzeugbeschränkung des Skills (D-81, D-238). **Prüfung 72** setzt es in beide Richtungen durch.
 4. `<ISSUE_TRACKER>` im Overlay Abschnitt 13 setzen und die Sprachregeln in Abschnitt 9 prüfen.
 5. Ein Glossar als Manifest-Typ `glossary` registrieren, falls vorhanden — der Skill nutzt es für verbindliche Fachbegriffe.
 6. Validieren: `python leitwerk-core/tests/scripts/validate-framework.py --strict-overlay`
@@ -152,3 +154,4 @@ Nicht aktivierte Packs liegen nur im Verzeichnis und werden vom KI-Client nicht 
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-09 | angelegt: Pack, Skill `role-re-ticket`, Laufzeitfassung | `<FRAMEWORK_OWNER>` |
+| 0.1.2 | 2026-09-21 | Abschnitt 9: Die Aktivierung hat vier Schritte statt zwei – die kopierte Laufzeitfassung wird über `install.py --update` in die Form des Client Packs gebracht (3a), und der Skill gehört in die Berechtigungsdatei (3b). Beides gemessen am Meßbaum von Bündel 5 (`CR-2026-115`, D-244; D-238) | `<FRAMEWORK_OWNER>` |

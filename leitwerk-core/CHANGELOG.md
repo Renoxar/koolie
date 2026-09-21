@@ -2,6 +2,145 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.82.0] - 2026-09-22
+
+**Die Herrichtung von Bündel 5 – `K-87` wurde kleiner, und zwei Prüfungen desselben
+Repositoriums standen gegeneinander** (`CR-2026-115`, **D-242** bis **D-246**,
+**`K-88`** neu, `K-87` geschlossen). **Kriterium 2 unverändert 19.** Dieses Release
+kostet **kein Kontingent** – es ist kein Lauf am Client gefahren worden.
+
+> 🟢 **Alle fünf Stücke der Herrichtung sind erledigt, und alle fünfzehn Zellen sind
+> jetzt fahrbar.** 🔴 **Beim Bauen sind vier weitere Befunde angefallen, und zwei davon
+> standen dem Meßtag im Weg.** **Dreiundzwanzigster Durchgang in Folge, bei dem der
+> billigste Befund vor dem ersten Lauf fällt.**
+
+### 🟢 `K-87` ist entschieden, und die Messung hat die Frage kleiner gemacht (D-242)
+
+Der Antrag hatte die Frage als Abwägung gestellt und für die Trennung von Skill und
+Rollenregel **drei Zuschnitte und fünfzehn weitere Läufe** veranschlagt. Gegen die
+Träger gehalten ist die vermutete Teilung **gar nicht herstellbar**: Die Laufzeitfassung
+`30-role-requirements-engineering.md` trägt EARS, die drei Kategorien, die M1-Grenzen,
+die Rückfrage bei unbekanntem `<ISSUE_TRACKER>` und die Datenschutzregel **vollständig**
+– dieselbe Substanz wie die `SKILL.md`. Wer nur eine Seite schneidet, läßt EARS stehen.
+
+➡️ **`ohnepack`:** Der Kontrollzuschnitt entfernt, was die Aktivierung installiert –
+Laufzeitfassung, Skillablage, Korbeintrag, dazu das kanonische Packverzeichnis – und
+läßt die **Kernregelschicht** stehen. Kein zusätzlicher Lauf.
+
+| Schritt am Meßbaum von Bündel 5 | Skills | `Skill()`-Einträge | Rollenregel | `SKILL.md` im Baum |
+|---|---|---|---|---|
+| nach `install.py` und Füllschritt | 12 | 12 | – | 13 |
+| nach der Aktivierung | **13** | **13** | ✔ | 14 |
+| nach `ohnepack` | **0** | 12 | – | **0** |
+
+### 🔴 Prüfung 37 verbietet genau den Eintrag, den Prüfung 72 verlangt (D-243)
+
+**Gemessen am fertig aktivierten Baum:** *„der allow-Korb führt 1 Regel(n), die die
+Kernquelle nicht erzeugt: `Skill(role-re-ticket)`"*. **Prüfung 72 ist erst mit `0.81.0`
+entstanden und verlangt diesen Eintrag** – er ist der dritte Teil der Aktivierung
+(D-238). **Prüfung 37 hielt ihn für eine Ausweitung.** Damit war die Abhilfe von D-238
+in keinem übernehmenden Projekt umsetzbar, ohne den eigenen Validator rot zu färben.
+
+🔴 **Warum `0.81.0` es nicht sehen konnte:** Dort wurde **vor** dem dritten Teil
+gemessen – 13 Skills gegen 12 Einträge, Validator 0 Fehler. *Die Meldung entsteht erst
+durch die Abhilfe.* Prüfung 37 leitet die zulässigen Skillfreigaben seither aus der
+Skillablage ab; belegt ist der Zuschnitt durch ein Paar (Gegenprobe 37c, Sonde 37h).
+
+> *Wer eine Prüfung baut, die etwas VERLANGT, fragt, ob eine andere desselben
+> Repositoriums es VERBIETET.*
+
+### 🔴 Die Aktivierungsanleitung sagt „kopieren", und das ist für `claude-code` falsch (D-244)
+
+| Weg | Validator an der Laufzeitfassung des Packs |
+|---|---|
+| `cp`, wie `framework/role-packs/README.md` es vorschrieb | **2 Fehler** – `description` und `trigger` wertet dieser Client für Regeldateien nicht aus (`K-18`) |
+| über `render_rule()` des Frameworks | **0** |
+
+`install.py` kann die Abbildung seit `0.14.0`; `ist_regelquelle()` führt die
+Laufzeitfassungen aktivierter Packs ausdrücklich auf – **aber nur, wenn man ihn danach
+laufen läßt.** Für `devin-desktop` ist Quellform gleich Zielform; dort war der fehlende
+Schritt folgenlos, und deshalb ist er acht Releases lang niemandem aufgefallen. Die
+Anleitung nennt ihn jetzt, `ROLE_PACK.md` geht auf `0.1.2`.
+
+🔴 **Und der erste Versuch tat nichts, lautlos:** `render_rule()` steigt aus, wenn der
+Text nicht mit dem Zeilenvorschub nach den drei Strichen beginnt – die Quelle ist CRLF.
+Der Meßapparat legt sie deshalb flach **und prüft danach, ob die Abbildung gegriffen
+hat.**
+
+> *Ein Werkzeug, das eine Abbildung kann, und eine Anleitung, die „kopieren" sagt: Die
+> Anleitung gewinnt, weil sie gelesen wird.*
+
+### 🔴 `UEB-30`: der Wert stand in drei Trägern, und der Schlitz färbt den Baum rot (D-245)
+
+Der Wert von `<ISSUE_TRACKER>` stand außer im Quell-Overlay noch in der Laufzeitfassung
+(*„Ausgabeformat: Markdown …"*) und in der `README.md` des Übungsrepositoriums – beide
+Male als **Ersetzung statt Bindung** (D-160). **Eine Präparation, die nur die
+Overlay-Zeile zurücknimmt, nimmt nichts zurück.** Beide verweisen jetzt auf die
+Bindungszeile.
+
+| Wert der Zelle, wenn `UEB-30` gesetzt ist | `--strict-overlay` |
+|---|---|
+| `<TBD: …>`, wie D-240 es vorgezeichnet hatte | **1 Fehler** – Abschnitt 13 ist ein sicherheitsrelevanter Abschnitt |
+| `nicht festgelegt` | **0** |
+
+Die **Bindung** bleibt in beiden Fällen; verloren geht allein der **Wert**. Mit dem
+Schlitz wäre `RE-001-N09` nur in einem Baum fahrbar, den das eigene Repositorium
+beanstandet – der Widerspruch, gegen den Prüfung 57 gebaut ist, eine Prüfung weiter.
+
+### 🔴 `UEB-31`: der erste Fachbegriff hätte eine abgenommene Zelle entwertet (D-246)
+
+Der naheliegende Gegenstand war eine *Vormerkung*. Der **abgenommene** Beleg von
+`SK-009-N02` stützt sich wörtlich darauf, daß es im Code **keinen** Vormerkungsbegriff
+gibt – eine neue Präparation hätte einer geschlossenen Zelle den Boden entzogen. Gewählt
+ist *Fernleihe*: **0 Fundstellen** im ganzen Bestand. 🔴 **Und der Verrat-Wächter des
+Übungsrepositoriums hätte eine Quelle durchgelassen, die ihren eigenen Testfall beim
+Namen nennt:** Sein Muster führte die Kennungsfamilie `SK-` wörtlich, und Bündel 5 heißt
+`RE-001-*`.
+
+### ⚠️ Neu und offen: `K-88` – Prüfung 55b prüft eine Teilzeichenkette
+
+Von 26 Pflichtplatzhaltern, die die Laufzeitschicht nennt, sind im aktiven
+Übungs-Overlay **14 nirgends** mit spitzen Klammern gebunden; ohne den
+**Änderungsverlauf des Overlays** sind es **15**. **Prüfung 55b meldet null.** 🔴 Die
+schärfste Fundstelle ist die Zeile, die die Bindung verkündet: `<ISSUE_TRACKER>` stand
+mit spitzen Klammern ausschließlich im Eintrag `0.63.0` des Änderungsverlaufs.
+**Hier nicht behoben** – vierzehn Platzhalter zu binden ist ein Eingriff in den
+Meßgegenstand, wenige Tage vor dem Meßtag; dieselbe Zurückhaltung wie bei `K-79` vor
+Bündel 4.
+
+### Geändert
+
+- **Neu: `tests/erhebungen/packaktivierung.py`** – Aktivierung eines Packs mit ihren
+  drei Teilen und je einem Wächter, die Umkehrung als Kontrollzuschnitt, und der
+  Skillschnitt von D-234/D-239 an **einer** Stelle statt im Baumbau.
+- **`tests/erhebungen/ablage.py`**: `blaetter()` leitet die Zuordnung
+  Kennungspräfix → Skill aus den Testblättern ab, `skillmenge()` gibt zu einer Zellmenge
+  Skills und Packs, `zellkennung()` nimmt die zusammengezogene Kennung zurück.
+- **`tests/erhebungen/baeume-b4.py`**: Klasse `ohnepack`, `--zellen`; die
+  Rückübersetzung der Zellkennung kommt aus `ablage`.
+- **`tests/erhebungen/umgebungen-bauen-b4.py`**: Der Wächter nennt die gemessenen Skills
+  nicht mehr beim Namen, sondern leitet sie aus dem Zuschnitt ab; die Packs werden
+  aktiviert, der Korbeintrag geprüft.
+- **Prüfung 37** erkennt die Skillfreigabe eines aktivierten Packs; Sonde 37h und
+  Gegenprobe 37c.
+- **`framework/role-packs/README.md`** und **`ROLE_PACK.md`** (0.1.1 → 0.1.2): Die
+  Aktivierung hat vier Schritte.
+- **`role-re-ticket/TESTS.md`**: die Vorbedingungen von `RE-001-P04`, `P05`, `N09` und
+  `N10`. **Die Skillversion bleibt `0.1.3`** – eine Vorbedingung ist keine Änderung am
+  Skill (Präzedenz `CR-2026-089`).
+- **`onboarding/exercises/README.md`**: `UEB-30` und `UEB-31` registriert; die
+  Zahlangabe im Satz ist entfallen, weil sie seit vier Releases falsch war.
+
+### Migrationshinweis für Overlays
+
+🔴 **Wer ein Role Pack aktiviert hat, führt `python leitwerk-core/install.py --update`
+aus und prüft danach den Korbeintrag.** Zwei Dinge kommen mit diesem Release zusammen:
+Die Laufzeitfassung des Packs wird erst durch `--update` in die Form des eigenen Client
+Packs gebracht (D-244), und der Skill braucht einen Eintrag der Berechtigungsdatei
+(D-238). **Ein Projekt mit `claude-code` und einem kopierten Packskill bekam bis zu
+diesem Release drei Validatorfehler**, von denen einer – der Korbeintrag – durch die
+Abhilfe selbst entstand. Der Validator meldet jeden der drei Fälle beim Namen.
+
 ## [0.81.0] - 2026-09-21
 
 **Die Vorbedingungen von Bündel 5 – der Meßbaum trägt den gemessenen Skill nicht, und

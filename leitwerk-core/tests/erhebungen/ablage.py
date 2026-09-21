@@ -29,10 +29,18 @@ stimmt fuer die Erhebung, fuer die er geschrieben wurde, und fuer keine danach.
 Fehlt die Angabe, bricht jedes Skript ab, das eine Belegablage braucht. Ein
 Abbruch ist billiger als ein Beleg am falschen Ort.
 """
+import io
 import os
+import re
 import sys
 
 UMGEBUNG = "LW_ERHEBUNG"
+
+# Die Kennung einer Blattzelle, ausgeschrieben und zusammengezogen. Sie steht
+# seit 0.82.0 an EINER Stelle; bis dahin uebersetzte `baeume-b4.py` sie mit
+# `kern[:2].upper()` und `dossier-b4.py` gar nicht zurueck.
+_KENNUNG_RE = re.compile(r"^([A-Z]{2,3}-[0-9]{3})-[PN][0-9]{2}$")
+_KURZ_RE = re.compile(r"^([a-z]{2,3})([0-9]{3})([pn][0-9]{2})$")
 
 # Die Wurzel des Repositoriums: dieses Modul liegt in
 # <wurzel>/leitwerk-core/tests/erhebungen/.
@@ -201,6 +209,110 @@ def sollmenge(promptordner, baumordner):
     return mit, zwei, ohne
 
 
+def blaetter(wurzel=None):
+    """Je Kennungspraefix eines Testblatts (`SK-012`, `RE-001`) sein Skill und sein Ort.
+
+    🔴 ABGELEITET, NICHT GEPFLEGT - und der Anlass ist derselbe zum dritten Mal.
+    `umgebungen-bauen-b4.py` fuehrte die drei Skills von Buendel 4 BEIM NAMEN, und
+    alle drei lagen auch im Baum von Buendel 5: Der Waechter haette geschwiegen,
+    waehrend der gemessene Skill fehlte (D-237). `dossier-b4.py` fuehrte dieselbe
+    Zuordnung ein zweites Mal als Handliste.
+
+      Marken, Wurzeln und Namenslisten gehoeren abgeleitet, nicht gepflegt.
+
+    Gesucht wird jede `TESTS.md` unter `framework/skills/` und unter
+    `framework/<art>/<pack>/skills/`; der Praefix kommt aus der ersten Spalte ihrer
+    Tabellenzeilen, also aus dem Blatt selbst und nicht aus seinem Dateinamen.
+    Rueckgabe: Praefix -> dict(skill, blatt, pack, art).
+    """
+    wurzel = wurzel or WURZEL
+    rahmen = os.path.join(wurzel, "leitwerk-core", "framework")
+    orte = [(os.path.join(rahmen, "skills"), None, None)]
+    for art in ("role-packs", "tech-packs"):
+        basis = os.path.join(rahmen, art)
+        if not os.path.isdir(basis):
+            continue
+        for pack in sorted(os.listdir(basis)):
+            unter = os.path.join(basis, pack, "skills")
+            if os.path.isdir(unter):
+                orte.append((unter, pack, art))
+    aus = {}
+    for ablage, pack, art in orte:
+        if not os.path.isdir(ablage):
+            continue
+        for skill in sorted(os.listdir(ablage)):
+            blatt = os.path.join(ablage, skill, "TESTS.md")
+            if not os.path.isfile(blatt):
+                continue
+            with io.open(blatt, encoding="utf-8", newline="") as fh:
+                text = fh.read()
+            for zeile in text.replace("\r\n", "\n").split("\n"):
+                if not zeile.startswith("| "):
+                    continue
+                kennung = zeile.split("|")[1].strip()
+                treffer = _KENNUNG_RE.match(kennung)
+                if not treffer:
+                    continue
+                praefix = treffer.group(1)
+                fruehere = aus.get(praefix)
+                if fruehere and fruehere["skill"] != skill:
+                    raise SystemExit(
+                        "ABBRUCH: der Kennungspraefix %s steht in zwei Blaettern "
+                        "(%s und %s) - eine Zelle laesst sich dann keinem Skill "
+                        "zuordnen" % (praefix, fruehere["skill"], skill))
+                aus[praefix] = {
+                    "skill": skill,
+                    "blatt": os.path.relpath(blatt, wurzel).replace(os.sep, "/"),
+                    "pack": pack,
+                    "art": art,
+                }
+    if not aus:
+        raise SystemExit("ABBRUCH: kein Testblatt unter framework/ gefunden - die "
+                         "Ableitung haette ihren Gegenstand verloren und bliebe "
+                         "leise leer (D-23)")
+    return aus
+
+
+def zellkennung(kurz):
+    """`sk012p01` -> `SK-012-P01`, `re001n09` -> `RE-001-N09`.
+
+    Der Apparat fuehrt die Kennung einer Zelle zusammengezogen und klein; das
+    Testblatt fuehrt sie ausgeschrieben. Die Ruecknahme stand bis 0.81.0 an zwei
+    Stellen im Quelltext.
+    """
+    treffer = _KURZ_RE.match(kurz)
+    if not treffer:
+        raise SystemExit("ABBRUCH: %r ist keine Zellkennung des Apparats" % kurz)
+    a, b, c = treffer.groups()
+    return "%s-%s-%s" % (a.upper(), b, c.upper())
+
+
+def skillmenge(zellen, wurzel=None):
+    """Welche Skills eine Zellmenge misst - und welche Packs dafuer aktiv sein muessen.
+
+    Rueckgabe: (skills, packs). `skills` ist die sortierte Namensliste, `packs` die
+    sortierte Liste der (Art, Packname) - leer, wenn alle gemessenen Skills im Kern
+    liegen. Genau diese beiden Listen ersetzen die Handliste des Waechters (D-237).
+    """
+    karte = blaetter(wurzel)
+    skills, packs, unbekannt = set(), set(), []
+    for kurz in zellen:
+        voll = zellkennung(kurz) if "-" not in kurz else kurz
+        praefix = "-".join(voll.split("-")[:2])
+        eintrag = karte.get(praefix)
+        if not eintrag:
+            unbekannt.append(voll)
+            continue
+        skills.add(eintrag["skill"])
+        if eintrag["pack"]:
+            packs.add((eintrag["art"], eintrag["pack"]))
+    if unbekannt:
+        raise SystemExit("ABBRUCH: zu %d Zelle(n) traegt kein Testblatt des Frameworks "
+                         "den Kennungspraefix: %s" % (len(unbekannt),
+                                                      ", ".join(sorted(unbekannt))))
+    return sorted(skills), sorted(packs)
+
+
 def laeufe(zellen, zwei):
     """Die Laufkennungen einer Zellmenge - eine Zelle mit zweitem Turn hat ZWEI."""
     aus = []
@@ -218,3 +330,7 @@ if __name__ == "__main__":
     print("Erhebungsablage:", erhebung())
     print("Belege:         ", belege(anlegen=False))
     print("Prompts:        ", prompts(anlegen=False))
+    karte = blaetter()
+    print("Testblaetter:   %d (%s)"
+          % (len(karte), ", ".join("%s=%s" % (k, v["skill"])
+                                   for k, v in sorted(karte.items()))))
