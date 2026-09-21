@@ -2,6 +2,158 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.81.0] - 2026-09-21
+
+**Die Vorbedingungen von Bündel 5 – der Meßbaum trägt den gemessenen Skill nicht, und
+keine der 71 Prüfungen sah es** (`CR-2026-114`, **D-237** bis **D-241**, **`K-87`**
+neu, **Prüfung 72**). **Kriterium 2 unverändert 19.** Dieses Release kostet **kein
+Kontingent** – es ist kein Lauf am Client gefahren worden.
+
+> 🔴 **Fünf Befunde, und keiner hat etwas gekostet.** Der erste allein hätte rund
+> dreißig Läufe und 30 bis 37 USD gegen einen Baum verbrannt, in dem der gemessene Skill
+> nicht existiert. **Zweiundzwanzigster Durchgang in Folge, bei dem der billigste
+> Befund vor dem ersten Lauf fällt.**
+
+🟢 **Die erste Frage jedes Durchgangs ist beantwortet, und zwar mit nein:** Kein
+Release seit `0.68.0` hat den Gegenstand angefaßt – **neunzehn** Releases, der Skill steht
+unverändert auf `0.1.3`. **`K-84` hat hier keinen Biß**, denn von den fünfzehn Zellen
+ist keine einzige je abgenommen worden. Bündel 5 ist das einzige Bündel der Reihe, für
+das das gilt.
+
+### 🔴 Der teuerste Befund: der Meßbaum trägt den Skill nicht (D-237)
+
+`role-re-ticket` ist der einzige Skill dieses Frameworks außerhalb des Kerns. An einem
+Baum, der genau wie die 38 Bäume von Bündel 4 gebaut ist, gemessen:
+
+| Schritt | Wirkung auf `role-re-ticket` |
+|---|---|
+| `git archive HEAD` | kommt mit – das Pack **ist** im Übungsrepositorium aktiviert |
+| Packwechsel (`rm -rf .devin`) | **weg** |
+| `install.py --client claude-code` | legt **zwölf** Skills an – die des Kerns |
+| `cc-overlay-fuellen.py` | berührt Skills nicht |
+
+**Zwölf Skillverzeichnisse, `role-re-ticket` ist keines davon, und
+`30-role-requirements-engineering.md` fehlt ebenso.** Alle fünfzehn Zellen wären gegen
+einen Baum gelaufen, in dem ihr Gegenstand nicht existiert.
+
+🔴 **Und der Wächter hätte geschwiegen:** `umgebungen-bauen-b4.py` führt die drei
+Skills von Bündel 4 **beim Namen**, und alle drei liegen auch im Baum von Bündel 5.
+
+🟢 **Das Framework ist dabei nicht im Unrecht** – `framework/role-packs/README.md` sagt
+ausdrücklich, daß `install.py` die Aktivierung *„bewusst nicht vorwegnimmt"*; sie ist
+eine Projektentscheidung. **Die Lücke liegt im Meßapparat**, der vier Bündel lang nur
+Kernskills gemessen hat.
+
+> *Vier Bündel lang war „installiert" dasselbe wie „vorhanden". Beim fünften nicht
+> mehr – und der Wächter prüfte die Namen des vierten.*
+
+### 🔴 Die zweite Hälfte fiel beim Beheben an: das Pack erreicht die Berechtigungsdatei nie (D-238, Prüfung 72)
+
+Nach der Aktivierung **wortgetreu nach der README** und nach `install.py --update`:
+
+| Gemessen | Wert |
+|---|---|
+| Skillverzeichnisse in `.claude/skills/` | **13** |
+| `Skill(...)`-Einträge im `allow`-Korb | **12** |
+| `validate-framework.py --strict-overlay` | **0 Fehler, 0 Warnungen** |
+
+**Die Regelschicht des Packs war vollständig, die technische kannte es nicht.**
+`defaultMode` steht auf `default`: Ein nicht genannter Aufruf fällt in den
+Rückfragekorb, im nicht-interaktiven Betrieb also in die Abweisung.
+
+🔴 **Warum Prüfung 39 es nicht sieht, obwohl sie dafür gebaut ist:** Sie hält
+`framework/runtime/permissions.json` gegen `framework/skills/` – **Regelmenge des Kerns
+gegen Skills des Kerns, beides Ebene 3, und dort deckt es sich (12 zu 12).** Ein
+Packskill ist Ebene 6 und kommt in keiner der beiden Mengen vor.
+
+🟢 **Die Aktivierung hat seither drei Teile statt zwei** – Laufzeitfassung,
+Skillablage **und Korbeintrag** –, die README nennt den dritten, und **Prüfung 72**
+setzt ihn durch, in beide Richtungen. **Sie schweigt bei einem Client, dessen Manifest
+`permission_tools.skill` als leer deklariert** (`devin-desktop`, D-89); eine
+Gegenprobe belegt, daß dieses Schweigen deklariert und nicht geraten ist.
+
+⚠️ **Folgenlos für den Meßtag, und das ist gemessen** (D-187: der Aufruf mit
+Schrägstrich ist kein Werkzeugaufruf) – **aber nicht belanglos:** D-81 beschreibt den
+Ausgang ohne Eintrag als *„die Sitzung liest die `SKILL.md` ersatzweise als Datei, ohne
+die Werkzeugbeschränkung des Skills"*, und genau diese Beschränkung ist der Gegenstand
+von `RE-001-N03`.
+
+### 🔴 Der Zuschnitt `ohneskill` ließ genau eine `SKILL.md` stehen – die des gemessenen Skills (D-239)
+
+**D-234** hat den Zuschnitt drei Tage zuvor berichtigt und ihm drei Schnittorte
+gegeben; die Skills eines Role Packs liegen unter
+`framework/role-packs/<pack>/skills/` und sind keiner davon.
+
+| Zuschnitt | verbliebene `SKILL.md` |
+|---|---|
+| `0.79.4`, drei genannte Orte | **1** – `role-re-ticket` |
+| nach D-239, abgeleitete Orte | **0** |
+
+🟢 **Der Stammwächter von D-234 hätte abgebrochen**, und das ist sein erster
+eingespielter Preis: Der Zuschnitt wäre nicht falsch gefahren, sondern gar nicht.
+
+> *Wer eine zu enge Stelle findet, sucht die zweite in derselben Richtung – D-234 eine
+> Ebene tiefer, drei Tage später.*
+
+### 🔴 Zwei Zellen, ein Platzhalter, entgegengesetztes Vorzeichen (D-240)
+
+`RE-001-P04` verlangt `<ISSUE_TRACKER>` **gesetzt**, `RE-001-N09` **ohne Wert** – auf
+demselben Baum. Gemessen, wo der Wert steht: Laufzeitfassung **0**,
+Berechtigungsdatei **0**, Kernregeln je einmal **als ungelöster Platzhalter**, und im
+Quell-Overlay **genau einmal**, in Abschnitt 13, in der Spalte *Kontextquelle*, in
+Prosa und ohne spitze Klammern.
+
+🔴 **Prüfung 55b hält ihn für gebunden, und das ist eine Teilzeichenkette** – `if name
+in text`. *Eine Bindung, die eine Teilzeichenkette ist, sagt nichts über einen Wert.*
+Das ist `K-79` mit einem Namen: derselbe Fall wie `<DEFAULT_BRANCH>` bei Bündel 4,
+**nur daß dort die Bindung den Meßgegenstand geändert hätte und hier die Bindung der
+Meßgegenstand ist.**
+
+### 🔴 `RE-001-N10` hat keinen Gegenstand (D-241)
+
+**Das Präparationsregister nennt keine einzige `RE-001`-Zelle** – 29 Präparationen,
+null Zuordnungen. `UEB-01` und `UEB-05` schreiben **Handlungen** an den Assistenten
+vor, keine Produktverhalten; ein Lauf würde beide korrekt als Injektionsversuch melden
+und damit etwas anderes belegen als die Zelle. **Sechste Wiederholung von D-198.**
+`UEB-30` und `UEB-31` sind benannt, nicht gebaut – die Herrichtung ist ein eigener
+Posten.
+
+### 🟢 Der Stand der fünfzehn Zellen
+
+**Elf tragen, zwei halb (`P04`, `P05`), zwei nicht (`N09`, `N10`) – und alle fünfzehn
+wären trotzdem unfahrbar gewesen.**
+
+### 🔴 Der Durchgang vor dem Commit trug zum zweiundzwanzigsten Mal
+
+Der erste Entwurf meldete `validate-output.py` als **Fail-open** – *„Skill nicht
+gefunden, Exit 0"*. Das `$?` stand hinter einer Pipe und las den Rückgabewert von
+`head`. Nachgemessen ohne Pipe: **Exit 1 in allen drei Fällen.** *Eine Zahl, die man
+nicht gezählt hat, ist erfunden – auch eine Exitnummer.* ⚠️ **Was bleibt, steht im
+Protokoll:** Alle drei Fälle geben **denselben** Exitwert; wer nur ihn liest,
+unterscheidet nicht zwischen *„die Ausgabe ist falsch"* und *„der Skill ist nicht
+installiert"*.
+
+### Migrationshinweis
+
+**Für übernehmende Projekte: null Dateien außerhalb von `leitwerk-core/`.** Dieses
+Release ändert den Prüfapparat, den Meßapparat und eine README des Kerns – keinen
+ausgelieferten Laufzeitträger.
+
+🔴 **Wer ein Role Pack aktiviert hat, prüft jetzt seinen Berechtigungskorb.** Prüfung 72
+meldet ab sofort jeden Skill der Installation, den die Berechtigungsdatei nicht nennt –
+und jeden Eintrag ohne Skill. Bei `devin-desktop` schweigt sie (D-89).
+
+### Bekannte Einschränkungen
+
+- **`K-87` ist offen und vor der Herrichtung zu entscheiden:** was `ohneskill` bei
+  einem Role Pack außer dem Skill schneidet – die Laufzeitfassung `30-role-<pack>.md`
+  und `ROLE_PACK.md` sind Ebene 6, aber `ROLE_PACK.md` Abschnitt 6 trägt die
+  EARS-Vorschrift, auf die der Skill verweist.
+- **Der Meßtag von Bündel 5 ist nicht fahrbar**, solange die Herrichtung nicht
+  gelaufen ist. Sie ist ein eigener Posten (`~0.82.0`) – wer sie in denselben Zug legt,
+  prüft seine eigene Arbeit im selben Atemzug (Präzedenz `0.63.0`/`0.64.0`).
+- **`UEB-30` und `UEB-31` sind benannt und nicht gebaut.**
+
 ## [0.80.0] - 2026-09-21
 
 **Der Nachlauf von Bündel 4 – dreizehn von dreizehn Zellen abgenommen, und der

@@ -437,7 +437,23 @@ Prüft (statisch, ohne laufenden KI-Client):
      das man umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den
      Kontonamen weiter; was daraus folgt, ist als K-85 geführt und hier nicht
      entschieden
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 71 laeuft als eigenes
+ 72. Ein aktiviertes Pack steht auch im Berechtigungskorb (D-238): In einer
+     Installation deckt sich die Skillablage des Client Packs mit den
+     Namenseintraegen der Berechtigungsdatei - in beide Richtungen. ANLASS, und er
+     ist gemessen: Der Messbaum von Buendel 5 trug nach der Aktivierung WORTGETREU
+     nach framework/role-packs/README.md dreizehn Skillverzeichnisse und zwoelf
+     Skill(...)-Eintraege; role-re-ticket fehlte, und der Validator meldete 0 Fehler.
+     Ein nicht genannter Aufruf faellt in den Rueckfragekorb und im
+     rueckfragefreien Betrieb in die Abweisung - die Sitzung liest die SKILL.md dann
+     ersatzweise als Datei, OHNE die Werkzeugbeschraenkung des Skills (D-81).
+     WARUM PRUEFUNG 39 ES NICHT SIEHT, obwohl sie dafuer gebaut ist: Sie haelt
+     framework/runtime/permissions.json gegen framework/skills/ - Regelmenge des
+     Kerns gegen Skills des Kerns, beides Ebene 3, und dort deckt es sich. Ein
+     Packskill ist Ebene 6 und kommt in keiner der beiden Mengen vor. GRENZE, und
+     sie ist deklariert: Die Schreibweise des Skillaufrufs steht je Client als
+     permission_tools.skill im Manifest; ist sie leer (devin-desktop, D-89), schweigt
+     die Pruefung - fehlt das FELD, meldet sie es (D-155)
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 72 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -7684,6 +7700,127 @@ def check_arbeitsplatzpfad(root: str) -> None:
                     f"{P71_MARKE} in derselben Zeile laeuft durch (D-231)")
 
 
+# --- Pruefung 72: Ein aktiviertes Pack steht auch im Berechtigungskorb -------------
+#
+# ANLASS, UND ER IST GEMESSEN (2026-09-21, Vorbedingungsdurchgang von Buendel 5,
+# D-238). Bundel 5 misst `role-re-ticket`, den einzigen Skill dieses Frameworks, der
+# nicht im Kern liegt. Nach der Aktivierung WORTGETREU nach
+# `framework/role-packs/README.md` - Laufzeitfassung kopiert, Skillverzeichnis kopiert -
+# und nach `install.py --update` stand im Messbaum:
+#
+#     Skillverzeichnisse in .claude/skills/        13
+#     Skill(...)-Eintraege im allow-Korb           12
+#     Skill(role-re-ticket)                        fehlt
+#     validate-framework.py --strict-overlay       0 Fehler, 0 Warnungen
+#
+# DIE REGELSCHICHT DES PACKS WAR VOLLSTAENDIG, DIE TECHNISCHE KANNTE ES NICHT. Und
+# `defaultMode` steht auf `default`: Ein nicht genannter Aufruf faellt in den
+# Rueckfragekorb, im nicht-interaktiven Betrieb also in die Abweisung. D-81 hat genau
+# diesen Ausgang beschrieben - "der Fehlschlag ist stumm; die Sitzung liest die
+# SKILL.md ersatzweise als Datei, OHNE die Werkzeugbeschraenkung des Skills".
+#
+# WARUM PRUEFUNG 39 ES NICHT SIEHT, OBWOHL SIE DAFUER GEBAUT IST. Sie haelt
+# `framework/runtime/permissions.json` gegen `framework/skills/` - Regelmenge des Kerns
+# gegen Skills des Kerns, beides Ebene 3, und dort deckt es sich (12 zu 12). Ein
+# Packskill ist Ebene 6 und kommt in keiner der beiden Mengen vor. Derselbe Zuschnitt,
+# der D-234 drei Tage zuvor unterlaufen ist: eine Stelle, die `framework/skills` sagt
+# und `framework/role-packs/<pack>/skills` meint.
+#
+# WARUM DIE ABHILFE NICHT IN permissions.json LIEGT. Eine allow-Regel dort traegt JEDE
+# Installation - auch die, die das Pack nicht aktiviert hat. Das waere "eine
+# Vorabfreigabe fuer einen Skill, den es nicht gibt", und genau das verbietet
+# Pruefung 39 in ihrer Gegenrichtung. Die Aktivierung ist eine Projektentscheidung
+# (README Punkt 4) und hat deshalb DREI Teile, nicht zwei; diese Pruefung setzt den
+# dritten durch, und zwar dort, wo er hingehoert: in der Installation.
+#
+# WARUM SIE BEI EINEM CLIENT SCHWEIGT, UND WARUM DAS KEINE STILLE NULL IST. Das
+# Manifest fuehrt die Schreibweise des Skillaufrufs als `permission_tools.skill`. Bei
+# `claude-code` steht dort `["Skill"]`, bei `devin-desktop` eine LEERE Liste - erhoben
+# am 2026-09-14 (D-89): Der Aufruf ist dort zwar ein Werkzeugaufruf, aber es ist keine
+# Schreibweise bekannt, mit der eine Regel ihn beim Namen nennt. Eine leere Liste ist
+# deklariert; ein FEHLENDES Feld ist ein Befund, und den meldet sie - dieselbe
+# Trennlinie zwischen "nicht abgebildet" und "gibt es nicht", die D-155 zieht.
+P72_MUSTER = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)\(([^()]*)\)$")
+P72_SELBSTPROBE = "Skill(role-beispiel)"  # SYNTHETISCH
+
+
+def _p72_eintraege(cfg) -> list:
+    """Jeder Regeleintrag der Berechtigungsdatei, ueber alle Koerbe.
+
+    Ueber die Koerbe zu laufen statt `allow` zu nennen ist Absicht: Ein Eintrag in
+    `ask` oder `deny` NENNT den Skill ebenso, und wer nur `allow` liest, meldet ein
+    ausdrueckliches Verbot als fehlenden Eintrag.
+    """
+    aus: list = []
+
+    def rein(o) -> None:
+        if isinstance(o, dict):
+            for v in o.values():
+                rein(v)
+        elif isinstance(o, list):
+            for x in o:
+                rein(x)
+        elif isinstance(o, str):
+            aus.append(o)
+
+    rein(cfg.get("permissions", cfg) if isinstance(cfg, dict) else cfg)
+    return aus
+
+
+def check_pack_im_korb(root: str, man: dict) -> None:
+    """Pruefung 72 (D-238): Jeder Skill der Installation steht im Berechtigungskorb."""
+    if not P72_MUSTER.match(P72_SELBSTPROBE):
+        err(f"Pruefung 72: das eigene Muster trifft {P72_SELBSTPROBE!r} nicht mehr - "
+            f"sie haette ihren Gegenstand verloren und bestuende leise (D-23, D-238)")
+        return
+    pack = man.get("client", "?")
+    werkzeuge = man.get("permission_tools")
+    if not isinstance(werkzeuge, dict) or "skill" not in werkzeuge:
+        err(f"clients/{pack}/manifest.json: Feld permission_tools.skill fehlt. Ein "
+            f"Pack fuehrt es, notfalls leer - der Unterschied zwischen „nicht "
+            f"abgebildet“ und „gibt es nicht“ gehoert deklariert und nicht aus einem "
+            f"fehlenden Feld erraten (D-155, D-238)")
+        return
+    namen = [w for w in (werkzeuge.get("skill") or []) if isinstance(w, str)]
+    if not namen:
+        return  # Deklariert leer (devin-desktop, D-89) - keine Schreibweise bekannt
+    rel_skills = man.get("skills_dir")
+    rel_perm = man.get("permissions_file")
+    if not rel_skills or not rel_perm:
+        return
+    ablage = os.path.join(root, *rel_skills.split("/"))
+    pfad = os.path.join(root, *rel_perm.split("/"))
+    if not os.path.isdir(ablage) or not os.path.isfile(pfad):
+        return  # Keine Installation an dieser Wurzel - hier gibt es nichts zu decken
+    try:
+        cfg = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return  # Pruefung 3 meldet das bereits
+    im_baum = sorted(n for n in os.listdir(ablage)
+                     if os.path.isfile(os.path.join(ablage, n, "SKILL.md")))
+    genannt = []
+    for eintrag in _p72_eintraege(cfg):
+        m = P72_MUSTER.match(eintrag.strip())
+        if m and m.group(1) in namen and m.group(2):
+            genannt.append(m.group(2))
+    for name in im_baum:
+        if name not in genannt:
+            err(f"{rel_perm}: der Skill '{name}' liegt in {rel_skills}/, wird aber "
+                f"von keinem Eintrag der Berechtigungsdatei genannt. Sein Aufruf "
+                f"faellt in den Rueckfragekorb und im rueckfragefreien Betrieb in die "
+                f"Abweisung; die Sitzung liest die SKILL.md dann ersatzweise als "
+                f"Datei, ohne die Werkzeugbeschraenkung des Skills (D-81). Bei einem "
+                f"Pack-Skill ist das der dritte Teil der Aktivierung "
+                f"(framework/role-packs/README.md), nicht ein Schritt von install.py "
+                f"(D-238)")
+    for name in sorted(set(genannt)):
+        if name not in im_baum and not name.endswith("*"):
+            err(f"{rel_perm}: der Eintrag fuer '{name}' nennt keinen Skill in "
+                f"{rel_skills}/. Eine Freigabe fuer einen Skill, den diese "
+                f"Installation nicht hat, ist eine Zusage ohne Gegenstand (D-81, "
+                f"D-238)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -7770,6 +7907,7 @@ def main() -> int:
     check_praefix_uebererfassung(root)
     check_werkzeugnamen(root)
     check_arbeitsplatzpfad(root)
+    check_pack_im_korb(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

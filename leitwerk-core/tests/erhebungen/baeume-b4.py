@@ -162,9 +162,35 @@ def klassenbasis(klasse):
         #               arbeitete nach den Regeln
         #
         # Ein Zuschnitt, der davon abhaengt, wohin der Lauf schaut, ist keiner.
-        for unter in (os.path.join(".claude", "skills"),
-                      os.path.join(".claude", "agents"),
-                      os.path.join("leitwerk-core", "framework", "skills")):
+        #
+        # 🔴 UND DIE DREI ORTE WAREN IMMER NOCH ZU WENIG (D-239, 2026-09-21).
+        # Buendel 5 misst `role-re-ticket`, den einzigen Skill dieses Frameworks
+        # ausserhalb des Kerns. Er liegt unter
+        # `leitwerk-core/framework/role-packs/<pack>/skills/` - und das ist keiner
+        # der drei Orte. Wortgleich auf den Baum von Buendel 5 angewandt blieb
+        # GENAU EINE SKILL.md stehen, und es war die des gemessenen Skills.
+        # Der Stammwaechter unten haette abgebrochen; der Zuschnitt waere nicht
+        # falsch gefahren, sondern gar nicht.
+        #
+        #   Wer eine zu enge Stelle findet, sucht die zweite in derselben
+        #   Richtung. D-234 eine Ebene tiefer, drei Tage spaeter.
+        #
+        # Die Orte werden seither ABGELEITET, nicht genannt: jede `skills/`-Ablage
+        # unter `framework/role-packs/` und `framework/tech-packs/` kommt hinzu.
+        # Ein gepflegter Ort ist eine gepflegte Zahl (D-153) - und der naechste
+        # Pack-Skill kaeme ohne diese Ableitung wieder durch.
+        orte = [os.path.join(".claude", "skills"),
+                os.path.join(".claude", "agents"),
+                os.path.join("leitwerk-core", "framework", "skills")]
+        for art in ("role-packs", "tech-packs"):
+            basis = os.path.join(ziel, "leitwerk-core", "framework", art)
+            if not os.path.isdir(basis):
+                continue
+            for pack in sorted(os.listdir(basis)):
+                if os.path.isdir(os.path.join(basis, pack, "skills")):
+                    orte.append(os.path.join("leitwerk-core", "framework", art,
+                                             pack, "skills"))
+        for unter in orte:
             ablage = os.path.join(ziel, unter)
             if not os.path.isdir(ablage):
                 raise SystemExit("ABBRUCH: %s fehlt im Zuschnitt ohneskill - "

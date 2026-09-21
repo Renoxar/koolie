@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 71, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 72, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6361,6 +6361,96 @@ gegenprobe("71b", "Die Marke SYNTHETISCH in derselben Zeile laeuft durch - diese
 
 gegenprobe("71c", "Eine Aufzeichnung bleibt unbeanstandet - ein Protokoll haelt fest, wo gemessen wurde, und wer es umschreibt, hat keines mehr (D-141)",
            _71_aufzeichnung, M71)
+
+
+# --- Pruefung 72: Ein aktiviertes Pack steht auch im Berechtigungskorb ------------
+#
+# WARUM DIESE EINHEIT EINE INSTALLATION BAUT statt den Repositoriumsbaum zu praeparieren:
+# Ihr Gegenstand IST die Installation. Im Quellrepositorium gibt es keine Skillablage
+# eines Client Packs, und die Pruefung schwiege dort zu Recht - eine Sonde auf einer
+# Kopie des Repositoriums haette nichts zu treffen.
+#
+# DREI SONDEN, UND SIE BELEGEN BEIDE RICHTUNGEN UND DIE ANKERFRAGE. Der gemessene Fall
+# ist 72a: ein Pack WORTGETREU nach `framework/role-packs/README.md` aktiviert - Skill
+# kopiert -, und der Korb weiss nichts davon. 72b ist die Gegenrichtung: ein Eintrag
+# ohne Skill ist eine Zusage ohne Gegenstand (D-81). 72c fragt das Manifest: Ein
+# FEHLENDES Feld `permission_tools.skill` ist ein Befund - der Unterschied zwischen
+# "nicht abgebildet" und "gibt es nicht" gehoert deklariert (D-155).
+#
+# ZWEI GEGENPROBEN, UND DIE ZWEITE IST DIE WICHTIGERE. 72a belegt, dass eine
+# ausgelieferte Installation durchlaeuft - ohne sie meldete die Sonde nur, dass
+# irgendetwas meldet. 72b belegt den ZUSCHNITT: Dieselbe Aktivierung in einer
+# `devin-desktop`-Installation bleibt unbeanstandet, weil das Manifest dort
+# `permission_tools.skill` als LEER deklariert (erhoben am 2026-09-14, D-89: Der
+# Skillaufruf ist dort ein Werkzeugaufruf, aber es ist keine Schreibweise bekannt, mit
+# der eine Regel ihn beim Namen nennt). Ohne sie waere das Schweigen der Pruefung bei
+# diesem Pack nicht von einer stillen Null zu unterscheiden.
+M72 = "wird aber von keinem Eintrag der Berechtigungsdatei genannt"
+M72_RUECK = "nennt keinen Skill in"
+M72_FELD = "Feld permission_tools.skill fehlt"
+P72_PACKSKILL = ("leitwerk-core/framework/role-packs/requirements-engineering/"
+                 "skills/role-re-ticket").replace("/", os.sep)
+
+
+def _72_pack_aktivieren(root: str, pack_skills: str) -> str:
+    """Aktiviert das Role Pack wortgetreu nach README Punkt 4: Skill kopieren."""
+    quelle = os.path.join(root, P72_PACKSKILL)
+    name = os.path.basename(quelle)
+    shutil.copytree(quelle, os.path.join(root, *pack_skills.split("/"), name))
+    return name
+
+
+def sonden_pack_im_korb() -> None:
+    """Wirkungsnachweis fuer Pruefung 72 (CR-2026-114, D-238)."""
+    for pack, skills, meldet in (("claude-code", ".claude/skills", True),
+                                 ("devin-desktop", ".devin/skills", False)):
+        root = installation(pack)
+        try:
+            if pack == "claude-code":
+                # --- Gegenprobe 72a: die ausgelieferte Installation ------------
+                melde("GEGENPROBE", "72a", M72 not in validator_ausgabe(root),
+                      "Die ausgelieferte Installation deckt sich - zwoelf Skills, "
+                      "zwoelf Eintraege, keine Meldung")
+
+            name = _72_pack_aktivieren(root, skills)
+            ausgabe = validator_ausgabe(root)
+            getroffen = M72 in ausgabe and name in ausgabe
+            if meldet:
+                melde("SONDE", "72a", getroffen,
+                      "Ein aktiviertes Role Pack ohne Korbeintrag wird gemeldet - der "
+                      "gemessene Fall aus dem Vorbedingungsdurchgang von Buendel 5")
+                if not getroffen:
+                    notiz("        Ausgabe:", " | ".join(ausgabe.splitlines()[:6]))
+            else:
+                melde("GEGENPROBE", "72b", not getroffen,
+                      "Dieselbe Aktivierung bei einem Pack mit leer DEKLARIERTEM "
+                      "permission_tools.skill bleibt unbeanstandet (D-89)")
+
+            if pack != "claude-code":
+                continue
+
+            # --- Sonde 72b: die Gegenrichtung -------------------------------
+            # Der Eintrag bleibt, sein Skill geht - eine Freigabe ohne Gegenstand.
+            shutil.rmtree(os.path.join(root, *skills.split("/"), name))
+            shutil.rmtree(os.path.join(root, *skills.split("/"), "fw-plan"))
+            ausgabe = validator_ausgabe(root)
+            melde("SONDE", "72b", M72_RUECK in ausgabe and "fw-plan" in ausgabe,
+                  "Ein Korbeintrag ohne Skill in der Ablage wird gemeldet - eine "
+                  "Freigabe fuer einen Skill, den es nicht gibt (D-81)")
+
+            # --- Sonde 72c: das Manifest schweigt statt zu deklarieren -------
+            _manifest_aendern(root, "claude-code",
+                              lambda m: m["permission_tools"].pop("skill", None))
+            melde("SONDE", "72c", M72_FELD in validator_ausgabe(root),
+                  "Ein FEHLENDES Feld permission_tools.skill wird gemeldet - eine "
+                  "leere Liste ist deklariert, ein fehlendes Feld ist geraten (D-155)")
+        finally:
+            aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_pack_im_korb,
+        "Ein aktiviertes Pack steht auch im Berechtigungskorb - in beide Richtungen, "
+        "und nur bei einem Client, dessen Manifest eine Schreibweise deklariert")
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
