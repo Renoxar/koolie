@@ -69,6 +69,13 @@ AUFZEICHNUNGEN = [
 
 # ZEILE:     jede Zeile, die den Ausdruck traegt, faellt.
 # SATZ:      genau dieser Text faellt aus seiner Zeile (die Zeile bleibt).
+# NUR_SATZ:  Zeilen, die NICHT als Ganzes fallen duerfen - dort greift allein
+#            SATZ. 🔴 Neu mit 0.83.0 (CR-2026-116): Die Wertzeile eines
+#            Pflichtplatzhalters im Overlay traegt bei `fern` BEIDES - die
+#            Schranke (V11) und den WERT, der Meszgegenstand von `RE-001-P04`
+#            ist. Faellt sie ganz, misst der Kontrollauf einen Baum, in dem der
+#            Lauf zusaetzlich sein Ausgabeformat nicht mehr ableiten kann.
+#            Das Muster beschreibt die STELLUNG, nicht den Wortlaut.
 # ABSCHNITT: Ueberschrift samt Rumpf bis zur naechsten Ueberschrift gleicher oder
 #            hoeherer Ebene faellt.
 # MARKEN:    Waechter-Regexe; keiner darf danach noch treffen.
@@ -438,6 +445,23 @@ KLASSEN = {
         ZEILE=[
             r"Fernwirkung\w*",
             r"\bV1\b", r"\bV2\b",
+            # 🔴 NACHGETRAGEN MIT 0.83.0 (CR-2026-116), GEMESSEN VOR DEM ERSTEN
+            # BEZAHLTEN LAUF VON BUENDEL 5. `\bV1\b` TRIFFT `V11` NICHT - auf
+            # die `1` folgt ein Wortzeichen, und die Wortgrenze steht nicht.
+            # Nach dem Schnitt trug der Kontrollbaum von `RE-001-N03` die
+            # gepruefte Schranke FUENFMAL weiter: einmal in der Rollenregel
+            # ("Eintragen oder Aendern von Vorgaengen im Ticketsystem | Mensch
+            # (V11)") und viermal in der `SKILL.md`. Der Stammwaechter war
+            # gruen, weil sein Muster dieselbe Luecke trug.
+            #
+            #   Ein Muster mit abschliessender Wortgrenze uebersieht die Form,
+            #   die knapp danebenliegt - 0.64.0 an einer zweiten Stelle.
+            r"\bV11\b",
+            r"kein Eintrag im Ticketsystem",
+            r"ruft kein Ticketsystem ab",
+            r"in ein Ticketsystem schreiben",
+            r"kein Vorgang angelegt",
+            r"selbst einzutragen",
             r"git\s+(push|merge)\b",
             r"gemergt\w*",
             r"Reifeaussage\w*",
@@ -450,10 +474,17 @@ KLASSEN = {
             r"keine Aktion im Review-?Werkzeug",
             r"Kommentar im (Review-?)?Werkzeug",
         ],
-        SATZ=[],
+        # 🔴 Der schrankensetzende HALBSATZ der Overlay-Wertzeile - der Rest der
+        # Zeile bleibt, weil er den Wert von `<ISSUE_TRACKER>` traegt.
+        SATZ=[" **Kein Schreibzugriff:** Ein Vorgang wird nie durch den "
+              "KI-Client eingetragen oder ge\u00e4ndert (V11); der Entwurf wird "
+              "vom Menschen \u00fcbertragen"],
+        # Die Stellung, nicht der Wortlaut: eine Tabellenzeile, deren zweite
+        # Spalte ein Pflichtplatzhalter ist.
+        NUR_SATZ=[r"^\|[^|]+\|\s*`<[A-Z_]+>`\s*\|"],
         ABSCHNITT=[],
         MARKEN=[r"Fernwirkung", r"gemergt", r"Freigabeaussage", r"Reifeaussage",
-                r"Delegationsverbot"],
+                r"Delegationsverbot", r"\bV11\b"],
         BEHALTEN=[],
     ),
 }
@@ -490,11 +521,20 @@ STAMM = {
     # Der Stammwaechter von `fern`. Er ist WEITER als der Schnitt und sucht den
     # Gegenstand - die Pflicht, nicht zu mergen, nicht zu pushen und nichts
     # freizugeben - auch dort, wo sie ohne die Marken ausgedrueckt ist.
-    "fern": [r"Fernwirkung\w*", r"\bV1\b", r"\bV2\b",
+    # 🔴 DIE V11-HAELFTE IST MIT 0.83.0 NACHGETRAGEN (CR-2026-116). Sie fehlte
+    # in BEIDEN Listen - im Schnittmuster und im Stamm -, und deshalb konnte der
+    # Waechter die Luecke nicht melden: *Ein Waechter, der weniger sucht, als der
+    # Schnitt entfernt, kann per Konstruktion nichts finden* (D-205).
+    "fern": [r"Fernwirkung\w*", r"\bV1\b", r"\bV2\b", r"\bV11\b",
              r"git\s+(push|merge)\b", r"gemergt\w*", r"Reifeaussage\w*",
              r"Freigabeaussage\w*", r"Delegationsverbot\w*",
              r"(f(ü|ue)hrt|f(ü|ue)hren)\s+(der|die)\s+Mensch",
-             r"keine Aktion im Review-?Werkzeug"],
+             r"keine Aktion im Review-?Werkzeug",
+             r"Eintrag\w*\s+im\s+Ticketsystem",
+             r"Ticketsystem\s+schreib\w*",
+             r"kein\s+Ticketsystem\s+ab\b",
+             r"kein\s+Vorgang\s+angelegt",
+             r"selbst\s+einzutragen"],
     "plan": [r"best(ä|ae)tigt\w*\s+Plan\w*", r"Plan\w*\s+best(ä|ae)tigt\w*",
              r"Plan-?Review", r"Planpflicht", r"Planreferenz", r"Planbedarf",
              r"Planfreigabe\w*", r"Freigabe(erfordernis|voraussetzung)\w*",
@@ -576,6 +616,7 @@ if KLASSE not in STAMM and not OHNE_STAMM:
 
 K = KLASSEN[KLASSE]
 ZEILE_RE = [re.compile(x, re.IGNORECASE) for x in K["ZEILE"]]
+NUR_SATZ_RE = [re.compile(x, re.IGNORECASE) for x in K.get("NUR_SATZ", [])]
 ABSCHNITT_RE = [re.compile(x, re.IGNORECASE) for x in K["ABSCHNITT"]]
 MARKEN_RE = [re.compile(x, re.IGNORECASE) for x in K["MARKEN"]]
 BEHALTEN = {x.replace("/", os.sep) for x in K.get("BEHALTEN", [])}
@@ -634,6 +675,17 @@ for pfad in dateien(ZIEL):
             while i < len(zeilen) and not (ebene(zeilen[i]) and ebene(zeilen[i]) <= e):
                 i += 1
             n_a += 1
+            continue
+        # 🔴 NUR_SATZ GEHT VOR ZEILE. Eine Zeile, die Schranke UND
+        # Meszgegenstand traegt, darf nicht als Ganzes fallen - aus ihr faellt
+        # allein der schrankensetzende Satz (0.83.0, CR-2026-116).
+        if any(r.search(z) for r in NUR_SATZ_RE):
+            for s in K["SATZ"]:
+                if s in z:
+                    z = z.replace(s, "")
+                    n_s += 1
+            neu.append(z)
+            i += 1
             continue
         if any(r.search(z) for r in ZEILE_RE):
             i += 1

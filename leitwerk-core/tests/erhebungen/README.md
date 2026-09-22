@@ -88,6 +88,27 @@ dieselbe Lehre wie `--ziel` beim Baumbau (D-218).
 | `baeume_loeschen.py` | löst **jede Verzeichnisverbindung einzeln**, dann `shutil.rmtree` mit `onexc`-Haken |
 | `zaehlen46.py` | zählt Kriterium 2 mit der Regel von Prüfung 46 |
 | `ablage.py` | sagt allen anderen, **wo** Belege, Prompts und Zustandsaufnahmen liegen, **welche Kernversion** das Übungsrepositorium tragen muß – und **welche Zellen eine Erhebung schuldet** (`sollmenge()`, D-230) |
+| `packaktivierung.py` | aktiviert ein Role oder Tech Pack im Meßbaum (drei Teile, drei Wächter), nimmt es für `ohnepack` wieder heraus und trägt den Skillschnitt (D-237, D-238, D-242, D-244) |
+
+## 🟢 Der Apparat von Bündel 5 – dieselbe Mechanik, ein eigener Zuschnitt
+
+**Zu Bündel 5 (`RE-001`, `role-re-ticket`) gehören eigene Werkzeuge**, und der
+Grund steht in D-230: *Ein Verzeichnis ist kein Zuschnitt. Es ist der Zuschnitt
+von gestern.* Geerbt und mit `0.82.0` gemessen ist die **Mechanik**;
+Zuordnung, Pflichtliste und Zielpfad (`C:\lw-b5`) gehören diesem Bündel.
+
+| Skript | Was es anders macht als seine `-b4`-Fassung |
+|---|---|
+| `umgebungen-bauen-b5.py` | **aktiviert das Role Pack** (bei Bündel 4 ist der Block leer, weil alle drei Skills im Kern liegen); prüft Vertrag, Schema, Glossar und die **Wertzeile** von `<ISSUE_TRACKER>`; **leere Abweichungsliste** – kein Schreibkorb, keine Befehlsschlitze; fährt `validate-output.py` statt `npm test` |
+| `baeume-b5.py` | **sechs** Kontrollklassen statt acht, **keine** Übungs-Branches, **kein** `node_modules`; setzt `UEB-30` und `UEB-31` in je **zwei** Bäume **vor** dem ersten Commit |
+| `prompts-schreiben-b5.py` | fünfzehn Prompts; `RE-001-P04` und `RE-001-N09` tragen **denselben** Prompt – verschieden ist der Baum (D-240) |
+| `auswerten-b5.py` | Marken sind **Muster**, keine Teilzeichenketten; dritte Gattung `nennung`; `--marken` hält jede `fund`-Marke **gegen den Baum ihrer Zelle** (D-233) |
+| `dossier-b5.py` | findet das Testblatt über `ablage.blaetter()` – `role-re-ticket` liegt **nicht** unter `framework/skills/` |
+| `reihe-b5.py`, `stand-b5.py`, `zustand-b5.py`, `trust-b5.py` | aus den `-b4`-Fassungen; geändert wurde ausschließlich der Basispfad und die Nennung der Nachbarwerkzeuge |
+
+🔴 **Zwei Befunde am Kontrollzuschnitt fielen vor dem ersten bezahlten Lauf**
+(D-247, D-248) – beide an der Klasse `fern`, und beide hätten einen Kontrollauf
+unbrauchbar gemacht, ohne daß ein Wächter es gemeldet hätte.
 
 ## Die drei Wächter, die es seit 0.79.0 gibt
 

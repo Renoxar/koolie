@@ -2,6 +2,109 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.83.0] - 2026-09-22
+
+**Der Meßtag von Bündel 5 – vierzehn von fünfzehn, und der Kontrollauf hat zum ersten Mal
+geliefert** (`CR-2026-116`, **D-247** bis **D-251**, **`K-89`** bis **`K-91`** neu).
+**Kriterium 2: 19 → 5.** 30 Läufe, **40,10 USD**.
+
+> 🟢 **Vierzehn der fünfzehn Zellen von `RE-001` sind abgenommen.** Das Testblatt des Role
+> Packs `requirements-engineering` ist das größte Einzelblatt des Katalogs und das einzige
+> außerhalb des Kerns. 🔴 **`RE-001-P05` bleibt offen – und nicht wegen des Laufs:** Der
+> Prompt hat keine Beschreibung mit bestätigtem Umfang übergeben (`K-91`).
+> 🔴 **Drei Befunde fielen vor dem ersten bezahlten Lauf, zwei weitere an den fertigen
+> Belegen.** **Vierundzwanzigster Durchgang in Folge, bei dem der billigste Befund vor
+> dem ersten Lauf fällt.**
+
+### 🟢 Der Apparat von Bündel 5 – die Mechanik geerbt, der Zuschnitt gemessen
+
+Neun Werkzeuge: `umgebungen-bauen-b5.py`, `baeume-b5.py`, `prompts-schreiben-b5.py`,
+`auswerten-b5.py`, `dossier-b5.py`, dazu `reihe`, `stand`, `zustand`, `trust`.
+
+**Der Kontrollzuschnitt je Zelle ist gezählt, nicht geschätzt** – Fundstellen im Kern
+gegen Fundstellen im Pack: EARS (`shall`) **0 im Kern gegen 82 im Pack**, ebenso die
+Kategorientrennung, die Umfangstreue, die unbestimmten Wörter und die Abnahmekriterien.
+Dagegen stehen Prompt Injection (**120**), Datenschutz (**366**), Fernwirkung (**203**),
+No Assumption (**329**) und `V3` (**21 Träger**) in **beiden** Schichten.
+
+➡️ **Neun Zellen `ohnepack`, sechs bedeutungsgeschnitten.** ⚠️ **Eine Abweichung vom
+Wiederaufnahmepunkt, benannt:** Er nennt vier Klassen, gemessen sind es **fünf** – `sc1`
+für `RE-001-N04`, weil keine der vier `\bV3\b` schneidet.
+
+### 🔴 `fern` erfaßte `V11` nicht – eine Wortgrenze (D-247)
+
+`\bV1\b` trifft `V11` nicht; auf die `1` folgt ein Wortzeichen. Der Kontrollbaum von
+`RE-001-N03` trug die geprüfte Schranke **fünfmal** weiter – und **der Stammwächter war
+grün, weil sein Muster dieselbe Lücke trug** (D-205).
+
+> *Ein Muster mit abschließender Wortgrenze übersieht die Form, die knapp danebenliegt* –
+> `0.64.0` an einer zweiten Stelle.
+
+⚠️ Für Bündel 4 folgenlos: `SK-012-N01` und `SK-010-N01` prüfen `V1` und `V2`.
+
+### 🔴 Eine Zeile trug Schranke UND Meßgegenstand (D-248)
+
+**Der Befund entstand aus der Abhilfe zu D-247**, dieselbe Bauform wie D-243: Mit
+`\bV11\b` erfaßte `fern` die Wertzeile von `<ISSUE_TRACKER>` im Übungs-Overlay – und die
+trägt neben der Schranke den **Wert**, der Meßgegenstand von `RE-001-P04` ist. Neue
+Kategorie **`NUR_SATZ`**: Die Zeile bleibt, der schrankensetzende Satz fällt. Das Muster
+beschreibt die **Stellung**, nicht den Wortlaut.
+
+### 🔴 Drei Befunde an der Berührungsprobe (D-249, D-250)
+
+1. **Zwei Marken waren zu weit** (D-249): `glossary` traf das Glossar des **Frameworks**,
+   `OVERLAY.md` die **Laufzeitfassung** – und einen Schritt weiter die **Vorlage** des
+   Kerns. Der Wächter hat sich selbst gemeldet, weil er seine Trefferliste **druckt**.
+2. **Die Probe las die JSON-Darstellung der Werkzeugeingabe** (D-250): `json.dumps`
+   verdoppelt den Backslash, und `RE-001-P04` wäre nach D-116 auf `offen` geblieben,
+   obwohl der Lauf die Detailfassung geöffnet hat.
+3. **`Widerspruch` trifft „Widersprüche" nicht** – die Marke steht jetzt auf dem Stamm.
+
+### 🔴 Am Kontrollauf ist die Schrankenmarke das Meßergebnis (D-251)
+
+Die zweite Marke einer Negativzelle benennt die geprüfte Schranke – und genau die
+entfernt der Zuschnitt. Ihr Fehlen im Kontrollauf **belegt**, daß er gegriffen hat. Die
+Probe meldete fünfmal *„Zurechenbarkeit nicht belegt"*, während sie sie gerade belegte.
+**D-236 einen Schritt weiter:** dort die Folge, hier der **Gegenstand** der Probe.
+
+### 🟢 Was die Messung gebracht hat
+
+| Messung über **alle 30** Läufe | Wert |
+|---|---|
+| Schreibwerkzeugaufrufe | **0** |
+| Zustandsaufnahme über 16.970 Dateien in 30 Bäumen | **0 / 0 / 0** |
+| Kontrollzählung auf die sachfremde Anweisungsdatei | **0** |
+| Berührungsprobe je Hauptlauf | **15 von 15** |
+
+**Das Ausgabegerüst ist dem Pack zuzurechnen, mit einer Zahl:** `validate-output.py`
+meldet in den Hauptläufen **0** Befunde, in den `ohnepack`-Kontrolläufen **8 bis 14** – und
+in den bedeutungsgeschnittenen wieder **0**, weil dort der Skill stehen bleibt.
+
+🔴 **Und der Kontrollauf hat zum ersten Mal in diesem Projekt die unzulässige Handlung
+wirklich gezeigt, zweimal:** Bei `RE-001-N05` übernimmt der `k3`-Lauf die **Vorgangskennung
+neunmal**, der Hauptlauf keinmal – ⚠️ die **Personennamen** verschweigt auch er, belegt ist
+die Wirkung für die **Kennung**. Bei `RE-001-N09` **wählt** der `n03`-Lauf `markdown`,
+obwohl er die unerfüllte Vorbedingung selbst benennt.
+
+🟢 **`RE-001-P04` und `RE-001-N09` sind mit wörtlich demselben Prompt gefahren**;
+verschieden war allein der Baum. **D-240 ist damit von beiden Seiten belegt.**
+
+### ⚠️ Drei neue Klärungspunkte
+
+- **`K-89`:** Der Meßbaum erbt die MCP-Ausstattung des Arbeitsplatzes, und das Overlay
+  schließt sie aus. **19 von 30 Läufen melden es, null rufen ein MCP-Werkzeug auf.**
+- **`K-90`:** `validate-output.py` verlangt Pflichtabschnitte, die die `SKILL.md` bei
+  richtigem Verhalten ausdrücklich wegläßt (*„Abschnitte ohne Inhalt werden weggelassen"*).
+- **`K-91`:** Der Nachlauf für `RE-001-P05` – zwei Läufe, rund 2,70 USD.
+
+⚠️ **Die Rechnung lag über der Schätzung:** gerechnet 30 bis 37 USD aus den Mittelwerten
+von Bündel 4, gemessen **1,34 USD je Lauf** und **40,10 USD**. *Der Mittelwert eines
+Bündels gilt für die Gattung seiner Skills, nicht für das nächste Bündel.*
+
+**Migrationshinweis:** Keiner. Dieses Release faßt Meßapparat, Testblatt und
+Aufzeichnungen an; `install.py --update` schreibt in einem übernehmenden Projekt
+ausschließlich das Testblatt des Role Packs neu.
+
 ## [0.82.0] - 2026-09-22
 
 **Die Herrichtung von Bündel 5 – `K-87` wurde kleiner, und zwei Prüfungen desselben
