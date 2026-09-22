@@ -91,6 +91,56 @@ dieselbe Lehre wie `--ziel` beim Baumbau (D-218).
 | `ablage.py` | sagt allen anderen, **wo** Belege, Prompts und Zustandsaufnahmen liegen, **welche Kernversion** das Übungsrepositorium tragen muß – und **welche Zellen eine Erhebung schuldet** (`sollmenge()`, D-230) |
 | `packaktivierung.py` | aktiviert ein Role oder Tech Pack im Meßbaum (drei Teile, drei Wächter), nimmt es für `ohnepack` wieder heraus und trägt den Skillschnitt (D-237, D-238, D-242, D-244) |
 
+## 🔴 Der Apparat kennt zwei Clients – seit `0.86.0`, und der Befund davor war teuer
+
+> **Gefunden am 2026-09-22 im Vorbedingungsdurchgang des `AP2`-Restes** (**D-276**):
+> **Kein einziges Werkzeug dieses Verzeichnisses rief `devin.exe` auf.** Alle fahren
+> `claude -p`, und die drei Belegquellen, auf die `lauf.py` seine Auswertung stützt, gibt
+> es beim Pack `devin-desktop` nicht – kein `--output-format json`, kein
+> `permission_denials`, kein Sitzungstranskript mit `toolDenialKind`.
+>
+> *Ein Apparat, der einen Meßgegenstand nie gesehen hat, meldet sein Fehlen nicht; er
+> meldet gar nichts.* Der Apparat liegt seit `0.79.0` im Kern und ist seither dreimal
+> gehärtet worden; **in keinem dieser Durchgänge ist es aufgefallen.**
+
+| Skript | Was es tut |
+|---|---|
+| `lauf-dd.py` | fährt **einen** Lauf mit dem Client Pack `devin-desktop` und sichert Mitschrift, stdout, **stderr**, Antwort und Laufprotokoll |
+| `auswerten-dd.py` | wertet die Mitschriften aus; `--bilanz` zählt Läufe, Token und Kosten |
+
+**Drei Pfade werden dort gesagt, nicht abgeleitet:** `LW_ERHEBUNG`, `LW_UEBUNG` und neu
+**`LW_DEVIN`** – der Pfad der Agent-CLI. Sie liegt **nicht** im PATH einer Shell, die vor
+der Installation des Clients gestartet wurde; ein Standardwert im Quelltext wäre ein
+Arbeitsplatz, und Prüfung 71 meldete ihn.
+
+### Was dieser Client anders macht – drei Sachen, alle am 2026-09-22 gemessen
+
+1. 🔴 **Er ruft parallel auf, und die erste Abweisung storniert die übrigen** (**D-286**).
+   Eine Sonde legt deshalb **genau einen Gegenstand in einen Lauf.** Wer acht Versuche in
+   einen Prompt legt, mißt den ersten – und liest sieben Stornierungen als Abweisungen.
+2. 🔴 **Die Mitschrift führt einen Unteragenten nicht** (**D-282**). `run_subagent` steht
+   darin, seine Werkzeugaufrufe nicht. Wer einen Unteragenten mißt, baut einen Meßbaum mit
+   einem **aufzeichnenden** `PreToolUse`-Hook (`matcher: ".*"`, entscheidet nichts) und
+   einer Positivkontrolle. So ist `A1` gefallen.
+3. 🔴 **Der Betriebsmodus entscheidet mit** (**D-280**, **D-281**). `auto` weist jeden
+   nicht nur lesenden Aufruf ab – **auch ohne jede Regel** –, `dangerous` hebt den
+   `deny`-Korb auf. **Der Modus gehört in die Aufzeichnung jedes Laufs** und in jede
+   Aussage darüber, was gemessen wurde; `lauf-dd.py` schreibt ihn mit.
+
+### Vier Abweisungsformen, und sie sagen Verschiedenes (**D-289**)
+
+`auswerten-dd.py` erkennt sie am **vollständigen** Wortlaut, nicht an einem Teilstück:
+`REGEL` (die Berechtigungsschicht nennt die Regel selbst), `HOOK` (der Schutz-Hook nennt
+seinen Grund), `MODUS` (*„rejected by the user"* – **obwohl kein Mensch gefragt worden
+ist**), `STORNIERT` (ein Nebenaufruf derselben Antwort wurde abgewiesen).
+
+> **Der Anlaß war der erste Lauf der Reihe.** Er endete mit
+> `Error: Agent error: Permission denied: We're currently facing high demand for this model.`
+> – **eine Kapazitätsmeldung, die mit den Worten „Permission denied" beginnt.** Ein
+> Auswerter mit einer Teilzeichenkette hätte sie als gelungene Abweisung der
+> Berechtigungsschicht gebucht. ⚠️ **Eine unbekannte Form ist ein eigener Ausgang**, nie
+> ein „durchgelaufen".
+
 ## 🟢 Der Apparat von Bündel 5 – dieselbe Mechanik, ein eigener Zuschnitt
 
 **Zu Bündel 5 (`RE-001`, `role-re-ticket`) gehören eigene Werkzeuge**, und der

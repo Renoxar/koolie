@@ -89,7 +89,7 @@ Die Delegationsverbote V1 bis V12 (`leitwerk-core/framework/core/09-risk-model.m
 
 | Pack | Code | Status | `[TECHNISCH]` | Kernzusagen | Fähigkeitsmatrix belegt |
 |---|---|---|---|---|---|
-| `devin-desktop` | `CP-DD` | entwurf | 20 von 36 | 6 von 6 | teilweise – H1, H2, R5, R6 und S5 sind in Sitzungen beobachtet; die Zahl der offenen VERIFY-Marker steht im Pack, Abschnitt „Belegstand" |
+| `devin-desktop` | `CP-DD` | pilot | 21 von 36 | 6 von 6 | 🟢 **`AP2` ist mit `0.86.0` zu Ende gefahren** – `S3`, `B3`, `B10` und `A1` sind an einer Installation gemessen (`CR-2026-120`), dazu H1, H2, R5, R6 und S5 in früheren Sitzungen. **Genau eine Zeile trägt noch einen offenen VERIFY-Marker, und dauerhaft:** `X2` (`K-20`). ⚠️ **Die Einstufungen `[TECHNISCH]` des B-Blocks gelten nicht im Betriebsmodus `dangerous`** – dort trägt der Schutz-Hook (D-281); die Vorbemerkung des Blocks sagt es |
 | `claude-code` | `CP-CC` | entwurf | 22 von 31 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; für S3, S4, A1 und die Reichweite von H2 liegen Messungen vor, für die übrigen Zeilen stehen die Wirkungsnachweise aus |
 
 ## 7. Änderungsverlauf

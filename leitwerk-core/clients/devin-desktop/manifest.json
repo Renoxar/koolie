@@ -98,11 +98,11 @@
     "tools_format": "list",
     "tool_names": {"read": ["read"], "grep": ["grep"], "glob": ["glob"], "edit": ["edit"], "exec": ["exec"]},
     "tool_names_namespace": "eigen",
-    "_tool_names_note": "Wie skill_frontmatter - dasselbe eigene Frontmatter-Vokabular an der zweiten Stelle, an der es abgebildet wird (2026-09-14, tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-88). Das Agentenprofil fw-reviewer traegt danach unveraendert 'allowed-tools: read, grep, glob'; ob dieser Client damit die Zusage A1 einloest, ist weiterhin unerhoben."
+    "_tool_names_note": "Wie skill_frontmatter - dasselbe eigene Frontmatter-Vokabular an der zweiten Stelle, an der es abgebildet wird (2026-09-14, tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-88). Das Agentenprofil fw-reviewer traegt danach unveraendert 'allowed-tools: read, grep, glob'; und seit dem 2026-09-22 ist gemessen, dass dieser Client damit die Zusage A1 EINLOEST: Ein Unteragent mit diesem Profil ruft kein schreibendes Werkzeug auf, das Vollzugriffsprofil des Clients ruft exec und write (D-284). GRENZE: Belegt ist der Werkzeugbestand, nicht die Reichweite je Werkzeug."
   },
-  "agent_start_tools": [],
-  "agent_start_tools_absent": ["unerhoben"],
-  "_agent_start_tools_absent_note": "UNERHOBEN, nicht abwesend (CR-2026-058, D-70). Dieses Pack fuehrt Subagenten als Vorschaufunktion des Clients (Quelle QD-14); mit welchem Werkzeugnamen ein Skill einen Unteragenten startet und ob dieser Name in einer Werkzeugsperre wirkt, ist fuer diesen Client NICHT gemessen. Die Erhebung vom 2026-09-13 betrifft ausschliesslich claude-code und uebertraegt sich nicht. Die leere Liste ist deshalb KEINE Aussage ueber den Client, sondern ueber den Belegstand - dieselbe Unterscheidung wie bei hook_tools_absent nach D-47. Zeile A1 dieses Packs traegt entsprechend weiter einen offenen VERIFY-Marker.",
+  "agent_start_tools": ["run_subagent"],
+  "agent_start_tools_absent": [],
+  "_agent_start_tools_absent_note": "ERHOBEN am 2026-09-22 (tests/protocols/2026-09-22-ap2-rest-devin-desktop.md, CR-2026-120, D-284). Das Startwerkzeug heisst run_subagent; die Mitschrift fuehrt es unter agent.tool_definitions, und sein Pflichtargument 'profile' nennt das Subagentenprofil. Bis 0.85.2 stand hier ['unerhoben'] mit der Begruendung, der Name sei fuer diesen Client NICHT gemessen und die Erhebung vom 2026-09-13 betreffe ausschliesslich claude-code - das war richtig und ist jetzt eingeloest. Gemessen ist auch die WIRKUNG des Profils: allowed-tools bestimmt den Werkzeugbestand des Unteragenten (Laeufe A1-GH, A1-SH, A1-RH, ueber einen Aufzeichnungs-Hook mit Positivkontrolle, weil --export die Werkzeugaufrufe eines Unteragenten NICHT fuehrt, D-282). Der Client stellt zwei eigene Profile: subagent_explore (lesend) und subagent_general (voller Schreibzugriff). Zeile A1 des Packs traegt damit keinen offenen VERIFY-Marker mehr. GRENZE: Belegt ist der Werkzeugbestand, nicht die Reichweite je Werkzeug.",
   "permission_tools": {
     "read": [
       "Read"
