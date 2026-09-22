@@ -1,4 +1,4 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.86.0 (2026-09-22)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.86.1 (2026-09-22)
 
 > 🟢 **ZUERST LESEN: `AP2` IST ZU ENDE GEFAHREN. VIER VON FÜNF MARKERN SIND GEFALLEN,
 > KRITERIUM 1 STEHT AUF 18.** 70 Sitzungsläufe an einer Installation, siebzehn Meßbäume,
@@ -152,6 +152,22 @@
 > ist `0.86.0` erheblich:** Die Station zu Sicherheit und Governance kann jetzt sagen, was
 > gemessen ist **und wo die Grenze liegt** – `dangerous`, die Mustersemantik, und daß die
 > zweite Linie genau dort trägt, wo die erste fällt.
+
+> 🆕 **FÜR ECHTE CLIENTTESTS STEHEN ABONNEMENTS BEREIT – UND DAS IST EINE ANGABE DES
+> MENSCHEN, KEINE MESSUNG** (`0.86.1`, `K-97`). An der Konsole verfügbar: **Devin Pro**,
+> **Codex Pro**, **Claude Max**. 🔴 **Die CLI auf diesem Arbeitsplatz war am 2026-09-22
+> als `Devin Free` angemeldet** – gemessen mit `devin auth status`. *Der Plan ist eine
+> Eigenschaft des angemeldeten Kontos, nicht des Werkzeugs*, und die Anmeldung ist zu
+> wechseln, bevor ein Pro-Kontingent wirkt.
+>
+> ➡️ **Was das ändert, und was nicht.** 🟢 **`1.1.0` (Client Pack `openai-codex`) ist
+> fahrbar geworden** – die vier Erhebungen brauchen kein Kontingent mehr zu scheuen.
+> 🟢 **Die Frage, ob ein anderes Modell einen anderen Werkzeugbestand bekommt, ist
+> meßbar geworden** (bisher ausdrücklich unmeßbar, Erhebung vom 2026-09-14). 🔴 **Und
+> sie ist zugleich der Preis:** **Alle Devin-Belege dieses Projekts stehen auf
+> `SWE-1.6 Slow`.** Wer auf einem Pro-Modell mißt, mißt einen anderen Gegenstand (D-117),
+> und die Vergleichbarkeit mit 70 Läufen von heute ist dahin. **Das ist `K-97` und hier
+> nicht entschieden.**
 
 🔴 **Diese Datei liegt seit `0.78.1` IM Repositorium und wird mit dem Release-Commit
 versioniert** (D-216). *Bis `0.81.0` stand hier das Gegenteil – „liegt außerhalb,
@@ -1701,7 +1717,7 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.86.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.86.1**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün – **415 von 415 Einheiten**, je rund sieben Minuten Wanduhr.
 🔴 **Und er war es erst im dritten Anlauf:** Der erste lief gegen einen unfertigen Baum,
@@ -1822,7 +1838,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.86.0**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.86.1**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.84.0` gehoben** (2026-09-22, `0.84.0`), Overlay **`0.84.0`** – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
@@ -1872,7 +1888,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 |---|---|
 | Änderungsantrag | **`CR-2026-121`** |
 | Decision Record | **`D-291`** |
-| Klärungspunkt | **`K-97`** – ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **eine der sechs belegten synthetischen Kennungen**, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
+| Klärungspunkt | **`K-98`** – ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **eine der sechs belegten synthetischen Kennungen**, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
@@ -2480,7 +2496,7 @@ gehört die **Aufzählung** ins Protokoll und die Zahl nicht; wo sie eindeutig i
   den Werkzeugbestand selbst unter `agent.tool_definitions` – **die billigste Erhebung des Projekts.**
 - **`devin skills show <name>` zeigt, was der Client aus einer Skilldatei macht** – ohne Sitzung, ohne
   Kontingent. Er **verwirft unbekannte Namen lautlos.**
-- **Fallen:** Print-Modus endet gelegentlich **ohne Ausgabe mit Exit 0**. Kontingent: **Free plan**;
+- **Fallen:** Print-Modus endet gelegentlich **ohne Ausgabe mit Exit 0** – 🟢 **seit `0.86.0` ist die Ursache gemessen: der `ask`-Korb** (D-280). ⚠️ **Kontingent:** Die CLI war am 2026-09-22 als **`Devin Free`** angemeldet (`devin auth status`), **und ein Devin-Pro-Abonnement steht zur Verfügung** (Angabe des Menschen, `0.86.1`, `K-97`) – *der Plan ist eine Eigenschaft des Kontos, nicht des Werkzeugs.* **Auf dem Free-Konto gilt:**
   ein anderes Modell ist dort nicht aufrufbar (`Upgrade to Pro`) – jede Aussage über den
   Werkzeugbestand gilt nur für `SWE-1.6 Slow`.
 - **`--permission-mode` ist nicht das Mittel für eine Messung, die `deny`-Liste schon** – ein `deny`
