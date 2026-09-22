@@ -2,13 +2,23 @@
 
 **Framework für den professionellen Einsatz von KI-Codierassistenten in Softwareentwicklungsteams.**
 
-Dieses Framework fliegt das Flugzeug nicht – es hält es stabil und auf Kurs: Es schreibt nicht vor, wie Software entsteht, sondern hält den KI-gestützten Entwicklungsprozess in einer Spur, die prüfbar, nachvollziehbar und übertragbar bleibt.
+Dieses Framework treibt die Entwicklung nicht und ersetzt niemanden – es hält sie beisammen und in Richtung: Es schreibt nicht vor, wie Software entsteht, sondern hält den KI-gestützten Entwicklungsprozess in einer Spur, die prüfbar, nachvollziehbar und übertragbar bleibt.
 
 Projektneutral, wiederverwendbar und erweiterbar – mit methodischem Vorgehensmodell und sofort nutzbarer technischer Referenzimplementierung. Erste Anwendung: strukturierte Einführung und Onboarding neuer Entwicklerinnen und Entwickler in einem bestehenden Projekt; Übertragung auf weitere Projekte über ein austauschbares Project Overlay.
 
 Welcher KI-Client zum Einsatz kommt, entscheidet ein **Client Pack** (`.koolie/core/clients/`) – derzeit `devin-desktop` und `claude-code`. Der Kern ist werkzeugneutral; welche Zusagen ein Client technisch durchsetzt und welche nur als Anweisung im Kontext stehen, weist die Fähigkeitsmatrix des jeweiligen Packs aus.
 
 **Version:** siehe `.koolie/core/VERSION` · **Änderungen:** `.koolie/core/CHANGELOG.md` · **Status:** alle Module `entwurf` (Validierung in Roadmap-AP2) · **Owner:** `<FRAMEWORK_OWNER>` (`.koolie/core/OWNERS.md`)
+
+## Warum Koolie?
+
+Ein **Koolie** ist ein australischer Hütehund, und das Bild ist die Aufgabenbeschreibung dieses Frameworks: Ein Hütehund treibt die Herde nicht, und er ersetzt den Schäfer nicht – er hält sie beisammen und in Richtung. Er arbeitet selbständig, aber auf Anweisung, und er hält Grenzen, ohne zu beißen.
+
+Genau das tut dieses Framework mit einem KI-Client: Es macht ihn nicht besser, und es entscheidet nichts an seiner Stelle. Es hält ihn in der Spur, an den Grenzen und an den Stellen, an denen ein Mensch entscheidet – und es hält ihn an, bevor er schreibt.
+
+Ein Koolie ist außerdem eine **Gebrauchsrasse, kein Schauhund**. Das ist hier ein Anspruch: Was in diesem Framework steht, muss im Alltag eines Projekts tragen, nicht in einer Vorführung gut aussehen.
+
+Die Namensentscheidung mit ihrer Begründung und den verworfenen Alternativen steht als D-125 in `.koolie/core/governance/DECISION_LOG.md`.
 
 ## Leitidee in drei Sätzen
 
