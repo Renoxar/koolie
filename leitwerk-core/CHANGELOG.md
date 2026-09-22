@@ -2,6 +2,133 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.85.0] - 2026-09-22
+
+**Die Quellenzuordnung je Matrixzeile - und die vier Zellen, die die Marke nur genannt
+haben** (`CR-2026-118`, **D-263** bis **D-268**; `K-62` geschlossen, **Pruefung 73 und
+74** neu). **Ohne Kontingent, ohne Lauf an einem Client.**
+
+> 🟢 **`K-62` IST ZU, UND DER BESTAND HAT 25 VON 26 ZUORDNUNGEN HERGEGEBEN.** Die
+> Quellenliste fuehrt je Quelle, wofuer sie herangezogen wurde - das ist eine
+> Aufzeichnung und keine Schaetzung. **Die sechsundzwanzigste bleibt ausgesprochen
+> offen** und ist damit der **erste gezielte Auftrag** an `FW-AK-01`: eine Zeile gegen
+> eine Seite statt 44 gegen 22.
+> 🔴 **UND DIE ZAHL WAR AUS ZWEI GRUENDEN NICHT DIE RICHTIGE.** Vier Belegzellen
+> **nennen** die Marke `[DOK]`, ohne sie zu tragen (D-265), und sieben Verweisbelege
+> *"wie B3"* zaehlten in keiner Richtung mit (D-266). **Nach der Kopfregel waren es
+> 40 von 46.**
+> 🔴 **DER TEUERSTE BEFUND KOSTETE NICHTS UND STAND 73 RELEASES DA** (D-264): `M6` und
+> `M7` des Packs `devin-desktop` stehen hinter einer Leerzeile und sind **keine
+> Tabellenzeilen** - im Pack wie im Hauptdokument -, waehrend die Zusammenfassung
+> desselben Packs sie mitzaehlt.
+> ⚠️ **Kriterium 1 bleibt bei 22.** `K-62` ist kein `VERIFY`-Marker; er ist die
+> Vorbedingung, unter der die uebrigen billig werden.
+
+### 🔴 Die Zaehlregel stand nirgends geschrieben - sie ist rekonstruiert worden
+
+Die Regel, die `26 von 44` ergibt, ist gegen **beide** aufgezeichneten Staende gehalten:
+Sie reproduziert `29 von 43` zum Stand `0.61.0` und `26 von 44` zum Stand `0.84.0`.
+**Erst damit ist zu sagen, was dieser Eingriff bewegt.**
+
+⚠️ **Nebenbefund:** D-156 nennt fuenf Zeilen, die am 18.09. *"ihre Quelle bekommen"*
+haetten - **`X2` trug sie schon zu `0.61.0`**. Die Zahlen stimmen, ihre Zerlegung nicht
+ganz; berichtigt in Anhang 31.4.3.
+
+### 🔴 Die Kopfregel, und sie ist die Vorlage fuer den `VERIFY`-Marker (D-265)
+
+Vier Belegzellen nennen `[DOK]`, ohne es zu tragen: `R5` und `B10` **erklaeren** die
+Marke (*"ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]`"*), `S2` und `H3`
+nennen sie **in der Vergangenheit** und sind laengst gemessen.
+
+➡️ **Das ist der `VERIFY`-Marker eine Ebene tiefer:** Auch dort zaehlen vier Fundstellen
+mit, die ihn nur **nennen**, und auch dort muss die Trennlinie gezogen werden, bevor
+Kriterium 1 auf null gehen kann (`CR-2026-070` E3). **Hier ist sie zum ersten Mal
+maschinell gezogen:** der **Belegkopf** - die Zelle bis zum ersten Satzbruch.
+
+**Preis, und er ist benannt:** Ein Rest-`[DOK]` hinter einer Messung (`B2`, `H2`, `A1`)
+wird nicht erzwungen. Die drei Zeilen tragen ihre Kennung trotzdem.
+
+### 🔴 Sieben Verweisbelege, und zwei Zaehlregeln fuer dieselbe Spalte (D-266)
+
+`B4`, `B5`, `B6` (beide Packs) und `B8` (`devin-desktop`) belegen mit *"wie B3"*, `B5`
+ueber **zwei** Glieder. **Solange `B3` keine Kennung trug, trugen bei `devin-desktop`
+fuenf Zeilen keine.** Die Zusammenfassung desselben Packs zaehlt sie beim
+`VERIFY`-Marker dagegen sehr wohl mit (*"... B4, B5, B6 und B8 ueber den Verweis"*).
+
+**Verbindlich ist seither die Kennung** (`QC-n`/`QD-n`), nicht der Seitenpfad - nur sie
+laesst sich gegen die Liste halten. Der Pfad bleibt als Lesehilfe.
+
+### 🔴 Zwei Matrixzeilen, die seit `0.26.0` keine sind (D-264, Pruefung 74)
+
+`M6` und `M7` des Packs `devin-desktop` stehen hinter einer Leerzeile. Markdown rendert
+sie als **Absatz mit Strichen** - im Pack und im Hauptdokument. **Die Leerzeile stammt
+aus genau dem Release, das die beiden Zeilen angelegt hat**, weil `AP2-DD-03` gefunden
+hatte, dass zwei geregelte Modi keine Matrixzeile haben. *Die Abhilfe gab ihnen eine
+Zeile, die keine Tabellenzeile ist.*
+
+**72 Pruefungen, keine hat es gesehen** - und die neue 73 haette es auch nicht: Sie
+erkennt eine Matrixzeile am **Muster** und nicht am **Block**.
+
+### 🔴 Ein `[DOK]`, das gegen den eigenen Bestand belegt (D-267)
+
+`B10` bei `claude-code` trug *"`[DOK]` fuer die Abbildung (`permission_tools_bare` im
+Manifest, erzeugte Datei nachgeprueft am 2026-09-13)"* - **Nachweise des Frameworks
+ueber sich selbst**, waehrend die Marke *"in der Herstellerdokumentation beschrieben"*
+heisst. Die Produktseite, die die Zeile wirklich traegt, stand nicht dabei.
+
+### 🔴 Ein Vorbehalt, den nur das Protokoll kennt (D-268)
+
+`AP2-DD-09` (2026-09-11) begrenzt Zeile `R2` bei `devin-desktop` und stand seit
+`0.25.0` **allein im Protokoll** - vierundsiebzig Releases. *Ein Beleg mit einem
+Vorbehalt, der nicht danebensteht, ist ein Beleg ohne Vorbehalt.*
+
+### ⚠️ Der Durchgang vor dem Commit hat drei eigene Zahlen kassiert
+
+Alter des Tabellenbruchs **73** statt 59 Releases, Alter des Vorbehalts `AP2-DD-09`
+**vierundsiebzig** statt vierundfuenfzig, Umfang des Pruefapparats **72** statt 67
+Pruefungen - berichtigt an 21 Stellen in sieben Traegern. **Alle drei waren aus einer
+Differenz von Versionsnummern gerechnet statt gezaehlt, und alle drei waren zu klein.**
+*Derselbe Befundtyp, den dieses Projekt sonst an seinen Zusagen findet, an der eigenen
+Buchfuehrung.* **Der Durchgang traegt sich zum siebenundzwanzigsten Mal in Folge.**
+
+### Geaendert
+
+- `clients/claude-code/CLIENT_PACK.md`: Vorbemerkung zur Belegspalte neu gefasst;
+  **24 Matrixzeilen** - zwoelf ohne Quelle zugeordnet, zwoelf mit Pfad um die Kennung
+  ergaenzt; `M3` ausgesprochen offen; `B10` berichtigt (D-267); `S2` und `H3` als
+  historische Nennung kenntlich.
+- `clients/devin-desktop/CLIENT_PACK.md`: Vorbemerkung neu; **14 Matrixzeilen**
+  zugeordnet, ueber den Verweis erreichen sie **18**; `R2` um `AP2-DD-09` ergaenzt;
+  **Tabellenbruch vor `M6` geheilt**, Leerzeile vor `### X` ergaenzt.
+- `clients/README.md` Abschnitt 4: drei verbindliche Folgen ergaenzt.
+- `build/doc/31-anhaenge.md`: Die Zusage von 31.4 gilt wieder - **soweit sie besteht**;
+  31.4.3 berichtigt.
+- `tests/scripts/validate-framework.py`: **Pruefung 73 und 74**, Register ergaenzt.
+- `tests/scripts/probe-pruefungen.py`: **elf Einheiten** (sechs Sonden, fuenf
+  Gegenproben); Sondenmenge `6, 14 und 18 bis 74`.
+- `tests/TEST_CATALOG.md`: Sondenmenge nachgezogen.
+- `governance/DECISION_LOG.md`: **D-263** bis **D-268**; `K-62` geschlossen.
+- `docs/ROADMAP.md`: Posten `0.85.0` erledigt; die vier folgenden Posten standen seit
+  `0.62.0` auf vergebenen Nummern und sind auf `~0.86.0` bis `~0.89.0` gesetzt.
+- `governance/change-requests/CR-2026-118-quellenzuordnung-matrixzeilen.md` (neu),
+  `tests/protocols/2026-09-22-quellenzuordnung-matrixzeilen.md` (neu).
+
+### Migrationshinweise
+
+**Keine.** Das Release fasst kein Artefakt der Laufzeitschicht an; `install.py --update`
+schreibt in einem uebernehmenden Projekt nichts Neues.
+
+### Bekannte Einschraenkungen
+
+- **`M3` bei `claude-code` bleibt ohne Quelle**, ausgesprochen und deklariert
+  (`P73_OFFEN`). Erster gezielter Auftrag an `FW-AK-01`.
+- **Die uebrigen Vorbehalte der AP2-Protokolle sind nicht durchgegangen worden**
+  (`CR-2026-118` E8) - eigener Posten, benannt und offen.
+- **Pruefung 73 erzwingt nur den Belegkopf.** Ein Rest-`[DOK]` hinter einer Messung
+  bleibt ungedeckt (D-265).
+- **Das Hauptdokument ist nicht neu gebaut** - `build/out/` gehoert zu `AP11`. Der
+  Tabellenbruch heilt beim naechsten Bau von selbst mit.
+
 ## [0.84.0] - 2026-09-22
 
 **Die vier Sammelzellen des zentralen Katalogs - und der Nachlauf von `RE-001-P05`**

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 72, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 74, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6513,6 +6513,161 @@ def sonden_pack_im_korb() -> None:
 buendel(sonden_pack_im_korb,
         "Ein aktiviertes Pack steht auch im Berechtigungskorb - in beide Richtungen, "
         "und nur bei einem Client, dessen Manifest eine Schreibweise deklariert")
+
+
+
+
+# --- Pruefung 73: Jede [DOK]-Matrixzeile nennt ihre Quelle -------------------------
+#
+# VIER SONDEN, UND SIE BELEGEN DIE VIER WEGE, AUF DENEN EINE ZUORDNUNG VERSCHWINDET.
+# 73a ist der gemessene Ausgangsfall: eine Zeile, deren Belegkopf die Kennung nicht
+# nennt - am 2026-09-18 traf das auf 29 von 43 Zeilen zu. 73b ist der Fall, den keine
+# Zaehlung ohne Verweisaufloesung sieht: Beim Pack devin-desktop haengen B4, B5, B6 und
+# B8 an B3, eine davon ueber zwei Glieder - nimmt man B3 die Kennung, verlieren FUENF
+# Zeilen ihren Beleg, und die Meldung nennt die Kette. 73c und 73d sind die beiden
+# Richtungen der deklarierten Luecke: eine neue, die nicht in P73_OFFEN steht, und eine
+# deklarierte, die aus der Zeile verschwunden ist. Die zweite ist der Fall "eine
+# Ausnahme ohne Gegenstand" (0.57.1) - sie sieht wie Sorgfalt aus und ist tot.
+#
+# DREI GEGENPROBEN, UND DIE ZWEITE IST DIE WICHTIGERE. 73a belegt, dass der
+# ausgelieferte Bestand durchlaeuft - ohne sie meldete die Sonde nur, dass irgendetwas
+# meldet. 73b belegt DIE KOPFREGEL: Eine Nennung der Marke HINTER dem Belegkopf bleibt
+# unbeanstandet. Ohne sie waere die Pruefung nicht von einer Textsuche zu
+# unterscheiden, und Zeile R5 des Packs claude-code - "ein Dokumentenabgleich belegt
+# [DOK], nicht [TECHNISCH]" - fiele als Befund an. 73c belegt den Zuschnitt zur
+# Vorlage: clients/_template/ fuehrt <TBD> in jeder Belegzelle und wird nicht gemessen.
+M73 = "nennt im Belegkopf keine Quellenkennung"
+M73_KETTE = "ueber den Verweis"
+M73_UNDEKLARIERT = "steht aber nicht in P73_OFFEN"
+M73_TOT = "als ausgesprochene Luecke, die Zeile sagt es aber nicht"
+P73_CC = "leitwerk-core/clients/claude-code/CLIENT_PACK.md".replace("/", os.sep)
+P73_DD = "leitwerk-core/clients/devin-desktop/CLIENT_PACK.md".replace("/", os.sep)
+P73_VORLAGE = "leitwerk-core/clients/_template/CLIENT_PACK.md".replace("/", os.sep)
+
+
+def _73_kennung_nehmen(root: str) -> None:
+    """Sonde: Zeile B1 des Packs claude-code verliert ihre Kennung."""
+    ersetze(P(root, P73_CC),
+            ("| `[DOK]` **`QC-5`** (Zuordnung `K-62`) |", "| `[DOK]` |"))
+
+
+def _73_verweisziel_nehmen(root: str) -> None:
+    """Sonde: B3 verliert die Kennung - vier weitere Zeilen verweisen darauf."""
+    ersetze(P(root, P73_DD),
+            ("Mechanismus `[DOK]` **`QD-11`** (Zuordnung `K-62`);",
+             "Mechanismus `[DOK]`;"))
+
+
+def _73_luecke_erfinden(root: str) -> None:
+    """Sonde: eine zweite ausgesprochene Luecke, die niemand deklariert hat."""
+    ersetze(P(root, P73_DD),
+            ("| `[DOK]` **`QD-12`** (Zuordnung `K-62`) |",
+             "| `[DOK]` - QUELLE NICHT ZUGEORDNET (synthetisch) |"))
+
+
+def _73_luecke_schliessen(root: str) -> None:
+    """Sonde: die deklarierte Luecke verschwindet aus der Zeile, P73_OFFEN bleibt."""
+    ersetze(P(root, P73_CC),
+            ("🔴 **QUELLE NICHT ZUGEORDNET** (`K-62`, 2026-09-22)",
+             "**`QC-2`** (synthetisch)"))
+
+
+def _73_nennung_hinter_dem_kopf(root: str) -> None:
+    """Gegenprobe: die Marke HINTER dem Belegkopf ist eine Nennung, kein Beleg."""
+    ersetze(P(root, P73_CC),
+            ("| `[DOK]` **`QC-5`** (Zuordnung `K-62`) |",
+             "| `[DOK]` **`QC-5`** (Zuordnung `K-62`). Zur Einordnung: Ein "
+             "Dokumentenabgleich belegt `[DOK]` und nie `[TECHNISCH]` (D-12) |"))
+
+
+def _73_vorlage_leeren(root: str) -> None:
+    """Gegenprobe: die Vorlage fuehrt <TBD> und wird nicht gemessen."""
+    ersetze(P(root, P73_VORLAGE),
+            ("| R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung "
+             "ungefragt geladen | `AGENTS.md` | `<TBD>` | `<TBD>` | `<TBD>` |",
+             "| R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung "
+             "ungefragt geladen | `AGENTS.md` | `<TBD>` | `<TBD>` | `[DOK]` |"))
+
+
+sonde("73a", "Eine [DOK]-Zeile ohne Quellenkennung im Belegkopf wird gemeldet - der "
+             "gemessene Ausgangsfall: 29 von 43 Zeilen am 2026-09-18",
+      _73_kennung_nehmen, M73)
+
+sonde("73b", "Nimmt das Ziel eines Verweisbelegs seine Kennung, verlieren die "
+             "verweisenden Zeilen sie mit - und die Meldung nennt die Kette",
+      _73_verweisziel_nehmen, M73_KETTE)
+
+sonde("73c", "Eine ausgesprochene Luecke, die nicht in P73_OFFEN steht, wird "
+             "gemeldet - sonst waere die Marke eine Hintertuer",
+      _73_luecke_erfinden, M73_UNDEKLARIERT)
+
+sonde("73d", "Eine deklarierte Luecke, die aus der Zeile verschwunden ist, wird "
+             "gemeldet - eine Ausnahme ohne Gegenstand ist tot (0.57.1)",
+      _73_luecke_schliessen, M73_TOT)
+
+gegenprobe("73a", "Der ausgelieferte Bestand laeuft durch - 46 Matrixzeilen, eine "
+                  "deklarierte Luecke, keine Meldung",
+           None, M73)
+
+gegenprobe("73b", "Eine Nennung der Marke HINTER dem Belegkopf bleibt unbeanstandet - "
+                  "die Kopfregel, ohne die jede Erlaeuterung ein Befund waere",
+           _73_nennung_hinter_dem_kopf, M73)
+
+gegenprobe("73c", "Die Vorlage clients/_template/ fuehrt <TBD> und wird nicht "
+                  "gemessen - ein Pack ohne Client hat keine Quellenliste",
+           _73_vorlage_leeren, M73)
+
+
+# --- Pruefung 74: Eine Matrixzeile steht in ihrer Tabelle --------------------------
+#
+# ZWEI SONDEN UND ZWEI GEGENPROBEN. 74a ist der gemessene Fall, wortgetreu: die
+# Leerzeile zwischen M5 und M6 des Packs devin-desktop, die dort seit 0.26.0 stand und
+# zwei Matrixzeilen zu Fliesstext gemacht hat - im Pack wie im Hauptdokument. 74b ist
+# dieselbe Bauform mit Fremdtext statt Leerzeile: Ein Absatz mitten in der Tabelle
+# bricht sie ebenso, und er sieht harmloser aus.
+#
+# DIE ZWEITE GEGENPROBE IST DIE WICHTIGERE, und sie schuetzt den ZUSCHNITT. Abschnitt 5
+# des Packs claude-code fuehrt eine Tabelle "Bekannte Abweichungen im Verhalten", und
+# ihre erste Zeile beginnt mit "| B6 |" - dieselbe Gestalt wie eine Matrixzeile, in
+# einer anderen Tabelle und in einem anderen Abschnitt. Wer nur nach dem Muster sucht,
+# meldet sie mit. Die Pruefung liest deshalb nur unterhalb von "## 2.", und diese
+# Gegenprobe belegt es an einer Zeile, die dort WIRKLICH steht.
+M74 = "sieht aus wie eine Matrixzeile und steht in keiner Tabelle"
+P74_DD = P73_DD
+P74_CC = P73_CC
+
+
+def _74_leerzeile_setzen(root: str) -> None:
+    """Sonde: der gemessene Fall - eine Leerzeile vor M6, wie sie bis 0.84.0 stand."""
+    zeile_nach(P(root, P74_DD), "| M5 | Eigener Nur-Lese-Modus", "")
+
+
+def _74_fremdtext_setzen(root: str) -> None:
+    """Sonde: ein Absatz mitten in der Tabelle bricht sie ebenso."""
+    zeile_nach(P(root, P74_DD), "| M5 | Eigener Nur-Lese-Modus",
+               "" + chr(10) + "Anmerkung zur Modusreihe - SYNTHETISCH." + chr(10))
+
+
+def _74_abweichungstabelle_brechen(root: str) -> None:
+    """Gegenprobe: dieselbe Gestalt in Abschnitt 5 wird NICHT gemessen."""
+    zeile_nach(P(root, P74_CC), "## 5. Bekannte Abweichungen im Verhalten",
+               "" + chr(10) + "| B6 | synthetische Zeile ohne Tabelle | - |")
+
+
+sonde("74a", "Eine Leerzeile vor einer Matrixzeile wird gemeldet - der gemessene "
+             "Fall, der seit 0.26.0 zwei Zeilen zu Fliesstext gemacht hat",
+      _74_leerzeile_setzen, M74)
+
+sonde("74b", "Ein Absatz mitten in der Tabelle bricht sie ebenso und wird gemeldet",
+      _74_fremdtext_setzen, M74)
+
+gegenprobe("74a", "Der ausgelieferte Bestand laeuft durch - beide Packs, jede "
+                  "Matrixzeile in ihrer Tabelle",
+           None, M74)
+
+gegenprobe("74b", "Dieselbe Gestalt in Abschnitt 5 bleibt unbeanstandet - die "
+                  "Pruefung liest unterhalb von '## 2.', nicht nach dem Muster",
+           _74_abweichungstabelle_brechen, M74)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
