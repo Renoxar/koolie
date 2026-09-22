@@ -2076,9 +2076,22 @@ def _34_leer_ohne_erklaerung(root: str) -> None:
 
 
 def _34_erklaerung_ohne_notiz(root: str) -> None:
+    """Die Sonde BRINGT die Abwesenheitserklaerung mit, statt sie vorauszusetzen.
+
+    Bis 0.85.2 stand sie im Bestand (`agent_start_tools_absent: ["unerhoben"]`); mit
+    0.86.0 ist sie aufgeloest - das Startwerkzeug heisst `run_subagent` (D-284). Eine
+    Sonde, die auf den Bestand zeigt, verliert damit ihren Gegenstand und bestuende
+    leise (D-23). Sie setzt ihn seither selbst.
+    """
     pfad = P(root, MANIFEST_DD_34.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace('"_agent_start_tools_absent_note"',
-                                     '"_agent_start_tools_absent_hinweis"', 1))
+    t = lies(pfad)
+    t = t.replace('"agent_start_tools": ["run_subagent"],',
+                  '"agent_start_tools": [],', 1)
+    t = t.replace('"agent_start_tools_absent": [],',
+                  '"agent_start_tools_absent": ["unerhoben"],', 1)
+    t = t.replace('"_agent_start_tools_absent_note"',
+                  '"_agent_start_tools_absent_hinweis"', 1)
+    schreib(pfad, t)
 
 
 def _34_beides_zugleich(root: str) -> None:
@@ -2092,14 +2105,20 @@ def _34_beides_zugleich(root: str) -> None:
 
 def _34_a1_ohne_vorbehalt(root: str) -> None:
     """devin-desktop sagt A1 ohne VERIFY-Marker zu, kann das Werkzeug aber nicht nennen."""
-    pfad = P(root, PACK_DD_34.replace("/", os.sep))
+    # BIS 0.85.2 nahm diese Sonde der Zeile A1 ihren VERIFY-Marker. Den gibt es nicht
+    # mehr: Die Profilwirkung ist am 2026-09-22 gemessen (D-284), und die Zeile sagt A1
+    # seither OHNE Vorbehalt zu. Damit ist der Vorbehalt kein Praeparationsort mehr -
+    # die Sonde nimmt stattdessen das Startwerkzeug weg, das die Zusage traegt. Der
+    # gemessene Fall ist derselbe, und er ist in diesem Release LIVE eingetreten:
+    # Pruefung 34 hat ihn gemeldet, sobald A1 seinen Marker verlor und das Manifest noch
+    # ein leeres Feld fuehrte.
+    pfad = P(root, MANIFEST_DD_34.replace("/", os.sep))
     t = lies(pfad)
-    i = t.index("| A1 |")
-    ende = t.index("\r\n", i)
-    # Den Vorbehalt generisch entfernen, nicht woertlich: Pruefung 14 meldet jeden
-    # Clientnamen, auch in einer Sonde - und der Marker traegt ihn.
-    zeile = re.sub(r"<VERIFY[^>]*>", "(Sonde: Vorbehalt entfernt)", t[i:ende])
-    schreib(pfad, t[:i] + zeile + t[ende:])
+    t = t.replace('"agent_start_tools": ["run_subagent"],',
+                  '"agent_start_tools": [],', 1)
+    t = t.replace('"agent_start_tools_absent": [],',
+                  '"agent_start_tools_absent": ["unerhoben"],', 1)
+    schreib(pfad, t)
 
 
 sonde("34a", "Manifest ohne Feld agent_start_tools - ein Kanal ohne Deklaration",
@@ -3037,7 +3056,10 @@ gegenprobe("40b", "Ein Querverweis auf eine kleinere Pruefungsnummer bleibt "
 MAN_DD = "leitwerk-core/clients/devin-desktop/manifest.json"
 MAN_CC = "leitwerk-core/clients/claude-code/manifest.json"
 
-NOTE_DD_START = '"_agent_start_tools_absent_note": "UNERHOBEN, nicht abwesend'
+# Der Anker zeigt auf den SCHLUESSEL, nicht auf seinen Wert: Der Wert hat sich mit
+# 0.86.0 geaendert (von "UNERHOBEN, nicht abwesend" auf "ERHOBEN am 2026-09-22"), und
+# eine Sonde, die am Wert haengt, verliert ihren Gegenstand beim naechsten Messwert.
+NOTE_DD_START = '"_agent_start_tools_absent_note": '
 NOTE_CC_FUND = ("tests/protocols/2026-09-13-erhebung-disallowed-tools.md "
                 "Abschnitt 4.3")
 
@@ -3045,9 +3067,14 @@ NOTE_CC_FUND = ("tests/protocols/2026-09-13-erhebung-disallowed-tools.md "
 def _41_behauptung(root: str) -> None:
     """Eine Abwesenheitserklaerung ohne Enthaltung und ohne Fundstelle - der Fall vom
     2026-09-14. Die Note traegt danach noch ein Datum, aber keinen Beleg."""
-    ersetze(_p(root, MAN_DD),
-            (NOTE_DD_START,
-             '"_agent_start_tools_absent_note": "Dieser Client fuehrt kein Startwerkzeug'))
+    t = lies(_p(root, MAN_DD))
+    t = t.replace('"agent_start_tools_absent": [],',
+                  '"agent_start_tools_absent": ["unerhoben"],', 1)
+    anfang = t.index(NOTE_DD_START)
+    ende = t.index('",', anfang)
+    t = (t[:anfang] + '"_agent_start_tools_absent_note": "Dieser Client fuehrt kein '
+         'Startwerkzeug fuer Unteragenten.' + t[ende:])
+    schreib(_p(root, MAN_DD), t)
 
 
 def _41_datum_ohne_fundstelle(root: str) -> None:
@@ -3057,7 +3084,7 @@ def _41_datum_ohne_fundstelle(root: str) -> None:
 
 def _41_gegenstand_weg(root: str) -> None:
     """Kein Pack fuehrt noch eine Abwesenheitserklaerung - die Pruefung meldet es selbst."""
-    ersetze(_p(root, MAN_DD), ('  "agent_start_tools_absent": ["unerhoben"],\r\n', ""))
+    ersetze(_p(root, MAN_DD), ('  "agent_start_tools_absent": [],\r\n', ""))
     ersetze(_p(root, MAN_CC), ('    "skill_deny_unmapped": "argumentmuster",\r\n', ""))
 
 
@@ -6553,9 +6580,12 @@ def _73_kennung_nehmen(root: str) -> None:
 
 def _73_verweisziel_nehmen(root: str) -> None:
     """Sonde: B3 verliert die Kennung - vier weitere Zeilen verweisen darauf."""
+    # Der Anker ist so kurz wie moeglich: Die Zeile B3 ist mit 0.86.0 neu geschrieben
+    # worden (Muster-Semantik, D-277), und der laengere Suchtext von 0.85.0 traf nicht
+    # mehr. Eine Sonde, deren Suchtext an der Prosa haengt, faellt bei jedem Messwert.
     ersetze(P(root, P73_DD),
-            ("Mechanismus `[DOK]` **`QD-11`** (Zuordnung `K-62`);",
-             "Mechanismus `[DOK]`;"))
+            ("Mechanismus `[DOK]` **`QD-11`** (Zuordnung `K-62`)",
+             "Mechanismus `[DOK]` (ohne Quelle)"))
 
 
 def _73_luecke_erfinden(root: str) -> None:

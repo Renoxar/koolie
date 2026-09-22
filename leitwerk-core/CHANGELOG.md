@@ -2,6 +2,140 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.86.0] - 2026-09-22
+
+**Der Rest von `AP2` ist gefahren: vier von fuenf Markern des Packs `devin-desktop` sind
+aufgeloest** (`CR-2026-120`, **D-276** bis **D-290**, `K-92` bis `K-96` neu). **67
+Sitzungslaeufe an einer Installation, siebzehn Messbaeume, 0,4718 USD.** **Kriterium 1 von
+D-11 faellt von 22 auf 18.**
+
+> 🔴 **DER SCHWERSTE BEFUND: `--permission-mode dangerous` HEBT DEN `deny`-KORB AUF.**
+> `Read(.env)` wurde gelesen, `Exec(git push)` ausgefuehrt - **beide stehen unter
+> `_core_rules_integrity.deny_must_contain`**, also in der Liste, die das Projekt nach dem
+> eigenen Kommentar der Datei nicht entfernen darf. **Sie sind nicht entfernt worden; sie
+> sind von aussen abgeschaltet worden, mit einem Schalter der Kommandozeile, ohne die Datei
+> anzufassen** (**D-281**). 🟢 **Und genau dort traegt die zweite Linie:** Im selben Modus
+> hat der Schutz-Hook denselben Lesezugriff blockiert. *Erste und zweite Linie fallen unter
+> verschiedenen Bedingungen - das ist die empirische Rechtfertigung des Hooks, und sie ist
+> jetzt an dem Schalter gemessen, der sie ausloest.* ➡️ **Entschieden:** Die Einstufungen
+> `[TECHNISCH]` des B-Blocks bleiben; die Vorbemerkung des Blocks traegt die Grenze. **Der
+> Preis ist benannt: Diesen Satz setzt keine Pruefung durch.**
+
+### Die vier Marker
+
+| Zeile | Gegenstand | Ergebnis |
+|---|---|---|
+| **S3** | Wirkung additiver Skill-Permissions | 🟢 **die Zusage trägt, unter einer benannten Bedingung** (**D-287**): **Sechs von sechs Läufen** mit einem aktiven Skill, der `edit` in **beiden** Feldern ausschliesst, wurden **abgewiesen**; **acht von acht** ohne diese Kombination liefen durch, und die Kontrolle ohne Skillaufruf im selben Baum ebenfalls. 🔴 **Die Bedingung ist der Messwert:** `allowed-tools` allein wirkt nicht, `permissions` allein wirkt nicht - **es braucht beide.** 🟢 Alle dreizehn ausgelieferten Skills fuehren beide Felder. ⚠️ **Die Abweisung nennt den Arbeitsbereich als Grund, nicht den Skill** - wer sie am Wortlaut zurechnet, rechnet sie falsch zu |
+| **B3** | Muster-Semantik der Pfadregeln | 🟢 **mit benannter Grenze** (**D-277**): `**/` trifft **null** Verzeichnisse (`server.pem` auf Wurzelebene faellt unter `Read(**/*.pem)`) **und mehrere**; ein Praefixmuster ohne `**/` wirkt. 🔴 **Die Muster unterscheiden Gross- und Kleinschreibung:** `klein/notiz.secret` wird abgewiesen, `UNTEN/Notiz.SECRET` nicht - **waehrend NTFS beide Schreibweisen als dieselbe Datei fuehrt.** Der Schutz-Hook tut das Gegenteil (`K-92`) |
+| **B10** | Auswertung einer Domain-Angabe | 🔴 **zum Schlechteren, Einstufung auf `[NICHT ABBILDBAR]`** (**D-279**): **Das Abrufwerkzeug heisst `webfetch`; `Fetch` ist kein Werkzeugname dieses Clients.** Acht Laeufe ueber sechs Baeume, drei Schreibweisen und drei Betriebsmodi - **die Berechtigungsdatei erreicht den Kanal in keiner Richtung**, auch nicht unter dem Laufzeitnamen. *Ein Argument kann nicht ausgewertet werden, wenn schon der Werkzeugname nicht trifft.* Dieselbe Bauform wie `AP2-CC-02`, nur meldet dieser Client es beim Sitzungsstart **nicht einmal** |
+| **A1** | Profilwirkung des Reviewprofils | 🟢 **zum Besseren** (**D-284**): Das `allowed-tools` eines Subagentenprofils **bestimmt den Werkzeugbestand des Unteragenten.** Das Vollzugriffsprofil des Clients ruft `exec` und `write` auf; eine synthetische Sonde mit `read, grep, glob` und neutralem Rollentext ruft **kein** Werkzeug auf, und `fw-reviewer` verhaelt sich wie die Sonde |
+| **X2** | Codebasis-Indexierung | **bleibt, dauerhaft** (`K-20`) |
+
+### Die Koerbe `ask` und `allow` - gemessen, und die Antwort ist eine Enthaltung
+
+🔴 **Sie sind im nicht-interaktiven Betrieb nicht von der Voreinstellung des Clients zu
+unterscheiden** (**D-280**): Im Modus `auto` weist der Client **jeden** Schreibaufruf ab -
+mit Regel und ohne; im Modus `accept-edits` laesst er **jeden** durch - mit Regel und ohne.
+🟢 **Der `deny`-Korb dagegen ist zurechenbar:** `Exec(git push)` wird im Regelbaum
+abgewiesen und im leeren ausgefuehrt, und der Client nennt die Quelle selbst.
+⚠️ **Der interaktive Betrieb ist nicht gemessen und wird nicht behauptet.**
+
+🆕 **Der Befund erklaert eine Falle, die seit `0.24.0` in der Uebergabe steht:** *„Print-Modus
+endet gelegentlich ohne Ausgabe mit Exit 0."* **Das ist der `ask`-Korb**, und die
+Standardfehlerausgabe sagt es woertlich. *Eine Falle, die zehn Releases lang „gelegentlich"
+hiess, hatte die ganze Zeit eine Ursache - und sie steht in der Datei, die das Framework
+selbst erzeugt.*
+
+### Fuenf Befunde fielen vor dem ersten Lauf - zum elften Mal in Folge
+
+1. 🔴 **Der Messapparat kannte diesen Client nicht** (**D-276**). Dreissig Werkzeuge unter
+   `tests/erhebungen/`, **keines rief `devin.exe` auf**; die drei Belegquellen von
+   `lauf.py` gibt es bei diesem Client nicht. **Neu: `lauf-dd.py` und `auswerten-dd.py`**,
+   und ein dritter gesagter Pfad, `LW_DEVIN`. *Ein Apparat, der einen Messgegenstand nie
+   gesehen hat, meldet sein Fehlen nicht; er meldet gar nichts.*
+2. 🔴 **`B10` hatte keinen Gegenstand.** Der Laufzeitname des Abrufwerkzeugs stand **in
+   keinem Traeger des Repositoriums** - das Protokoll vom 2026-09-14 nennt sieben der 25
+   Werkzeuge, die vollstaendige Liste lag in einer inzwischen geloeschten Ablage (**D-283**).
+3. 🔴 **Neun Nachbarverzeichnisse und drei Dateien fehlen**, darunter zwei, die die
+   Uebergabe ausdruecklich als Belege fuehrt (`lw-tech/ap2-hook-aufzeichnung.jsonl`,
+   *„nicht loeschen - Beleg fuer `K-24`"*). ➡️ **Ein Protokoll, das einen Beleg ausserhalb
+   des Repositoriums nennt, gibt kuenftig seinen Inhalt so weit wieder, dass der Satz auch
+   ohne die Datei nachvollziehbar bleibt.** Die Belege bleiben draussen (D-222 unveraendert).
+4. 🟢 Client in der Zielspanne (3.9.19, Agent-CLI 3000.10.21), Konto `Devin Free`.
+5. ⚠️ **Eine Angabe der Uebergabe hat nicht gehalten:** `devin models list` fuehrt heute
+   **50 Modellfamilien mit Preisen**. **Eine Auflistung ist keine Aufrufbarkeit** - nicht
+   nachgemessen, die Reihe blieb auf `SWE-1.6 Slow`.
+
+### Drei Befunde am Messen selbst
+
+- 🔴 **Der Client ruft parallel auf, und die erste Abweisung storniert die uebrigen**
+  (**D-286**). Acht Lesungen in einem Prompt, **sieben ohne Messwert** - und der Antworttext
+  haette sie als sieben Abweisungen gemeldet. *Eine Sonde legt bei diesem Client genau einen
+  Gegenstand in einen Lauf.*
+- 🔴 **Die Mitschrift fuehrt einen Unteragenten nicht** (**D-282**). Ein Lauf meldete
+  `GESCHRIEBEN`, **und es gab keine Datei.** Abhilfe: ein `PreToolUse`-Hook, der
+  **aufzeichnet und nichts entscheidet**, mit Positivkontrolle - daran ist `A1` gefallen.
+- 🔴 **Eine Kapazitaetsmeldung des Anbieters beginnt mit den Worten „Permission denied"**
+  (**D-289**). Ein Auswerter, der Abweisungen an dieser Zeichenfolge erkennt, haette sie als
+  gelungene Abweisung der Berechtigungsschicht gebucht. `auswerten-dd.py` unterscheidet
+  seither **vier Abweisungsformen am vollstaendigen Wortlaut**, und eine unbekannte Form ist
+  ein **eigener** Ausgang.
+
+### Drei Befunde, die nebenbei fielen
+
+- 🔴 **Neun der zwoelf `fw-*`-Skills erreichen das Modell ueberhaupt nicht** (**D-288**).
+  Die Sitzung fuehrt **drei** - genau die mit `triggers: user, model` - und **zwei
+  eingebaute Skills des Clients**. Das ist `K-57` fuer dieses Pack, **und es ist schlimmer
+  als dort:** Beim Schwesterpack ist der gesperrte Skill ueber den Prompt erreichbar, hier
+  meldet das Modell ihn als nicht vorhanden. ⚠️ **`devin skills list` zeigt dagegen alle
+  zwoelf.** Der eingebaute `upload-secrets` hat dieselbe Dateiklasse zum Gegenstand, die
+  `B3` schuetzt (`K-94`, ungemessen).
+- 🔴 **Ein Schreibvorgang hat das Projekt verlassen** (**D-285**). Ein Unteragent hat
+  `exec pwd` aufgerufen, die MSYS-Antwort `/c/lw-ap2/…` bekommen und `write` damit
+  abgesetzt; die Datei entstand unter `C:\c\lw-ap2\…`, **ausserhalb des Messbaums**, und der
+  Lauf meldete Erfolg. **Das ist die Pfadidentitaet aus D-63 mit einem neuen Mitglied**, und
+  **kein projektrelatives Schreibverbot trifft sie** (`K-96`).
+- 🟢 **Die Importsteuerung wirkt, und jetzt ist es an der Menge gemessen** (**D-290**). In
+  **sieben** Laeufen im Baum ohne `config.json` laedt die Sitzung eine Anweisungsdatei aus
+  dem **Benutzerprofil**; in **sechzig** Laeufen mit `read_config_from.windsurf: false`
+  erscheint sie in **keiner** Mitschrift. ⚠️ **Der Kanal liegt ausserhalb jedes
+  Projektverzeichnisses** - die Datei war hier leer; **dass sie es bleibt, sagt niemand zu.**
+
+### Geaendert
+
+- `clients/devin-desktop/CLIENT_PACK.md` **0.12.0 → 0.13.0**: Steckbrief (Pruefdatum,
+  gepruefte Clientversion), Vorbemerkung, **zwei neue Zeilen der Pfadabbildung** (Skills,
+  die das Modell erreicht; Startwerkzeug fuer Unteragenten), Vorbemerkung des B-Blocks,
+  Zeilen `R6`, `S3`, `B3`, `B10`, `A1`, Zusammenfassung der Durchsetzungstiefe
+  (`[TEXTUELL]` 15 → 14, `[NICHT ABBILDBAR]` 1 → **2**), Abschnitt 4, Belegstand
+  (**9 → 5** offene Marker), Aenderungsverlauf.
+- `clients/devin-desktop/manifest.json`: `agent_start_tools` **`[]` → `["run_subagent"]`**,
+  `agent_start_tools_absent` geleert, Anmerkung neu geschrieben. **Pruefung 34 hat den
+  Widerspruch gemeldet, sobald `A1` seinen Marker verlor** - eine Zusage ohne Werkzeugnamen.
+- `tests/erhebungen/lauf-dd.py`, `tests/erhebungen/auswerten-dd.py` **neu**;
+  `tests/erhebungen/README.md` ergaenzt.
+- `governance/DECISION_LOG.md`: **D-276** bis **D-290**, `K-92` bis `K-96`.
+- `tests/protocols/2026-09-22-ap2-rest-devin-desktop.md` und
+  `tests/protocols/2026-09-22-wirkungsnachweise-0.86.0.md` neu.
+- `docs/ROADMAP.md`: Standzeile **Kriterium 1 = 22 → 18**, Zeile `~0.86.0` abgeschlossen.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner.** Es ist kein Artefakt der Laufzeitschicht angefasst worden; `install.py --update`
+schriebe nichts Neues. Die Regelmenge `framework/runtime/permissions.json` ist **unveraendert** -
+insbesondere bleibt `Fetch(*)` stehen (E2): Sie liegt werkzeugneutral im Kern und gilt fuer
+jeden Client; dass ein Client sie nicht abbilden kann, aendert ihren **Belegstand**, nicht
+die Zusage.
+
+### Bekannte Einschraenkungen
+
+- **Die Grenze der Einstufung `[TECHNISCH]` steht als Satz in der Vorbemerkung des B-Blocks,
+  und keine Pruefung setzt sie durch** (dieselbe Bauform wie `K-41`).
+- **Der interaktive Betrieb ist nicht gemessen** - weder fuer `ask`/`allow` noch fuer die
+  Rueckfrage eines Unteragenten.
+- **Belegt ist bei `A1` der Werkzeugbestand, nicht die Reichweite je Werkzeug.**
+- **`X2` bleibt dauerhaft offen** (`K-20`), und `K-92` bis `K-96` sind neu und unentschieden.
+
 ## [0.85.2] - 2026-09-22
 
 **Die neun Entscheidungen von `CR-2026-119` beantwortet - `E1` abgelehnt, `E2` bis `E9`

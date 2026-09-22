@@ -1,133 +1,157 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.85.2 (2026-09-22)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.86.0 (2026-09-22)
 
-> 🟢 **ZUERST LESEN: DIE NEUN ENTSCHEIDUNGEN SIND GEFALLEN – `E1` ABGELEHNT, `E2` BIS
-> `E9` ANGENOMMEN.** `CR-2026-119` ist am 2026-09-22 beantwortet und mit `0.85.2`
-> aufgezeichnet (**D-269** bis **D-275**). 🔴 **Die Umbenennung auf `Koolie` wird NICHT
-> vorgezogen:** D-127 bleibt unverändert – nach der letzten Messung, vor `AP11`. **Es ist
-> kein Pfad angefaßt worden.**
+> 🟢 **ZUERST LESEN: `AP2` IST ZU ENDE GEFAHREN. VIER VON FÜNF MARKERN SIND GEFALLEN,
+> KRITERIUM 1 STEHT AUF 18.** 70 Sitzungsläufe an einer Installation, siebzehn Meßbäume,
+> **0,4718 USD** (`CR-2026-120`, **D-276** bis **D-290**, `K-92` bis `K-96` neu).
+> ⚠️ **Die Kostenschätzung war um zwei Größenordnungen zu hoch**, und der Grund ist kein
+> Sparerfolg: Die Bündel-Meßtage messen **Skills** mit einem teuren Modell und langen
+> Sitzungen, dieser Meßtag mißt **Mechanismen** mit dem Modell des Free-Plans und Sitzungen
+> von drei bis dreißig Sekunden. *Der Mittelwert eines Meßtags gilt für die Gattung seines
+> Gegenstands, nicht für die nächste Gattung* – dieselbe Lehre wie `0.83.0`, mit umgekehrtem
+> Vorzeichen.
 >
-> ➡️ **DER NÄCHSTE SCHRITT IST DAMIT DER REST VON `AP2`** (`~0.86.0`), **und er kostet
-> Modellzeit:** vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und
-> die ungemessene Wirkung der Körbe `ask`/`allow`. **Danach die übrigen `VERIFY`-Marker
-> (`~0.87.0`), dann die Umbenennung (`~0.88.0`).**
+> ➡️ **DER NÄCHSTE SCHRITT IST `~0.87.0` – DIE ÜBRIGEN `VERIFY`-MARKER**, und er kostet
+> **kein Kontingent**: 18 Fundstellen in **14** Dateien, **davon genau eine im Pack
+> `devin-desktop`** (der Marker von `X2`). **Der Schritt endet mit der Abschaffung der
+> Markerform selbst** – Registerzeile, Glossarzeile und vier nur nennende Fundstellen –,
+> und erst damit geht auch `X2` von der Zahl ab: **Die Frage bleibt offen (`K-20`), die
+> Marke nicht.** **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen.**
+> Danach `~0.88.0`: die Umbenennung.
 >
-> 🔴 **WAS DIE ABLEHNUNG KOSTET, STEHT DA UND WIRD GETRAGEN:** Die Vorführung am **24.09.**
-> läuft unter dem alten Namen. 🟢 **Foliensatz und die vier Vorführstationen bleiben
-> unverändert** (`E9`, D-275) – Folien, Stationen und Rückfall-Belege zeigen jetzt
-> denselben Namen, es ist nichts nachzuziehen. **Die bevorstehende Umbenennung gehört
-> trotzdem im Vortrag gesagt.** *Erspart wird der Preis von `E1`: Der
-> Vorbedingungsdurchgang der `AP2`-Sitzung bleibt auf dem Baum gültig, auf dem er
-> gefahren wird.*
+> 🔴 **DER SCHWERSTE BEFUND DES TAGES: `--permission-mode dangerous` HEBT DEN `deny`-KORB
+> AUF** (**D-281**). `Read(.env)` wurde gelesen, `Exec(git push)` ausgeführt – **beide
+> stehen unter `_core_rules_integrity.deny_must_contain`**, also in der Liste, die das
+> Projekt nach dem eigenen Kommentar der Datei nicht entfernen darf. **Sie sind nicht
+> entfernt worden; sie sind von außen abgeschaltet worden, mit einem Schalter der
+> Kommandozeile, ohne die Datei anzufassen.** 🟢 **Und genau dort trägt die zweite Linie:**
+> Im selben Modus hat der Schutz-Hook denselben Lesezugriff blockiert. *Erste und zweite
+> Linie fallen unter verschiedenen Bedingungen – die empirische Rechtfertigung des Hooks
+> ist jetzt an dem Schalter gemessen, der sie auslöst.* ➡️ **Entschieden (E1):** Die
+> Einstufungen `[TECHNISCH]` bleiben, die Vorbemerkung des B-Blocks trägt die Grenze.
+> ⚠️ **Preis: Diesen Satz setzt keine Prüfung durch** (dieselbe Bauform wie `K-41`).
 >
-> 🟢 **`K-50` IST ZU** (`E2`, D-270): **Migrationshinweis mit benannter Dateiliste**, kein
-> maschineller Pfad. 🔴 **Die Fläche ist beim Nachzählen größer geworden: 30 Dateien mit 141
-> Nennungen**, nicht 27 – **die `.gitignore` beider Projekte und ein Glossareintrag fehlten
-> in der Liste des Antrags**, und der Eintrag auf `build/out` unter dem Kernverzeichnis
-> des Übungsrepositoriums ist ein **wirksames** Ausschlußmuster.
-> 🟢 **`K-75` (1) UND (2) SIND ZU** (`E4`/`E5`, D-272) – **und zwar abweichend vom
-> Vorschlag der Vorlage: `.koolie/core/`**, mit Punkt, und der Kern heißt darunter
-> `core/`. 🔴 **Damit verschiebt der Umbenennungslauf zusätzlich `project-overlay/`, und
-> `<CORE_DIR>` bekommt erstmals einen Schrägstrich** – jede Stelle, die ihn als einzelnes
-> Verzeichnissegment behandelt, bricht. ⚠️ **Und auch die 30 Dateien sind gegen eine
-> Umbenennung OHNE Umzug gezählt – vor dem Lauf wird erneut gezählt.**
+> 🟢 **`S3` TRÄGT – ABER NUR, WENN BEIDE FRONTMATTER-FELDER DIE EINSCHRÄNKUNG TRAGEN**
+> (**D-287**). **Sechs von sechs Läufen** mit einem aktiven Skill, der `edit` in
+> `allowed-tools` **und** `permissions` ausschließt, wurden abgewiesen; **acht von acht**
+> ohne diese Kombination liefen durch, und die Kontrolle ohne Skillaufruf im **selben** Baum
+> ebenfalls. 🔴 **Die Bedingung ist der eigentliche Messwert und steht in keiner Quelle:**
+> `allowed-tools` allein bleibt folgenlos, `permissions` allein ebenso. 🟢 **Alle dreizehn
+> ausgelieferten Skills führen beide Felder.** ⚠️ **Zwei Grenzen:** Die Abweisung nennt den
+> **Arbeitsbereich** als Grund, nicht den Skill – wer sie am Wortlaut zurechnet, rechnet sie
+> falsch zu –, und **ein Skill mit nur einem Feld bekommt keine Einschränkung und keine
+> Meldung** (`K-93`).
 >
-> 🔴 **DER UMBENENNUNGSLAUF BAUT PRÜFUNG 75** (`E3`, D-271) – sie meldet einen Restbestand
-> des alten Namens, mit der Chronik als **deklarierter** Ausnahmemenge. **Gebaut wird sie
-> IM Lauf und nicht davor:** Vorher meldete sie die 1.976 Fundstellen des Bestands und
-> stünde von ihrem ersten Lauf an rot – *eine Prüfung, die von Anfang an rot steht, wird
-> abgeschaltet statt gelesen.*
+> 🔴 **EIN MARKER IST ZUM SCHLECHTEREN GEFALLEN, UND DAS IST DAS ERGEBNIS UND KEIN MAKEL.**
+> **`B10`** (**D-279**): **Das Abrufwerkzeug heißt `webfetch`; `Fetch` ist kein
+> Werkzeugname dieses Clients.** Acht Läufe, sechs Bäume, drei Schreibweisen, drei
+> Betriebsmodi – **die Berechtigungsdatei erreicht den Kanal in keiner Richtung**, auch
+> nicht unter dem Laufzeitnamen. *Ein Argument kann nicht ausgewertet werden, wenn schon
+> der Werkzeugname nicht trifft.* Die Zeile geht auf `[NICHT ABBILDBAR]`.
 >
-> 🆕 **GITEA LEITET WEITER – UND DIE WEITERLEITUNG IST KEIN BESTANDSSCHUTZ** (`E8`,
-> D-274). **Gemessen** an einem eigens angelegten und danach wieder entfernten
-> Testrepositorium auf Gitea 1.27.3: Der alte Name antwortet mit **301** auf den neuen,
-> `git ls-remote` gegen die alte URL läuft durch. 🔴 **Sobald der alte Name neu belegt
-> wird, endet die Weiterleitung ohne jede Meldung** – die alte Adresse liefert dann ein
-> fremdes Repositorium. ➡️ **Der alte Repositoriumsname bleibt nach der Umbenennung
-> unbelegt, und die Remote-URL wird trotzdem sofort nachgezogen.** *Die Klammerbehauptung,
-> mit der die Frage vorgelegt wurde – „Gitea legt keine Weiterleitung an" –, war falsch;
-> jetzt ist sie gemessen.*
+> 🟢 **EINER IST ZUM BESSEREN GEFALLEN: `A1`** (**D-284**). Das `allowed-tools` eines
+> Subagentenprofils **bestimmt den Werkzeugbestand des Unteragenten** – das
+> Vollzugriffsprofil ruft `exec` und `write`, eine synthetische Sonde ohne `write` ruft
+> **kein** Werkzeug, und `fw-reviewer` verhält sich wie die Sonde. 🔴 **Der Beleg kommt
+> nicht aus der Mitschrift:** `--export` führt den Unteragenten **nicht** (**D-282**) –
+> gemessen über einen Aufzeichnungs-Hook mit Positivkontrolle. **Nebenbei erhoben:** Das
+> Startwerkzeug heißt `run_subagent`; das Manifest führte es seit `0.33.0` als *unerhoben*.
 >
-> 🟢 **DER VORRAT DES UMBENENNUNGSLAUFS BLEIBT GÜLTIG UND STEHT IN `CR-2026-119`:** 490
-> von 494 Dateien mit **einem** `git mv`, Textlauf **925 Fundstellen in 128 Dateien**
-> (Chronik ausgenommen, D-273, gemessen verträglich mit Prüfung 12), **43 Träger mit
-> `<CORE_DIR>`**, **304 Nennungen** in den Werkzeugen – davon 170 in
-> `probe-pruefungen.py`, überwiegend Suchtexte von Präparationen. ⚠️ **Die 304 zählen
-> `leitwerk` klein geschrieben; über alle Schreibweisen sind es 311** – ein Textlauf
-> allein auf den Pfad ließe 16 Nennungen des bloßen Namens stehen. 🔴 **Der Sondenlauf in
-> beiden Kodierungsumgebungen ist dort kein Formalakt:** Eine Sonde, deren Suchtext nicht
-> mehr trifft, verliert ihren Gegenstand, und nach D-23 gilt die Prüfung dann als nicht
-> vorhanden. ⚠️ **Alle Zahlen sind gegen `0.85.0` gezählt und altern mit jedem Release.**
+> 🟢 **UND EINER MIT BENANNTER GRENZE: `B3`** (**D-277**). `**/` trifft **null**
+> Verzeichnisse und **mehrere**, Präfixmuster wirken – 🔴 **aber die Muster unterscheiden
+> Groß- und Kleinschreibung:** `klein/notiz.secret` wird abgewiesen, `UNTEN/Notiz.SECRET`
+> nicht, **während NTFS beide Schreibweisen als dieselbe Datei führt.** *Eine Schranke, die
+> die Schreibweise unterscheidet, und ein Dateisystem, das sie nicht unterscheidet, ergeben
+> zusammen eine Schranke, an der man vorbeigeht, indem man anders tippt.* **Der Schutz-Hook
+> tut das Gegenteil** (Zeile `H4`) – das ist **`K-92`**.
 >
-> 🟢 **ZUERST LESEN: `K-62` IST ZU, UND KRITERIUM 1 IST ANGEFANGEN.** Die
-> Quellenzuordnung je Matrixzeile steht: **25 der 26 Zuordnungen hat der BESTAND
-> hergegeben** – die Quellenliste führt je Quelle, wofür sie herangezogen wurde, und das
-> ist eine Aufzeichnung und keine Schätzung. **Kein Kontingent, kein Lauf.**
-> ⚠️ **Kriterium 1 steht weiter auf 22.** `K-62` ist kein `VERIFY`-Marker; er ist die
-> **Vorbedingung**, unter der die übrigen billig werden.
-> ➡️ **DER NÄCHSTE SCHRITT IST DER REST VON `AP2`** (`~0.86.0`) – vier
-> sitzungsgebundene Marker von `devin-desktop` und die ungemessene Wirkung der Körbe
-> `ask`/`allow`. **Er kostet Modellzeit.**
+> 🔴 **DIE KÖRBE `ask` UND `allow` SIND GEMESSEN, UND DIE ANTWORT IST EINE ENTHALTUNG**
+> (**D-280**): Im nicht-interaktiven Betrieb sind sie **nicht von der Voreinstellung des
+> Clients zu unterscheiden** – `auto` weist jeden Schreibaufruf auch **ohne** Regel ab,
+> `accept-edits` läßt jeden auch **mit** Regel durch. 🟢 **Der `deny`-Korb dagegen ist
+> zurechenbar.** ⚠️ **Der interaktive Betrieb ist nicht gemessen und wird nicht
+> behauptet.** 🆕 **Und der Befund erklärt eine Falle, die seit `0.24.0` hier stand:**
+> *„Print-Modus endet gelegentlich ohne Ausgabe mit Exit 0."* **Das ist der `ask`-Korb**,
+> und die Standardfehlerausgabe sagt es wörtlich.
 >
-> 🔴 **DIE SECHSUNDZWANZIGSTE ZEILE BLEIBT AUSGESPROCHEN OFFEN, UND DAS IST DAS ERGEBNIS
-> UND KEIN REST.** `M3` bei `claude-code` (*„Freigabe auf die Sitzung begrenzbar"*):
-> **Keine der sechs Seiten führt die Sitzungs-Grant-Stufen**, während sie beim
-> Schwesterpack in `QD-11` stehen. `QC-2` wäre die naheliegende Zuordnung – *und genau
-> deshalb wäre sie geraten* (D-156). ➡️ **Damit hat der nächste Durchgang von
-> `FW-AK-01` seinen ersten gezielten Auftrag: eine Zeile gegen eine Seite statt 44 gegen
-> 22.** *`K-62` zahlt seinen Preis schon in der Sitzung, die ihn schließt.*
+> 🔴 **FÜNF BEFUNDE FIELEN VOR DEM ERSTEN LAUF – ZUM ELFTEN MAL IN FOLGE.** Der teuerste:
+> **Der Meßapparat kannte diesen Client nicht** (**D-276**). Dreißig Werkzeuge unter
+> `tests/erhebungen/`, **keines rief `devin.exe` auf**; die drei Belegquellen von `lauf.py`
+> gibt es bei diesem Client nicht. **Neu: `lauf-dd.py` und `auswerten-dd.py`, und ein
+> dritter gesagter Pfad – `LW_DEVIN`.** *Ein Apparat, der einen Meßgegenstand nie gesehen
+> hat, meldet sein Fehlen nicht; er meldet gar nichts.*
 >
-> 🔴 **DIE ZAHL 26 VON 44 WAR AUS ZWEI GRÜNDEN NICHT DIE RICHTIGE**, und beide Befunde
-> fielen beim Bau der Prüfung. (1) **Vier Zellen NENNEN die Marke `[DOK]`, ohne sie zu
-> tragen** (D-265): zwei erklären sie, zwei nennen sie in der Vergangenheit. **Das ist
-> der `VERIFY`-Marker eine Ebene tiefer** – auch dort zählen vier nur nennende
-> Fundstellen mit, und auch dort muß diese Trennlinie gezogen werden, bevor Kriterium 1
-> auf null gehen kann. *Hier ist sie zum ersten Mal maschinell gezogen: der **Belegkopf**
-> – die Zelle bis zum ersten Satzbruch.* (2) **Sieben Verweisbelege *„wie B3"* zählten in
-> keiner Richtung mit** (D-266), einer über zwei Glieder – während die Zusammenfassung
-> desselben Packs sie beim `VERIFY`-Marker sehr wohl mitzählt. **Zwei Zählregeln für
-> dieselbe Spalte. Nach der Kopfregel waren es 40 von 46.**
+> 🔴 **NEUN NACHBARVERZEICHNISSE UND DREI DATEIEN FEHLEN, UND ZWEI DAVON SIND BELEGE**
+> (**D-283**). `lw-tech/ap2-hook-aufzeichnung.jsonl` – diese Übergabe sagte darüber *„nicht
+> löschen – Beleg für `K-24`"* –, `leitwerk-erhebungen-2026-09-12/ap2-record.py` (der
+> Aufzeichnungs-Hook für das unbeobachtete `H3`), dazu `leitwerk-ed.py`,
+> `leitwerk-netztest-2026-09-17.py` und das Archiv `…-2026-09-17.md`; ein zehntes Verzeichnis
+> ist nur **umbenannt** (`leitwerk-review-2026-09-12/` → `review/`). ⚠️ **Die Zahl stand in
+> der ersten Fassung dieses Kopfes auf „sieben und zwei" und ist beim Durchgang vor dem
+> Commit auf neun und drei gestiegen** – vier weitere Belegablagen (`-2026-09-17`,
+> `-18-s3`, `-18-s4`, `-18-s5`) standen in der Statustabelle von Abschnitt 1 und waren
+> nicht mitgezählt. 🔴 **Und die Wirkung
+> fiel am selben Tag an:** Die Erhebung vom 2026-09-14 hat **25 Werkzeuge** gezählt, ihr
+> Protokoll nennt **sieben** – deshalb war der Laufzeitname des Abrufwerkzeugs im Haus nicht
+> auffindbar, und `B10` hatte keinen Gegenstand. ➡️ **Die Belege bleiben draußen (D-222
+> unverändert); was sich ändert, ist die Buchführung:** *Ein Protokoll, das einen Beleg
+> außerhalb des Repositoriums nennt, gibt seinen Inhalt so weit wieder, daß der Satz auch
+> ohne die Datei nachvollziehbar bleibt.* **Die Tabelle „Testumgebungen" in Abschnitt 6 ist
+> mit diesem Release berichtigt.**
 >
-> 🔴 **DER TEUERSTE BEFUND KOSTETE NICHTS UND STAND 73 RELEASES DA** (D-264). `M6` und
-> `M7` des Packs `devin-desktop` stehen hinter einer **Leerzeile** und sind damit **keine
-> Tabellenzeilen** – Markdown rendert sie als Absatz mit Strichen, im Pack **und im
-> Hauptdokument**. Die Leerzeile stammt aus `0.26.0`, **von genau dem Release, das die
-> beiden Zeilen angelegt hat**, weil `AP2-DD-03` gefunden hatte, daß zwei geregelte Modi
-> keine Matrixzeile haben. *Die Abhilfe gab ihnen eine Zeile, die keine Tabellenzeile
-> ist.* **Und die Zusammenfassung desselben Packs zählt sie mit** (`20 + 15 + 1 = 36`).
-> **72 Prüfungen, keine hat es gesehen** – auch die neue 73 nicht, weil sie die Zeile am
-> **Muster** erkennt und nicht am **Block**. Deshalb zwei Prüfungen, nicht eine.
+> 🔴 **NEUN DER ZWÖLF `fw-*`-SKILLS ERREICHEN DAS MODELL ÜBERHAUPT NICHT** (**D-288**). Die
+> Sitzung führt **drei** – genau die mit `triggers: user, model` – und **zwei eingebaute
+> Skills des Clients**. Das ist `K-57` für dieses Pack, **und schlimmer als dort:** Beim
+> Schwesterpack ist der gesperrte Skill über den Prompt erreichbar, hier meldet das Modell
+> ihn als nicht vorhanden. ⚠️ **`devin skills list` zeigt dagegen alle zwölf** – *eine
+> Auflistung, die etwas zeigt, was die Sitzung nicht sieht.* **Zwei Meßläufe sind daran
+> gescheitert, bevor der Befund sichtbar war.**
 >
-> 🔴 **ZWEI WEITERE BEFUNDE AN DER BELEGSPALTE.** `B10` bei `claude-code` belegte mit
-> `[DOK]` **gegen den eigenen Bestand** – Manifestfeld und erzeugte Datei –, während die
-> Marke *„in der Herstellerdokumentation beschrieben"* heißt (D-267). Und der Vorbehalt
-> `AP2-DD-09` zu Zeile `R2` bei `devin-desktop` stand seit `0.25.0` **allein im
-> Protokoll**, vierundsiebzig Releases lang (D-268): *Ein Beleg mit einem Vorbehalt, der
-> nicht danebensteht, ist ein Beleg ohne Vorbehalt.*
+> ⚠️ **DREI DINGE, DIE BEI DIESEM CLIENT ANDERS SIND UND DIE JEDE KÜNFTIGE MESSUNG
+> BETREFFEN.** (1) **Er ruft parallel auf, und die erste Abweisung storniert die übrigen**
+> (**D-286**) – *eine Sonde legt genau einen Gegenstand in einen Lauf*; acht Lesungen in
+> einem Prompt ergaben **sieben ohne Messwert**. (2) **Die Mitschrift führt einen
+> Unteragenten nicht** (**D-282**). (3) **Der Betriebsmodus entscheidet mit** und gehört in
+> jede Aussage darüber, was gemessen wurde.
 >
-> 🟢 **Kriterium 2 steht auf null** (`0.84.0`), alle 125 Zellen tragen `bestanden`.
+> 🆕 **EIN SCHREIBVORGANG HAT DAS PROJEKT VERLASSEN** (**D-285**): Ein Unteragent rief
+> `exec pwd` auf, bekam die MSYS-Antwort `/c/lw-ap2/…` und setzte `write` damit ab – die
+> Datei entstand unter `C:\c\lw-ap2\…`, **außerhalb des Meßbaums**, und der Lauf meldete
+> Erfolg. **Das ist die Pfadidentität aus D-63 mit einem neuen Mitglied**, und **kein
+> projektrelatives Schreibverbot trifft sie** (`K-96`).
+>
+> 🟢 **KRITERIUM 2 STEHT AUF NULL** (`0.84.0`), alle 125 Zellen tragen `bestanden`.
+> 🟢 **`K-62` ist zu** (`0.85.0`), 🟢 **`K-50` und `K-75` (1)+(2) sind zu** (`0.85.2`).
 >
 > ⚠️ **ZU ENTSCHEIDEN, UNVERÄNDERT: `K-84`.** Acht von dreizehn Skills tragen eine
 > Version, die ihre eigenen Meßbefunde erzeugt hat; die Anhebung von `role-re-ticket`
 > auf `0.1.4` hat vierzehn frisch abgenommene Zellen auf die Fassung davor gesetzt
 > (D-119). **Wörtlich angewandt ginge Kriterium 2 wieder aufwärts.** ⚠️ **Offen und
-> älter:** `K-85`, `K-86`.
+> älter:** `K-85`, `K-86`. 🆕 **Neu und unentschieden:** `K-92` (zwei Mustersemantiken in
+> zwei Schichten), `K-93` (welches Frontmatter-Feld trägt – **nicht trennbar, eine
+> Enthaltung**), `K-94` (der eingebaute Skill `upload-secrets` hat dieselbe Dateiklasse zum
+> Gegenstand, die `B3` schützt – **ungemessen**), `K-96` (die POSIX-Schreibweise).
 >
 > ⚠️ **DIE WURZEL-ANWEISUNGSDATEI HAT NOCH 90 ZEICHEN** bis zur Fehlergrenze von 12.000.
 > **Dieses Release hat sie nicht angefaßt.**
 >
-> 🔴 **VOR DEM ERSTEN HANDGRIFF AM MEßAPPARAT: `LW_ERHEBUNG` UND `LW_UEBUNG` SETZEN.**
-> Ohne sie bricht jedes Skript ab, das eine Belegablage oder das Übungsrepositorium
-> braucht (D-224, D-231).
+> 🔴 **VOR DEM ERSTEN HANDGRIFF AM MEßAPPARAT: `LW_ERHEBUNG` UND `LW_UEBUNG` SETZEN** –
+> und **für eine `devin-desktop`-Messung zusätzlich `LW_DEVIN`** (D-224, D-231, D-276).
+> Ohne sie bricht jedes Skript ab, das eine Belegablage, das Übungsrepositorium oder die
+> Agent-CLI braucht.
 >
 > 🟢 **Das Übungsrepositorium steht auf `0.84.0`** und ist von diesem Release nicht
 > berührt: **kein Artefakt der Laufzeitschicht angefaßt**, `install.py --update`
-> schriebe nichts Neues.
+> schriebe nichts Neues. **Auch die Regelmenge `permissions.json` ist unverändert** –
+> `Fetch(*)` bleibt stehen (E2).
 >
 > 🟢 **Eine Präsentation zum Framework ist verabredet:** gemischtes Publikum,
 > **Live-Vorführung mit Stützfolien**, Schwerpunkt *was das Framework im Alltag tut* und
 > *Sicherheit und Governance*. Foliensatz mit Drehbuch in den Sprechnotizen (Adresse in
 > `UEBERGABE.local.md`) – dreizehn Folien, vier Vorführstationen, **zu jeder Station ein
-> Rückfall aus den aufgezeichneten Belegen von Bündel 3**.
+> Rückfall aus den aufgezeichneten Belegen von Bündel 3**. ⚠️ **Für den Vortrag am 24.09.
+> ist `0.86.0` erheblich:** Die Station zu Sicherheit und Governance kann jetzt sagen, was
+> gemessen ist **und wo die Grenze liegt** – `dangerous`, die Mustersemantik, und daß die
+> zweite Linie genau dort trägt, wo die erste fällt.
 
 🔴 **Diese Datei liegt seit `0.78.1` IM Repositorium und wird mit dem Release-Commit
 versioniert** (D-216). *Bis `0.81.0` stand hier das Gegenteil – „liegt außerhalb,
@@ -136,12 +160,13 @@ Was nicht hierher darf, steht in **`UEBERGABE.local.md`** daneben: Adressen, Kon
 Servernamen. **Prüfung 67** rechnet die Titelzeile gegen `leitwerk-core/VERSION`, und
 eine Nummer eines Merge Requests gehört nicht hinein.
 
-> 📦 **Die ausgelagerten Fassungen liegen daneben, außerhalb des Repositoriums:**
-> `leitwerk-UEBERGABE-archiv-2026-09-17.md` (Releases `0.55.0` bis `0.73.0`, 2111
-> Zeilen) und `leitwerk-UEBERGABE-archiv-2026-09-21-buendel34.md` (die Abschnitte 0.25
-> bis 0.35, Bündel 3 und 4, mit `0.81.0` ausgelagert). **Wer die Herleitung einer Regel
-> sucht, findet sie dort oder im `CHANGELOG.md` des Releases; für die Arbeit selbst
-> genügt dieses Dokument.**
+> 📦 **Die ausgelagerte Fassung liegt daneben, außerhalb des Repositoriums:**
+> `leitwerk-UEBERGABE-archiv-2026-09-21-buendel34.md` (die Abschnitte 0.25 bis 0.35,
+> Bündel 3 und 4, mit `0.81.0` ausgelagert). 🔴 **Die zweite – `…-2026-09-17.md` mit den
+> Releases `0.55.0` bis `0.73.0`, 2111 Zeilen – gibt es nicht mehr** (am 2026-09-22
+> nachgesehen, D-283); diese Übergabe hat sie bis `0.85.2` als vorhanden geführt.
+> **Wer die Herleitung einer Regel sucht, findet sie im `CHANGELOG.md` des Releases;
+> für die Arbeit selbst genügt dieses Dokument.**
 
 ---
 
@@ -320,6 +345,139 @@ aussehen und an einem Präparationswächter hängen.
 | `0.78.2` | **`K-80` entschieden** | 🔴 **Ein einzelnes `CR` ohne folgenden `LF` nimmt git die Normalisierung** – 14 Träger, und es waren genau die 14, die git nicht normalisiert hat (D-217). **Prüfung 66** liest seither **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt. 🟢 **Die Übergabe steht seither im Release-Commit**, ohne Antragsnummer; **Prüfung 67** rechnet die Titelzeile gegen `VERSION` (D-216) |
 | `0.79.0` | **Meßtag Bündel 4**, 50 Läufe, 61,19 USD – **acht von neunzehn** | 🔴 **`HEAD` stand an allen 38 Bäumen auf `main`.** Der Vorbedingungsdurchgang hatte geprüft, ob der Branch **da** ist; der Lauf braucht, daß er **ausgecheckt** ist – *ein Vorhandensein belegt sich selbst, ein Zustand nicht* (D-218). 🔴 **`{ command: "git branch -D", prefix: "git branch" }` sperrt über sein Präfix auch das bloße Auflisten** – 25 Abweisungen in 23 von 50 Läufen; **Prüfung 68** (D-219). 🟢 **Der Zuschnitt braucht neben Vollständigkeit eine AUSRICHTUNG** (D-221). 🟢 **Der Meßapparat liegt seither versioniert im Kern** (D-222) |
 | `0.79.1` | Der Aufräumer stirbt an seiner Erfolgsmeldung | **Ein Werkzeug prüft seinen BERICHTSWEG in beiden Kodierungsumgebungen, nicht nur seinen Lauf** (D-223). Das Skript war nie in der zweiten gefahren; eines von siebzehn betroffen |
+
+---
+
+### 0.47 `0.86.0`: `AP2` zu Ende – vier Marker, 70 Läufe, 47 Cent
+
+> 🟢 **Kriterium 1: 22 → 18.** `CR-2026-120`, **D-276** bis **D-290**, `K-92` bis `K-96` neu.
+> **Fünf Befunde fielen vor dem ersten Lauf.**
+
+| Zeile | Gegenstand | Ergebnis | Record |
+|---|---|---|---|
+| **S3** | Wirkung additiver Skill-Permissions | 🟢 **die Zusage trägt** – aber **nur, wenn beide Felder sie tragen**; jedes allein bleibt folgenlos | **D-287** |
+| **B3** | Muster-Semantik der Pfadregeln | 🟢 **mit Grenze** – Groß-/Kleinschreibung wird unterschieden | **D-277** |
+| **B10** | Auswertung einer Domain-Angabe | 🔴 **zum Schlechteren** – das Werkzeug heißt `webfetch`, die Datei erreicht es nicht | **D-279** |
+| **A1** | Profilwirkung des Reviewprofils | 🟢 **zum Besseren** – `allowed-tools` bestimmt den Werkzeugbestand | **D-284** |
+| **X2** | Codebasis-Indexierung | **bleibt, dauerhaft** | `K-20` |
+| **Körbe `ask`/`allow`** | Wirkung | 🔴 **nicht unterscheidbar**, interaktiver Betrieb ausdrücklich nicht behauptet | **D-280** |
+
+#### 🔴 Der schwerste Befund, und er steht jetzt in der Vorbemerkung des B-Blocks
+
+**`--permission-mode dangerous` hebt den `deny`-Korb vollständig auf** (D-281): `Read(.env)`
+gelesen, `Exec(git push)` ausgeführt. **Beide Regeln stehen unter
+`_core_rules_integrity.deny_must_contain`** – der Liste, die das Projekt nach dem eigenen
+Kommentar der Datei nicht entfernen darf und die der Validator gegen die Kernquelle hält.
+**Sie sind nicht entfernt worden. Sie sind von außen abgeschaltet worden, ohne die Datei
+anzufassen.**
+
+> **Dieselbe Bauform wie `B9`, eine Ebene höher.** Dort hebt die Benutzerkonfiguration eine
+> projektseitige Verschärfung auf, hier ein Aufrufparameter. Die Lehre stand für das
+> Schwesterpack seit `0.41.0` in dieser Übergabe – *„für eine Messung keinen Bypass, sondern
+> eine `allow`-Liste"* –, **für dieses Pack war sie ungemessen.**
+
+🟢 **Und genau dort trägt die zweite Linie:** Lauf `H-D`, Baum nur mit dem Hook, Modus
+`dangerous` – der Schutz-Hook hat denselben Lesezugriff blockiert. *Erste und zweite Linie
+fallen unter verschiedenen Bedingungen; das ist die empirische Rechtfertigung des Hooks, und
+sie ist jetzt an dem Schalter gemessen, der sie auslöst.*
+
+#### 🔴 `B10` hatte keinen Gegenstand – gefunden, bevor ein Lauf lief
+
+Die Regel `Fetch(*)` nennt einen Werkzeugnamen, **den dieser Client nicht führt.** Der
+Laufzeitname – `webfetch` – **stand in keinem Träger des Repositoriums**: Die Erhebung vom
+2026-09-14 hat 25 Werkzeuge gezählt, ihr Protokoll nennt sieben, die vollständige Liste lag
+in einer gelöschten Ablage (D-283). **Acht Läufe über sechs Bäume, drei Schreibweisen
+(`Fetch(*)`, `Fetch(example.com)`, `webfetch`) und drei Betriebsmodi** liefern denselben
+Ausgang wie der leere Korb: Der Aufruf scheitert am **Betriebsmodus**, und der Client nennt
+in keinem Lauf eine Regel als Quelle.
+
+#### ⚠️ Drei Dinge, die bei diesem Client anders sind
+
+1. **Er ruft parallel auf, und die erste Abweisung storniert die übrigen** (D-286). Der erste
+   Meßlauf legte acht Lesungen in einen Prompt; **sieben hatten keinen Messwert**, und der
+   Antworttext hätte sie als sieben Abweisungen gemeldet. *Eine Sonde legt genau einen
+   Gegenstand in einen Lauf.*
+2. **Die Mitschrift führt einen Unteragenten nicht** (D-282). Ein Lauf meldete `GESCHRIEBEN`,
+   **und es gab keine Datei.** Abhilfe: ein `PreToolUse`-Hook, der **aufzeichnet und nichts
+   entscheidet**, mit Positivkontrolle – daran ist `A1` gefallen.
+3. **Der Betriebsmodus entscheidet mit** (D-280, D-281) und gehört in die Aufzeichnung jedes
+   Laufs.
+
+#### 🔴 Vier Abweisungsformen, und eine davon heißt „Permission denied", ohne eine zu sein
+
+Der erste Lauf der Reihe endete mit
+`Error: Agent error: Permission denied: We're currently facing high demand for this model.`
+– **eine Kapazitätsmeldung.** Ein Auswerter, der Abweisungen an dieser Zeichenfolge erkennt,
+hätte sie als gelungene Abweisung der Berechtigungsschicht gebucht (D-289). `auswerten-dd.py`
+unterscheidet seither `REGEL`, `HOOK`, `MODUS` und `STORNIERT` am **vollständigen** Wortlaut,
+und eine unbekannte Form ist ein **eigener** Ausgang.
+
+> ⚠️ **Und die Form `MODUS` sagt *„Tool execution was rejected by the user"* – obwohl kein
+> Mensch gefragt worden ist.** Wer sie wörtlich liest, schreibt einem Menschen eine
+> Entscheidung zu, die eine Voreinstellung getroffen hat.
+
+#### 🆕 Was nebenbei anfiel
+
+- 🔴 **Neun der zwölf Skills erreichen das Modell nicht** (D-288) – `K-57` für dieses Pack,
+  und schlimmer als dort. Zwei Meßläufe sind daran gescheitert. **Zwei eingebaute Skills des
+  Clients stehen dafür in jeder Sitzung**, einer davon (`upload-secrets`) mit genau der
+  Dateiklasse als Gegenstand, die `B3` schützt (`K-94`, ungemessen).
+- 🔴 **Ein Schreibvorgang hat das Projekt verlassen** (D-285): `/c/lw-ap2/…` unter MSYS wurde
+  als `C:\c\lw-ap2\…` geschrieben, außerhalb des Meßbaums, mit Erfolgsmeldung. **Die
+  Pfadidentität aus D-63 hat ein neues Mitglied** (`K-96`).
+- 🟢 **Die Importsteuerung wirkt, und jetzt an der Menge gemessen** (D-290): **sieben** Läufe
+  im Baum ohne `config.json` laden eine Anweisungsdatei aus dem Benutzerprofil, **sechzig**
+  mit `read_config_from.windsurf: false` laden sie nicht. ⚠️ Der Kanal liegt außerhalb jedes
+  Projektverzeichnisses; die Datei war leer, **und daß sie es bleibt, sagt niemand zu.**
+- 🔴 **Der Meßbaum `haupt` hat den Gegenstand verdeckt.** Zwei Läufe setzten **keinen einzigen
+  Werkzeugaufruf** ab, weil der Regeltext bei halb gefülltem Overlay auf Modus M1 erkannte.
+  *Die dritte Regel der Sitzungstests, zum zweiten Mal bestätigt – diesmal vom eigenen
+  Aufbau gebrochen: ein halb gefüllter Baum ist schlechter als ein leerer, weil er
+  widerspricht.*
+
+#### ⚠️ Der Durchgang vor dem Commit trägt sich zum dreißigsten Mal
+
+| Zahl | zuerst genannt | nachgezählt |
+|---|---|---|
+| Läufe mit Mitschrift | „65" | 🔴 **70** – elf Läufe kamen nach der ersten Bilanz, darunter die, die `S3` umgekehrt haben |
+| Kosten | „0,4276 USD" | 🔴 **0,4718 USD** – zweimal gestiegen, weil nach der ersten Bilanz noch elf Läufe kamen |
+| Läufe ohne Werkzeugaufruf | fünf | 🔴 **sechs** |
+| Kriterium 1 nachher | ~18 | 🟢 **18** |
+| Restfundstellen, Dateien | „13, keine im Pack" | 🔴 **14, und eine liegt im Pack** – der Marker von `X2` |
+| fehlende Nachbarverzeichnisse | „sieben" | 🔴 **neun**, dazu **drei** Dateien statt zwei |
+| Meßbäume | „zehn" | 🔴 **siebzehn** – gezählt am Laufwerk, nicht an der Tabelle, die sie gruppiert |
+| **`S3`: Läufe und Ausgang** | **„neun Läufe, in sieben lief `edit` durch"** | 🔴 **Es waren zehn und acht – und beim Nachsehen, welche zehn, fiel auf, daß der Auswerter eine fünfte Abweisungsform nicht kannte. Der Befund kehrt sich um: `S3` trägt** (D-287) |
+| Kontrollzählung sachfremde Anweisungsdatei | – | 🟢 **null** über alle 70 Mitschriften |
+
+> 🔴 **Die fünfte Zeile ist die teuerste, die dieser Durchgang je gefunden hat.** Die vorherigen neunundzwanzig Male hat er eine **Zahl** gerettet; hier hat er einen **Befund** gerettet – einen, der schon als Zeile im Pack, als Decision Record und als Changelogeintrag geschrieben war und der das Gegenteil des Gemessenen sagte. ➡️ *Wer eine Zahl über den eigenen Bestand nennt, zählt sie – und wenn die Zahl nicht hält, prüft er nicht die Zahl, sondern das Werkzeug, das sie erzeugt hat.*
+
+#### 🔴 Und der Abnahmelauf selbst ist einmal danebengegangen
+
+**Der Sondenlauf wurde nebenher gestartet**, als `CHANGELOG.md` und `VERSION` schon auf
+`0.86.0` standen und `UEBERGABE.md` noch auf `0.85.2`. **Prüfung 67 rechnet die Titelzeile
+gegen `VERSION`, und der Sondenapparat kopiert den Arbeitsbaum** – die Folge waren **92
+gescheiterte Einheiten, die alle dieselbe Ursache hatten** und keine einzige ihren
+Gegenstand betrafen.
+
+> *Ein Sondenlauf mißt den Baum, in dem er startet. Wer ihn nebenher fahren läßt, mißt den
+> Baum von vorhin.* **418 Sekunden zweimal statt einmal** – die Regel *„der Abnahmelauf
+> gegen den FERTIGEN Baum ist ein eigener Lauf"* steht seit `0.54.0` in Abschnitt 5 und ist
+> hier gebrochen worden, um Wanduhr zu sparen.
+
+#### 🔴 Wiederaufnahmepunkt: die übrigen `VERIFY`-Marker
+
+1. **`~0.87.0` – die übrigen 18 Marker**, verteilt auf **14 Dateien**, **davon genau eine im
+   Pack `devin-desktop`** (der Marker von `X2`). ⚠️ **Kostet kein Kontingent.** Der Schritt endet mit der Abschaffung
+   des Markers **selbst**: Registerzeile und Glossarzeile in `docs/PLACEHOLDER_REGISTRY.md`
+   zählen mit (Absicht, `CR-2026-070` E3), dazu die vier nur nennenden Fundstellen
+   (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`). **Ohne diesen Schritt
+   kann Kriterium 1 nicht auf null gehen.**
+2. **Danach `~0.88.0`** – die Umbenennung, mit dem Ablauf in zehn Schritten aus
+   `CR-2026-119` Abschnitt 5 und dem Umzug nach `.koolie/core/` (D-272). ⚠️ **Alle Zahlen
+   dort sind gegen `0.85.0` gezählt und vor dem Lauf erneut zu zählen** – dieses Release hat
+   zwei Träger des Packs und den Apparat angefaßt.
+3. ⚠️ **`K-84` bleibt zu entscheiden**, `K-85` und `K-86` ebenso; **neu und unentschieden
+   sind `K-92` bis `K-96`.**
 
 ---
 
@@ -1543,9 +1701,24 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.85.2**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.86.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
-Kodierungsumgebungen grün.
+Kodierungsumgebungen grün – **415 von 415 Einheiten**, je rund sieben Minuten Wanduhr.
+🔴 **Und er war es erst im dritten Anlauf:** Der erste lief gegen einen unfertigen Baum,
+der zweite meldete **sieben Sonden, die ihren Gegenstand verloren hatten** – genau an dem,
+was dieses Release aufgelöst hat (D-23; Wirkungsnachweis Abschnitt 2 und 2a). **Der
+Validator war bei allen sieben grün.**
+
+🟢 **`AP2` IST ZU ENDE GEFAHREN, UND KRITERIUM 1 STEHT AUF 18** (`0.86.0`): Vier von fünf
+Markern des Packs `devin-desktop` sind aufgelöst – **`S3` und `A1` zum Besseren,
+`B10` zum Schlechteren, `B3` mit benannter Grenze**; `X2` bleibt dauerhaft offen (`K-20`).
+**70 Sitzungsläufe, siebzehn Meßbäume, 0,4718 USD.** ⚠️ **Die Schätzung lag um zwei
+Größenordnungen zu hoch** – dieser Meßtag mißt **Mechanismen**, nicht **Skills**.
+
+🔴 **Der schwerste Befund: `--permission-mode dangerous` hebt den `deny`-Korb auf**
+(D-281), auch die Einträge unter `_core_rules_integrity`. 🟢 **Und genau dort trägt der
+Schutz-Hook** – gemessen im selben Modus. **Entschieden (E1):** `[TECHNISCH]` bleibt, die
+Vorbemerkung des B-Blocks trägt die Grenze; **keine Prüfung setzt sie durch.**
 
 🟢 **KRITERIUM 2 STEHT AUF NULL** – **125 Zellen im Bestand, keine offen**: 38 im
 zentralen Katalog und 87 in den dreizehn Testblättern. Die Kette ist zu Ende:
@@ -1580,9 +1753,11 @@ billig werden. 🔴 **Und die Zahl 26 von 44 war aus zwei Gründen nicht die ric
 vier Zellen **nannten** die Marke nur (D-265), sieben Verweisbelege zählten in keiner
 Richtung mit (D-266); nach der Kopfregel waren es **40 von 46**.
 
-🔴 **DER NÄCHSTE SCHRITT IST DER REST VON `AP2`** (`~0.86.0`, **kostet Modellzeit**).
-Danach die übrigen `VERIFY`-Marker samt Abschaffung des Markers selbst (`~0.87.0`) und
-**dann** die Umbenennung auf `Koolie` (`~0.88.0`, **kein Kontingent**).
+🔴 **DER NÄCHSTE SCHRITT IST `~0.87.0`: DIE ÜBRIGEN 18 `VERIFY`-MARKER**, verteilt auf
+**14 Dateien**, **davon genau eine im Pack `devin-desktop`** – und er **kostet kein
+Kontingent**. Er endet mit der Abschaffung des Markers **selbst** (Registerzeile,
+Glossarzeile, vier nur nennende Fundstellen); ohne ihn kann Kriterium 1 nicht auf null
+gehen. **Dann** die Umbenennung auf `Koolie` (`~0.88.0`, **kein Kontingent**).
 
 🟢 **Die Reihenfolge steht wieder so, wie D-127 sie gesetzt hat** – die mit `CR-2026-119`
 beantragte Vorziehung ist am 2026-09-22 **abgelehnt** worden (`E1`, **D-269**). ⚠️ **Der
@@ -1593,9 +1768,18 @@ Namen. 🟢 **Der gemessene Vorrat des Umbenennungslaufs bleibt gültig** und st
 
 ⚠️ **Offen und benannt:** **`K-84`** (acht von dreizehn Skills tragen eine Version, die
 ihre eigenen Meßbefunde erzeugt hat – **durch `0.84.0` größer geworden**, weil
-`role-re-ticket` auf `0.1.4` steht), `K-85`, `K-86`. 🟢 **Geschlossen mit `0.84.0`:**
-`K-59`, `K-88`, `K-89`, `K-90`, `K-91`; **mit `0.85.0`:** `K-62`; **mit `0.85.2`:** `K-50`
-und die beiden fristgebundenen Fragen von `K-75` (D-270, D-272).
+`role-re-ticket` auf `0.1.4` steht), `K-85`, `K-86`. 🆕 **Neu aus `0.86.0` und
+unentschieden:** **`K-92`** (der Schutz-Hook prüft Pfadmuster ohne Rücksicht auf Groß-
+und Kleinschreibung, die Berechtigungsschicht **mit** – dieselbe Zusage, zwei Semantiken;
+betrifft auch das Schwesterpack, dort **ungemessen**), **`K-93`** (welches der beiden
+Frontmatter-Felder trägt – **nicht trennbar, weil keines wirkt; eine Enthaltung, keine
+Zahl**), **`K-94`** (der eingebaute Skill `upload-secrets` hat dieselbe Dateiklasse zum
+Gegenstand, die `B3` schützt – **ungemessen**, und er schickt Daten an einen fremden
+Dienst, also braucht die Messung eine eigene Freigabe nach D-34), **`K-96`** (die
+POSIX-Schreibweise `/c/…` verläßt das Projekt, und kein Schreibverbot trifft sie).
+🟢 **Geschlossen mit `0.84.0`:** `K-59`, `K-88`, `K-89`, `K-90`, `K-91`; **mit `0.85.0`:**
+`K-62`; **mit `0.85.2`:** `K-50` und die beiden fristgebundenen Fragen von `K-75`
+(D-270, D-272).
 
 **Drei Releases an einem Tag:**
 
@@ -1638,18 +1822,19 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.85.2**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.86.0**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.84.0` gehoben** (2026-09-22, `0.84.0`), Overlay **`0.84.0`** – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
 | Meßbäume Bündel 5 | `C:\lw-b5` | *(nach der Abnahme entfernt)* – 30 Zellbäume und sieben Basen, aus `umgebungen-bauen-b5.py` und `baeume-b5.py` in rund zwanzig Minuten neu baubar |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
-| Belege 0.54.0 | `devpacks/leitwerk-erhebungen-2026-09-17/` | 73 Belegdateien, acht Skripte, sechzehn Prompts, eigene README |
-| Belege 0.58.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s3/` | elf Läufe, sieben Skripte, fünf Prompts, eigene README |
-| Belege 0.66.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s5/` | **dreißig Läufe**, einundzwanzig Bäume, elf Skripte, zehn Prompts, eigene README |
+| ~~Belege 0.54.0~~ | 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-17/`~~ | **WEG** (am 2026-09-22 nachgesehen, D-283). Darin lag auch `skripte/trust.py`, das Abschnitt 3 als Aufräumskript nennt |
+| ~~Belege 0.58.0~~ | 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-18-s3/`~~ | **WEG** (D-283) |
+| ~~Belege 0.66.0~~ | 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-18-s5/`~~ | **WEG** (D-283) |
 | Belege Bündel 4 | `devpacks/leitwerk-erhebungen-2026-09-19-b4/` | 🔴 **203 Belegdateien aus 50 Läufen (61,19 USD), unversioniert** – und neunzehn Dossiers. 🟢 **Der Apparat liegt seit `0.79.0` im Repositorium** (`leitwerk-core/tests/erhebungen/`, D-222); die Skripte, die hier noch liegen, sind der Stand des Meßtags |
 | Belege des Nachlaufs | `devpacks/leitwerk-erhebungen-2026-09-20-b4n/` | 🟢 **Angelegt mit `0.80.0`: 125 Belegdateien, rund 16 MB, unversioniert** – dazu die Dossiers und `WIEDERAUFNAHME.md`. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224); ohne die Angabe bricht jedes Skript des Apparats ab |
-| Belege 0.59.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s4/` | **zwanzig Läufe** (zwölf gewertet, acht in drei Verworfen-Ablagen), neun Skripte, sechs Prompts |
+| ~~Belege 0.59.0~~ | 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-18-s4/`~~ | **WEG** (D-283) |
+| 🟢 Belege `AP2`-Rest | `devpacks/leitwerk-erhebungen-2026-09-22-ap2/` | **Angelegt mit `0.86.0`: 333 Dateien** – 70 Mitschriften mit Werkzeugaufrufen, Prompts, ein verworfener Lauf unter `verworfen/`, **unversioniert** |
 
 **Abnahme:** Der Prüfapparat steht bei **74**, Sondenmenge **`6, 14 und 18 bis 74`** – ausgerechnet, nicht gepflegt. **302 Einheiten**, Laufzeit rund **410 s** Wanduhr auf 8 Bahnen (Faktor 7,9). ⚠️ **Diese Zeile stand bis `0.85.2` auf 67 Prüfungen, 243 Einheiten und 300 s** – drei Releases alt; die Zahlen sind am 2026-09-22 aus dem Lauf selbst genommen. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt.* 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
 
@@ -1685,9 +1870,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-120`** |
-| Decision Record | **`D-276`** |
-| Klärungspunkt | **`K-92`** – 🟢 weiterhin ungenutzt; `0.85.0` hat `K-62` geschlossen und keinen neuen aufgeworfen |
+| Änderungsantrag | **`CR-2026-121`** |
+| Decision Record | **`D-291`** |
+| Klärungspunkt | **`K-97`** – ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **eine der sechs belegten synthetischen Kennungen**, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
@@ -1698,7 +1883,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 `UEB-28` längst vergeben waren. **Eine Zahl, die gepflegt werden muß, wird nicht
 gepflegt.** Wer sie braucht, zählt sie: `grep -o 'D-[0-9]\{3\}' governance/DECISION_LOG.md | sort -u | tail -1`.
 
-**Belegte synthetische Kennungen – nie echt vergeben:** `G-99`, `UEB-97`, `UEB-98`, `UEB-99`, `K-99`, `K-95`. 🔴 **Sie stehen seit 0.60.0 IM REPOSITORIUM** – in einem Absatz des Decision Logs, aus dem Prüfung 50 ihre Ausnahmemenge ableitet. `K-95` ist zusammengesetzt (`"K-" + "95"`), weil eine wörtliche Nennung im Prüfapparat selbst ein Befund von Prüfung 50 wäre.
+**Belegte synthetische Kennungen – nie echt vergeben:** `G-99`, `UEB-97`, `UEB-98`, `UEB-99`, `K-99`, `K-96`. 🔴 **Sie stehen seit 0.60.0 IM REPOSITORIUM** – in einem Absatz des Decision Logs, aus dem Prüfung 50 ihre Ausnahmemenge ableitet. `K-96` ist zusammengesetzt (`"K-" + "95"`), weil eine wörtliche Nennung im Prüfapparat selbst ein Befund von Prüfung 50 wäre.
 🔴 **`UEB-08` war bis 0.58.0 die synthetische Kennung der Gegenprobe 44b und ist jetzt
 echt.** Die Gegenprobe steht auf `UEB-97`. **Eine synthetische Kennung nimmt nie die nächste
 freie** – sonst kollidiert sie beim ersten echten Bedarf.
@@ -1715,7 +1900,7 @@ Wer die Zahlen wissen will, führt den Validator aus – hier stehen sie als Mom
 
 | # | Kriterium | Stand | Woran es hängt |
 |---|---|---|---|
-| 1 | kein unbearbeiteter `VERIFY`-Marker | **22** ⬇ | Fünf Zeilen der Fähigkeitsmatrix von `devin-desktop` (S3, B3, B10, A1 sitzungsgebunden; **X2 dauerhaft unbeobachtbar**, `K-20`), plus Fundstellen der übrigen Träger. **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0“ vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan.** 🟢 **Die Trennlinie zwischen tragender und nur nennender Fundstelle steht seit `0.85.0`** – Prüfung 73 zieht sie an der Belegspalte (D-265) |
+| 1 | kein unbearbeiteter `VERIFY`-Marker | **18** ⬇ | 🟢 **`AP2` ist mit `0.86.0` zu Ende gefahren** – vier Marker des Packs `devin-desktop` sind aufgelöst (`S3`, `B3`, `B10`, `A1`; `CR-2026-120`, D-277 bis D-287). **`X2` bleibt dauerhaft offen** (`K-20`): Was ein Client indexiert, ist von außen nicht zu beobachten. **Was bleibt, sind 18 Fundstellen in 14 Dateien – davon genau eine in diesem Pack: der Marker von `X2`, und er geht erst, wenn die Markerform selbst abgeschafft wird.** **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0" vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan** und ist jetzt der nächste. 🟢 **Die Trennlinie zwischen tragender und nur nennender Fundstelle steht seit `0.85.0`** – Prüfung 73 zieht sie an der Belegspalte (D-265) |
 | 2 | Testkatalog ohne `offen` | **0 ✅** – **85 → 0**, zuletzt `5 → 0` mit `0.84.0` | 🟢 **Erfüllt mit `0.84.0`.** Alle 38 Zellen des zentralen Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden`. **Die Kette:** `111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0` – sechs Meßtage, ein Nachlauf je Bündel 4 und 5, und **ein Schritt aufwärts, der Absicht war** (`0.79.2`, D-227). 🔴 **Was ein `bestanden` sagt und was nicht:** daß das Verhalten eingetreten ist, nicht daß das Framework es bewirkt hat (D-115) – die Zurechnung trägt der Kontrollauf; es nennt das gemessene Client Pack **mit Produktstand** (D-117, D-202), und bei einem Schranken-Testfall weist die Zelle je Schicht aus, was belegt ist (D-122). ⚠️ **`K-84` ist offen:** Acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt hat; wörtlich angewandt ginge der Zähler wieder aufwärts |
 | 3 | alle Modulstatus über `entwurf` | **0 ✅** | Erfüllt mit 0.53.0. 77 von 77 Trägern auf `pilot`, vier Vorlagen mit Ausfüllschlitz |
 | 4 | keine Decision Records `entschieden (Vorschlag)` | **0 ✅** | Erfüllt mit 0.49.0 |
@@ -1744,8 +1929,7 @@ Läufe je Arbeitssitzung.
 nichts – und seit dem 17.09. auch nicht mehr **außerhalb**: Die alten
 Arbeitsverzeichnisse unter `%TEMP%` (`lw-inst-*`, `lw-sonde-*`, `lw-nur32-*`) sind
 gelöscht (sechs Stück), ebenso die **drei Altlasten** in `~/.claude.json`, die seit
-dem 13.09. auf ein längst gelöschtes Scratchpad zeigten. **Aufräumskript für die
-nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
+dem 13.09. auf ein längst gelöschtes Scratchpad zeigten. 🔴 **Das hier genannte Aufräumskript gibt es nicht mehr** – `leitwerk-erhebungen-2026-09-17/` ist weg (D-283); im Kern steht `tests/erhebungen/trust-b5.py`. ⚠️ **Und eine vierte Altlast lag noch in `~/.claude.json`** – ein Vertrauenseintrag auf ein Verzeichnis, das es nicht gibt; mit `0.86.0` entfernt.
 
 | # | Was | Aufwand | Wirkung auf D-11 |
 |---|---|---|---|
@@ -1755,9 +1939,9 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0e** | 🟢 **ERLEDIGT mit `0.84.0`** – **Die vier Sammelzellen des zentralen Katalogs und der Nachlauf von `RE-001-P05`** (`CR-2026-117`, D-252 bis D-261; `K-59`, `K-88`, `K-89`, `K-90`, `K-91` geschlossen): **acht Befunde, sieben ohne Kontingent.** 🔴 **Beide Preise, die `K-59` vertagt haben, waren gemessen falsch** – die Ausnahme steht seit `0.32.0` in zehn Dateien jeder Installation, und die **Schreibseite** von G-11 stand in **keiner** der sechs Fassungen. ⚠️ **3,18 USD statt der gerechneten 2,70**, zum zweiten Mal in Folge über der Schätzung (D-260) | eine Sitzung, zwei Läufe | **Kriterium 2: 5 → 0 ✅** |
 | **0f** | 🟢 **ERLEDIGT mit `0.85.0`** – **Die Quellenzuordnung je Matrixzeile** (`CR-2026-118`, D-263 bis D-268, `K-62` geschlossen, **Prüfungen 73 und 74**): **25 der 26 Zuordnungen hat der Bestand hergegeben**, die sechsundzwanzigste (`M3` bei `claude-code`) bleibt **ausgesprochen offen** und ist der erste gezielte Auftrag an `FW-AK-01`. 🔴 **Die Zahl war aus zwei Gründen nicht die richtige** – vier Zellen nannten die Marke nur (D-265, **die Bauform der nur nennenden `VERIFY`-Fundstellen**), sieben Verweisbelege zählten nicht mit (D-266); nach der Kopfregel **40 von 46**. 🔴 **Der teuerste Befund stand 73 Releases da:** `M6` und `M7` bei `devin-desktop` sind hinter einer Leerzeile **keine Tabellenzeilen** mehr, während die Zusammenfassung sie mitzählt (D-264) | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
 | **0g** | 🟢 **ERLEDIGT mit `0.85.2`** – **Die neun Entscheidungen von `CR-2026-119`** (D-269 bis D-275; `K-50` geschlossen, `K-75` (1) und (2) entschieden): 🔴 **`E1` abgelehnt** – die Umbenennung wird **nicht** vorgezogen, D-127 gilt unverändert. **`E2` bis `E9` angenommen**, `E4`/`E5` abweichend als **`.koolie/core/`**. 🆕 **Der einzige neue Meßwert:** Gitea **legt** eine Weiterleitung an (301, `git ls-remote` läuft durch) – **und sie endet lautlos, sobald der alte Name neu belegt wird** (D-274). **Kein Pfad angefaßt** | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
-| **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.86.0** | 1–2 Sitzungen | **Kriterium 1: von 22 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen** (`K-20`). ⚠️ **Vor dem Lauf: die Vorbedingungen der Klasse durchgehen** – zehnmal in Folge der billigste Befund des Releases |
-| **2** | **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** – laut Releaseplan **~0.87.0** | eine Sitzung **nach Nr. 2** | Rest von Kriterium 1. 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0“ vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
-| **3** | 🔴 **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.88.0**, **nach Nr. 2 und vor `AP11`** (D-127, Vorziehung abgelehnt mit D-269) | eine Sitzung, **kein Kontingent** | –. **Der Ablauf steht in zehn Schritten** (`CR-2026-119` Abschnitt 5), **der Umfang ist gemessen:** 490 von 494 Dateien mit **einem** `git mv`, Textlauf **925 Fundstellen in 128 Dateien** (Chronik ausgenommen, D-273), **43 Träger mit `<CORE_DIR>`**, **304 Nennungen** in den Werkzeugen. 🔴 **Der Kern zieht zugleich nach `.koolie/core/`** (D-272) – `<CORE_DIR>` bekommt erstmals einen Schrägstrich. **Beide übernehmenden Projekte werden danach gehoben und nach D-270 von Hand migriert** (**30 Dateien, 141 Nennungen**, Stand 2026-09-22 – vor dem Lauf erneut zu zählen). 🆕 **Der Lauf baut Prüfung 75** (D-271), und das Repositorium wird **nach** dem Merge umbenannt (D-274) |
+| **0h** | 🟢 **ERLEDIGT mit `0.86.0`** – **Der Rest von `AP2`** (`CR-2026-120`, **D-276** bis **D-290**, `K-92` bis `K-96` neu): **vier von fünf Markern aufgelöst**, 70 Sitzungsläufe, siebzehn Meßbäume, **0,4718 USD** – zwei Größenordnungen unter der Schätzung, weil dieser Meßtag **Mechanismen** mißt und nicht **Skills**. 🟢 **`S3` und `A1` zum Besseren** (die Skill-Felder wirken – **aber nur gemeinsam**; das Subagentenprofil bestimmt den Werkzeugbestand), 🔴 **`B10` zum Schlechteren** (das Abrufwerkzeug heißt `webfetch`, und die Berechtigungsdatei erreicht es in keiner Richtung), 🟢 **`B3` mit benannter Grenze** (Groß-/Kleinschreibung). 🔴 **Der schwerste Befund: `--permission-mode dangerous` hebt den `deny`-Korb auf** – **und genau dort trägt der Schutz-Hook.** 🔴 **Fünf Befunde fielen vor dem ersten Lauf**, darunter: **der Meßapparat kannte diesen Client nicht** (D-276) | eine Sitzung, **0,47 USD** | **Kriterium 1: 22 → 18** |
+| **1** | **Die übrigen `VERIFY`-Marker** – laut Releaseplan **~0.87.0** | eine Sitzung, **kein Kontingent** | **Rest von Kriterium 1: 18 → 0.** **18 Fundstellen in 14 Dateien**, davon genau eine im Pack `devin-desktop` (der Marker von `X2`). 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0" vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
+| **2** | 🔴 **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.88.0**, **nach Nr. 1 und vor `AP11`** (D-127, Vorziehung abgelehnt mit D-269) | eine Sitzung, **kein Kontingent** | –. **Der Ablauf steht in zehn Schritten** (`CR-2026-119` Abschnitt 5), **der Umfang ist gemessen:** 490 von 494 Dateien mit **einem** `git mv`, Textlauf **925 Fundstellen in 128 Dateien** (Chronik ausgenommen, D-273), **43 Träger mit `<CORE_DIR>`**, **304 Nennungen** in den Werkzeugen. 🔴 **Der Kern zieht zugleich nach `.koolie/core/`** (D-272) – `<CORE_DIR>` bekommt erstmals einen Schrägstrich. **Beide übernehmenden Projekte werden danach gehoben und nach D-270 von Hand migriert** (**30 Dateien, 141 Nennungen**, Stand 2026-09-22 – vor dem Lauf erneut zu zählen). 🆕 **Der Lauf baut Prüfung 75** (D-271), und das Repositorium wird **nach** dem Merge umbenannt (D-274) |
 
 ### Prüfkandidaten – bewusst **nicht** der nächste Schritt (bewegen keine Zahl)
 
@@ -1816,7 +2000,7 @@ Rest von B04/B05 (technische Durchsetzung für Shell und Unterprozess).
 
 - **Kein Lauf mit einem echten Framework-Skill.** Gemessen ist der Mechanismus mit einer
   synthetischen Sonde, nicht ein installierter `fw-*`-Skill in einer Sitzung.
-- **Die Wirkung der Skill-`permissions` bei `devin-desktop` ist unerhoben** (`drop_fields: []`).
+- 🟢 **ERLEDIGT mit `0.86.0`: Die Wirkung der Skill-`permissions` bei `devin-desktop` ist erhoben** – und sie ist **keine** (D-287). Was bleibt, ist `K-93`: welches der beiden Felder trüge sie, wenn eines wirkte. **Nicht trennbar, eine Enthaltung.**
 - **`<READ_ONLY_PATHS>` wird nicht in die Berechtigungsdatei abgebildet** – die Kategorie ist rein
   textuell; offen, ob sie eine Abbildung braucht.
 - **Kein Lauf gegen ein Projekt mit ausgefüllter `<EXCLUDED_PATHS>`-Liste.**
@@ -1829,7 +2013,7 @@ Rest von B04/B05 (technische Durchsetzung für Shell und Unterprozess).
 - **Kein vollständiger Übernahmelauf** (Kandidatenprüfung → Aktivierung → Nachprüfung in einem
   fremden Projekt).
 - **Symbolische Verknüpfungen unter Linux/macOS sind nicht gemessen** (NTFS-Junctions sind es).
-- **H3 ist unbeobachtet.** Aufzeichnungs-Hook: `devpacks/leitwerk-erhebungen-2026-09-12/ap2-record.py`.
+- **H3 ist unbeobachtet**, und 🔴 **der Aufzeichnungs-Hook, den diese Zeile nannte, gibt es nicht mehr** (`devpacks/leitwerk-erhebungen-2026-09-12/ap2-record.py`, D-283). 🟢 **Ersatz ist gebaut und gemessen:** ein `PreToolUse`-Hook mit `matcher: ".*"`, der **aufzeichnet und nichts entscheidet**, mit Positivkontrolle – `0.86.0` hat `A1` damit belegt. Der Aufbau steht in Abschnitt 6.
 - **Abgleich Quell-Overlay ↔ Laufzeitfassung** offen (`CR-2026-044` E4); geprüft wird nur der Status.
 - **Gegenzeichnung der Protokolle:** zwölf mit offenem Abschnitt, **fünf ganz ohne** (`FW-DS-03`,
   `FW-KO-01`, `FW-KO-04`, `FW-RE-02`, `FW-ZA-05`).
@@ -1891,8 +2075,9 @@ ist Pflichtpfad, ohne dass der Übernahmeleitfaden es erwähnt; das Secret-Muste
   Suchtext; geht er verloren, besteht sie **leise**. Prüfungen 28, 29 und 31 melden das Fehlen ihres
   Ankers selbst als Fehler, je eine Sonde belegt es.
 - **Je Pack laufen lassen, wo eine Installation im Spiel ist** (B02).
-- **Der Abnahmelauf gegen den FERTIGEN Baum ist ein eigener Lauf** – die Läufe, die das Protokoll
+- 🔴 **Der Abnahmelauf gegen den FERTIGEN Baum ist ein eigener Lauf** – die Läufe, die das Protokoll
   beschreiben, laufen zwangsläufig ohne das Protokoll.
+  ⚠️ **Mit `0.86.0` einmal gebrochen und sofort bezahlt:** Der Sondenlauf wurde nebenher gestartet, als `VERSION` schon auf `0.86.0` stand und die Übergabe noch auf `0.85.2`; **Prüfung 67 rechnet die Titelzeile gegen `VERSION`, und der Sondenapparat kopiert den Arbeitsbaum** – **jede Gegenprobe meldete zwei Fehler, die nichts mit ihrem Gegenstand zu tun hatten**, und der Durchgang endete mit Exit 1. *Ein Sondenlauf mißt den Baum, in dem er startet; wer ihn nebenher fahren läßt, mißt den Baum von vorhin.* **418 Sekunden zweimal statt einmal.**
 - **Laufzeiten stehen unterhalb der Trennlinie** (D-94) und sind nicht Teil des zeilengleichen
   Vergleichs – sonst ändert der Eintrag der Laufzeit die Endfassung, die er misst.
 
@@ -2305,6 +2490,69 @@ gehört die **Aufzählung** ins Protokoll und die Zahl nicht; wo sie eindeutig i
   `find_file_by_name`, `write`, `skill`; zur Laufzeit heißt das glob-förmige Werkzeug
   `find_file_by_name`. Bei `claude-code` fallen beide zusammen.
 
+#### 🟢 Der Meßapparat kennt diesen Client seit `0.86.0` – vorher nicht
+
+**Gefunden im Vorbedingungsdurchgang des `AP2`-Restes** (D-276): **Kein Werkzeug unter
+`tests/erhebungen/` rief `devin.exe` auf.** Neu sind **`lauf-dd.py`** (ein Lauf, alle
+Belegquellen) und **`auswerten-dd.py`** (`--bilanz` zählt Läufe, Token, Kosten).
+**Ein dritter Pfad wird gesagt: `LW_DEVIN`.**
+
+```
+set LW_DEVIN=C:\...\AppData\Local\devin\cli\bin\devin.exe      # SYNTHETISCH
+python lauf-dd.py <kennung> <baum> <promptdatei> [--korbmodus accept-edits]
+python auswerten-dd.py --bilanz
+```
+
+#### 🔴 Drei Dinge, die jede Messung an diesem Client betreffen
+
+1. **Er ruft parallel auf, und die erste Abweisung storniert die übrigen** (D-286).
+   *Eine Sonde legt genau einen Gegenstand in einen Lauf.* Acht Lesungen in einem Prompt
+   ergaben **sieben ohne Messwert** – und der Antworttext hätte sie als sieben Abweisungen
+   gemeldet.
+2. **Die Mitschrift führt einen Unteragenten nicht** (D-282). `run_subagent` steht darin,
+   seine Werkzeugaufrufe nicht. **Abhilfe, gemessen:** ein `PreToolUse`-Hook mit
+   `matcher: ".*"`, der **aufzeichnet und nichts entscheidet**, dazu eine Positivkontrolle
+   mit einem direkten Aufruf. Daran ist `A1` gefallen – und derselbe Baum hat gezeigt, daß
+   Schutz-Hook und `deny`-Korb einen Unteragenten **erfassen**.
+3. **Der Betriebsmodus entscheidet mit** (D-280, D-281) und gehört in jede Aussage darüber,
+   was gemessen wurde. `auto` weist **jeden** nicht nur lesenden Aufruf ab – auch ohne jede
+   Regel –, `accept-edits` läßt Schreibzugriffe durch, `dangerous` **hebt den `deny`-Korb
+   auf**. ➡️ **Wer eine Schranke mißt, fährt `auto` und `accept-edits` gegeneinander**;
+   `dangerous` ist kein Meßmodus, sondern ein Meßgegenstand.
+
+#### 🔴 Vier Abweisungsformen, und sie sagen Verschiedenes (D-289)
+
+| Form | Wortlaut (gekürzt) | Was sie bedeutet |
+|---|---|---|
+| `REGEL` | *„denied by a deny rule in the project settings"* | die Berechtigungsschicht, **und sie nennt die Quelle selbst** |
+| `HOOK` | `Tool rejected: {"decision": "block", "reason": …}` | der Schutz-Hook, mit seinem Grund |
+| `MODUS` | *„Tool execution was rejected by the user"* | 🔴 **der Betriebsmodus – obwohl kein Mensch gefragt worden ist** |
+| `STORNIERT` | *„canceled because another tool call … was rejected"* | **kein Messwert**, sondern ein Fehlbestand |
+
+> 🔴 **Und eine fünfte sieht aus wie eine Abweisung und ist keine:**
+> `Error: Agent error: Permission denied: We're currently facing high demand for this model.`
+> – **eine Kapazitätsmeldung.** Sie ist wiederholbar (`retryable: true`); der Lauf gehört
+> verworfen, nicht gebucht. **Deshalb wird am vollständigen Wortlaut erkannt, nie an einem
+> Teilstück**, und eine unbekannte Form ist ein eigener Ausgang.
+
+#### ⚠️ Was noch gilt und was nicht mehr
+
+- **`devin skills list` zeigt alle Skills, die Sitzung sieht drei** (D-288). Nur Skills mit
+  `triggers: model` erreichen das Modell; die übrigen meldet es als **nicht vorhanden**.
+  *Eine Auflistung, die etwas zeigt, was die Sitzung nicht sieht.*
+- **Zwei eingebaute Skills des Clients stehen in jeder Sitzung** (`declarative-repo-setup`,
+  `upload-secrets`, je `source: builtin:…`). **Der zweite hat dieselbe Dateiklasse zum
+  Gegenstand, die `B3` schützt** (`K-94`).
+- **`devin doctor` sagt weniger als die Mitschrift:** Es meldet *„1 profile(s) loaded"*, die
+  Mitschrift führt das Profil **mit seiner Beschreibung** und daneben die beiden eingebauten.
+- ⚠️ **Die Angabe *„ein anderes Modell ist nicht aufrufbar"* hat am 2026-09-22 nicht
+  gehalten:** `devin models list` führt **50 Modellfamilien mit Preisen**. **Eine Auflistung
+  ist keine Aufrufbarkeit** – nicht nachgemessen. Der Werkzeugbestand gilt weiter nur für
+  `SWE-1.6 Slow`.
+- 🟢 **Ein Lauf kostet weniger, als dieses Projekt geschätzt hat:** 70 Läufe, **0,4718 USD**
+  nach der Preisliste. *Der Mittelwert eines Meßtags gilt für die Gattung seines
+  Gegenstands.*
+
 ### Messmethode – was sich bewährt hat
 
 - **Umgebung ohne Regeltexte ist nicht optional.** Sonst misst man Modellverhalten statt Engine.
@@ -2555,7 +2803,7 @@ welchen Wert die Zeile meint.**
 > Ruhezustand, langsame CPU, **kurze Netztrennung** (Kontrolllauf: Faktor 1,03 gegen 9,5 im
 > Störfall). **Offen bleibt eine länger anhaltende Netzstörung** – der Kontrolllauf lief sechs
 > Sekunden offline, der Störfall vierundneunzig Minuten. Wiederverwendbar:
-> `devpacks/leitwerk-netztest-2026-09-17.py` (trennt das WLAN selbst, ohne Adminrechte, verbindet im
+> 🔴 **`devpacks/leitwerk-netztest-2026-09-17.py` gibt es nicht mehr** (D-283); die Beschreibung bleibt als Bauanleitung stehen: ein Skript, das das WLAN selbst trennt, ohne Adminrechte, und im
 > `finally` wieder) und `…-ergebnis.json`.
 
 ### Testumgebungen (außerhalb des Repos)
@@ -2564,9 +2812,10 @@ welchen Wert die Zeile meint.**
 |---|---|
 | `devpacks/otp-generator` | **Der Pilot, keine Spielwiese.** Client Pack `claude-code` |
 | `devpacks/test-devin-framework` | **Das Übungsrepositorium**, Vorbedingung für Kriterium 2. Client Pack `devin-desktop`, kein Remote, direkt auf `main`. **`tools/**` ist gesperrt** (`<EXCLUDED_PATHS>`) – dort liegt das Mentorenblatt mit der Auflösung jeder Negativübung |
-| `devpacks/leitwerk-erhebungen-2026-09-12/`, `-13/`, `-14/` | **Belege, keine Umgebungen.** Die Läufe sind mit `skripte/vorbereiten.py` und `skripte/messreihe.py` neu baubar, kosten Modellzeit **und sind nicht deterministisch** – wiederholbar ist der **Mechanismus**, nicht die Quote. Die Devin-Mitschrift ist nicht kostenlos neu baubar |
-| `devpacks/leitwerk-review-2026-09-12/` | Das **externe Review**, unverändert. Gehört nicht ins Repositorium – sein Prüfprotokoll lässt den Validator scheitern (B03) |
-| `devpacks/lw-tech/`, `devpacks/leitwerk-ap2/` | `devin-desktop`-Installationen (ohne bzw. mit Regeltexten), **beide auf Framework 0.24.0**. **`lw-tech/ap2-hook-aufzeichnung.jsonl` nicht löschen** – Beleg für K-24 |
+| 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-12/`, `-13/`, `-14/`, `-17/`, `-18-s3/`, `-18-s4/`, `-18-s5/`~~ | **AM 2026-09-22 NACHGESEHEN: ALLE SIEBEN SIND WEG** (D-283). Darin lagen die Belege der Erhebungen vom 12. bis 14.09. – unter anderem die **vollständige Liste der 25 Werkzeuge** dieses Clients, von denen das Protokoll sieben nennt, und `ap2-record.py`, der Aufzeichnungs-Hook für das unbeobachtete `H3`. **Der Preis ist an diesem Tag angefallen:** Ohne den Laufzeitnamen `webfetch` hatte `B10` keinen Gegenstand |
+| `devpacks/review/` | Das **externe Review**, unverändert – **es heißt nicht mehr `leitwerk-review-2026-09-12/`**. Gehört nicht ins Repositorium; sein Prüfprotokoll lässt den Validator scheitern (B03) |
+| 🔴 ~~`devpacks/lw-tech/`, `devpacks/leitwerk-ap2/`~~ | **BEIDE SIND WEG** (D-283). `lw-tech/ap2-hook-aufzeichnung.jsonl` stand hier mit dem Satz *„nicht löschen – Beleg für K-24"* und war der Beleg, über den `0.53.0` die Markerfundstelle `Z27` (`DEVIN_PROJECT_DIR`) aufgelöst hat. 🟢 **Wiederhergestellt wird nichts:** `Z27` ist aufgelöst, der Marker ist weg, die Aussage steht im Protokoll vom 2026-09-16. **Der Beleg fehlt, die Aufzeichnung nicht** |
+| 🟢 `devpacks/leitwerk-erhebungen-2026-09-22-ap2/` | **Die Belege des `AP2`-Restes** – 70 Mitschriften, Prompts, ein verworfener Lauf unter `verworfen/`. **Derselben Vergänglichkeit unterworfen wie die drei oben**; was aus ihnen folgt, steht im Protokoll |
 | `devpacks/BlackNode` | **Als Pilot verworfen** (K-31). Taugt als Prüfstein, sobald K-31 entschieden ist. **Unberührt lassen** |
 
 **Ein Projekt heben – der Ablauf steht (Zehn-Minuten-Vorgang):**
@@ -2600,7 +2849,7 @@ gebraucht. Das Projekt arbeitet so: Sitzung im Wurzelordner (`devpacks/`), Repos
 
 ### Werkzeug und Fallstricke beim Patchen
 
-- `devpacks/leitwerk-ed.py` – zeilenendungserhaltende Textersetzung, bricht bei falscher Trefferzahl ab.
+- 🔴 **`devpacks/leitwerk-ed.py` GIBT ES NICHT MEHR** (am 2026-09-22 nachgesehen, D-283), und diese Übergabe hat es bis `0.85.2` als vorhanden geführt. ➡️ **Wer eine zeilenendungserhaltende Ersetzung braucht, legt sein Hilfsskript in den Scratchpad** – lesen, `\r\n` normalisieren, ersetzen, **beim Schreiben zurückwandeln**, und bei falscher Trefferzahl abbrechen. Die Wächterbedingung ist der ganze Wert des Werkzeugs; ohne sie schreibt ein falsches Muster lautlos nichts.
 - 🔴 **EIN EINZELNES `CR` MACHT EINE DATEI FÜR GIT ZU EINER BINÄRDATEI** (0.78.2, D-217). Ein Wagenrücklauf ohne folgenden Zeilenvorschub rendert nicht und druckt nicht – **und git normalisiert den Träger danach nicht mehr**, weder über `core.autocrlf` noch über ein `text=auto`. Der nächste Commit schreibt dann **die ganze Datei** neu. **Wer über Steuerzeichen schreibt, schreibt sie nicht hin:** Im Quelltext gehört der Backslash hin, nicht das Zeichen. 🟢 **Prüfung 66 fängt es seither** – sie liest **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt und 65 Prüfungen genau daran blind waren. **Nachsehen mit** `re.findall(chr(13) + '(?!' + chr(10) + ')', bytes)`.
 - 🆕 **EINEN MEßBAUM MIT VERZEICHNISVERBINDUNGEN LÖSCHT MAN IN ZWEI SCHRITTEN** (0.74.1).
   Jeder Baum von Bündel 3 trug eine `mklink /J`-Verbindung auf das **gemeinsame**
