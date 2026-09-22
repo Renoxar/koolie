@@ -2,6 +2,88 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.85.1] - 2026-09-22
+
+**Der Vorbereitungsdurchgang der Umbenennung - neun Entscheidungen vorgelegt, kein Pfad
+angefasst** (`CR-2026-119`). **Ohne Kontingent.** Kein Decision Record: **es ist nichts
+entschieden**, es ist gemessen.
+
+> 🔴 **DIE VORZIEHUNG IST BEANTRAGT, NICHT ENTSCHIEDEN.** D-127 hat "Umbenennung vor
+> den Messungen" ausdruecklich verworfen - mit der Begruendung *"105 Ergebniszellen und
+> 23 Marker offen"*. **Heute sind es 0 und 22**, und die verbleibende Messung betrifft
+> EINE Faehigkeitsmatrix statt fuenf Buendel. **Die tragende Haelfte der Begruendung ist
+> entfallen, die andere nicht** - D-127 sagt auch *"an dieser Stelle ist nichts mehr zu
+> messen"*, und das trifft heute nicht zu. **Der Preis steht deshalb als E1 in der
+> Vorlage:** Der Vorbedingungsdurchgang der `AP2`-Sitzung ist auf dem umbenannten Baum
+> zu wiederholen.
+
+### 🟢 Die erste Frage war, ob D-125 und Pruefung 12 gegeneinanderstehen - sie tun es nicht
+
+D-125 sagt, die Chronik werde **nicht** umgeschrieben. Damit stuende dort nach der
+Umbenennung ein Pfad, den es nicht mehr gibt - und Pruefung 12 meldet tote Pfadangaben.
+
+| Pruefweg | in der Chronik | Folge |
+|---|---|---|
+| Markdown-Links, **ueberall** geprueft | 🟢 **null** | keine Kollision |
+| Backtick-Pfade, Ausnahmemenge `LINK_EXCEPTIONS` | 319 in 107 Dateien | 🟢 ausgenommen |
+| Backtick-Pfade in **lebenden** Traegern | 925 in 128 Dateien | muessen wandern |
+
+**Die Arbeitsflaeche des Textlaufs ist damit 925 Fundstellen in 128 Dateien, nicht 1.976
+in 326.**
+
+### 🟢 `K-50` ist entscheidbar geworden - drei Schichten, und nur eine braucht Arbeit
+
+| Schicht | `otp-generator` | `test-devin-framework` | wer sie umsetzt |
+|---|---|---|---|
+| Kern im Zielprojekt | 1.357 | 1.848 | **das Heben** |
+| Laufzeitschicht | 220 | 336 | **`install.py --update`** (sie wird erzeugt) |
+| **Projekteigenes** | **45** in **11 Dateien** | **88** in **16 Dateien** | 🔴 **niemand - das ist `K-50`** |
+
+**Die ganze Migrationsflaeche ist 27 Dateien ueber beide Projekte.** `K-50` nennt den
+Preis der Gegenseite selbst: *"Ein maschineller Pfad ist Code, der genau einmal laeuft
+und danach ewig gepflegt oder zurueckgebaut werden will."*
+
+### 🔴 Der Name steht auch im Werkzeug, und dort ist er Gegenstand von Sonden
+
+`probe-pruefungen.py` fuehrt ihn **170**mal, `validate-framework.py` **54**mal. Die
+Nennungen in den Sonden sind ueberwiegend **Suchtexte von Praeparationen**: Eine Sonde,
+deren Suchtext nicht mehr trifft, verliert ihren Gegenstand - und nach D-23 gilt die
+Pruefung dann als nicht vorhanden. **Der Sondenlauf in beiden Kodierungsumgebungen ist
+bei dieser Umbenennung kein Formalakt, sondern der eigentliche Nachweis.**
+
+### ⚠️ Und der Durchgang vor dem Commit hat WIEDER zwei Zahlen kassiert
+
+**304 statt 230 Nennungen** des Namens in den Werkzeugen, **59 in 16** statt 57 in 14
+Erhebungswerkzeugen. **Beide waren aus Teilsummen gerechnet statt gezaehlt, und beide
+waren zu klein** - dieselbe Bauform wie die drei Zahlen aus `0.85.0` am selben Tag.
+🔴 **Fuenf zu kleine eigene Zahlen an einem Tag, alle aus einer Rechnung statt einer
+Zaehlung.** *Wer eine Zahl ueber den eigenen Bestand nennt, zaehlt sie - auch wenn die
+Teilsummen danebenstehen.* **Der Durchgang traegt sich zum achtundzwanzigsten Mal in
+Folge.**
+
+### Geaendert
+
+- `governance/change-requests/CR-2026-119-umbenennung-koolie.md` (neu): Anlass, der
+  gemessene Umfang und **neun Entscheidungen** `E1` bis `E9`, samt Ablaufplan in zehn
+  Schritten. **Status: vorgelegt.**
+- `governance/DECISION_LOG.md`: `K-50` und `K-75` um die Messung vom 22.09. ergaenzt -
+  **beide bleiben offen.**
+- `docs/ROADMAP.md`: Die Umbenennung steht als `~0.86.0` mit dem Vermerk **beantragt,
+  nicht entschieden**; `AP2` und die uebrigen Marker wandern auf `~0.87.0` und `~0.88.0`.
+
+### Migrationshinweise
+
+**Keine.** Kein Artefakt angefasst.
+
+### Bekannte Einschraenkungen
+
+- **Es ist nichts entschieden.** `E1` bis `E9` werden zu Beginn der Umsetzungssitzung
+  beantwortet; vorher wird kein Pfad angefasst.
+- **`K-50` und `K-75` bleiben offen** - gemessen ist die Flaeche, nicht der Weg.
+- **Der Foliensatz und die vier Vorfuehrstationen nennen `leitwerk-core/`** und sind
+  nach der Umbenennung nachzuziehen (`E9`). Die Rueckfall-Belege von Buendel 3 bleiben
+  alt - sie sind Chronik.
+
 ## [0.85.0] - 2026-09-22
 
 **Die Quellenzuordnung je Matrixzeile - und die vier Zellen, die die Marke nur genannt
