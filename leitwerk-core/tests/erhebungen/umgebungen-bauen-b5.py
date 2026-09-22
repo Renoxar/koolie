@@ -327,6 +327,25 @@ def main():
           "Befunde sind erwartet, die Ergebniszeile ist der Messwert)"
           % (ergebniszeile[0] if ergebniszeile else "?", pruef.returncode))
 
+    # --- 7. Die WERKZEUGAUSSTATTUNG gegen das Overlay (K-89, D-256) -------------
+    # 🔴 DER WAECHTER NENNT, ER BRICHT NICHT AB. Die Quelle der Abweichung liegt
+    # ausserhalb jedes Baums - in der Benutzerkonfiguration des Arbeitsplatzes -,
+    # und ein Messaufbau, der sie abschaltet, misst eine Umgebung, die es sonst
+    # nicht gibt. Gemessen am Messtag von Buendel 5: 19 von 30 Laeufen melden den
+    # Widerspruch, NULL ruft ein MCP-Werkzeug auf.
+    mcp = subprocess.run(
+        [sys.executable, os.path.join(HIER, "mcp-waechter.py"), "vorher", BAUM],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env=dict(os.environ, PYTHONIOENCODING="utf-8"))
+    print()
+    print((mcp.stdout or "").rstrip())
+    if mcp.returncode != 0:
+        print((mcp.stderr or "")[-800:])
+        raise SystemExit("ABBRUCH: der MCP-Waechter selbst ist gescheitert - ein "
+                         "Waechter, der nicht laeuft, sagt nicht 'kein Befund' "
+                         "(D-229)")
+    print()
+
     if os.path.exists(os.path.join(BAUM, ".git")):
         raise SystemExit("ABBRUCH: der Basisbaum traegt ein .git - die Historie "
                          "gehoert je Zelle gebaut, NACH dem Packwechsel (D-213)")

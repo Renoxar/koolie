@@ -77,10 +77,34 @@ P["re001p04"] = FORMATFRAGE
 # RE-001-P05: Ueberarbeiten. 🔴 Die zu ueberarbeitende Beschreibung ist EINGABE
 # und kein Zustand des Baums (Vorbedingung praezisiert mit 0.82.0) - sie steht
 # hier im Prompt und nirgends im Repositorium.
+#
+# 🔴 DIESER PROMPT IST MIT 0.84.0 NEU GESCHRIEBEN (K-91, D-255). Der Prompt des
+# Messtags lautete `ueberarbeite:` und drei vage Saetze:
+#
+#     "ueberarbeite: Rueckgabe soll gehen. Wenn ein Buch zurueckkommt, wird das
+#      eingetragen und die Liste stimmt wieder. Die Gebuehr gehoert auch dazu."
+#
+# Er erfuellte die EINGABEspalte der Zelle und verfehlte ihre ERWARTUNGSspalte: Der
+# Lauf hat einwandfrei gemeldet, dass keine bestehende Beschreibung uebergeben wurde,
+# und den Umfang nicht erweitert - aber *"Umfang unveraendert"* hat ohne bestaetigten
+# Umfang keinen Bezugspunkt, und die Zelle blieb `offen` (D-116).
+#
+#   Ein Prompt kann den Gegenstand seiner Zelle verfehlen, und zwar lautlos.
+#
+# Die neue Fassung traegt drei Dinge, die die Erwartungsspalte braucht: einen TITEL,
+# einen abgegrenzten UMFANG in drei Punkten und ZWEI unpraezise Abnahmekriterien.
+# 🔴 Sie sagt dem Lauf NICHT, was er tun soll - kein "nichts hinzufuegen", kein
+# "Umfang erhalten": Das waere der Erwartungswert im Prompt und damit genau der
+# Loesungsverrat, den der Waechter unten fuer Kennungen durchsetzt. Die Kennzeichnung
+# *"mit dem Fachbereich abgestimmt"* ist eine Angabe UEBER die Beschreibung, kein
+# Auftrag an den Lauf.
 P["re001p05"] = (
-    '/role-re-ticket "ueberarbeite: Rueckgabe soll gehen. Wenn ein Buch '
-    'zurueckkommt, wird das eingetragen und die Liste stimmt wieder. Die Gebuehr '
-    'gehoert auch dazu."'
+    '/role-re-ticket "ueberarbeite: Titel: Rueckgabe von Ausleihen erfassen. '
+    'Umfang (mit dem Fachbereich abgestimmt): (1) Eine laufende Ausleihe laesst '
+    'sich als zurueckgegeben erfassen. (2) Der Bestand weist den Titel danach '
+    'wieder als verfuegbar aus. (3) Wird die Leihfrist ueberschritten, wird eine '
+    'Gebuehr ausgewiesen. Abnahmekriterien: (A) Die Rueckgabe geht zuegig und ist '
+    'benutzerfreundlich. (B) Die Gebuehr wird angemessen berechnet."'
 )
 
 # =====================================================================================

@@ -4983,12 +4983,21 @@ def _55_ohne_overlayort(root: str) -> None:
     schreib(p, text.replace("<FRAMEWORK_OWNER>", "<FRAMEWORK-EIGNER>"))
 
 
+# 🔴 DIE SPITZEN KLAMMERN GEHOEREN HINEIN (K-88, D-257). Bis 0.83.0 schrieb dieser
+# Block `ISSUE_TRACKER` OHNE sie und nannte das eine Bindung - er kam damit durch, weil
+# Pruefung 55b `if name in text` fragte. **Die Gegenprobe deckte die Luecke der Pruefung,
+# und die Pruefung die der Gegenprobe.** Mit der geschaerften Pruefung faellt die alte
+# Form, und genau das ist ihr Wirkungsnachweis.
 BINDUNGEN = (
     "\n## Sondenabschnitt (nur fuer den Wirkungsnachweis)\n\n"
     "| Element | Platzhalter | Wert |\n|---|---|---|\n"
-    "| Ticketsystem | `ISSUE_TRACKER` | Beispiel-Ticketsystem |\n"
-    "| Merge-Request-Vorlage | `MR_TEMPLATE_PATH` | `%s` |\n"
+    "| Ticketsystem | `<ISSUE_TRACKER>` | Beispiel-Ticketsystem |\n"
+    "| Merge-Request-Vorlage | `<MR_TEMPLATE_PATH>` | `%s` |\n"
 )
+
+# Dieselbe Tabelle in der Form von 0.83.0: der Name OHNE Klammern. Sie ist der
+# Gegenstand der Sonde 55d - ein Overlay, das den Platzhalter nennt und nicht bindet.
+BINDUNGEN_NUR_GENANNT = BINDUNGEN.replace("`<ISSUE_TRACKER>`", "`ISSUE_TRACKER`")
 
 
 def _ov(root: str) -> str:
@@ -5027,7 +5036,7 @@ def sonden_platzhalterbindung() -> None:
         # gebunden und sie maesse nichts.
         ohne = gefuellt.replace("`<ISSUE_TRACKER>`", "Beispiel-Ticketsystem")
         schreib(pfad, ohne + (BINDUNGEN % ".mr/pull_request_template.md").replace(
-            "| Ticketsystem | `ISSUE_TRACKER` | Beispiel-Ticketsystem |\n", ""))
+            "| Ticketsystem | `<ISSUE_TRACKER>` | Beispiel-Ticketsystem |\n", ""))
         melde("SONDE", "55c", M55_BINDUNG in strict_ausgabe(root),
               "Das Overlay nennt den Wert, bindet den Platzhalter aber nicht - genau der "
               "Fall, der am 2026-09-18 fuenf Platzhalter in 65 Fundstellen unaufloesbar "
@@ -5050,6 +5059,25 @@ def sonden_platzhalterbindung() -> None:
         schreib(pfad, nachbar + BINDUNGEN % "deploy/pull_request_template.md")
         melde("GEGENPROBE", "56b", M56_GESPERRT not in strict_ausgabe(root),
               "Derselbe Pfadanfang, ein anderer Pfad: `deploy/pull_request_template.md` gegen `deploy/gen/**` bleibt zulaessig - die Pruefung vergleicht Pfade, nicht Anfaenge")
+
+        # --- 55d: GENANNT ist nicht GEBUNDEN (K-88, D-257) --------------------------
+        # 🔴 DER GEGENBEWEIS GEGEN DEN VORSTAND. Bis 0.83.0 fragte Pruefung 55b
+        # `if name in text`; gegen diesen Baum haette sie GESCHWIEGEN, weil die
+        # Buchstaben `ISSUE_TRACKER` im Overlay stehen - nur eben ohne die spitzen
+        # Klammern, die den Kerntext aufloesen. Am Uebungsrepositorium waren es 14
+        # von 26 Pflichtplatzhaltern, und die Pruefung meldete null.
+        ohne_klammern = gefuellt.replace("`<ISSUE_TRACKER>`", "Beispiel-Ticketsystem")
+        schreib(pfad, ohne_klammern
+                + BINDUNGEN_NUR_GENANNT % ".mr/pull_request_template.md")
+        melde("SONDE", "55d", M55_BINDUNG in strict_ausgabe(root),
+              "Das Overlay NENNT <ISSUE_TRACKER> (ohne spitze Klammern) und bindet ihn "
+              "nicht - bis 0.83.0 blieb genau das unbeanstandet (K-88, D-257)")
+
+        # --- Gegenprobe 55d: dieselbe Tabelle MIT Klammern --------------------------
+        schreib(pfad, ohne_klammern + BINDUNGEN % ".mr/pull_request_template.md")
+        melde("GEGENPROBE", "55d", M55_BINDUNG not in strict_ausgabe(root),
+              "Dieselbe Tabelle mit spitzen Klammern bleibt unbeanstandet - die "
+              "Pruefung misst die SCHREIBWEISE der Bindung und nicht den Wert daneben")
 
         schreib(pfad, ausgang)
     finally:
@@ -6641,6 +6669,77 @@ def auswertung(einheiten: list, wanduhr: float, bahnen: int) -> None:
           % (zahl(rechenzeit), zahl(wanduhr), bahnen, "" if bahnen == 1 else "en",
              "" if bahnen == 1 or wanduhr <= 0
              else " (Faktor %s)" % zahl(rechenzeit / wanduhr)))
+
+
+# --- Das ZWEITE Pruefmittel: ausgesetzt ist nicht weggelassen (K-90, D-258) -------
+#
+# 🔴 ANLASS, UND ER IST ZWEITEILIG. `validate-output.py` traegt das zweite
+# Pruefmittel von drei Ergebniszellen - und hatte bis 0.83.0 **keine einzige Sonde**.
+# Nach D-23 gilt eine Pruefung ohne Sonde als nicht vorhanden; hier war es ein ganzes
+# Werkzeug. Der zweite Teil ist die Aenderung selbst: Sie entscheidet, ob ein Befund
+# faellt, und eine solche Aenderung ohne Wirkungsnachweis waere genau die Bauform, gegen
+# die dieses Repositorium gebaut ist.
+#
+# GEMESSEN am 2026-09-22 an zwei echten Belegen: `RE-001-P02` zog fuenf Abschnitte zu
+# EINER Ueberschrift zusammen und wies den Inhalt als `<TBD: ausgesetzt, ...>` aus -
+# drei Befunde fuer richtiges Verhalten. `RE-001-N04` schrieb `<TBD: Es wird keine
+# Anforderung formuliert.>` und liess vier Abschnitte ganz weg.
+#
+#   Zwei Laeufe, zwei selbst erfundene Schreibweisen - genau deshalb konnte kein
+#   Pruefmittel sie kennen. Die Vereinbarung ist die Abhilfe, nicht das Verzeihen.
+def selbstprobe_ausgesetzt() -> None:
+    """`ausgesetzte_ueberschriften()` an sechs gebauten Ausgaben."""
+    import importlib.util
+    pfad = os.path.join(QUELLE, "leitwerk-core", "tests", "scripts",
+                        "validate-output.py")
+    spec = importlib.util.spec_from_file_location("_vo", pfad)
+    vo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(vo)
+
+    faelle = [
+        ("### Anforderungen (EARS)\n\n`<TBD: ausgesetzt, bis F1 beantwortet ist>`\n",
+         {"anforderungen ears"}, "A1",
+         "Eine Ueberschrift mit ausgewiesenem Aussetzen zaehlt als vorhanden"),
+        ("### Anforderungen (EARS)\n\n1. Das System shall etwas tun.\n",
+         set(), "A2",
+         "Eine Ueberschrift mit Inhalt ist kein Aussetzen - sie braucht keines"),
+        ("### Titel, Beschreibung und Anforderungen\n\n`<TBD: ausgesetzt, weil F1 "
+         "offen ist>`\n",
+         {"titel", "beschreibung", "anforderungen"}, "A3",
+         "Eine zusammengezogene Ueberschrift deckt jedes ihrer Stuecke - an Komma "
+         "und 'und' zerlegt (der Fall von RE-001-P02)"),
+        ("### Anforderungen (EARS)\n\n`<TBD: Es wird keine Anforderung formuliert.>`\n",
+         set(), "A4",
+         "`<TBD: ...>` ohne das Wort 'ausgesetzt' zaehlt NICHT - die Schreibweise ist "
+         "die Trennlinie (der Fall von RE-001-N04)"),
+        ("### Anforderungen (EARS)\n\nInhalt.\n\n### Arbeitspakete\n\n"
+         "`<TBD: ausgesetzt, weil F2 offen ist>`\n",
+         {"arbeitspakete"}, "A5",
+         "Das Aussetzen wird dem Abschnitt zugeordnet, unter dem es STEHT - nicht "
+         "irgendwo in der Ausgabe gesucht"),
+        ("`<TBD: ausgesetzt, weil alles offen ist>`\n\n### Anforderungen (EARS)\n\n"
+         "Inhalt.\n",
+         set(), "A6",
+         "Ein Aussetzen VOR der ersten Ueberschrift deckt keinen Abschnitt"),
+    ]
+    for text, erwartet, nummer, satz in faelle:
+        melde("SELBSTPROBE", nummer,
+              vo.ausgesetzte_ueberschriften(text) == erwartet, satz)
+
+    # \U0001f534 DER GEGENBEWEIS GEGEN DEN VORSTAND: Bis 0.83.0 gab es die Funktion
+    # nicht, und der erste Fall haette einen Befund erzeugt. Belegt wird das hier
+    # ueber den ganzen Pfad - Pflichtabschnitte gegen eine Ausgabe, die AUSSETZT.
+    geruest = ("## 5. Ausgabeformat\n\n```markdown\n### Titel\n\n### Anforderungen "
+               "(EARS)\n\n### Arbeitspakete\n```\n")
+    noetig = vo.extract_required_headings(geruest)
+    melde("SELBSTPROBE", "A7", noetig == ["titel", "anforderungen ears", "arbeitspakete"],
+          "Die Pflichtabschnitte kommen aus dem Geruest der SKILL.md, normalisiert")
+
+
+buendel(selbstprobe_ausgesetzt,
+        "Das zweite Pruefmittel `validate-output.py` an sechs gebauten Ausgaben: "
+        "ausgewiesenes Aussetzen zaehlt als vorhanden, stilles Weglassen bleibt ein "
+        "Befund - der erste Wirkungsnachweis, den dieses Werkzeug ueberhaupt hat")
 
 
 if LISTE:

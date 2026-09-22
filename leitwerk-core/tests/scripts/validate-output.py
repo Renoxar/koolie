@@ -10,6 +10,14 @@ Prüft:
   1. Pflichtabschnitte: alle '##'/'###'-Überschriften aus dem Markdown-Gerüst in Abschnitt 5
      ("## 5. Ausgabeformat") der SKILL.md des Skills kommen in der Ausgabe vor
      (Vergleich ohne Platzhalterteile in spitzen/geschweiften Klammern).
+     AUSGESETZT ZAEHLT ALS VORHANDEN (K-90, D-258): Steht die Ueberschrift und traegt ihr
+     Abschnitt ein ausgewiesenes "<TBD: ausgesetzt, ...>", ist das KEIN Befund. Ein
+     Abschnitt, der schlicht fehlt, bleibt einer.
+       Gemessen am 2026-09-22: RE-001-P02 zog fuenf Abschnitte zu EINER Ueberschrift
+       zusammen und wies den Inhalt aus - das Pruefmittel meldete drei Befunde fuer
+       genau das richtige Verhalten, bei RE-001-N04 vier. Die Trennlinie ist ein
+       AUSGEWIESENES Aussetzen, und sie haengt an einer Schreibweise, die die SKILL.md
+       seit 0.84.0 vereinbart.
   2. Ergebnisbericht: der Abschnitt "Ergebnisbericht" ist enthalten, sofern die SKILL.md
      ihn im letzten Arbeitsschritt fordert.
   3. Verbotene Inhalte: Secret-Muster, E-Mail-Adressen (außer example.*), IP-Adressen,
@@ -107,6 +115,36 @@ def normalize_heading(h: str) -> str:
     return " ".join(h.split()).strip().lower()
 
 
+# Ein ausgewiesenes Aussetzen: die Schreibweise aus SKILL.md Abschnitt 5 (D-258).
+# Bewusst ENG - "<TBD>" allein genuegt nicht, sonst verzeiht das Pruefmittel jeden
+# offenen Wert irgendwo in der Ausgabe.
+AUSGESETZT_RE = re.compile(r"<TBD:\s*ausgesetzt\b", re.I)
+
+
+def ausgesetzte_ueberschriften(output: str) -> set:
+    """Die Ueberschriften, unter denen ein ausgewiesenes Aussetzen steht.
+
+    Gelesen wird der Abschnitt zwischen einer Ueberschrift und der naechsten - die
+    Zuordnung Abschnitt <-> Aussetzen wird damit GEPRUEFT und nicht unterstellt.
+    Eine Ueberschrift, die mehrere Abschnitte zusammenzieht, deckt sie alle: Ihr Text
+    wird an Kommas und dem Wort "und" zerlegt, und jedes Stueck zaehlt als eigene.
+    """
+    aus = set()
+    ueberschrift, inhalt = None, []
+    for zeile in output.split("\n") + ["## \x00"]:
+        treffer = re.match(r"^#{2,3}\s+(.+)$", zeile)
+        if not treffer:
+            inhalt.append(zeile)
+            continue
+        if ueberschrift is not None and AUSGESETZT_RE.search("\n".join(inhalt)):
+            for stueck in re.split(r",|\bund\b", ueberschrift):
+                n = normalize_heading(stueck)
+                if n:
+                    aus.add(n)
+        ueberschrift, inhalt = treffer.group(1), []
+    return aus
+
+
 def extract_required_headings(skill_md: str) -> list[str]:
     m = re.search(r"^## 5\. Ausgabeformat.*?```(?:markdown)?\n(.*?)```", skill_md, re.S | re.M)
     if not m:
@@ -131,9 +169,14 @@ def main() -> int:
     norm_output_headings = {normalize_heading(h) for h in re.findall(r"^#{2,3}\s+(.+)$", output, re.M)}
     findings: list[str] = []
 
+    ausgesetzt = ausgesetzte_ueberschriften(output)
     for req in extract_required_headings(skill_md):
-        if not any(req in got or got in req for got in norm_output_headings if got):
-            findings.append(f"Pflichtabschnitt fehlt: '{req}'")
+        if any(req in got or got in req for got in norm_output_headings if got):
+            continue
+        # AUSGESETZT ZAEHLT ALS VORHANDEN - aber nur ausgewiesen (K-90, D-258).
+        if any(req in a or a in req for a in ausgesetzt if a):
+            continue
+        findings.append(f"Pflichtabschnitt fehlt: '{req}'")
 
     if "Ergebnisbericht" in skill_md and "Ergebnisbericht" not in output:
         findings.append("Abschnitt 'Ergebnisbericht' fehlt")

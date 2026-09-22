@@ -85,8 +85,9 @@ dieselbe Lehre wie `--ziel` beim Baumbau (D-218).
 | `dossier-b4.py` | legt je Zelle die **Erwartung** des Testblatts neben den **Beleg** des Laufs – und **fährt die Auswertung dafür selbst** (D-232) |
 | `zustand-b4.py`, `node-waechter.py` | Zustandsaufnahme vor und nach der Reihe; Gegenzählung des geteilten Bestands |
 | `umgebungen-bauen-b4.py`, `trust-b4.py` | Umgebungen und Vertrauenseinträge |
-| `baeume_loeschen.py` | löst **jede Verzeichnisverbindung einzeln**, dann `shutil.rmtree` mit `onexc`-Haken |
-| `zaehlen46.py` | zählt Kriterium 2 mit der Regel von Prüfung 46 |
+| `baeume_loeschen.py` | löst **jede Verzeichnisverbindung einzeln**, dann `shutil.rmtree` mit `onexc`-Haken. **Der Zielpfad wird gesagt** (`loeschen <pfad>`), und ein fehlendes Ziel ist ein **Abbruch** – bis `0.83.0` stand `C:\lw-b4` im Quelltext und ein falsches Ziel führte zu einem stillen Nichts-Tun (D-262) |
+| `zaehlen46.py` | zählt Kriterium 2 mit der Regel von Prüfung 46 – **und mit ihrem Code**: Die Zellzerlegung kommt seit `0.84.0` aus `validate-framework.py`, weil ein eigener `split` den **maskierten** Zelltrenner nicht kannte (D-259) |
+| `mcp-waechter.py` | hält die **Werkzeugausstattung** eines Meßbaums gegen sein Overlay – `vorher` die Konfigurationsquellen, `nachher` die Mitschriften. **Er nennt, er schaltet nicht ab** (`K-89`, D-256) |
 | `ablage.py` | sagt allen anderen, **wo** Belege, Prompts und Zustandsaufnahmen liegen, **welche Kernversion** das Übungsrepositorium tragen muß – und **welche Zellen eine Erhebung schuldet** (`sollmenge()`, D-230) |
 | `packaktivierung.py` | aktiviert ein Role oder Tech Pack im Meßbaum (drei Teile, drei Wächter), nimmt es für `ohnepack` wieder heraus und trägt den Skillschnitt (D-237, D-238, D-242, D-244) |
 
@@ -217,6 +218,7 @@ als 28 bezahlte Läufe gegen sie gehalten wurden:
   aber nur für die Namen, nicht für die Werte.
 - **Den Apparat als Ganzes einmal fahren.** Beim ersten vollständigen Aufbau von
   Bündel 4 brach er an **sechs** Stellen, und alle sechs kosteten nichts.
+- **Die Werkzeugausstattung des Baums gegen sein Overlay halten** – `python mcp-waechter.py vorher <baum>`. Ein Meßbaum erbt die Ausstattung des Arbeitsplatzes, nicht nur seine Dateien; das Übungs-Overlay führt *„Freigegebene MCP-Server: keine“*, und die dreißig Sitzungen von Bündel 5 bekamen zwei gestellt (D-256). **Gestellt ist nicht aufgerufen** – der zweite Teil (`nachher`) zählt beides getrennt.
 - **Nicht unterhalb des Arbeitsbereichs messen** – dort liegt eine sachfremde
   Anweisungsdatei, und der Client lädt sie aus jedem übergeordneten Verzeichnis. Die
   Kontrollzählung über alle Mitschriften muß **null** ergeben.

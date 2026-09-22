@@ -2,6 +2,127 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.84.0] - 2026-09-22
+
+**Die vier Sammelzellen des zentralen Katalogs - und der Nachlauf von `RE-001-P05`**
+(`CR-2026-117`, **D-252** bis **D-262**; `K-59`, `K-88`, `K-89`, `K-90` und `K-91`
+geschlossen). **Kriterium 2: 5 -> 0.** Zwei Laeufe, **3,18 USD**.
+
+> 🟢 **KRITERIUM 2 STEHT AUF NULL.** Alle 38 Zellen des zentralen Katalogs und alle 87
+> Zellen der dreizehn Testblaetter tragen `bestanden`. Die Kette
+> `111 -> 105 -> 100 -> 93 -> 92 -> 85 -> 74 -> 56 -> 38 -> 30 -> 32 -> 19 -> 5 -> 0`
+> ist zu Ende; **der groesste Posten von D-11 ist erledigt.**
+> 🔴 **NEUN BEFUNDE, ACHT DAVON OHNE KONTINGENT** - und der fuenfundzwanzigste
+> Durchgang in Folge, bei dem der billigste vor dem ersten Lauf faellt. **Der neunte
+> fiel nach der Abnahme, beim Aufraeumen** (D-262): `baeume_loeschen.py` fuehrte den
+> Zielpfad von Buendel 4 im Quelltext und haette **leise nichts getan**. Der Pfad wird
+> jetzt gesagt, und ein fehlendes Ziel ist ein **Abbruch**.
+
+### 🔴 `K-59` - beide Preise der Vertagung waren gemessen falsch (D-253)
+
+Der Klaerungspunkt stand seit `0.61.0` auf *"den Text nachziehen hiesse, eine Ausnahme in
+JEDE Installation auszuliefern"*. Drei Messungen:
+
+- **Der Preis ist seit `0.32.0` bezahlt.** In einer frischen Installation steht der
+  Halbsatz *"und im Quellrepositorium des Frameworks selbst"* in **zehn Dateien** - fuenf
+  `SKILL.md` und fuenf Skill-`CHANGELOG.md`.
+- **Das Profil liegt in beiden uebernehmenden Projekten**, obwohl sein Abschnitt 2.3
+  *"wird in kein Zielprojekt installiert"* sagte. **Der Satz beschrieb das Werkzeug und
+  nicht das Ergebnis:** `install.py` kopiert es nicht, `ADOPTION_GUIDE.md` Schritt 2
+  kopiert `leitwerk-core/` als Ganzes.
+- **Die Abweichung ist GROESSER als beschrieben.** `G-11` erlaubt zwei Handlungen: die
+  Analyse (M1) und das Ablegen des Protokolls (M5, schreibend). Die Leseseite kennen fuenf
+  der sechs Fassungen, **die Schreibseite keine einzige** - auch nicht die fuenf
+  Analyseskills, die alle M1 fuehren.
+
+**Entschieden: Verweis statt Ausnahme.** Die drei anweisenden Fassungen nennen
+`FRAMEWORK_DEV_PROFILE.md` als die Fassung, die den Fall fuehrt; der Satz *"nur lesend"*
+bleibt woertlich stehen. ⚠️ **Die Wurzel-Anweisungsdatei steht danach bei 11.910 von
+12.000 Zeichen** - die Grenze ist ein Fehler, keine Warnung, und es bleiben **90 Zeichen**.
+
+### 🟢 Vier Sammelzellen, und der Schluessel war eine Zaehlung (D-252)
+
+`FW-KO-05`, `FW-NE-04`, `FW-PO-03` und `FW-RE-01` sind abgenommen.
+
+🔴 **Die Vorbedingung nannte ein Kennungsmuster und meinte eine Gattung:** `FW-PO-03`
+verlangte *"alle 29 Zellen `SK-...-P0n`"* - mit diesem Praefix gibt es **24**. Die 29
+stimmen erst mit den fuenf `RE-001-P0n` des Role Packs; bei `FW-NE-04` ebenso (48 + 10).
+**Wer dem Muster folgt statt der Zahl, verliert die fuenfzehn Zellen des Role Packs.**
+
+🔴 **`FW-KO-05` ist nachgeprueft und nicht bloss uebernommen** (`K-61`): Von den sechs
+Fassungen haben sich seit `0.61.0` drei bewegt - `02-privacy.md` rein **strukturell**,
+die Overlay-Vorlage um einen Platzhalter, zwoelf `SKILL.md` um Version und Formatzeile.
+Keine Einstufung eines Grenzfalls ist davon beruehrt.
+
+### 🟢 Der Nachlauf von `RE-001-P05` - ein anderer Prompt, nicht ein anderer Baum (D-255)
+
+**Zwei Laeufe, 3,18 USD, Zelle abgenommen.** Der Prompt des Messtags erfuellte die
+EINGABEspalte und verfehlte die ERWARTUNGSspalte. Der neue uebergibt Titel, abgegrenzten
+Umfang in drei Punkten und zwei unpraezise Abnahmekriterien - **und sagt dem Lauf nicht,
+was er damit tun soll**; *"nichts hinzufuegen"* waere der Erwartungswert in der Eingabe
+gewesen. **Die Vorbedingung der Zelle verlangt es jetzt ausdruecklich.**
+
+🟢 **Zum ersten Mal in diesem Blatt trifft der Kontrollauf das unzulaessige Verhalten der
+Zelle selbst:** Der `ohnepack`-Lauf zerlegt die Aufgabe in drei Tickets und formuliert zu
+einem davon drei eigene EARS-Anforderungen, **von denen eine im uebergebenen Umfang keine
+Grundlage hat**. Der Hauptlauf fuehrt denselben Sachverhalt als offene Frage.
+
+⚠️ **3,18 USD statt der gerechneten 2,70** (D-260) - **zum zweiten Mal in Folge ueber der
+Schaetzung**, und beide Male lag der Unterschied in dem, was der Lauf zu LESEN hatte.
+
+### 🔴 Vier Befunde am Apparat und an den Pruefungen
+
+- **`zaehlen46.py` kannte den maskierten Zelltrenner nicht** (D-259). Es zerlegte mit
+  einem eigenen `split`; Pruefung 46 benutzt `tabellenzellen()`. **An zwei Zellen gehen
+  beide auseinander** - `RE-001-P04` (10 statt 8 Spalten) und `RE-001-N06` (11 statt 8).
+  Beide standen auf `bestanden`, **die Zaehlung stimmte aus dem falschen Grund.** Das
+  Werkzeug teilt jetzt den Code der Pruefung.
+- **`K-88`: Pruefung 55b prueft die BINDUNG statt der Nennung** (D-257). Sie fragte
+  `if name in text` und meldete **0**; mit spitzen Klammern **14 von 26**. Die vierzehn
+  Platzhalter des Uebungs-Overlays sind gebunden. 🔴 **Die Gegenprobe deckte die Luecke
+  mit:** `BINDUNGEN` schrieb den Namen ohne Klammern und nannte das eine Bindung.
+- **Die Abhilfe erzeugte den naechsten Befund** (D-261, dieselbe Bauform wie D-248).
+  Pruefung 56 las dieselbe Zeile anders - und `_p56_bindung()` nahm die **erste** Zeile
+  mit dem Namen, nicht die mit einem **Wert**. **Die Overlay-Vorlage fuehrt dort ein
+  `<TBD>`**, und ein Projekt, das seinen Wert weiter unten bindet, wurde damit gemessen.
+- **`K-90`: eine Schreibweise fuer das Aussetzen** (D-258). `SKILL.md` Abschnitt 5
+  vereinbart `<TBD: ausgesetzt, weil ...>`; das Pruefmittel ordnet sie dem Abschnitt zu,
+  **unter dem sie steht**. 🔴 **Nebenbefund, und er wiegt schwerer:** `validate-output.py`
+  traegt das zweite Pruefmittel von drei Ergebniszellen und hatte **keine einzige Sonde**.
+  Es hat jetzt sieben.
+
+### 🟢 `K-89`: ein Waechter, der nennt und nicht abschaltet (D-256)
+
+`tests/erhebungen/mcp-waechter.py` haelt die Werkzeugausstattung eines Messbaums gegen
+sein Overlay. **Gegen die dreissig Mitschriften des Messtags gefahren, reproduziert er die
+Messung:** 30 Laeufe, 30 mit gestelltem Server, **0 Aufrufe**, genau zwei Server.
+
+🔴 **Dabei ist ein eigener Befund gefallen:** In derselben Mitschrift stehen **fuenf**
+Servernamen - drei davon im FLIESSTEXT der Skill- und Agentenauflistung. *Gestellt ist
+nicht genannt und nicht aufgerufen - drei Zahlen, drei Aussagen.*
+
+### Migrationshinweis
+
+- **Pruefung 55b ist schaerfer:** Ein aktives Overlay, das einen Pflichtplatzhalter nur
+  NENNT, meldet jetzt einen Fehler. Wer `--strict-overlay` faehrt, bindet die gemeldeten
+  Platzhalter in `project-overlay/OVERLAY.md` mit spitzen Klammern um den Namen - die Laufzeitfassung
+  bleibt unberuehrt. **Gemessen am Uebungsrepositorium: 14 Meldungen, +28 Zeichen.**
+- **Die drei anweisenden Fassungen tragen einen Verweis** auf das Entwicklungsprofil.
+  `install.py --update` schreibt `<ROOT_INSTRUCTION_FILE>` und die Regelablage neu; die
+  Laufzeitfassung des Overlays (`20-project-overlay.md`) gehoert dem Projekt und wird
+  nicht ueberschrieben.
+- **`role-re-ticket` steht auf `0.1.4`** - Abschnitt 5 vereinbart die Schreibweise des
+  Aussetzens. Wer den Skill aktiviert hat, zieht ihn nach.
+
+### Bekannte Einschraenkungen
+
+- **`K-84` ist offen und durch dieses Release groesser geworden:** Die Anhebung von
+  `role-re-ticket` auf `0.1.4` setzt vierzehn frisch abgenommene Zellen auf die Fassung
+  davor (D-119). Benannt, nicht entschieden.
+- **Die Wurzel-Anweisungsdatei hat 90 Zeichen Luft** bis zur Fehlergrenze von 12.000.
+- **`K-79` und `K-69` haben einen Zaehler, keine Antwort:** Zehn Werte des Quell-Overlays
+  stehen weiter in keiner bindenden Schicht.
+
 ## [0.83.0] - 2026-09-22
 
 **Der Meßtag von Bündel 5 – vierzehn von fünfzehn, und der Kontrollauf hat zum ersten Mal
