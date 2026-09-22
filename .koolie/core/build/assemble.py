@@ -40,17 +40,29 @@ import subprocess
 import sys
 import tempfile
 
-# CORE = .koolie/core/ (dieses Skript liegt in CORE/build/).
-# REPO = Wurzelverzeichnis des Projekts; EMBED-Pfade sind dazu relativ,
-# weil AGENTS.md, .devin/ und .koolie/project-overlay/ dort liegen.
+# CORE = <CORE_DIR>/ (dieses Skript liegt in CORE/build/). Zwei dirname-Aufrufe
+# sind hier richtig und bleiben es: Sie zaehlen den Weg vom Skript zum Kern, und
+# der ist unabhaengig davon, wie tief der Kern unter der Projektwurzel liegt.
 CORE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REPO = os.path.dirname(CORE)
 DOC = os.path.join(CORE, "build", "doc")
 OUT = os.path.join(CORE, "build", "out")
 EMBED_RE = re.compile(r"^\{\{(EMBED|EMBED-RAW):([^:}]+)(?::([^}]+))?\}\}\s*$", re.M)
 
 sys.path.insert(0, CORE)
 import clientmap  # noqa: E402  (liegt im Kernverzeichnis)
+
+# REPO = Wurzelverzeichnis des Projekts; EMBED-Pfade sind dazu relativ, weil die
+# Wurzel-Anweisungsdatei, die Laufzeitschicht und das Overlay dort liegen.
+#
+# 0.89.0: Bis dahin stand hier ein DRITTER dirname-Aufruf auf CORE - ein im
+# Quelltext gezaehlter Weg zur Projektwurzel und damit die Bauform aus D-299 an
+# einer siebten Stelle. Sie hat die Umbenennung nicht ueberlebt: Seit der Kern
+# unter `.koolie/core` liegt, lieferte sie `.koolie/` statt der Wurzel, und JEDE
+# Einbettung schlug fehl. Das Hauptdokument war damit seit 0.88.0 nicht baubar,
+# ohne dass es eine Pruefung gemeldet haette - Pruefung 76 haelt vier Werkzeuge
+# gegeneinander, und dieses ist keines davon. Der Nachfolger ist dieselbe
+# benannte Ableitung, die die anderen vier verwenden.
+REPO = clientmap.projektwurzel(CORE)
 
 REFERENZ_CLIENT = "devin-desktop"
 

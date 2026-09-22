@@ -8,7 +8,7 @@ Projektneutral, wiederverwendbar und erweiterbar – mit methodischem Vorgehensm
 
 Welcher KI-Client zum Einsatz kommt, entscheidet ein **Client Pack** (`.koolie/core/clients/`) – derzeit `devin-desktop` und `claude-code`. Der Kern ist werkzeugneutral; welche Zusagen ein Client technisch durchsetzt und welche nur als Anweisung im Kontext stehen, weist die Fähigkeitsmatrix des jeweiligen Packs aus.
 
-**Version:** siehe `.koolie/core/VERSION` · **Änderungen:** `.koolie/core/CHANGELOG.md` · **Status:** alle Module `entwurf` (Validierung in Roadmap-AP2) · **Owner:** `<FRAMEWORK_OWNER>` (`.koolie/core/OWNERS.md`)
+**Version:** siehe `.koolie/core/VERSION` · **Änderungen:** `.koolie/core/CHANGELOG.md` · **Status:** kein Modulträger auf `entwurf` – 77 von 77 stehen auf `pilot` · **Owner:** `<FRAMEWORK_OWNER>` (`.koolie/core/OWNERS.md`)
 
 ## Warum Koolie?
 
@@ -22,13 +22,13 @@ Die Namensentscheidung mit ihrer Begründung und den verworfenen Alternativen st
 
 ## Leitidee in drei Sätzen
 
-Devin ist ein unterstützendes Werkzeug – Verantwortung, Prüfung und Freigabe bleiben bei Menschen. Kontext wird bewusst und minimal bereitgestellt (Klassen K0–K3), Aufgaben werden eingestuft (Kontrollstufen niedrig/mittel/hoch) und in definierten Betriebsmodi (M1–M5) bearbeitet. Alles Projektspezifische lebt im austauschbaren Overlay; der Kern bleibt bei Projektwechseln unverändert.
+Der KI-Client ist ein unterstützendes Werkzeug – Verantwortung, Prüfung und Freigabe bleiben bei Menschen. Kontext wird bewusst und minimal bereitgestellt (Klassen K0–K3), Aufgaben werden eingestuft (Kontrollstufen niedrig/mittel/hoch) und in definierten Betriebsmodi (M1–M5) bearbeitet. Alles Projektspezifische lebt im austauschbaren Overlay; der Kern bleibt bei Projektwechseln unverändert.
 
 ## Aufbau: ein Ordner für den Kern, drei Dinge im Wurzelverzeichnis
 
 Das gesamte unveränderliche Framework liegt in **einem** Verzeichnis: `.koolie/core/`. Es in ein Projekt zu übernehmen heißt, diesen Ordner zu kopieren und ein Skript aufzurufen.
 
-Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet:
+Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dort findet. **Wie sie heißen, entscheidet das Client Pack**; der Baum unten zeigt sie mit ihren Platzhaltern, das Laufzeitglossar (`.koolie/core/docs/RUNTIME_GLOSSARY.md`) löst jeden je Pack auf:
 
 | Pfad | Warum im Wurzelverzeichnis | Belegstatus |
 |---|---|---|
@@ -38,11 +38,10 @@ Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet
 
 ```text
 <projekt>/
-├── AGENTS.md                            # Agentenanweisung (aus dem Kern installiert)
-├── AGENTS.local.md.example              # Vorlage persönliche Ergänzung
-├── .devin/                              # Devin-Laufzeitschicht [DOK]
-│   ├── config.json                      # Berechtigungen: Kernregeln + Projektwerte
-│   ├── hooks.v1.json                    # PreToolUse-Schutzprüfung, SessionStart-Meldung
+├── <Wurzel-Anweisungsdatei>             # Agentenanweisung (aus dem Kern installiert)
+├── <persönliche Ergänzung>.example      # Vorlage, nicht versioniert
+├── <Laufzeitschicht>/                   # vollständig erzeugt – nie von Hand schreiben
+│   ├── <Berechtigungsdatei>             # Kernregeln + Projektwerte – UND die Hooks
 │   ├── agents/fw-reviewer.md            # nur lesendes Review-Subagentenprofil
 │   ├── rules/00-, 10-, 15-*.md          # Core-Kurzfassungen ....... aus dem Kern
 │   ├── rules/20-project-overlay.md      # Overlay-Laufzeitfassung ... Projekt
@@ -51,39 +50,47 @@ Im Wurzelverzeichnis landen nur die Dinge, die Devin ausschließlich dort findet
 │   │                                    #   Aktivierung ............. Projekt
 │   └── skills/fw-* role-* tech-* prj-*  # Kern | aktivierte Packs | Projekt
 │
-├── .koolie/core/                # ◀ DER KERN: ein Ordner, unveränderlich
-│   ├── install.py                       #   legt die Wurzeldateien an, aktualisiert sie
-│   ├── VERSION · CHANGELOG.md · OWNERS.md
-│   ├── clients/                         #   Abbildung auf KI-Clients (keine Regelebene)
-│   │   ├── README.md                    #     Zweck, Fähigkeitsmatrix, Erstellung
-│   │   └── <client>/                    #     je Client:
-│   │       ├── CLIENT_PACK.md           #       Pfadabbildung + Durchsetzungstiefe
-│   │       └── root-template/           #       nur noch die README der Laufzeitschicht
-│   ├── framework/                       #   kanonischer, werkzeugneutraler Kern
-│   │   ├── core/                        #     FW-CORE-00…10
-│   │   ├── role-packs/                  #     Ebene 6
-│   │   ├── tech-packs/                  #     Ebene 5
-│   │   └── org-policies/                #     Ebene 2
-│   ├── prompts/                         #   FW-PR-001…012
-│   ├── checklists/                      #   FW-CL-01…11
-│   ├── decision-trees/                  #   FW-DT-01…06 (Mermaid validiert)
-│   ├── onboarding/                      #   Quick-Start, Leitfaden, Übungen, Test
-│   ├── templates/                       #   Skill-, Plan-, MR-Vermerk-Vorlagen
-│   ├── examples/                        #   ausschließlich synthetische Beispiele
-│   ├── governance/                      #   RACI, Hierarchie, Prozesse, Decision Log
-│   ├── pilot/                           #   Pilotkonzept und Metriken
-│   ├── docs/                            #   Adoption Guide, Roadmap, Platzhalterregister
-│   ├── tests/                           #   Testkatalog + Validierungs- und Hook-Skripte
-│   └── build/                           #   Assemblierung des Gesamtdokuments
-│
-├── .koolie/project-overlay/                     # Ebene 4: gehört dem Projekt
-│   ├── OVERLAY.md · overlay-manifest.yaml
-│   ├── forbidden-terms.txt              # projektlokale Sperrbegriffe
-│   ├── documents/                       # freigegebene Projektdokumente
-│   └── exceptions/EXCEPTIONS.md
+├── .koolie/                             # Kern und Projektkonfiguration, ein Ordner
+│   ├── core/                            # ◀ DER KERN: unveränderlich, byte-gleich
+│   │   ├── install.py · clientmap.py    #   legt die Wurzeldateien an, bildet sie ab
+│   │   ├── VERSION · CHANGELOG.md · OWNERS.md
+│   │   ├── clients/                     #   Abbildung auf KI-Clients (keine Regelebene)
+│   │   │   ├── README.md                #     Zweck, Fähigkeitsmatrix, Erstellung
+│   │   │   └── <client>/                #     je Client DREI Dateien:
+│   │   │       ├── CLIENT_PACK.md       #       Pfadabbildung + Durchsetzungstiefe
+│   │   │       ├── manifest.json        #       dieselbe Abbildung maschinenlesbar
+│   │   │       └── root-template/       #       die README der Laufzeitschicht
+│   │   ├── framework/                   #   kanonischer, werkzeugneutraler Kern
+│   │   │   ├── core/                    #     FW-CORE-00…10, elf Module
+│   │   │   ├── runtime/                 #     Quelle der gesamten Laufzeitschicht
+│   │   │   ├── skills/                  #     fw-* : die zwölf Referenz-Skills
+│   │   │   ├── role-packs/              #     Ebene 6 – RP-DEV und RP-RE
+│   │   │   ├── tech-packs/              #     Ebene 5 – Vorlage
+│   │   │   └── org-policies/            #     Ebene B: Einbindungspunkt
+│   │   ├── prompts/                     #   FW-PR-001…012
+│   │   ├── checklists/                  #   FW-CL-01…11
+│   │   ├── decision-trees/              #   FW-DT-01…06 (Mermaid validiert)
+│   │   ├── onboarding/                  #   Quick-Start, Leitfaden, Übungen, Test
+│   │   ├── templates/                   #   Overlay-Saat, Regel-, Skill-, MR-Vorlagen
+│   │   ├── examples/                    #   ausschließlich synthetische Beispiele
+│   │   ├── governance/                  #   RACI, Hierarchie, Prozesse, Decision Log
+│   │   ├── pilot/                       #   Pilotkonzept und Metriken
+│   │   ├── docs/                        #   Adoption Guide, Roadmap, Register
+│   │   ├── tests/                       #   Testkatalog + Validierungs- und Hook-Skripte
+│   │   └── build/                       #   Assemblierung des Hauptdokuments
+│   │
+│   └── project-overlay/                 # Ebene 4: gehört dem Projekt
+│       ├── OVERLAY.md · overlay-manifest.yaml
+│       ├── forbidden-terms.txt          # projektlokale Sperrbegriffe
+│       ├── documents/                   # freigegebene Projektdokumente
+│       └── exceptions/EXCEPTIONS.md
 │
 └── <Projektcode>                        # backend/, frontend/, src/ …
 ```
+
+> **Eine eigene Hook-Datei gibt es nicht.** Bei beiden ausgelieferten Packs steht die
+> Hook-Konfiguration **in der Berechtigungsdatei** – dort ist gemessen, dass der Client sie
+> liest, und aus einer eigenen Hook-Datei wurde nachweislich kein Hook ausgeführt (D-32).
 
 ## Framework in ein Projekt übernehmen
 
@@ -166,7 +173,7 @@ In einem **Projekt** gilt das Gegenteil: dort werden Wurzel-Anweisungsdatei, Lau
 | `python .koolie/core/tests/scripts/validate-framework.py` | Struktur, Frontmatter, Skill-Konformität, verbotene Inhalte, Platzhalter |
 | `… --strict-overlay` | zusätzlich die Aktivierungsreife eines Overlays (nur im Projekt sinnvoll) |
 | `… --mermaid` | zusätzlich die Syntax aller Diagramme (benötigt `mmdc`) |
-| `.koolie/core/tests/TEST_CATALOG.md` | das Verhalten von Devin (manuelle Testsitzungen) |
+| `.koolie/core/tests/TEST_CATALOG.md` | das Verhalten des KI-Clients (Testsitzungen an einer Installation) |
 
 Im Framework-Repository ist `--strict-overlay` erwartungsgemäß rot: `.koolie/project-overlay/` ist hier die Vorlage mit offenen Platzhaltern. Ohne das Flag muss der Lauf fehlerfrei sein.
 

@@ -109,7 +109,10 @@ Fünf Auflösungen mit Ermessensspielraum, jede einzeln. E1 und E2 sind bereits 
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-10 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E3, E4 und E5 einzeln entscheiden>` |
+| Auflagen | **E1 bis E5 wie in Abschnitt 4 vorgelegt**: der Begriff „der KI-Client" durchgängig; Geltungsbereich ist der ganze Kern nach der Definition des Glossars; die Versionsfelder werden gehoben; der AP2-Titel wird neutralisiert; der Dateiname des Entscheidungsbaums bleibt. 🔴 **Abschnitt 6 sagte bis zu diesem Nachtrag „E1, E2 und E3 einzeln entscheiden", während Abschnitt 4 fünf Fragen vorlegt** – eine Aufzählung, die ihre eigene Tabelle unterzählt |
+| Umsetzung | **mit Release 0.18.0 bis 0.23.0** – Einzelheiten und Nachweise in `.koolie/core/CHANGELOG.md` |
+
+Abschnitt 6 ist am 2026-09-22 mit `CR-2026-124` (`AP11`) **nachgetragen**, nicht neu entschieden: Die Entscheidung selbst steht seit 2026-09-10 in **D-28**, die Umsetzung im `CHANGELOG.md` zu Release 0.18.0 bis 0.23.0. 🔴 **Der Releaseplan nannte für diesen Nachtrag zwei Anträge; gezählt am 2026-09-22 sind es sieben** – `CR-2026-020`, `-021`, `-023`, `-025`, `-026`, `-029` und `-030`.

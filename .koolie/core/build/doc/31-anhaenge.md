@@ -2,20 +2,23 @@
 
 ## 31.1 Inventar des Referenz-Repositorys
 
-Stand Release 0.9.0, 233 versionierte Dateien im Kern. Die vollständige Struktur mit Erläuterung steht in Kap. 15.2; hier nur die Größenordnung je Bereich.
+Stand Release 0.89.0, gezählt am 2026-09-22 aus dem Versionsbestand: **502 versionierte Dateien im Kern**, 506 im Repositorium. Die vollständige Struktur mit Erläuterung steht in Kap. 15.2; hier nur die Größenordnung je Bereich.
 
 | Bereich | Dateien | Inhalt |
 |---|---|---|
 | direkt im Kernverzeichnis | 5 | `install.py`, `clientmap.py`, `VERSION`, `CHANGELOG.md`, `OWNERS.md` |
-| `clients/` | 10 | Abbildungsschicht: zwei Client Packs zu je vier Dateien, Regeln der Schicht, Vorlage |
-| `framework/` | 83 | Core-Module, Laufzeitfassung, 12 Referenz-Skills, Role- und Tech-Packs, Organisationsvorgaben |
+| `clients/` | 8 | Abbildungsschicht: zwei Client Packs zu je drei Dateien, Regeln der Schicht, Vorlage |
+| `framework/` | 83 | elf Core-Module, Laufzeitfassung, 12 Referenz-Skills, zwei Role Packs mit einem dreizehnten Skill, Tech-Pack-Vorlage, Organisationsvorgaben |
 | `templates/` | 23 | Project-Overlay-Saat, Regelvorlagen, Skill-Vorlage |
-| `build/` | 37 | 33 Kapitelquellen, Assemblierungs- und DOCX-Skript, Referenzdokument, README |
+| `build/` | 38 | **34 Kapitelquellen**, Assemblierungs- und DOCX-Skript, Referenzdokument, README |
 | `prompts/` · `checklists/` · `decision-trees/` | 32 | 12 Prompt-Vorlagen, 11 Checklisten, 6 Entscheidungsbäume, je README |
-| `governance/` | 18 | Decision Log, RACI, Hierarchie, Prozesse, Änderungsanträge |
-| `onboarding/` · `examples/` · `pilot/` · `docs/` · `tests/` | 25 | Onboarding-Paket, synthetische Beispiele, Pilotkonzept, Leitfäden, Testkatalog mit Skripten und Protokollen |
+| `governance/` | 132 | Decision Log, RACI, Hierarchie, Prozesse – und **123 Änderungsanträge** |
+| `tests/` | 163 | Testkatalog, Prüf- und Hook-Skripte, **123 Protokolle**, Erhebungsapparat |
+| `onboarding/` · `examples/` · `pilot/` · `docs/` | 18 | Onboarding-Paket, synthetische Beispiele, Pilotkonzept, Leitfäden und Register |
 
-**Was daraus in ein Projekt installiert wird:** 80 Dateien beim Client Pack `devin-desktop`, 79 bei `claude-code` – Wurzel-Anweisungsdatei, Laufzeitschicht und Project Overlay. Der Unterschied liegt allein darin, dass ein Client keine eigene Hook-Datei kennt.
+⚠️ **Die beiden größten Posten sind Aufzeichnung, nicht Regelwerk.** 246 der 502 Dateien – knapp die Hälfte – sind Änderungsanträge und Protokolle. Sie werden mit dem Kern ausgeliefert, weil ein Beleg ohne seinen Träger keiner ist; für die **Nutzung** des Frameworks braucht sie niemand. Ein wählbarer Lieferumfang steht als eigener Posten im Releaseplan (Kap. 30).
+
+**Was daraus in ein Projekt installiert wird:** **78 Dateien, bei beiden Client Packs gleich viele** – Wurzel-Anweisungsdatei, persönliche Vorlage, Laufzeitschicht und Project Overlay; gezählt am 2026-09-22 an je einer frischen Referenzinstallation. 🔴 **Bis Release 0.88.1 stand hier „80 beim Pack `devin-desktop`, 79 bei `claude-code`" mit der Begründung, ein Client kenne keine eigene Hook-Datei.** Die Begründung ist seit D-32 (Release 0.26.0) hinfällig: **Seither erzeugt das Framework für keinen der beiden Packs eine eigene Hook-Datei**, die Konfiguration steht bei beiden in der Berechtigungsdatei – den Unterschied, den dieser Satz erklärte, gibt es nicht mehr. *Eine Zahl, die ihren Unterschied noch begründet, nachdem der Unterschied entfallen ist, hat aufgehört, gemessen zu werden.*
 
 Bewusst ohne Dateizahlen je Unterverzeichnis: Diese Tabelle stand bis Release 0.8.0 auf dem Stand von 0.2.0, weil sie beschrieb, was das Dateisystem ohnehin weiß. Verbindlich ist der Baum in Kap. 15.2 und – für den Installationsumfang – die Ausgabe von `install.py`.
 
@@ -48,7 +51,7 @@ Die **maßgebliche Zuordnung** steht in der Fähigkeitsmatrix des jeweiligen Pac
 
 ### 31.4.1 Client Pack `devin-desktop`
 
-Recherchestand: 01.–02.09.2026, gegen Devin Desktop 3.8.20 (QD-4). Ergänzt am 11.09.2026 gegen Devin Desktop 3.9.19 / CLI 3000.10.21 (Erhebungen zu K-21 bis K-27). **Vollständig abgeglichen am 18.09.2026 gegen den Produktstand 3.10.31** (`FW-AK-01`, `.koolie/core/tests/protocols/2026-09-18-FW-AK-01.md`) – der erste vollständige Abgleich dieses Teils. Fünf Zeilen der Fähigkeitsmatrix sind inzwischen in einer Sitzung **beobachtet** (H1, H2, R5, R6, S5); die übrigen Einstufungen sind gegen eine Installation nicht belegt, 8 von 34 Zeilen tragen einen VERIFY-Marker (Roadmap AP2).
+Recherchestand: 01.–02.09.2026, gegen Devin Desktop 3.8.20 (QD-4). Ergänzt am 11.09.2026 gegen Devin Desktop 3.9.19 / CLI 3000.10.21 (Erhebungen zu K-21 bis K-27). **Vollständig abgeglichen am 18.09.2026 gegen den Produktstand 3.10.31** (`FW-AK-01`, `.koolie/core/tests/protocols/2026-09-18-FW-AK-01.md`) – der erste vollständige Abgleich dieses Teils. **Neun Zeilen der Fähigkeitsmatrix sind in einer Sitzung an einer laufenden Installation beobachtet** – H1, H2, R5, R6 und S5 aus früheren Läufen, dazu S3, B3, B10 und A1 aus dem Abschluss von AP2 am 2026-09-22. **Zwei davon sind zum Schlechteren ausgegangen** (S3 und B10: die Messung widerlegt die zuvor vorgesehene Einstufung), eine zum Besseren (A1), eine mit benannter Grenze (B3). **Genau eine Zeile sagt noch `BELEG OFFEN`, und sie sagt es dauerhaft:** `X2` – was ein Client indexiert und wohin er es gibt, ist von außen nicht zu beobachten. Die frühere Markerform mit ihrer Frist „vor Version 1.0.0" ist mit Release 0.87.0 abgeschafft: *Ein Belegstand trägt keine Frist*, und für eine Frage, die dauerhaft nicht beobachtbar ist, war sie nie einlösbar.
 
 🔴 **Drei Quellen belegen einen Agenten, den der Hersteller entfernt hat.** Der Changelog sagt zu 3.9.19 (08.09.2026): *„Cascade has been removed. Devin Local is now the only agent available in Devin Desktop."* QD-5, QD-7 und QD-8 liegen unter `desktop/cascade/` und sprechen weiter im Präsens von diesem Agenten; QD-2 sagt sogar noch, er bleibe *„through July"* verfügbar. **Die Seiten sind erreichbar und inhaltlich unverändert – veraltet ist, wofür sie taugen.** Die Folge steht im Pack: Zeile R1 stützt sich seit 0.12.0 auf QD-6 statt auf QD-5, und die Zeichenzahlen aus QD-7 gelten weiter als **Vorgabe des Frameworks** und nicht als Produkteigenschaft (Zeile R4).
 
@@ -102,7 +105,7 @@ Eine Quelle ohne Abrufdatum ist kein Beleg, sondern eine Behauptung mit Fußnote
 
 ## 31.5 Konsolidierter Verifikationsbedarf
 
-Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg sagt dort `BELEG OFFEN` mit Grund und Datum, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: 8 von 34 Zeilen bei `devin-desktop` tragen den Marker; bei `claude-code` sind es 2 von 29 – beide mit 0.26.0 neu (R5, S5) und für diesen Client nicht erhoben –, und dort ist weiterhin keine Einstufung als **beobachtete** Durchsetzung belegt – ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
+Der **maßgebliche** Verifikationsbedarf steht seit Release 0.5.0 in der Fähigkeitsmatrix des jeweiligen Client Packs: Jede Zeile ohne Beleg sagt dort `BELEG OFFEN` mit Grund und Datum, und die Matrix wird mit dem Pack gepflegt statt in diesem Anhang. Belegstand zum Zeitpunkt dieser Dokumentfassung: **1 von 36 Zeilen bei `devin-desktop` sagt `BELEG OFFEN`** (`X2`, dauerhaft), **bei `claude-code` keine von 31**. Die beiden Zahlen messen trotzdem Verschiedenes: Bei `claude-code` ist der Beleg überwiegend ein Dokumentenabgleich gegen eine benannte Clientversion, und **ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung**; Messungen liegen dort für sechs Zeilen vor. Bei `devin-desktop` tritt zum Dokumentenabgleich eine laufende Sitzung hinzu. Die Matrix beider Packs ist in Kap. 15.1 beziehungsweise Kap. 7a eingebettet.
 
 Die folgende Liste ergänzt sie um Punkte, die keiner einzelnen Zusage der Matrix zugeordnet sind, sondern das Zusammenspiel betreffen. Sie gilt für das Client Pack `devin-desktop`; Prüfweg ist Roadmap-AP2, Testklasse AK:
 

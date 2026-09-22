@@ -1,6 +1,10 @@
 # 20 Referenz-Skills
 
-Die zwölf Referenz-Skills decken die geforderten Aufgaben ab und bilden zusammen den Standardweg jeder Änderung (verstehen → bewerten → planen → umsetzen → testen → prüfen → beschreiben). Jeder Skill ist projektneutral, verlangt Rückfragen bei Unklarheiten, macht Annahmen sichtbar, begrenzt den Scope, definiert Prüfungen, besitzt ein festes Ausgabeformat und bringt Positiv- wie Negativtestfälle mit (mindestens zwei beziehungsweise drei je Skill). Alle Skills liegen im Status `entwurf` (Version 0.1.0, Owner `<FRAMEWORK_OWNER>`) und durchlaufen den Lebenszyklus aus Kapitel 18.
+Die zwölf Referenz-Skills decken die geforderten Aufgaben ab und bilden zusammen den Standardweg jeder Änderung (verstehen → bewerten → planen → umsetzen → testen → prüfen → beschreiben). Jeder Skill ist projektneutral, verlangt Rückfragen bei Unklarheiten, macht Annahmen sichtbar, begrenzt den Scope, definiert Prüfungen, besitzt ein festes Ausgabeformat und bringt Positiv- wie Negativtestfälle mit (mindestens zwei beziehungsweise drei je Skill; gezählt am 2026-09-22: **je zwei Positiv- und drei bis fünf Negativtestfälle**, zusammen 72 Zellen).
+
+**Alle zwölf stehen im Status `pilot`**, mit Versionen zwischen `0.1.3` und `0.1.7`, Owner `<FRAMEWORK_OWNER>`; sie durchlaufen den Lebenszyklus aus Kapitel 18. Die Versionen sind nicht kosmetisch: **Jede Anhebung hat einen Meßbefund als Anlass**, und ihre Testzellen sind an einer laufenden Sitzung abgenommen, nicht abgezeichnet – der Ergebnisstatus jeder Zelle nennt sein Protokoll und das gemessene Client Pack mit Produktstand.
+
+**Ein dreizehnter Skill liegt außerhalb dieses Kapitels:** `role-re-ticket` gehört zum Role Pack Requirements Engineering (Ebene 6, Kap. 7.3) und wird nicht mit dem Kern installiert, sondern mit dem Pack aktiviert. Er bringt fünf Positiv- und zehn Negativtestfälle mit.
 
 | ID | Skill (`/aufruf`) | Auftragspunkt | Modus | Werkzeuge | Trigger |
 |---|---|---|---|---|---|

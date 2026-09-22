@@ -12,12 +12,22 @@ Die Erstfassung 0.1.0 beschrieb ein Framework für genau einen KI-Client. Seithe
 | 0.7.0 | Das Framework heißt **Leitwerk**; der Name folgt dem Inhalt (mit `0.88.0` umbenannt in **Koolie**) |
 | 0.8.0 | Ein Client Pack besteht aus vier Dateien; die gesamte Saat kommt aus dem Kern |
 | 0.9.0 | Dieses Dokument baut aus einem frischen Auscheckstand und weist bei jeder Laufzeitdatei aus, aus welchem Client Pack sie stammt |
+| 0.26.0 | Der Schutz-Hook läuft **fail-closed**, und die Hook-Konfiguration steht dort, wo der Client sie nachweislich liest – nicht dort, wo seine Dokumentation sie nennt (D-31, D-32). Ein Client Pack umfasst seither drei Dateien (D-36) |
+| 0.49.0 | **Kriterium 4 der 1.0.0-Definition erfüllt:** kein Decision Record mehr im Status `entschieden (Vorschlag)` |
+| 0.53.0 | **Kriterium 3 erfüllt:** kein Modulträger mehr im Status `entwurf` |
+| 0.57.0 | Der Validator setzt die **Werkzeugneutralität des Kerns selbst** durch (Prüfung 14 und 48). Bis dahin galt sie als Regel und wurde von nichts gemessen – siebzehn Fundstellen in vierzehn Trägern fielen im ersten Lauf |
+| 0.84.0 | **Kriterium 2 erfüllt:** keine Ergebniszelle mehr auf `offen`. 111 Zellen über sechs Messtage, ein Schritt aufwärts darunter, und er war Absicht |
+| 0.85.0 | Jede mit `[DOK]` belegte Zeile einer Fähigkeitsmatrix nennt die **Quellenkennung** ihrer Belegliste; Prüfung 73 setzt es durch. Eine Zeile bleibt ausdrücklich ohne Zuordnung – *geraten wird nicht* |
+| 0.86.0 | **Roadmap-AP2 ist zu Ende gefahren:** 70 Sitzungsläufe an einer Installation, vier Zusagen gemessen – zwei zum Besseren, zwei zum Schlechteren |
+| 0.87.0 | **Kriterium 1 erfüllt**, indem die Markerform selbst abgeschafft wurde: *Ein Belegstand sagt, was heute belegt ist, nicht, bis wann es belegt sein muss* (D-291). Die Zahl bleibt als Rückfallsperre stehen |
+| 0.88.0 | **Das Framework heißt Koolie.** Der Kern liegt unter `.koolie/core/`, das Project Overlay unter `.koolie/project-overlay/`; 498 Dateien mit einem `git mv`, 1.645 Ersetzungen in 197 Trägern |
+| 0.89.0 | Dieses Dokument ist gegen den geltenden Stand gesetzt. 🔴 **Es war seit 0.88.0 nicht baubar** – das Assemblierungsskript zählte den Weg zur Projektwurzel im Quelltext, und der Kern liegt seit der Umbenennung eine Ebene tiefer |
 
-Unverändert geblieben ist die Ehrlichkeitsgrenze: **Kein Mechanismus wurde in einer Zielinstallation ausgeführt.** Die Fähigkeitsmatrizen beider Packs sind unbelegt.
+**Was an der Ehrlichkeitsgrenze geblieben ist, und was nicht.** Der Satz „kein Mechanismus wurde in einer Zielinstallation ausgeführt" gilt **nicht mehr**: Für das Client Pack `devin-desktop` ist AP2 gefahren und mit Release 0.86.0 abgeschlossen, neun Matrixzeilen sind an einer laufenden Installation beobachtet. **Geblieben ist die Grenze in ihrer genaueren Form:** Ein Beleg gilt je Zeile, je Client und je Produktstand – nicht als Gesamturteil über eine Matrix. Für `claude-code` sind die Wirkungsnachweise überwiegend offen; ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung. 🔴 **Und zwei der gemessenen Zusagen sind zum Schlechteren ausgegangen** – die Messung hat widerlegt, was das Pack vorgesehen hatte. Das steht in den betreffenden Zeilen und ist nicht eingeebnet worden; *eine Matrix, in der jede Messung die Erwartung bestätigt, misst nicht.*
 
 ## Kritische Selbstprüfung
 
-Die Selbstprüfung bezieht sich auf die Erstfassung 0.1.0 und wurde für diese Dokumentfassung auf den Stand 0.9.0 fortgeschrieben. Sie wurde automatisiert durchgeführt (Strukturvalidator über das gesamte Repository: 0 Fehler, 0 Warnungen; zusätzlich Querverweisprüfung `FW-KO-04`; Inhaltsprüfungen auf Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen, nicht gelistete URLs; Mermaid-Syntaxprüfung aller Diagramme: valide) und im Durchsichtsverfahren. Ergebnis je Prüffrage:
+Die Selbstprüfung bezieht sich auf die Erstfassung 0.1.0 und wurde für diese Dokumentfassung auf den Stand 0.89.0 fortgeschrieben. Sie wurde automatisiert durchgeführt (Strukturvalidator über das gesamte Repository: 0 Fehler, 0 Warnungen; zusätzlich Querverweisprüfung `FW-KO-04`; Inhaltsprüfungen auf Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen, nicht gelistete URLs; Mermaid-Syntaxprüfung aller Diagramme: valide) und im Durchsichtsverfahren. Ergebnis je Prüffrage:
 
 | Nr. | Prüffrage | Ergebnis |
 |---|---|---|
@@ -34,7 +44,7 @@ Die Selbstprüfung bezieht sich auf die Erstfassung 0.1.0 und wurde für diese D
 | 11 | Übernahme ohne Core-Änderung möglich? | Ja. Adoption Guide + CL-10; Projektwechsel = Overlay-Tausch; byte-gleiche Core-Übernahme aus Releases; nachgewiesen durch Trennmechanik (Kap. 8). |
 | 12 | Skills versionierbar, testbar, wartbar? | Ja. Semantic Versioning je Skill, Lebenszyklus mit Kriterien, Pflicht-Testfälle (2 Positiv/3 Negativ je Skill), CHANGELOG je Skill, Strukturvalidierung und Ausgabeprüfung per Skript, Owner-Feld. |
 | 13 | Beispiele ausschließlich synthetisch und gekennzeichnet? | Ja. Kennzeichnungspflicht ist Konvention und Validator-Prüfung („synthetisch" in jeder EXAMPLES.md); Beispiele nutzen offensichtlich fiktive Bezeichner und Beispiel-Domänen. |
-| 14 | Offene Entscheidungen im Decision Log? | Ja. K-01…K-20, D-01…D-10, A-01…A-05 zentral geführt (Kap. 29.2); entscheidungsreife Kurzliste unten. |
+| 14 | Offene Entscheidungen im Decision Log? | Ja, und das Register ist seither erheblich gewachsen: **308 Decision Records von D-01 bis D-308, lückenlos; 101 Klärungspunkte von K-01 bis K-103 – zwei Nummern sind für synthetische Kennungen des Prüfapparats belegt und fehlen deshalb; dazu fünf Annahmen A-01 bis A-05** – zentral geführt (Kap. 29.2), gezählt am 2026-09-22. Die Vollständigkeit beider Register setzen Prüfung 50 und 58 durch: Jede im Kern genannte Kennung steht als Zeile im Log. Entscheidungsreife Kurzliste unten. |
 | 15 | Technische Empfehlungen nach Verbindlichkeit und Belegstatus gekennzeichnet? | Ja. MUSS/SOLL/KANN/DARF NICHT plus `[DOK]`/`[EMPF]`/`[KONZ]`/`BELEG OFFEN` durchgängig; Legende in Kap. 6 (FW-CORE-00). |
 
 Im Zuge der Selbstprüfung behobene Mängel (Auszug): Vereinheitlichung der M5-Befehlsregel (lesende Git-Befehle) über Modul, Laufzeitregel und Skills; Registrierung nachträglich aufgefallener Schema-Platzhalter; Entfernung eines Kodierungsartefakts; Korrektur eines Abschnittsverweises in der MCP-Vorlage; Ergänzung fehlender Kernregeln-Prüfungen im Validator während der Erstellung.
@@ -46,7 +56,7 @@ Punkte, die tatsächlich eine projektspezifische oder organisatorische Entscheid
 1. **Organisationsfreigabe und Vertragslage (K-05, K-06):** Planstufe/Admin-Kontrollen erheben; Datenschutz- und Vertragsprüfung (Auftragsverarbeitung, Training-Opt-out, Zero Data Retention, Verarbeitungsorte, Löschverfahren) durchführen und im Overlay referenzieren. Vorher keine Aktivierung.
 2. **Nutzungsumfang (K-04):** Nur lokale, beobachtete Nutzung (Framework-Standard) oder Freigabe von Cloud-Sitzungen und Kommandozeilenbetrieb mit erweitertem Sicherheitsmodell.
 3. **Rollenbesetzung:** `<FRAMEWORK_OWNER>`, Overlay Owner, `<SECURITY_CONTACT>`, `<DATA_PROTECTION_CONTACT>`, Mentorinnen/Mentoren, Modul-Owner (Zuordnung außerhalb des Repositorys).
-4. **Bestätigung der Strukturentscheidungen D-01…D-10** durch den künftigen Framework Owner – insbesondere D-05 (Bypass untersagt), D-06/K-08 (8-stufige Hierarchie mit Verschärfungsprinzip), D-10 (Cloud/CLI deaktiviert).
+4. **Bestätigung der Strukturentscheidungen D-01 bis D-10** durch den künftigen Framework Owner – insbesondere D-05 (Modus ohne Rückfragen untersagt), D-06/K-08 (8-stufige Hierarchie mit Verschärfungsprinzip), D-10 (Cloud/Kommandozeilenbetrieb deaktiviert). Die übrigen 298 Records sind Framework-Entscheidungen und betreffen ein aufnehmendes Projekt nur über ihre Wirkung.
 5. **Erstprojekt-Parameter:** Overlay-Werte (Pfade, Befehle, kritische Komponenten, `<CHANGE_SIZE_THRESHOLD>`), Ablageorte für Ergebnisberichte/Pläne/Testprotokolle, Feedbackkanal, Review-Zyklus-Frequenz.
 6. **Wahl des Client Packs und dessen verbindliche Zielversion** für AP2 und den Pilot. Ohne geprüfte Zielversion ist in der Fähigkeitsmatrix keine Einstufung `[TECHNISCH]` zulässig.
 7. **Pilotparameter:** Pilotgruppe, `<PILOT_DURATION>`, Fallliste, Zielwerte der Metriken (erst nach Referenzbasis).
@@ -63,7 +73,7 @@ Unvermeidbare Annahmen dieser Erstfassung – alle gekennzeichnet, keine stillsc
 
 ## Verifikationsbedarf
 
-Gegen die Dokumentation des gewählten Clients beziehungsweise in einer Zielinstallation zu prüfen: die Fähigkeitsmatrix des Client Packs (8 von 34 Zeilen bei `devin-desktop`, 2 von 29 bei `claude-code` sagen `BELEG OFFEN`) sowie die konsolidierten Punkte V2–V10 aus Anhang 31.4 – V1 ist mit 0.26.0 geschlossen, Ergebnis „nicht dokumentiert"; exakte `config.json`-Schemadetails; Hook-Eingabeschema (danach fail-closed als Standard); Skill-Discovery `.agents/skills/` und `@skills:`-Verhalten; Frontmatter-Toleranz; MCP-Dateistruktur; Codebasis-Indexierung; Spaces-Kontextreichweite; Wirkung additiver Skill-Permissions; reales Ladeverhalten der always-on-Summe. Prüfweg: Roadmap-AP2 mit Protokollpflicht; laufend: Testklasse AK im Release-Zyklus.
+Gegen die Dokumentation des gewählten Clients beziehungsweise in einer Zielinstallation zu prüfen: die Fähigkeitsmatrix des Client Packs (**1 von 36 Zeilen bei `devin-desktop` sagt `BELEG OFFEN` – dauerhaft –, bei `claude-code` keine von 31; dort stehen dafür die Wirkungsnachweise überwiegend aus**) sowie die konsolidierten Punkte V2–V10 aus Anhang 31.5 – V1 ist mit 0.26.0 geschlossen, Ergebnis „nicht dokumentiert"; exakte `config.json`-Schemadetails; Hook-Eingabeschema (danach fail-closed als Standard); Skill-Discovery `.agents/skills/` und `@skills:`-Verhalten; Frontmatter-Toleranz; MCP-Dateistruktur; Codebasis-Indexierung; Spaces-Kontextreichweite; Wirkung additiver Skill-Permissions; reales Ladeverhalten der always-on-Summe. Prüfweg: Roadmap-AP2 mit Protokollpflicht; laufend: Testklasse AK im Release-Zyklus.
 
 ## Datenschutzprüfung
 

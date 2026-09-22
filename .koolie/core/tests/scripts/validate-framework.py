@@ -523,7 +523,27 @@ Prüft (statisch, ohne laufenden KI-Client):
      decken (0.57.0), ueber Werkzeuggrenzen hinweg. Der zweite Gegenstand
      traegt den ersten: Gleichheit allein waere erfuellbar, indem alle vier
      denselben Fehler machen
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 76 laeuft als eigenes
+ 77. Der Stand des Hauptdokuments (D-312): Die Zeile `| Dokumentversion | X.Y.Z
+     (entspricht Framework-Release X.Y.Z) |` in build/doc/00-kopf.md nennt beide Male
+     denselben Wert, und dieser Wert ist der aus <CORE_DIR>/VERSION. ANLASS: Das
+     Hauptdokument stand am 2026-09-22 auf Dokumentversion 0.9.0 vom 2026-09-10 -
+     ZWEIUNDVIERZIG Releases zurueck. Es behauptete dort "Alle Module im Status
+     entwurf", waehrend seit 0.53.0 kein einziger Traeger darauf steht; es nannte
+     einen Produktstand, den das Pack zwei Zielspannen weiter hinter sich gelassen
+     hatte; und es fuehrte eine Client-Pack-Groesse, die seit 0.26.0 nicht mehr
+     stimmte. KEINE dieser Zahlen war falsch geschrieben - alle waren bei ihrer
+     Einfuehrung richtig und sind stehen geblieben, waehrend ihr Gegenstand weiterlief.
+     Das ist die Bauform von Pruefung 40 an einem groesseren Gegenstand. ZWEI
+     GEGENSTAENDE: (1) Der Anker - fehlt die Zeile, bestuende die Pruefung leise, und
+     sie meldet sein Fehlen deshalb selbst (D-23). (2) Beide Werte gleich und gleich
+     VERSION - die Gleichheit der beiden untereinander traegt den Vergleich mit
+     VERSION, denn eine Zeile, die zwei verschiedene Staende nennt, laesst offen,
+     welcher gemeint ist. PREIS, benannt: Jedes Release fasst diese Zeile an. Das ist
+     derselbe Preis, den Pruefung 67 fuer die Uebergabe verlangt, und er hat dort
+     getragen. GRENZE: Sie misst die VERSION, nicht den INHALT. Ein Dokument, dessen
+     Zahlen veralten, waehrend jemand die Versionszeile mitzieht, laeuft durch - was
+     dagegen hilft, ist der Durchgang vor dem Commit und keine Pruefung.
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 77 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -2063,10 +2083,33 @@ NEUTRAL_ABBILDUNG = (
     KERN + "/docs/PLACEHOLDER_REGISTRY.md",
     KERN + "/clients/",
 )
-# Die einzige befristete Ausnahme: build/ haelt die Quellen des Hauptdokuments, das mit
-# AP11 (~0.69.0) neu gesetzt wird. Sie faellt mit diesem Schritt (docs/ROADMAP.md).
-NEUTRAL_FRIST = (KERN + "/build/",)
-NEUTRAL_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_ABBILDUNG + NEUTRAL_FRIST
+# DIE BEFRISTETE AUSNAHME FUER build/ IST MIT 0.89.0 GEFALLEN (AP11, D-311).
+#
+# Sie galt fuer das GANZE Verzeichnis, mit der Begruendung, es halte die Quellen des
+# Hauptdokuments, das mit AP11 neu gesetzt werde. Gemessen beim Neusetzen: Von 36
+# Fundstellen lagen 27 in den beiden ANHANG- und ABSCHLUSSTRAEGERN - der Quellenliste
+# JE CLIENT PACK und dem konsolidierten Verifikationsbedarf EINES Packs. Das ist
+# dieselbe Gattung, die NEUTRAL_ABBILDUNG seit 0.57.1 dauerhaft ausnimmt, und
+# CR-2026-025 E3 hatte sie 2026-09-11 auch schon ausdruecklich ausgewiesen
+# ("die Anhaenge beschreiben teils Pruefpunkte gegen die Dokumentation eines konkreten
+# Clients"). EINE FRIST UEBER EINEN GEGENSTAND, DER DIE AUSNAHME DAUERHAFT BRAUCHT,
+# KANN NICHT ABLAUFEN - sie sieht nur zwanzig Releases lang so aus, als lehne sie an.
+#
+# Die uebrigen neun Fundstellen lagen in den Kapiteln und sind mit 0.89.0 aufgeloest.
+# Was bleibt, ist eine Dauerausnahme ueber DREI benannte Traeger, nicht ueber ein
+# Verzeichnis:
+#   29-grenzen.md   Zeitdokument des Stands vom 2026-09-01, ausdruecklich nicht
+#                   fortgeschrieben - Chronik wie CHANGELOG.md und DECISION_LOG.md
+#   31-anhaenge.md  Quellenliste JE CLIENT PACK und Verifikationsbedarf EINES Packs
+#   32-abschluss.md Chronik der Releases und die Aussagen des Auftrags UEBER die
+#                   Produktnennung selbst ("der Hersteller-/Produktbezug ist fuer
+#                   Phase 3 erforderlich")
+NEUTRAL_DOKUMENT = (
+    KERN + "/build/doc/29-grenzen.md",
+    KERN + "/build/doc/31-anhaenge.md",
+    KERN + "/build/doc/32-abschluss.md",
+)
+NEUTRAL_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_ABBILDUNG + NEUTRAL_DOKUMENT
 
 # Eine ANDERE Frage mit derselben Antwortliste, und deshalb eine eigene Konstante:
 # Welches Dokument traegt ueberhaupt eine eigene Artefaktversion? Chronik traegt keine -
@@ -7077,7 +7120,7 @@ P63_VERWEIS = re.compile(
     r"`(?P<pfad>[A-Za-z0-9_./-]*\.md)`[^`\n]{0,90}?Abschnitt\s+"
     r"(?P<nummern>\d+(?:\.\d+)?(?:\s*(?:und|bis|,)\s*\d+(?:\.\d+)?)*)")
 P63_UEBERSCHRIFT = re.compile(r"^#{2,6}\s+(\d+(?:\.\d+)*)\.?\s", re.M)
-P63_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_FRIST
+P63_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_DOKUMENT
 
 
 def _p63_nummern(roh: str) -> list:
@@ -8475,6 +8518,59 @@ def check_kernlage(root: str) -> None:
             f"Werkzeug an einem anderen Ort (D-299)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 77: Das Hauptdokument nennt den Stand, auf dem es gebaut ist
+# ---------------------------------------------------------------------------
+#
+# Sie ist die Schwester von Pruefung 67. Dort haelt die Titelzeile der Uebergabe gegen
+# VERSION, hier die Kopfzeile des Hauptdokuments - und der Unterschied ist, dass die
+# Uebergabe jede Sitzung gelesen wird und das Hauptdokument nur zur Auslieferung.
+# Genau deshalb ist es zweiundvierzig Releases zurueckgefallen, ohne dass es jemandem
+# aufgefallen waere.
+#
+# WARUM DIE QUELLE UND NICHT DAS ERZEUGNIS. build/out/hauptdokument.md steht in der
+# .gitignore und ist in einer frischen Auscheckung gar nicht da; eine Pruefung dagegen
+# waere in jeder Installation rot. Der Gegenstand ist die KAPITELQUELLE, und die ist
+# versioniert - derselbe Gedanke wie bei Pruefung 46 und 75.
+DOKUMENT_KOPF = KERN + "/build/doc/00-kopf.md"
+DOKUMENT_VERSION_RE = re.compile(
+    r"^\|\s*Dokumentversion\s*\|\s*(\d+\.\d+\.\d+)\s*"
+    r"\(entspricht Framework-Release\s*(\d+\.\d+\.\d+)\)\s*\|", re.M)
+
+
+def check_dokumentstand(root: str) -> None:
+    """Pruefung 77 (D-312): Das Hauptdokument steht auf dem Stand des Kerns."""
+    pfad = os.path.join(root, *DOKUMENT_KOPF.split("/"))
+    if not os.path.isfile(pfad):
+        err(f"{DOKUMENT_KOPF}: fehlt. Prüfung 77 hält dort die Dokumentversion gegen "
+            f"{KERN}/VERSION; ohne den Träger hat sie ihren Gegenstand verloren (D-312)")
+        return
+    vpfad = os.path.join(root, KERN, "VERSION")
+    if not os.path.isfile(vpfad):
+        return  # Pruefung 1 meldet die fehlende Pflichtdatei bereits
+    stand = read(vpfad).strip()
+    m = DOKUMENT_VERSION_RE.search(read(pfad))
+    if not m:
+        err(f"{DOKUMENT_KOPF}: keine Zeile der Form "
+            f"`| Dokumentversion | X.Y.Z (entspricht Framework-Release X.Y.Z) |`. "
+            f"Prüfung 77 hält sie gegen {KERN}/VERSION und bestünde ohne sie leise – "
+            f"genau der Zustand, in dem das Dokument 42 Releases zurückgefallen ist "
+            f"(D-312, D-23)")
+        return
+    dokument, genannt = m.group(1), m.group(2)
+    if dokument != genannt:
+        err(f"{DOKUMENT_KOPF}: die Kopfzeile nennt die Dokumentversion {dokument} und "
+            f"das Framework-Release {genannt}. Die Zeile sagt aus, dass beide "
+            f"übereinstimmen; nennt sie zwei Werte, lässt sie offen, auf welchem Stand "
+            f"das Dokument gebaut ist (D-312)")
+        return
+    if dokument != stand:
+        err(f"{DOKUMENT_KOPF}: die Kopfzeile nennt den Stand {dokument}, "
+            f"{KERN}/VERSION führt {stand}. Das Hauptdokument wird aus diesem "
+            f"Repositorium assembliert und hat keinen eigenen Stand; eine abweichende "
+            f"Zahl behauptet einen Bau, den es nicht gegeben hat (D-312)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -8566,6 +8662,7 @@ def main() -> int:
     check_matrixzeile_in_tabelle(root)
     check_altname_restbestand(root, man)
     check_kernlage(root)
+    check_dokumentstand(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

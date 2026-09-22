@@ -2,6 +2,189 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [0.89.0] - 2026-09-22
+
+**`AP11`: Das Hauptdokument gegen den geltenden Stand - und der Erzeuger, der seit der
+Umbenennung nicht mehr lief** (`CR-2026-124`, **D-309** bis **D-312**, **Pruefung 77**,
+`K-103` geschlossen, `K-104` neu). **Ohne Kontingent, ohne Lauf an einem Client.**
+
+> 🔴 **DER ERSTE BEFUND FIEL VOR DEM ERSTEN HANDGRIFF: DAS DOKUMENT LIESS SICH NICHT
+> BAUEN.** `build/assemble.py` leitete die Projektwurzel ueber einen im Quelltext
+> gezaehlten dritten `os.path.dirname()`-Aufruf ab. Seit der Kern unter `.koolie/core`
+> liegt, liefert dieser Ausdruck `.koolie/` statt der Wurzel - und **jede** Einbettung
+> schlaegt fehl. Der erste Bauversuch endete an der ERSTEN Direktive.
+> 🔴 **Das ist die Bauform aus D-299 an einer SIEBTEN Stelle, und Pruefung 76 hat sie nicht
+> gemeldet:** Sie haelt VIER Werkzeuge gegeneinander, und dieses ist keines davon.
+> *Eine Pruefung, die eine abgezaehlte Menge vergleicht, kann nur so vollstaendig sein wie
+> ihre Menge.*
+> ⚠️ **Und `0.88.1` hat die Folge falsch gebucht:** Sie schrieb, die Fundstellen des alten
+> Namens im Erzeugnis *"loest der naechste Bau"*. Es gab keinen naechsten Bau - und was
+> nach der Berichtigung bleibt, stammt aus der **eingebetteten Chronik** und bleibt dort
+> nach D-273. ➡️ *Eine Zusage ueber einen Vorgang, den man nicht ausgefuehrt hat, ist eine
+> Vermutung mit Zeitform.*
+
+> 🔴 **DER ABSTAND WAR ZWEIUNDVIERZIG RELEASES, UND KEINE EINZIGE ZAHL WAR FALSCH
+> GESCHRIEBEN.** Das Dokument stand auf Dokumentversion `0.9.0` vom 2026-09-10. Es
+> behauptete *"Alle Module im Status `entwurf`"* (gemessen: **null**; 81 Traeger mit
+> Steckbriefzeile, **77 auf `pilot`**, vier Ausfuellschlitze), *"Kein Mechanismus wurde
+> bislang in einer Zielinstallation ausgefuehrt"* (`AP2` ist mit `0.86.0` zu Ende gefahren,
+> **neun** Matrixzeilen sind beobachtet), *"Alle dynamischen Tests stehen auf `offen`"*
+> (**keiner**; 38 + 87 Zellen tragen `bestanden`), *"26 technische Zusagen"* (**31** und
+> **36**), *"233 versionierte Dateien im Kern"* (**502**), *"155 Markdown-Dateien"*
+> (**450**), *"rund 8.700 Zeichen"* fuer die Wurzel-Anweisungsdatei (**11.887**, an der
+> erzeugten Datei gemessen) und *"K-01 bis K-20, D-01 bis D-10"* (**K-01 bis K-103**,
+> **D-01 bis D-308**). **Alle waren bei ihrer Einfuehrung richtig und sind stehen
+> geblieben, waehrend ihr Gegenstand weiterlief.**
+> ➡️ *Das ist die Bauform von Pruefung 40 an einem groesseren Gegenstand - und der Grund,
+> warum die Behebung eine Pruefung braucht und nicht nur eine Textaenderung.*
+
+> 🔴 **ZWEI AUFZAEHLUNGEN WIDERLEGTEN IHRE EIGENE ZAHL IM SELBEN SATZ.** *"Ein Client Pack
+> enthaelt vier Dateien"* - und die Aufzaehlung daneben nennt drei (`manifest.json`,
+> `CLIENT_PACK.md`, die README der Laufzeitschicht). Die vierte war die README der
+> Regelablage; sie ist mit D-36 in die erste aufgegangen, und die Zahl blieb stehen, an
+> **vier** Fundstellen. Ebenso *"Allgemeingueltige Regeln in zehn Modulen: FW-CORE-00 …
+> 10"* - die Aufzaehlung in derselben Zeile fuehrt **elf**.
+
+### Was sich aendert
+
+- 🟢 **`assemble.py` leitet die Projektwurzel ueber `clientmap.projektwurzel()` ab**
+  (**D-309**) - dieselbe benannte Ableitung wie die vier Werkzeuge aus D-299. **Der Bau ist
+  fuer BEIDE Client Packs belegt** und ab jetzt Teil des Abnahmelaufs. ⚠️ **Eine Pruefung
+  bekommt er nicht** (`E2`): Pruefung 76 misst eine **Lageangabe**, und `assemble.py`
+  traegt keine, sondern leitet ab - eine fuenfte Stelle waere ein zweiter Gegenstand in
+  derselben Pruefung. *Preis, benannt: Ein Bau, der nicht gefahren wird, faellt weiterhin
+  nicht auf.*
+- 🟢 **Das Hauptdokument steht auf dem gemessenen Stand**, jede Zahl mit Messdatum oder
+  Fundstelle. **Gemessen: 15 der 34 Kapitelquellen sind geaendert**; die uebrigen 19
+  tragen ihren Inhalt ueber Einbettungen und folgen dem Kern ohne eigenen Eingriff.
+  🔴 **Im Durchgang vor dem Commit stand hier „32 der 34"** - eine selbst erzeugte Zahl,
+  entstanden aus der Verwechslung mit den Traegern AUSSERHALB der Dauerausnahme, und
+  auch die waeren **31** und nicht 32. **Der Namensabsatz aus der Wurzel-README steht jetzt auch im Dokument**
+  (D-305, Deckblatt).
+- 🟢 **Der Baum der Referenzstruktur steht in Platzhaltern** (**D-310**) - in Kapitel 15.2
+  **und** in der Wurzel-README. 🔴 **Er hiess *"Repository-Struktur"* und zeigte die eines
+  einzigen Clients**, dazu an drei Stellen ueberholt: eine **eigene Hook-Datei**, die seit
+  D-32 fuer kein Pack erzeugt wird; eine **README der Regelablage**, die es seit D-36 nicht
+  gibt; und `.koolie/core/` sowie `.koolie/project-overlay/` als zwei **Wurzeleintraege**,
+  obwohl sie seit `0.88.0` Geschwister unter `.koolie/` sind. 🟢 **Gegengeprueft an je
+  einer frischen Referenzinstallation:** **78 Dateien je Pack**, keine Hook-Datei, kein
+  README in der Regelablage. ⚠️ *Preis: Der Baum liest sich abstrakter; Anhang 31.2 loest
+  ihn auf.*
+- 🟢 **Die befristete Neutralitaetsausnahme fuer `build/` ist gefallen** (**D-311**) - und
+  durch eine **Dauerausnahme ueber drei benannte Traeger** ersetzt: `29-grenzen.md`
+  (Zeitdokument), `31-anhaenge.md` (Quellenliste **je Client Pack** und
+  Verifikationsbedarf **eines** Packs), `32-abschluss.md` (Chronik und die Aussagen des
+  Auftrags UEBER die Produktnennung selbst). 🔴 **Die Frist war ueber ZWEI Gegenstaende
+  gespannt, und fuer einen konnte sie nie ablaufen:** Von **36** gemeldeten Fundstellen
+  lagen **27** in den beiden Anhang- und Abschlusstraegern - dieselbe Gattung, die
+  `NEUTRAL_ABBILDUNG` seit `0.57.1` dauerhaft ausnimmt. 🔴 **Und `CR-2026-025` E3 hatte es
+  am 2026-09-10 schon entschieden:** *"die Anhaenge beschreiben teils Pruefpunkte gegen die
+  Dokumentation eines konkreten Clients"*. **Die Frist stand zwanzig Releases lang ueber
+  einer Entscheidung, die sie aufhob.** Die uebrigen **neun** Fundstellen sind aufgeloest.
+- 🆕 **Pruefung 77 haelt die Dokumentversion gegen `<CORE_DIR>/VERSION`** (**D-312**), mit
+  drei Sonden und einer Gegenprobe. **Zwei Gegenstaende:** der Anker - fehlt die Zeile,
+  bestuende die Pruefung leise - und die Gleichheit beider Werte der Zeile untereinander,
+  **die den Vergleich mit `VERSION` erst traegt**: Eine Zeile, die zwei Staende nennt,
+  laesst offen, welcher gemeint ist. ⚠️ **Preis, benannt und nicht klein:** Jedes Release
+  fasst diese Zeile an - derselbe Preis, den Pruefung 67 fuer die Uebergabe verlangt.
+  **Grenze, ebenso benannt:** Sie misst die **Version**, nicht den **Inhalt**.
+- 🟢 **`K-103` ist geschlossen.** Die Wurzel-README nennt den gemessenen Status, und ihre
+  drei Akteursnennungen heissen **"der KI-Client"**; die vierte - der Kommentar im Baum -
+  ist mit dem Baum auf Platzhalter umgestellt. 🔴 **Beim Berichtigen fielen die eigenen
+  Zahlen des Punktes:** `K-103` nannte *"80 Traeger, 73 auf `pilot`"*; gemessen ueber den
+  Zaehlbereich von Kriterium 3 sind es **81, 77 und vier Ausfuellschlitze**. ➡️ *Eine Zahl,
+  die einen Befund begruendet, gehoert an demselben Gegenstand nachgezaehlt wie der Befund.*
+- 🆕 **`K-104`:** Ist eine Pruefung auf die **Aussagen** der Wurzel-README doch baubar?
+  `0.88.1` hat sie abgelehnt, weil sie *"im Framework gruen und in jeder Installation rot"*
+  waere - **und genau dieser Einwand ist bei Pruefung 75 acht Stunden spaeter mechanisch
+  geloest worden**: Sie unterscheidet am Vorhandensein von `UEBERGABE.md`, wo sie laeuft.
+- 🟢 **Abschnitt 6 von SIEBEN Aenderungsantraegen ist nachgetragen** - `CR-2026-020`,
+  `-021`, `-023`, `-025`, `-026`, `-029` und `-030`. 🔴 **Der Releaseplan nannte zwei.**
+  Nachgetragen wird, was Decision Log (`D-28` bis `D-33`) und `CHANGELOG.md` bereits
+  festhalten; jeder Block sagt in einem eigenen Satz, dass er ein Nachtrag ist und woher er
+  stammt. **Es ist nichts neu entschieden worden.** ⚠️ Dabei fiel eine weitere
+  Unterzaehlung: `CR-2026-020` legt in Abschnitt 4 **fuenf** Fragen vor, sein Abschnitt 6
+  sagte *"E1, E2 und E3 einzeln entscheiden"*.
+- 🟢 **Fuenf falsche Anhangsverweise berichtigt.** `00-kopf.md` schickte fuer die Quellen
+  nach `31.3` (richtig: `31.4`) und fuer das Platzhalterregister nach `31.2` (richtig:
+  `31.3`), `05-glossar.md` und `08-trennung.md` ebenso, `32-abschluss.md` fuer V2-V10 nach
+  `31.4` statt `31.5`. **Pruefung 12 liest Pfad-Token in Backticks und keine
+  Abschnittsnummern in Prosa;** Pruefung 63 loest Nummernverweise auf, hatte `build/` aber
+  ueber dieselbe Frist ausgenommen - mit ihrem Fall laeuft sie jetzt auch dort.
+- 🟢 **Ein Kodierungsrest aus `0.9.0` ist weg:** *"Regeln in der Wurzel-Anweisungsdatei und
+  der Regelablage `` wirken"* - **leere Backticks, dreiundvierzig Releases lang.**
+
+### Drei Nachbarfunde, gemeldet UND behoben
+
+Anders als zuletzt sind sie behoben, weil sie in Traegern liegen, die das Hauptdokument
+**einbettet** - sie waeren Teil der Lieferung geworden:
+
+- 🔴 **`docs/RUNTIME_GLOSSARY.md` widersprach sich im selben Traeger.** Die Tabelle sagt,
+  die Hook-Konfiguration stehe bei **beiden** Packs in der Berechtigungsdatei (D-32); acht
+  Zeilen darunter sagte der erlaeuternde Absatz, sie sei bei einem Pack *"eine eigene
+  Datei"* - seit `0.26.0`. **Der Absatz, der die Tabelle erklaert, widersprach ihr.**
+- 🔴 **`clients/README.md` fuehrte `claude-code` als Status `entwurf`**, waehrend das Pack
+  selbst `pilot` sagt, und nannte **vier** gemessene Matrixzeilen, wo das Pack **sechs**
+  fuehrt. *Zwei Traeger desselben Hauses, zwei Zahlen.*
+- 🔴 **`docs/ROADMAP.md` trug die Ueberschrift *"Stand nach Release 0.56.0"***, direkt ueber
+  dem Satz *"Wird mit jedem Release fortgeschrieben"* - gemessen mit `git log -S`:
+  **zweiunddreissig Releases**. Und `29-grenzen.md` schickt seine Leser genau dorthin, um
+  den aktuellen Stand zu erfahren.
+
+### Geaendert
+
+- `.koolie/core/build/assemble.py` - Projektwurzel ueber `clientmap.projektwurzel()`
+- `.koolie/core/build/doc/` - 15 der 34 Kapitelquellen
+- `.koolie/core/tests/scripts/validate-framework.py` - **Pruefung 77**;
+  `NEUTRAL_FRIST` entfaellt, `NEUTRAL_DOKUMENT` tritt an ihre Stelle (auch fuer Pruefung 63)
+- `.koolie/core/tests/scripts/probe-pruefungen.py` - Sonden `77a` bis `77c`, Gegenprobe `77a`
+- `.koolie/core/tests/TEST_CATALOG.md` - Sondenmenge `6, 14 und 18 bis 77`
+- `.koolie/core/docs/RUNTIME_GLOSSARY.md` - Ausnahmetabelle und das MCP-Beispiel
+- `.koolie/core/clients/README.md` - Status und Messzahl von `claude-code`
+- `.koolie/core/governance/change-requests/` - Abschnitt 6 von sieben Antraegen;
+  `CR-2026-124-hauptdokument-ap11.md` neu
+- `.koolie/core/governance/DECISION_LOG.md` - **D-309** bis **D-312**; `K-103` geschlossen,
+  `K-104` neu
+- `README.md` - Statuszeile, drei Akteursnennungen, Baum
+- `.koolie/core/tests/protocols/2026-09-22-hauptdokument-ap11.md` - neu
+- `.koolie/core/VERSION`, `.koolie/core/CHANGELOG.md`, `.koolie/core/docs/ROADMAP.md`,
+  `UEBERGABE.md`
+
+### Migrationshinweise
+
+**Keine.** Kein ausgeliefertes Laufzeitartefakt geaendert - keine Quelle unter
+`framework/runtime/`, kein Skill, kein Manifest. Eine frische Referenzinstallation ist vor
+und nach diesem Release byte-gleich (78 Dateien je Pack). Ein uebernehmendes Projekt
+braucht nichts zu tun. ⚠️ **Wer den Kern hebt, bekommt Pruefung 77 mit** - sie hat ihren
+Gegenstand in jeder Installation, weil `build/doc/00-kopf.md` mit dem Kern ausgeliefert
+wird.
+
+### Bekannte Einschraenkungen
+
+- 🔴 **Die Word-Fassung ist NICHT gebaut** (`E8`). `pandoc` und das
+  Mermaid-Kommandozeilenwerkzeug sind auf diesem Arbeitsplatz nicht installiert - gemessen
+  am 2026-09-22, beide ohne Treffer. *Eine Word-Fassung, die niemand erzeugt hat, ist kein
+  Lieferbestandteil, sondern eine Zusage.* 🟢 **Der Weg dorthin ist mit diesem Release
+  ueberhaupt erst frei:** `build-docx.py` liest `build/out/hauptdokument.md`, und das
+  entstand seit `0.88.0` nicht mehr. Eigener Plan-Posten `~0.90.0`.
+- 🔴 **Die Gegenzeichnung der Protokolle ist NICHT nachgezogen** (`E9`) - und das ist keine
+  Vertagung, sondern eine Abgrenzung: **Eine Gegenzeichnung ist die Handlung einer zweiten
+  Rolle**, und ein Werkzeug, das `<TBD: Rolle>` durch einen Rollennamen ersetzt, faelscht
+  sie. 🔴 **Die Zahl des Plans hat dafuer keinen Gegenstand:** Er nannte *"zwoelf offene und
+  fuenf fehlende"*; gezaehlt nach der Regel *"ein Abschnitt mit `Gegenzeichnung` in der
+  Ueberschrift, ohne `<TBD>`"* sind es von **122** Protokollen **13 gegengezeichnet, 45
+  offen, 64 ohne Abschnitt** - auf die zehn FW-Testprotokolle eingegrenzt **drei, zwei und
+  fuenf**. *"Fuenf ganz ohne"* trifft; *"zwoelf mit offenem Abschnitt"* trifft keine der
+  beiden Abgrenzungen.
+- ⚠️ **Pruefung 77 misst die Version, nicht den Inhalt.** Ein Dokument, dessen Zahlen
+  veralten, waehrend jemand die Versionszeile mitzieht, laeuft durch. Was dagegen hilft,
+  ist der Durchgang vor dem Commit.
+- ⚠️ **Drei Traeger des Hauptdokuments pruefen 14 und 48 dauerhaft nicht** (D-311). Die
+  Grenze steht als Menge im Quelltext, mit Begruendung je Traeger, und im Laufzeitglossar.
+- ⚠️ **`29-grenzen.md` Abschnitt 29.1 bleibt ein Zeitdokument** und wird nicht
+  fortgeschrieben; angefasst sind nur der Hinweiskasten darueber, der falsche
+  Anhangsverweis und die leeren Backticks.
+
 ## [0.88.1] - 2026-09-22
 
 **Der Vortrag am 24.09. auf dem umbenannten Baum - und der Namensabsatz, den `0.88.0` als
