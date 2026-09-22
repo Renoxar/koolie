@@ -9,7 +9,7 @@
 | Ebene laut Entscheidungsbaum 6 | **Core**, mit Wirkung auf jede Installation |
 | Art | **Umbenennungslauf ohne Kontingent** – kein Lauf an einem Client, keine Modellzeit |
 | Dringlichkeit | 🔴 **Terminiert.** Die Vorführung ist am 2026-09-24; die Umbenennung soll am 2026-09-22 laufen, damit der 23.09. als Puffer für Nachzieharbeiten bleibt |
-| **Status** | 🔴 **VORGELEGT, NICHT ENTSCHIEDEN.** Die Fragen `E1` bis `E9` sind zu Beginn der Umsetzungssitzung zu beantworten. **Vor der Entscheidung wird kein Pfad angefaßt** |
+| **Status** | 🔴 **ENTSCHIEDEN am 2026-09-22** (D-269 bis D-275). **`E1` ist abgelehnt:** Die Umbenennung wird **nicht** vorgezogen, D-127 bleibt unverändert in Kraft. **`E2` bis `E9` sind angenommen**, `E4` und `E5` in einer vom Vorschlag abweichenden Fassung (`.koolie/core/` statt Vertagung und `koolie-core/`). 🟢 **Es ist kein Pfad angefaßt worden** – der Lauf selbst steht als Posten `~0.88.0` im Releaseplan, hinter dem Rest von `AP2` |
 
 ## 1. Anlass
 
@@ -163,5 +163,42 @@ Formalakt, sondern der eigentliche Nachweis.**
 
 ## 6. Entscheidung
 
-🔴 **Offen.** Diese Vorlage ist am 2026-09-22 mit Release `0.85.1` vorgelegt worden und
-wird zu Beginn der Umsetzungssitzung beantwortet.
+🔴 **Am 2026-09-22 beantwortet, mit `0.85.2` aufgezeichnet: `E1` abgelehnt, `E2` bis `E9`
+angenommen.** Die Vorlage ist am selben Tag mit `0.85.1` vorgelegt worden; **es ist auch
+in dieser Sitzung kein Pfad angefaßt worden.**
+
+| Nr. | Entscheidung | Abweichung vom Vorschlag | Record |
+|---|---|---|---|
+| **E1** | 🔴 **Abgelehnt.** Die Umbenennung wird **nicht** vor den Rest von `AP2` gezogen. **D-127 bleibt unverändert in Kraft** – nach der letzten Messung, vor `AP11` | **ja**, der Vorschlag lautete *vorziehen* | **D-269** |
+| **E2** | **Migrationshinweis mit benannter Dateiliste** (`K-50` geschlossen) | nein | **D-270** |
+| **E3** | **Prüfung 75 wird gebaut** – **im Umbenennungsrelease, nicht vorher** | nein (Zeitpunkt benannt) | **D-271** |
+| **E4** + **E5** | 🔴 **`.koolie/core/`** – mit Punkt, und unter dem Unterverzeichnis heißt der Kern **`core/`**. `K-75` (1) und (2) sind damit **entschieden statt vertagt** | **ja**, der Vorschlag lautete *vertagen* und `koolie-core/` | **D-272** |
+| **E6** | **Die Chronik wandert nicht mit** (D-125 bestätigt) | nein | **D-273** |
+| **E7** | **`UEBERGABE.md` wandert mit** | nein | **D-273** |
+| **E8** | **Gitea nach dem Merge** des Umbenennungsreleases. 🟢 **Der Vorbehalt ist gemessen, nicht angenommen** (Gitea 1.27.3, Testrepositorium): Gitea **legt** eine Weiterleitung an – **301**, `git ls-remote` läuft durch. 🔴 **Sie endet lautlos, sobald der alte Name neu belegt wird**, deshalb bleibt er unbelegt und die Remote-URL wird sofort nachgezogen | nein (Vorbehalt geklärt, **und die Annahme der Vorlage war falsch**) | **D-274** |
+| **E9** | **Foliensatz und Vorführstationen bleiben unverändert** – die Vorführung am 24.09. läuft auf `leitwerk-core/`, und die bevorstehende Umbenennung wird im Vortrag **gesagt** | 🔴 **ja, weil `E1` sie gegenstandslos gemacht hat** – der Vorschlag setzte den umbenannten Baum voraus | **D-275** |
+
+🔴 **Was die Ablehnung von `E1` kostet und was sie erspart.** Erspart wird der Preis, den
+`E1` nennt: Der Vorbedingungsdurchgang der `AP2`-Sitzung bleibt auf dem Baum gültig, auf
+dem er gefahren wird. **Bezahlt wird mit dem Termin:** Die Vorführung am 2026-09-24 läuft
+unter dem alten Namen, und der Puffertag des 23.09. wird nicht gebraucht. *Der Satz von
+D-127 „an dieser Stelle ist nichts mehr zu messen" trifft erst zu, wenn `AP2` zu Ende
+ist – und genau darauf wartet der Lauf jetzt.*
+
+🟢 **Die Messungen dieses Antrags bleiben gültig und sind der Vorrat des Umbenennungsreleases:**
+490 von 494 Dateien wandern mit einem `git mv`, die Arbeitsfläche des Textlaufs ist **925
+Fundstellen in 128 Dateien**, 43 Träger führen `<CORE_DIR>`, die Werkzeuge nennen den Namen
+**304**mal.
+⚠️ **Sie sind gegen `0.85.0` gezählt und altern mit jedem Release** – wer den Lauf fährt,
+zählt sie nach, und der Ablauf in Abschnitt 5 gilt unverändert.
+
+🔴 **Zwei Zahlen dieses Antrags sind bei der Entscheidung nachgezählt worden, und eine hat
+nicht gehalten.**
+
+| Zahl | im Antrag | nachgezählt am 2026-09-22 |
+|---|---|---|
+| Nennungen in den Werkzeugen | **304** | 🟢 **304** – mit dem Muster `leitwerk`; **311** über alle Schreibweisen, **295** allein für den Pfad `leitwerk-core`. *Ein Textlauf allein auf den Pfad ließe 16 Nennungen des bloßen Namens stehen.* |
+| Migrationsfläche (Schicht 3) | **27 Dateien**, 133 Nennungen | 🔴 **30 Dateien, 141 Nennungen** – Pilot **50 in 13**, Übungsrepositorium **91 in 17**. **Es fehlten die `.gitignore` beider Projekte und ein Glossareintrag** – und `leitwerk-core/build/out/` im Übungsrepositorium ist ein **wirksames** Ausschlußmuster, das nach dem Umzug stumm aufhört zu greifen (D-97, Prüfung 45) |
+
+➡️ **Der Migrationshinweis aus `E2` wird deshalb gegen den Bestand erzeugt und nicht aus
+dieser Liste abgeschrieben.**
