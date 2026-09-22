@@ -2053,9 +2053,13 @@ buendel(sonden_skill_deny,
 #
 # Die letzte Sonde ist die interessanteste: Sie belegt die Verschaerfung, die diese
 # Pruefung bei ihrem ERSTEN Lauf selbst gelernt hat. Ohne den Vorbehalt fiel
-# devin-desktop durch, obwohl es ehrlich ist - seine Zeile A1 traegt einen offenen
-# VERIFY-Marker, und die Praeambel des Packs sagt, die Einstufung nenne die VORGESEHENE
+# devin-desktop durch, obwohl es ehrlich ist - seine Zeile A1 trug einen offenen
+# Beleg, und die Praeambel des Packs sagt, die Einstufung nenne die VORGESEHENE
 # Tiefe. Die Einstufung allein sagt nicht, ob eine Zusage schon gilt.
+#
+# MIT 0.87.0 STEHT DER VORBEHALT AUF DER NACHFOLGEFORM BELEG OFFEN (D-291); die
+# Markerform ist abgeschafft. Die Sonde trifft davon nichts: Sie nimmt seit 0.86.0 das
+# Startwerkzeug weg und nicht den Vorbehalt.
 MANIFEST_CC_34 = "leitwerk-core/clients/claude-code/manifest.json"
 MANIFEST_DD_34 = "leitwerk-core/clients/devin-desktop/manifest.json"
 PACK_DD_34 = "leitwerk-core/clients/devin-desktop/CLIENT_PACK.md"

@@ -22,8 +22,8 @@ triggers:
      - Dieser Kommentarblock und alle <...>-Platzhalter werden beim Ausfüllen ersetzt oder entfernt.
      - Frontmatter: nur in der Clientdokumentation belegte Felder (name, description, argument-hint,
        allowed-tools, permissions, triggers; optional model, subagent, agent) [DOK]. Der Verzeichnisname
-       ist der Aufrufname /<skill-name> [DOK]. Exakte Syntax von permissions im Skill:
-       <VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>.
+       ist der Aufrufname /<skill-name> [DOK]. Wirkung und Syntax von permissions im Skill:
+       Zeile S3 der Fähigkeitsmatrix des jeweiligen Client Packs.
      - Metadaten des Frameworks (ID, Version, Status, Owner) stehen in der Tabelle unten (D-08).
      - Die Statuszelle ist ein Ausfüllschlitz: Ein neuer Skill beginnt auf entwurf; der Lebenszyklus
        steht in Abschnitt 7 von leitwerk-core/framework/core/08-skill-conventions.md (D-104).
@@ -39,7 +39,7 @@ triggers:
 |---|---|
 | ID | `<FW-SK-NNN / PRJ-SK-NNN / RP-<PACK>-SK-NNN / TP-<PACK>-SK-NNN>` |
 | Name | `<skill-name>` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `<TBD: Status; ein neuer Skill beginnt auf entwurf>` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER / Modul-Owner / APPROVAL_ROLE>` |
 | Betriebsmodus | `<M1 Read-only Analysis / M2 Guided Planning / M3 Controlled Modification / M4 Test and Validation / M5 Documentation Support>` |

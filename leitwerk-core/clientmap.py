@@ -325,7 +325,8 @@ def _kommentar(man: dict, mit_hooks: bool) -> str:
     hinweis = man.get("permissions_note")
     if hinweis:
         teile.append(hinweis)
-    teile.append("Exakte Mustersemantik: <VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>.")
+    teile.append("Exakte Mustersemantik: siehe Zeile B3 der Faehigkeitsmatrix "
+                 "dieses Client Packs.")
     return " ".join(teile)
 
 

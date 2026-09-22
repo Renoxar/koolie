@@ -31,7 +31,7 @@
 - [ ] Verschärfungsprinzip eingehalten (keine Lockerung höherer Ebenen; keine Berührung von V1–V12/K3)?
 - [ ] Widerspruchsfreiheit zu bestehenden Modulen geprüft (welche gelesen)?
 - [ ] Laufzeitfassungen betroffen (Wurzel-Anweisungsdatei, Regelablage, Berechtigungsdatei)? Synchronisierung in **allen** Client Packs geplant (`leitwerk-core/clients/README.md`)?
-- [ ] Belegstatus korrekt (`[DOK]`-Aussagen mit Quelle; sonst `[EMPF]`/`[KONZ]`/VERIFY-Marker)?
+- [ ] Belegstatus korrekt (`[DOK]`-Aussagen mit Quelle; sonst `[EMPF]`/`[KONZ]`/`BELEG OFFEN`)?
 - [ ] Test- und Validierungsbedarf: betroffene Testkatalog-IDs, neue Testfälle, Validatorlauf?
 - [ ] Auswirkungen auf Overlays und laufende Onboardings; Migrationshinweis nötig?
 - [ ] Dokumentation: CHANGELOG, Decision Log, betroffene Checklisten/Bäume/Onboarding?

@@ -75,7 +75,7 @@ triggers:
 
 **Ausgeschlossene Informationen:** K3 gemäß `leitwerk-core/framework/core/02-privacy.md`; Inhalte aus `<EXCLUDED_PATHS>` (auch wenn sie im Diff enthalten sind); Autoren-, E-Mail- und Zeitstempelangaben aus der Git-Historie; Ticketinhalte über die Kennung hinaus, Kommentare, Anhänge, Kundenkommunikation; Prompts mit K2- oder K3-Inhalten; Sitzungsprotokolle mit Umgebungsdetails (nur Referenz).
 
-(Erläuterung) Die `permissions`-Regeln im Frontmatter verwenden die Muster-Syntax der Berechtigungskonfiguration (`<PERMISSIONS_FILE>`); ihre Wirkung auf Skill-Ebene ist zu prüfen: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
+(Erläuterung) Die `permissions`-Regeln im Frontmatter verwenden die Muster-Syntax der Berechtigungskonfiguration (`<PERMISSIONS_FILE>`); ihre Wirkung auf Skill-Ebene steht in Zeile `S3` der Fähigkeitsmatrix des jeweiligen Client Packs.
 
 ## 3. Arbeitsschritte
 

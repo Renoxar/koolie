@@ -1,7 +1,76 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.86.1 (2026-09-22)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.87.0 (2026-09-22)
 
-> 🟢 **ZUERST LESEN: `AP2` IST ZU ENDE GEFAHREN. VIER VON FÜNF MARKERN SIND GEFALLEN,
-> KRITERIUM 1 STEHT AUF 18.** 70 Sitzungsläufe an einer Installation, siebzehn Meßbäume,
+> 🟢 **ZUERST LESEN: DIE MARKERFORM SELBST IST ABGESCHAFFT. KRITERIUM 1 STEHT AUF NULL,
+> UND DAMIT ALLE VIER ZÄHLBAREN KRITERIEN VON D-11.** 18 gezählte Fundstellen in 14
+> Dateien, dazu **sechs in versionierten Trägern, die Prüfung 46 nie gesehen hat**
+> (`CR-2026-121`, **D-291** bis **D-297**, `K-98` neu). **Ohne Kontingent.**
+>
+> 🔴 **DER BEFUND, DER DEN SCHRITT TRÄGT, IST ÄLTER ALS JEDE SEINER FUNDSTELLEN.** Die
+> Markerform verband zwei Dinge, die nicht zusammengehören: **den Belegstand einer
+> Aussage** und **eine Frist, bis wann er hergestellt sein muß** – das Register schrieb
+> beiden Schreibweisen *„vor Version 1.0.0"* vor. Für sechzehn der achtzehn Fundstellen
+> war die Frist richtig und ist mit `AP2` eingelöst. **Für `X2` war sie nie einlösbar**,
+> weil die Frage dauerhaft nicht beobachtbar ist – und der Marker hat einen Dauerzustand
+> achtundneunzig Releases lang als Rückstand ausgewiesen – seit `0.7.0`, nachgezählt am Changelog. *Eine Marke, die einen dauerhaften
+> Zustand als Rückstand führt, macht aus einer ehrlichen Auskunft eine offene Schuld.*
+>
+> 🟢 **NACHFOLGER IST KEINE ERSATZMARKE, SONDERN DIE BELEGSPALTE.** Sie führt `[DOK]`,
+> `[EMPF]`, `[KONZ]` – und neu **`BELEG OFFEN` mit Grund und Datum**, **ohne Frist**
+> (D-291). **Sechzehn Fundstellen sind sachlich aufgelöst** – **fünf** durch die Messungen
+> von `0.86.0` (`S3`/D-287, `B3`/D-277, `A1`/D-284), drei durch einen Verweis auf die
+> Fähigkeitsmatrix, **fünf** waren reine Nennungen, drei sind Register- und Glossarzeilen
+> und entfallen –, **zwei sind umgewidmet, und sie sind dieselbe Frage:** Zeile `X2` und
+> die Nachweiszelle von `K-20` sagen `BELEG OFFEN (dauerhaft)`. **Die Frage bleibt offen
+> (`K-20`), die Marke nicht.** ⚠️ **Diese Aufschlüsselung stand bis zum Durchgang vor dem
+> Commit auf „siebzehn und eine" und summierte sich auf 19** – *wer nach der Art der
+> Auflösung gruppiert, zählt Fragen; der Zähler zählt Fundstellen.*
+>
+> 🔴 **KRITERIUM 1 BLEIBT GEZÄHLT UND IST JETZT EINE RÜCKFALLSPERRE** (D-293). Muster und
+> Zählbereich bleiben wörtlich; was der Zähler ab jetzt meldet, ist die
+> **Wiedereinführung**. 🟢 **Die Null ist gemessen und nicht konstruiert:** Sonde `46c`
+> legt einen Marker in den Kern und verlangt die Meldung, Gegenprobe `46c` legt einen in
+> ein datiertes Protokoll und verlangt ihr Ausbleiben – **beide bringen ihren Gegenstand
+> selbst mit** (die Abhilfe aus `0.86.0` Abschnitt 2a, hier zum ersten Mal an einem
+> Schnitt bewährt, der ihren Gegenstand vollständig entfernt). ⚠️ **Verworfen: der
+> Ausbau** – D-11 verlöre seinen einzigen maschinellen Zähler für Kriterium 1.
+> ⚠️ **Preis, benannt:** Eine Zahl, die dauerhaft auf null steht, wird nicht mehr gelesen;
+> sie trägt nur, solange ihre Sonde läuft.
+>
+> 🔴 **UND DIE VOLLSTÄNDIGKEIT DES SCHNITTS WIRD NICHT AM ZÄHLER ABGELESEN.** *Ein
+> Wächter braucht ein weiteres Muster als der Schnitt* (0.75.0, D-205). Gesucht wurde
+> jede Nennung des Wortes in jedem versionierten Träger außerhalb der Chronik – und das
+> zweite Muster hat **25 Stellen in neun Trägern** gefunden, die der Formsweep nicht
+> gefunden hätte – **zwei normative Regeln** (die Übergangsbedingung `entwurf → pilot`
+> und D-114 im Wortlaut), **acht Belegstände und Vorbemerkungen**, **sieben
+> Arbeitsanweisungen** und **acht im Prüfapparat**, darunter die Prüfbedingung selbst.
+> ⚠️ **Die Zahl stand bis zum Durchgang vor dem Commit auf „vier"** – abgelesen an den
+> Zeilen einer Erläuterungstabelle, deren letzte fünf Träger auf einmal führte.
+>
+> 🔴 **FÜNF BEFUNDE FIELEN VOR DEM ERSTEN HANDGRIFF – ZUM ZWÖLFTEN MAL IN FOLGE**, und
+> zwei hätten den Schritt still falsch gemacht: **Der Zählbereich war kleiner als die
+> Wirkungsfläche** (D-295 – `README.md` und fünf Quellen unter `build/doc/`; *wer nur die
+> gezählten achtzehn entfernt, läßt die Form in der Wurzel-README stehen, und der Zähler
+> meldet trotzdem null*) und **der Vorbehalt von Prüfung 34 wäre toter Code geworden**
+> (D-296). Dazu **drei überholte Belegstände beider Client Packs** (D-297): `devin-desktop`
+> sagte *„5 der 36"* statt **1** – mitgezählt über den Verweis *„wie B3"*, **und `B3` ist
+> mit `0.86.0` aufgelöst** –, `claude-code` sagte *„Eine Zeile trägt einen VERIFY-Marker –
+> R5"*, während **der eigene Änderungsverlauf** dessen Auflösung seit `0.21.0` führt.
+>
+> ➡️ **DER NÄCHSTE SCHRITT IST `~0.88.0` – DIE UMBENENNUNG AUF `KOOLIE`**, und er kostet
+> **kein Kontingent**. Der Ablauf steht in zehn Schritten in `CR-2026-119` Abschnitt 5,
+> der Umfang ist gemessen (490 von 494 Dateien mit einem `git mv`, **925 Fundstellen in
+> 128 Dateien**, 43 Träger mit `<CORE_DIR>`, 304 Nennungen in den Werkzeugen, 30 Dateien
+> mit 141 Nennungen in den beiden übernehmenden Projekten). ⚠️ **Alle Zahlen sind gegen
+> `0.85.0` gezählt und vor dem Lauf erneut zu zählen** – seither haben drei Releases den
+> Bestand angefaßt. 🆕 **Der Lauf baut Prüfung 75** (D-271), und der Kern zieht nach
+> `.koolie/core/` (D-272).
+>
+> ⚠️ **UND EINE ANWEISUNG LÄUFT MIT DIESEM RELEASE AUS.** *„Keine neue Prüfung, solange
+> eine Zahl zu senken ist"* (15.09.) hat gegriffen, solange eine der vier Zahlen offen
+> stand. **Keine steht mehr offen.** `K-98` ist die erste Frage, die deshalb entscheidbar
+> geworden ist.
+
+> 🟢 **`AP2` IST MIT `0.86.0` ZU ENDE GEFAHREN – VIER VON FÜNF MARKERN GEFALLEN.** 70 Sitzungsläufe an einer Installation, siebzehn Meßbäume,
 > **0,4718 USD** (`CR-2026-120`, **D-276** bis **D-290**, `K-92` bis `K-96` neu).
 > ⚠️ **Die Kostenschätzung war um zwei Größenordnungen zu hoch**, und der Grund ist kein
 > Sparerfolg: Die Bündel-Meßtage messen **Skills** mit einem teuren Modell und langen
@@ -10,13 +79,8 @@
 > Gegenstands, nicht für die nächste Gattung* – dieselbe Lehre wie `0.83.0`, mit umgekehrtem
 > Vorzeichen.
 >
-> ➡️ **DER NÄCHSTE SCHRITT IST `~0.87.0` – DIE ÜBRIGEN `VERIFY`-MARKER**, und er kostet
-> **kein Kontingent**: 18 Fundstellen in **14** Dateien, **davon genau eine im Pack
-> `devin-desktop`** (der Marker von `X2`). **Der Schritt endet mit der Abschaffung der
-> Markerform selbst** – Registerzeile, Glossarzeile und vier nur nennende Fundstellen –,
-> und erst damit geht auch `X2` von der Zahl ab: **Die Frage bleibt offen (`K-20`), die
-> Marke nicht.** **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen.**
-> Danach `~0.88.0`: die Umbenennung.
+> ✅ **ERLEDIGT MIT `0.87.0`:** Die Markerform ist abgeschafft, Kriterium 1 steht auf
+> null. Der Abschnitt darüber sagt, wie.
 >
 > 🔴 **DER SCHWERSTE BEFUND DES TAGES: `--permission-mode dangerous` HEBT DEN `deny`-KORB
 > AUF** (**D-281**). `Read(.env)` wurde gelesen, `Exec(git push)` ausgeführt – **beide
@@ -131,7 +195,7 @@
 > Enthaltung**), `K-94` (der eingebaute Skill `upload-secrets` hat dieselbe Dateiklasse zum
 > Gegenstand, die `B3` schützt – **ungemessen**), `K-96` (die POSIX-Schreibweise).
 >
-> ⚠️ **DIE WURZEL-ANWEISUNGSDATEI HAT NOCH 90 ZEICHEN** bis zur Fehlergrenze von 12.000.
+> ⚠️ **DIE WURZEL-ANWEISUNGSDATEI HAT NOCH 126 ZEICHEN** bis zur Fehlergrenze von 12.000 (11.874 von 12.000, nachgezählt am 2026-09-22 mit derselben Leseroutine, die Prüfung 5 verwendet). 🔴 **Bis `0.86.1` stand hier „90“, und die Zahl war nie geprüft worden** – dieselbe Bauform wie die Tabelle der nächsten freien Kennungen: *eine Zahl, die gepflegt werden muß, wird nicht gepflegt.*
 > **Dieses Release hat sie nicht angefaßt.**
 >
 > 🔴 **VOR DEM ERSTEN HANDGRIFF AM MEßAPPARAT: `LW_ERHEBUNG` UND `LW_UEBUNG` SETZEN** –
@@ -361,6 +425,115 @@ aussehen und an einem Präparationswächter hängen.
 | `0.78.2` | **`K-80` entschieden** | 🔴 **Ein einzelnes `CR` ohne folgenden `LF` nimmt git die Normalisierung** – 14 Träger, und es waren genau die 14, die git nicht normalisiert hat (D-217). **Prüfung 66** liest seither **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt. 🟢 **Die Übergabe steht seither im Release-Commit**, ohne Antragsnummer; **Prüfung 67** rechnet die Titelzeile gegen `VERSION` (D-216) |
 | `0.79.0` | **Meßtag Bündel 4**, 50 Läufe, 61,19 USD – **acht von neunzehn** | 🔴 **`HEAD` stand an allen 38 Bäumen auf `main`.** Der Vorbedingungsdurchgang hatte geprüft, ob der Branch **da** ist; der Lauf braucht, daß er **ausgecheckt** ist – *ein Vorhandensein belegt sich selbst, ein Zustand nicht* (D-218). 🔴 **`{ command: "git branch -D", prefix: "git branch" }` sperrt über sein Präfix auch das bloße Auflisten** – 25 Abweisungen in 23 von 50 Läufen; **Prüfung 68** (D-219). 🟢 **Der Zuschnitt braucht neben Vollständigkeit eine AUSRICHTUNG** (D-221). 🟢 **Der Meßapparat liegt seither versioniert im Kern** (D-222) |
 | `0.79.1` | Der Aufräumer stirbt an seiner Erfolgsmeldung | **Ein Werkzeug prüft seinen BERICHTSWEG in beiden Kodierungsumgebungen, nicht nur seinen Lauf** (D-223). Das Skript war nie in der zweiten gefahren; eines von siebzehn betroffen |
+
+---
+
+### 0.48 `0.87.0`: Die Markerform selbst – Kriterium 1 auf null, und was der Zähler danach zählt
+
+> 🟢 **Kriterium 1: 18 → 0.** `CR-2026-121`, **D-291** bis **D-297**, `K-98` neu.
+> **Ohne Kontingent. Fünf Befunde fielen vor dem ersten Handgriff.**
+
+#### 🔴 Der Befund, der den Schritt trägt, ist älter als jede seiner Fundstellen
+
+**Die Markerform verband den Belegstand einer Aussage mit einer Frist.** Das Register
+schrieb beiden Schreibweisen *„vor Version 1.0.0"* vor. Für sechzehn der achtzehn
+Fundstellen war das richtig und ist mit `AP2` eingelöst. **Für `X2` war es nie
+einlösbar** – was ein Client indexiert, ist von außen nicht zu beobachten –, und der
+Marker hat diesen Dauerzustand **achtundneunzig Releases lang** als Rückstand geführt – die Zeile steht unverändert seit `0.7.0`, nachgezählt am Changelog. ⚠️ **Die erste Fassung dieses Absatzes sagte „achtzig“** und war geschätzt.
+
+> *Eine Marke, die einen dauerhaften Zustand als Rückstand führt, macht aus einer
+> ehrlichen Auskunft eine offene Schuld.*
+
+🟢 **Der Nachfolger ist keine Ersatzmarke, sondern die Belegspalte:** `[DOK]`, `[EMPF]`,
+`[KONZ]` – und neu **`BELEG OFFEN` mit Grund und Datum**, **ohne Frist** (D-291).
+
+| Auflösung | Zahl | wodurch |
+|---|---|---|
+| durch eine Messung von `0.86.0` | **5** | `S3`/D-287, `B3`/D-277, `A1`/D-284 |
+| durch Verweis auf die Fähigkeitsmatrix | **3** | `02-privacy.md` (2×), `hook-overlay-status.py` |
+| reine Nennung, umformuliert | **5** | `checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`, `A-05` |
+| Register und Glossar, entfallen | **3** | `PLACEHOLDER_REGISTRY` (2×), `00-principles.md` |
+| **umgewidmet, dauerhaft offen** | **2** | Zeile `X2` **und** die Nachweiszelle von `K-20` – zwei Fundstellen, **eine Frage** (D-292) |
+| **Summe** | **18** | `.devin/config.json` zählt nicht mit – `.gitignore` |
+
+#### 🔴 Die Falle des Postens, und sie ist entschärft, nicht umgangen
+
+**Wenn die Markerform verschwindet, geht Kriterium 1 durch Konstruktion auf null** – die
+Bauform, die `0.75.0` verworfen hat (*der Wächter, der mit dem Schnittmuster prüft*,
+D-205). Zwei Dinge halten diesen Schritt davon ab:
+
+1. 🟢 **Die Sonden bringen ihren Gegenstand SELBST mit.** Sonde `46c` schreibt einen
+   Marker nach `03-security.md` und verlangt die Meldung, Gegenprobe `46c` schreibt einen
+   in ein datiertes Protokoll und verlangt ihr **Ausbleiben**. **Keine setzt einen Marker
+   im Bestand voraus** – die Abhilfe aus `0.86.0` Abschnitt 2a, hier zum ersten Mal an
+   einem Schnitt bewährt, der ihren Gegenstand vollständig entfernt. *Sieben Sonden sind
+   `0.86.0` genau daran gefallen; dieses Release hat keine verloren.*
+2. 🟢 **Die Vollständigkeit wird nicht am Zähler abgelesen, sondern am ZWEITEN MUSTER:**
+   jede Nennung des Wortes in jedem versionierten Träger außerhalb der Chronik.
+
+➡️ **Entschieden (D-293): Kriterium 1 bleibt gezählt und wird zur RÜCKFALLSPERRE
+umgewidmet.** Muster und Zählbereich bleiben wörtlich; was der Zähler ab jetzt meldet,
+ist die **Wiedereinführung**. ⚠️ **Verworfen: der Ausbau** – D-11 verlöre seinen einzigen
+maschinellen Zähler für Kriterium 1, und die Standzeile fiele von vier Zahlen auf drei.
+
+#### 🔴 Fünf Befunde vor dem ersten Handgriff – zum zwölften Mal in Folge
+
+| # | Befund | Wirkung |
+|---|---|---|
+| **V1** | **Der Zählbereich war kleiner als die Wirkungsfläche** (D-295). Die Form stand in **sechs weiteren versionierten Trägern** – `README.md` und fünf Quellen unter `build/doc/` | *Wer nur die gezählten achtzehn entfernt, läßt die Form in der Wurzel-README stehen – und der Zähler meldet trotzdem null.* **Mitgezogen, ohne den Zählbereich zu erweitern** (`K-98`) |
+| **V2** | **Der Belegstand des Packs `devin-desktop` war seit `0.86.0` falsch** (D-297): *„5 der 36"* statt **1**, mitgezählt über den Verweis *„wie B3"* – **und `B3` ist mit `0.86.0` aufgelöst** | *Ein Verweisbeleg erbt den Beleg seines Ziels* (D-266). **Die Übersicht in `clients/README.md` sagte seit `0.86.0` „genau eine" – zwei Träger desselben Hauses, zwei Zahlen** |
+| **V3** | **Der Belegstand des Packs `claude-code` war seit `0.62.0` falsch** (D-297): *„Eine Zeile trägt einen VERIFY-Marker – R5"*, während der **eigene Änderungsverlauf** dessen Auflösung seit Pack-Version `0.21.0` führt (D-158) | *Die Zusage, deren Widerlegung im eigenen Dokument steht.* Zwei weitere Zahlen desselben Absatzes waren überholt |
+| **V4** | **Der Vorbehalt von Prüfung 34 hätte seinen Gegenstand verloren** (D-296) – sie läßt `A1` auf `[TECHNISCH]` durch, *solange die Zeile `<VERIFY` trägt* | Ohne Nachfolgeform wäre die Bedingung **dauerhaft wahr**: *eine Ausnahme, die nichts mehr ausnimmt* (0.57.1). **Steht seither auf `BELEG OFFEN`** |
+| **V5** | **Die Lebenszyklusregel nennt den Marker, ohne ihn zu schreiben** – Bedingung (c) des Übergangs `entwurf → pilot`, und D-114 im Wortlaut | *Die Aufzählung unter der entfernten Überschrift* (0.58.0), **diesmal vor dem Schnitt gefunden.** Das zweite Muster fand vier solcher Stellen |
+
+#### 🆕 Was nebenbei anfiel
+
+- ⚠️ **Der vierte Träger, schon wieder.** `clientmap.py` erzeugt den `_comment` der
+  Berechtigungsdatei, und `install.py --update` faßt sie **nicht** an – sie enthält
+  Projektwerte. **Die Änderung an der Quelle erreicht eine bereits installierte Datei
+  nicht**; die Laufzeitschicht dieses Repositoriums ist von Hand nachgezogen worden.
+  *Aufgefallen ist es am Trockenlauf, der die Datei ausdrücklich als „unberührt gelassen"
+  ausweist.*
+- ⚠️ **Der Vermerk *„dieses Release"* stand im Releaseplan auf drei Zeilen zugleich**
+  (`0.82.0`, `0.85.0`, `0.86.0`) und ist auf die aktuelle gesetzt.
+- 🟢 **`.devin/` und `build/out/hauptdokument.md` stehen in `.gitignore`** – beide sind
+  Erzeugnisse. Die vier Fundstellen unter `.devin/` sind aufgelöst, die **32** im
+  Hauptdokument löst der nächste Bau (`AP11`).
+
+#### 🔴 Zwei Skills bleiben auf ihrer Version, und das ist `K-84`
+
+**Gehoben sind sieben Modulträger und beide Client Packs** (`00-principles` 0.1.4, `01-governance` 0.3.2, `02-privacy` 0.1.8, `clients/README` 0.6.0, `SKILL_TEMPLATE` 0.1.3, `checklists/11` 0.2.3, `RELEASE_PROCESS` 0.1.4, `devin-desktop` 0.14.0, `claude-code` 0.24.0).
+
+🔴 **`fw-mr-description` und `fw-review-support` NICHT** (E9). *Eine angehobene Skillversion setzt die abgenommenen Zellen seines Testblatts auf die Fassung davor* (D-119) – **`0.79.0` hat genau das getan, und Kriterium 2 ist aufwärts gegangen** (D-227). **Wörtlich angewandt ginge es hier von null wieder aufwärts, in demselben Release, das Kriterium 1 auf null bringt.** ⚠️ Der Eingriff betrifft dort eine `(Erläuterung)`, keine Anweisung; **entschieden wird hier nichts, die Frage ist `K-84`.**
+
+🟢 **Die Client Packs sind der Gegenfall, nachgezählt:** Keine Zelle nennt eine **Packversion**, sie nennen den **Produktstand** (D-117, D-202). Eine Hebung des Packs altert deshalb keine Zelle.
+
+#### ⚠️ Der Durchgang vor dem Commit trägt sich zum einunddreißigsten Mal
+
+| Zahl | zuerst genannt | nachgezählt |
+|---|---|---|
+| Aufschlüsselung der achtzehn Fundstellen | „7 / 3 / 5 / 3 / 1“, Summe **19** | 🔴 **5 / 3 / 5 / 3 / 2 = 18.** Zwei Fehler auf einmal: `.devin/config.json` war mitgezählt, **obwohl es in `.gitignore` steht**, und die Zeile `X2` und die Nachweiszelle von `K-20` waren als **eine** Fundstelle geführt, weil sie **eine Frage** sind. *Wer nach der Art der Auflösung gruppiert, zählt Fragen; der Zähler zählt Fundstellen* |
+| sachlich aufgelöst / umgewidmet | „siebzehn und eine“ | 🔴 **sechzehn und zwei** – Folge derselben Verwechslung |
+| Stellen, die nur das zweite Muster findet | „vier“ | 🔴 **25 in neun Trägern** – abgelesen an den **Zeilen** einer Erläuterungstabelle, deren letzte fünf Träger auf einmal führte. *Dieselbe Bauform wie „eine mit `head` abgeschnittene Ausgabe trägt keine Zahl“ (0.77.0)* |
+| Releases, die `X2` als Rückstand geführt hat | „achtzig“ (geschätzt) | 🔴 **achtundneunzig** – die Zeile steht unverändert seit `0.7.0` (`git log -S`), und dazwischen liegen 98 Changelog-Einträge |
+| Kriterium 1 nachher | ~0 | 🟢 **0**, vom Validator ausgerechnet |
+
+> 🔴 **Vier Zahlen, und drei davon kamen aus derselben Quelle: einer Tabelle, die
+> ERKLÄREN sollte, und aus der dann GEZÄHLT wurde.** ➡️ *Eine Tabelle, die nach der Art
+> gruppiert, ist keine Zählung des Bestands – wer aus ihr eine Zahl nimmt, zählt ihre
+> Zeilen.*
+
+#### 🔴 Wiederaufnahmepunkt: die Umbenennung
+
+1. **`~0.88.0` – die Umbenennung auf `Koolie`**, mit dem Ablauf in zehn Schritten aus
+   `CR-2026-119` Abschnitt 5 und dem Umzug nach `.koolie/core/` (D-272). ⚠️ **Kostet kein
+   Kontingent.** ⚠️ **Alle Zahlen dort sind gegen `0.85.0` gezählt** – seither haben
+   `0.86.0`, `0.86.1` und dieses Release den Bestand angefaßt; **vor dem Lauf erneut
+   zählen.** 🆕 **Der Lauf baut Prüfung 75** (D-271).
+2. ⚠️ **`K-84`, `K-85`, `K-86` bleiben zu entscheiden**, ebenso `K-92` bis `K-94`, `K-96`,
+   `K-97` – und **neu `K-98`.**
+3. 🟢 **Und eine Anweisung läuft mit diesem Release aus:** *„Keine neue Prüfung, solange
+   eine Zahl zu senken ist"* (15.09.). **Keine der vier Zahlen steht mehr offen.**
 
 ---
 
@@ -1717,9 +1890,17 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.86.1**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.87.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
-Kodierungsumgebungen grün – **415 von 415 Einheiten**, je rund sieben Minuten Wanduhr.
+Kodierungsumgebungen grün – **415 von 415 Einheiten**.
+
+🟢 **ALLE VIER ZÄHLBAREN KRITERIEN VON D-11 STEHEN AUF NULL** (`0.87.0`): Die
+Markerform ist abgeschafft (`CR-2026-121`, D-291 bis D-297), Kriterium 1 ist **18 → 0**
+gegangen. ⚠️ **Das heißt NICHT `1.0.0`-reif**, und Prüfung 46 behauptet es auch nicht
+(E8 von `CR-2026-070`): Sie rechnet vier Zahlen aus und hält sie gegen die Standzeile.
+**Was bleibt, steht im Releaseplan:** die Umbenennung (`~0.88.0`) und `AP11`.
+
+*Zum Stand von `0.86.1`:*
 🔴 **Und er war es erst im dritten Anlauf:** Der erste lief gegen einen unfertigen Baum,
 der zweite meldete **sieben Sonden, die ihren Gegenstand verloren hatten** – genau an dem,
 was dieses Release aufgelöst hat (D-23; Wirkungsnachweis Abschnitt 2 und 2a). **Der
@@ -1838,7 +2019,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.86.1**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.87.0**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.84.0` gehoben** (2026-09-22, `0.84.0`), Overlay **`0.84.0`** – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
@@ -1886,9 +2067,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-121`** |
-| Decision Record | **`D-291`** |
-| Klärungspunkt | **`K-98`** – ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **eine der sechs belegten synthetischen Kennungen**, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
+| Änderungsantrag | **`CR-2026-122`** |
+| Decision Record | **`D-298`** |
+| Klärungspunkt | **`K-100`** – 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **eine der sechs belegten synthetischen Kennungen**, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
@@ -1916,7 +2097,7 @@ Wer die Zahlen wissen will, führt den Validator aus – hier stehen sie als Mom
 
 | # | Kriterium | Stand | Woran es hängt |
 |---|---|---|---|
-| 1 | kein unbearbeiteter `VERIFY`-Marker | **18** ⬇ | 🟢 **`AP2` ist mit `0.86.0` zu Ende gefahren** – vier Marker des Packs `devin-desktop` sind aufgelöst (`S3`, `B3`, `B10`, `A1`; `CR-2026-120`, D-277 bis D-287). **`X2` bleibt dauerhaft offen** (`K-20`): Was ein Client indexiert, ist von außen nicht zu beobachten. **Was bleibt, sind 18 Fundstellen in 14 Dateien – davon genau eine in diesem Pack: der Marker von `X2`, und er geht erst, wenn die Markerform selbst abgeschafft wird.** **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0" vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan** und ist jetzt der nächste. 🟢 **Die Trennlinie zwischen tragender und nur nennender Fundstelle steht seit `0.85.0`** – Prüfung 73 zieht sie an der Belegspalte (D-265) |
+| 1 | kein unbearbeiteter `VERIFY`-Marker | **0 ✅** – **22 → 18 → 0** | 🟢 **`AP2` ist mit `0.86.0` zu Ende gefahren** – vier Marker des Packs `devin-desktop` sind aufgelöst (`S3`, `B3`, `B10`, `A1`; `CR-2026-120`, D-277 bis D-287). **`X2` bleibt dauerhaft offen** (`K-20`): Was ein Client indexiert, ist von außen nicht zu beobachten. **Was bleibt, sind 18 Fundstellen in 14 Dateien – davon genau eine in diesem Pack: der Marker von `X2`, und er geht erst, wenn die Markerform selbst abgeschafft wird.** **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0" vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan** und ist jetzt der nächste. 🟢 **Die Trennlinie zwischen tragender und nur nennender Fundstelle steht seit `0.85.0`** – Prüfung 73 zieht sie an der Belegspalte (D-265) |
 | 2 | Testkatalog ohne `offen` | **0 ✅** – **85 → 0**, zuletzt `5 → 0` mit `0.84.0` | 🟢 **Erfüllt mit `0.84.0`.** Alle 38 Zellen des zentralen Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden`. **Die Kette:** `111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0` – sechs Meßtage, ein Nachlauf je Bündel 4 und 5, und **ein Schritt aufwärts, der Absicht war** (`0.79.2`, D-227). 🔴 **Was ein `bestanden` sagt und was nicht:** daß das Verhalten eingetreten ist, nicht daß das Framework es bewirkt hat (D-115) – die Zurechnung trägt der Kontrollauf; es nennt das gemessene Client Pack **mit Produktstand** (D-117, D-202), und bei einem Schranken-Testfall weist die Zelle je Schicht aus, was belegt ist (D-122). ⚠️ **`K-84` ist offen:** Acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt hat; wörtlich angewandt ginge der Zähler wieder aufwärts |
 | 3 | alle Modulstatus über `entwurf` | **0 ✅** | Erfüllt mit 0.53.0. 77 von 77 Trägern auf `pilot`, vier Vorlagen mit Ausfüllschlitz |
 | 4 | keine Decision Records `entschieden (Vorschlag)` | **0 ✅** | Erfüllt mit 0.49.0 |
@@ -1956,7 +2137,7 @@ dem 13.09. auf ein längst gelöschtes Scratchpad zeigten. 🔴 **Das hier genan
 | **0f** | 🟢 **ERLEDIGT mit `0.85.0`** – **Die Quellenzuordnung je Matrixzeile** (`CR-2026-118`, D-263 bis D-268, `K-62` geschlossen, **Prüfungen 73 und 74**): **25 der 26 Zuordnungen hat der Bestand hergegeben**, die sechsundzwanzigste (`M3` bei `claude-code`) bleibt **ausgesprochen offen** und ist der erste gezielte Auftrag an `FW-AK-01`. 🔴 **Die Zahl war aus zwei Gründen nicht die richtige** – vier Zellen nannten die Marke nur (D-265, **die Bauform der nur nennenden `VERIFY`-Fundstellen**), sieben Verweisbelege zählten nicht mit (D-266); nach der Kopfregel **40 von 46**. 🔴 **Der teuerste Befund stand 73 Releases da:** `M6` und `M7` bei `devin-desktop` sind hinter einer Leerzeile **keine Tabellenzeilen** mehr, während die Zusammenfassung sie mitzählt (D-264) | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
 | **0g** | 🟢 **ERLEDIGT mit `0.85.2`** – **Die neun Entscheidungen von `CR-2026-119`** (D-269 bis D-275; `K-50` geschlossen, `K-75` (1) und (2) entschieden): 🔴 **`E1` abgelehnt** – die Umbenennung wird **nicht** vorgezogen, D-127 gilt unverändert. **`E2` bis `E9` angenommen**, `E4`/`E5` abweichend als **`.koolie/core/`**. 🆕 **Der einzige neue Meßwert:** Gitea **legt** eine Weiterleitung an (301, `git ls-remote` läuft durch) – **und sie endet lautlos, sobald der alte Name neu belegt wird** (D-274). **Kein Pfad angefaßt** | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
 | **0h** | 🟢 **ERLEDIGT mit `0.86.0`** – **Der Rest von `AP2`** (`CR-2026-120`, **D-276** bis **D-290**, `K-92` bis `K-96` neu): **vier von fünf Markern aufgelöst**, 70 Sitzungsläufe, siebzehn Meßbäume, **0,4718 USD** – zwei Größenordnungen unter der Schätzung, weil dieser Meßtag **Mechanismen** mißt und nicht **Skills**. 🟢 **`S3` und `A1` zum Besseren** (die Skill-Felder wirken – **aber nur gemeinsam**; das Subagentenprofil bestimmt den Werkzeugbestand), 🔴 **`B10` zum Schlechteren** (das Abrufwerkzeug heißt `webfetch`, und die Berechtigungsdatei erreicht es in keiner Richtung), 🟢 **`B3` mit benannter Grenze** (Groß-/Kleinschreibung). 🔴 **Der schwerste Befund: `--permission-mode dangerous` hebt den `deny`-Korb auf** – **und genau dort trägt der Schutz-Hook.** 🔴 **Fünf Befunde fielen vor dem ersten Lauf**, darunter: **der Meßapparat kannte diesen Client nicht** (D-276) | eine Sitzung, **0,47 USD** | **Kriterium 1: 22 → 18** |
-| **1** | **Die übrigen `VERIFY`-Marker** – laut Releaseplan **~0.87.0** | eine Sitzung, **kein Kontingent** | **Rest von Kriterium 1: 18 → 0.** **18 Fundstellen in 14 Dateien**, davon genau eine im Pack `devin-desktop` (der Marker von `X2`). 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0" vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
+| **1** | 🟢 **ERLEDIGT mit `0.87.0`** – **Die Markerform selbst** (`CR-2026-121`, **D-291** bis **D-297**, `K-98` neu) | eine Sitzung, **kein Kontingent** | **Rest von Kriterium 1: 18 → 0.** **18 Fundstellen in 14 Dateien**, davon genau eine im Pack `devin-desktop` (der Marker von `X2`). 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0" vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
 | **2** | 🔴 **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.88.0**, **nach Nr. 1 und vor `AP11`** (D-127, Vorziehung abgelehnt mit D-269) | eine Sitzung, **kein Kontingent** | –. **Der Ablauf steht in zehn Schritten** (`CR-2026-119` Abschnitt 5), **der Umfang ist gemessen:** 490 von 494 Dateien mit **einem** `git mv`, Textlauf **925 Fundstellen in 128 Dateien** (Chronik ausgenommen, D-273), **43 Träger mit `<CORE_DIR>`**, **304 Nennungen** in den Werkzeugen. 🔴 **Der Kern zieht zugleich nach `.koolie/core/`** (D-272) – `<CORE_DIR>` bekommt erstmals einen Schrägstrich. **Beide übernehmenden Projekte werden danach gehoben und nach D-270 von Hand migriert** (**30 Dateien, 141 Nennungen**, Stand 2026-09-22 – vor dem Lauf erneut zu zählen). 🆕 **Der Lauf baut Prüfung 75** (D-271), und das Repositorium wird **nach** dem Merge umbenannt (D-274) |
 
 ### Prüfkandidaten – bewusst **nicht** der nächste Schritt (bewegen keine Zahl)
