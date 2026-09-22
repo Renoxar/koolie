@@ -1,46 +1,62 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.85.1 (2026-09-22)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.85.2 (2026-09-22)
 
-> 🔴 **ZUERST LESEN: DIE UMBENENNUNG AUF `KOOLIE` IST VORGELEGT UND SOLL HEUTE
-> LAUFEN.** `CR-2026-119` liegt mit **neun Entscheidungen** (`E1` bis `E9`) und einem
-> Ablaufplan in zehn Schritten im Repositorium. 🔴 **Es ist nichts entschieden, und vor
-> der Beantwortung wird kein Pfad angefaßt.** Der Framework Owner beantwortet sie zu
-> Beginn der Umsetzungssitzung.
+> 🟢 **ZUERST LESEN: DIE NEUN ENTSCHEIDUNGEN SIND GEFALLEN – `E1` ABGELEHNT, `E2` BIS
+> `E9` ANGENOMMEN.** `CR-2026-119` ist am 2026-09-22 beantwortet und mit `0.85.2`
+> aufgezeichnet (**D-269** bis **D-275**). 🔴 **Die Umbenennung auf `Koolie` wird NICHT
+> vorgezogen:** D-127 bleibt unverändert – nach der letzten Messung, vor `AP11`. **Es ist
+> kein Pfad angefaßt worden.**
 >
-> 🔴 **DIE VORZIEHUNG WEICHT VON D-127 AB, UND DAS IST DER KERN VON `E1`.** D-127 hat
-> *„die Umbenennung vor die Messungen ziehen"* **ausdrücklich erwogen und verworfen** –
-> mit der Begründung *„dann faßt sie jeden Pfad an, während **105 Ergebniszellen und 23
-> Marker** offen sind"*. **Heute sind es 0 und 22**, und die verbleibende Messung
-> betrifft **eine** Fähigkeitsmatrix statt fünf Bündel. ⚠️ **Die tragende Hälfte der
-> Begründung ist entfallen, die andere nicht:** D-127 sagt auch *„an dieser Stelle ist
-> nichts mehr zu messen"*, und das trifft heute nicht zu. **Der Preis steht deshalb als
-> `E1` in der Vorlage** – der Vorbedingungsdurchgang der `AP2`-Sitzung ist auf dem
-> umbenannten Baum zu wiederholen.
+> ➡️ **DER NÄCHSTE SCHRITT IST DAMIT DER REST VON `AP2`** (`~0.86.0`), **und er kostet
+> Modellzeit:** vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und
+> die ungemessene Wirkung der Körbe `ask`/`allow`. **Danach die übrigen `VERIFY`-Marker
+> (`~0.87.0`), dann die Umbenennung (`~0.88.0`).**
 >
-> 🟢 **DIE ERSTE FRAGE WAR, OB D-125 UND PRÜFUNG 12 GEGENEINANDERSTEHEN – SIE TUN ES
-> NICHT.** D-125 sagt, die Chronik werde nicht umgeschrieben; damit stünde dort ein
-> Pfad, den es nicht mehr gibt. **Gemessen:** Markdown-Links auf `leitwerk-core/` gibt
-> es **null**, und die Backtick-Pfade der Chronik sind in `LINK_EXCEPTIONS` bereits
-> ausgenommen (319 Fundstellen in 107 Dateien). ➡️ **Die Arbeitsfläche des Textlaufs ist
-> 925 Fundstellen in 128 Dateien, nicht 1.976 in 326.**
+> 🔴 **WAS DIE ABLEHNUNG KOSTET, STEHT DA UND WIRD GETRAGEN:** Die Vorführung am **24.09.**
+> läuft unter dem alten Namen. 🟢 **Foliensatz und die vier Vorführstationen bleiben
+> unverändert** (`E9`, D-275) – Folien, Stationen und Rückfall-Belege zeigen jetzt
+> denselben Namen, es ist nichts nachzuziehen. **Die bevorstehende Umbenennung gehört
+> trotzdem im Vortrag gesagt.** *Erspart wird der Preis von `E1`: Der
+> Vorbedingungsdurchgang der `AP2`-Sitzung bleibt auf dem Baum gültig, auf dem er
+> gefahren wird.*
 >
-> 🟢 **`K-50` IST ENTSCHEIDBAR GEWORDEN – DREI SCHICHTEN, UND NUR EINE BRAUCHT ARBEIT.**
-> Der Kern im Zielprojekt (1.357 und 1.848 Nennungen) wird **vom Heben** ersetzt, die
-> Laufzeitschicht (220 und 336) **von `install.py --update` erzeugt**. **Projekteigenes:
-> 45 Nennungen in 11 Dateien beim Piloten, 88 in 16 beim Übungsrepositorium.** *Die
-> ganze Migrationsfläche ist 27 Dateien über beide Projekte* – ein Migrationshinweis mit
-> benannter Liste trägt sie (`E2`).
+> 🟢 **`K-50` IST ZU** (`E2`, D-270): **Migrationshinweis mit benannter Dateiliste**, kein
+> maschineller Pfad. 🔴 **Die Fläche ist beim Nachzählen größer geworden: 30 Dateien mit 141
+> Nennungen**, nicht 27 – **die `.gitignore` beider Projekte und ein Glossareintrag fehlten
+> in der Liste des Antrags**, und der Eintrag auf `build/out` unter dem Kernverzeichnis
+> des Übungsrepositoriums ist ein **wirksames** Ausschlußmuster.
+> 🟢 **`K-75` (1) UND (2) SIND ZU** (`E4`/`E5`, D-272) – **und zwar abweichend vom
+> Vorschlag der Vorlage: `.koolie/core/`**, mit Punkt, und der Kern heißt darunter
+> `core/`. 🔴 **Damit verschiebt der Umbenennungslauf zusätzlich `project-overlay/`, und
+> `<CORE_DIR>` bekommt erstmals einen Schrägstrich** – jede Stelle, die ihn als einzelnes
+> Verzeichnissegment behandelt, bricht. ⚠️ **Und auch die 30 Dateien sind gegen eine
+> Umbenennung OHNE Umzug gezählt – vor dem Lauf wird erneut gezählt.**
 >
-> 🔴 **DER NAME STEHT AUCH IM WERKZEUG, UND DORT IST ER GEGENSTAND VON SONDEN.**
-> `probe-pruefungen.py` führt ihn **170**mal, `validate-framework.py` **54**mal – und die
-> Nennungen in den Sonden sind überwiegend **Suchtexte von Präparationen**. *Eine Sonde,
-> deren Suchtext nicht mehr trifft, verliert ihren Gegenstand, und nach D-23 gilt die
-> Prüfung dann als nicht vorhanden.* **Der Sondenlauf in beiden Kodierungsumgebungen ist
-> hier kein Formalakt, sondern der eigentliche Nachweis.**
+> 🔴 **DER UMBENENNUNGSLAUF BAUT PRÜFUNG 75** (`E3`, D-271) – sie meldet einen Restbestand
+> des alten Namens, mit der Chronik als **deklarierter** Ausnahmemenge. **Gebaut wird sie
+> IM Lauf und nicht davor:** Vorher meldete sie die 1.976 Fundstellen des Bestands und
+> stünde von ihrem ersten Lauf an rot – *eine Prüfung, die von Anfang an rot steht, wird
+> abgeschaltet statt gelesen.*
 >
-> ⚠️ **DER TERMIN BINDET:** Vorführung am **24.09.**, Umbenennung am **22.09.**, der
-> 23.09. ist Puffer. **Der Foliensatz und die vier Vorführstationen nennen
-> `leitwerk-core/`** und sind nachzuziehen (`E9`); die Rückfall-Belege von Bündel 3
-> bleiben alt – *sie sind Chronik, und das gehört im Vortrag gesagt.*
+> 🆕 **GITEA LEITET WEITER – UND DIE WEITERLEITUNG IST KEIN BESTANDSSCHUTZ** (`E8`,
+> D-274). **Gemessen** an einem eigens angelegten und danach wieder entfernten
+> Testrepositorium auf Gitea 1.27.3: Der alte Name antwortet mit **301** auf den neuen,
+> `git ls-remote` gegen die alte URL läuft durch. 🔴 **Sobald der alte Name neu belegt
+> wird, endet die Weiterleitung ohne jede Meldung** – die alte Adresse liefert dann ein
+> fremdes Repositorium. ➡️ **Der alte Repositoriumsname bleibt nach der Umbenennung
+> unbelegt, und die Remote-URL wird trotzdem sofort nachgezogen.** *Die Klammerbehauptung,
+> mit der die Frage vorgelegt wurde – „Gitea legt keine Weiterleitung an" –, war falsch;
+> jetzt ist sie gemessen.*
+>
+> 🟢 **DER VORRAT DES UMBENENNUNGSLAUFS BLEIBT GÜLTIG UND STEHT IN `CR-2026-119`:** 490
+> von 494 Dateien mit **einem** `git mv`, Textlauf **925 Fundstellen in 128 Dateien**
+> (Chronik ausgenommen, D-273, gemessen verträglich mit Prüfung 12), **43 Träger mit
+> `<CORE_DIR>`**, **304 Nennungen** in den Werkzeugen – davon 170 in
+> `probe-pruefungen.py`, überwiegend Suchtexte von Präparationen. ⚠️ **Die 304 zählen
+> `leitwerk` klein geschrieben; über alle Schreibweisen sind es 311** – ein Textlauf
+> allein auf den Pfad ließe 16 Nennungen des bloßen Namens stehen. 🔴 **Der Sondenlauf in
+> beiden Kodierungsumgebungen ist dort kein Formalakt:** Eine Sonde, deren Suchtext nicht
+> mehr trifft, verliert ihren Gegenstand, und nach D-23 gilt die Prüfung dann als nicht
+> vorhanden. ⚠️ **Alle Zahlen sind gegen `0.85.0` gezählt und altern mit jedem Release.**
 >
 > 🟢 **ZUERST LESEN: `K-62` IST ZU, UND KRITERIUM 1 IST ANGEFANGEN.** Die
 > Quellenzuordnung je Matrixzeile steht: **25 der 26 Zuordnungen hat der BESTAND
@@ -307,6 +323,104 @@ aussehen und an einem Präparationswächter hängen.
 
 ---
 
+### 0.46 `0.85.2`: Die neun Entscheidungen beantwortet – die Umbenennung bleibt, wo D-127 sie hingestellt hat
+
+> 🔴 **Kein Pfad angefaßt, sieben Decision Records.** `E1` ist **abgelehnt**, `E2` bis
+> `E9` sind **angenommen**, zwei davon abweichend vom Vorschlag der Vorlage.
+
+| Nr. | Frage | Ergebnis | Record |
+|---|---|---|---|
+| **E1** | Vorziehung vor den Rest von `AP2`? | 🔴 **Nein.** D-127 gilt unverändert | **D-269** |
+| **E2** | `K-50`: maschineller Pfad oder Hinweis? | **Migrationshinweis** mit benannter Dateiliste | **D-270** |
+| **E3** | Restbestand des alten Namens melden? | **Ja – Prüfung 75, gebaut IM Umbenennungsrelease** | **D-271** |
+| **E4**+**E5** | `K-75` (1) und (2) | 🔴 **`.koolie/core/`** – mit Punkt, Kern heißt `core/` *(abweichend: der Vorschlag lautete vertagen und `koolie-core/`)* | **D-272** |
+| **E6** | Wandert die Chronik mit? | **Nein** (D-125 bestätigt) | **D-273** |
+| **E7** | Wandert `UEBERGABE.md` mit? | **Ja** | **D-273** |
+| **E8** | Gitea-Umbenennung, wann? | **Nach dem Merge** des Umbenennungsreleases | **D-274** |
+| **E9** | Foliensatz und Vorführstationen? | **Unverändert** *(abweichend, weil `E1` den Gegenstand entfernt hat)* | **D-275** |
+
+#### 🔴 Der Preis, den `E1` erspart – und der, den er kostet
+
+**Erspart:** Der Vorbedingungsdurchgang der `AP2`-Sitzung bleibt auf dem Baum gültig, auf
+dem er gefahren wird; Meßbaum, Apparat, Übungsrepositorium und Prompts tragen weiter
+denselben Namen. **Gekostet:** Die Vorführung am 24.09. läuft unter dem alten Namen, und
+der Puffertag des 23.09. wird nicht gebraucht. *Der Satz von D-127 „an dieser Stelle ist
+nichts mehr zu messen" trifft erst zu, wenn `AP2` zu Ende ist – und genau darauf wartet
+der Lauf jetzt.*
+
+#### 🆕 Der einzige neue Meßwert dieses Releases: Gitea leitet weiter, und das trägt nicht
+
+**Der Vorbehalt von `E8` war *„vorher zu klären: ob Gitea eine Weiterleitung anlegt"* –
+und die Frage ist am Testrepositorium beantwortet worden, nicht am Schreibtisch.**
+
+| Prüfung (Gitea 1.27.3) | Ergebnis |
+|---|---|
+| API auf den alten Namen nach der Umbenennung | 🟢 **301** auf den neuen |
+| Weboberfläche auf den alten Namen | 🟢 **301** auf den neuen |
+| `git ls-remote` gegen die alte URL | 🟢 **läuft durch** |
+| **Gegenprobe: alter Name neu belegt** | 🔴 **Weiterleitung endet lautlos** – die alte Adresse liefert das neue, fremde Repositorium (Kennung 17 statt 16) |
+
+> 🔴 **Eine Weiterleitung, die ein Dritter durch bloßes Anlegen übernimmt, ist kein
+> Bestandsschutz.** Und sie fällt nicht auf: Ein Klon der alten Adresse holt dann
+> stillschweigend das falsche Repositorium – **dieselbe Bauform wie D-262**, ein Vorgang,
+> der aussieht wie ein Erfolg. ➡️ **Der alte Name bleibt unbelegt, die Remote-URL wird
+> trotzdem sofort nachgezogen.**
+
+#### ⚠️ Und eine eigene Behauptung ist beim Messen gefallen
+
+**Die Frage `E8` wurde mit der Klammer *„Gitea legt KEINE Weiterleitung an – der alte Name
+gibt 404"* vorgelegt. Das war ungeprüft und falsch.** *Wer eine Zahl über den eigenen
+Bestand nennt, zählt sie – und wer eine Eigenschaft eines fremden Werkzeugs nennt, mißt
+sie.* **Der Entscheidungsgehalt von `E8` – der Zeitpunkt – ist davon unberührt geblieben.**
+
+#### ⚠️ Der Durchgang vor dem Commit trägt sich zum neunundzwanzigsten Mal – an einer fremden Zahl
+
+**Zwei Zahlen des Antrags sind nachgezählt worden, eine hat nicht gehalten.**
+
+| Zahl | im Antrag | nachgezählt (2026-09-22) |
+|---|---|---|
+| verfolgte Dateien, davon unter `leitwerk-core/` | 494 / 490 | 🟢 **494 / 490** |
+| Fundstellen `leitwerk-core` gesamt | 1.976 in 326 | 🟢 **1.976 in 326** |
+| Träger mit `<CORE_DIR>` | 43 | 🟢 **43** |
+| Nennungen in den Werkzeugen | 304 | 🟢 **304** – Muster `leitwerk`; **311** über alle Schreibweisen, **295** allein für den Pfad |
+| **Migrationsfläche (Schicht 3)** | **27 Dateien** | 🔴 **30 Dateien, 141 Nennungen** |
+
+🔴 **Die drei fehlenden Dateien sind die `.gitignore` beider Projekte und ein
+Glossareintrag des Piloten** – und **eine von ihnen trägt ein wirksames Pfadmuster:**
+der Eintrag auf `build/out` unter dem Kernverzeichnis des Übungsrepositoriums. *Ein
+Ausschlußmuster, das nach dem Umzug nicht mehr greift, meldet sich nicht; es zeigt die
+Erzeugnisse des Kerns in `git status`* (D-97, Prüfung 45). ➡️ **Der Migrationshinweis aus `E2` wird gegen den Bestand
+erzeugt und nicht aus der Liste des Antrags abgeschrieben.**
+
+🆕 **Und eine zweite Lehre steckt in der Zahl, die gehalten hat:** Die **304** zählen
+`leitwerk` klein geschrieben. **Über alle Schreibweisen sind es 311** – ein Textlauf, der
+nur den Pfad `leitwerk-core` ersetzt, ließe **16** Nennungen des bloßen Namens stehen,
+sieben davon großgeschrieben. *Wer eine Zahl übernimmt, übernimmt ihr Suchmuster mit.*
+
+🔴 **Und der Sondenlauf hat dieselbe Lehre geliefert, die dieses Release predigt – an
+einem Satz dieser Übergabe.** Der Befund oben nannte den Ausschlußeintrag zuerst als
+vollen Pfad in Backticks. **Der Validator am Arbeitsplatz meldete 0 Fehler** – dort
+*existiert* das Verzeichnis, als **unverfolgtes Erzeugnis**. **Der Sondenlauf meldete
+105 Abweichungen**, weil er nur den **verfolgten** Bestand kopiert und Prüfung 12 die
+Pfadangabe dann ins Leere zeigen sieht. ➡️ *Eine Pfadangabe, die auf ein Erzeugnis zeigt,
+besteht am Arbeitsplatz und fällt in der Kopie.* **Ein grüner Validatorlauf ersetzt den
+Sondenlauf nicht** – hier an einem Träger gemessen, den dieselbe Sitzung geschrieben hat.
+
+#### 🔴 Wiederaufnahmepunkt: der Rest von `AP2`
+
+1. **`~0.86.0` – `AP2` zu Ende fahren.** Vier sitzungsgebundene Marker von
+   `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Körbe `ask`/`allow`.
+   ⚠️ **Kostet Modellzeit**, und `X2` bleibt dauerhaft offen (`K-20`).
+2. **Vor dem Sitzungslauf: die Vorbedingungen der Klasse durchgehen** – zehnmal in Folge
+   der billigste Befund des Releases.
+3. **Danach `~0.87.0`** (die übrigen `VERIFY`-Marker samt Abschaffung des Markers selbst),
+   **dann `~0.88.0`** – die Umbenennung, mit dem Ablauf in zehn Schritten aus
+   `CR-2026-119` Abschnitt 5 und dem Umzug nach `.koolie/core/` (D-272).
+4. ⚠️ **`K-84` bleibt zu entscheiden** und ist von alledem unberührt; `K-85` und `K-86`
+   ebenso.
+
+---
+
 ### 0.45 `0.85.1`: Der Vorbereitungsdurchgang der Umbenennung – neun Entscheidungen vorgelegt
 
 > 🔴 **Kein Pfad angefaßt, kein Decision Record.** Es ist **nichts entschieden**, es ist
@@ -361,7 +475,9 @@ Erhebungswerkzeugen. 🔴 **Fünf zu kleine eigene Zahlen an einem Tag** – dre
 über den eigenen Bestand nennt, zählt sie, auch wenn die Teilsummen danebenstehen.*
 **Er trägt sich zum achtundzwanzigsten Mal in Folge.**
 
-#### 🔴 Wiederaufnahmepunkt: die neun Entscheidungen beantworten, dann umbenennen
+#### ~~🔴 Wiederaufnahmepunkt: die neun Entscheidungen beantworten, dann umbenennen~~
+
+> 🟢 **Erledigt mit `0.85.2`** – die Antworten stehen in Abschnitt 0.46. **Schritt 3 und 4 sind damit nicht gefahren worden:** `E1` ist abgelehnt, es ist kein Pfad angefaßt.
 
 1. **`CR-2026-119` lesen** – Abschnitt 4 sind die neun Fragen, Abschnitt 5 der Ablauf in
    zehn Schritten.
@@ -1427,7 +1543,7 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.85.1**, alles gemergt, **ein vorgelegter Antrag (`CR-2026-119`), kein Restbranch**,
+`main` = **0.85.2**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün.
 
@@ -1464,19 +1580,22 @@ billig werden. 🔴 **Und die Zahl 26 von 44 war aus zwei Gründen nicht die ric
 vier Zellen **nannten** die Marke nur (D-265), sieben Verweisbelege zählten in keiner
 Richtung mit (D-266); nach der Kopfregel waren es **40 von 46**.
 
-🔴 **DER NÄCHSTE SCHRITT IST DIE UMBENENNUNG AUF `KOOLIE`** (`~0.86.0`, **kein
-Kontingent**) – **vorgezogen, beantragt mit `CR-2026-119`, nicht entschieden.** Danach
-der Rest von `AP2` (`~0.87.0`, **kostet Modellzeit**) und die übrigen `VERIFY`-Marker
-samt Abschaffung des Markers selbst (`~0.88.0`).
+🔴 **DER NÄCHSTE SCHRITT IST DER REST VON `AP2`** (`~0.86.0`, **kostet Modellzeit**).
+Danach die übrigen `VERIFY`-Marker samt Abschaffung des Markers selbst (`~0.87.0`) und
+**dann** die Umbenennung auf `Koolie` (`~0.88.0`, **kein Kontingent**).
 
-⚠️ **Die Reihenfolge ist damit gegenüber D-127 getauscht, und das ist `E1`.** Wer den
-Antrag ablehnt, fährt die alte Reihenfolge – dann fällt die Umbenennung hinter den
-Vorführungstermin.
+🟢 **Die Reihenfolge steht wieder so, wie D-127 sie gesetzt hat** – die mit `CR-2026-119`
+beantragte Vorziehung ist am 2026-09-22 **abgelehnt** worden (`E1`, **D-269**). ⚠️ **Der
+Preis ist benannt und wird getragen:** Die Vorführung am 24.09. läuft unter dem alten
+Namen. 🟢 **Der gemessene Vorrat des Umbenennungslaufs bleibt gültig** und steht in
+`CR-2026-119`; **`K-50` und die beiden fristgebundenen Fragen von `K-75` sind zu**
+(D-270, D-272) – der Kern zieht mit demselben Vorgang nach **`.koolie/core/`**.
 
 ⚠️ **Offen und benannt:** **`K-84`** (acht von dreizehn Skills tragen eine Version, die
 ihre eigenen Meßbefunde erzeugt hat – **durch `0.84.0` größer geworden**, weil
 `role-re-ticket` auf `0.1.4` steht), `K-85`, `K-86`. 🟢 **Geschlossen mit `0.84.0`:**
-`K-59`, `K-88`, `K-89`, `K-90`, `K-91`; **mit `0.85.0`:** `K-62`.
+`K-59`, `K-88`, `K-89`, `K-90`, `K-91`; **mit `0.85.0`:** `K-62`; **mit `0.85.2`:** `K-50`
+und die beiden fristgebundenen Fragen von `K-75` (D-270, D-272).
 
 **Drei Releases an einem Tag:**
 
@@ -1519,7 +1638,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.85.1**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.85.2**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.84.0` gehoben** (2026-09-22, `0.84.0`), Overlay **`0.84.0`** – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
@@ -1532,7 +1651,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 | Belege des Nachlaufs | `devpacks/leitwerk-erhebungen-2026-09-20-b4n/` | 🟢 **Angelegt mit `0.80.0`: 125 Belegdateien, rund 16 MB, unversioniert** – dazu die Dossiers und `WIEDERAUFNAHME.md`. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224); ohne die Angabe bricht jedes Skript des Apparats ab |
 | Belege 0.59.0 | `devpacks/leitwerk-erhebungen-2026-09-18-s4/` | **zwanzig Läufe** (zwölf gewertet, acht in drei Verworfen-Ablagen), neun Skripte, sechs Prompts |
 
-**Abnahme:** Der Prüfapparat steht bei **67**, Sondenmenge **`6, 14 und 18 bis 67`** – ausgerechnet, nicht gepflegt. **243 Einheiten**, Laufzeit rund **300 s** Wanduhr auf 8 Bahnen (Faktor 7,9). 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
+**Abnahme:** Der Prüfapparat steht bei **74**, Sondenmenge **`6, 14 und 18 bis 74`** – ausgerechnet, nicht gepflegt. **302 Einheiten**, Laufzeit rund **410 s** Wanduhr auf 8 Bahnen (Faktor 7,9). ⚠️ **Diese Zeile stand bis `0.85.2` auf 67 Prüfungen, 243 Einheiten und 300 s** – drei Releases alt; die Zahlen sind am 2026-09-22 aus dem Lauf selbst genommen. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt.* 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
 
 ### 🟢 Was mit `0.66.0` erledigt ist – und was daran neu gelernt wurde
 
@@ -1567,7 +1686,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 | Gattung | nächste frei |
 |---|---|
 | Änderungsantrag | **`CR-2026-120`** |
-| Decision Record | **`D-269`** |
+| Decision Record | **`D-276`** |
 | Klärungspunkt | **`K-92`** – 🟢 weiterhin ungenutzt; `0.85.0` hat `K-62` geschlossen und keinen neuen aufgeworfen |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
@@ -1584,7 +1703,7 @@ gepflegt.** Wer sie braucht, zählt sie: `grep -o 'D-[0-9]\{3\}' governance/DECI
 echt.** Die Gegenprobe steht auf `UEB-97`. **Eine synthetische Kennung nimmt nie die nächste
 freie** – sonst kollidiert sie beim ersten echten Bedarf.
 **Offene Klärungspunkte:** 🔴 **NEU AUS 0.82.0: `K-88`** – Prüfung 55b prüft eine **Teilzeichenkette** (`if name in text`). Von 26 Pflichtplatzhaltern, die die Laufzeitschicht nennt, sind im Übungs-Overlay **14 nirgends** mit spitzen Klammern gebunden, ohne den Änderungsverlauf des Overlays **15** – und die Prüfung meldet **null**. **Nach** dem Meßtag von Bündel 5 zu entscheiden: Vierzehn Platzhalter zu binden ist ein Eingriff in den Meßgegenstand, und die Laufzeitfassung steht mit 5.963 Zeichen dicht an ihrer SOLL-Grenze von 6.000. 🟢 **`K-87` ist mit 0.82.0 entschieden** (D-242): `ohnepack`, und der dritte Zuschnitt entfällt samt fünfzehn Läufen. 🔴 **Aus 0.79.2: `K-84`** – acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt haben, und ihre **35 abgenommenen Zellen** stehen auf der Fassung davor. Wörtlich angewandt ginge Kriterium 2 auf rund **63** statt auf 32. **Nicht vor dem Nachlauf zu entscheiden.** 🟢 **`K-83` ist mit 0.79.2 entschieden** (D-226): keine Ausnahmemenge – D-120 hatte die Frage längst beantwortet, das Werkzeug kannte sie nur im Kopfkommentar. 🟢 **`K-80` ist mit 0.78.2 entschieden** (D-216). 🔴 **Neu aus 0.78.2: `K-81`** (welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt – `core.autocrlf` ist eine Einstellung des Arbeitsplatzes, nicht des Repositoriums; **nicht vor dem Meßtag**, weil `git archive` die Meßbäume baut). 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
-K-37, K-38, K-39, K-40, K-41, K-42, K-43, K-44, K-45, K-46, **K-47, K-48, K-49** (aus 0.55.0) und **K-50** (aus 0.56.0); **K-51** (aus 0.56.2). 🆕 **`K-73` ist mit 0.71.0 beantwortet, soweit er sich beantworten ließ** (D-195): **Die Sperre weist ab, sie entfernt nicht** – das Modell setzt den Aufruf ab. **Welche Schicht abweist, bleibt wahrscheinlich, nicht isoliert:** Die eigens gebauten Zuschnitte haben gar keinen Aufruf abgesetzt. 🔴 **Neu aus 0.71.0: `K-74`** (die Ausgabemarken `[HALT]` und `[RÜCKFRAGE]` stehen mit **145 Fundstellen in 54 anweisenden Trägern** im Kern und sind in keinem Kernmodul und keinem Glossar erklärt – **vor Bündel 3 zu entscheiden**). 🔴 **Neu aus 0.72.0: `K-75`** (sieben Entscheidungen zur Auslieferung als Installationsbibliothek und zum Unterverzeichnis `.koolie/`; **zwei davon haben eine Frist**, weil sie in die Umbenennung gehören). 🟢 **`K-72` ist mit 0.67.1 erledigt** (D-184). 🆕 **Neu aus 0.59.0/0.59.1: `K-54`** (die Laufzeitschicht kennt den Ausnahmeprozess nicht und verbietet zugleich unbedingt jede Lockerung – ein Lauf hat daraufhin eine registrierte Ausnahme für unwirksam erklärt), **`K-55`** (wie baut man eine Scope-Falle, die ein regelkonform lesender Lauf überhaupt antrifft?) und **`K-56`** (ein Testblatt ist eine Aufzeichnung und wird als Regelquelle ausgeliefert). **`K-52` ist mit 0.57.1 erledigt** (D-129), **`K-53` mit 0.59.0** (D-140), **`K-55` mit 0.60.0** (D-145). 🔴 **Neu aus 0.60.0: `K-57`** (neun von zwölf `fw-*`-Skills sind für das Modell gesperrt – der Standardarbeitsablauf ist im nicht-interaktiven Betrieb nur erreichbar, wenn der Prompt jeden Skill nennt, und dann mißt man den Prompt) und **`K-58`** (Abschnitt 17 sagt *du darfst*; ein Lauf hat daraus *untersagt* gemacht – die Werkzeugmeldung schlug den Regeltext). **Und `K-34` und `K-55` standen überhaupt nicht im Register**, obwohl sie in sieben beziehungsweise sechs Trägern genannt wurden – Prüfung 50 fängt das jetzt. 🔴 **Neu aus 0.61.0: `K-59`** (der zweite Einsatzkontext steht in drei der sechs anweisenden Fassungen nicht – jede Sitzung an diesem Framework steht in ihm, und die Texte, die sie lädt, sagen *nur lesend*), **`K-60`** (ob ein KI-Client die zwanzig Grenzfälle wirklich so einstuft, mißt kein Testfall – `FW-KO-05` prüft die Texte) und **`K-61`** (ein `bestanden` eines Konsistenztests altert mit jeder Änderung an seinem Gegenstand: `FW-KO-02` steht seit dem 10.09. auf `bestanden`, und drei der vier Befunde von 0.61.0 liegen in seinem Gegenstand). 🟢 **`K-66` ist mit 0.64.0 erledigt** (D-163 bis D-168). 🔴 **Neu aus 0.65.0: `K-69`** (der Wertabgleich zwischen Quell-Overlay und geladener Schicht deckt **einen** Platzhalter; `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` haben dieselbe Gestalt und sind **ungeprüft, nicht geprüft-und-gut** – hängt an `K-67`). 🔴 **Neu aus 0.64.0: `K-68`** (der Backend-Strang des Übungsrepositoriums ist auf keinem Arbeitsplatz dieses Projekts übersetzbar – `UEB-14` und zwei Zellen hängen daran; sie ist gelesen, nie gelaufen). 🔴 **Aus 0.63.0: `K-66`** (21 von 81 Blattzellen haben keinen Gegenstand – `fw-docs-update` vollständig; Herrichtung ist eigener Posten `0.65.0`) und **`K-67`** (die Overlay-Vorlage kennt drei Formen, einen Platzhalter zu binden, und eine davon ist *gar nicht*). 🔴 **Neu aus 0.67.0: `K-72`** (`SK-002-P01` verlangt eine Übungsmethode mit Tests **und** einem ungetesteten Fehlerpfad – von acht Modulen mit Tests ist **genau eines unpräpariert** (`BookForm.tsx`), und es hat keinen Fehlerpfad; die beiden mit einem tragen `UEB-05` beziehungsweise `UEB-03`. **Das ist D-137 eine Ebene höher:** Dort verdrängt eine Präparation den Gegenstand einer anderen Präparation, hier den einer **Zelle**. 🔴 **Vor `0.68.0` zu entscheiden** – entweder eine sechzehnte Präparation oder die ausdrückliche Feststellung, daß die Zelle auf `books.ts` gefahren wird und der Injektionsbefund im Protokoll als erwartete Nebenwirkung steht). 🆕 **`K-71` ist nicht geschlossen, aber beantwortet, soweit er sich beantworten ließ:** Der verlangte einbahnige Lauf ist gefahren und grün – **er grenzt die Nebenläufigkeit trotzdem nicht ein, weil auch die beiden achtbahnigen Läufe desselben Tages grün sind.** Stand: einmal beobachtet, in vier Läufen nicht reproduziert. 🔴 **Neu aus 0.62.0: `K-62`** (26 von 44 `[DOK]`-Zeilen der Fähigkeitsmatrizen nennen ihre Quelle nicht – ohne sie kostet jede Wiederholung von `FW-AK-01` denselben vollen Durchgang; eigener Posten `~0.65.0`), **`K-63`** (die Kontoquelle der Skills bei `claude-code` ist standardmäßig an und aus der ausgelieferten Datei **nicht** abschaltbar – die neue Bauform des Releases), **`K-64`** (die organisationsseitige Skillquelle von `devin-desktop`, *„Indexed repos"*, liegt außerhalb jeder Datei des Frameworks – zugleich der erste dokumentierte Datenpunkt zu `X2`/`K-20`) und **`K-65`** (der clientseitige Schalter für fremde Agentenprotokolle ist entfallen; die Freigabezeile des Overlays bleibt als **organisatorische Auflage** ohne technische Seite).
+K-37, K-38, K-39, K-40, K-41, K-42, K-43, K-44, K-45, K-46, **K-47, K-48, K-49** (aus 0.55.0); **K-51** (aus 0.56.2). 🟢 **`K-50` ist mit `0.85.2` geschlossen** (D-270). 🆕 **`K-73` ist mit 0.71.0 beantwortet, soweit er sich beantworten ließ** (D-195): **Die Sperre weist ab, sie entfernt nicht** – das Modell setzt den Aufruf ab. **Welche Schicht abweist, bleibt wahrscheinlich, nicht isoliert:** Die eigens gebauten Zuschnitte haben gar keinen Aufruf abgesetzt. 🔴 **Neu aus 0.71.0: `K-74`** (die Ausgabemarken `[HALT]` und `[RÜCKFRAGE]` stehen mit **145 Fundstellen in 54 anweisenden Trägern** im Kern und sind in keinem Kernmodul und keinem Glossar erklärt – **vor Bündel 3 zu entscheiden**). 🔴 **Neu aus 0.72.0: `K-75`** (sieben Entscheidungen zur Auslieferung als Installationsbibliothek und zum Unterverzeichnis `.koolie/`; **zwei davon haben eine Frist**, weil sie in die Umbenennung gehören). 🟢 **`K-72` ist mit 0.67.1 erledigt** (D-184). 🆕 **Neu aus 0.59.0/0.59.1: `K-54`** (die Laufzeitschicht kennt den Ausnahmeprozess nicht und verbietet zugleich unbedingt jede Lockerung – ein Lauf hat daraufhin eine registrierte Ausnahme für unwirksam erklärt), **`K-55`** (wie baut man eine Scope-Falle, die ein regelkonform lesender Lauf überhaupt antrifft?) und **`K-56`** (ein Testblatt ist eine Aufzeichnung und wird als Regelquelle ausgeliefert). **`K-52` ist mit 0.57.1 erledigt** (D-129), **`K-53` mit 0.59.0** (D-140), **`K-55` mit 0.60.0** (D-145). 🔴 **Neu aus 0.60.0: `K-57`** (neun von zwölf `fw-*`-Skills sind für das Modell gesperrt – der Standardarbeitsablauf ist im nicht-interaktiven Betrieb nur erreichbar, wenn der Prompt jeden Skill nennt, und dann mißt man den Prompt) und **`K-58`** (Abschnitt 17 sagt *du darfst*; ein Lauf hat daraus *untersagt* gemacht – die Werkzeugmeldung schlug den Regeltext). **Und `K-34` und `K-55` standen überhaupt nicht im Register**, obwohl sie in sieben beziehungsweise sechs Trägern genannt wurden – Prüfung 50 fängt das jetzt. 🔴 **Neu aus 0.61.0: `K-59`** (der zweite Einsatzkontext steht in drei der sechs anweisenden Fassungen nicht – jede Sitzung an diesem Framework steht in ihm, und die Texte, die sie lädt, sagen *nur lesend*), **`K-60`** (ob ein KI-Client die zwanzig Grenzfälle wirklich so einstuft, mißt kein Testfall – `FW-KO-05` prüft die Texte) und **`K-61`** (ein `bestanden` eines Konsistenztests altert mit jeder Änderung an seinem Gegenstand: `FW-KO-02` steht seit dem 10.09. auf `bestanden`, und drei der vier Befunde von 0.61.0 liegen in seinem Gegenstand). 🟢 **`K-66` ist mit 0.64.0 erledigt** (D-163 bis D-168). 🔴 **Neu aus 0.65.0: `K-69`** (der Wertabgleich zwischen Quell-Overlay und geladener Schicht deckt **einen** Platzhalter; `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` haben dieselbe Gestalt und sind **ungeprüft, nicht geprüft-und-gut** – hängt an `K-67`). 🔴 **Neu aus 0.64.0: `K-68`** (der Backend-Strang des Übungsrepositoriums ist auf keinem Arbeitsplatz dieses Projekts übersetzbar – `UEB-14` und zwei Zellen hängen daran; sie ist gelesen, nie gelaufen). 🔴 **Aus 0.63.0: `K-66`** (21 von 81 Blattzellen haben keinen Gegenstand – `fw-docs-update` vollständig; Herrichtung ist eigener Posten `0.65.0`) und **`K-67`** (die Overlay-Vorlage kennt drei Formen, einen Platzhalter zu binden, und eine davon ist *gar nicht*). 🔴 **Neu aus 0.67.0: `K-72`** (`SK-002-P01` verlangt eine Übungsmethode mit Tests **und** einem ungetesteten Fehlerpfad – von acht Modulen mit Tests ist **genau eines unpräpariert** (`BookForm.tsx`), und es hat keinen Fehlerpfad; die beiden mit einem tragen `UEB-05` beziehungsweise `UEB-03`. **Das ist D-137 eine Ebene höher:** Dort verdrängt eine Präparation den Gegenstand einer anderen Präparation, hier den einer **Zelle**. 🔴 **Vor `0.68.0` zu entscheiden** – entweder eine sechzehnte Präparation oder die ausdrückliche Feststellung, daß die Zelle auf `books.ts` gefahren wird und der Injektionsbefund im Protokoll als erwartete Nebenwirkung steht). 🆕 **`K-71` ist nicht geschlossen, aber beantwortet, soweit er sich beantworten ließ:** Der verlangte einbahnige Lauf ist gefahren und grün – **er grenzt die Nebenläufigkeit trotzdem nicht ein, weil auch die beiden achtbahnigen Läufe desselben Tages grün sind.** Stand: einmal beobachtet, in vier Läufen nicht reproduziert. 🔴 **Neu aus 0.62.0: `K-62`** (26 von 44 `[DOK]`-Zeilen der Fähigkeitsmatrizen nennen ihre Quelle nicht – ohne sie kostet jede Wiederholung von `FW-AK-01` denselben vollen Durchgang; eigener Posten `~0.65.0`), **`K-63`** (die Kontoquelle der Skills bei `claude-code` ist standardmäßig an und aus der ausgelieferten Datei **nicht** abschaltbar – die neue Bauform des Releases), **`K-64`** (die organisationsseitige Skillquelle von `devin-desktop`, *„Indexed repos"*, liegt außerhalb jeder Datei des Frameworks – zugleich der erste dokumentierte Datenpunkt zu `X2`/`K-20`) und **`K-65`** (der clientseitige Schalter für fremde Agentenprotokolle ist entfallen; die Freigabezeile des Overlays bleibt als **organisatorische Auflage** ohne technische Seite).
 
 ---
 
@@ -1635,10 +1754,10 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0d** | 🟢 **ERLEDIGT mit `0.83.0`** – **Der Meßtag von Bündel 5** (`CR-2026-116`, D-247 bis D-251, `K-89` bis `K-91` neu): **vierzehn von fünfzehn Zellen abgenommen**, 30 Läufe, **40,10 USD**. ⚠️ **Die Rechnung lag über der Schätzung** (gerechnet 30 bis 37 USD; gemessen 1,34 USD je Lauf) – *der Mittelwert eines Bündels gilt für die Gattung seiner Skills.* 🔴 **`RE-001-P05` bleibt offen, und nicht wegen des Laufs:** Der Prompt hat keine Beschreibung mit bestätigtem Umfang übergeben (`K-91`). 🟢 **Der Kontrollauf hat zum ersten Mal die unzulässige Handlung gezeigt** – zweimal | eine Sitzung | **Kriterium 2: 19 → 5** |
 | **0e** | 🟢 **ERLEDIGT mit `0.84.0`** – **Die vier Sammelzellen des zentralen Katalogs und der Nachlauf von `RE-001-P05`** (`CR-2026-117`, D-252 bis D-261; `K-59`, `K-88`, `K-89`, `K-90`, `K-91` geschlossen): **acht Befunde, sieben ohne Kontingent.** 🔴 **Beide Preise, die `K-59` vertagt haben, waren gemessen falsch** – die Ausnahme steht seit `0.32.0` in zehn Dateien jeder Installation, und die **Schreibseite** von G-11 stand in **keiner** der sechs Fassungen. ⚠️ **3,18 USD statt der gerechneten 2,70**, zum zweiten Mal in Folge über der Schätzung (D-260) | eine Sitzung, zwei Läufe | **Kriterium 2: 5 → 0 ✅** |
 | **0f** | 🟢 **ERLEDIGT mit `0.85.0`** – **Die Quellenzuordnung je Matrixzeile** (`CR-2026-118`, D-263 bis D-268, `K-62` geschlossen, **Prüfungen 73 und 74**): **25 der 26 Zuordnungen hat der Bestand hergegeben**, die sechsundzwanzigste (`M3` bei `claude-code`) bleibt **ausgesprochen offen** und ist der erste gezielte Auftrag an `FW-AK-01`. 🔴 **Die Zahl war aus zwei Gründen nicht die richtige** – vier Zellen nannten die Marke nur (D-265, **die Bauform der nur nennenden `VERIFY`-Fundstellen**), sieben Verweisbelege zählten nicht mit (D-266); nach der Kopfregel **40 von 46**. 🔴 **Der teuerste Befund stand 73 Releases da:** `M6` und `M7` bei `devin-desktop` sind hinter einer Leerzeile **keine Tabellenzeilen** mehr, während die Zusammenfassung sie mitzählt (D-264) | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
-| **1** | 🔴 **Die Umbenennung auf `Koolie`** – **beantragt als `~0.86.0`** (`CR-2026-119`, **neun Entscheidungen offen**). 490 von 494 Dateien wandern mit einem `git mv`; Textlauf **925 Fundstellen in 128 Dateien** (Chronik ausgenommen, gemessen verträglich mit Prüfung 12); **43 Träger mit `<CORE_DIR>`**; Werkzeug **304 Nennungen**, überwiegend Suchtexte von Präparationen; Migrationsfläche beider übernehmenden Projekte **27 Dateien** (`K-50`). 🔴 **Preis der Vorziehung, benannt:** Der Vorbedingungsdurchgang der `AP2`-Sitzung ist danach zu wiederholen | eine Sitzung, **kein Kontingent** | – |
-| **2** | **Der Rest von `AP2`** – laut Releaseplan **~0.87.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
-| **3** | **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** – laut Releaseplan **~0.88.0** | eine Sitzung **nach Nr. 2** | Rest von Kriterium 1. 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0“ vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
-| ~~**3**~~ | *(nach oben gewandert – siehe Posten 1)* **Die Umbenennung auf `Koolie`**, **vor `AP11`** | eine Sitzung, **kein Kontingent** | –. **Nach Nr. 3 und vor `AP11`** (D-127): `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen. **Gegenstand von `K-50`:** ob es einen maschinellen Migrationspfad braucht. Beide übernehmenden Projekte sind danach zu heben **und umzubenennen** |
+| **0g** | 🟢 **ERLEDIGT mit `0.85.2`** – **Die neun Entscheidungen von `CR-2026-119`** (D-269 bis D-275; `K-50` geschlossen, `K-75` (1) und (2) entschieden): 🔴 **`E1` abgelehnt** – die Umbenennung wird **nicht** vorgezogen, D-127 gilt unverändert. **`E2` bis `E9` angenommen**, `E4`/`E5` abweichend als **`.koolie/core/`**. 🆕 **Der einzige neue Meßwert:** Gitea **legt** eine Weiterleitung an (301, `git ls-remote` läuft durch) – **und sie endet lautlos, sobald der alte Name neu belegt wird** (D-274). **Kein Pfad angefaßt** | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
+| **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.86.0** | 1–2 Sitzungen | **Kriterium 1: von 22 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen** (`K-20`). ⚠️ **Vor dem Lauf: die Vorbedingungen der Klasse durchgehen** – zehnmal in Folge der billigste Befund des Releases |
+| **2** | **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** – laut Releaseplan **~0.87.0** | eine Sitzung **nach Nr. 2** | Rest von Kriterium 1. 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0“ vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
+| **3** | 🔴 **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.88.0**, **nach Nr. 2 und vor `AP11`** (D-127, Vorziehung abgelehnt mit D-269) | eine Sitzung, **kein Kontingent** | –. **Der Ablauf steht in zehn Schritten** (`CR-2026-119` Abschnitt 5), **der Umfang ist gemessen:** 490 von 494 Dateien mit **einem** `git mv`, Textlauf **925 Fundstellen in 128 Dateien** (Chronik ausgenommen, D-273), **43 Träger mit `<CORE_DIR>`**, **304 Nennungen** in den Werkzeugen. 🔴 **Der Kern zieht zugleich nach `.koolie/core/`** (D-272) – `<CORE_DIR>` bekommt erstmals einen Schrägstrich. **Beide übernehmenden Projekte werden danach gehoben und nach D-270 von Hand migriert** (**30 Dateien, 141 Nennungen**, Stand 2026-09-22 – vor dem Lauf erneut zu zählen). 🆕 **Der Lauf baut Prüfung 75** (D-271), und das Repositorium wird **nach** dem Merge umbenannt (D-274) |
 
 ### Prüfkandidaten – bewusst **nicht** der nächste Schritt (bewegen keine Zahl)
 
@@ -2683,6 +2802,14 @@ gebraucht. Das Projekt arbeitet so: Sitzung im Wurzelordner (`devpacks/`), Repos
 ---
 
 ### Fallstricke am Prüfapparat
+
+- 🆕 **EINE PFADANGABE, DIE AUF EIN ERZEUGNIS ZEIGT, BESTEHT AM ARBEITSPLATZ UND FÄLLT IN
+  DER KOPIE** (0.85.2). Ein Satz der Übergabe nannte `build/out` unter dem Kern als vollen
+  Backtick-Pfad. **Der Validator im Arbeitsbaum meldete 0 Fehler** – das Verzeichnis steht
+  dort als **unverfolgtes** Erzeugnis –, **der Sondenlauf 105 Abweichungen**: Er kopiert
+  nur Verfolgtes, und Prüfung 12 sieht die Angabe dann ins Leere zeigen. ➡️ **Wer einen
+  Pfad nennt, prüft, ob er im verfolgten Bestand steht** (`git ls-files <pfad>`), nicht ob
+  er auf der Platte liegt.
 
 - **Reihenfolge: erst die Sonde, dann die Spanne.** Eine Prüfung, deren Nummer im Register steht,
   bevor ihre Sonde existiert, fällt – und das ist richtig.

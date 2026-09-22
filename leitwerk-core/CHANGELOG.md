@@ -2,6 +2,122 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.85.2] - 2026-09-22
+
+**Die neun Entscheidungen von `CR-2026-119` beantwortet - `E1` abgelehnt, `E2` bis `E9`
+angenommen** (**D-269** bis **D-275**). **Ohne Kontingent, und es ist kein Pfad
+angefasst.** `K-50` geschlossen, `K-75` (1) und (2) entschieden.
+
+> 🔴 **DIE UMBENENNUNG AUF `KOOLIE` WIRD NICHT VORGEZOGEN.** D-127 bleibt unveraendert:
+> nach der letzten Messung, vor `AP11`. **Die tragende Haelfte der Begruendung von D-127
+> ist zwar entfallen** (105 → 0 offene Ergebniszellen), **die andere nicht** - der Rest
+> von `AP2` steht aus. **Der Preis der Vorziehung wird nicht bezahlt:** Der
+> Vorbedingungsdurchgang der `AP2`-Sitzung muesste sonst auf dem umbenannten Baum
+> wiederholt werden. ⚠️ **Was die Ablehnung kostet, ist benannt:** Die Vorfuehrung am
+> 24.09. laeuft unter dem alten Namen, und der Puffertag des 23.09. wird nicht gebraucht.
+
+### Die neun Antworten
+
+| Nr. | Frage | Ergebnis | Record |
+|---|---|---|---|
+| `E1` | Vorziehung vor den Rest von `AP2`? | 🔴 **nein**, D-127 gilt unveraendert | D-269 |
+| `E2` | `K-50`: maschineller Pfad oder Hinweis? | **Migrationshinweis** mit benannter Dateiliste | D-270 |
+| `E3` | Restbestand des alten Namens melden? | **ja** - Pruefung 75, gebaut IM Umbenennungsrelease | D-271 |
+| `E4` + `E5` | `K-75` (1) und (2) | 🔴 **`.koolie/core/`** - mit Punkt, Kern heisst `core/` (abweichend vom Vorschlag) | D-272 |
+| `E6` | Wandert die Chronik mit? | **nein** (D-125 bestaetigt) | D-273 |
+| `E7` | Wandert `UEBERGABE.md` mit? | **ja** | D-273 |
+| `E8` | Gitea-Umbenennung, wann? | **nach dem Merge** des Umbenennungsreleases | D-274 |
+| `E9` | Foliensatz und Vorfuehrstationen? | **unveraendert** - `E1` hat den Gegenstand entfernt | D-275 |
+
+### 🆕 Der einzige neue Messwert: Gitea leitet weiter, und das traegt nicht
+
+**Der Vorbehalt von `E8` lautete "vorher zu klaeren: ob Gitea eine Weiterleitung anlegt".
+Gemessen an einem eigens angelegten und danach wieder entfernten Testrepositorium
+(Gitea 1.27.3):**
+
+| Pruefung | Ergebnis |
+|---|---|
+| API auf den alten Namen nach der Umbenennung | 🟢 **301** auf den neuen |
+| Weboberflaeche auf den alten Namen | 🟢 **301** auf den neuen |
+| `git ls-remote` gegen die alte URL | 🟢 laeuft durch |
+| **Gegenprobe: alter Name neu belegt** | 🔴 **Weiterleitung endet lautlos** - die alte Adresse liefert ein fremdes Repositorium |
+
+🔴 **Eine Weiterleitung, die ein Dritter durch blosses Anlegen uebernimmt, ist kein
+Bestandsschutz** - und sie faellt nicht auf: Ein Klon der alten Adresse holt
+stillschweigend das falsche Repositorium. ➡️ **Der alte Name bleibt unbelegt, die
+Remote-URL wird trotzdem sofort nachgezogen.**
+
+⚠️ **Und eine eigene Behauptung ist beim Messen gefallen:** Die Frage `E8` wurde mit der
+Klammer *"Gitea legt KEINE Weiterleitung an"* vorgelegt. **Das war ungeprueft und
+falsch.** *Wer eine Eigenschaft eines fremden Werkzeugs nennt, misst sie.* Der
+Entscheidungsgehalt von `E8` - der Zeitpunkt - ist davon unberuehrt.
+
+### 🔴 `K-75` (1) und (2): `.koolie/core/`, und das ist teurer als der Vorschlag
+
+Die Vorlage schlug vor, `E4` zu **vertagen** und den Kern `koolie-core/` zu nennen. **Der
+Framework Owner hat anders entschieden:** beides jetzt, und `.koolie/core/`. *Der Pfad
+fuehrt seinen Besitzer im uebergeordneten Segment, damit greift der Einwand von `K-75`
+(2) nicht.* 🔴 **Preis, benannt:** `<CORE_DIR>` bekommt **erstmals einen Schraegstrich** -
+jede Stelle, die ihn als einzelnes Verzeichnissegment behandelt, bricht -, das
+Punkt-Verzeichnis ist voreingestellt unsichtbar, **und der Umbenennungslauf verschiebt
+zusaetzlich `project-overlay/`.** ⚠️ **Die gemessenen 27 Dateien der Migrationsflaeche
+sind gegen eine Umbenennung OHNE Umzug gezaehlt und werden vor dem Lauf neu gezaehlt.**
+
+### ⚠️ Der Durchgang vor dem Commit traegt sich zum neunundzwanzigsten Mal
+
+**Zwei Zahlen des Antrags sind nachgezaehlt worden, eine hat nicht gehalten.**
+
+| Zahl | im Antrag | nachgezaehlt |
+|---|---|---|
+| verfolgte Dateien / davon unter `leitwerk-core/` | 494 / 490 | 🟢 494 / 490 |
+| Fundstellen `leitwerk-core` | 1.976 in 326 | 🟢 1.976 in 326 |
+| Traeger mit `<CORE_DIR>` | 43 | 🟢 43 |
+| Nennungen in den Werkzeugen | 304 | 🟢 **304** - Muster `leitwerk`; **311** ueber alle Schreibweisen, **295** allein fuer den Pfad |
+| **Migrationsflaeche (Schicht 3)** | **27 Dateien** | 🔴 **30 Dateien, 141 Nennungen** |
+
+🔴 **Es fehlten die `.gitignore` BEIDER Projekte und ein Glossareintrag des Piloten** -
+und `leitwerk-core/build/out/` im Uebungsrepositorium ist ein **wirksames**
+Ausschlussmuster: **Ein Muster, das nach dem Umzug nicht mehr greift, meldet sich nicht**,
+es zeigt die Erzeugnisse des Kerns in `git status` (D-97, Pruefung 45). ➡️ Der
+Migrationshinweis aus `E2` wird gegen den Bestand erzeugt, nicht aus dieser Liste
+abgeschrieben.
+
+🆕 **Die Lehre steckt auch in der Zahl, die gehalten hat:** Die 304 zaehlen `leitwerk`
+klein geschrieben; ueber alle Schreibweisen sind es **311**. Ein Textlauf allein auf den
+Pfad liesse **16** Nennungen des bloszen Namens stehen. *Wer eine Zahl uebernimmt,
+uebernimmt ihr Suchmuster mit.*
+
+### 🔴 Der Sondenlauf hat einen eigenen Traeger dieses Releases gefangen
+
+Der Befund oben nannte den Ausschlusseintrag des Uebungsrepositoriums zuerst als vollen
+Pfad in Backticks. **Der Validator am Arbeitsplatz meldete 0 Fehler** - dort existiert
+das Verzeichnis, als **unverfolgtes Erzeugnis**. **Der Sondenlauf meldete 105
+Abweichungen**, weil er nur den verfolgten Bestand kopiert und Pruefung 12 die Pfadangabe
+dann ins Leere zeigen sieht. ➡️ *Eine Pfadangabe, die auf ein Erzeugnis zeigt, besteht am
+Arbeitsplatz und faellt in der Kopie.* **Ein gruener Validatorlauf ersetzt den Sondenlauf
+nicht** - hier an einem Traeger gemessen, den dieselbe Sitzung geschrieben hat.
+
+### Geaendert
+
+- `governance/change-requests/CR-2026-119-umbenennung-koolie.md`: Statuszeile und
+  Abschnitt 6 - die Entscheidung mit Abweichungen und Preis.
+- `governance/DECISION_LOG.md`: **D-269** bis **D-275** neu; `K-50` geschlossen; `K-75`
+  (1) und (2) entschieden, die uebrigen fuenf bleiben bei `1.3.0`.
+- `docs/ROADMAP.md`: **Die Vorhersage des `AP2`-Postens stand auf `23 → ~19`** und damit
+  einen Marker zu hoch - Kriterium 1 steht seit `0.83.0` auf **22**; jetzt `22 → ~18`.
+  *Pruefung 46 rechnet nur die vier zaehlbaren Kriterien gegen die Standzeile, nicht die
+  Vorhersagen der Posten.*
+- `docs/ROADMAP.md`: Die Reihenfolge des Releaseplans steht wieder wie in D-127 -
+  `~0.86.0` Rest von `AP2`, `~0.87.0` uebrige `VERIFY`-Marker, `~0.88.0` Umbenennung.
+  *Mit `0.85.1` waren die Nummern der Vorziehung wegen getauscht worden, obwohl sie nicht
+  entschieden war.*
+- `UEBERGABE.md`: Kopfblock, Abschnitt 0.46 neu, Lage, naechste Schritte.
+
+### Wirkungsnachweis
+
+Validator 0 Fehler / 0 Warnungen; Sondenlauf in **beiden** Kodierungsumgebungen gruen.
+**Kriterium 1 bleibt bei 22, Kriterium 2 bei 0.**
+
 ## [0.85.1] - 2026-09-22
 
 **Der Vorbereitungsdurchgang der Umbenennung - neun Entscheidungen vorgelegt, kein Pfad
