@@ -46,7 +46,7 @@ git fetch "<url>" "+refs/heads/*:refs/remotes/origin/*" --prune
 
 | Angabe | Wert |
 |---|---|
-| Arbeitsbereich | der Pfad, unter dem `leitwerk`, `test-devin-framework` und die Erhebungen liegen |
+| Arbeitsbereich | der Pfad, unter dem `koolie`, `test-devin-framework` und die Erhebungen liegen |
 | Meßbäume | ein Pfad ausserhalb des Benutzerprofils |
 
 > 🔴 **Nicht unterhalb des Benutzerprofils messen.** Dort lag eine sachfremde
