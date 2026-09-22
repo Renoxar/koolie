@@ -23,7 +23,7 @@ Die Selbstprüfung bezieht sich auf die Erstfassung 0.1.0 und wurde für diese D
 |---|---|---|
 | 1 | Identifizierende Projektinformationen enthalten? | Nein. Variable Inhalte ausschließlich als registrierte Platzhalter; automatische und manuelle Prüfung ohne Befund. |
 | 2 | Reale Organisationen, Personen, Kunden, Behörden, Infrastrukturen genannt? | Nein – mit zwei bewussten, zulässigen Ausnahmen laut Auftrag: generische Werkzeugklassen (Jira, Git, GitLab, GitHub, CI/CD, IDE, Wiki) und der Hersteller-/Produktbezug zu Devin Desktop (ehemals Windsurf) samt offizieller Dokumentation, der für Phase 3 erforderlich ist. Rollen statt Personen durchgängig. |
-| 3 | Unbelegte Client-Funktionen als Tatsache behauptet? | Nein. Jede Produktaussage trägt `[DOK]` mit Quellenzuordnung (Anhang 31.4), `[EMPF]` oder `[KONZ]`; Offenes ist als `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` markiert und in Anhang 31.4 konsolidiert. Einschränkung transparent: `[DOK]` heißt dokumentationsbelegt, nicht installationsgeprüft (AP2). |
+| 3 | Unbelegte Client-Funktionen als Tatsache behauptet? | Nein. Jede Produktaussage trägt `[DOK]` mit Quellenzuordnung (Anhang 31.4), `[EMPF]` oder `[KONZ]`; Offenes trägt den Belegstand `BELEG OFFEN` und ist in Anhang 31.4 konsolidiert. Einschränkung transparent: `[DOK]` heißt dokumentationsbelegt, nicht installationsgeprüft (AP2). |
 | 4 | Framework Core und Project Overlay sauber getrennt? | Ja. Platzhalter-Schnittstellen, getrennte Ownership, technische Schreibsperren, Integritätsblock in der Berechtigungsdatei (seit 0.6.0 erzeugt und gegen die Kernquelle geprüft), Integritätsblock in `config.json`, strikte Overlay-Validierung; Grenzfälle über Entscheidungsbaum 6 (Kap. 8). |
 | 5 | Referenzartefakte tatsächlich wiederverwendbar? | Ja. Alle Artefakte sind projektneutral, versioniert, mit Owner-Feld und Ausfüllhinweisen; Skills/Prompts/Checklisten arbeiten ausschließlich mit Overlay-Platzhaltern; Übernahmeweg inklusive Aktualisierung ist definiert (Kap. 28). |
 | 6 | Widersprüchliche Anweisungen? | Keine bekannten. Prioritätshierarchie mit Widerspruchsprüfung und Zusatzregeln (Kap. 25.1); die zwei im Auftrag angelegten Spannungen (zwei Hierarchiefassungen; M5 ohne Befehle vs. lesende Git-Befehle für MR-Texte) wurden erkannt, entschieden und dokumentiert (K-08; FW-CORE-05). Restsicherung über Konsistenztests KO und Review-Zyklus. |
@@ -35,7 +35,7 @@ Die Selbstprüfung bezieht sich auf die Erstfassung 0.1.0 und wurde für diese D
 | 12 | Skills versionierbar, testbar, wartbar? | Ja. Semantic Versioning je Skill, Lebenszyklus mit Kriterien, Pflicht-Testfälle (2 Positiv/3 Negativ je Skill), CHANGELOG je Skill, Strukturvalidierung und Ausgabeprüfung per Skript, Owner-Feld. |
 | 13 | Beispiele ausschließlich synthetisch und gekennzeichnet? | Ja. Kennzeichnungspflicht ist Konvention und Validator-Prüfung („synthetisch" in jeder EXAMPLES.md); Beispiele nutzen offensichtlich fiktive Bezeichner und Beispiel-Domänen. |
 | 14 | Offene Entscheidungen im Decision Log? | Ja. K-01…K-20, D-01…D-10, A-01…A-05 zentral geführt (Kap. 29.2); entscheidungsreife Kurzliste unten. |
-| 15 | Technische Empfehlungen nach Verbindlichkeit und Belegstatus gekennzeichnet? | Ja. MUSS/SOLL/KANN/DARF NICHT plus `[DOK]`/`[EMPF]`/`[KONZ]`/VERIFY durchgängig; Legende in Kap. 6 (FW-CORE-00). |
+| 15 | Technische Empfehlungen nach Verbindlichkeit und Belegstatus gekennzeichnet? | Ja. MUSS/SOLL/KANN/DARF NICHT plus `[DOK]`/`[EMPF]`/`[KONZ]`/`BELEG OFFEN` durchgängig; Legende in Kap. 6 (FW-CORE-00). |
 
 Im Zuge der Selbstprüfung behobene Mängel (Auszug): Vereinheitlichung der M5-Befehlsregel (lesende Git-Befehle) über Modul, Laufzeitregel und Skills; Registrierung nachträglich aufgefallener Schema-Platzhalter; Entfernung eines Kodierungsartefakts; Korrektur eines Abschnittsverweises in der MCP-Vorlage; Ergänzung fehlender Kernregeln-Prüfungen im Validator während der Erstellung.
 
@@ -59,11 +59,11 @@ Unvermeidbare Annahmen dieser Erstfassung – alle gekennzeichnet, keine stillsc
 2. **A-02:** Entwickler arbeiten auf Feature-Branches ohne Direktschreibrechte auf geschützte Branches.
 3. **A-03:** Ein dokumentierter Review-/Freigabeprozess (Merge Request, CI) existiert und bleibt bestehen.
 4. **A-04:** Verarbeitung der Anfragen erfolgt über Anbieter-/Modellanbieter-Infrastruktur (kein lokales Modell) – Grundlage der restriktiven Kontextklassen.
-5. **A-05 (gilt für das Client Pack `devin-desktop`):** Die in der CLI-Dokumentation beschriebenen Mechanismen gelten für Devin Local in Devin Desktop (die Desktop-Dokumentation verweist auf geteilte Modi/Mechanismen); Absicherung über die VERIFY-Liste und AP2.
+5. **A-05 (gilt für das Client Pack `devin-desktop`):** Die in der CLI-Dokumentation beschriebenen Mechanismen gelten für Devin Local in Devin Desktop (die Desktop-Dokumentation verweist auf geteilte Modi/Mechanismen); Absicherung über die Belegspalte der Fähigkeitsmatrix und AP2.
 
 ## Verifikationsbedarf
 
-Gegen die Dokumentation des gewählten Clients beziehungsweise in einer Zielinstallation zu prüfen: die Fähigkeitsmatrix des Client Packs (8 von 34 Zeilen bei `devin-desktop`, 2 von 29 bei `claude-code` tragen einen VERIFY-Marker) sowie die konsolidierten Punkte V2–V10 aus Anhang 31.4 – V1 ist mit 0.26.0 geschlossen, Ergebnis „nicht dokumentiert"; exakte `config.json`-Schemadetails; Hook-Eingabeschema (danach fail-closed als Standard); Skill-Discovery `.agents/skills/` und `@skills:`-Verhalten; Frontmatter-Toleranz; MCP-Dateistruktur; Codebasis-Indexierung; Spaces-Kontextreichweite; Wirkung additiver Skill-Permissions; reales Ladeverhalten der always-on-Summe. Prüfweg: Roadmap-AP2 mit Protokollpflicht; laufend: Testklasse AK im Release-Zyklus.
+Gegen die Dokumentation des gewählten Clients beziehungsweise in einer Zielinstallation zu prüfen: die Fähigkeitsmatrix des Client Packs (8 von 34 Zeilen bei `devin-desktop`, 2 von 29 bei `claude-code` sagen `BELEG OFFEN`) sowie die konsolidierten Punkte V2–V10 aus Anhang 31.4 – V1 ist mit 0.26.0 geschlossen, Ergebnis „nicht dokumentiert"; exakte `config.json`-Schemadetails; Hook-Eingabeschema (danach fail-closed als Standard); Skill-Discovery `.agents/skills/` und `@skills:`-Verhalten; Frontmatter-Toleranz; MCP-Dateistruktur; Codebasis-Indexierung; Spaces-Kontextreichweite; Wirkung additiver Skill-Permissions; reales Ladeverhalten der always-on-Summe. Prüfweg: Roadmap-AP2 mit Protokollpflicht; laufend: Testklasse AK im Release-Zyklus.
 
 ## Datenschutzprüfung
 
@@ -74,7 +74,7 @@ Das Ergebnis ist nach automatisierter Prüfung (Sperrbegriffe, E-Mail-/IP-/Hostn
 Priorisiert und unmittelbar umsetzbar auf dem Weg zur ersten produktiven Framework-Version:
 
 1. **Rollen besetzen und Prüfungen beauftragen (AP1):** Framework Owner und Projektrollen benennen; Datenschutz-/Vertragsprüfung (K-06) und Erhebung der Planstufe/Admin-Kontrollen (K-05) starten – der kritische Pfad.
-2. **Mechanismen validieren (AP2):** Testinstallation mit fixierter Zielversion; die VERIFY-Marker der Fähigkeitsmatrix und die konsolidierten Prüfpunkte protokolliert abarbeiten; Hook auf fail-closed stellen; Belegstatus-Tabellen aktualisieren.
+2. **Mechanismen validieren (AP2):** Testinstallation mit fixierter Zielversion; die offenen Belege der Fähigkeitsmatrix und die konsolidierten Prüfpunkte protokolliert abarbeiten; Hook auf fail-closed stellen; Belegstatus-Tabellen aktualisieren.
 3. **Core-Review durchführen (AP3):** FW-CORE-Module und Prioritätshierarchie durch die benannten Rollen abnehmen; D-01…D-10 bestätigen; Organisations-Mapping (Klassifizierung → K0–K3) füllen.
 4. **Erstprojekt konfigurieren (AP4):** Client Pack wählen, Overlay vollständig ausfüllen, die Platzhalter der Berechtigungsdatei befüllen, erstes Technology Pack für `<TECH_STACK>` erstellen, Übungsrepository erzeugen; strikte Validierung.
 5. **Sicherheits-/Datenschutzfreigabe einholen (AP6)** und **Basistests des Testkatalogs ausführen (AP7-Teilmenge)** – erst danach Overlay aktivieren (CL-10).

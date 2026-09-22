@@ -3,7 +3,8 @@
 Framework-Hook: SessionStart - Overlay-Status als Zusatzkontext melden.
 
 Status: entwurf. Hook-Mechanismus [DOK]; Ausgabeschema "hookSpecificOutput.additionalContext"
-laut Dokumentation [DOK], Details <VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>.
+laut Dokumentation [DOK]. Was die Nutzlast im einzelnen traegt, ist nicht
+dokumentiert - dieselbe benannte Grenze wie bei Zeile R5 der Faehigkeitsmatrix.
 
 Aufruf:
 

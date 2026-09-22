@@ -162,4 +162,4 @@ Im Framework-Repository ist `--strict-overlay` erwartungsgemäß rot: `project-o
 
 ## Wichtige Konventionen
 
-Verbindlichkeit über **MUSS/SOLL/KANN/DARF NICHT**; produktbezogene Aussagen tragen Belegstatus `[DOK]`/`[EMPF]`/`[KONZ]` oder den Marker `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`; variable Inhalte ausschließlich als registrierte Platzhalter (`leitwerk-core/docs/PLACEHOLDER_REGISTRY.md`); Beispiele sind stets als synthetisch gekennzeichnet; Personen werden nirgends genannt – nur Rollen.
+Verbindlichkeit über **MUSS/SOLL/KANN/DARF NICHT**; produktbezogene Aussagen tragen Belegstatus `[DOK]`/`[EMPF]`/`[KONZ]` oder `BELEG OFFEN` mit Grund und Datum; variable Inhalte ausschließlich als registrierte Platzhalter (`leitwerk-core/docs/PLACEHOLDER_REGISTRY.md`); Beispiele sind stets als synthetisch gekennzeichnet; Personen werden nirgends genannt – nur Rollen.

@@ -92,7 +92,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      wirkt gemessen LAUTLOS gar nicht
  34. Startwerkzeug fuer Unteragenten (D-70): Ein Pack nennt es in agent_start_tools
      oder erklaert seine Abwesenheit ausdruecklich; wer Zeile A1 ohne offenen
-     VERIFY-Marker zusagt, muss nennen statt erklaeren
+     Beleg zusagt, muss nennen statt erklaeren. Der Vorbehalt steht seit 0.87.0
+     auf der Nachfolgeform BELEG OFFEN - die Markerform ist abgeschafft (D-291)
  35. Agentenprofil ohne Startwerkzeug (D-73): Weder agent_frontmatter.tool_names
      bildet eines ab, noch nennt ein ausgeliefertes Profil eines. Eine Verankerung -
      sie faengt heute nichts
@@ -148,7 +149,14 @@ Prüft (statisch, ohne laufenden KI-Client):
      BEIDE Richtungen ist ein Fehler. Am 2026-09-15 lagen alle vier Zahlen
      daneben, ohne dass eine je falsch geschrieben worden waere: Jede war das
      richtige Ergebnis einer Zaehlregel, die weniger kann als ihr Kriterium
-     verlangt. Kriterium 5 zaehlt sie nicht - das ist eine Enthaltung
+     verlangt. Kriterium 5 zaehlt sie nicht - das ist eine Enthaltung.
+     SEIT 0.87.0 IST KRITERIUM 1 EINE RUECKFALLSPERRE UND KEIN ARBEITSVORRAT
+     (D-291): Die Markerform ist abgeschafft, die Zahl steht auf null, und was
+     der Zaehler ab jetzt meldet, ist ihre WIEDEREINFUEHRUNG. Die Null ist
+     gemessen und nicht konstruiert, und das ist belegt: Sonde 46c legt einen
+     Marker in den Kern und verlangt die Meldung, Gegenprobe 46c legt einen in
+     ein datiertes Protokoll und verlangt ihr Ausbleiben - beide bringen ihren
+     Gegenstand SELBST mit und sind vom Schnitt nicht betroffen (D-23)
  47. Statusvokabular jedes Modultraegers (D-105, D-108): Jeder Steckbrief des Kerns
      fuehrt eine Statuszeile, und ihr Wert gehoert zum Vokabular aus
      08-skill-conventions.md Abschnitt 7. Der Ausfuellschlitz einer Vorlage gehoert
@@ -2138,6 +2146,10 @@ def check_placeholder_naming(root: str) -> None:
     Der Marker 'VERIFY AGAINST CURRENT <name> DOCUMENTATION' stand acht Releases im Kern,
     obwohl die clientneutrale Form daneben im Register gefuehrt wurde. Die Akteurspruefung
     fand ihn nicht: Sie sucht den kapitalisierten Namen, der Marker schreibt ihn gross.
+
+    Der Anlassfall ist mit 0.87.0 entfallen - beide Markerformen sind abgeschafft (D-291).
+    Die Pruefung bleibt: Ihr Gegenstand ist JEDER Platzhalter des Kerns, nicht dieser eine,
+    und die Sonde bringt ihren Fall selbst mit.
     """
     namen = _client_actor_names(root)
     if not namen:
@@ -3839,17 +3851,25 @@ def _uebersicht_pruefen(root: str, pack: str, technisch: int, summe: int) -> Non
 #
 # EINE ERKLAERUNG REICHT NICHT, WENN DAS PACK A1 OHNE VORBEHALT ZUSAGT: Zeile A1
 # verspricht ein rein lesendes Reviewprofil. Ein Pack, das diese Zeile auf [TECHNISCH]
-# stellt UND keinen offenen VERIFY-Marker mehr darauf fuehrt, behauptet, dass es
+# stellt UND keinen offenen Beleg mehr darauf fuehrt, behauptet, dass es
 # Unteragenten gibt und dass ihre Werkzeuge beschraenkbar sind - dann ist "kennt kein
 # Startwerkzeug" kein zulaessiger Stand.
 #
 # DER VORBEHALT GEHOERT DAZU, und das hat diese Pruefung bei ihrem ersten Lauf selbst
 # gezeigt: Ohne ihn fiel devin-desktop durch. Dessen Zeile A1 steht auf [TECHNISCH], aber
 # die Praeambel des Packs sagt ausdruecklich, die Spalte nenne die VORGESEHENE
-# Durchsetzungstiefe, und die Zeile traegt einen offenen VERIFY-Marker auf genau die
+# Durchsetzungstiefe, und die Zeile trug einen offenen Beleg auf genau die
 # Profilwirkung. Die Einstufung allein sagt also nicht, ob eine Zusage schon gilt - das
-# sagt der Marker. Eine Pruefung, die beides verwechselt, meldet einen Fehler, wo das Pack
-# ehrlich ist (CR-2026-058, Wirkungsnachweis).
+# sagt die Belegzelle. Eine Pruefung, die beides verwechselt, meldet einen Fehler, wo das
+# Pack ehrlich ist (CR-2026-058, Wirkungsnachweis).
+#
+# SEIT 0.87.0 STEHT DER VORBEHALT AUF DER NACHFOLGEFORM (CR-2026-121 E5, D-291). Die
+# Markerform ist abgeschafft; der Nachweisstand steht in der Belegspalte, und eine Zeile
+# ohne Beleg sagt BELEG OFFEN mit Grund und Datum. Haette der Vorbehalt den alten
+# Suchtext behalten, waere seine Bedingung dauerhaft wahr - eine Ausnahme, die nichts
+# mehr ausnimmt (0.57.1), und sie saehe wie Sorgfalt aus. HEUTE HAT SIE KEINEN FALL:
+# Beide Packs fuehren agent_start_tools gefuellt, und der Zweig wird nicht erreicht.
+# Sie ist Vorsorge fuer das naechste Pack, und Sonde 34e praepariert sie.
 #
 # WAS DIESE PRUEFUNG NICHT LEISTET: Sie prueft die Deklaration, nicht ihre Richtigkeit. Ob
 # der genannte Name beim Client wirklich sperrt, belegt allein eine Erhebung.
@@ -3906,7 +3926,7 @@ def check_agent_startwerkzeug(root: str) -> None:
             continue
         for zeile in read(pack_md).replace("\r\n", "\n").split("\n"):
             if (re.match(r"^\|\s*A1\s*\|", zeile) and "[TECHNISCH]" in zeile
-                    and "<VERIFY" not in zeile):
+                    and "BELEG OFFEN" not in zeile):
                 err(f"{rel}: Zeile A1 des Packs steht auf [TECHNISCH] - das Pack sagt ein "
                     f"rein lesendes Unteragentenprofil technisch zu -, aber "
                     f"'agent_start_tools' ist leer und nur erklaert. Wer Unteragenten "
@@ -5328,10 +5348,18 @@ D11_DATEI = KERN + "/docs/ROADMAP.md"
 D11_SATZ = ("Gezählt von Prüfung 46: Kriterium 1 = {}, Kriterium 2 = {}, "
             "Kriterium 3 = {}, Kriterium 4 = {}")
 D11_ANKER = "Gezählt von Prüfung 46: Kriterium 1 = "
-# Beide registrierten Schreibweisen (E4). Die Altform ist nur im Client Pack
-# devin-desktop zulaessig (Pruefung 14 setzt das durch) - sie traegt aber dieselbe Frist
-# "vor Version 1.0.0" und ist damit derselbe Gegenstand. Wer nur die neutrale Form
-# zaehlt, haelt ein Client Pack mit sieben offenen Verifikationsbedarfen fuer fertig.
+# Beide Schreibweisen (E4). Bis 0.86.1 waren sie registriert; die Altform war nur im
+# Client Pack devin-desktop zulaessig (Pruefung 14 setzte das durch) und trug dieselbe
+# Frist "vor Version 1.0.0". Wer nur die neutrale Form zaehlt, haelt ein Client Pack mit
+# sieben offenen Verifikationsbedarfen fuer fertig.
+#
+# MIT 0.87.0 SIND BEIDE FORMEN ABGESCHAFFT (CR-2026-121, D-291), und dieser Ausdruck
+# bleibt unveraendert stehen. Was er zaehlt, hat sich nicht geaendert; wozu die Zahl
+# dient, schon: Sie war ein Arbeitsvorrat und ist jetzt eine RUECKFALLSPERRE. Ausgebaut
+# wird sie nicht - D-11 verloere damit seinen einzigen maschinellen Zaehler fuer
+# Kriterium 1, die Standzeile fiele von vier Zahlen auf drei, und eine Wiedereinfuehrung
+# der Form fiele niemandem auf. DER PREIS IST BENANNT: Eine Zahl, die dauerhaft auf null
+# steht, wird nicht mehr gelesen; sie traegt nur, solange ihre Sonde laeuft.
 D11_MARKER_RE = re.compile(r"<VERIFY AGAINST CURRENT (?:CLIENT|DEVIN) DOCUMENTATION>")
 D11_AUSSER = ("build/", "CHANGELOG.md", "governance/change-requests/",
               "tests/protocols/")

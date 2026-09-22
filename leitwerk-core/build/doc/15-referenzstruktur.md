@@ -2,7 +2,7 @@
 
 ## 15.1 Belegstatus und Durchsetzungstiefe
 
-Für die Struktur wurden keine Client-Konventionen erfunden. Jede verwendete Konvention trägt einen **Belegstatus** – **offiziell dokumentiert** `[DOK]`, **technisch begründete Empfehlung** `[EMPF]` (aus dokumentierten Mechanismen abgeleitet, noch nicht in einer Installation ausgeführt), **konzeptioneller Vorschlag** `[KONZ]` (Framework-Konvention ohne Produktbezug) oder **noch zu verifizieren** (`<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`).
+Für die Struktur wurden keine Client-Konventionen erfunden. Jede verwendete Konvention trägt einen **Belegstatus** – **offiziell dokumentiert** `[DOK]`, **technisch begründete Empfehlung** `[EMPF]` (aus dokumentierten Mechanismen abgeleitet, noch nicht in einer Installation ausgeführt), **konzeptioneller Vorschlag** `[KONZ]` (Framework-Konvention ohne Produktbezug) oder **noch nicht belegt** (`BELEG OFFEN`, mit Grund und Datum).
 
 Wo diese Belege stehen, hat sich mit den Client Packs verschoben (Kap. 7a). Die Zuordnung von Mechanismen zu Dateinamen ist keine Eigenschaft des Frameworks mehr, sondern eine Eigenschaft des jeweiligen Client Packs – und wird dort geführt, versioniert und maschinenlesbar. Dieses Kapitel bettet sie ein, statt sie ein zweites Mal aufzuschreiben.
 

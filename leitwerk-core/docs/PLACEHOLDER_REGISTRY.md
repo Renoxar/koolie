@@ -77,5 +77,3 @@ Einzige Ausnahme ist `<CORE_DIR>`: Der Name des Kernverzeichnisses ist keine Eig
 | `<FORM_NAME>`, `<PLACEHOLDER>`, `<PACK>` | Generische Platzhalter in Erläuterungen und Beispielen | – | – | – |
 | `<JAHR>`, `<JJJJ>`, `<NNN>` | Schema-Platzhalter für Jahres- und Laufnummern in IDs (`CR-<JAHR>-<NNN>`, `INC-<PROJECT_CODE>-<JJJJ>-<NNN>`) | Vorlagen in `leitwerk-core/governance/` | „CR-2026-001" | – |
 | `<TBD: …>` | Offene projekt- oder organisationsspezifische Entscheidung | überall | – | Overlay-Abschnitte 4, 5, 6, 13, 14, 15: ja |
-| `<VERIFY AGAINST CURRENT DEVIN DOCUMENTATION>` | Clientgebundene Altform des nachstehenden Markers. **Nur in einem Client Pack zulässig**, dessen Client Devin Desktop ist; im werkzeugneutralen Kern steht die neutrale Form (D-02, Prüfung 14) | Client Pack `devin-desktop` | – | vor Version 1.0.0 |
-| `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>` | Technische Aussage, die gegen die Dokumentation desjenigen KI-Clients geprüft werden muss, für den das jeweilige Client Pack gilt. **Die im Kern zu verwendende Form** | Framework | – | vor Version 1.0.0 |

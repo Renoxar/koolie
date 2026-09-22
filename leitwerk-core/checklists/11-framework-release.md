@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-11` |
-| Version | `0.2.2` |
+| Version | `0.2.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jedem Framework-Release (auch Patch-Releases) |
@@ -37,7 +37,7 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 
 ### Produktstand der KI-Client
 
-- [ ] **MUSS** Aktualitätsprüfung gegen die offizielle Clientdokumentation durchgeführt (Changelog des Produkts gesichtet; betroffene `[DOK]`-Aussagen und `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`-Marker aktualisiert; Quellenliste im Hauptdokument nachgezogen).
+- [ ] **MUSS** Aktualitätsprüfung gegen die offizielle Clientdokumentation durchgeführt (Changelog des Produkts gesichtet; betroffene `[DOK]`-Aussagen und Belegzellen mit `BELEG OFFEN` aktualisiert; Quellenliste im Hauptdokument nachgezogen).
 - [ ] **MUSS** Produktänderungen mit Regelwirkung (neue Berechtigungen, geänderte Pfade, entfallene Mechanismen) sind als Änderungsanträge behandelt (`leitwerk-core/governance/RELEASE_PROCESS.md`, Abschnitt Produktbeobachtung).
 
 ### Tests

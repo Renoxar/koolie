@@ -2,6 +2,123 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.87.0] - 2026-09-22
+
+**Die Markerform selbst ist abgeschafft - Kriterium 1 steht auf null**
+(`CR-2026-121`, **D-291** bis **D-297**, `K-98` neu). **Ohne Kontingent, ohne Lauf an
+einem Client.**
+
+> 🔴 **Der Befund, der den Schritt traegt, und er ist aelter als jede seiner
+> Fundstellen.** Die Markerform verband zwei Dinge, die nicht zusammengehoeren: **den
+> Belegstand einer Aussage** und **eine Frist, bis wann er hergestellt sein muss** - das
+> Register schrieb beiden Schreibweisen *"vor Version 1.0.0"* vor. Fuer sechzehn der
+> achtzehn Fundstellen war die Frist richtig und ist mit `AP2` eingeloest. **Fuer `X2`
+> war sie nie einloesbar**, weil die Frage dauerhaft nicht beobachtbar ist - und der
+> Marker hat einen Dauerzustand **achtundneunzig Releases lang** als Rueckstand ausgewiesen - seit `0.7.0`, nachgezaehlt am Changelog. *Eine
+> Marke, die einen dauerhaften Zustand als Rueckstand fuehrt, macht aus einer ehrlichen
+> Auskunft eine offene Schuld.*
+
+### Was sich aendert
+
+- 🟢 **Der Belegstand steht, wo er hingehoert: in der Belegspalte.** Sie fuehrt `[DOK]`,
+  `[EMPF]`, `[KONZ]` - und neu **`BELEG OFFEN` mit Grund und Datum**, wenn der Nachweis
+  aussteht. **Eine Frist traegt er nicht** (D-291). Beide Registerzeilen entfallen aus
+  `docs/PLACEHOLDER_REGISTRY.md`, die Glossarzeile aus `framework/core/00-principles.md`.
+- 🟢 **Sechzehn der achtzehn Fundstellen sind sachlich aufgeloest, nicht umetikettiert.**
+  **Fuenf** durch die Messungen von `0.86.0` (`S3`/D-287, `B3`/D-277, `A1`/D-284), drei
+  durch einen Verweis auf die Faehigkeitsmatrix, **fuenf** waren reine Nennungen, drei sind
+  Register- und Glossarzeilen und entfallen. **Zwei werden umgewidmet, und sie sind
+  dieselbe Frage:** Zeile `X2` des Packs `devin-desktop` und die Nachweiszelle von `K-20`
+  sagen `BELEG OFFEN (dauerhaft)` - **die Frage bleibt offen (`K-20`), die Marke nicht**
+  (D-292). ⚠️ **Die Aufschluesselung stand bis zum Durchgang vor dem Commit auf "siebzehn
+  und eine" und summierte sich auf 19** - `.devin/config.json` war mitgezaehlt, obwohl es
+  in `.gitignore` steht, und `X2` und `K-20` waren als eine Fundstelle gefuehrt. *Wer nach
+  der Art der Aufloesung gruppiert, zaehlt Fragen; der Zaehler zaehlt Fundstellen.*
+- 🟢 **Kriterium 1 von D-11 bleibt gezaehlt und wird zur RUECKFALLSPERRE umgewidmet**
+  (D-293). Muster und Zaehlbereich bleiben woertlich; was der Zaehler ab jetzt meldet, ist
+  die **Wiedereinfuehrung** der Form. **Die Null ist gemessen und nicht konstruiert:**
+  Sonde `46c` legt einen Marker in den Kern und verlangt die Meldung, Gegenprobe `46c`
+  legt einen in ein datiertes Protokoll und verlangt ihr Ausbleiben - **beide bringen
+  ihren Gegenstand selbst mit** und sind vom Schnitt nicht betroffen. ⚠️ **Verworfen: der
+  Ausbau.** D-11 verloere damit seinen einzigen maschinellen Zaehler fuer Kriterium 1.
+
+### Fuenf Befunde vor dem ersten Handgriff - zum zwoelften Mal in Folge
+
+- 🔴 **Der Zaehlbereich war kleiner als die Wirkungsflaeche** (D-295). Die Markerform stand
+  in **sechs weiteren versionierten Traegern**, die Pruefung 46 nie gesehen hat:
+  `README.md` und fuenf Quellen des Hauptdokuments unter `build/doc/`. *Wer nur die
+  gezaehlten achtzehn entfernt, laesst die Form in der Wurzel-README und im Glossar des
+  Hauptdokuments stehen - und der Zaehler meldet trotzdem null.* **Sie sind mitgezogen,
+  ohne den Zaehlbereich zu erweitern;** dass sie weg sind, sagt der Wirkungsnachweis und
+  keine Pruefung (`K-98`).
+- 🔴 **Der Belegstand des Packs `devin-desktop` war seit `0.86.0` falsch** (D-297): *"5 der
+  36 Zeilen"*, mitgezaehlt ueber den Verweis *"wie B3"* - **und `B3` ist mit `0.86.0`
+  aufgeloest**; *ein Verweisbeleg erbt den Beleg seines Ziels* (D-266). Richtig ist **1 von
+  36**. **Die Uebersicht in `clients/README.md` sagte seit `0.86.0` genau das** - zwei
+  Traeger desselben Hauses, zwei Zahlen.
+- 🔴 **Der Belegstand des Packs `claude-code` war seit `0.62.0` falsch** (D-297): *"Eine
+  Zeile traegt einen VERIFY-Marker - R5"*, waehrend der **Aenderungsverlauf desselben
+  Packs** sagt, dass dieser Marker mit Pack-Version `0.21.0` aufgeloest ist (D-158).
+  *Die Zusage, deren Widerlegung im eigenen Dokument steht.* Dieselbe Klammer nannte *"9
+  von 36"* fuer das Schwesterpack, und der Satz darueber behauptete, dort sei *"keine
+  einzige Einstufung gegen eine Installation geprueft"* - seit `0.53.0` ueberholt.
+- 🔴 **Der Vorbehalt von Pruefung 34 haette seinen Gegenstand verloren** (D-296). Sie laesst
+  eine Zeile `A1` auf `[TECHNISCH]` durchgehen, solange sie `<VERIFY` traegt; mit der
+  Abschaffung waere die Bedingung **dauerhaft wahr** - *eine Ausnahme, die nichts mehr
+  ausnimmt*. **Sie steht seither auf der Nachfolgeform `BELEG OFFEN`.**
+- 🔴 **Die Lebenszyklusregel nennt den Marker, ohne ihn zu schreiben.**
+  `01-governance.md` Abschnitt 5 sagt im Uebergang `entwurf` → `pilot`: *"Offene
+  `VERIFY`-Marker des Traegers sind benannt"* - in der Schreibweise mit Bindestrich, und
+  **damit zaehlt Kriterium 1 sie nicht.** *Die Aufzaehlung unter der entfernten
+  Ueberschrift* (0.58.0), diesmal vor dem Schnitt gefunden. ➡️ **Der Waechter dieses
+  Schnitts braucht ein ZWEITES Muster** (0.75.0, D-205): gesucht wurde jede Nennung des
+  Wortes in jedem versionierten Traeger ausserhalb der Chronik, nicht nur die Form.
+
+### Nebenbei
+
+- ⚠️ **Eine Aenderung an der erzeugten Vorbemerkung erreicht eine bereits installierte
+  Berechtigungsdatei nicht.** `clientmap.py` erzeugt den `_comment` der
+  Berechtigungsdatei; `install.py --update` fasst sie **nicht** an, weil sie
+  Projektwerte enthaelt. *Der vierte Traeger wieder* - die Laufzeitschicht dieses
+  Repositoriums ist von Hand nachgezogen worden.
+- ⚠️ **Der Vermerk *"dieses Release"* stand im Releaseplan auf drei Zeilen zugleich**
+  (`0.82.0`, `0.85.0`, `0.86.0`) und ist auf die aktuelle gesetzt.
+
+### Versionen
+
+- **Gehoben:** `00-principles.md` 0.1.4, `01-governance.md` 0.3.2, `02-privacy.md`
+  0.1.8, `clients/README.md` 0.6.0, `SKILL_TEMPLATE.md` 0.1.3,
+  `checklists/11-framework-release.md` 0.2.3, `RELEASE_PROCESS.md` 0.1.4, Client Pack
+  `devin-desktop` 0.14.0, Client Pack `claude-code` 0.24.0.
+- 🔴 **NICHT gehoben: die Skills `fw-mr-description` und `fw-review-support`**
+  (`CR-2026-121` E9). *Eine angehobene Skillversion setzt die abgenommenen Zellen seines
+  Testblatts auf die Fassung davor* (D-119) - genau das hat `0.79.0` getan, und
+  Kriterium 2 stieg (D-227). **Woertlich angewandt ginge Kriterium 2 hier von 0 wieder
+  aufwaerts, in demselben Release, das Kriterium 1 auf 0 bringt.** Der Eingriff betrifft
+  dort eine `(Erlaeuterung)`, keine Anweisung. **Die Frage gehoert zu `K-84` und ist
+  dort offen.** ⚠️ **Die Client Packs sind der Gegenfall und deshalb gehoben:**
+  Nachgezaehlt nennt **keine** Zelle eines Testblatts eine Packversion - sie nennen den
+  Produktstand (D-117, D-202).
+
+### Migrationshinweis
+
+**Fuer uebernehmende Projekte: keine Aenderung an der Laufzeitschicht.** Die beiden
+angefassten Skills (`fw-mr-description`, `fw-review-support`) und die erzeugte
+Vorbemerkung der Berechtigungsdatei kommen mit `install.py --update`; die
+Berechtigungsdatei selbst bleibt unberuehrt, ihr `_comment` traegt den alten Satz bis zur
+naechsten Neuerzeugung. **Wer in einem Overlay oder einem eigenen Client Pack die
+Markerform verwendet, ersetzt sie durch `BELEG OFFEN` mit Grund und Datum.**
+
+### Bekannte Einschraenkung
+
+⚠️ **Dass eine unbelegte Aussage ueberhaupt gekennzeichnet wird, setzt keine Pruefung
+durch** - dieselbe Bauform wie `K-41`. Durchgesetzt bleiben die Quellenangabe jeder
+`[DOK]`-Zeile (Pruefung 73) und die Aufzaehlbarkeit der Matrixzeilen (Pruefung 74).
+⚠️ **Alle vier zaehlbaren Kriterien von D-11 stehen damit auf null.** Das heisst **nicht**
+`1.0.0`-reif, und Pruefung 46 behauptet es auch nicht: Sie rechnet vier Zahlen aus und
+haelt sie gegen die Standzeile. Was bleibt, steht im Releaseplan - die Umbenennung
+(`~0.88.0`) und `AP11`.
+
 ## [0.86.1] - 2026-09-22
 
 **Fuer echte Clienttests stehen Abonnements bereit - Devin Pro, Codex Pro, Claude Max**

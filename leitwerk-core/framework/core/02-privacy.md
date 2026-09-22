@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.7 |
+| Version | 0.1.8 |
 | Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
@@ -17,7 +17,7 @@ Jeder Inhalt, der dem KI-Client als Kontext bereitgestellt wird (geöffnete Date
 
 ### 1.2 Vertragliche und technische Bedingungen sind organisationsspezifisch
 
-Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung: `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`.
+Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung stehen in der Fähigkeitsmatrix des jeweiligen Client Packs; sie sind von außen nicht zu beobachten und bleiben als Klärungspunkt offen (`K-20`).
 
 ### 1.3 Bis zur Prüfung gilt die restriktivste Auslegung
 
@@ -88,7 +88,7 @@ Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme
 
 ### 3.9 Spaces und geteilter Kontext
 
-Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Details `<VERIFY AGAINST CURRENT CLIENT DOCUMENTATION>`), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
+Werden Kontexte zwischen Agenten geteilt (Spaces `[DOK]`, Reichweite je Client in der Fähigkeitsmatrix des Client Packs), gelten für den geteilten Kontext dieselben Klassen; ein Space DARF NICHT K2-Inhalte enthalten, die nicht für alle beteiligten Aufgaben freigegeben sind.
 
 ### 3.10 Persönliche Regeln
 
