@@ -1,0 +1,152 @@
+{
+  "_comment": "Maschinenlesbare Pfadabbildung dieses Client Packs. Die menschenlesbare Fassung mit Fähigkeitsmatrix steht in CLIENT_PACK.md. install.py und validate-framework.py lesen diese Datei; ohne sie ist ein Client Pack nicht installierbar.",
+  "client": "devin-desktop",
+  "runtime_dir": ".devin",
+  "root_instruction_file": "AGENTS.md",
+  "permissions_file": ".devin/config.json",
+  "skills_dir": ".devin/skills",
+  "agents_dir": ".devin/agents",
+  "pack_runtime_dir": ".devin/rules",
+  "has_rule_triggers": true,
+  "core_skill_prefix": "fw-",
+  "core_paths": [
+    ".devin/README.md"
+  ],
+  "seed_paths": [],
+  "project_owned_hint": [
+    ".devin/rules/2N-overlay-<name>.md   (Overlay-Regelerweiterungen)",
+    ".devin/rules/40-tech-<name>.md      (Packs ohne Quelle im Kern)",
+    ".devin/skills/prj-*/                (projektspezifische Skills)",
+    ".koolie/project-overlay/tech-packs/**       (projekteigene Packs)",
+    ".koolie/project-overlay/**                  (das gesamte Overlay)"
+  ],
+  "runtime_placeholders": {
+    "<RUNTIME_DIR>": ".devin",
+    "<ROOT_INSTRUCTION_FILE>": "AGENTS.md",
+    "<ROOT_INSTRUCTION_LOCAL>": "AGENTS.local.md",
+    "<PERMISSIONS_FILE>": ".devin/config.json",
+    "<SKILLS_DIR>": ".devin/skills",
+    "<RULES_DIR>": ".devin/rules",
+    "<AGENTS_DIR>": ".devin/agents",
+    "<HOOKS_FILE>": ".devin/config.json",
+    "<MCP_FILE>": ".devin/mcp_config.json",
+    "<CLIENT_NAME>": "Devin Desktop"
+  },
+  "skill_frontmatter": {
+    "tools_format": "list",
+    "tool_names": {"read": ["read"], "grep": ["grep"], "glob": ["glob"], "edit": ["edit"], "exec": ["exec"]},
+    "tool_names_namespace": "eigen",
+    "_tool_names_note": "ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-87, D-88). Die Abbildung ist die IDENTITAET, und das ist ein Messergebnis, kein Nichtstun: Dieser Client fuehrt fuer das Frontmatter ein EIGENES, normalisiertes und geschlossenes Vokabular, das mit seinen Laufzeit-Werkzeugnamen nicht uebereinstimmt. Gemessen an einer Sondendatei, die zwoelf Namen anbot: angenommen wurden read, grep, glob, edit, exec und web_search (Read und Grep gross geschrieben ebenfalls, auf Kleinschreibung normalisiert); VERWORFEN wurden find_file_by_name, write, skill und ein erfundener Name. Das heisst: glob ist hier RICHTIG, obwohl der Client kein Laufzeugwerkzeug dieses Namens fuehrt - das glob-foermige heisst zur Laufzeit find_file_by_name und steht deshalb in hook_tools, nicht hier. Ein erster Entwurf dieses Releases hat genau das verwechselt und find_file_by_name eingetragen; der Client verwarf den Eintrag lautlos, und die Vorabfreigabe schrumpfte von drei Namen auf zwei. Beim Pack claude-code fallen beide Namensraeume zusammen - deshalb ist der Unterschied bis 0.42.0 niemandem aufgefallen. GRENZE: Gemessen ist, welche Namen der Client ANNIMMT, nicht was er mit ihnen tut - Zeile S3 sagt es.",
+    "drop_fields": []
+  },
+  "shared_core": [
+    {
+      "src": "framework/runtime/root-instruction.md",
+      "dst": "<ROOT_INSTRUCTION_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/00-framework-core.md",
+      "dst": "<RULES_DIR>/00-framework-core.md"
+    },
+    {
+      "src": "framework/runtime/rules/10-privacy-security.md",
+      "dst": "<RULES_DIR>/10-privacy-security.md"
+    },
+    {
+      "src": "framework/runtime/rules/15-development-rules.md",
+      "dst": "<RULES_DIR>/15-development-rules.md"
+    },
+    {
+      "src": "framework/runtime/agents/fw-reviewer.md",
+      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+    },
+    {
+      "src": "templates/rules/21-overlay-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/21-overlay-TEMPLATE.md.template"
+    },
+    {
+      "src": "templates/rules/40-tech-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/40-tech-TEMPLATE.md.template"
+    },
+    {
+      "src": "framework/runtime/root-instruction-local.example.md",
+      "dst": "<ROOT_INSTRUCTION_LOCAL>.example"
+    },
+    {
+      "src": "framework/runtime/mcp-config.example.json",
+      "dst": "<MCP_FILE>.example"
+    }
+  ],
+  "shared_seed": [
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/20-project-overlay.md",
+      "dst": "<RULES_DIR>/20-project-overlay.md"
+    },
+    {
+      "src": "templates/project-overlay",
+      "dst": ".koolie/project-overlay"
+    }
+  ],
+  "rule_frontmatter": "yaml",
+  "root_instruction_imports": [],
+  "agent_frontmatter": {
+    "tools_field": "allowed-tools",
+    "tools_format": "list",
+    "tool_names": {"read": ["read"], "grep": ["grep"], "glob": ["glob"], "edit": ["edit"], "exec": ["exec"]},
+    "tool_names_namespace": "eigen",
+    "_tool_names_note": "Wie skill_frontmatter - dasselbe eigene Frontmatter-Vokabular an der zweiten Stelle, an der es abgebildet wird (2026-09-14, tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-88). Das Agentenprofil fw-reviewer traegt danach unveraendert 'allowed-tools: read, grep, glob'; und seit dem 2026-09-22 ist gemessen, dass dieser Client damit die Zusage A1 EINLOEST: Ein Unteragent mit diesem Profil ruft kein schreibendes Werkzeug auf, das Vollzugriffsprofil des Clients ruft exec und write (D-284). GRENZE: Belegt ist der Werkzeugbestand, nicht die Reichweite je Werkzeug."
+  },
+  "agent_start_tools": ["run_subagent"],
+  "agent_start_tools_absent": [],
+  "_agent_start_tools_absent_note": "ERHOBEN am 2026-09-22 (tests/protocols/2026-09-22-ap2-rest-devin-desktop.md, CR-2026-120, D-284). Das Startwerkzeug heisst run_subagent; die Mitschrift fuehrt es unter agent.tool_definitions, und sein Pflichtargument 'profile' nennt das Subagentenprofil. Bis 0.85.2 stand hier ['unerhoben'] mit der Begruendung, der Name sei fuer diesen Client NICHT gemessen und die Erhebung vom 2026-09-13 betreffe ausschliesslich claude-code - das war richtig und ist jetzt eingeloest. Gemessen ist auch die WIRKUNG des Profils: allowed-tools bestimmt den Werkzeugbestand des Unteragenten (Laeufe A1-GH, A1-SH, A1-RH, ueber einen Aufzeichnungs-Hook mit Positivkontrolle, weil --export die Werkzeugaufrufe eines Unteragenten NICHT fuehrt, D-282). Der Client stellt zwei eigene Profile: subagent_explore (lesend) und subagent_general (voller Schreibzugriff). Zeile A1 des Packs traegt damit keinen offenen VERIFY-Marker mehr. GRENZE: Belegt ist der Werkzeugbestand, nicht die Reichweite je Werkzeug.",
+  "permission_tools": {
+    "read": [
+      "Read"
+    ],
+    "search": [],
+    "write": [
+      "Write"
+    ],
+    "exec": [
+      "Exec"
+    ],
+    "fetch": [
+      "Fetch"
+    ],
+    "mcp": [
+      "mcp__*"
+    ],
+    "skill": []
+  },
+  "_permission_tools_skill_note": "ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-89; Klaerungspunkt K-33 damit geschlossen). Der Skill-Aufruf IST bei diesem Client ein eigener Werkzeugaufruf: Das Werkzeug heisst skill, der Skillname steht im Argument skill (Laeufe K1, K1b, P2, P3). Die Liste bleibt trotzdem leer, und der Grund ist ein anderer als bisher: Es ist keine Schreibweise bekannt, mit der eine Regel dieser Datei den Aufruf erreicht. Skill(fw-code-explain) laeuft durch (P2), skill(fw-code-explain) laeuft durch (P3) - waehrend Read(**/.env) in derselben Datei und denselben Laeufen abweist (P1b, Kontrolllauf). Eine Regel zu schreiben, die nichts tut, waere die Bauform von D-66 und D-82. ZWEITER WEG, nicht gesucht: Die Slash-Form /fw-name wird CLIENTSEITIG in den Prompt expandiert - im user-Schritt der Mitschrift steht der Inhalt der SKILL.md, nicht der Befehl (K1b). Eine Schranke auf dem Werkzeug erreicht diesen Weg ohnehin nicht. Offen als K-34: ob dieser Client eine wirksame Schreibweise kennt.",
+  "permission_tools_bare": [
+    "mcp__*"
+  ],
+  "permission_path_prefix": "",
+  "permission_exec_match": "literal",
+  "permissions_extra": {},
+  "settings_extra": {},
+  "_settings_extra_note": "Ausdrueckliche Abwesenheit, keine Luecke (CR-2026-087, D-155). Fuer diesen Client ist keine Einstellung bekannt, die das Framework auf der obersten Ebene der Berechtigungsdatei als Verschaerfung ausliefern muesste: Die Gegenstuecke des Schwesterpacks gibt es hier nicht in dieser Form - Devin Local persistiert keine Memories (docs.devin.ai/desktop/cascade/memories: 'The Devin Local agent - the default agent for new tabs - does not persist memories'), und die organisationsseitige Skillquelle ('Indexed repos', docs.devin.ai/product-guides/skills) kennt keinen clientseitigen Schalter (K-64). Pruefung 54 laesst ein Pack mit leerem Objekt durchlaufen; sie meldet einen Schluessel, der deklariert ist und in der erzeugten Datei fehlt oder auf der falschen Ebene steht.",
+  "permissions_note": "Die allow-Regel fuer Suchen entfaellt bei diesem Client und faellt damit auf den strengeren Standard zurueck - NICHT, weil es keine Suche gaebe (das stand hier bis 0.42.0 und ist gemessen falsch), sondern weil die Berechtigungsklasse Read(...) dieses Clients die Suchwerkzeuge mit umfasst: Ein deny Read(**/.env) weist einen grep-Aufruf auf dieselbe Datei ab, gemessen am 2026-09-14 in den Laeufen P4 und W1 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-87). Eine eigene Search-Regel waere damit eine zweite Schreibweise fuer dieselbe Zusage.",
+  "hook_path_fields": ["file_path", "path"],
+  "_hook_path_fields_note": "Wie beim Pack claude-code, an der eigenen Aufzeichnung belegt: Die Hook-Eingaben dieses Clients fuehren tool_input mit file_path. path steht daneben, weil ein zusaetzlich erkanntes Feld eine Verschaerfung ist und die Aufloesung sonst an einer Namensvariante vorbeilaeuft (CR-2026-056 E6).",
+  "hook_tools": {"read": ["read"], "search": ["grep", "find_file_by_name"], "exec": ["exec"], "write": ["edit", "write"]},
+  "_hook_tools_note": "Die Suchklasse ist ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-87) und seither hier gefuehrt. Bis 0.42.0 stand sie unter hook_tools_absent mit der Begruendung, dieser Client fuehre kein eigenes Suchwerkzeug - das ist gemessen FALSCH: Er fuehrt zwei, grep (ripgrep) und find_file_by_name (Glob-Muster). Die Folge war gemessen: Der erzeugte Matcher lautete read|exec|edit|write, und in einer Umgebung mit nur diesem Hook kam derselbe Secret-Wert, den ein read-Aufruf nicht bekam, ueber einen grep-Aufruf woertlich heraus (Laeufe H1 und H2). Das Hook-Skript selbst blockiert beides - es wurde nicht gefragt. Entlastung: Wie ausgeliefert trug die Berechtigungsschicht, weil die Klasse Read(...) dieses Clients die Suche mit umfasst (Laeufe P4 und W1); die fail-closed-Schicht (D-31) trug sie nicht, und sie ist die, die eine bearbeitete Berechtigungsdatei ueberleben soll (D-77).",
+  "hook_project_dir_var": "DEVIN_PROJECT_DIR",
+  "import_control": {
+    "key": "read_config_from",
+    "value": {
+      "agents_standard": true,
+      "cursor": false,
+      "windsurf": false,
+      "claude": false
+    }
+  },
+  "_import_control_note": "D-37: Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate. agents_standard bleibt true - das ist bei diesem Client das Format der eigenen Wurzel-Anweisungsdatei; es abzuschalten hiesse, das Framework abzuschalten. Wirkung gemessen am 2026-09-11 (K-21, K-23): 67 fremde Skills und der Inhalt einer fremden Regel verschwinden aus dem Kontext. Einstufung [TEXTUELL], nicht [TECHNISCH]: Die Benutzerkonfiguration hat in beide Richtungen Vorrang (K-27, ERH-11).",
+  "hook_fail_closed": true,
+  "_hook_fail_closed_note": "Das Eingabeschema dieses Clients ist seit 0.25.0 gegen eine Installation belegt: In einer AP2-Sitzung aufgezeichnet wurden die Felder hook_event_name, tool_name, tool_input, session_id, prompt_id und das in der Dokumentation nicht genannte tool_use_id (tests/protocols/2026-09-11-AP2-devin-desktop.md). Damit ist die Bedingung aus D-31 erfuellt und der durchsetzende Hook wird mit --fail-closed aufgerufen. Beobachtet ist auch das Blockieren selbst: Ein Lesezugriff auf eine Secret-Datei wurde abgebrochen - in einer Umgebung ohne Regeltexte und bei ausgeschalteter Berechtigungsschranke."
+}

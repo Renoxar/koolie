@@ -1,0 +1,26 @@
+---
+description: Overlay-Regelerweiterung <TBD: Kurzbezeichnung, z. B. Coding Guidelines> für <PROJECT_NAME>. Anwenden bei <TBD: Situationen, z. B. Aufgaben in Modus M3 oder M4>.
+trigger: model_decision
+---
+
+<!-- AUSFÜLLHINWEIS: Kopiere diese Datei nach 2N-overlay-<name>.md (N = 1–9, ohne .template).
+     Mechanismus: .koolie/project-overlay/OVERLAY.md Abschnitt 19, Ladeverhalten "rule".
+     Für Coding Guidelines ist eine Bindung an die Dateimuster der Sprache geeignet; wie
+     sie bei diesem Client notiert wird, steht in der README der Regelablage.
+     Unter 12.000 Zeichen bleiben.
+     Inhalt: nur Kernregeln des registrierten Dokuments (Manifest-ID nennen), keine Lockerung
+     von Framework-Regeln, keine Personen, keine internen Adressen, keine Secrets. -->
+
+# Overlay-Regel: <TBD: Titel>
+
+Quelle: Manifest-Eintrag `<TBD: DOC-00N>`, Dokument `.koolie/project-overlay/documents/<typ>/<datei>.md` (Kontextklasse `<K1/K2>`). Diese Regel konkretisiert das Framework für `<PROJECT_NAME>`; bei Widerspruch gilt die restriktivere Regel.
+
+## Kernregeln
+
+1. `<TBD>`
+2. `<TBD>`
+3. `<TBD>`
+
+## Bei Bedarf vollständig lesen
+
+`<TBD: Pfad des Dokuments>` – nur, wenn die Aufgabe Details erfordert, die über die Kernregeln hinausgehen.

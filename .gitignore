@@ -12,23 +12,23 @@ UEBERGABE.local.md
 __pycache__/
 # Legacy-Verzeichnisse werden nicht gepflegt
 .windsurf/
-# Build-Artefakte der Dokumentation (Quellen unter leitwerk-core/build/doc werden versioniert)
-leitwerk-core/build/out/
+# Build-Artefakte der Dokumentation (Quellen unter .koolie/core/build/doc werden versioniert)
+.koolie/core/build/out/
 
 # ---------------------------------------------------------------------------
 # Im Framework-Repository sind die Wurzelbestandteile Erzeugnisse:
-# Quelle der Wahrheit ist leitwerk-core/ (Client Packs und framework/runtime/),
-# mit "python leitwerk-core/install.py". So kann es keine zwei
+# Quelle der Wahrheit ist .koolie/core/ (Client Packs und framework/runtime/),
+# mit "python .koolie/core/install.py". So kann es keine zwei
 # auseinanderlaufenden Fassungen derselben Core-Datei geben.
 #
 # ACHTUNG: In einem PROJEKT gilt das Gegenteil - dort werden AGENTS.md, .devin/ und
-# project-overlay/ versioniert. Diese vier Zeilen sind deshalb beim Übernehmen des
+# .koolie/project-overlay/ versioniert. Diese vier Zeilen sind deshalb beim Übernehmen des
 # Frameworks in ein Projekt NICHT mitzunehmen.
 # ---------------------------------------------------------------------------
 /AGENTS.md
 /AGENTS.local.md.example
 /.devin/
-/project-overlay/
+/.koolie/project-overlay/
 
 # Sicherungsdateien aus Sondenlaeufen
 *.bak
