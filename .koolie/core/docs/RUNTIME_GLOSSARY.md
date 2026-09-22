@@ -28,7 +28,7 @@ Die Regel gilt für jeden Träger des Kerns. Ausgenommen ist genau, was hier ste
 | **Chronik** | `CHANGELOG.md`, `governance/change-requests/`, `governance/DECISION_LOG.md`, `tests/protocols/`, **`docs/ROADMAP.md`** | Sie berichten einen vergangenen Stand. Die Roadmap gehört dazu, weil sie die Erhebungsergebnisse je Arbeitspaket und die Befundberichte je Release führt |
 | **Werkzeuge** | alle `.py` des Kerns | Ein Skript, das eine Installation herstellt oder prüft, **muss** Pfade nennen. `install.py` und `clientmap.py` lösen sie aus den Manifesten auf, die Prüfskripte stellen Installationen her |
 | **Abbildungstabellen** | diese Datei, `docs/PLACEHOLDER_REGISTRY.md`, `clients/` | Sie müssen beide Namen nennen; dort ist der Pfad der Inhalt |
-| **Mit Frist: `build/`** | die Quellen des Hauptdokuments | Das Hauptdokument ist über vierzig Releases zurück und wird mit `AP11` (~0.69.0) neu gesetzt. **Die Ausnahme fällt mit diesem Schritt**; sie steht dort in der Roadmap |
+| **Anhänge und Chronik des Hauptdokuments** | `build/doc/29-grenzen.md`, `build/doc/31-anhaenge.md`, `build/doc/32-abschluss.md` | 🟢 **Die befristete Ausnahme über das ganze Verzeichnis `build/` ist mit `AP11` (Release 0.89.0) gefallen** (D-311) – die 32 übrigen Kapitelquellen sind werkzeugneutral. Was bleibt, sind drei Träger mit dauerhaftem Grund: `29-grenzen.md` ist ein ausdrückliches Zeitdokument des Stands vom 2026-09-01, `31-anhaenge.md` führt die Quellenliste **je Client Pack** und den Verifikationsbedarf **eines** Packs – dieselbe Gattung wie die Abbildungstabellen –, und `32-abschluss.md` trägt die Releasechronik samt den Aussagen des Auftrags **über** die Produktnennung selbst. 🔴 **Die Frist konnte für diese drei nie ablaufen**, und `CR-2026-025` E3 hatte es am 2026-09-10 schon gesagt |
 
 **Eine Spalte statt einer Datei.** In `tests/TEST_CATALOG.md` ist die **letzte** Zelle einer Tabellenzeile der Ergebnisstatus. Ein Pfad dort nennt, was ein Lauf gelesen hat, und gehört zum gemessenen Client Pack (D-117) – er ist Beleg, nicht Anweisung. Die übrigen Spalten derselben Zeile stehen unter der Regel: Die Eingabezelle „Passe AGENTS.md an" war bis 0.56.2 eine davon. Denselben Zuschnitt – die letzte Zelle – benutzt Prüfung 46 für den Ergebnisstatus.
 
@@ -80,7 +80,9 @@ Ein Begriff benennt die **Rolle** eines Artefakts, nicht seine Eigenschaften. Ob
 Zwei Beispiele, in denen der Begriff gleich und die Wirkung verschieden ist:
 
 - Die **Regelablage** enthält bei beiden Packs dieselben Regeltexte, und beide Clients laden sie von sich aus. Verschieden ist die **Bedingungssprache**: `devin-desktop` kennt die Ladetrigger der Kernquelle, `claude-code` kennt nur die Bindung an Dateimuster (`paths`) und lädt alles Übrige unbedingt. Der Kern beschreibt deshalb, *was* eine Regel bewirkt, nicht *wann* sie geladen wird; die Abbildung der Ladetrigger steht im Manifest des Packs unter `rule_triggers`.
-- Die **Hook-Konfiguration** ist bei `devin-desktop` eine eigene Datei, bei `claude-code` ein Abschnitt der Berechtigungsdatei. Ein Kerntext, der „die Hook-Datei" nennt, wäre schon wieder clientgebunden.
+- Die **MCP-Konfiguration** liegt bei `devin-desktop` innerhalb der Laufzeitschicht, bei `claude-code` daneben im Wurzelverzeichnis. Ein Kerntext, der „die Datei in der Laufzeitschicht" nennt, wäre schon wieder clientgebunden.
+
+🔴 **Bis Release 0.88.1 stand hier die Hook-Konfiguration als Beispiel, mit der Aussage, sie sei bei `devin-desktop` eine eigene Datei.** Das war seit D-32 (Release 0.26.0) falsch – und **die Tabelle acht Zeilen weiter oben sagte im selben Träger das Richtige.** Der Absatz, der die Tabelle erläutert, widersprach ihr: derselbe Befundtyp, den dieses Repositorium sonst an seinen Zusagen findet, hier an seiner eigenen Erläuterung.
 
 ## Ausgabemarken: `[HALT]` und `[RÜCKFRAGE]`
 

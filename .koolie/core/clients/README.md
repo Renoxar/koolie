@@ -90,7 +90,7 @@ Die Delegationsverbote V1 bis V12 (`.koolie/core/framework/core/09-risk-model.md
 | Pack | Code | Status | `[TECHNISCH]` | Kernzusagen | Fähigkeitsmatrix belegt |
 |---|---|---|---|---|---|
 | `devin-desktop` | `CP-DD` | pilot | 21 von 36 | 6 von 6 | 🟢 **`AP2` ist mit `0.86.0` zu Ende gefahren** – `S3`, `B3`, `B10` und `A1` sind an einer Installation gemessen (`CR-2026-120`), dazu H1, H2, R5, R6 und S5 in früheren Sitzungen. **Genau eine Zeile sagt noch `BELEG OFFEN`, und dauerhaft:** `X2` (`K-20`). ⚠️ **Die Einstufungen `[TECHNISCH]` des B-Blocks gelten nicht im Betriebsmodus `dangerous`** – dort trägt der Schutz-Hook (D-281); die Vorbemerkung des Blocks sagt es |
-| `claude-code` | `CP-CC` | entwurf | 22 von 31 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; für S3, S4, A1 und die Reichweite von H2 liegen Messungen vor, für die übrigen Zeilen stehen die Wirkungsnachweise aus |
+| `claude-code` | `CP-CC` | pilot | 22 von 31 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; **für sechs Zeilen liegen Messungen vor** – S3, S4, A1, die Reichweite von H2, B6 und, zur Hälfte, B2 –, für die übrigen stehen die Wirkungsnachweise aus. **Keine Zeile sagt `BELEG OFFEN`** |
 
 ## 7. Änderungsverlauf
 

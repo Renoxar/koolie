@@ -104,7 +104,10 @@ Sonden. Behoben; der Nebenbefund ist im Protokoll festgehalten.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-10 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1, E2 und E3 einzeln entscheiden>` |
+| Auflagen | **E1 bis E3 wie in Abschnitt 4 vorgelegt**: Der Interpreter wird ermittelt und nicht im Manifest konfiguriert; die Kandidatenreihenfolge beginnt bei `python3`; Prüfung 15 meldet als **Fehler** – *ein Schutz-Hook, der nicht läuft, ist schlimmer als ein fehlender* |
+| Umsetzung | **mit Release 0.19.0** – Einzelheiten und Nachweise in `.koolie/core/CHANGELOG.md` |
+
+Abschnitt 6 ist am 2026-09-22 mit `CR-2026-124` (`AP11`) **nachgetragen**, nicht neu entschieden: Die Entscheidung selbst steht seit 2026-09-10 in **D-29**, die Umsetzung im `CHANGELOG.md` zu Release 0.19.0. 🔴 **Der Releaseplan nannte für diesen Nachtrag zwei Anträge; gezählt am 2026-09-22 sind es sieben** – `CR-2026-020`, `-021`, `-023`, `-025`, `-026`, `-029` und `-030`.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 76, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 77, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -1809,7 +1809,9 @@ def _zeile_mit_summe(root: str) -> None:
     # (D-71). Eine Gegenprobe, die nur das Pack nachzieht, faellt seither an der zweiten
     # Stelle - und genau das ist der Zweck der Erweiterung.
     u = P(root, UEBERSICHT_31.replace("/", os.sep))
-    ersetze(u, ("| entwurf | 22 von 31 |", "| entwurf | 23 von 32 |"))
+    # 0.89.0: Der Statuswert dieser Zeile stand hier woertlich und ist mit CR-2026-124
+    # von "entwurf" auf "pilot" berichtigt worden - das Pack selbst sagte schon "pilot".
+    ersetze(u, ("| pilot | 22 von 31 |", "| pilot | 23 von 32 |"))
 
 
 sonde("31a", "Verfaelschte Anzahl je Einstufung in der Zusammenfassung",
@@ -1826,8 +1828,8 @@ sonde("31d", "Eine Matrixzeile ohne Einstufung faellt aus jeder Summe und wird g
 
 def _uebersicht_verfaelschen(root: str) -> None:
     pfad = P(root, UEBERSICHT_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| entwurf | 22 von 31 |",
-                                     "| entwurf | 25 von 29 |", 1))
+    schreib(pfad, lies(pfad).replace("| pilot | 22 von 31 |",
+                                     "| pilot | 25 von 29 |", 1))
 
 
 def _uebersichtszeile_entfernen(root: str) -> None:
@@ -6915,6 +6917,68 @@ sonde("76c", "Verliert eine der vier Stellen ihre Lageangabe, meldet Pruefung 76
 gegenprobe("76a", "Der ausgelieferte Bestand laeuft durch - vier Stellen, ein Wert, "
                   "keine basename-Bindung",
            None, M76_UNGLEICH)
+
+
+# --- Pruefung 77: Der Stand des Hauptdokuments (CR-2026-124, D-312) ----------------
+#
+# DREI SONDEN UND EINE GEGENPROBE. Die zweite ist die, die man weglassen wuerde: Sie
+# setzt in dieselbe Zeile zwei VERSCHIEDENE Staende. Ohne sie waere der Vergleich mit
+# VERSION erfuellbar, indem die Zeile zwei Werte nennt und einer davon passt - und
+# welcher gemeint ist, stuende nirgends.
+#
+# WARUM AN 00-kopf.md UND NICHT AN VERSION PRAEPARIERT WIRD: VERSION traegt der
+# Validator selbst gegen die Uebergabe (Pruefung 67) und gegen die Artefaktversionen
+# (Pruefung 13). Wer dort verstellt, loest drei Meldungen aus und misst keine davon.
+M77_STAND = "die Kopfzeile nennt den Stand"
+M77_UNEINIG = "und das Framework-Release"
+M77_ANKER = "keine Zeile der Form"
+
+P77_KOPF = ".koolie/core/build/doc/00-kopf.md".replace("/", os.sep)
+
+
+def _77_stand_verstellen(root: str) -> None:
+    """Sonde: das Dokument bleibt auf einem aelteren Stand stehen."""
+    pfad = P(root, P77_KOPF)
+    schreib(pfad, ersetzt(lies(pfad),
+                          ("| Dokumentversion | ", "| Dokumentversion | 0.9.0 (entspricht "
+                           "Framework-Release 0.9.0) |\r\n| Dokumentversion frueher | "),
+                          quelle=os.path.basename(pfad)))
+
+
+def _77_zeile_uneinig(root: str) -> None:
+    """Sonde: die Zeile nennt zwei verschiedene Staende."""
+    pfad = P(root, P77_KOPF)
+    text = lies(pfad)
+    anfang = text.index("| Dokumentversion | ")
+    ende = text.index("|", text.index("(entspricht Framework-Release", anfang)) + 1
+    schreib(pfad, text[:anfang]
+            + "| Dokumentversion | 0.89.0 (entspricht Framework-Release 0.88.1) |"
+            + text[ende:])
+
+
+def _77_anker_entfernen(root: str) -> None:
+    """Sonde: die Kopfzeile des Dokuments ist weg."""
+    pfad = P(root, P77_KOPF)
+    schreib(pfad, ersetzt(lies(pfad),
+                          ("| Dokumentversion | ", "| Fassung | "),
+                          quelle=os.path.basename(pfad)))
+
+
+sonde("77a", "Bleibt das Hauptdokument auf einem aelteren Stand stehen, wird es "
+             "gemeldet - genau so ist es zweiundvierzig Releases zurueckgefallen",
+      _77_stand_verstellen, M77_STAND)
+
+sonde("77b", "Nennt dieselbe Zeile zwei verschiedene Staende, wird es gemeldet - sonst "
+             "genuegte es, wenn einer der beiden Werte passt",
+      _77_zeile_uneinig, M77_UNEINIG)
+
+sonde("77c", "Verliert der Kopf seine Versionszeile, meldet Pruefung 77 den verlorenen "
+             "Anker, statt still zu bestehen",
+      _77_anker_entfernen, M77_ANKER)
+
+gegenprobe("77a", "Der ausgelieferte Bestand laeuft durch - Dokumentversion, genanntes "
+                  "Release und VERSION tragen denselben Wert",
+           None, M77_STAND)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------

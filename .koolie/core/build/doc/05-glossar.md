@@ -4,11 +4,9 @@
 |---|---|
 | KI-Codierassistent | Sammelbegriff für das Werkzeug, das dieses Framework steuert. Welches Produkt konkret, legt das Client Pack fest |
 | Client Pack | Abbildungsschicht für genau einen KI-Client: Pfadabbildung, Semantikabbildung und Fähigkeitsmatrix (Kap. 7a). Keine Regelebene |
-| Fähigkeitsmatrix | Einstufung aller 26 technischen Zusagen je Client: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `[NICHT ABBILDBAR]` |
+| Fähigkeitsmatrix | Einstufung jeder technischen Zusage des Frameworks je Client: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `[NICHT ABBILDBAR]`. Die Zeilenzahl ist je Pack verschieden – ein Client, der für eine Zusage keinen Mechanismus hat, bekommt dafür auch keine Zeile (Kap. 7a.3) |
 | Kernzusage B1–B6 | Die sechs Zusagen, die dem Integritätsblock der Berechtigungsdatei entsprechen; eine Abweichung von `[TECHNISCH]` ist begründungs- und freigabepflichtig |
-| Devin Desktop | IDE-Produkt (ehemals Windsurf) von Cognition; Rebranding zum 02.06.2026 `[DOK]`. Client Pack `devin-desktop`, in diesem Dokument das durchgehende Beispiel |
-| Devin Local | Standard-Agent in Devin Desktop; Nachfolger von Cascade `[DOK]`; Gegenstand dieses Frameworks |
-| Cascade | Vorgänger-Agent (Windsurf-Ära); dessen Workflows und Memories werden von Devin Local nicht unterstützt `[DOK]` und im Framework nicht verwendet |
+| `devin-desktop` · `claude-code` | Die beiden ausgelieferten Client Packs. **Welches Produkt, welcher Agent und welche geprüfte Version dahinterstehen, nennt der Kopf des jeweiligen Packs** (Kap. 7a.3, 15.1) – dieser Kern nennt es nicht, weil er sich sonst mit dem Produkt änderte (D-02, D-129). In diesem Dokument ist `devin-desktop` das durchgehende Beispiel |
 | Wurzel-Anweisungsdatei | zentrale Agentenanweisung im Wurzelverzeichnis; wird zu Beginn jeder Sitzung geladen `[DOK]`. Dateiname je Client Pack (Anhang 31.2) |
 | Regel (Rule) | Markdown-Datei in der Regelablage mit Ladebedingung. Quellform: Frontmatter `description`, `trigger` (`always_on`, `model_decision`, `glob`, `manual`, `agent`) und bei `glob` zusätzlich `globs`. Die Ladebedingung wird bei der Installation auf die Bedingungssprache des Clients abgebildet (D-27); welche das ist, steht im Client Pack `[DOK]` |
 | Skill | versionierte, testbare Arbeitsanweisung in der Skill-Ablage (`<name>/SKILL.md`); Aufruf `/name` `[DOK]`; Standard in Kap. 18 |
@@ -39,7 +37,7 @@
 | Belegstatus `[DOK]` / `[EMPF]` / `[KONZ]` | Kennzeichnung produktbezogener Aussagen: offiziell dokumentiert / begründete, noch nicht installationsgeprüfte Empfehlung / konzeptioneller Vorschlag |
 | `BELEG OFFEN` | Belegstand einer Aussage, deren Nachweis noch aussteht; die Zelle nennt Grund und Datum. Trägt keine Frist |
 | `<TBD: …>` | offene projekt- oder organisationsspezifische Entscheidung |
-| Platzhalter | registrierte variable Bezeichner in spitzen Klammern (Anhang 31.2) |
+| Platzhalter | registrierte variable Bezeichner in spitzen Klammern (Anhang 31.3) |
 | RACI | Verantwortungsmodell: Responsible, Accountable, Consulted, Informed (Kap. 25) |
 | Decision Log | fortgeschriebenes Entscheidungs- und Klärungsregister (`.koolie/core/governance/DECISION_LOG.md`) |
 | Übungsrepository | synthetisches Repository für Onboarding und Tests (Kap. 24, 26) |

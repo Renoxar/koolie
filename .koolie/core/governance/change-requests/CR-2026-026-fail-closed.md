@@ -125,7 +125,10 @@ Migrationspflicht ist damit sichtbar statt stillschweigend.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E4 einzeln entscheiden>` |
+| Auflagen | **E1 bis E4 wie in Abschnitt 5 vorgelegt**: Der Schutzschalter steht im Kommandoargument und nicht in der Umgebung; er wird **je Pack** gesetzt, weil das Eingabeschema nur bei einem belegt war; die Abbildung erkennt einen durchsetzenden Hook am Feld `enforcing` der Kernquelle; Prüfung 17 misst auf **zwei** Ebenen |
+| Umsetzung | **mit Release 0.24.0** – Einzelheiten und Nachweise in `.koolie/core/CHANGELOG.md` |
+
+Abschnitt 6 ist am 2026-09-22 mit `CR-2026-124` (`AP11`) **nachgetragen**, nicht neu entschieden: Die Entscheidung selbst steht seit 2026-09-11 in **D-31**, die Umsetzung im `CHANGELOG.md` zu Release 0.24.0. 🔴 **Der Releaseplan nannte für diesen Nachtrag zwei Anträge; gezählt am 2026-09-22 sind es sieben** – `CR-2026-020`, `-021`, `-023`, `-025`, `-026`, `-029` und `-030`.

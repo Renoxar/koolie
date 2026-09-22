@@ -20,18 +20,22 @@ Die achtstufige Prioritätshierarchie (Kap. 7) bleibt **unverändert**. Ein Clie
 {{EMBED-RAW:.koolie/core/clients/README.md:1}}
 ## 7a.3 Die Fähigkeitsmatrix
 
-Kern jedes Client Packs. Sie stuft jede der 26 technischen Zusagen des Frameworks in eine von drei Klassen ein – `[TECHNISCH]` (die Engine erzwingt sie), `[TEXTUELL]` (nur Anweisung im Kontext) oder `[NICHT ABBILDBAR]` – und macht damit messbar, was zuvor Behauptung war.
+Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine von drei Klassen ein – `[TECHNISCH]` (die Engine erzwingt sie), `[TEXTUELL]` (nur Anweisung im Kontext) oder `[NICHT ABBILDBAR]` – und macht damit messbar, was zuvor Behauptung war.
+
+**Die Zeilenzahl ist keine Eigenschaft des Frameworks, sondern eine des Packs.** `claude-code` führt 31 Zeilen, `devin-desktop` dieselben 31 und fünf weitere (A2, M4, M5, M6, M7), für die nur dort ein Mechanismus existiert – zusammen 36. Eine Zusage ohne Mechanismus bekommt keine Zeile; sie bekommt eine Begründung im Pack.
 
 Sechs dieser Zusagen sind **Kernzusagen** (B1 bis B6) und entsprechen dem Integritätsblock der Berechtigungsdatei. Weicht eine von `[TECHNISCH]` ab, ist sie im Pack einzeln zu begründen, im Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben.
 
 Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich das zweite Pack – derselbe Kern, ein anderer Client:
 
 {{EMBED-RAW:.koolie/core/clients/claude-code/CLIENT_PACK.md:1}}
-Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab. Ein Vergleich der Gesamtzahlen trägt allerdings nicht: Bei `devin-desktop` sind 24 von 34 Zusagen als `[TECHNISCH]` **vorgesehen**, und nur fünf Zeilen sind in einer Sitzung beobachtet; bei `claude-code` sind es nach AP2 25 von 29, und keine steht mehr auf `[NICHT ABBILDBAR]` – dafür ist dort keine Zeile in einer Sitzung beobachtet. Die Zahlen messen bis zum Abschluss von AP2 Verschiedenes. Die Matrizen sind seit 0.26.0 unterschiedlich lang, weil `devin-desktop` fünf Zusagen mehr führt, die nur dort einen Mechanismus haben.
+Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab – **drei davon technisch in jedem Zugriffskanal** (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess tragen sie die Regelschicht.
+
+**Ein Vergleich der Gesamtzahlen trägt dagegen nicht, und das hat zwei Gründe.** Erstens sind die Matrizen unterschiedlich lang (36 gegen 31 Zeilen). Zweitens – und das wiegt schwerer – **messen die Zahlen Verschiedenes:** Bei `devin-desktop` sind 21 von 36 Zeilen `[TECHNISCH]`, 13 `[TEXTUELL]`, 2 `[NICHT ABBILDBAR]`, und **neun Zeilen sind an einer laufenden Installation beobachtet** (S3, B3, B10, A1, H1, H2, R5, R6, S5); genau eine sagt noch `BELEG OFFEN`. Bei `claude-code` sind es 22 von 31 `[TECHNISCH]`, 7 `[TEXTUELL]`, 2 `[NICHT ABBILDBAR]` (S5, B10) und **keine Zeile ohne Beleg** – aber der Beleg ist dort überwiegend ein Dokumentenabgleich; Messungen liegen für sechs Zeilen vor (S3, S4, A1, die Reichweite von H2, B6 und – zur Hälfte – B2). **Ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung.** Die Summen rechnet Prüfung 31 bei jedem Validatorlauf aus der Matrix nach; sie werden nicht gepflegt.
 
 ## 7a.4 Form und Semantik
 
-Ein Client Pack enthält vier Dateien. Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei sind zwei Fälle zu unterscheiden, und der Unterschied ist wesentlich:
+Ein Client Pack enthält **drei Dateien** – die Fähigkeitsmatrix `CLIENT_PACK.md`, die maschinenlesbare Abbildung `manifest.json` und eine erklärende README der Laufzeitschicht unter `root-template/`. **Bis Release 0.25.0 waren es vier:** Die zweite README, die der Regelablage, ist mit 0.26.0 in die erste aufgegangen (D-36). Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei sind zwei Fälle zu unterscheiden, und der Unterschied ist wesentlich:
 
 **Formtransformation.** Der Inhalt ist derselbe, nur die Schreibweise unterscheidet sich – ein Frontmatter-Feld heißt anders, eine Werkzeugliste ist kommagetrennt statt eingerückt. Das betrifft Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills und die Vorlagen.
 

@@ -8,7 +8,7 @@ Die Wiederverwendbarkeit des Frameworks steht und fällt mit einer harten Regel:
 
 | Mechanismus | Wirkung |
 |---|---|
-| Platzhalter-Schnittstellen (Anhang 31.2) | Core-Regeln bleiben generisch formulierbar; Projekte füllen Werte ausschließlich im Overlay und in der Berechtigungsdatei |
+| Platzhalter-Schnittstellen (Anhang 31.3) | Core-Regeln bleiben generisch formulierbar; Projekte füllen Werte ausschließlich im Overlay und in der Berechtigungsdatei |
 | Verschärfungsprinzip (Kap. 25) | Das Overlay darf konkretisieren und verschärfen, nie lockern – Core-Garantien gelten damit projektübergreifend |
 | Getrennte Ablage und Ownership | Core: Framework Owner über Releases; Overlay: Overlay Owner über den Projektprozess; technische Schreibsperren (`Write(.koolie/core/**)` – das Kernverzeichnis als Ganzes, einschließlich der Skripte, die die Schutzzusagen durchsetzen –, dazu Laufzeitschicht, Wurzel-Anweisungsdatei und `Write(.koolie/project-overlay/**)` als `deny`) |
 | Dokumenten-Manifest | Projektwissen wird als registriertes Dokument mit Klasse und Ladeverhalten eingebunden – nie durch Editieren von Core-Dateien (Kap. 17) |
@@ -21,4 +21,4 @@ Regeln mit gemischtem Charakter werden getrennt: die generische Logik wandert mi
 
 ## 8.4 Nachweis der Trennung in dieser Erstfassung
 
-Alle 155 Markdown-Dateien des Referenz-Repositorys wurden automatisiert auf Projektneutralität geprüft (Sperrbegriffs-, E-Mail-, IP-, Hostnamen- und URL-Prüfungen; Kap. 26); sämtliche variablen Inhalte laufen über das Platzhalterregister; das Overlay ist eine reine Vorlage mit Ausfüllhinweisen und `<TBD>`-Feldern. Synthetische Beispiele sind als solche gekennzeichnet und verwenden offensichtlich fiktive Bezeichner.
+Alle 450 versionierten Markdown-Dateien des Kerns werden bei jedem Validatorlauf automatisiert auf Projektneutralität geprüft (Sperrbegriffs-, E-Mail-, IP-, Hostnamen- und URL-Prüfungen; Kap. 26) – gezählt am 2026-09-22, zusammen mit 52 weiteren versionierten Dateien. **Seit Release 0.57.0 prüft der Validator zusätzlich die Werkzeugneutralität selbst:** Kein anweisender Träger des Kerns nennt einen Produktnamen oder einen Pfad, der genau einem Client Pack gehört (Prüfung 14 und 48). Sämtliche variablen Inhalte laufen über das Platzhalterregister; das Overlay ist eine reine Vorlage mit Ausfüllhinweisen und `<TBD>`-Feldern. Synthetische Beispiele sind als solche gekennzeichnet und verwenden offensichtlich fiktive Bezeichner.

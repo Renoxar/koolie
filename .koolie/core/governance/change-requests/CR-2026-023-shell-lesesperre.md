@@ -119,7 +119,10 @@ Der Fall, gegen den die Sperre wirkt, ist der häufige: ein beiläufiges `cat .e
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-10 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1, E2 und E3 einzeln entscheiden>` |
+| Auflagen | **E1 bis E3 wie in Abschnitt 5 vorgelegt**: Die Werkzeugnamen stammen aus den Manifesten aller Packs; die Schutzziele werden getrennt; Prüfung 16 belegt die Wirkung durch **Aufruf** und nicht durch Listenvergleich. ⚠️ **Der Geltungsbereich war bis Release 0.25.0 zu eng beschrieben** und ist mit `CR-2026-037` nachgezogen – der Nachtrag steht in D-30 selbst |
+| Umsetzung | **mit Release 0.21.0** – Einzelheiten und Nachweise in `.koolie/core/CHANGELOG.md` |
+
+Abschnitt 6 ist am 2026-09-22 mit `CR-2026-124` (`AP11`) **nachgetragen**, nicht neu entschieden: Die Entscheidung selbst steht seit 2026-09-10 in **D-30**, die Umsetzung im `CHANGELOG.md` zu Release 0.21.0. 🔴 **Der Releaseplan nannte für diesen Nachtrag zwei Anträge; gezählt am 2026-09-22 sind es sieben** – `CR-2026-020`, `-021`, `-023`, `-025`, `-026`, `-029` und `-030`.

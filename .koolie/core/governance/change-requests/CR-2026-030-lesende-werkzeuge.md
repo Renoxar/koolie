@@ -134,7 +134,10 @@ getan hat. Das gehört in den Testkatalog, nicht in dieses Skript.
 
 | Feld | Inhalt |
 |---|---|
-| Entscheidung | `<TBD: angenommen / abgelehnt / mit Auflagen>` |
-| Datum | `<TBD>` |
+| Entscheidung | **angenommen** |
+| Datum | 2026-09-11 |
 | Entscheidende Rolle | `<FRAMEWORK_OWNER>` |
-| Auflagen | `<TBD: E1 bis E4 einzeln entscheiden>` |
+| Auflagen | **E1 bis E4 wie in Abschnitt 5 vorgelegt**: Das Leseverb kommt in die Kernquelle; gemessen wird es an den **Secret-Pfaden** und nicht an allen geschützten Pfaden; Prüfung 16 wird erweitert statt verdoppelt; die Gegenprobe für Kernpfade ist verbindlich – *ohne sie bricht die Erweiterung einen Grundsatz, und zwar still* |
+| Umsetzung | **mit Release 0.25.0** – Einzelheiten und Nachweise in `.koolie/core/CHANGELOG.md` |
+
+Abschnitt 6 ist am 2026-09-22 mit `CR-2026-124` (`AP11`) **nachgetragen**, nicht neu entschieden: Die Entscheidung selbst steht seit 2026-09-11 in **D-33**, die Umsetzung im `CHANGELOG.md` zu Release 0.25.0. 🔴 **Der Releaseplan nannte für diesen Nachtrag zwei Anträge; gezählt am 2026-09-22 sind es sieben** – `CR-2026-020`, `-021`, `-023`, `-025`, `-026`, `-029` und `-030`.

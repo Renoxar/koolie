@@ -35,11 +35,11 @@ Die Laufzeitschicht ist **kein** Bestandteil des Repositorys: Sie entsteht bei d
 
 ## 7.2 Ebene 3 – Framework Core (projektunabhängig)
 
-Allgemeingültige Regeln in zehn Modulen: FW-CORE-00 Leitprinzipien und Konventionen, 01 Governance-Grundsätze, 02 Kontext- und Datenschutzmodell, 03 Sicherheitsmodell, 04 Qualitätsgrundsätze, 05 Arbeitsmodell (Standardarbeitsablauf und Betriebsmodi), 06 Prompting-Regeln, 07 Review-Regeln, 08 Skill-Standard, 09 Risikoklassifizierung, 10 Fehler- und Eskalationsverfahren. Der Core enthält Platzhalter-Schnittstellen für alles Projektspezifische, aber keine Projektwerte; er ändert sich nur über Framework-Releases.
+Allgemeingültige Regeln in elf Modulen – FW-CORE-00 bis FW-CORE-10: 00 Leitprinzipien und Konventionen, 01 Governance-Grundsätze, 02 Kontext- und Datenschutzmodell, 03 Sicherheitsmodell, 04 Qualitätsgrundsätze, 05 Arbeitsmodell (Standardarbeitsablauf und Betriebsmodi), 06 Prompting-Regeln, 07 Review-Regeln, 08 Skill-Standard, 09 Risikoklassifizierung, 10 Fehler- und Eskalationsverfahren. Der Core enthält Platzhalter-Schnittstellen für alles Projektspezifische, aber keine Projektwerte; er ändert sich nur über Framework-Releases.
 
 ## 7.3 Ebene 6 – Role Packs (optional, rollenbezogen)
 
-Module je Tätigkeit (Softwareentwicklung als Referenzpack; Softwarearchitektur, Requirements Engineering, Testing und QA, DevOps, Dokumentation, Code Review vorgesehen). Ein Role Pack konkretisiert Arbeitsweise, typische Aufgaben mit Modus- und Stufenzuordnung, rollenspezifische Kontextquellen, Prüfpunkte und gegebenenfalls Skills (`role-<pack>-…`). Es enthält keine Governance-Regeln und keine Projektwerte; Aktivierung erfolgt je Projekt über das Overlay; die Laufzeitfassung `30-*` lädt bei Relevanz; kennt ein Client keine modellentschiedene Ladebedingung, lädt sie dort unbedingt.
+Module je Tätigkeit. **Ausgeliefert werden zwei:** Softwareentwicklung als Referenzpack der Erstfassung (`RP-DEV`) und Requirements Engineering (`RP-RE`) mit dem Skill `role-re-ticket` – dem dreizehnten Skill des Frameworks und dem einzigen, der nicht aus dem Kern stammt. Softwarearchitektur, Testing und QA, DevOps, Dokumentation und Code Review sind strukturell vorgesehen. Ein Role Pack konkretisiert Arbeitsweise, typische Aufgaben mit Modus- und Stufenzuordnung, rollenspezifische Kontextquellen, Prüfpunkte und gegebenenfalls Skills (`role-<pack>-…`). Es enthält keine Governance-Regeln und keine Projektwerte; Aktivierung erfolgt je Projekt über das Overlay; die Laufzeitfassung `30-*` lädt bei Relevanz; kennt ein Client keine modellentschiedene Ladebedingung, lädt sie dort unbedingt.
 
 ## 7.4 Ebene 5 – Technology Packs (optional, technologiebezogen)
 
