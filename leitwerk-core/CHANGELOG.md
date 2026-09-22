@@ -2,6 +2,45 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `leitwerk-core/governance/RELEASE_PROCESS.md`.
 
+## [0.86.1] - 2026-09-22
+
+**Fuer echte Clienttests stehen Abonnements bereit - Devin Pro, Codex Pro, Claude Max**
+(`K-97` neu). **Kein Pfad angefasst, kein Decision Record, keine Messung.**
+
+> 🔴 **Es ist eine Angabe des Menschen, kein Messwert.** Die Devin-CLI dieses
+> Arbeitsplatzes war am 2026-09-22 als **`Devin Free`** angemeldet - gemessen mit
+> `devin auth status`, im selben Release, das 70 Laeufe darauf gefahren hat. *Der Plan ist
+> eine Eigenschaft des angemeldeten Kontos, nicht des Werkzeugs*, und die Anmeldung ist zu
+> wechseln, bevor ein Pro-Kontingent wirkt.
+
+### Was es aendert
+
+- 🟢 **`1.1.0` (Client Pack `openai-codex`) ist fahrbar geworden.** Die vier Erhebungen
+  brauchen kein Kontingent mehr zu scheuen; drei der Eignungsfragen sind ueberdies an der
+  Konsole erhebbar, **bevor** eine Sitzung anfaellt - das hat `0.86.0` fuer `devin-desktop`
+  vorgefuehrt (Werkzeugbestand aus der Mitschrift, `skills show`, `doctor`).
+- 🟢 **Die Frage, ob ein anderes Modell einen anderen Werkzeugbestand bekommt, ist messbar
+  geworden.** Sie galt seit dem 2026-09-14 ausdruecklich als auf diesem Konto nicht messbar.
+- 🔴 **Und sie ist zugleich der Preis.** **Alle Devin-Belege dieses Projekts stehen auf
+  `SWE-1.6 Slow`** - allein aus `0.86.0` sind es 70 Laeufe. Wer auf einem Pro-Modell misst,
+  misst einen anderen Gegenstand (D-117), und die Vergleichbarkeit ist dahin. **Das ist
+  `K-97` und hier nicht entschieden.**
+- ⚠️ **Die Zeile der Uebergabe *„Kontingent: Free plan; ein anderes Modell ist dort nicht
+  aufrufbar"* ist damit berichtigt** - sie beschrieb ein Konto und las sich wie eine
+  Eigenschaft des Werkzeugs.
+
+### Geaendert
+
+- `UEBERGABE.md`: Kopfnotiz, Lagezeile, Statustabelle, Arbeitswissen *Devin*, naechste
+  freie Kennung (jetzt die achtundneunzigste).
+- `governance/DECISION_LOG.md`: `K-97` neu.
+- `docs/ROADMAP.md`: Zeile `1.1.0`.
+- `VERSION` **0.86.0 → 0.86.1**.
+
+### Migrationshinweis fuer Overlays
+
+**Keiner.** Kein Artefakt der Laufzeitschicht angefasst.
+
 ## [0.86.0] - 2026-09-22
 
 **Der Rest von `AP2` ist gefahren: vier von fuenf Markern des Packs `devin-desktop` sind
