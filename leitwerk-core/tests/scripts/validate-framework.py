@@ -453,7 +453,42 @@ Prüft (statisch, ohne laufenden KI-Client):
      sie ist deklariert: Die Schreibweise des Skillaufrufs steht je Client als
      permission_tools.skill im Manifest; ist sie leer (devin-desktop, D-89), schweigt
      die Pruefung - fehlt das FELD, meldet sie es (D-155)
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 72 laeuft als eigenes
+ 73. Jede [DOK]-Matrixzeile nennt ihre Quelle (D-263): In der Faehigkeitsmatrix
+     jedes Client Packs nennt der BELEGKOPF jeder mit [DOK] belegten Zeile eine
+     Quellenkennung der Liste in Anhang 31.4 (QC-n/QD-n); ein Verweisbeleg
+     ("wie B3") wird aufgeloest. ANLASS, und er ist gezaehlt: Anhang 31.4 sagt
+     ueber sich selbst, die massgebliche Zuordnung stehe je Zeile in der Matrix -
+     das traf am 2026-09-18 fuer 14 von 43 Zeilen zu (K-62, D-156). DER PREIS IST
+     GEMESSEN: Der Durchgang von FW-AK-01 musste alle 22 Quellen abrufen, weil ohne
+     Zuordnung je Zeile nicht zu sagen ist, welche Seite welche Zusage traegt.
+     DIE KOPFREGEL ist der Grund, weshalb die Pruefung ueberhaupt etwas sagt:
+     Geprueft wird die Zelle bis zum ersten Satzbruch; was danach steht, ist
+     Erlaeuterung. Ohne sie zaehlte jede NENNUNG der Marke mit - Zeile R5 des Packs
+     claude-code erklaert, "ein Dokumentenabgleich belegt [DOK], nicht
+     [TECHNISCH]", und das ist eine Aussage ueber die Marke, kein Beleg. Dieselbe
+     Trennlinie, die der VERIFY-Marker am Ende braucht (CR-2026-070 E3).
+     WARUM DIE KENNUNG UND NICHT DER SEITENPFAD: Nur die Kennung laesst sich gegen
+     die Liste halten; ein Pfad kann eine Seite nennen, die die Liste nicht fuehrt.
+     GRENZE, und sie ist deklariert: Gibt der Bestand keine Seite her, sagt die
+     Zeile QUELLE NICHT ZUGEORDNET - geraten wird nicht, eine geratene Zuordnung
+     saehe wie ein Beleg aus (D-156). Die zugelassenen Luecken stehen als MENGE in
+     P73_OFFEN, in beide Richtungen geprueft: eine neue faellt auf, eine
+     geschlossene ebenso
+ 74. Eine Matrixzeile steht in ihrer Tabelle (D-264): Zwischen einer Zeile der
+     Faehigkeitsmatrix und der Trennzeile ihrer Tabelle liegt keine Leerzeile und
+     kein Fremdtext. ANLASS, und er stand 73 Releases da: Das Pack devin-desktop
+     fuehrt sieben Modus-Zeilen, und zwischen M5 und M6 stand seit 0.26.0 eine
+     Leerzeile - eingefuegt von genau dem Release, das M6 und M7 anlegte, weil
+     AP2-DD-03 gefunden hatte, dass zwei geregelte Modi keine Matrixzeile haben.
+     Nach einer Leerzeile beginnt in Markdown ein neuer Block, und ein Block aus
+     Datenzeilen ohne Kopf- und Trennzeile ist ein ABSATZ: Beide Zeilen erscheinen
+     im Pack wie im Hauptdokument als Fliesstext mit Strichen. Die Zusammenfassung
+     desselben Packs zaehlt sie dagegen mit ("20 von 36"). WARUM EINE EIGENE
+     PRUEFUNG: 73 fragt, WAS in einer Zeile steht, 74, ob sie ueberhaupt eine ist -
+     eine gebrochene Tabelle laesst 73 unberuehrt, weil sie die Zeile am Muster
+     erkennt und nicht am Block. Genau deshalb hat es 73 Releases lang niemand
+     gemerkt
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 74 laeuft als eigenes
 Skript: leitwerk-core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -7920,6 +7955,235 @@ def check_pack_im_korb(root: str, man: dict) -> None:
                 f"D-238)")
 
 
+
+
+# --- Pruefung 73: Jede [DOK]-Matrixzeile nennt ihre Quelle --------------------------
+#
+# ANLASS, UND ER IST GEZAEHLT (K-62, D-156, seit 0.62.0 offen, gemessen 2026-09-22).
+# Anhang 31.4 des Hauptdokuments sagt ueber sich selbst, die MASSGEBLICHE Zuordnung
+# stehe in der Faehigkeitsmatrix: "Dort nennt die Belegspalte je Zeile die Seite, auf
+# die sie sich stuetzt." Das traf am 2026-09-18 fuer 14 von 43 Zeilen zu - die Bauform
+# "eine Zusage, die mehr verspricht, als sie leistet", in ihrer Grundform.
+#
+# DER PREIS IST GEMESSEN, NICHT GESCHAETZT: Der Durchgang von FW-AK-01 musste ALLE 22
+# Quellen abrufen, weil ohne Zuordnung je Zeile nicht zu sagen ist, welche Seite welche
+# Zusage traegt. Eine Quellenliste ohne Zuordnung macht ihre eigene
+# Wiederholungspruefung so teuer wie die erste.
+#
+# DIE KOPFREGEL, UND SIE IST DER GRUND, WESHALB DIESE PRUEFUNG UEBERHAUPT ETWAS SAGT.
+# Geprueft wird der BELEGKOPF - die Zelle bis zum ersten Satzbruch (Punkt-Leerzeichen,
+# Semikolon, Doppelpunkt). Was danach steht, ist Erlaeuterung. Ohne diese Trennung
+# zaehlte jede Nennung der Marke mit: Zeile R5 des Packs claude-code erklaert, "ein
+# Dokumentenabgleich belegt [DOK], nicht [TECHNISCH]" - das ist eine Aussage UEBER die
+# Marke und kein Beleg. Dieselbe Trennlinie, die der VERIFY-Marker am Ende braucht
+# (CR-2026-070 E3): die nur nennende Fundstelle zaehlt nicht wie die tragende.
+#
+# WARUM DIE KENNUNG UND NICHT DER SEITENPFAD. Das Pack devin-desktop nannte QD-6, das
+# Pack claude-code `docs/en/memory` - dieselbe Sache in zwei Schreibweisen. Nur die
+# Kennung laesst sich gegen die Liste halten; ein Pfad kann eine Seite nennen, die die
+# Liste gar nicht fuehrt, und dann behauptet die Liste wieder mehr, als sie leistet.
+# Der Pfad darf danebenstehen, er ist Lesehilfe.
+#
+# WARUM DER VERWEIS AUFGELOEST WIRD. Vier Zeilen des Packs devin-desktop belegen mit
+# "wie B3", eine davon ueber zwei Glieder ("wie B4" -> "wie B3"). Solange B3 keine
+# Kennung trug, trugen FUENF Zeilen keine - und keine Zaehlung, die den Verweis nicht
+# aufloest, sieht das. Die Zusammenfassung des Packs zaehlt sie umgekehrt sehr wohl mit
+# ("neun der 36 Zeilen tragen einen offenen VERIFY-Marker - ... B4, B5, B6 und B8 ueber
+# den Verweis"): Wer sie beim Marker mitzaehlt und beim Beleg nicht, hat zwei
+# Zaehlregeln fuer dieselbe Spalte.
+#
+# WARUM EINE AUSGESPROCHENE LUECKE ZULAESSIG IST UND TROTZDEM NICHT WACHSEN KANN.
+# D-156 sagt: "Eine Zuordnung zu raten waere schlimmer als keine: Sie saehe wie ein
+# Beleg aus." Fuer Zeile M3 des Packs claude-code gibt der Bestand keine Seite her -
+# keine der sechs Seiten fuehrt die Sitzungs-Grant-Stufen, waehrend sie beim
+# Schwesterpack in QD-11 stehen. Die Zeile sagt das mit der Marke
+# QUELLE NICHT ZUGEORDNET. Damit das keine Hintertuer ist, fuehrt diese Pruefung die
+# zugelassenen Luecken als MENGE: eine neue faellt auf, und eine geschlossene ebenso -
+# dieselbe Bauform wie das leer DEKLARIERTE Feld von Pruefung 72 (D-155).
+P73_KENNUNG_RE = re.compile(r"Q[CD]-\d+")
+P73_BRUCH_RE = re.compile(r"\.\s|;\s|:\s|:$")
+P73_ZEILE_RE = re.compile(r"^\|\s*([RSBHAMX]\d+)\s*\|")
+P73_VERWEIS_RE = re.compile(r"^(?:wie|dito)\b[^A-Z]*([RSBHAMX]\d+)")
+P73_OFFEN_MARKE = "QUELLE NICHT ZUGEORDNET"
+# Die ausgesprochenen Luecken, je Pack. Wer eine neue braucht, traegt sie hier ein -
+# und begruendet sie im Aenderungsantrag. Wer eine schliesst, nimmt sie hier heraus.
+P73_OFFEN = {"claude-code": {"M3"}}
+P73_SELBSTPROBE = ("`[DOK]` **`QC-9`** (synthetisch)", "`[DOK]` ohne Kennung")
+
+
+def _p73_kopf(zelle: str) -> str:
+    """Der Belegkopf: die Zelle bis zum ersten Satzbruch."""
+    m = P73_BRUCH_RE.search(zelle)
+    return zelle[:m.start() + 1] if m else zelle
+
+
+def _p73_matrixzeilen(root: str, pack: str) -> dict:
+    """{Kennung: Belegzelle} der Faehigkeitsmatrix eines Packs, in Lesereihenfolge."""
+    pfad = os.path.join(root, KERN, "clients", pack, "CLIENT_PACK.md")
+    if not os.path.isfile(pfad):
+        return {}
+    aus = {}
+    drin = False
+    for zeile in read(pfad).replace("\r\n", "\n").split("\n"):
+        if zeile.startswith("## 2. "):
+            drin = True
+            continue
+        if drin and re.match(r"^## \d", zeile):
+            drin = False
+        if not drin:
+            continue
+        m = P73_ZEILE_RE.match(zeile)
+        if not m:
+            continue
+        zellen = tabellenzellen(zeile)
+        if zellen:
+            aus[m.group(1)] = zellen[-1]
+    return aus
+
+
+def _p73_aufgeloest(zellen: dict, kennung: str) -> tuple:
+    """Der Belegkopf einer Zeile, Verweise aufgeloest. (Kopf, Kette)."""
+    ziel, kette = kennung, []
+    for _ in range(5):
+        kopf = _p73_kopf(zellen[ziel])
+        m = P73_VERWEIS_RE.match(kopf)
+        if not m or m.group(1) not in zellen or m.group(1) in kette:
+            return kopf, kette
+        kette.append(m.group(1))
+        ziel = m.group(1)
+    err(f"Faehigkeitsmatrix, Zeile {ziel}: der Belegverweis laeuft ueber mehr als "
+        f"fuenf Glieder. Eine Belegkette, die niemand bis zum Ende liest, ist kein "
+        f"Beleg (D-266)")
+    return "", kette
+
+
+def check_belegquelle(root: str) -> None:
+    """Pruefung 73 (D-263): Jede `[DOK]`-Matrixzeile nennt ihre Quellenkennung."""
+    gut, schlecht = P73_SELBSTPROBE
+    if not P73_KENNUNG_RE.search(_p73_kopf(gut)) or P73_KENNUNG_RE.search(_p73_kopf(schlecht)):
+        err("Pruefung 73: die eigene Selbstprobe traegt nicht mehr - die Pruefung "
+            "haette ihren Gegenstand verloren und bestuende leise (D-23)")
+        return
+    verz = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(verz):
+        err(f"{KERN}/clients/ fehlt - Pruefung 73 haette keinen Gegenstand (D-23)")
+        return
+    packs = sorted(n for n in os.listdir(verz)
+                   if n != "_template"
+                   and os.path.isfile(os.path.join(verz, n, "CLIENT_PACK.md")))
+    if not packs:
+        err(f"{KERN}/clients/: kein Client Pack mit CLIENT_PACK.md gefunden - "
+            f"Pruefung 73 haette keinen Gegenstand (D-23)")
+        return
+    for pack in packs:
+        zellen = _p73_matrixzeilen(root, pack)
+        if not zellen:
+            err(f"clients/{pack}/CLIENT_PACK.md: unter '## 2.' steht keine "
+                f"Matrixzeile. Pruefung 73 liest die Faehigkeitsmatrix dort und "
+                f"haette ohne sie nichts zu pruefen (D-23)")
+            continue
+        erwartet = set(P73_OFFEN.get(pack, ()))
+        gefunden = set()
+        for kennung in zellen:
+            kopf, kette = _p73_aufgeloest(zellen, kennung)
+            if "[DOK]" not in kopf:
+                continue
+            ueber = f" (ueber den Verweis {' → '.join(kette)})" if kette else ""
+            if P73_OFFEN_MARKE in kopf:
+                gefunden.add(kette[-1] if kette else kennung)
+                continue
+            if not P73_KENNUNG_RE.search(kopf):
+                err(f"clients/{pack}/CLIENT_PACK.md: Zeile {kennung} ist mit `[DOK]` "
+                    f"belegt und nennt im Belegkopf keine Quellenkennung "
+                    f"(`QC-n`/`QD-n`){ueber}. Anhang 31.4 sagt zu, die Zuordnung "
+                    f"stehe je Zeile in der Matrix; eine Zeile ohne sie macht jede "
+                    f"Wiederholung von `FW-AK-01` so teuer wie die erste (K-62, "
+                    f"D-156). Gibt der Bestand keine Seite her, sagt die Zeile "
+                    f"`{P73_OFFEN_MARKE}` - geraten wird nicht, eine geratene "
+                    f"Zuordnung saehe wie ein Beleg aus (D-263)")
+        for offen in sorted(gefunden - erwartet):
+            err(f"clients/{pack}/CLIENT_PACK.md: Zeile {offen} sagt "
+                f"`{P73_OFFEN_MARKE}`, steht aber nicht in P73_OFFEN. Eine "
+                f"ausgesprochene Luecke ist zulaessig und wird DEKLARIERT - sonst "
+                f"waere sie eine Hintertuer, durch die die Zusage von Anhang 31.4 "
+                f"still wieder kleiner wird (D-263)")
+        for offen in sorted(erwartet - gefunden):
+            err(f"clients/{pack}/CLIENT_PACK.md: P73_OFFEN fuehrt Zeile {offen} als "
+                f"ausgesprochene Luecke, die Zeile sagt es aber nicht (mehr). Ist die "
+                f"Quelle nachgetragen, gehoert der Eintrag heraus; eine Ausnahme ohne "
+                f"Gegenstand sieht wie Sorgfalt aus und ist tot (0.57.1, D-263)")
+
+
+# --- Pruefung 74: Eine Matrixzeile steht in ihrer Tabelle ---------------------------
+#
+# ANLASS, UND ER STAND 73 RELEASES DA (gemessen 2026-09-22, D-264). Das Pack
+# devin-desktop fuehrt sieben Modus-Zeilen. Zwischen M5 und M6 stand eine LEERZEILE -
+# seit 0.26.0, dem Release, das M6 und M7 ueberhaupt erst angelegt hat, weil AP2-DD-03
+# gefunden hatte, dass zwei geregelte Modi keine Matrixzeile haben. Die Abhilfe gab
+# ihnen eine Zeile, die KEINE Tabellenzeile ist: Nach einer Leerzeile beginnt in
+# Markdown ein neuer Block, und ein Block aus "| M6 | ... |" ohne Kopf- und Trennzeile
+# ist ein Absatz. Beide Zeilen erscheinen im Hauptdokument als Fliesstext mit Strichen.
+#
+# UND DIE BUCHFUEHRUNG ZAEHLT SIE MIT: Die Zusammenfassung desselben Packs fuehrt
+# "20 von 36" - 36 ist die Zeilenzahl EINSCHLIESSLICH M6 und M7. Die Zahl stimmte, die
+# Tabelle zeigte sie nicht. Das ist der wiederkehrende Befundtyp mit umgekehrtem
+# Vorzeichen: nicht der Text verspricht mehr als der Mechanismus haelt, sondern die
+# Buchfuehrung sagt etwas ueber eine Zeile, die der Leser gar nicht als Zeile sieht.
+#
+# WARUM EINE EIGENE PRUEFUNG UND NICHT EIN TEIL VON 73. Der Gegenstand ist ein anderer:
+# 73 fragt, WAS in einer Zeile steht, 74 fragt, ob sie ueberhaupt eine ist. Eine
+# gebrochene Tabelle laesst 73 unberuehrt - sie liest die Zeile weiterhin, weil sie sie
+# am Muster erkennt und nicht am Block. Genau deshalb hat 73 Releases lang niemand
+# etwas gemerkt.
+P74_TRENNZEILE_RE = re.compile(r"^\|\s*:?-{3,}")
+
+
+def check_matrixzeile_in_tabelle(root: str) -> None:
+    """Pruefung 74 (D-264): Jede Matrixzeile steht in ihrer Tabelle."""
+    if P74_TRENNZEILE_RE.match("| M6 | synthetisch |"):
+        err("Pruefung 74: das eigene Muster haelt eine Datenzeile fuer eine "
+            "Trennzeile - sie meldete nichts mehr und bestuende leise (D-23)")
+        return
+    verz = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(verz):
+        return
+    packs = sorted(n for n in os.listdir(verz)
+                   if os.path.isfile(os.path.join(verz, n, "CLIENT_PACK.md")))
+    if not packs:
+        err(f"{KERN}/clients/: kein Client Pack mit CLIENT_PACK.md - Pruefung 74 "
+            f"haette keinen Gegenstand (D-23)")
+        return
+    for pack in packs:
+        rel = f"clients/{pack}/CLIENT_PACK.md"
+        zeilen = read(os.path.join(verz, pack, "CLIENT_PACK.md")) \
+            .replace("\r\n", "\n").split("\n")
+        drin = False
+        for i, zeile in enumerate(zeilen):
+            if zeile.startswith("## 2. "):
+                drin = True
+                continue
+            if drin and re.match(r"^## \d", zeile):
+                drin = False
+            if not drin or not P73_ZEILE_RE.match(zeile):
+                continue
+            # Rueckwaerts bis zur Trennzeile - ohne Leerzeile und ohne Fremdzeile.
+            j, getragen = i - 1, False
+            while j >= 0:
+                vor = zeilen[j].strip()
+                if not vor or not vor.startswith("|"):
+                    break
+                if P74_TRENNZEILE_RE.match(vor):
+                    getragen = True
+                    break
+                j -= 1
+            if not getragen:
+                kennung = P73_ZEILE_RE.match(zeile).group(1)
+                err(f"{rel}:{i + 1}: Zeile {kennung} sieht aus wie eine Matrixzeile "
+                    f"und steht in keiner Tabelle - zwischen ihr und der Trennzeile "
+                    f"liegt eine Leerzeile oder Fremdtext. Markdown rendert sie als "
+                    f"Absatz mit Strichen, im Pack wie im Hauptdokument, waehrend die "
+                    f"Zusammenfassung desselben Packs sie mitzaehlt (D-264)")
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -8007,6 +8271,8 @@ def main() -> int:
     check_werkzeugnamen(root)
     check_arbeitsplatzpfad(root)
     check_pack_im_korb(root, man)
+    check_belegquelle(root)
+    check_matrixzeile_in_tabelle(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

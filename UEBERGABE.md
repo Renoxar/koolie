@@ -1,79 +1,69 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.84.0 (2026-09-22)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.85.0 (2026-09-22)
 
-> 🟢 **ZUERST LESEN: KRITERIUM 2 STEHT AUF NULL.** Alle 38 Zellen des zentralen
-> Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden`. Die Kette
-> `111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0` ist zu Ende –
-> **der größte Posten von D-11 ist erledigt.**
-> ➡️ **DER NÄCHSTE SCHRITT IST KRITERIUM 1** (`~0.85.0`, **22 → abwärts**): die
-> Quellenzuordnung je Matrixzeile (`K-62`), `AP2` zu Ende, die übrigen `VERIFY`-Marker –
-> **und der Schritt, den der Zähler am Ende verlangt: den Marker SELBST abschaffen.**
-> **Erst danach die Umbenennung auf `Koolie`** (D-125, D-127).
+> 🟢 **ZUERST LESEN: `K-62` IST ZU, UND KRITERIUM 1 IST ANGEFANGEN.** Die
+> Quellenzuordnung je Matrixzeile steht: **25 der 26 Zuordnungen hat der BESTAND
+> hergegeben** – die Quellenliste führt je Quelle, wofür sie herangezogen wurde, und das
+> ist eine Aufzeichnung und keine Schätzung. **Kein Kontingent, kein Lauf.**
+> ⚠️ **Kriterium 1 steht weiter auf 22.** `K-62` ist kein `VERIFY`-Marker; er ist die
+> **Vorbedingung**, unter der die übrigen billig werden.
+> ➡️ **DER NÄCHSTE SCHRITT IST DER REST VON `AP2`** (`~0.86.0`) – vier
+> sitzungsgebundene Marker von `devin-desktop` und die ungemessene Wirkung der Körbe
+> `ask`/`allow`. **Er kostet Modellzeit.**
 >
-> 🟢 **DIE VIER SAMMELZELLEN SIND ZU, UND DER SCHLÜSSEL WAR EINE ZÄHLUNG.** `FW-KO-05`
-> hing an `K-59`, die drei anderen an ihren Bestandteilen. **Neun Befunde, acht ohne
-> Kontingent** – fünfundzwanzigster Durchgang in Folge, bei dem der billigste vor dem
-> ersten Lauf fällt. 🔴 **Und der neunte fiel NACH der Abnahme, beim Aufräumen**
-> (D-262): `baeume_loeschen.py` trug `C:\lw-b4` im Quelltext und hätte **leise nichts
-> getan** – *ein stilles Nichts-Tun sieht genauso aus wie ein erfolgreiches
-> Aufräumen.*
+> 🔴 **DIE SECHSUNDZWANZIGSTE ZEILE BLEIBT AUSGESPROCHEN OFFEN, UND DAS IST DAS ERGEBNIS
+> UND KEIN REST.** `M3` bei `claude-code` (*„Freigabe auf die Sitzung begrenzbar"*):
+> **Keine der sechs Seiten führt die Sitzungs-Grant-Stufen**, während sie beim
+> Schwesterpack in `QD-11` stehen. `QC-2` wäre die naheliegende Zuordnung – *und genau
+> deshalb wäre sie geraten* (D-156). ➡️ **Damit hat der nächste Durchgang von
+> `FW-AK-01` seinen ersten gezielten Auftrag: eine Zeile gegen eine Seite statt 44 gegen
+> 22.** *`K-62` zahlt seinen Preis schon in der Sitzung, die ihn schließt.*
 >
-> 🔴 **`K-59`: BEIDE PREISE DER VERTAGUNG WAREN GEMESSEN FALSCH** (D-253). Der Punkt
-> stand auf *„den Text nachziehen hieße, eine Ausnahme in jede Installation
-> auszuliefern"* – **sie steht dort seit `0.32.0`, in zehn Dateien.** Und das Profil,
-> das sie begrenzt, liegt in **beiden** übernehmenden Projekten, obwohl sein Abschnitt
-> 2.3 das Gegenteil sagte: *Der Satz beschrieb das Werkzeug und nicht das Ergebnis.*
-> 🔴 **Die Abweichung ist zudem GRÖßER als beschrieben:** G-11 erlaubt die Analyse (M1)
-> **und** das Ablegen des Protokolls (M5) – die Leseseite kennen fünf der sechs
-> Fassungen, **die Schreibseite keine einzige.**
+> 🔴 **DIE ZAHL 26 VON 44 WAR AUS ZWEI GRÜNDEN NICHT DIE RICHTIGE**, und beide Befunde
+> fielen beim Bau der Prüfung. (1) **Vier Zellen NENNEN die Marke `[DOK]`, ohne sie zu
+> tragen** (D-265): zwei erklären sie, zwei nennen sie in der Vergangenheit. **Das ist
+> der `VERIFY`-Marker eine Ebene tiefer** – auch dort zählen vier nur nennende
+> Fundstellen mit, und auch dort muß diese Trennlinie gezogen werden, bevor Kriterium 1
+> auf null gehen kann. *Hier ist sie zum ersten Mal maschinell gezogen: der **Belegkopf**
+> – die Zelle bis zum ersten Satzbruch.* (2) **Sieben Verweisbelege *„wie B3"* zählten in
+> keiner Richtung mit** (D-266), einer über zwei Glieder – während die Zusammenfassung
+> desselben Packs sie beim `VERIFY`-Marker sehr wohl mitzählt. **Zwei Zählregeln für
+> dieselbe Spalte. Nach der Kopfregel waren es 40 von 46.**
 >
-> 🟢 **`RE-001-P05` IST ABGENOMMEN – MIT EINEM ANDEREN PROMPT, NICHT EINEM ANDEREN BAUM**
-> (`K-91`, D-255). Er übergibt Titel, abgegrenzten Umfang und zwei unpräzise
-> Abnahmekriterien **und sagt dem Lauf nicht, was er damit tun soll**; *„nichts
-> hinzufügen"* wäre der Erwartungswert in der Eingabe gewesen. **Die Vorbedingung der
-> Zelle verlangt es jetzt ausdrücklich.** 🟢 **Und zum ersten Mal in diesem Blatt trifft
-> der Kontrollauf das unzulässige Verhalten der Zelle selbst:** Er zerlegt die Aufgabe in
-> drei Tickets und formuliert eine EARS-Anforderung, **die im übergebenen Umfang keine
-> Grundlage hat.**
+> 🔴 **DER TEUERSTE BEFUND KOSTETE NICHTS UND STAND 73 RELEASES DA** (D-264). `M6` und
+> `M7` des Packs `devin-desktop` stehen hinter einer **Leerzeile** und sind damit **keine
+> Tabellenzeilen** – Markdown rendert sie als Absatz mit Strichen, im Pack **und im
+> Hauptdokument**. Die Leerzeile stammt aus `0.26.0`, **von genau dem Release, das die
+> beiden Zeilen angelegt hat**, weil `AP2-DD-03` gefunden hatte, daß zwei geregelte Modi
+> keine Matrixzeile haben. *Die Abhilfe gab ihnen eine Zeile, die keine Tabellenzeile
+> ist.* **Und die Zusammenfassung desselben Packs zählt sie mit** (`20 + 15 + 1 = 36`).
+> **72 Prüfungen, keine hat es gesehen** – auch die neue 73 nicht, weil sie die Zeile am
+> **Muster** erkennt und nicht am **Block**. Deshalb zwei Prüfungen, nicht eine.
 >
-> ⚠️ **3,18 USD STATT DER GERECHNETEN 2,70 – ZUM ZWEITEN MAL IN FOLGE ÜBER DER
-> SCHÄTZUNG** (D-260). Derselbe Baum, derselbe Skill, derselbe Zuschnitt – verschieden
-> ist allein der Prompt. *Beide Male lag der Unterschied in dem, was der Lauf zu LESEN
-> hatte.*
+> 🔴 **ZWEI WEITERE BEFUNDE AN DER BELEGSPALTE.** `B10` bei `claude-code` belegte mit
+> `[DOK]` **gegen den eigenen Bestand** – Manifestfeld und erzeugte Datei –, während die
+> Marke *„in der Herstellerdokumentation beschrieben"* heißt (D-267). Und der Vorbehalt
+> `AP2-DD-09` zu Zeile `R2` bei `devin-desktop` stand seit `0.25.0` **allein im
+> Protokoll**, vierundsiebzig Releases lang (D-268): *Ein Beleg mit einem Vorbehalt, der
+> nicht danebensteht, ist ein Beleg ohne Vorbehalt.*
 >
-> 🔴 **VIER BEFUNDE AN DEN WERKZEUGEN, UND DER LETZTE ENTSTAND DURCH DIE ABHILFE ZUM
-> VORLETZTEN.** `zaehlen46.py` kannte den **maskierten** Zelltrenner nicht und ging an
-> zwei Zellen von Prüfung 46 auseinander – beide auf `bestanden`, **die Zählung stimmte
-> aus dem falschen Grund** (D-259). `K-88`: Prüfung 55b prüfte eine **Nennung** und
-> versprach im eigenen Meldungstext eine **Bindung** (D-257) – **und die Gegenprobe
-> deckte es mit**, weil sie den Namen ohne Klammern schrieb. 🔴 **Die Abhilfe brach Sonde
-> 56a** (D-261): `_p56_bindung()` nahm die **erste** Zeile mit dem Namen, nicht die mit
-> einem **Wert** – und die Overlay-**Vorlage** führt dort ein `<TBD>`.
+> 🟢 **Kriterium 2 steht auf null** (`0.84.0`), alle 125 Zellen tragen `bestanden`.
 >
-> 🔴 **UND EIN WERKZEUG, DAS DREI ERGEBNISZELLEN TRÄGT, HATTE KEINE EINZIGE SONDE.**
-> `validate-output.py` – nach D-23 gilt es damit als nicht vorhanden. Es hat jetzt
-> sieben.
->
-> 🟢 **`K-89` IST GEBAUT UND REPRODUZIERT DIE MESSUNG:** `mcp-waechter.py` meldet über
-> die dreißig Mitschriften des Meßtags **30 Läufe, 30 mit gestelltem Server, 0 Aufrufe,
-> genau zwei Server** – und hat dabei einen eigenen Befund gefunden: In derselben
-> Mitschrift stehen **fünf** Servernamen, drei davon nur im Fließtext. *Gestellt ist
-> nicht genannt und nicht aufgerufen.*
->
-> ⚠️ **`K-84` IST DURCH DIESES RELEASE GRÖßER GEWORDEN.** Die Anhebung von
-> `role-re-ticket` auf `0.1.4` (`K-90`) setzt **vierzehn frisch abgenommene Zellen** auf
-> die Fassung davor (D-119). **Benannt, nicht entschieden.** ⚠️ **Offen und älter:**
-> `K-84`, `K-85`, `K-86`.
+> ⚠️ **ZU ENTSCHEIDEN, UNVERÄNDERT: `K-84`.** Acht von dreizehn Skills tragen eine
+> Version, die ihre eigenen Meßbefunde erzeugt hat; die Anhebung von `role-re-ticket`
+> auf `0.1.4` hat vierzehn frisch abgenommene Zellen auf die Fassung davor gesetzt
+> (D-119). **Wörtlich angewandt ginge Kriterium 2 wieder aufwärts.** ⚠️ **Offen und
+> älter:** `K-85`, `K-86`.
 >
 > ⚠️ **DIE WURZEL-ANWEISUNGSDATEI HAT NOCH 90 ZEICHEN** bis zur Fehlergrenze von 12.000.
-> Der nächste Satz, der dort hineinsoll, verlangt erst eine Entscheidung darüber, was
-> hinaus soll.
+> **Dieses Release hat sie nicht angefaßt.**
 >
 > 🔴 **VOR DEM ERSTEN HANDGRIFF AM MEßAPPARAT: `LW_ERHEBUNG` UND `LW_UEBUNG` SETZEN.**
 > Ohne sie bricht jedes Skript ab, das eine Belegablage oder das Übungsrepositorium
 > braucht (D-224, D-231).
 >
-> 🟢 **Das Übungsrepositorium steht auf `0.84.0`** – vier Dateien angefaßt, **vier
-> vorhergesagt**; der Trockenlauf lief gegen den **Arbeitsbaum** (Lehre von `0.82.0`).
+> 🟢 **Das Übungsrepositorium steht auf `0.84.0`** und ist von diesem Release nicht
+> berührt: **kein Artefakt der Laufzeitschicht angefaßt**, `install.py --update`
+> schriebe nichts Neues.
 >
 > 🟢 **Eine Präsentation zum Framework ist verabredet:** gemischtes Publikum,
 > **Live-Vorführung mit Stützfolien**, Schwerpunkt *was das Framework im Alltag tut* und
@@ -100,7 +90,7 @@ eine Nummer eines Merge Requests gehört nicht hinein.
 ## 0. Die Releases seit `0.73.0` – und wo die älteren stehen
 
 > 🟢 **Die aktuelle Lage steht oben im Kopf dieser Datei**, der nächste Schritt am
-> Ende von Abschnitt 0.40. Dieser Abschnitt führt **in voller Länge nur noch die
+> Ende von Abschnitt 0.44. Dieser Abschnitt führt **in voller Länge nur noch die
 > Releases, deren Befunde auf den nächsten Schritt binden** – `0.79.2` bis
 > `0.81.0`. Alles davor steht als **Kurzchronik** (0.25 – 0.35) oder im Archiv.
 >
@@ -275,6 +265,116 @@ aussehen und an einem Präparationswächter hängen.
 
 ---
 
+### 0.44 `0.85.0`: Die Quellenzuordnung je Matrixzeile – `K-62` ist zu
+
+> 🟢 **`K-62` geschlossen, ohne Kontingent und ohne Lauf.** **D-263** bis **D-268**,
+> **Prüfung 73 und 74** neu. **Sechs Befunde, alle ohne Kontingent** – *sechsundzwanzigster
+> Durchgang in Folge, bei dem der billigste vor dem ersten Lauf fällt; hier fällt er ohne
+> jeden Lauf, weil es keinen gab.*
+
+**Der Antrag:** `leitwerk-core/governance/change-requests/CR-2026-118-quellenzuordnung-matrixzeilen.md`.
+**Das Protokoll:** `leitwerk-core/tests/protocols/2026-09-22-quellenzuordnung-matrixzeilen.md`.
+
+#### 🔴 Erster Schritt: die Zählregel rekonstruieren – sie stand nirgends
+
+| Stand | aufgezeichnet | die rekonstruierte Regel ergibt |
+|---|---|---|
+| `0.61.0` | 29 von 43 | **29 von 43**, Zerlegung deckungsgleich |
+| `0.84.0` | 26 von 44 | **26 von 44** (`claude-code` 12/24, `devin-desktop` 14/20) |
+
+**Erst damit ist zu sagen, was ein Eingriff bewegt.** ⚠️ **Nebenbefund:** D-156 nennt
+fünf Zeilen, die am 18.09. *„ihre Quelle bekommen"* hätten – **`X2` trug sie schon zu
+`0.61.0`**. Die Zahlen stimmen, ihre Zerlegung nicht ganz.
+
+#### 🟢 Woher die Zuordnung kommt – aus dem Bestand, und sie sagt es (D-263)
+
+Die Quellenliste führt je Quelle eine Spalte *„Belegt im Framework insbesondere"*; das
+ist die **Aufzeichnung** dessen, wofür die Seite gelesen wurde. Das AP2-Protokoll von
+`claude-code` sagt es wörtlich: *„Belegzuordnung je Seite: Hauptdokument Anhang 31.4.2."*
+**25 von 26 Zeilen lassen sich daraus zuordnen.**
+
+🔴 **Verworfen: die 22 Quellen erneut abzurufen.** Das wäre ein zweiter vollständiger
+Durchgang – **genau der Preis, den `K-62` senken soll** – und er setzte den
+Recherchestand einiger Seiten auf den 22.09., während die übrigen auf dem 18.09.
+blieben. *Die Liste hatte diesen Zustand schon einmal, und `FW-AK-01` hat ihn am 18.09.
+gerade erst geheilt.*
+
+➡️ **Deshalb trägt jede nachgetragene Zeile den Zusatz `(Zuordnung K-62)`**, und die
+Vorbemerkung beider Packs sagt in einem Satz, was er bedeutet: *Eine Zuordnung ist keine
+Aktualitätsaussage.*
+
+#### 🔴 Die Kopfregel – und sie ist die Vorlage für den `VERIFY`-Marker (D-265)
+
+| Zeile | Vorkommen von `[DOK]` | trägt die Zeile es? |
+|---|---|---|
+| `cc` `R5`, `B10` | *„ein Dokumentenabgleich belegt `[DOK]`…"* | nein – **Aussage über die Marke** |
+| `cc` `S2`, `H3` | *„zuvor `[DOK]`"* | nein – **Vergangenheit**, längst gemessen |
+
+➡️ **Die vier nur nennenden Fundstellen des `VERIFY`-Markers sind dieselbe Bauform**
+(`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`). **Wer Kriterium 1 auf
+null bringen will, braucht diese Trennlinie – hier ist sie zum ersten Mal maschinell
+gezogen.**
+
+⚠️ **Preis, benannt:** Ein **Rest**-`[DOK]` hinter einer Messung (`B2`, `H2`, `A1`) wird
+nicht erzwungen. Die drei Zeilen tragen ihre Kennung trotzdem.
+
+#### 🔴 Sieben Verweisbelege, zwei Zählregeln für dieselbe Spalte (D-266)
+
+`B4`, `B5`, `B6` (beide Packs) und `B8` (`devin-desktop`) belegen mit *„wie B3"*, `B5`
+über **zwei** Glieder. **Solange `B3` keine Kennung trug, trugen bei `devin-desktop`
+fünf Zeilen keine** – und keine Zählung, die den Verweis nicht auflöst, sieht das. Die
+Zusammenfassung desselben Packs zählt sie beim `VERIFY`-Marker dagegen mit.
+
+**Verbindlich ist seither die Kennung** (`QC-n`/`QD-n`), nicht der Seitenpfad: Nur sie
+läßt sich gegen die Liste halten. Der Pfad bleibt als Lesehilfe.
+
+#### 🔴 Zwei Matrixzeilen, die seit `0.26.0` keine sind (D-264, Prüfung 74)
+
+`M6` und `M7` bei `devin-desktop` stehen hinter einer Leerzeile → **Absatz, keine
+Tabelle**, im Pack wie im Hauptdokument. Die Leerzeile stammt von **dem Release, das die
+Zeilen angelegt hat**. Die Zusammenfassung zählt sie mit (`36`). **Prüfung 73 hätte es
+nie gemeldet** – sie erkennt die Zeile am Muster, nicht am Block. *Genau deshalb sind es
+zwei Prüfungen.*
+
+#### Die beiden neuen Prüfungen
+
+- **73** – jede `[DOK]`-Matrixzeile nennt ihre Quellenkennung im **Belegkopf**;
+  Verweisbelege werden über bis zu fünf Glieder aufgelöst; die ausgesprochenen Lücken
+  stehen als **Menge** in `P73_OFFEN` und werden in **beide** Richtungen geprüft.
+  `clients/_template/` ist ausgenommen.
+- **74** – eine Matrixzeile steht in ihrer Tabelle.
+- **Elf Sondeneinheiten.** 🔴 **Die beiden wichtigeren sind Gegenproben:** 73b belegt die
+  Kopfregel (eine Nennung **hinter** dem Kopf bleibt unbeanstandet – ohne sie wäre die
+  Prüfung eine Textsuche), 74b den Zuschnitt (die Abweichungstabelle in Abschnitt 5 des
+  Packs `claude-code` beginnt **wirklich** mit `| B6 |`).
+
+#### ⚠️ Und der Durchgang vor dem Commit hat drei eigene Zahlen kassiert
+
+Alter des Tabellenbruchs **73** statt 59 Releases, Alter von `AP2-DD-09`
+**vierundsiebzig** statt vierundfünfzig, Umfang des Prüfapparats **72** statt 67 –
+berichtigt an **21 Stellen in sieben Trägern**. 🔴 **Alle drei waren aus einer Differenz
+von Versionsnummern gerechnet statt gezählt, und alle drei waren zu klein.** *Derselbe
+Befundtyp, den dieses Projekt sonst an seinen Zusagen findet, an der eigenen
+Buchführung.* **Er trägt sich zum siebenundzwanzigsten Mal in Folge.**
+
+#### 🔴 Wiederaufnahmepunkt: der Rest von `AP2` (`~0.86.0`)
+
+1. **Der Rest von `AP2`** – vier sitzungsgebundene Marker von `devin-desktop` (`S3`,
+   `B3`, `B10`, `A1`) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`.
+   ⚠️ **Das kostet Modellzeit – vor dem ersten bezahlten Lauf Bescheid sagen.** `X2`
+   bleibt dauerhaft offen (`K-20`).
+2. **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** (`~0.87.0`) – 🔴 **und der
+   Schritt, den der Zähler am Ende verlangt:** Registerzeile und Glossarzeile des Markers
+   **selbst** abschaffen, dazu die vier nur nennenden Fundstellen. 🟢 **Die Trennlinie
+   dafür steht seit diesem Release** (D-265).
+3. **Erst danach die Umbenennung auf `Koolie`** (`~0.88.0`; D-125, D-127). ⚠️ **Der
+   Zeitpunkt ist bereits dreimal angefaßt worden.**
+4. ⚠️ **`K-84` ist zu entscheiden.**
+5. **Offen und benannt:** `M3` bei `claude-code` (erster gezielter Auftrag an
+   `FW-AK-01`) und **die übrigen Vorbehalte der AP2-Protokolle** – eigener Posten
+   (`CR-2026-118` E8).
+
+---
 ### 0.43 `0.84.0`: Die vier Sammelzellen – Kriterium 2 steht auf null
 
 > 🟢 **Kriterium 2: 5 → 0.** Zwei Läufe, **3,18 USD**. **D-252** bis **D-262**; `K-59`,
@@ -1219,7 +1319,7 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.84.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.85.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün.
 
@@ -1231,7 +1331,8 @@ zentralen Katalog und 87 in den dreizehn Testblättern. Die Kette ist zu Ende:
 ⚠️ **Die Kette zählt die OFFENEN zum Beginn der Meßreihe, nicht den Bestand** – 111 war
 der Stand von `0.56.0`, als der Plan geschrieben wurde; vierzehn Zellen sind seither
 hinzugekommen. **Gefunden vom Durchgang vor dem Commit, der jede Zahl nachzählt** – zum
-sechsundzwanzigsten Mal in Folge trägt er sich.
+siebenundzwanzigsten Mal in Folge trägt er sich: `0.85.0` hat ihm **drei eigene Zahlen**
+gekostet, alle drei zu klein und alle drei gerechnet statt gezählt.
 
 🔴 **Der Zähler ist einmal gestiegen, und das war Absicht** (`0.79.2`, D-227): Zwei
 abgenommene Zellen standen auf einer Skillfassung, die es nicht mehr gibt. *Ein Zähler,
@@ -1247,13 +1348,22 @@ Laufs:** Der Prompt hat keine Beschreibung mit bestätigtem Umfang übergeben (`
 🟢 **DIE VIER SAMMELZELLEN UND `RE-001-P05` SIND MIT `0.84.0` ABGENOMMEN** – acht
 Befunde, sieben davon ohne Kontingent, zwei Läufe und **3,18 USD**.
 
-🔴 **DER NÄCHSTE SCHRITT IST KRITERIUM 1** (`~0.85.0`, **22 → abwärts**), und danach –
-und erst danach – die **Umbenennung auf `Koolie`** (D-125, D-127).
+🟢 **KRITERIUM 1 IST ANGEFANGEN, UND SEIN ERSTER POSTEN IST ZU** (`0.85.0`): Die
+Quellenzuordnung je Matrixzeile steht – **25 der 26 Zuordnungen hat der Bestand
+hergegeben**, kein Kontingent, kein Lauf. ⚠️ **Der Zähler steht trotzdem weiter auf 22:**
+`K-62` ist kein `VERIFY`-Marker, sondern die **Vorbedingung**, unter der die übrigen
+billig werden. 🔴 **Und die Zahl 26 von 44 war aus zwei Gründen nicht die richtige** –
+vier Zellen **nannten** die Marke nur (D-265), sieben Verweisbelege zählten in keiner
+Richtung mit (D-266); nach der Kopfregel waren es **40 von 46**.
+
+🔴 **DER NÄCHSTE SCHRITT IST DER REST VON `AP2`** (`~0.86.0`, **kostet Modellzeit**),
+dann die übrigen `VERIFY`-Marker samt Abschaffung des Markers selbst (`~0.87.0`) – und
+danach, und erst danach, die **Umbenennung auf `Koolie`** (`~0.88.0`; D-125, D-127).
 
 ⚠️ **Offen und benannt:** **`K-84`** (acht von dreizehn Skills tragen eine Version, die
 ihre eigenen Meßbefunde erzeugt hat – **durch `0.84.0` größer geworden**, weil
 `role-re-ticket` auf `0.1.4` steht), `K-85`, `K-86`. 🟢 **Geschlossen mit `0.84.0`:**
-`K-59`, `K-88`, `K-89`, `K-90`, `K-91`.
+`K-59`, `K-88`, `K-89`, `K-90`, `K-91`; **mit `0.85.0`:** `K-62`.
 
 **Drei Releases an einem Tag:**
 
@@ -1296,7 +1406,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.84.0**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.85.0**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.84.0` gehoben** (2026-09-22, `0.84.0`), Overlay **`0.84.0`** – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
@@ -1343,9 +1453,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-118`** |
-| Decision Record | **`D-263`** |
-| Klärungspunkt | **`K-92`** – 🟢 ungenutzt; `0.84.0` hat fünf geschlossen und keinen neuen aufgeworfen |
+| Änderungsantrag | **`CR-2026-119`** |
+| Decision Record | **`D-269`** |
+| Klärungspunkt | **`K-92`** – 🟢 weiterhin ungenutzt; `0.85.0` hat `K-62` geschlossen und keinen neuen aufgeworfen |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
@@ -1373,7 +1483,7 @@ Wer die Zahlen wissen will, führt den Validator aus – hier stehen sie als Mom
 
 | # | Kriterium | Stand | Woran es hängt |
 |---|---|---|---|
-| 1 | kein unbearbeiteter `VERIFY`-Marker | **22** ⬇ | Fünf Zeilen der Fähigkeitsmatrix von `devin-desktop` (S3, B3, B10, A1 sitzungsgebunden; **X2 dauerhaft unbeobachtbar**, `K-20`), plus Fundstellen der übrigen Träger. **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0“ vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan** |
+| 1 | kein unbearbeiteter `VERIFY`-Marker | **22** ⬇ | Fünf Zeilen der Fähigkeitsmatrix von `devin-desktop` (S3, B3, B10, A1 sitzungsgebunden; **X2 dauerhaft unbeobachtbar**, `K-20`), plus Fundstellen der übrigen Träger. **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0“ vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan.** 🟢 **Die Trennlinie zwischen tragender und nur nennender Fundstelle steht seit `0.85.0`** – Prüfung 73 zieht sie an der Belegspalte (D-265) |
 | 2 | Testkatalog ohne `offen` | **0 ✅** – **85 → 0**, zuletzt `5 → 0` mit `0.84.0` | 🟢 **Erfüllt mit `0.84.0`.** Alle 38 Zellen des zentralen Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden`. **Die Kette:** `111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0` – sechs Meßtage, ein Nachlauf je Bündel 4 und 5, und **ein Schritt aufwärts, der Absicht war** (`0.79.2`, D-227). 🔴 **Was ein `bestanden` sagt und was nicht:** daß das Verhalten eingetreten ist, nicht daß das Framework es bewirkt hat (D-115) – die Zurechnung trägt der Kontrollauf; es nennt das gemessene Client Pack **mit Produktstand** (D-117, D-202), und bei einem Schranken-Testfall weist die Zelle je Schicht aus, was belegt ist (D-122). ⚠️ **`K-84` ist offen:** Acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt hat; wörtlich angewandt ginge der Zähler wieder aufwärts |
 | 3 | alle Modulstatus über `entwurf` | **0 ✅** | Erfüllt mit 0.53.0. 77 von 77 Trägern auf `pilot`, vier Vorlagen mit Ausfüllschlitz |
 | 4 | keine Decision Records `entschieden (Vorschlag)` | **0 ✅** | Erfüllt mit 0.49.0 |
@@ -1411,9 +1521,10 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0c** | 🟢 **ERLEDIGT mit `0.82.0`** – **Die Herrichtung von Bündel 5** (`CR-2026-115`, D-242 bis D-246, `K-88` neu, `K-87` geschlossen): **alle fünfzehn Zellen sind fahrbar.** `ohnepack` entschieden **ohne** den dritten Zuschnitt (15 Läufe gespart), der Baumbau aktiviert das Pack, `UEB-30` und `UEB-31` gebaut, Übungsrepositorium auf `0.82.0`. 🔴 **Zwei Befunde standen dem Meßtag im Weg:** Prüfung 37 verbot, was Prüfung 72 verlangt (D-243), und die Aktivierungsanleitung sagte „kopieren" (D-244) | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **19**) |
 | **0d** | 🟢 **ERLEDIGT mit `0.83.0`** – **Der Meßtag von Bündel 5** (`CR-2026-116`, D-247 bis D-251, `K-89` bis `K-91` neu): **vierzehn von fünfzehn Zellen abgenommen**, 30 Läufe, **40,10 USD**. ⚠️ **Die Rechnung lag über der Schätzung** (gerechnet 30 bis 37 USD; gemessen 1,34 USD je Lauf) – *der Mittelwert eines Bündels gilt für die Gattung seiner Skills.* 🔴 **`RE-001-P05` bleibt offen, und nicht wegen des Laufs:** Der Prompt hat keine Beschreibung mit bestätigtem Umfang übergeben (`K-91`). 🟢 **Der Kontrollauf hat zum ersten Mal die unzulässige Handlung gezeigt** – zweimal | eine Sitzung | **Kriterium 2: 19 → 5** |
 | **0e** | 🟢 **ERLEDIGT mit `0.84.0`** – **Die vier Sammelzellen des zentralen Katalogs und der Nachlauf von `RE-001-P05`** (`CR-2026-117`, D-252 bis D-261; `K-59`, `K-88`, `K-89`, `K-90`, `K-91` geschlossen): **acht Befunde, sieben ohne Kontingent.** 🔴 **Beide Preise, die `K-59` vertagt haben, waren gemessen falsch** – die Ausnahme steht seit `0.32.0` in zehn Dateien jeder Installation, und die **Schreibseite** von G-11 stand in **keiner** der sechs Fassungen. ⚠️ **3,18 USD statt der gerechneten 2,70**, zum zweiten Mal in Folge über der Schätzung (D-260) | eine Sitzung, zwei Läufe | **Kriterium 2: 5 → 0 ✅** |
-| **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.66.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
-| **2** | **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** – laut Releaseplan **~0.67.0** | eine Sitzung **nach Nr. 2** | Rest von Kriterium 1. 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0“ vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
-| **3** | **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.68.0**, **vor `AP11`** | eine Sitzung, **kein Kontingent** | –. **Nach Nr. 3 und vor `AP11`** (D-127): `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen. **Gegenstand von `K-50`:** ob es einen maschinellen Migrationspfad braucht. Beide übernehmenden Projekte sind danach zu heben **und umzubenennen** |
+| **0f** | 🟢 **ERLEDIGT mit `0.85.0`** – **Die Quellenzuordnung je Matrixzeile** (`CR-2026-118`, D-263 bis D-268, `K-62` geschlossen, **Prüfungen 73 und 74**): **25 der 26 Zuordnungen hat der Bestand hergegeben**, die sechsundzwanzigste (`M3` bei `claude-code`) bleibt **ausgesprochen offen** und ist der erste gezielte Auftrag an `FW-AK-01`. 🔴 **Die Zahl war aus zwei Gründen nicht die richtige** – vier Zellen nannten die Marke nur (D-265, **die Bauform der nur nennenden `VERIFY`-Fundstellen**), sieben Verweisbelege zählten nicht mit (D-266); nach der Kopfregel **40 von 46**. 🔴 **Der teuerste Befund stand 73 Releases da:** `M6` und `M7` bei `devin-desktop` sind hinter einer Leerzeile **keine Tabellenzeilen** mehr, während die Zusammenfassung sie mitzählt (D-264) | eine Sitzung, **kein Kontingent** | – (Kriterium 1 unverändert **22**) |
+| **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.86.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
+| **2** | **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** – laut Releaseplan **~0.87.0** | eine Sitzung **nach Nr. 2** | Rest von Kriterium 1. 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0“ vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
+| **3** | **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.88.0**, **vor `AP11`** | eine Sitzung, **kein Kontingent** | –. **Nach Nr. 3 und vor `AP11`** (D-127): `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen. **Gegenstand von `K-50`:** ob es einen maschinellen Migrationspfad braucht. Beide übernehmenden Projekte sind danach zu heben **und umzubenennen** |
 
 ### Prüfkandidaten – bewusst **nicht** der nächste Schritt (bewegen keine Zahl)
 
@@ -2120,9 +2231,13 @@ gehört die **Aufzählung** ins Protokoll und die Zahl nicht; wo sie eindeutig i
   Abweichungen von 0.62.0 hängen allein an ihr.
 - **Beide Changelogs zuerst lesen, dann die Seiten.** Der Changelog ordnet den ganzen
   Durchgang: Er sagt, welche Seiten überhaupt noch beschreiben, was ausgeliefert wird.
-- ⚠️ **Die Quellenliste trägt für 26 von 44 `[DOK]`-Zeilen keine Zuordnung** (`K-62`).
-  Solange das so ist, ist ein *gezielter* Abgleich nicht möglich – **jede Wiederholung
-  kostet denselben vollen Durchgang.**
+- 🟢 **Die Quellenzuordnung steht seit `0.85.0`** (`K-62` geschlossen, Prüfung 73).
+  **Ein gezielter Abgleich ist damit möglich:** Wer wissen will, ob Zeile `B2` noch
+  trägt, liest `QC-2` – und nicht alle 22 Seiten. ⚠️ **Eine Zeile ist ausgesprochen
+  offen:** `M3` bei `claude-code`. **Sie ist der erste gezielte Auftrag dieses
+  Durchgangs** – eine Zeile gegen eine Seite. 🔴 **Und die Zuordnung ist KEINE
+  Aktualitätsaussage** (D-263): Sie sagt, welche Seite die Liste dafür führt, nicht,
+  daß die Seite die Zusage heute trägt. Der Recherchestand bleibt der vom 18.09.
 - **Ein Dokumentenabgleich belegt `[DOK]`, nie `[TECHNISCH]`** (D-12). Ein aufgelöster
   VERIFY-Marker geht auf `[DOK]` mit benannten Grenzen, nicht auf eine Stufe höher.
 - **Ein `bestanden` dieser Zelle altert ab dem Abnahmetag** – dieselbe Bauform wie `K-61`.
