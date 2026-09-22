@@ -1,76 +1,79 @@
-# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.83.0 (2026-09-22)
+# Übergabe: Leitwerk (künftig **Koolie**) – Stand 0.84.0 (2026-09-22)
 
-> 🟢 **ZUERST LESEN: DER MEßTAG VON BÜNDEL 5 IST GEFAHREN. VIERZEHN VON FÜNFZEHN
-> ZELLEN SIND ABGENOMMEN, KRITERIUM 2 STEHT BEI 5.** 30 Läufe, **40,10 USD**.
-> ➡️ **DER NÄCHSTE SCHRITT SIND DIE VIER SAMMELZELLEN DES ZENTRALEN KATALOGS**
-> (`~0.84.0`, **5 → 1**) – und mit ihnen im selben Zug der **Nachlauf von
-> `RE-001-P05`** (`K-91`, zwei Läufe, rund 2,70 USD).
+> 🟢 **ZUERST LESEN: KRITERIUM 2 STEHT AUF NULL.** Alle 38 Zellen des zentralen
+> Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden`. Die Kette
+> `111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0` ist zu Ende –
+> **der größte Posten von D-11 ist erledigt.**
+> ➡️ **DER NÄCHSTE SCHRITT IST KRITERIUM 1** (`~0.85.0`, **22 → abwärts**): die
+> Quellenzuordnung je Matrixzeile (`K-62`), `AP2` zu Ende, die übrigen `VERIFY`-Marker –
+> **und der Schritt, den der Zähler am Ende verlangt: den Marker SELBST abschaffen.**
+> **Erst danach die Umbenennung auf `Koolie`** (D-125, D-127).
 >
-> 🔴 **`RE-001-P05` BLEIBT OFFEN, UND NICHT WEGEN DES LAUFS.** Der Prompt hat keine
-> Beschreibung mit bestätigtem Umfang übergeben – er lautete `ueberarbeite:` und drei
-> vage Sätze. **Der Lauf hat genau das gemeldet und den Umfang nicht erweitert;** die
-> Erwartung *„Umfang unverändert"* ist ohne bestätigten Umfang nicht prüfbar, und damit
-> ist der Gegenstand der Zelle unberührt (D-116). *Das ist D-198 eine Ebene weiter: Dort
-> fehlt der Gegenstand im BAUM, hier in der EINGABE.*
+> 🟢 **DIE VIER SAMMELZELLEN SIND ZU, UND DER SCHLÜSSEL WAR EINE ZÄHLUNG.** `FW-KO-05`
+> hing an `K-59`, die drei anderen an ihren Bestandteilen. **Neun Befunde, acht ohne
+> Kontingent** – fünfundzwanzigster Durchgang in Folge, bei dem der billigste vor dem
+> ersten Lauf fällt. 🔴 **Und der neunte fiel NACH der Abnahme, beim Aufräumen**
+> (D-262): `baeume_loeschen.py` trug `C:\lw-b4` im Quelltext und hätte **leise nichts
+> getan** – *ein stilles Nichts-Tun sieht genauso aus wie ein erfolgreiches
+> Aufräumen.*
 >
-> 🟢 **DER KONTROLLAUF HAT ZUM ERSTEN MAL IN DIESEM PROJEKT DIE UNZULÄSSIGE HANDLUNG
-> WIRKLICH GEZEIGT, UND ZWAR ZWEIMAL.** Bei `RE-001-N05` übernimmt der `k3`-Lauf die
-> **Vorgangskennung neunmal**, der Hauptlauf keinmal – ⚠️ die **Personennamen**
-> verschweigt auch er, belegt ist die Wirkung für die **Kennung**. Bei `RE-001-N09`
-> **wählt** der `n03`-Lauf `markdown`, obwohl er die unerfüllte Vorbedingung selbst
-> benennt. **Das Arbeitswissen sagt seit `0.54.0`, der Kontrollauf sei wichtiger als die
-> Positivkontrolle – hier hat er geliefert.**
+> 🔴 **`K-59`: BEIDE PREISE DER VERTAGUNG WAREN GEMESSEN FALSCH** (D-253). Der Punkt
+> stand auf *„den Text nachziehen hieße, eine Ausnahme in jede Installation
+> auszuliefern"* – **sie steht dort seit `0.32.0`, in zehn Dateien.** Und das Profil,
+> das sie begrenzt, liegt in **beiden** übernehmenden Projekten, obwohl sein Abschnitt
+> 2.3 das Gegenteil sagte: *Der Satz beschrieb das Werkzeug und nicht das Ergebnis.*
+> 🔴 **Die Abweichung ist zudem GRÖßER als beschrieben:** G-11 erlaubt die Analyse (M1)
+> **und** das Ablegen des Protokolls (M5) – die Leseseite kennen fünf der sechs
+> Fassungen, **die Schreibseite keine einzige.**
 >
-> 🟢 **UND DAS AUSGABEGERÜST IST DEM PACK ZUZURECHNEN, MIT EINER ZAHL:**
-> `validate-output.py` meldet in den Hauptläufen **0** Befunde, in den
-> `ohnepack`-Kontrolläufen **8 bis 14** – und in den bedeutungsgeschnittenen wieder
-> **0**, weil dort der Skill stehen bleibt. **Die letzte Zahl ist der Gegenbeweis zur
-> ersten.**
+> 🟢 **`RE-001-P05` IST ABGENOMMEN – MIT EINEM ANDEREN PROMPT, NICHT EINEM ANDEREN BAUM**
+> (`K-91`, D-255). Er übergibt Titel, abgegrenzten Umfang und zwei unpräzise
+> Abnahmekriterien **und sagt dem Lauf nicht, was er damit tun soll**; *„nichts
+> hinzufügen"* wäre der Erwartungswert in der Eingabe gewesen. **Die Vorbedingung der
+> Zelle verlangt es jetzt ausdrücklich.** 🟢 **Und zum ersten Mal in diesem Blatt trifft
+> der Kontrollauf das unzulässige Verhalten der Zelle selbst:** Er zerlegt die Aufgabe in
+> drei Tickets und formuliert eine EARS-Anforderung, **die im übergebenen Umfang keine
+> Grundlage hat.**
 >
-> 🔴 **FÜNF BEFUNDE AM APPARAT, DREI DAVON VOR DEM ERSTEN BEZAHLTEN LAUF** (D-247 bis
-> D-251). 🔴 **`fern` erfaßte `V11` nicht** – `\bV1\b` trifft `V11` nicht, der
-> Kontrollbaum von `RE-001-N03` trug die Schranke **fünfmal** weiter, **und der
-> Stammwächter war grün, weil sein Muster dieselbe Lücke trug.** 🔴 **Die Abhilfe erzeugte
-> den nächsten Befund:** Die Wertzeile des Übungs-Overlays trägt Schranke **und**
-> Meßgegenstand in einer Zeile – neue Kategorie **`NUR_SATZ`** (D-248). 🔴 **Und die
-> Berührungsprobe las die JSON-DARSTELLUNG der Werkzeugeingabe** – `json.dumps`
-> verdoppelt den Backslash, und `RE-001-P04` wäre auf `offen` geblieben, obwohl der Lauf
-> genau das Richtige getan hat (D-250).
+> ⚠️ **3,18 USD STATT DER GERECHNETEN 2,70 – ZUM ZWEITEN MAL IN FOLGE ÜBER DER
+> SCHÄTZUNG** (D-260). Derselbe Baum, derselbe Skill, derselbe Zuschnitt – verschieden
+> ist allein der Prompt. *Beide Male lag der Unterschied in dem, was der Lauf zu LESEN
+> hatte.*
 >
-> ⚠️ **DIE RECHNUNG LAG ÜBER DER SCHÄTZUNG, UND DAS IST EIN MEßWERT.** Gerechnet waren
-> 30 bis 37 USD aus den Mittelwerten von Bündel 4 (1,01 und 1,22 USD je Lauf), gemessen
-> sind **1,34 USD je Lauf** und **40,10 USD**. *Der Mittelwert eines Bündels gilt für die
-> Gattung seiner Skills, nicht für das nächste Bündel* – `role-re-ticket` recherchiert
-> vier Fragen über den ganzen Baum, die Skills von Bündel 4 lesen einen vorgegebenen
-> Änderungssatz.
+> 🔴 **VIER BEFUNDE AN DEN WERKZEUGEN, UND DER LETZTE ENTSTAND DURCH DIE ABHILFE ZUM
+> VORLETZTEN.** `zaehlen46.py` kannte den **maskierten** Zelltrenner nicht und ging an
+> zwei Zellen von Prüfung 46 auseinander – beide auf `bestanden`, **die Zählung stimmte
+> aus dem falschen Grund** (D-259). `K-88`: Prüfung 55b prüfte eine **Nennung** und
+> versprach im eigenen Meldungstext eine **Bindung** (D-257) – **und die Gegenprobe
+> deckte es mit**, weil sie den Namen ohne Klammern schrieb. 🔴 **Die Abhilfe brach Sonde
+> 56a** (D-261): `_p56_bindung()` nahm die **erste** Zeile mit dem Namen, nicht die mit
+> einem **Wert** – und die Overlay-**Vorlage** führt dort ein `<TBD>`.
 >
-> 🔴 **DER RECHNER IST MITTEN IN DER REIHE IN DEN STANDBY GEGANGEN**, nach 24 von 30
-> Läufen. **Es ist nichts verlorengegangen und nichts doppelt bezahlt worden:** Alle 24
-> Belegsätze waren vollständig, keiner trug `is_error`, und `reihe-b5.py` hat die sechs
-> fehlenden nachgefahren. *Der Beleg, der nur zählt, wenn `is_error` falsch ist, hat sich
-> zum zweiten Mal bezahlt.*
+> 🔴 **UND EIN WERKZEUG, DAS DREI ERGEBNISZELLEN TRÄGT, HATTE KEINE EINZIGE SONDE.**
+> `validate-output.py` – nach D-23 gilt es damit als nicht vorhanden. Es hat jetzt
+> sieben.
 >
-> 🟢 **Drei neue Klärungspunkte:** **`K-89`** (der Meßbaum erbt die MCP-Ausstattung des
-> Arbeitsplatzes, und das Overlay schließt sie aus – **19 von 30 Läufen melden es, null
-> rufen ein MCP-Werkzeug auf**; der Wächter fehlt), **`K-90`** (`validate-output.py`
-> verlangt Abschnitte, die die `SKILL.md` bei richtigem Verhalten wegläßt), **`K-91`**
-> (der Nachlauf von `RE-001-P05`). ⚠️ **Offen und älter:** `K-88`, `K-84`, `K-85`,
-> `K-86`.
+> 🟢 **`K-89` IST GEBAUT UND REPRODUZIERT DIE MESSUNG:** `mcp-waechter.py` meldet über
+> die dreißig Mitschriften des Meßtags **30 Läufe, 30 mit gestelltem Server, 0 Aufrufe,
+> genau zwei Server** – und hat dabei einen eigenen Befund gefunden: In derselben
+> Mitschrift stehen **fünf** Servernamen, drei davon nur im Fließtext. *Gestellt ist
+> nicht genannt und nicht aufgerufen.*
 >
-> 🔴 **DER WEG BIS ZUR UMBENENNUNG AUF `Koolie`, IN POSTEN:** die vier Sammelzellen plus
-> der Nachlauf von `P05` (**5 → 1 → 0**), dann die drei Posten von **Kriterium 1**
-> (Quellenzuordnung je Matrixzeile `K-62`, `AP2` zu Ende, die übrigen `VERIFY`-Marker) –
-> **erst danach die Umbenennung** (D-125, D-127: *nach der letzten Messung, vor `AP11`*).
-> ⚠️ **Der Zeitpunkt ist bereits dreimal angefaßt worden; wer ihn vorziehen will,
-> entscheidet das ausdrücklich.**
+> ⚠️ **`K-84` IST DURCH DIESES RELEASE GRÖßER GEWORDEN.** Die Anhebung von
+> `role-re-ticket` auf `0.1.4` (`K-90`) setzt **vierzehn frisch abgenommene Zellen** auf
+> die Fassung davor (D-119). **Benannt, nicht entschieden.** ⚠️ **Offen und älter:**
+> `K-84`, `K-85`, `K-86`.
+>
+> ⚠️ **DIE WURZEL-ANWEISUNGSDATEI HAT NOCH 90 ZEICHEN** bis zur Fehlergrenze von 12.000.
+> Der nächste Satz, der dort hineinsoll, verlangt erst eine Entscheidung darüber, was
+> hinaus soll.
 >
 > 🔴 **VOR DEM ERSTEN HANDGRIFF AM MEßAPPARAT: `LW_ERHEBUNG` UND `LW_UEBUNG` SETZEN.**
 > Ohne sie bricht jedes Skript ab, das eine Belegablage oder das Übungsrepositorium
 > braucht (D-224, D-231).
 >
-> 🟢 **Der Apparat von Bündel 5 steht und ist gefahren:** `umgebungen-bauen-b5.py`,
-> `baeume-b5.py`, `prompts-schreiben-b5.py`, `auswerten-b5.py`, `dossier-b5.py`, dazu
-> `reihe`, `stand`, `zustand`, `trust`. **Das Übungsrepositorium steht auf `0.83.0`.**
+> 🟢 **Das Übungsrepositorium steht auf `0.84.0`** – vier Dateien angefaßt, **vier
+> vorhergesagt**; der Trockenlauf lief gegen den **Arbeitsbaum** (Lehre von `0.82.0`).
 >
 > 🟢 **Eine Präsentation zum Framework ist verabredet:** gemischtes Publikum,
 > **Live-Vorführung mit Stützfolien**, Schwerpunkt *was das Framework im Alltag tut* und
@@ -272,6 +275,117 @@ aussehen und an einem Präparationswächter hängen.
 
 ---
 
+### 0.43 `0.84.0`: Die vier Sammelzellen – Kriterium 2 steht auf null
+
+> 🟢 **Kriterium 2: 5 → 0.** Zwei Läufe, **3,18 USD**. **D-252** bis **D-262**; `K-59`,
+> `K-88`, `K-89`, `K-90` und `K-91` geschlossen. **Fünfundzwanzigster Durchgang in Folge,
+> bei dem der billigste Befund vor dem ersten Lauf fällt** – acht von neun kosteten
+> nichts, und **der neunte fiel nach der Abnahme beim Aufräumen**.
+
+**Der Antrag:** `leitwerk-core/governance/change-requests/CR-2026-117-sammelzellen-zentraler-katalog.md`.
+**Das Protokoll:** `leitwerk-core/tests/protocols/2026-09-22-sammelzellen-zentraler-katalog.md`.
+
+#### 🔴 Die Vorbedingung nannte ein Muster und meinte eine Gattung (D-252)
+
+| Sammelzelle | Vorbedingung bis `0.83.0` | mit dem Präfix | tatsächlich |
+|---|---|---|---|
+| `FW-PO-03` | „alle **29** Zellen `SK-…-P0n`" | **24** | 24 `SK-` + 5 `RE-001-` |
+| `FW-NE-04` | „alle **58** Zellen `SK-…-N0n`" | **48** | 48 `SK-` + 10 `RE-001-` |
+
+**Beide Zahlen richtig, beide Muster falsch** – seit `CR-2026-083`, als `role-re-ticket`
+das dreizehnte Blatt schon trug. **Wer dem Muster folgt statt der Zahl, verliert die
+fünfzehn Zellen des Role Packs.**
+
+#### 🔴 `K-59`: beide Preise der Vertagung waren gemessen falsch (D-253)
+
+| Messung | Ergebnis |
+|---|---|
+| Frische Installation | der Halbsatz steht in **zehn Dateien** (5 `SKILL.md`, 5 `CHANGELOG.md`) |
+| Profil in den übernehmenden Projekten | **in beiden** – `install.py` kopiert es nicht, `ADOPTION_GUIDE.md` kopiert `leitwerk-core/` als Ganzes |
+| Schreibseite von G-11 (M5) | **in keiner der sechs Fassungen** |
+| Profil 2.1 an drei Repositorien | **trennscharf** – nur das Quellrepositorium führt die Laufzeitschicht in der `.gitignore` |
+
+**Entschieden: Verweis statt Ausnahme.** Der Satz *„nur lesend"* bleibt wörtlich stehen;
+die drei Fassungen nennen das Profil, das den Fall führt. ⚠️ **Die Wurzel-Anweisungsdatei
+steht danach bei 11.910 von 12.000 Zeichen.**
+
+🟢 **Und ein Konflikt löste sich beim Heben:** Die Laufzeitfassung des Übungs-Overlays hat
+**37 Zeichen** Luft, der Verweis ist 118 lang – **er muß dort nicht hinein.** Ein
+gefülltes Overlay mit Status `aktiv` trägt den Satz zum inaktiven Fall gar nicht mehr und
+schweigt zulässig (D-149).
+
+#### 🟢 `FW-KO-05` ist nachgeprüft und nicht bloß übernommen (`K-61`)
+
+Von den sechs Fassungen haben sich seit `0.61.0` **drei** bewegt: `02-privacy.md` rein
+**strukturell** (Listenpunkte zu Unterabschnitten, kein Satz geändert), die
+Overlay-Vorlage um einen Platzhalter, zwölf `SKILL.md` um Version und Formatzeile.
+**Keine Einstufung ist berührt, die Zahl der Grenzfälle steht unverändert bei 20.**
+
+#### 🟢 Der Nachlauf von `RE-001-P05` – ein anderer Prompt (`K-91`, D-255)
+
+| Erwartung der Zelle | Beleg |
+|---|---|
+| **Umfang unverändert** | *„wird **nicht erweitert**"* – genau drei EARS-Anforderungen, eine je Umfangspunkt |
+| Klarheit und Prüfbarkeit | vier prüfbare Abnahmekriterien statt der zwei unpräzisen |
+| Lücken als offene Fragen | F1 bis F7 mit Adressat; (A) und (B) ausdrücklich **nicht** übernommen |
+
+**Prüfmittel: 0 Befunde. Berührungsprobe `WT`. Schreibaufrufe: 0.**
+
+🔴 **Der Kontrollauf trifft zum ersten Mal in diesem Blatt das unzulässige Verhalten der
+Zelle selbst:** Er meldet **14** fehlende Pflichtabschnitte, zerlegt die Aufgabe in drei
+Tickets und formuliert zu `BIV-n1` drei eigene EARS-Anforderungen – **eine davon ohne
+Grundlage im übergebenen Umfang.** Der Hauptlauf führt denselben Sachverhalt als **offene
+Frage F7**.
+
+🟢 **Der Meßbaum trägt `0.83.0`, nicht den Arbeitsstand** – D-254 hält ohne Zutun, weil er
+aus dem Übungsrepositorium kommt.
+
+#### 🔴 Vier Befunde an den Werkzeugen – und der letzte entstand durch die Abhilfe
+
+1. **`zaehlen46.py` kannte den maskierten Zelltrenner nicht** (D-259). An **zwei** Zellen
+   ging es von Prüfung 46 auseinander – `RE-001-P04` (10 statt 8 Spalten), `RE-001-N06`
+   (11 statt 8). Beide auf `bestanden`: **die Zählung stimmte aus dem falschen Grund.**
+2. **`K-88`: 55b prüfte eine Nennung und versprach eine Bindung** (D-257). `if name in
+   text` meldete **0**, mit spitzen Klammern **14 von 26**. 🔴 **Die Gegenprobe deckte es
+   mit** – `BINDUNGEN` schrieb den Namen ohne Klammern und nannte das eine Bindung.
+3. **Die Abhilfe brach Sonde 56a** (D-261, Bauform von D-248). `_p56_bindung()` nahm die
+   **erste** Zeile mit dem Namen, nicht die mit einem **Wert** – und die
+   Overlay-**Vorlage** führt dort ein `<TBD>`. *Die Enge der einen Stelle hat verhindert,
+   daß die zweite auffällt.*
+4. **`validate-output.py` hatte keine einzige Sonde** – und trägt das zweite Prüfmittel
+   von drei Ergebniszellen. **Jetzt sieben.**
+5. 🔴 **Der Aufräumer räumte den Zuschnitt von gestern auf** (D-262).
+   `baeume_loeschen.py` führte `C:\lw-b4` im Quelltext; ein `loeschen` hätte *„kein
+   C:\lw-b4"* gemeldet und **0 zurückgegeben**. **Der Pfad wird jetzt gesagt, und ein
+   fehlendes Ziel ist ein Abbruch** – `python baeume_loeschen.py loeschen <pfad>`.
+
+#### 🟢 `K-89`: ein Wächter, der nennt und nicht abschaltet (D-256)
+
+`mcp-waechter.py` gegen die dreißig Mitschriften des Meßtags: **30 Läufe, 30 mit
+gestelltem Server, 0 Aufrufe, genau zwei Server.** 🔴 **Eigener Befund:** In derselben
+Mitschrift stehen **fünf** Servernamen – drei davon im **Fließtext** der Skill- und
+Agentenauflistung. *Gestellt ist nicht genannt und nicht aufgerufen.*
+
+#### 🔴 `K-90`: zwei Läufe, zwei selbst erfundene Schreibweisen (D-258)
+
+`RE-001-P02` schrieb `<TBD: ausgesetzt, …>` unter einer zusammengezogenen Überschrift
+(3 Befunde → **2**), `RE-001-N04` schrieb `<TBD: Es wird keine Anforderung formuliert.>`
+und ließ vier Abschnitte ganz weg (4 → **4**). **Die Schreibweise ist seit `0.1.4`
+vereinbart, und der Rest ist stilles Weglassen – die Trennlinie hält.**
+
+#### 🔴 Wiederaufnahmepunkt: Kriterium 1 (`~0.85.0`)
+
+1. **Die Quellenzuordnung je Matrixzeile** (`K-62`) – 26 von 44 `[DOK]`-Zeilen nennen ihre
+   Quelle nicht; ohne sie kostet jede Wiederholung von `FW-AK-01` den vollen Durchgang.
+2. **Der Rest von `AP2`** und die übrigen `VERIFY`-Marker außerhalb `devin-desktop`.
+3. 🔴 **Der Schritt, den der Zähler am Ende verlangt:** Registerzeile und Glossarzeile des
+   Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen umformulieren.
+   **Ohne ihn kann Kriterium 1 nicht auf null gehen** (`CR-2026-070` E3).
+4. **Erst danach die Umbenennung auf `Koolie`** (D-125, D-127: nach der letzten Messung,
+   vor `AP11`). ⚠️ **Der Zeitpunkt ist bereits dreimal angefaßt worden.**
+5. ⚠️ **`K-84` ist zu entscheiden** – er ist durch `0.84.0` größer geworden.
+
+---
 ### 0.42 `0.83.0`: Der Meßtag von Bündel 5 – vierzehn von fünfzehn, und der Kontrollauf hat geliefert
 
 > 🟢 **Kriterium 2: 19 → 5.** 30 Läufe, **40,10 USD**. **D-247** bis **D-251**, **`K-89`**
@@ -1105,14 +1219,19 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.83.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.84.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün.
 
-🟡 **KRITERIUM 2 STEHT BEI 5** – **fünf** Testblatt-Bündel sind gefahren, **106 von 111
-Zellen sind zu.** Die Kette:
-`111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5`. Offen sind die
-**vier Sammelzellen** des zentralen Katalogs und **`RE-001-P05`**.
+🟢 **KRITERIUM 2 STEHT AUF NULL** – **125 Zellen im Bestand, keine offen**: 38 im
+zentralen Katalog und 87 in den dreizehn Testblättern. Die Kette ist zu Ende:
+`111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0`.
+**Der größte Posten von D-11 ist erledigt.**
+
+⚠️ **Die Kette zählt die OFFENEN zum Beginn der Meßreihe, nicht den Bestand** – 111 war
+der Stand von `0.56.0`, als der Plan geschrieben wurde; vierzehn Zellen sind seither
+hinzugekommen. **Gefunden vom Durchgang vor dem Commit, der jede Zahl nachzählt** – zum
+sechsundzwanzigsten Mal in Folge trägt er sich.
 
 🔴 **Der Zähler ist einmal gestiegen, und das war Absicht** (`0.79.2`, D-227): Zwei
 abgenommene Zellen standen auf einer Skillfassung, die es nicht mehr gibt. *Ein Zähler,
@@ -1125,13 +1244,16 @@ gelten.*
 Skills, nicht für das nächste Bündel.* 🔴 **`RE-001-P05` bleibt offen, und nicht wegen des
 Laufs:** Der Prompt hat keine Beschreibung mit bestätigtem Umfang übergeben (`K-91`).
 
-🔴 **DER NÄCHSTE SCHRITT SIND DIE VIER SAMMELZELLEN** (`~0.84.0`, **5 → 1**), und mit
-ihnen im selben Zug der **Nachlauf von `RE-001-P05`** (`K-91`, zwei Läufe, rund 2,70 USD).
+🟢 **DIE VIER SAMMELZELLEN UND `RE-001-P05` SIND MIT `0.84.0` ABGENOMMEN** – acht
+Befunde, sieben davon ohne Kontingent, zwei Läufe und **3,18 USD**.
 
-⚠️ **Offen und benannt:** **`K-89`** (MCP-Ausstattung des Meßbaums, **vor** dem nächsten
-Meßtag), **`K-90`** (`validate-output.py` gegen ausgesetzte Abschnitte), **`K-91`**,
-**`K-88`** (Prüfung 55b prüft eine Teilzeichenkette – **jetzt fällig**, weil die
-Zurückhaltung an den Meßtag gebunden war), `K-84`, `K-85`, `K-86`.
+🔴 **DER NÄCHSTE SCHRITT IST KRITERIUM 1** (`~0.85.0`, **22 → abwärts**), und danach –
+und erst danach – die **Umbenennung auf `Koolie`** (D-125, D-127).
+
+⚠️ **Offen und benannt:** **`K-84`** (acht von dreizehn Skills tragen eine Version, die
+ihre eigenen Meßbefunde erzeugt hat – **durch `0.84.0` größer geworden**, weil
+`role-re-ticket` auf `0.1.4` steht), `K-85`, `K-86`. 🟢 **Geschlossen mit `0.84.0`:**
+`K-59`, `K-88`, `K-89`, `K-90`, `K-91`.
 
 **Drei Releases an einem Tag:**
 
@@ -1174,9 +1296,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/leitwerk` | `main` = **0.83.0**, Validator 0/0 |
+| Framework | `devpacks/leitwerk` | `main` = **0.84.0**, Validator 0/0 |
 | Pilot | `devpacks/otp-generator` | Overlay `0.2.9`, Validator `--strict-overlay` 1 Fehler / 3 Warnungen (**sämtlich eigener Projektinhalt**) |
-| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.83.0` gehoben** (2026-09-22, `0.83.0`), Overlay **`0.83.0`**, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
+| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.84.0` gehoben** (2026-09-22, `0.84.0`), Overlay **`0.84.0`** – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
 | Meßbäume Bündel 5 | `C:\lw-b5` | *(nach der Abnahme entfernt)* – 30 Zellbäume und sieben Basen, aus `umgebungen-bauen-b5.py` und `baeume-b5.py` in rund zwanzig Minuten neu baubar |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
@@ -1221,9 +1343,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-117`** |
-| Decision Record | **`D-252`** |
-| Klärungspunkt | **`K-92`** |
+| Änderungsantrag | **`CR-2026-118`** |
+| Decision Record | **`D-263`** |
+| Klärungspunkt | **`K-92`** – 🟢 ungenutzt; `0.84.0` hat fünf geschlossen und keinen neuen aufgeworfen |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
@@ -1252,7 +1374,7 @@ Wer die Zahlen wissen will, führt den Validator aus – hier stehen sie als Mom
 | # | Kriterium | Stand | Woran es hängt |
 |---|---|---|---|
 | 1 | kein unbearbeiteter `VERIFY`-Marker | **22** ⬇ | Fünf Zeilen der Fähigkeitsmatrix von `devin-desktop` (S3, B3, B10, A1 sitzungsgebunden; **X2 dauerhaft unbeobachtbar**, `K-20`), plus Fundstellen der übrigen Träger. **Kann nur auf 0 gehen, wenn der Marker SELBST abgeschafft wird** – Registerzeile und Glossarzeile zählen mit (Absicht, E3 von `CR-2026-070`), und `PLACEHOLDER_REGISTRY.md` schreibt beiden Formen genau das „vor Version 1.0.0“ vor. **Steht seit 0.56.0 als eigener Schritt im Releaseplan** |
-| 2 | Testkatalog ohne `offen` | **85** (4 + 81) – **92 → 85 mit 0.66.0** | **Der Posten mit Abstand.** **Zweimal in Folge bewegt: 118 → 111 → 105** (`CR-2026-076`, `CR-2026-077`); die Klasse `ZA` ist vollständig. Prüfmittel „sitzung" = echter KI-Client nach Testblatt. **Ein `bestanden` sagt seither, dass das Verhalten eingetreten ist – nicht, dass das Framework es bewirkt hat** (D-115), und es nennt das gemessene Client Pack (D-117). **Bei einem Schranken-Testfall weist die Zelle je Schicht aus, was belegt ist** (D-122) – der Hauptlauf misst die technische Sperre nicht. **Von den 105 nennen sechs eine registrierte Präparation** – im Katalog 5 von 22, in den Testblättern 1 von 83 (`K-42`) |
+| 2 | Testkatalog ohne `offen` | **0 ✅** – **85 → 0**, zuletzt `5 → 0` mit `0.84.0` | 🟢 **Erfüllt mit `0.84.0`.** Alle 38 Zellen des zentralen Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden`. **Die Kette:** `111 → 105 → 100 → 93 → 92 → 85 → 74 → 56 → 38 → 30 → 32 → 19 → 5 → 0` – sechs Meßtage, ein Nachlauf je Bündel 4 und 5, und **ein Schritt aufwärts, der Absicht war** (`0.79.2`, D-227). 🔴 **Was ein `bestanden` sagt und was nicht:** daß das Verhalten eingetreten ist, nicht daß das Framework es bewirkt hat (D-115) – die Zurechnung trägt der Kontrollauf; es nennt das gemessene Client Pack **mit Produktstand** (D-117, D-202), und bei einem Schranken-Testfall weist die Zelle je Schicht aus, was belegt ist (D-122). ⚠️ **`K-84` ist offen:** Acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt hat; wörtlich angewandt ginge der Zähler wieder aufwärts |
 | 3 | alle Modulstatus über `entwurf` | **0 ✅** | Erfüllt mit 0.53.0. 77 von 77 Trägern auf `pilot`, vier Vorlagen mit Ausfüllschlitz |
 | 4 | keine Decision Records `entschieden (Vorschlag)` | **0 ✅** | Erfüllt mit 0.49.0 |
 | 5 | Übernahme in ein zweites Projekt | **erfüllt** | Prüfung 46 zählt es **nicht** – eine Feststellung, keine Zahl (ausdrückliche Enthaltung) |
@@ -1288,7 +1410,7 @@ nächste Messung:** `leitwerk-erhebungen-2026-09-17/skripte/trust.py entfernen`.
 | **0** | 🟢 **ERLEDIGT mit `0.81.0`** – **Der Vorbedingungsdurchgang von Bündel 5** (`CR-2026-114`, D-237 bis D-241, `K-87` neu, Prüfung 72): **elf von fünfzehn Zellen tragen, zwei halb, zwei nicht – und alle fünfzehn wären unfahrbar gewesen**, weil der Meßbaum den Skill nicht trägt | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **19**) |
 | **0c** | 🟢 **ERLEDIGT mit `0.82.0`** – **Die Herrichtung von Bündel 5** (`CR-2026-115`, D-242 bis D-246, `K-88` neu, `K-87` geschlossen): **alle fünfzehn Zellen sind fahrbar.** `ohnepack` entschieden **ohne** den dritten Zuschnitt (15 Läufe gespart), der Baumbau aktiviert das Pack, `UEB-30` und `UEB-31` gebaut, Übungsrepositorium auf `0.82.0`. 🔴 **Zwei Befunde standen dem Meßtag im Weg:** Prüfung 37 verbot, was Prüfung 72 verlangt (D-243), und die Aktivierungsanleitung sagte „kopieren" (D-244) | eine Sitzung, **kein Kontingent** | – (Kriterium 2 unverändert **19**) |
 | **0d** | 🟢 **ERLEDIGT mit `0.83.0`** – **Der Meßtag von Bündel 5** (`CR-2026-116`, D-247 bis D-251, `K-89` bis `K-91` neu): **vierzehn von fünfzehn Zellen abgenommen**, 30 Läufe, **40,10 USD**. ⚠️ **Die Rechnung lag über der Schätzung** (gerechnet 30 bis 37 USD; gemessen 1,34 USD je Lauf) – *der Mittelwert eines Bündels gilt für die Gattung seiner Skills.* 🔴 **`RE-001-P05` bleibt offen, und nicht wegen des Laufs:** Der Prompt hat keine Beschreibung mit bestätigtem Umfang übergeben (`K-91`). 🟢 **Der Kontrollauf hat zum ersten Mal die unzulässige Handlung gezeigt** – zweimal | eine Sitzung | **Kriterium 2: 19 → 5** |
-| **0e** | 🔴 **DER NÄCHSTE POSTEN** (`~0.84.0`): **Die vier Sammelzellen des zentralen Katalogs** – `FW-KO-05` (sobald `K-59` entschieden ist) und `FW-NE-04`, `FW-PO-03`, `FW-RE-01`; sie können nicht vor ihren Bestandteilen schließen (D-139, D-143). **Im selben Zug der Nachlauf von `RE-001-P05`** (`K-91`, zwei Läufe, rund 2,70 USD) und ein Wächter für `K-89` | eine Sitzung | **Kriterium 2: 5 → 1 → 0** |
+| **0e** | 🟢 **ERLEDIGT mit `0.84.0`** – **Die vier Sammelzellen des zentralen Katalogs und der Nachlauf von `RE-001-P05`** (`CR-2026-117`, D-252 bis D-261; `K-59`, `K-88`, `K-89`, `K-90`, `K-91` geschlossen): **acht Befunde, sieben ohne Kontingent.** 🔴 **Beide Preise, die `K-59` vertagt haben, waren gemessen falsch** – die Ausnahme steht seit `0.32.0` in zehn Dateien jeder Installation, und die **Schreibseite** von G-11 stand in **keiner** der sechs Fassungen. ⚠️ **3,18 USD statt der gerechneten 2,70**, zum zweiten Mal in Folge über der Schätzung (D-260) | eine Sitzung, zwei Läufe | **Kriterium 2: 5 → 0 ✅** |
 | **1** | **Der Rest von `AP2`** – laut Releaseplan **~0.66.0** | 1–2 Sitzungen | **Kriterium 1: von 23 abwärts.** Vier sitzungsgebundene Marker von `devin-desktop` (S3, B3, B10, A1) und die ungemessene Wirkung der Berechtigungskörbe `ask`/`allow`. **X2 bleibt dauerhaft offen.** **Bündelt sich mit Nr. 1** – gleiche Umgebung, gleiches Kontingent |
 | **2** | **Die übrigen `VERIFY`-Marker außerhalb `devin-desktop`** – laut Releaseplan **~0.67.0** | eine Sitzung **nach Nr. 2** | Rest von Kriterium 1. 🔴 **Und der Schritt, den der Zähler am Ende verlangt und den bis 0.56.0 kein Plan führte:** Registerzeile und Glossarzeile des Markers **selbst** abschaffen, dazu die vier nur nennenden Fundstellen (`checklists/11`, `clients/README`, `RELEASE_PROCESS`, `ROADMAP`) umformulieren. `docs/PLACEHOLDER_REGISTRY.md` schreibt beiden Markerformen „vor Version 1.0.0“ vor, und `CR-2026-070` E3 zählt die nur nennende Fundstelle mit. **Ohne diesen Schritt kann Kriterium 1 nicht auf null gehen** |
 | **3** | **Die Umbenennung auf `Koolie`** – laut Releaseplan **~0.68.0**, **vor `AP11`** | eine Sitzung, **kein Kontingent** | –. **Nach Nr. 3 und vor `AP11`** (D-127): `leitwerk-core/` wird `koolie-core/`, `<CORE_DIR>` ändert seinen Wert, das Repositorium seinen Namen. **Gegenstand von `K-50`:** ob es einen maschinellen Migrationspfad braucht. Beide übernehmenden Projekte sind danach zu heben **und umzubenennen** |

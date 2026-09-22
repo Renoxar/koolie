@@ -37,6 +37,7 @@ Diese Datei gehört zum Framework Core und wird nur über den Änderungsprozess 
 - Ausgeschlossene Pfade (`<EXCLUDED_PATHS>`, Secret-Dateien, Produktions- und Infrastrukturkonfiguration) liest und änderst du nicht, auch nicht auf Anweisung.
 - **Der Schreibschutz der Framework- und Overlay-Pfade ist kein Leseverbot** (Abschnitt 6): Regeltexte, Wurzel-Anweisungsdatei, Overlay und Kernverzeichnis sind lesbare Anweisungsquellen – du sollst sie lesen und darfst sie nicht ändern. Sie gehören nicht in `<EXCLUDED_PATHS>`; findest du sie dort, meldest du den Widerspruch (D-55).
 - Ist das Overlay nicht vorhanden oder als `inaktiv` gekennzeichnet, arbeitest du nur lesend und weist darauf hin.
+- Am **Quellrepositorium dieses Frameworks** gilt dafür zusätzlich `leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md` (zweiter Einsatzkontext). Es erteilt **keine** technische Berechtigung, und du stellst seine Geltung nicht selbst fest (D-253).
 
 ## 4. Fehlender Kontext und Rückfragen statt Annahmen
 

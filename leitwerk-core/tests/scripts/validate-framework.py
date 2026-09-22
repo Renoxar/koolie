@@ -6387,7 +6387,21 @@ def check_pflichtplatzhalter(root: str) -> None:
 
 
 def check_platzhalterbindung(root: str, man: dict) -> None:
-    """Pruefung 55b (--strict-overlay): Das aktive Overlay BINDET, statt zu ersetzen."""
+    """Pruefung 55b (--strict-overlay): Das aktive Overlay BINDET, statt zu ersetzen.
+
+    🔴 SIE PRUEFT SEIT 0.84.0 DIE BINDUNG UND NICHT MEHR DIE NENNUNG (K-88, D-257).
+    Bis 0.83.0 fragte sie `if name in text`, also die BUCHSTABEN des Platzhalternamens
+    irgendwo im Overlay - und meldete am Uebungsrepositorium NULL, waehrend 14 von 26
+    Pflichtplatzhaltern dort nirgends mit spitzen Klammern standen. Ihr eigener
+    Meldungstext sagte dabei "ist im Overlay aber nirgends gebunden".
+
+      Eine Bindung, die eine Teilzeichenkette ist, sagt nichts ueber einen Wert.
+
+    🔴 Und die Gegenprobe deckte es mit: `BINDUNGEN` in `probe-pruefungen.py` schrieb
+    `ISSUE_TRACKER` ohne Klammern und nannte das eine Bindung. Zwei Stellen, die
+    einander decken - derselbe Befundtyp wie bei `LINK_ROOTS` und `OPTIONAL_RUNTIME_RE`
+    (0.57.0). Die Sonde `55d` misst jetzt genau den Unterschied.
+    """
     overlay = os.path.join(root, "project-overlay", "OVERLAY.md")
     if not os.path.isfile(overlay):
         return
@@ -6408,7 +6422,9 @@ def check_platzhalterbindung(root: str, man: dict) -> None:
                     if f"<{name}>" in inhalt:
                         genannt.setdefault(name, []).append(rel)
     for name, traeger in sorted(genannt.items()):
-        if name in text:
+        # Der Name IN SPITZEN KLAMMERN - die Schreibweise, die den Kerntext aufloest.
+        # Ein blosses Vorkommen der Buchstaben ist eine Nennung, keine Bindung (D-257).
+        if f"<{name}>" in text:
             continue
         err(f"project-overlay/OVERLAY.md: Der Pflichtplatzhalter <{name}> wird von "
             f"{len(traeger)} Träger(n) der geladenen Schicht genannt (z. B. "
@@ -6450,14 +6466,48 @@ def _p56_deckt(glob: str, pfad: str) -> bool:
 
 
 def _p56_bindung(text: str, name: str) -> str:
-    """Der Wert, den die Bindungszeile des Platzhalters traegt."""
+    """Der Wert, den die Bindungszeile des Platzhalters traegt - in BEIDEN Schreibweisen.
+
+    🔴 GEFUNDEN DURCH DIE ABHILFE ZU K-88, AM SELBEN TAG (D-261). Pruefung 55b
+    verlangt seit 0.84.0 den Platzhalternamen IN SPITZEN KLAMMERN; diese Funktion suchte
+    ihn OHNE - `f"`{name}`"`. Nach der Bindung der vierzehn Platzhalter im
+    Uebungs-Overlay haette Pruefung 56 ihre Zeilen nicht mehr gefunden und waere leise
+    gruen geblieben; Sonde 56a ist genau daran gefallen.
+
+      Zwei Pruefungen, die dieselbe Zeile lesen, muessen sie gleich lesen - oder jede
+      fuer ihren eigenen Gegenstand, und das ausdruecklich.
+
+    Hier gilt das Zweite: **55b prueft die SCHREIBWEISE der Bindung, 56 den WERT
+    daneben.** Fuer den Wert ist gleichgueltig, wie der Name geschrieben steht - und ein
+    Overlay aus dem Bestand traegt ihn weiter ohne Klammern. Die Funktion nimmt deshalb
+    beide Formen; eine Pruefung, die einen Wert nicht mehr findet, meldet keinen Fehler,
+    sondern schweigt - und das ist die Bauform "die Null durch Konstruktion".
+
+    **Dieselbe Bauform wie D-248 und D-243:** Die Meldung entsteht durch die Abhilfe,
+    und zwei Pruefungen standen gegeneinander.
+    """
+    offen = None
     for zeile in text.replace("\r\n", "\n").split("\n"):
         z = zeile.strip()
-        if not z.startswith("|") or f"`{name}`" not in z:
+        if not z.startswith("|"):
+            continue
+        if f"`<{name}>`" not in z and f"`{name}`" not in z:
             continue
         zellen = tabellenzellen(z)
-        return " ".join(zellen[1:])
-    return ""
+        wert = " ".join(zellen[1:])
+        # \U0001f534 EINE ZEILE MIT `<TBD...>` BINDET NICHTS (D-261, zweiter Teil). Die
+        # Overlay-VORLAGE traegt zu jedem Pflichtplatzhalter eine Zeile mit offenem
+        # Wert; wer sie stehen laesst und den Wert weiter unten bindet, wurde bis
+        # 0.83.0 mit dem `<TBD>` der Vorlage gemessen - und die Pruefung schwieg.
+        # Aufgefallen ist es erst, als 55b die spitzen Klammern verlangte und diese
+        # Funktion dieselbe Schreibweise lesen musste: Die Enge der einen Stelle hat
+        # verhindert, dass die zweite auffaellt (die Bauform von 0.57.0).
+        if re.search(r"<TBD[:>]", wert):
+            offen = offen or wert
+            continue
+        return wert
+    # Keine gebundene Zeile - der offene Wert ist die ehrlichere Auskunft als "".
+    return offen or ""
 
 
 def check_ausgeschlossene_vorbedingung(root: str, man: dict) -> None:

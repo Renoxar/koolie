@@ -13,7 +13,7 @@ trigger: always_on
 
 ## Status
 
-- Overlay-Status: `<TBD: aktiv | inaktiv>` (bei `inaktiv` oder fehlendem Eintrag arbeitest du nur lesend)
+- Overlay-Status: `<TBD: aktiv | inaktiv>` (bei `inaktiv` oder fehlendem Eintrag arbeitest du nur lesend; am Quellrepositorium des Frameworks gilt dafür zusätzlich `leitwerk-core/governance/FRAMEWORK_DEV_PROFILE.md`, D-253)
 - Overlay-Version: `<TBD: Version>` · Framework-Version: siehe `leitwerk-core/VERSION`
 - Overlay Owner (Rolle): `<APPROVAL_ROLE>`
 

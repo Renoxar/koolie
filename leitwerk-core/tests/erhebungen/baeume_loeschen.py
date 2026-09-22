@@ -1,11 +1,24 @@
-"""Loescht die Messbaeume unter C:\\lw-b4 - Verbindungen EINZELN (Regel aus 0.74.1).
+"""Loescht die Messbaeume eines Buendels - Verbindungen EINZELN (Regel aus 0.74.1).
 
 Ein rekursives Loeschen, das einer Verzeichnisverbindung folgt, loescht den geteilten
 `node_modules`-Bestand des Uebungsrepositoriums mit. Erst jede Verbindung mit
 os.rmdir loesen (das entfernt den Link, nicht das Ziel), dann den Rest.
 
-    python baeume_loeschen.py zaehlen     # nur den Quellbestand zaehlen
-    python baeume_loeschen.py loeschen    # zaehlen, loeschen, gegenzaehlen
+    python baeume_loeschen.py zaehlen                # nur den Quellbestand zaehlen
+    python baeume_loeschen.py loeschen C:\\lw-b5    # zaehlen, loeschen, gegenzaehlen
+
+\U0001f534 DAS ZIEL WIRD GESAGT, NICHT IM QUELLTEXT GEFUEHRT (D-262). Bis 0.83.0 stand
+hier `BASIS = r"C:\\lw-b4"` - der Zielpfad von Buendel 4. Beim Aufraeumen nach dem
+Nachlauf von Buendel 5 (`C:\\lw-b5`) haette das Werkzeug `kein C:\\lw-b4` gemeldet und
+**0 zurueckgegeben**: ein stilles Nichts-Tun, das genauso aussieht wie ein erfolgreiches
+Aufraeumen.
+
+  Ein Aufraeumer, der sein Ziel nicht findet, meldet nicht "nichts zu tun", sondern
+  "ich weiss nicht, wo" - und bricht ab.
+
+Dieselbe Lehre wie `--ziel` beim Baumbau (D-218), `LW_ERHEBUNG` (D-224) und die
+Sollmenge aus den Baeumen (D-230): **Ein Ort, der aus der Umgebung erschlossen wird,
+gehoert dem, der ihn zuletzt gefuellt hat.**
 """
 import os
 import shutil
@@ -24,7 +37,6 @@ import ablage
 # nicht.
 sys.stdout.reconfigure(encoding="utf-8")
 
-BASIS = r"C:\lw-b4"
 QUELLE = os.path.join(ablage.uebungsrepositorium(),   # D-231
                       "frontend", "node_modules")
 
@@ -81,14 +93,22 @@ def _junction(pfad):
 
 def main():
     was = sys.argv[1] if len(sys.argv) > 1 else "zaehlen"
+    if was == "loeschen" and len(sys.argv) < 3:
+        raise SystemExit(
+            "ABBRUCH: `loeschen` braucht den Zielpfad.\n"
+            "Ein Zielpfad im Quelltext ist der Zuschnitt von gestern (D-262):\n"
+            "    python baeume_loeschen.py loeschen <pfad der Messbaeume>")
+    BASIS = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else ""
     vorher = bestand(QUELLE)
     print("node_modules vorher: %d Dateien / %d Bytes (dazu %d "
           "Zwischenstandsdateien des Pruefmittels)" % vorher)
     if was != "loeschen":
         return 0
     if not os.path.isdir(BASIS):
-        print("kein", BASIS)
-        return 0
+        raise SystemExit(
+            "ABBRUCH: %r ist kein Verzeichnis. Ein Aufraeumer, der sein Ziel nicht\n"
+            "findet, meldet nicht 'nichts zu tun' - das sieht genauso aus wie ein\n"
+            "erfolgreiches Aufraeumen (D-262)." % BASIS)
     gesamt = 0
     for name in sorted(os.listdir(BASIS)):
         baum = os.path.join(BASIS, name)

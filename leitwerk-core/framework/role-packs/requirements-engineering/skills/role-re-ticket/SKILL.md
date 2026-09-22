@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `RP-RE-SK-001` |
 | Name | `role-re-ticket` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -95,7 +95,9 @@ triggers:
 
 ## 5. Ausgabeformat
 
-Das Gerüst ist fest; die Auszeichnung richtet sich nach dem ermittelten Format (`jira`: `h2.`, `||…||`, `#`-Listen · `markdown`: `##`, Pipe-Tabellen · `neutral`: Klartext-Überschriften). Abschnitte ohne Inhalt werden weggelassen.
+Das Gerüst ist fest; die Auszeichnung richtet sich nach dem ermittelten Format (`jira`: `h2.`, `||…||`, `#`-Listen · `markdown`: `##`, Pipe-Tabellen · `neutral`: Klartext-Überschriften).
+
+**Ein Abschnitt, dessen Inhalt nicht bestimmbar ist, wird nicht weggelassen:** Seine Überschrift bleibt stehen und trägt `<TBD: ausgesetzt, weil …>` mit der Begründung und, soweit vorhanden, der Nummer der offenen Frage. Das gilt auch für mehrere Abschnitte zusammen – dann steht jede Überschrift, und die Begründung steht einmal. **Ein Abschnitt, der nach Sachlage nicht einschlägig ist** – etwa „Annahmen“, wenn es keine gibt –, wird weggelassen.
 
 ```markdown
 ## Aufgabenbeschreibung – role-re-ticket v<Version aus dem Steckbrief>

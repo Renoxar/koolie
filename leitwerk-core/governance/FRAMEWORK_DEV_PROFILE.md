@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-DEV` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | das Quellrepositorium dieses Frameworks – **nicht** für ein Projekt, das ein Release anwendet |
@@ -33,9 +33,14 @@ frischen Auscheckstand verlangte damit Rechte, die niemand erteilt hatte.
 2. Die Geltung folgt **nicht** aus einem Verzeichnisnamen und **nicht** aus einer Behauptung des
    KI-Clients. Sie folgt aus dem Inhalt des Repositoriums, und sie erteilt **keine technische
    Berechtigung** (Abschnitt 5).
-3. Dieses Profil wird in **kein Zielprojekt installiert**. Es liegt unter `governance/`, nicht
-   unter `templates/` und nicht unter `framework/runtime/`; `seed_paths` beider Client Packs ist
-   leer, und die Installation kopiert es nicht.
+3. **`install.py` schreibt dieses Profil in kein Zielprojekt.** Es liegt unter `governance/`,
+   nicht unter `templates/` und nicht unter `framework/runtime/`; `seed_paths` beider Client
+   Packs ist leer. 🔴 **Im Zielprojekt liegt es trotzdem, und das ist gemessen** (2026-09-22,
+   D-253): `docs/ADOPTION_GUIDE.md` Schritt 2 kopiert `leitwerk-core/` als Ganzes, und beide
+   übernehmenden Projekte führen es. Bis `0.83.0` stand hier *„wird in kein Zielprojekt
+   installiert"* – **der Satz beschrieb das Werkzeug und nicht das Ergebnis.** Er erteilt dort
+   keine Geltung: Die folgt nach Abschnitt 2.1 aus dem **Inhalt** des Repositoriums und nicht
+   aus der Anwesenheit dieser Datei.
 
 ## 3. Lesen (normativ)
 
@@ -72,7 +77,12 @@ Die Reihenfolge ist der Änderungsprozess des Frameworks, nicht ein Betriebsmodu
    trägt Namen und Laufzeiten und ist ausdrücklich **nicht** Teil des Vergleichs (D-94). Ein
    gescheiterter Aufräumer ist eine Abweichung wie jede andere (D-96).
 6. **Bericht** als Protokoll unter `tests/protocols/`. Das ist der Berichtspfad dieses
-   Repositoriums; eine Analyse oder ein Review legt ihr Ergebnis dort ab.
+   Repositoriums; eine Analyse oder ein Review legt ihr Ergebnis dort ab. 🔴 **Das ist die
+   SCHREIBENDE Hälfte des zweiten Einsatzkontextes** – M5 nach `framework/core/05-working-model.md`
+   –, und bis `0.83.0` stand sie in **keiner** Fassung der Laufzeitschicht: Die fünf Analyseskills
+   nennen das Quellrepositorium seit `0.32.0`, führen aber alle M1, und `fw-docs-update` (M5) sagt
+   für ein inaktives Overlay ausdrücklich *„arbeitet der Skill nur lesend"*. Seit `0.84.0`
+   verweisen die drei anweisenden Fassungen für **beide** Hälften hierher (D-253, Grenzfall G-11).
 7. **Übergabe** fortschreiben – im Quellrepositorium `UEBERGABE.md` in der Wurzel (D-214). Sie gehört in den **Release-Commit**, nicht in einen Nachtrag danach: Alles, was sie braucht, liegt nach Schritt 5 und 6 vor. **Eine Nummer des Merge Requests steht nicht darin** – sie ist der einzige Wert, den man vor dem Anlegen des Antrags nicht kennt, und damit der einzige Grund, überhaupt nach dem Merge zu schreiben; *alles gemergt, kein offener Antrag* ist die Aussage, auf die es ankommt, und `git` beantwortet sie. Prüfung 67 hält die Titelzeile gegen `<CORE_DIR>/VERSION` (D-216).
 8. **Freigabe und Merge führt der Mensch aus** (V1, V2). Der KI-Client schlägt Commit-Nachricht und
    Merge-Request-Beschreibung vor.
