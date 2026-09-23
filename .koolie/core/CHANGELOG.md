@@ -2,6 +2,137 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.2.0] - 2026-09-23
+
+**Die Chronik, die ihr eigenes Release nicht zu Ende zaehlt - und eine Vorlage, die nur
+durch ihre Unvollstaendigkeit ungeprueft bleibt** (`CR-2026-131` E1 bis E6, **D-335** bis
+**D-340**, **Pruefung 83 und 84**, `K-112` und `K-113` neu). Ein MINOR-Release ohne
+Kontingent und ohne Lauf an einem Client. Beide Befunde stammen aus dem
+Vorbedingungsdurchgang vor dem naechsten Posten - zum **zwanzigsten** Mal in Folge der
+billigste Befund eines Releases.
+
+> 🔴 **DIE SPANNE DER CHRONIK ENDETE BEI D-332, VERGEBEN WAREN D-329 BIS D-334.**
+> `docs/ROADMAP.md` fuehrt je Release die Spanne seiner Entscheidungen, und ueber
+> vierzehn Releases mit dieser Schreibweise ist sie lueckenlos - genau die letzte war um
+> **zwei** zu niedrig. **Die Ursache ist gemessen und steht im eigenen Release:** D-333
+> und D-334 sind *beim Umsetzen* gefallen, `K-111` sogar erst beim Setzen der Marke; die
+> Zeile war da laengst geschrieben.
+> ➡️ *Eine Zahl, die vor ihrem Gegenstand geschrieben wird, ist zum Zeitpunkt ihrer
+> Niederschrift richtig und danach nicht mehr.* **Das ist die Bauform von Pruefung 40 -
+> hier innerhalb eines EINZIGEN Releases statt ueber zweiundvierzig.**
+>
+> 🔴 **DER SCHWERERE TEIL: KEIN BESCHREIBENDER TRAEGER NENNT ALLE SECHS.** ROADMAP vier,
+> `CHANGELOG.md` fuenf, Antrag vier, Protokoll vier - **und D-333 steht in keinem
+> davon.** Es steht im Register, im Protokoll und in den beiden normativen Traegern, die
+> es geaendert hat, also dort, wo es **wirkt**, und nirgends dort, wo das Release
+> **erklaert** wird. Und D-333 ist die Entscheidung, die den schwersten Befund von
+> `1.1.0` behoben hat.
+> 🟢 **Vollstaendig nennt die Menge genau ein Traeger: die Marke** (*"D-329 bis
+> D-334"*). ➡️ ***Der einzige Traeger, der die Menge vollstaendig nennt, ist der, den
+> keine Pruefung erreichen kann*** - der Markentext liegt im Tag-Objekt, nicht im
+> Arbeitsbaum (`K-113`). **Das ist `K-111` an einem zweiten Gegenstand.**
+>
+> 🔴 **PRUEFUNG 58 FAENGT DIE VERWAISTE NENNUNG, NICHT DIE VERWAISTE KENNUNG.** Sie
+> haelt die Gegenrichtung - *jede genannte Kennung steht im Register*. Die fehlende
+> Richtung ist die, die die Chronik unvollstaendig laesst.
+>
+> 🆕 **PRUEFUNG 83 HAELT DIE HOECHSTE RELEASE-SPANNE GEGEN DAS REGISTER** (D-335), mit
+> drei Sonden und **zwei** Gegenproben. 🟢 **Sie hat bei ihrem ersten Lauf ihren eigenen
+> Anlass gemeldet** - wie Pruefung 81 in `1.0.0`. 🔴 **Die zweite Gegenprobe ist die, die
+> man weglassen wuerde, und sie traegt den Zuschnitt:** Die Releasetabelle ist **nicht
+> sortiert** - gemessen stand `1.0.1` VOR `1.0.0` (D-337) -, und deshalb nimmt die
+> Pruefung die **hoechste** Obergrenze und nicht die zuletzt geschriebene. Ohne sie waere
+> die Reihenfolgefestigkeit eine Behauptung im Kopfkommentar statt eine gemessene
+> Eigenschaft (D-299, D-326).
+> ⚠️ **Grenze, benannt: sie misst die OBERGRENZE, nicht die Vollstaendigkeit der
+> Nennungen** - dieselbe Bauform wie Pruefung 77 (*Version, nicht Inhalt*) und 82
+> (*Behauptung, nicht Tatsache*); `K-112` fuehrt die Frage weiter. ⚠️ **Preis, benannt:**
+> Jedes Release fasst diese Zeile an, wie bei Pruefung 67, 77 und 82.
+>
+> 🔴 **DER ZWEITE BEFUND LAG AUF DEM WEG DES NAECHSTEN POSTENS.** `_client_packs()` nahm
+> jedes Verzeichnis unter `clients/` auf, das eine `CLIENT_PACK.md` traegt - **und
+> `_template` erfuellt das.** Was die Vorlage vor allen 82 Pruefungen schuetzte, war
+> **allein ihr fehlendes `manifest.json`**; der Docstring hielt die Annahme fest statt
+> einer Ausnahme. **Gemessen am 2026-09-23 mit einem Probemanifest** - einer Kopie des
+> Manifests von `claude-code`, also einem, das einen **fremden** Client beschreibt -:
+> drei Packs mit Manifest, Validator **0 Fehler, 0 Warnungen**. **Und
+> `clients/README.md` Schritt 5 verlangt genau dieses Manifest fuer jedes neue Pack.**
+> ➡️ ***Eine Vorlage, die nur deshalb keine Pruefung ausloest, weil ihr ein Bestandteil
+> fehlt, ist nicht ausgenommen - sie ist unvollstaendig.*** Und der Tag, an dem jemand
+> sie nach der eigenen Anleitung vervollstaendigt, ist der Tag, an dem sie geprueft wird,
+> ohne dass es jemand entschieden hat.
+> 🔴 **Die Bauform *"zwei Stellen, die einander decken"*** (`0.57.0`): Die
+> unvollstaendige Vorlage verhindert, dass die fehlende Ausnahme je auffaellt.
+> ⚠️ **Und die Ausnahme existierte bereits an zwei anderen Stellen** - Pruefung 73 und
+> die Pfadausnahmen - und nicht dort, wo die Packmenge **entsteht**.
+> ➡️ *Wer eine Ausnahme an zwei Stellen fuehrt und an der dritten vergisst, hat sie
+> nicht vergessen - er hat keine Stelle, an der sie steht.* 🟢 Seit D-336 steht sie in
+> `_client_packs()`, und **Pruefung 84** haelt fest, was sie voraussetzt.
+>
+> 🟢 **EIN BEFUND IST AUSGEBLIEBEN, UND DAS IST BERICHTENSWERT:** Die Tabelle *Naechste
+> freie Kennungen* stimmt - **zum ersten Mal seit vier Releases**, nachgezaehlt ueber
+> alle fuenf Gattungen. Sie stand in `1.1.0`, `1.0.0` und `0.80.0` falsch.
+>
+> ⚠️ **DER RELEASEPLAN RUECKT UM EINS** (D-339): `openai-codex` von `1.2.0` auf `1.3.0`,
+> das Overlay *"General Development"* auf `1.4.0`, die Installationsbibliothek auf
+> `1.5.0`. **Ausgewiesen statt stillschweigend.** Der Zuschnitt folgt einem erprobten
+> Muster: `0.81.0` Vorbedingungen, `0.82.0` Herrichtung, `0.83.0` Messtag - drei Nummern
+> fuer einen Posten.
+
+> 🔴 **UND DER ABNAHMELAUF HAT EINEN BEFUND GEBRACHT, DEN KEINE DER 82 BISHERIGEN
+> PRUEFUNGEN SEHEN KONNTE** (D-340). Die Gegenprobe 58b legt eine Registerzeile mit ihrer
+> Sondenkennung an; Pruefung 83 las sie als hoechste vergebene und meldete **654 fehlende
+> Entscheidungen**. 🔴 **Die Aufloesung ist ZWEIMAL gefallen, und beide Male im vollen
+> Sondenlauf.** Anlauf 1 stellte die Kennung in die Menge der belegten synthetischen
+> Kennungen - **Sonde 58a verlor ihren Gegenstand**, weil Pruefung 58 genau jene Menge vom
+> MELDEN ausnimmt. Anlauf 2 nannte sie in einem eigenen Absatz woertlich - **Pruefung 58
+> meldete die Nennung.**
+> ➡️ ***Zwei Pruefungen, die dieselbe Kennung ansehen, stellen nicht dieselbe Frage*** -
+> Zugehoerigkeit gegen Grenze. ➡️ ***Eine Ausnahme, die ihren Gegenstand nennen muss, um zu
+> wirken, erzeugt den Befund, den sie verhindern soll.***
+> 🟢 **Erst ein reservierter BEREICH loest beides:** `D`-Kennungen ab 900 zaehlen bei
+> Pruefung 83 nicht als Obergrenze. Er nennt keine Kennung und traegt die naechste
+> Sondenkennung ohne Nachtrag. ⚠️ **Grenze, benannt:** Er ist eine Behauptung ueber
+> kuenftige Vergaben, und keine Pruefung setzt ihn durch (`K-114`); der Abstand betraegt
+> heute 560 Kennungen.
+> 🔴 **Das ist D-243 zweimal hintereinander, an einem Paar von SONDEN statt an einem Paar
+> von Regeltexten - und der Beleg, dass der Abnahmelauf kein Formalakt ist: Beide
+> Aufloesungen sahen am Validator gruen aus.**
+
+### Geaendert
+
+- `docs/ROADMAP.md`: die Spanne von `1.1.0` auf **D-329 bis D-334** berichtigt, `K-111`
+  ergaenzt; `1.0.1` hinter `1.0.0` gerueckt (die Tabelle ist ueber 133 Zeilen monoton
+  und war an genau dieser Stelle nicht); Planzeilen um eins gerueckt; Standueberschrift
+  auf `1.2.0`.
+- `clients/README.md`: Schritt 1 nennt die Vorlage bei ihrem Umfang - `CLIENT_PACK.md`,
+  nicht das Verzeichnis; Abschnitt 3 weist den Umfang ausdruecklich aus.
+- `tests/scripts/validate-framework.py`: `_client_packs()` nimmt `_template` nicht mehr
+  auf; der Docstring traegt die Begruendung statt der Annahme.
+- `CHANGELOG.md`: **D-333 bei `1.1.0` nachgetragen** (D-338).
+
+### Ergaenzt
+
+- **Pruefung 83** - die hoechste Release-Spanne von `docs/ROADMAP.md` gegen die hoechste
+  vergebene Kennung des Decision Logs (D-335). Drei Sonden, zwei Gegenproben.
+- **Pruefung 84** - die Client-Pack-Vorlage traegt keine Packbestandteile (D-336). Drei
+  Sonden, zwei Gegenproben; **die erste Gegenprobe misst die Ausnahme selbst** und nicht
+  nur die Meldung.
+- `K-112` (erreicht eine Pruefung die **Nennungen**, nicht nur die Spanne?), `K-113`
+  (die Marke ist der vollstaendigste Traeger und der einzige ungepruefte) und `K-114`
+  (wer setzt den reservierten Sondenbereich durch?).
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 83 misst die Obergrenze, nicht die Vollstaendigkeit der Nennungen.** Ein
+  Traeger, der die Spanne richtig fuehrt und eine Kennung im Fliesstext nicht nennt,
+  kommt durch (`K-112`).
+- **Pruefung 84 prueft die Anwesenheit von Bestandteilen, nicht deren Inhalt.** Eine
+  `CLIENT_PACK.md` der Vorlage, die einen echten Client beschreibt statt Platzhalter zu
+  fuehren, faengt Pruefung 7 ueber die Markerform.
+- **Der Markentext bleibt unerreichbar.** Er liegt im Tag-Objekt, nicht im Arbeitsbaum,
+  und in einer Installation gibt es ihn nicht (`K-113`, D-299).
+
 ## [1.1.0] - 2026-09-23
 
 **Die Reihenfolge des Hebens - ein Pruefpunkt, den sein eigenes Verfahren hinter seinen
@@ -137,6 +268,31 @@ haette.
   Word-Fassung unter `build/out/`, das Release-Archiv ganz ausserhalb des
   Repositoriums. Der Ersatz ist an beiden Stellen ein Verfahrensschritt, und damit
   schwaecher (`K-110`, D-328, D-332).
+
+### Nachgetragen mit 1.2.0
+
+> 🔴 **D-333 STAND IN KEINEM BESCHREIBENDEN TRAEGER DIESES RELEASES.** Dieser Absatz
+> ist ein **Nachtrag** und traegt nichts Neues ein: Was hier steht, halten das Decision
+> Log und das Abnahmeprotokoll vom 2026-09-23 bereits fest. **Es ist nichts neu
+> entschieden worden** (`CR-2026-131` E4, D-338).
+>
+> **D-333: Das Heben vor dem Commit nimmt den ARBEITSBAUM als Quelle, beschraenkt auf
+> das Verfolgte - nicht `git archive HEAD`. Und es steht nach dem letzten Eingriff in
+> den Kern.** Der eingespielte Hebe-Ablauf nahm `git archive HEAD`, also den
+> **committeten** Stand, waehrend die Arbeitsanweisung *"fuer den echten Vorgang nach
+> dem Merge"* sagte - genau das schliesst D-330 aus. ➡️ *Zwei Regeln, die einander die
+> Voraussetzung entziehen* (D-146, `K-54`). Der Ersatz ist gemessen und gleich gross:
+> `git ls-files -z .koolie/core` in ein `tar` liefert **519** Traeger aus dem
+> Arbeitsbaum, `git archive HEAD` **517** aus dem committeten Stand - und die Differenz
+> sind **genau der Aenderungsantrag und das Protokoll dieses Releases**.
+> ➡️ *Wer vor dem Commit mit `git archive HEAD` hebt, liefert ein Projekt aus, dem der
+> Antrag und das Protokoll des Releases fehlen.*
+>
+> ➡️ **Warum der Nachtrag noetig war:** D-333 ist *beim Umsetzen* gefallen, also nach
+> dem Zeitpunkt, zu dem die beschreibenden Traeger geschrieben waren. Von vier Traegern,
+> die `1.1.0` beschreiben, nennt keiner alle sechs Entscheidungen. **Vollstaendig nennt
+> die Menge nur die Marke `v1.1.0`** - und sie ist der einzige Traeger, den keine
+> Pruefung erreichen kann (`K-113`).
 
 ## [1.0.1] - 2026-09-23
 

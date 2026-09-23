@@ -28,8 +28,8 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.1.0** | `0.3.3` | 2026-09-23 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.1.0** | `1.1.0` | 2026-09-23 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.2.0** | `0.3.3` | 2026-09-23 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.2.0** | `1.1.0` | 2026-09-23 |
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`
