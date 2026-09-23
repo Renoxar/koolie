@@ -787,20 +787,66 @@ Projekte** – ein Posten, der ohne diesen Antrag nicht in diesem Release gelege
 | **B18** 🔴 **Der Klarname stand falsch im Copyright-Vermerk – abgeleitet aus der Git-Historie.** Er stand im Bestand nirgends, also hat das Werkzeug die Schreibweise aus dem Autorenfeld genommen. **Die Historie führt ihn in allen 122 Merge-Commits falsch.** ➡️ *Der Gegenstand eines Namens ist die Person, nicht das Repositorium – eine Angabe aus der nächstgelegenen Quelle ist keine geprüfte Angabe.* | 🟢 **Gefunden hat es die manuelle Stichprobe des Owners (Prüfpunkt 9) – und keine der 81 Prüfungen konnte es.** Das ist `K-109` im Feld, und zugleich der Beleg dafür, warum `FW-CL-11` die Stichprobe *„zusätzlich zur automatischen Prüfung"* verlangt. ⚠️ **Die Historie bleibt falsch** – sie wird nach D-324 nicht umgeschrieben; für künftige Merges ist das **Profil des Servers** die Stelle (`K-108`) |
 | **B17** ⚠️ **Die Signatur war da und nicht prüfbar.** `git tag -v v1.0.0` bestätigte sie nicht – Ursache war ein fehlendes `gpg.ssh.allowedSignersFile`, nicht eine fehlende Unterschrift (**D-327**) | 🟢 Nach der Einrichtung: `Good "git" signature … with ED25519 key`. Die Datei liegt unter `.git/`, **nicht versioniert** – sie trägt eine Adresse |
 
+#### 🟢 Was nach `1.0.0` und `1.0.1` erledigt ist
+
+**Die Freigabe ist vollzogen.** Der Owner hat den Freigabe-Commit gesetzt, die
+Freigabezeile gefüllt und **zwei signierte Marken** gesetzt: `v1.0.0` und `v1.0.1`, beide
+mit `Good "git" signature` (die Prüfvorrichtung steht seit D-327 unter `.git/`).
+🟢 **Dazu zwei Gitea-Releases**, je mit Archiv und Prüfsumme als Anhang – das ist die
+*„Ablage außerhalb des Repositoriums"* aus Abschnitt 4.1 in ihrer natürlichen Form.
+🟢 **Und das Gitea-Profil ist berichtigt:** Künftige Merge-Commits tragen `René
+Hildebrand`, byte-genau geprüft (`U+00E9`).
+
 #### 🔴 Wiederaufnahmepunkt
 
-1. 🔴 **Zwei Handlungen des Menschen stehen aus, und keine ist delegierbar:** die
-   **manuelle Stichprobe** (Prüfpunkt 9, Vorlage in Abschnitt 6 des Freigabeprotokolls)
-   und die **dokumentierte Freigabe** (Prüfpunkt 21). Dazu die **signierte Marke** als
-   Schritt 1 des Archivverfahrens. Die Befehle liegen als Datei bereit.
-2. 🔴 **`K-108`: Wird veröffentlicht, und was geht mit?** Die Historie trägt den
-   Klarnamen in 122 Commits und die Adresse in allen 261 – **unter beiden Namen**. Nach
-   D-324 ist das nicht mehr durch ein Umschreiben vorbereitbar.
-3. ⚠️ **`K-109`: Die Regel *„Rollen statt Personen"* hat keine Prüfung.** Sie steht in
+1. 🔴 **SCHULDPOSTEN AUS `1.0.1`: Die Bestandsliste stimmt nicht.**
+   `governance/ADOPTION_REGISTRY.md` führt beide übernehmenden Projekte auf `1.0.0`;
+   gemessen tragen sie **`1.0.1`**. **Ursache: Sie wurden NACH dem Merge gehoben statt
+   davor**, und damit war `FW-CL-11` Prüfpunkt 20 zum Merge-Zeitpunkt nicht erfüllt.
+   ➡️ *Das ist genau die Bauform, für die D-322 angelegt wurde – ein Nachweis, den
+   Prüfung 46 ausdrücklich NICHT zählt, veraltet unbemerkt.* **Zum zweiten Mal in zwei
+   Releases.** ⚠️ **Zu prüfen: Gehört das Heben VOR den Release-Commit, und muß
+   Abschnitt 4.1 die Reihenfolge sagen?** Heute sagt er sie nicht.
+2. ➡️ **Der Posten: `1.1.0` – Client Pack `openai-codex`**, die neun Schritte aus
+   `clients/README.md` Abschnitt 5, davon vier Erhebungen. Ein Codex-Pro-Abonnement
+   steht zur Verfügung (`K-97`). ⚠️ **Mit Kontingent** – der erste Meßtag seit `0.86.0`.
+   🔴 **Die Eignungsfragen vorab erheben, nicht danach:** durchsetzende
+   Berechtigungsschicht mit Verweigerungsvorrang, Hook vor dem Werkzeugaufruf, ein
+   Suchwerkzeug. **Drei davon sind an der Konsole erhebbar, bevor eine Sitzung läuft.**
+   Verwirft der Client `permissions` oder `triggers`, **muß** das Pack den Ersatz
+   benennen. ⚠️ **Und `1.1.0` ist das erste Release unter dem neuen Regime:** Ab `1.0.0`
+   gilt die MAJOR-Regel wieder. Ein neues Client Pack ist MINOR – **das prüfen, nicht
+   annehmen.**
+3. 🔴 **`K-108`: Wird veröffentlicht, und was geht mit?** 🟢 **Die Vorbereitung ist
+   erledigt, die Entscheidung steht aus.** Das Profil ist berichtigt, künftige Merges
+   tragen den richtigen Namen. 🔴 **Die Historie nicht:** **124 Merge-Commits** führen
+   weiter `Hildbrand`, und die **Adresse steht unter beiden Namen in allen 265
+   Commits**. Nach D-324 wird sie nicht umgeschrieben. *Was beim Publizieren mitginge,
+   ist damit entschieden – offen ist nur noch, OB publiziert wird und wo.*
+4. ⚠️ **`K-109`: Die Regel *„Rollen statt Personen"* hat keine Prüfung.** Sie steht in
    zwei normativen Trägern, und alle 81 Prüfungen liefen grün, während ein Klarname in
-   einen Kernträger geschrieben wurde.
-4. ⚠️ **`K-100` bleibt teurer als gebucht**, und `B9` zeigt dieselbe Bauform an einem
-   zweiten Gegenstand: zwei Zählungen, beide richtig, kein Vokabular.
+   einen Kernträger geschrieben wurde – **und dort auch noch falsch.** Gefunden hat es
+   die **manuelle Stichprobe** (D-323, Nachtrag).
+5. ⚠️ **`K-100` bleibt teurer als gebucht**, und `B9` zeigt dieselbe Bauform an einem
+   zweiten Gegenstand: **322 angemeldete Einheiten gegen 447 Ergebniszeilen**, beide
+   richtig, kein Vokabular. Das Register führt **107** K-Zeilen.
+6. ⚠️ **`K-105`: Der Foliensatz** liegt außerhalb des Repositoriums und steht auf
+   `0.90.0` – überholt durch `0.91.0`, `1.0.0` **und** `1.0.1`. Keine Prüfung erreicht ihn.
+
+#### 🔴 Die sechs Fallen, die in `1.0.0` und `1.0.1` zugeschnappt sind
+
+| # | Falle | Wo sie zuschnappte |
+|---|---|---|
+| 1 | **Eine neue Prüfung läuft einmal gegen ein übernehmendes Projekt, bevor sie fertig ist** | Prüfung 78 und 79 aus `0.90.0` waren in **jeder** Installation rot – und die Lehre stand im selben Release, das sie gebaut hat (D-326) |
+| 2 | **Ein Erzeugnis mit Exit 0 ist kein Beleg – im Erzeugnis nachzählen** | Zweimal bezahlt: der Word-Bau mit null Diagrammen (`0.90.0`) und `git archive` mit der falschen Zeilenendeform (D-328) |
+| 3 | **Eine Entscheidung gilt so weit wie ihr gemessener Gegenstand, nicht so weit wie die Folgerung aus ihr** | D-320 maß den Blob; daß damit auch das Archiv feststehe, war eine Folgerung (D-328) |
+| 4 | **Commit und Marke gehören als Paar** | Ändert sich der Baum danach, müssen beide neu – `amend` und `tag -d`/`tag -s` (B15) |
+| 5 | **Das Werkzeug stellt Dateien auf LF um** | `Write` und `sed -i` je einmal; **Prüfung 81 hat beides gefangen**. Patchskripte als Datei schreiben, mit `io.open(…, newline="")` |
+| 6 | **Ein gerades `"` in deutscher Prosa beendet einen Python-String** | Patchskripte mit dreifachen einfachen Quotes begrenzen |
+
+🔴 **Nicht delegierbar, ab jetzt bei JEDEM Release:** der **Freigabe-Commit** und die
+**signierte Marke** (D-319, D-321). Das Werkzeug bereitet Text und Befehle als Datei vor;
+**Push, PR, Merge, Archiv und Gitea-Release sind danach wieder seine Sache.**
 
 ---
 
