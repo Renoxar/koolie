@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -46,9 +46,10 @@ eine Aufzählung.*
 | Schritt | Was | Wer |
 |---|---|---|
 | 1 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`, die Nachricht nennt Release, Antrag und die Entscheidungen | 🔴 **der Framework Owner, nicht ein Werkzeug** |
-| 2 | **Archiv** aus der Marke: `git archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch |
-| 3 | **Ablage außerhalb des Repositoriums**, zusammen mit der Prüfsumme des Archivs | Werkzeug oder Mensch |
-| 4 | Eintrag in `.koolie/core/governance/ADOPTION_REGISTRY.md` und Mitteilung an die übernehmenden Projekte nach Punkt 3 | Framework Owner |
+| 2 | **Archiv** aus der Marke, mit **ausdrücklicher** Zeilenendeform: `git -c core.eol=lf -c core.autocrlf=input archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch |
+| 3 | 🔴 **Im Erzeugnis nachzählen**, nicht der Meldung glauben: Dateizahl, Zeilenendeform, Lizenz in Wurzel **und** Kern, keine Erzeugnisse aus `build/out/` | Werkzeug oder Mensch |
+| 4 | **Ablage außerhalb des Repositoriums**, zusammen mit der Prüfsumme des Archivs | Werkzeug oder Mensch |
+| 5 | Eintrag in `.koolie/core/governance/ADOPTION_REGISTRY.md` und Mitteilung an die übernehmenden Projekte nach Punkt 3 | Framework Owner |
 
 🔴 **Die Signatur braucht eine Prüfvorrichtung, sonst belegt sie die halbe Aussage**
 (D-327). Ohne hinterlegten Unterzeichner meldet `git tag -v` **keine** Bestätigung –
@@ -70,9 +71,22 @@ unterschrieben hat – nicht, wem der Schlüssel gehört.*
 Schlüssel sogar signieren – **und genau deshalb darf es nicht.** Dieselbe Trennung gilt für
 den Freigabe-Commit.
 
-⚠️ **Die Zeilenenden des Archivs stehen seit D-320 fest.** `git archive` folgt der
-`.gitattributes`; ohne sie hinge der Inhalt der Lieferung an der Konfiguration des
-Rechners, der sie erzeugt hat.
+🔴 **DIE ZEILENENDEN DES ARCHIVS SETZT DER BEFEHL, NICHT DIE `.gitattributes`** (D-328,
+berichtigt mit `1.0.1`). ⚠️ **Bis `1.0.0` stand hier das Gegenteil**, und das erste
+Archiv dieses Projekts hat es widerlegt: `git archive` schreibt die Dateien im
+**Arbeitsbaum**-Format aus, nicht im Blob-Format. **Dreimal dieselbe Marke, nur
+`core.autocrlf` verstellt – `true` und `false` liefern CRLF, `input` liefert LF**, bei
+unverändertem Blob. ➡️ *Zwei Arbeitsplätze erzeugten aus derselben signierten Marke zwei
+Archive mit zwei Prüfsummen.* **Deshalb stehen die Schalter in Schritt 2, und deshalb
+wird in Schritt 3 nachgezählt.**
+
+⚠️ **Verworfen: `eol=lf` in der `.gitattributes`.** Sie zwänge auch den **Arbeitsbaum**
+auf LF, und das hat `CR-2026-128` E1 mit Begründung abgelehnt. *Eine Regel für die
+Lieferung gehört an die Lieferung, nicht an das Repositorium.*
+
+⚠️ **Grenze, benannt:** Ein Verfahrensschritt ist schwächer als eine Prüfung. Der
+Gegenstand liegt **außerhalb** des Repositoriums; eine Prüfung dagegen wäre im Framework
+grün und in jeder Installation ohne Archiv rot (D-299).
 
 ⚠️ **Das Archiv enthält nur Versioniertes.** Hauptdokument und Word-Fassung sind
 Erzeugnisse unter `build/out/` und stehen in der `.gitignore`; wer sie mitliefern will,

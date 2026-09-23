@@ -2,6 +2,55 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.0.1] - 2026-09-23
+
+**Die Zeilenenden des Archivs - eine Zusage, die ihr eigenes Werkzeug nicht haelt**
+(`CR-2026-129` E1 bis E3, **D-328**, D-320 in der Reichweite begrenzt). Ein
+Patch-Release ohne Kontingent, **ohne neue Pruefung** - und mit einer benannten Grenze.
+
+> 🔴 **DAS ERSTE RELEASE-ARCHIV DIESES PROJEKTS HAT DIE REGEL WIDERLEGT, DIE ES
+> ERZEUGEN LIESS - KEINE DREI STUNDEN NACH IHRER AUFNAHME.** `RELEASE_PROCESS.md`
+> Abschnitt 4.1 sagte: *"Die Zeilenenden des Archivs stehen seit D-320 fest. `git
+> archive` folgt der `.gitattributes`."* **Gemessen, dreimal dieselbe Marke `v1.0.0`,
+> nur `core.autocrlf` des erzeugenden Rechners verstellt:** `true` -> **520 CRLF**,
+> `false` -> **520 CRLF**, `input` -> **520 LF**. **Der Blob lag in allen drei Faellen
+> unveraendert auf LF.**
+> ➡️ *`git archive` schreibt im ARBEITSBAUM-Format aus, nicht im Blob-Format - es wendet
+> dieselbe Umwandlung an wie ein `git checkout`.*
+> 🔴 **Die Abhaengigkeit, die D-320 fuer das Repositorium beseitigt hat, bestand fuer
+> die LIEFERUNG unveraendert fort:** Zwei Arbeitsplaetze erzeugten aus derselben
+> signierten Marke zwei Archive mit zwei Pruefsummen.
+
+> 🔴 **GEFUNDEN HAT ES DAS NACHZAEHLEN IM ERZEUGNIS, NICHT DER LAUF.** `git archive`
+> meldete Exit 0 und schrieb eine Datei. ➡️ *Ein Erzeugnis mit Exit 0 ist kein Beleg* -
+> dieselbe Lehre, die `0.90.0` am Word-Bau gezogen hat, an einem zweiten Gegenstand.
+> **Das Nachzaehlen steht seither als Schritt 3 im Verfahren.**
+
+> ⚠️ **UND DIE AUFLOESUNG IST SCHWAECHER ALS EINE PRUEFUNG - DAS STEHT SO DA.** Der
+> Gegenstand liegt **ausserhalb** des Repositoriums; eine Pruefung dagegen waere im
+> Framework gruen und in jeder Installation ohne Archiv rot (D-299). Was bleibt, ist ein
+> Verfahrensschritt, und der Antrag benennt den Unterschied, statt ihn zu verschweigen.
+
+**Aenderungen**
+
+- `governance/RELEASE_PROCESS.md` auf `0.2.1`: Der Archivbefehl traegt die Schalter
+  (`-c core.eol=lf -c core.autocrlf=input`), das **Nachzaehlen im Erzeugnis** ist
+  Schritt 3, und der falsche Satz ist durch den gemessenen ersetzt.
+- Decision Log: **D-328**; **D-320** bekommt einen Nachtrag, der seine Reichweite
+  ausdruecklich auf den **Blob** begrenzt - *eine Entscheidung gilt so weit wie ihr
+  gemessener Gegenstand und nicht so weit wie die Folgerung aus ihr.*
+
+**Migrationshinweise fuer Overlays**
+
+**Keine.** Kein Overlay-Feld, kein Platzhalter, keine Regelablage, kein Skill, keine
+Pruefung beruehrt. Wer ein Archiv von `1.0.0` bezogen hat, kann es behalten - der
+**Inhalt** ist derselbe, nur seine Zeilenendeform haengt am erzeugenden Rechner.
+
+**Bekannte Einschraenkungen**
+
+- **Die Form der Lieferung ist ein Verfahrensschritt, keine Pruefung** (siehe oben).
+- Alle Einschraenkungen aus `1.0.0` gelten unveraendert weiter.
+
 ## [1.0.0] - 2026-09-23
 
 **`AP12` - der Freigabelauf, und das erste Glied der Nachweiskette, das nie existiert
