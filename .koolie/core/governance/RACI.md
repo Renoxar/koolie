@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-RACI` |
-| Version | `0.1.1` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -31,6 +31,7 @@
 | Onboarding durchführen und freigeben | C | – | I | R (Lernende) | – | – | – | – | – | A/R | I |
 | Pilot planen und auswerten | C | – | R | C | C | – | – | C (Befragungen) | C | – | A |
 | Aktualitätsprüfung gegenüber Produktänderungen des KI-Clients | A/R | R | I | I | – | – | C | – | – | – | – |
+| Abnahmeprotokoll des Testkatalogs gegenzeichnen (D-319) | A/R | C | I | I | C | – | C | – | – | – | I |
 | Auditnachweise bereitstellen | A/R | C | R | C | – | – | C | C | – | – | I |
 
 **Konsistenzregeln:** Je Zeile genau ein A (bei geteilten A ist die Aufteilung vermerkt: mitzeichnend). Der KI-Client taucht in keiner Spalte auf – es ist Werkzeug, nicht Rolle. Bei Personalunion mehrerer Rollen in kleinen Teams MUSS das Vier-Augen-Prinzip je Zeile erhalten bleiben (dann übernimmt eine andere benannte Rolle das C/Review).

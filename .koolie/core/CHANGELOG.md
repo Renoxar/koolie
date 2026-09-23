@@ -2,6 +2,91 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [0.91.0] - 2026-09-23
+
+**Die Gegenzeichnung - eine Rollenfrage, kein Arbeitsposten** (`CR-2026-127` E1 bis E5,
+**D-319**, **Pruefung 80**, `K-107` neu). **`AP11` ist damit abgeschlossen.**
+**Ohne Kontingent, ohne Lauf an einem Client.**
+
+> 🔴 **DIE PFLICHT WAR KONSTRUKTIV NICHT ERFUELLBAR, UND DAS HATTE NIEMAND BENANNT.**
+> `0.89.0` hat richtig aufgeschrieben, eine Gegenzeichnung sei die Handlung einer
+> ZWEITEN ROLLE und ein Werkzeug, das sie ausfuellt, faelsche sie. **Was fehlte, ist die
+> Folge: An diesem Framework arbeitet EINE Person.**
+> ➡️ *Eine Pflicht, die niemand erfuellen kann, ist ein Befund ueber ihre Formulierung.*
+> 🔴 **Das ist die Bauform "die Regel mit leerer Schnittmenge" (D-189, `K-72`) an einer
+> GOVERNANCE-Regel statt an einer Testzelle.**
+
+> 🟢 **DER ZUSCHNITT IST GEMESSEN, NICHT GEWAEHLT.** Ueber den Gesamtbestand geben zwei
+> Zaehlregeln zwei Ergebnisse - 13/45/64 von 122 gegen 17/47/61 von 125. Ueber die ZEHN
+> Abnahmeprotokolle geben **beide 3/2/5**. ➡️ *Ein Gegenstand, der unter zwei Regeln
+> derselbe ist, ist der richtige Gegenstand.* **Sieben Protokolle sind nachgezogen**, die
+> uebrigen drei trugen ihre Gegenzeichnung schon.
+
+> 🆕 **WAS IST DIE UNTERSCHRIFT? Die Zeile sagt, WAS gegengezeichnet wurde; der Commit
+> sagt, WER** (D-319 E5). 🔴 **Eine Fehleinschaetzung war dabei zu berichtigen:** Die
+> Vorbereitung hatte gesagt, ein Werkzeug KOENNE den Commit nicht setzen. **Es kann** -
+> git ist hier mit der Identitaet des Owners konfiguriert. **Genau deshalb darf es ihn
+> fuer die Gegenzeichnung nicht setzen**; die Faelschung wanderte sonst nur aus der
+> Markdown-Zeile in die Commit-Metadaten. ➡️ *So wird sie unmoeglich statt nur verboten.*
+> ⚠️ **Preis, gemessen:** Die Commits sind NICHT signiert (`%G?` liefert `N`); die
+> Unterschrift ist so stark wie der Schreibzugriff. `K-107` fuehrt es auf ein signiertes
+> Tag fuer `1.0.0` weiter - und nennt den Nebenbefund, dass die Historie Klarnamen in
+> **109 Releases** rueckwirkend fuehrt, oeffentlich ab der Veroeffentlichung.
+
+> 🔴 **DER EIGENE VORSCHLAG ZU E3 IST IM DURCHGANG GEFALLEN.** `CR-2026-127` schlug vor,
+> die offenen `<TBD>` in den uebrigen Protokollen zu ENTFERNEN. **Gemessen: 45 Traeger in
+> DREI verschiedenen Tabellenformen, und alle sind Chronik** (D-273). Ein Sweep darueber
+> ist die Bauform aus D-277. **Das `<TBD` ist dort richtig** - es haelt fest, dass einmal
+> eine Gegenzeichnung vorgesehen war. ➡️ *Wer eine Aufzeichnung nachtraeglich glattzieht,
+> verliert genau die Angabe, die sie traegt.* 🟢 **Die Abgrenzung steht jetzt EINMAL an
+> den drei Stellen, an denen sie gilt** - nicht fuenfundvierzigmal in den Aufzeichnungen.
+
+> 🆕 **PRUEFUNG 80, UND SIE WAR BEIM ERSTEN LAUF ROT UEBER GENAU DIE SIEBEN.** Fuenf
+> Einheiten; **Gegenprobe `80b` ist die, die man weglassen wuerde, und sie traegt den
+> ganzen Zuschnitt**: Ein offenes `<TBD>` in einem ARBEITSPROTOKOLL muss unbeanstandet
+> bleiben. Ohne sie waere D-319 eine Behauptung im Kopfkommentar statt eine gemessene
+> Eigenschaft.
+
+### Geaendert
+
+- `.koolie/core/checklists/11-framework-release.md` (`0.2.3` -> `0.3.0`) - neuer
+  Pruefpunkt und die Abgrenzung
+- `.koolie/core/tests/protocols/README.md` - die Abgrenzung als Regelzeile
+- `.koolie/core/governance/RACI.md` (`0.1.1` -> `0.2.0`) - neue Zeile
+  "Abnahmeprotokoll des Testkatalogs gegenzeichnen"
+- **Sieben Abnahmeprotokolle** unter `.koolie/core/tests/protocols/` - Gegenzeichnung
+  eingetragen, als **Selbstgegenzeichnung** ausgewiesen
+- `.koolie/core/tests/scripts/validate-framework.py` - **Pruefung 80**, Register und
+  Sondenmenge `6, 14 und 18 bis 80`
+- `.koolie/core/tests/scripts/probe-pruefungen.py` - Sonden `80a` bis `80c`,
+  Gegenproben `80a` und `80b`
+- `.koolie/core/tests/TEST_CATALOG.md`, `.koolie/core/build/doc/26-qs-test.md`,
+  `.koolie/core/build/doc/00-kopf.md`
+- `.koolie/core/governance/change-requests/CR-2026-127-...md` - Abschnitt 6 geschlossen
+- `.koolie/core/governance/DECISION_LOG.md` - **D-319**, `K-107` neu
+- `.koolie/core/docs/ROADMAP.md`, `.koolie/core/CHANGELOG.md`, `.koolie/core/VERSION`,
+  `UEBERGABE.md`
+
+### Neu
+
+- `.koolie/core/tests/protocols/2026-09-23-gegenzeichnung-rollenfrage.md`
+
+### Migrationshinweise fuer Overlays
+
+Keine. ⚠️ **Fuer uebernehmende Projekte relevant:** `checklists/11` traegt einen neuen
+Pruefpunkt, und `RACI.md` eine neue Zeile. Beide betreffen den Framework-Release-Prozess,
+nicht die Projektarbeit.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 80 erkennt ein Abnahmeprotokoll am DATEINAMEN.** Ein Protokoll, das anders
+  heisst, laeuft durch - dieselbe Ehrlichkeit wie bei Pruefung 48
+- **Sie verlangt eine Unterschrift und erzeugt keine.** Ob jemand wirklich gelesen hat,
+  kann kein Skript pruefen
+- **Die Commits sind nicht signiert** (`K-107`)
+- **Die 45 offenen `<TBD>` in den Arbeits- und Messprotokollen bleiben stehen** - das ist
+  entschieden (D-319, E3) und kein Restposten
+
 ## [0.90.0] - 2026-09-23
 
 **Der Rest von `AP11`: Die Word-Fassung - und die drei Traeger neben den Kapiteln, die

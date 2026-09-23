@@ -561,7 +561,20 @@ Prüft (statisch, ohne laufenden KI-Client):
      GPL-3.0. ANLASS: Zwei Stellen mit demselben Inhalt laufen auseinander,
      sobald eine angefasst wird - der haeufigste Befundtyp dieses
      Repositoriums, und die Antwort darauf ist dieselbe wie bei Pruefung 76
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 79 laeuft als eigenes
+ 80. Jedes Abnahmeprotokoll traegt seine Gegenzeichnung (D-319): Ein Protokoll
+     des Testkatalogs (Dateiname JJJJ-MM-TT-FW-<Klasse>-<NN>.md) fuehrt einen
+     Abschnitt `Gegenzeichnung` ohne offenes <TBD>. ANLASS: AP11 verlangte sie,
+     und 0.89.0 hat sie als ABGRENZUNG stehen gelassen - eine Gegenzeichnung ist
+     die Handlung einer ZWEITEN Rolle, und ein Werkzeug, das sie ausfuellt,
+     faelscht sie. Die Folge hatte niemand benannt: An diesem Framework arbeitet
+     EINE Person, die Pflicht war konstruktiv unerfuellbar - die Bauform der
+     Regel mit leerer Schnittmenge an einer Governance-Regel. ZUSCHNITT: nur
+     Abnahmeprotokolle. Gemessen ueber BEIDE Zaehlregeln ergibt der Gesamtbestand
+     17/47/61 oder 13/45/64; die zehn Abnahmeprotokolle ergeben 3/2/5 unter
+     beiden - ein Gegenstand, der unter zwei Regeln derselbe ist, ist der
+     richtige. GRENZE: Sie verlangt eine Unterschrift und erzeugt keine. Die
+     Zeile sagt, WAS gegengezeichnet wurde; der Commit sagt, WER
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 80 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -8757,6 +8770,79 @@ def check_lizenz(root: str) -> None:
             f"belegt, dass zwei Dateien gleich sind – auch zwei leere sind das (D-23)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 80: Jedes Abnahmeprotokoll traegt seine Gegenzeichnung (CR-2026-127, D-319)
+# ---------------------------------------------------------------------------
+#
+# ANLASS. AP11 verlangte die Gegenzeichnung der Protokolle. 0.89.0 hat sie nicht
+# gefahren und den Grund als ABGRENZUNG aufgeschrieben: Eine Gegenzeichnung ist die
+# Handlung einer ZWEITEN ROLLE, und ein Werkzeug, das <TBD: Rolle> ersetzt, faelscht
+# sie. Das traegt - und es hatte eine Folge, die niemand benannt hatte: An diesem
+# Framework arbeitet EINE Person. Die Pflicht war in ihrer damaligen Form nicht
+# erfuellbar, und zwar konstruktiv. Das ist die Bauform "die Regel mit leerer
+# Schnittmenge" (D-189, K-72) an einer GOVERNANCE-Regel statt an einer Testzelle.
+#
+# DER ZUSCHNITT IST DIE HALBE ENTSCHEIDUNG (D-319). Nicht jedes Protokoll ist eine
+# Abnahme: Von 125 sind die meisten Arbeits- und Messprotokolle, die ihren Beleg in
+# sich tragen. Eine Gegenzeichnung sagt etwas anderes - eine zweite Person hat geprueft
+# und steht dafuer ein. Gemessen am 2026-09-23 ueber BEIDE Zaehlregeln: Der Gesamtbestand
+# ergibt 17/47/61 oder 13/45/64, je nach Regel; die ZEHN Abnahmeprotokolle ergeben
+# 3/2/5 unter BEIDEN. Ein Gegenstand, der unter zwei Regeln derselbe ist, ist der
+# richtige Gegenstand.
+#
+# WAS SIE PRUEFT UND WAS NICHT. Sie prueft, dass der Abschnitt DA ist und kein offenes
+# <TBD> mehr traegt. Sie prueft NICHT, ob jemand wirklich gelesen hat - das kann kein
+# Skript, und deshalb steht neben der Zeile der Commit: Die Zeile sagt, WAS
+# gegengezeichnet wurde, der Commit sagt, WER. Eine Unterschrift, die ein Werkzeug
+# erzeugen kann, belegt nichts; diese Pruefung erzeugt keine, sie verlangt eine.
+#
+# GRENZE, benannt: Sie erkennt ein Abnahmeprotokoll am DATEINAMEN. Ein Protokoll, das
+# anders heisst, laeuft durch - dieselbe Ehrlichkeit wie bei Pruefung 48, die Pfade
+# findet und keine Prosa.
+P80_ABLAGE = KERN + "/tests/protocols"
+P80_NAME = re.compile(r"^\d{4}-\d{2}-\d{2}-FW-[A-Z]{2}-\d{2}[\w.-]*\.md$")
+P80_ABSCHNITT = re.compile(r"^#{1,6}\s.*Gegenzeichnung", re.M | re.I)
+
+
+def check_gegenzeichnung(root: str) -> None:
+    """Pruefung 80 (D-319): Abnahmeprotokolle tragen ihre Gegenzeichnung."""
+    ablage = os.path.join(root, *P80_ABLAGE.split("/"))
+    if not os.path.isdir(ablage):
+        err(f"{P80_ABLAGE}/: fehlt. Prüfung 80 hält dort die Gegenzeichnung der "
+            f"Abnahmeprotokolle; ohne die Ablage hat sie ihren Gegenstand verloren "
+            f"(D-319)")
+        return
+    # --- Gegenstand 1: der Anker ---------------------------------------------------
+    kandidaten = sorted(n for n in os.listdir(ablage) if P80_NAME.match(n))
+    if not kandidaten:
+        err(f"{P80_ABLAGE}/: kein einziges Abnahmeprotokoll des Testkatalogs gefunden "
+            f"(Muster `JJJJ-MM-TT-FW-<Klasse>-<NN>.md`). Prüfung 80 hätte nichts zu "
+            f"prüfen und bestünde leise – genau der Zustand, aus dem die Pflicht "
+            f"zweiundzwanzig Releases lang unbemerkt offen war (D-23, D-319)")
+        return
+    # --- Gegenstand 2: Abschnitt vorhanden und ohne offenes <TBD> -------------------
+    for name in kandidaten:
+        text = read(os.path.join(ablage, name))
+        treffer = P80_ABSCHNITT.search(text)
+        if not treffer:
+            err(f"{P80_ABLAGE}/{name}: kein Abschnitt `Gegenzeichnung`. Ein "
+                f"Abnahmeprotokoll des Testkatalogs trägt ihn (D-319, `FW-CL-11`). "
+                f"Arbeits- und Meßprotokolle bekommen ihn nicht – die Abgrenzung steht "
+                f"in `{P80_ABLAGE}/README.md`")
+            continue
+        abschnitt = text[treffer.start():]
+        naechste = re.search(r"^#{1,6}\s", abschnitt[treffer.end() - treffer.start():],
+                             re.M)
+        if naechste:
+            abschnitt = abschnitt[:treffer.end() - treffer.start() + naechste.start()]
+        if TBD_RE.search(abschnitt):
+            err(f"{P80_ABLAGE}/{name}: der Abschnitt `Gegenzeichnung` trägt noch ein "
+                f"offenes `<TBD>`. Eine Gegenzeichnung ist die Handlung einer Rolle und "
+                f"kein Feld, das ein Werkzeug füllt – ist keine zweite Rolle vorhanden, "
+                f"wird selbst gegengezeichnet und der Abschnitt weist das ausdrücklich "
+                f"aus (D-319, `CR-2026-127` E1)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -8851,6 +8937,7 @@ def main() -> int:
     check_dokumentstand(root)
     check_dokumentzahlen(root)
     check_lizenz(root)
+    check_gegenzeichnung(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

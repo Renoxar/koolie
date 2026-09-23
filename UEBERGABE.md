@@ -1,4 +1,4 @@
-# Übergabe: **Koolie** – Stand 0.90.0 (2026-09-23)
+# Übergabe: **Koolie** – Stand 0.91.0 (2026-09-23)
 
 > 🟢 **DAS HAUPTDOKUMENT STEHT AUF DEM GELTENDEN STAND – UND SEIN ERZEUGER LIEF SEIT
 > `0.88.0` NICHT MEHR** (`0.89.0`, `CR-2026-124`, **D-309** bis **D-312**, **Prüfung 77**,
@@ -164,6 +164,55 @@
 > 🟢 **Dazu vorbereitet: das Freigabeprotokoll `FW-CL-11`** mit jedem der 22 Prüfpunkte auf
 > seinem gemessenen Stand – **18 gedeckt, vier brauchen einen Menschen, keiner ist
 > abgehakt.**
+
+> 🟢 **`AP11` IST ABGESCHLOSSEN – DIE GEGENZEICHNUNG WAR EINE ROLLENFRAGE UND KEIN
+> ARBEITSPOSTEN** (`0.91.0`, `CR-2026-127` E1 bis E5, **D-319**, **Prüfung 80**, `K-107`
+> neu). **Ohne Kontingent.** Sieben Abnahmeprotokolle sind nachgezogen, die übrigen drei
+> trugen ihre Gegenzeichnung schon.
+>
+> 🔴 **DIE PFLICHT WAR KONSTRUKTIV NICHT ERFÜLLBAR, UND DAS HATTE NIEMAND BENANNT.**
+> `0.89.0` hat richtig aufgeschrieben, eine Gegenzeichnung sei die Handlung einer
+> **zweiten Rolle** und ein Werkzeug, das sie ausfüllt, fälsche sie. **Was fehlte, ist die
+> Folge: An diesem Framework arbeitet EINE Person.**
+> ➡️ *Eine Pflicht, die niemand erfüllen kann, ist ein Befund über ihre Formulierung.*
+> 🔴 **Das ist die Bauform *die Regel mit leerer Schnittmenge*** (D-189, `K-72`) – bisher
+> an einer Testzelle gemessen, hier **an einer Governance-Regel**.
+>
+> 🟢 **DER ZUSCHNITT IST GEMESSEN, NICHT GEWÄHLT.** Über den Gesamtbestand geben zwei
+> Zählregeln zwei Ergebnisse – **13/45/64 von 122** gegen **17/47/61 von 125**. Über die
+> **zehn** Abnahmeprotokolle geben **beide 3/2/5**.
+> ➡️ *Ein Gegenstand, der unter zwei Zählregeln derselbe ist, ist der richtige Gegenstand.*
+>
+> 🆕 **WAS IST DIE UNTERSCHRIFT? DIE ZEILE SAGT, WAS – DER COMMIT SAGT, WER** (D-319, E5).
+> 🔴 **Eine Fehleinschätzung war dabei zu berichtigen:** Die Vorbereitung hatte gesagt, ein
+> Werkzeug **könne** den Commit nicht setzen. **Es kann** – git ist hier mit der Identität
+> des Owners konfiguriert, und beide vorangegangenen Releases sind so entstanden.
+> **Genau deshalb darf es ihn für die Gegenzeichnung nicht setzen:** Die Fälschung wanderte
+> sonst nur aus der Markdown-Zeile in die Commit-Metadaten.
+> ➡️ *So wird sie **unmöglich** statt nur verboten.*
+> ⚠️ **Preis, gemessen:** Die Commits sind **nicht signiert** (`%G?` liefert `N` für jeden);
+> die Unterschrift ist so stark wie der Schreibzugriff. **`K-107`** führt es auf ein
+> signiertes Tag für `1.0.0` weiter – und nennt den Nebenbefund, daß die Historie
+> **Klarnamen in 109 Releases rückwirkend** führt, öffentlich ab der Veröffentlichung.
+>
+> 🔴 **DER EIGENE VORSCHLAG ZU E3 IST IM DURCHGANG GEFALLEN.** `CR-2026-127` schlug vor, die
+> offenen `<TBD>` in den übrigen Protokollen zu **entfernen**. Gemessen: **45 Träger in
+> DREI verschiedenen Tabellenformen**, und alle sind **Chronik** (D-273). Ein Sweep darüber
+> ist die Bauform aus D-277. **Das `<TBD` ist dort richtig** – es hält fest, daß einmal eine
+> Gegenzeichnung vorgesehen war. ➡️ *Wer eine Aufzeichnung nachträglich glattzieht, verliert
+> genau die Angabe, die sie trägt.* 🟢 **Die Abgrenzung steht jetzt EINMAL an den drei
+> Stellen, an denen sie gilt** – `checklists/11`, `tests/protocols/README.md`, `RACI.md`.
+>
+> 🆕 **PRÜFUNG 80 WAR BEIM ERSTEN LAUF ROT ÜBER GENAU DIE SIEBEN.** Fünf Einheiten;
+> **Gegenprobe `80b` ist die, die man weglassen würde, und sie trägt den ganzen Zuschnitt**:
+> Ein offenes `<TBD>` in einem **Arbeitsprotokoll** muß unbeanstandet bleiben. Ohne sie wäre
+> D-319 eine Behauptung im Kopfkommentar statt eine gemessene Eigenschaft.
+>
+> 🔴 **WAS JETZT NOCH ZWISCHEN DIESEM STAND UND `1.0.0` LIEGT, IST KEINE ARBEIT MEHR.**
+> Drei Prüfpunkte von `FW-CL-11` brauchen einen Menschen: die **manuelle Stichprobe**, die
+> **Aktualitätsprüfung gegen die Clientdokumentation** (Netzzugriff – außerhalb des
+> freigegebenen Arbeitsbereichs) und die **dokumentierte Freigabe**. Alles dafür liegt in
+> `tests/protocols/2026-09-23-freigabelauf-1.0.0-vorbereitung.md`.
 
 > 🟢 **ERLEDIGT MIT `0.88.1` – der Kopfblock bleibt als Herleitung stehen:**
 > 🟢 **DER VORTRAG AM 24.09. IST VORBEREITET, UND `KOOLIE` TRÄGT SEINE NAMENSABLEITUNG**
@@ -581,6 +630,75 @@ aussehen und an einem Präparationswächter hängen.
 | `0.78.2` | **`K-80` entschieden** | 🔴 **Ein einzelnes `CR` ohne folgenden `LF` nimmt git die Normalisierung** – 14 Träger, und es waren genau die 14, die git nicht normalisiert hat (D-217). **Prüfung 66** liest seither **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt. 🟢 **Die Übergabe steht seither im Release-Commit**, ohne Antragsnummer; **Prüfung 67** rechnet die Titelzeile gegen `VERSION` (D-216) |
 | `0.79.0` | **Meßtag Bündel 4**, 50 Läufe, 61,19 USD – **acht von neunzehn** | 🔴 **`HEAD` stand an allen 38 Bäumen auf `main`.** Der Vorbedingungsdurchgang hatte geprüft, ob der Branch **da** ist; der Lauf braucht, daß er **ausgecheckt** ist – *ein Vorhandensein belegt sich selbst, ein Zustand nicht* (D-218). 🔴 **`{ command: "git branch -D", prefix: "git branch" }` sperrt über sein Präfix auch das bloße Auflisten** – 25 Abweisungen in 23 von 50 Läufen; **Prüfung 68** (D-219). 🟢 **Der Zuschnitt braucht neben Vollständigkeit eine AUSRICHTUNG** (D-221). 🟢 **Der Meßapparat liegt seither versioniert im Kern** (D-222) |
 | `0.79.1` | Der Aufräumer stirbt an seiner Erfolgsmeldung | **Ein Werkzeug prüft seinen BERICHTSWEG in beiden Kodierungsumgebungen, nicht nur seinen Lauf** (D-223). Das Skript war nie in der zweiten gefahren; eines von siebzehn betroffen |
+
+---
+
+### 0.53 `0.91.0`: Die Gegenzeichnung – eine Rollenfrage, kein Arbeitsposten
+
+> 🟢 **`AP11` ist abgeschlossen.** `CR-2026-127` E1 bis E5, **D-319**, **Prüfung 80**,
+> `K-107` neu. **Ohne Kontingent, ohne Lauf an einem Client.**
+
+#### 🔴 Der Befund war gebucht – und unvollständig
+
+`0.89.0` hat den Posten nicht gefahren und den Grund als **Abgrenzung** aufgeschrieben:
+*„Eine Gegenzeichnung ist die Handlung einer zweiten Rolle."* **Das trägt.** Was dort
+fehlte, ist die Folge: **Es gibt hier keine zweite Rolle.** Die Pflicht war nicht
+unerledigt, sondern **unerfüllbar** – und das ist ein Befund über ihre Formulierung, nicht
+über ihre Bearbeitung.
+
+#### 🟢 Der Zuschnitt, gemessen über zwei Zählregeln
+
+| Menge | Regel A (nur Überschrift) | Regel B (auch Tabellenzeile) |
+|---|---|---|
+| Gesamtbestand | 13 / 45 / 64 von **122** | 17 / 47 / 61 von **125** |
+| die zehn Abnahmeprotokolle | **3 / 2 / 5** | **3 / 2 / 5** |
+
+➡️ *Ein Gegenstand, der unter zwei Regeln derselbe ist, ist der richtige.* Der
+Gesamtbestand ist es nicht – er gibt zwei Zahlen, und keine ist nachprüfbar falsch.
+
+#### 🔴 Zwei eigene Aussagen sind in diesem Durchgang gefallen
+
+| Aussage | nachgesehen |
+|---|---|
+| `CR-2026-127` E3: *„die offenen `<TBD>` entfernen"* | 🔴 **45 Träger, drei Tabellenformen, alle Chronik.** Bleibt stehen (D-273, D-277) |
+| *„ein Werkzeug kann den Commit nicht setzen"* | 🔴 **Falsch. Es kann** – und genau deshalb darf es nicht |
+
+*Auch eine Aussage, die man eine Stunde vorher selbst geschrieben hat, gehört an ihrem
+Gegenstand nachgesehen.*
+
+#### 🆕 Die Unterschriftsform (D-319, E5)
+
+| Träger | Aussage |
+|---|---|
+| die **Zeile** im Protokoll | **WAS** gegengezeichnet wurde – Rolle, Datum, Umfang |
+| der **Commit** | **WER** – die Identität des Owners, gesetzt von ihm |
+
+**Der Umfang steht so da, wie er genannt wurde:** *„Protokoll vollständig gelesen"*, und
+keine Silbe mehr. *Eine Vorbereitung, die dem Gegenzeichner Prüfungen zuschreibt, die er
+nicht genannt hat, ist dieselbe Fälschung mit besseren Manieren.*
+
+#### ⚠️ Der Durchgang vor dem Commit trägt sich zum sechsunddreißigsten Mal
+
+| Zahl oder Aussage | zuerst genannt | nachgezählt |
+|---|---|---|
+| E3 | „entfernen" | 🔴 **stehenlassen** |
+| der Commit | „kann ein Werkzeug nicht" | 🔴 **kann es** |
+| Protokolle gesamt | „122" | ⚠️ **125**, und die Zahl hängt an der Regel |
+| die zehn Abnahmeprotokolle | 3 / 2 / 5 | 🟢 **3 / 2 / 5** unter **beiden** Regeln |
+| Prüfungen | – | 🟢 **80** |
+
+#### 🔴 Wiederaufnahmepunkt
+
+1. 🔴 **Die Abnahmesitzung — und sie ist auf DREI Punkte geschrumpft.** Die
+   Gegenzeichnung ist weg. Es bleiben: **manuelle Stichprobe**, **Aktualitätsprüfung
+   gegen die Clientdokumentation** (braucht Netzzugriff) und die **dokumentierte
+   Freigabe**. Vorbereitet in
+   `tests/protocols/2026-09-23-freigabelauf-1.0.0-vorbereitung.md`.
+2. ⚠️ **`K-107` vor der Veröffentlichung entscheiden:** signiertes Tag für `1.0.0`? Und
+   die Historie führt **Klarnamen in 109 Releases** – öffentlich ab dem Publizieren, und
+   danach nicht mehr rückholbar.
+3. ⚠️ **`K-100` bleibt teurer als gebucht** – ohne Statusvokabular bleibt die Zahl der
+   offenen Klärungspunkte auch nach der Verschiebung unzählbar.
 
 ---
 
@@ -2621,7 +2739,7 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.90.0**, alles gemergt, **ein ausdrücklich offener Antrag** (`CR-2026-127`, die Rollenfrage der Gegenzeichnung), **kein Restbranch**,
+`main` = **0.91.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
 Kodierungsumgebungen grün – **436 Einheiten** (428 + 8 aus Prüfung 78 und 79), und der
 **zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede in 468 Zeilen.**
@@ -2790,7 +2908,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/koolie` | `main` = **0.90.0**, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
+| Framework | `devpacks/koolie` | `main` = **0.91.0**, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
 | Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `0.88.0` gehoben (2026-09-22) – über 34 Releases**, Overlay **`0.3.0`**, Kern unter `.koolie/core/`. **61 Träger von Hand nachgezogen.** Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**, belegt mit einem **Entlastungslauf** gegen das Sicherungsbundle. 🔴 **Neun der zehn Fehler nach dem Heben kamen aus dem VERSIONSSPRUNG, nicht aus der Umbenennung:** sieben Pflichtplatzhalter waren durch ihren **Wert** ersetzt statt gebunden (D-160, seit `0.63.0`), `autoMemoryEnabled` fehlte in der Berechtigungsdatei (D-155), und die Overlay-Version stand in **drei** Trägern – *der Validator meldet sie nacheinander*. ⚠️ **Der verbliebene Fehler ist Projektarbeit** (gesperrter Begriff in `CHANGELOG.md`) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.88.0` gehoben** (2026-09-22), Overlay **`0.88.0`**, Kern unter `.koolie/core/` – **77 Träger von Hand nachgezogen**, Validator `--strict-overlay` **0 Fehler / 1 Warnung**. ⚠️ **Die Warnung ist die Laufzeitfassung des Overlays: von 5.963 auf 6.024 von 6.000 Zeichen gewachsen**, weil `project-overlay` acht Zeichen länger geworden ist – **benannt, nicht geändert** (`K-88`: eine Kürzung wäre ein Eingriff in den Meßgegenstand). 🔴 **Drei Projektdateien nennen kein `leitwerk`, sondern `project-overlay/`** – *die Migrationsfläche von D-270 ist gegen eine Umbenennung OHNE Umzug gemessen.* 🟢 **Zwei Nennungen bleiben bewußt stehen** (`tools/praeparationen.py`, `tools/mentorenblatt/PRAEPARATIONEN.md`): Sie nennen eine Belegablage, und die wird nicht umbenannt (D-300). *Zum Stand von `0.84.0`:* – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |

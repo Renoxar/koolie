@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-11` |
-| Version | `0.2.3` |
+| Version | `0.3.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jedem Framework-Release (auch Patch-Releases) |
@@ -46,6 +46,7 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 - [ ] **MUSS** (ab 1.0.0, D-11) Kein Testfall des Katalogs steht auf Ergebnisstatus `offen`; jeder trägt `bestanden`, `fehlgeschlagen (Referenz)` oder `nicht anwendbar (Begründung)`.
 - [ ] **MUSS** Skill-Testfälle (`TESTS.md` je Skill) für alle geänderten Skills erneut ausgeführt.
 - [ ] **MUSS** Hook- und Validierungsskripte laufen fehlerfrei (Selbsttest der Skripte).
+- [ ] **MUSS** Jedes **Abnahmeprotokoll des Testkatalogs** trägt einen Abschnitt *Gegenzeichnung* ohne offenes `<TBD>` (**Prüfung 80**). 🔴 **Die Pflicht gilt ausschließlich für diese Protokolle** – Dateiname `JJJJ-MM-TT-FW-<Klasse>-<NN>.md` –, nicht für Arbeits- und Meßprotokolle (D-319, `CR-2026-127` E1). *Eine Gegenzeichnung bestätigt eine Abnahme; ein Meßprotokoll trägt seinen Beleg in sich.* ⚠️ **Ist keine zweite Rolle vorhanden, wird selbst gegengezeichnet und der Abschnitt weist das ausdrücklich als „Selbstgegenzeichnung“ aus** – die Zusage der zweiten Rolle ist damit zurückgenommen, nicht erfüllt.
 - [ ] **SOLL** Mindestens ein vollständiger Durchlauf des Standardarbeitsablaufs auf dem Übungsrepository (M1 → M2 → M3 → M4) ohne Regelverstoß.
 
 ### Abschluss

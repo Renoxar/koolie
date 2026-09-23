@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 79, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 80, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -7134,6 +7134,97 @@ sonde("79c", "Zwei gleiche Dateien ohne Lizenztext werden gemeldet - Gleichheit 
 gegenprobe("79a", "Der ausgelieferte Bestand laeuft durch - beide Stellen, ein Inhalt, "
                   "und dieser Inhalt ist die GPL-3.0",
            None, M79_UNGLEICH)
+
+
+# --- Pruefung 80: Die Gegenzeichnung der Abnahmeprotokolle (CR-2026-127, D-319) ----
+#
+# DREI SONDEN UND ZWEI GEGENPROBEN. Die zweite Gegenprobe ist die, die man weglassen
+# wuerde, und sie traegt die ganze Entscheidung: Ein offenes <TBD> im
+# Gegenzeichnungsabschnitt eines ARBEITSPROTOKOLLS muss unbeanstandet bleiben. Ohne sie
+# waere der Zuschnitt aus D-319 eine Behauptung im Kommentar statt eine gemessene
+# Eigenschaft - und die Pruefung verlangte still die Gegenzeichnung von 125 Protokollen
+# statt von zehn.
+#
+# 🔴 JEDE SONDE PRUEFT IHRE EIGENE FUNDSTELLE, nicht irgendeine Meldung. Der
+# ausgelieferte Bestand traegt sieben frisch gezeichnete Abnahmeprotokolle; eine Sonde,
+# die nur auf den Meldungstext prueft, bestuende auch ohne Praeparation. Der Erwartungs-
+# text nennt deshalb den DATEINAMEN des Opfers - dieselbe Bauform wie bei Sonde 75a.
+M80_FEHLT = "2026-09-10-FW-KO-02.md: kein Abschnitt"
+M80_TBD = "2026-09-10-FW-KO-02.md: der Abschnitt `Gegenzeichnung` trägt noch ein offenes"
+M80_ANKER = "kein einziges Abnahmeprotokoll des Testkatalogs gefunden"
+
+P80_OPFER = ".koolie/core/tests/protocols/2026-09-10-FW-KO-02.md"
+P80_ARBEITSPROTOKOLL = ".koolie/core/tests/protocols/2026-09-13-B06-gegenpruefung.md"
+
+
+def _80_abschnitt_entfernen(root: str) -> None:
+    """Sonde: einem Abnahmeprotokoll fehlt die Gegenzeichnung."""
+    pfad = P(root, *P80_OPFER.split("/"))
+    text = lies(pfad)
+    anfang = text.find("## Gegenzeichnung")
+    if anfang < 0:
+        raise Praeparationsfehler(
+            "2026-09-10-FW-KO-02.md: kein Abschnitt 'Gegenzeichnung' gefunden - die "
+            "Sonde zu Pruefung 80 haette nichts zu entfernen")
+    schreib(pfad, text[:anfang].rstrip("\r\n") + "\r\n")
+
+
+def _80_tbd_zurueck(root: str) -> None:
+    """Sonde: der Abschnitt ist da und traegt wieder ein offenes <TBD>."""
+    pfad = P(root, *P80_OPFER.split("/"))
+    text = lies(pfad)
+    anfang = text.find("## Gegenzeichnung")
+    if anfang < 0:
+        raise Praeparationsfehler(
+            "2026-09-10-FW-KO-02.md: kein Abschnitt 'Gegenzeichnung' gefunden")
+    schreib(pfad, text + "\r\n| Zweitpruefung | `<TBD: Rolle>` | | |\r\n")
+
+
+def _80_anker_entfernen(root: str) -> None:
+    """Sonde: kein Traeger passt mehr auf das Namensmuster der Abnahmeprotokolle."""
+    ablage = P(root, *".koolie/core/tests/protocols".split("/"))
+    umbenannt = 0
+    for name in sorted(os.listdir(ablage)):
+        if "-FW-" in name and name.endswith(".md"):
+            os.rename(os.path.join(ablage, name),
+                      os.path.join(ablage, name.replace("-FW-", "-fw", 1)))
+            umbenannt += 1
+    if not umbenannt:
+        raise Praeparationsfehler(
+            "tests/protocols/: kein Traeger mit '-FW-' im Namen - die Sonde zum "
+            "verlorenen Anker haette nichts umzubenennen")
+
+
+def _80_arbeitsprotokoll_offen(root: str) -> None:
+    """Gegenprobe: ein ARBEITSPROTOKOLL mit offenem Abschnitt - der Zuschnitt."""
+    pfad = P(root, *P80_ARBEITSPROTOKOLL.split("/"))
+    text = lies(pfad)
+    if "<TBD" not in text:
+        raise Praeparationsfehler(
+            "2026-09-13-B06-gegenpruefung.md: traegt kein offenes <TBD> mehr - die "
+            "Gegenprobe zum Zuschnitt von Pruefung 80 haette keinen Gegenstand")
+    schreib(pfad, text + "\r\n| Zweitpruefung | `<TBD: Rolle>` | | |\r\n")
+
+
+sonde("80a", "Fehlt einem Abnahmeprotokoll die Gegenzeichnung, wird es mit Dateinamen "
+             "gemeldet - fuenf von zehn hatten den Abschnitt nie",
+      _80_abschnitt_entfernen, M80_FEHLT)
+
+sonde("80b", "Ein offenes <TBD> im Abschnitt wird gemeldet - eine Gegenzeichnung ist "
+             "eine Handlung und kein Feld, das ein Werkzeug fuellt",
+      _80_tbd_zurueck, M80_TBD)
+
+sonde("80c", "Passt kein Traeger mehr auf das Namensmuster, meldet Pruefung 80 den "
+             "verlorenen Anker, statt still ueber null Protokolle zu bestehen",
+      _80_anker_entfernen, M80_ANKER)
+
+gegenprobe("80a", "Der ausgelieferte Bestand laeuft durch - alle zehn Abnahmeprotokolle "
+                  "tragen ihren Abschnitt ohne offenes <TBD>",
+           None, M80_FEHLT)
+
+gegenprobe("80b", "Ein offenes <TBD> in einem ARBEITSPROTOKOLL bleibt unbeanstandet - "
+                  "das ist der Zuschnitt aus D-319 und nicht bloss seine Behauptung",
+           _80_arbeitsprotokoll_offen, "B06-gegenpruefung.md: der Abschnitt")
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
