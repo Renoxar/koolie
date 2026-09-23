@@ -28,8 +28,8 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.2.0** | `0.3.3` | 2026-09-23 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.2.0** | `1.1.0` | 2026-09-23 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.3.0** | `0.3.3` | 2026-09-23 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.3.0** | `1.1.0` | 2026-09-23 |
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`
@@ -44,6 +44,13 @@ erste von **zwei** Stellen. Gemessen am 2026-09-23 im Vorbedingungsdurchgang von
 beiden übernehmenden Projekten trugen weiter `1.0.0` neben einer `VERSION` `1.0.1`.
 ➡️ ***Wer eine Liste nach dem Heben fortschreibt, schreibt sie an einer Stelle fort und
 liefert sie an zwei.***
+
+🔴 **UND DAS HEBEN ENDETE BIS `1.3.0`, BEVOR SEIN ERGEBNIS DAUERHAFT WAR** (D-343).
+Die vier Handgriffe von Schritt 2 nannten das **Committen im übernehmenden Projekt**
+nicht. Gemessen beim Abschluß von `1.2.0`: In **beiden** Projekten trug der jüngste
+Commit `VERSION` `1.0.1`; die Hebung auf `1.1.0` ist nie committet worden. ➡️ ***Ein
+Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist, liefert einen Zustand
+und keinen Stand.*** Schritt 2 trägt seither einen fünften Handgriff.
 
 🟢 **Deshalb nennt diese Liste den ZIELSTAND, bevor gehoben wird.** Schritt 1 des
 Verfahrens schreibt sie fort, Schritt 2 hebt – die Kopie trägt dann denselben Stand wie

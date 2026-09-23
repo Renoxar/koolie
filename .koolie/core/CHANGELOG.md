@@ -2,6 +2,130 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.3.0] - 2026-09-23
+
+**Die Erhebung zu `openai-codex` - der Client, dessen Wurzelanweisung eine Datei daneben
+ersetzt** (`CR-2026-132` E1 bis E5, **D-341** bis **D-345**, **Pruefung 85**, `K-115`
+geklaert, `K-116` und `K-117` neu). Ein MINOR-Release ohne Kontingent. Der Posten `openai-codex`
+bekommt damit seine zweite Nummer: `1.3.0` ist die Erhebung, `1.4.0` der Bau.
+
+> 🟢 **ZEHN MESSUNGEN AM PROMPT-EINGANG, SECHS DAVON MIT GEGENPROBE, NULL KONTINGENT**
+> (D-344). `codex debug prompt-input` gibt die Entwickler- und Nutzernachrichten aus, die
+> der Client der naechsten Anfrage voranstellt - **ohne eine Anfrage zu stellen.** Das ist
+> bei diesem Client die Entsprechung der Mitschrift, mit der `0.86.0` das Pack
+> `devin-desktop` gemessen hat, **und es ist billiger:** die Mitschrift entsteht aus einem
+> Lauf, dieser Ausdruck aus keinem. 🔴 **An einer Stelle ist es auch schaerfer:** Die
+> Verdraengung der Wurzel-Anweisung ist an einer **Abwesenheit** im Prompt erkennbar - ein
+> Lauf haette sie nur gezeigt, wenn das Modell zufaellig auf die fehlende Regel gestossen
+> waere. ➡️ *Ein Vorhandensein belegt sich selbst, ein Fehlen nicht* - hier laesst sich
+> das Fehlen zum ersten Mal direkt ablesen.
+>
+> 🔴 **DREI BEFUNDE AENDERN DIE BAUFORM DES PACKS, NICHT SEINEN INHALT - UND DESHALB
+> RUECKT DER BAU AUF `1.4.0`** (D-341).
+> 🔴 **(1) EINE DATEI NEBEN DER WURZEL-ANWEISUNG VERDRAENGT SIE VOLLSTAENDIG.** Gemessen
+> mit Gegenprobe: mit ihr steht die Wurzel-Anweisung des Frameworks in **keiner**
+> Nachricht der Sitzung, ohne sie steht sie darin. ➡️ ***Eine Wurzel-Anweisung, die eine
+> ungepruefte Datei im selben Verzeichnis ersetzen kann, ist keine Ebene 1 - sie ist ein
+> Standard.***
+> 🔴 **(2) DIE GESAMTE PROJEKTLOKALE SCHICHT LAEDT NUR BEI EINGETRAGENEM VERTRAUEN** -
+> Konfiguration, Hooks und Exec-Policies, und der Eintrag steht in der
+> **Benutzer**konfiguration des Arbeitsplatzes. A/B gemessen mit zwei
+> Benutzerverzeichnissen und identischem Projekt. *Ein versionierter Traeger, der nicht
+> laedt, traegt nichts.* 🔴 **UND SIE KANN LOCKERN:** `approval_policy = "never"` und der
+> Sandkastenmodus ohne Schranken im **Projekt** schlagen den **Benutzer**standard - das
+> gemessene Spiegelbild von `B9`.
+> 🔴 **(3) DIE PFADRECHTESCHICHT KENNT KEINE MUSTER.** Ihre Schluessel muessen absolute
+> Pfade, `~/`-Pfade oder Sonderziele sein; die Kernzusage **B3** verlangt genau Muster
+> (`.env`, `*.pem`, `*.key`, `secrets/**`). 🔴 **Und auf diesem Arbeitsplatz kann der
+> Sandkasten `deny`-Leserechte gar nicht durchsetzen - der Client bricht ab, statt
+> ungesandboxt zu laufen.**
+> ➡️ ***Ein Pack, das vor diesen drei Entscheidungen entsteht, entsteht zweimal.***
+>
+> 🔴 **DER EIGENE PLAN HATTE DREI ZIELANGABEN, DIE IHR RELEASE UEBERLEBT HABEN** (D-342).
+> `docs/ROADMAP.md` fuehrt drei Abschnitte der Form *"Geplant: ... - Ziel-Release X"*, und
+> **alle drei** nannten eine Version, die die Gegenwart ueberholt hatte: die Umbenennung
+> auf `~0.68.0` (erledigt mit `0.88.0`, und der Abschnitt hiess seit **fuenfzehn**
+> Releases "Geplant"), `openai-codex` auf `1.1.0` (waehrend die **Releasetabelle derselben
+> Datei** ihn auf `1.3.0` fuehrte, rund 1.280 Zeilen entfernt) und die Projekt-Overlays
+> auf `1.2.0` (ausgeliefert, Posten nicht gefahren). ➡️ ***Eine Zielangabe ist eine Zahl,
+> die vor ihrem Gegenstand geschrieben wird*** - die Bauform von Pruefung 83, hier an der
+> **Planseite** derselben Datei statt an der Chronikseite. **Die Ursache ist gemessen:**
+> Die Verschiebungen sind je einzeln ausgewiesen worden (D-127, D-339), und **keine** hat
+> die Ueberschrift angefasst. ➡️ *Wer eine Zahl an zwei Stellen fuehrt, pflegt eine.*
+> 🆕 **PRUEFUNG 85** haelt jede Zielangabe gegen `.koolie/core/VERSION`, mit zwei Sonden
+> und **zwei** Gegenproben. 🔴 **Die zweite Gegenprobe ist die, die man weglassen wuerde:**
+> Eine Zielangabe in der **Zukunft** muss durchlaufen - sonst maesse die Pruefung die
+> Schreibweise und nicht die Sache. ⚠️ **Grenze, benannt: sie misst die ZIELANGABE, nicht
+> den STAND des Postens** (`K-116`) - und genau das zeigt der erste Fall: Den erledigten
+> Abschnitt hat sie **aus dem falschen Grund** gefangen, weil seine Zahl zufaellig auch
+> veraltet war.
+>
+> 🔴 **EIN BEFUND DIESES DURCHGANGS HAT SICH ALS MESSFEHLER ERWIESEN, UND ER BLEIBT
+> GEBUCHT** (D-345). `V4` meldete, die Word-Fassung stehe auf `v1.1.0`, waehrend
+> `VERSION` auf `1.2.0` stand - ein dritter Preis fuer `K-110`, mit Decision Record.
+> 🟢 **Es war falsch:** `build/out/` fuehrt `Koolie_v1.2.0_claude-code.docx` und
+> `Koolie_v1.2.0_devin-desktop.docx`; der Verfahrensschritt aus D-332 hat gehalten.
+> 🔴 **Die Ursache ist gemessen: Die Verzeichnisliste war auf zehn Zeilen beschnitten**,
+> und die beiden Traeger standen auf Zeile elf und zwoelf. Die Liste war nicht falsch -
+> sie war **kuerzer als ihr Gegenstand**, und die Abwesenheit einer Zeile wurde als
+> Abwesenheit einer Datei gelesen.
+> ➡️ ***Eine Messung, die ihre Ausgabe beschneidet, misst die Beschneidung.***
+> 🔴 **Und der Satz, der es haette verhindern muessen, steht in demselben Release:**
+> *Ein Vorhandensein belegt sich selbst, ein Fehlen nicht* - hier hat er gegen die eigene
+> Messung gearbeitet. 🟢 **Gefunden hat es der Bau selbst**, als Schritt 3 die
+> Erzeugnisse schrieb. ➡️ ***Der Vorgang findet, was seine Beschreibung uebersieht.***
+> **Gebucht statt gestrichen**, wie D-305 denselben Fall schon einmal gebucht hat - und
+> mit einem Zuschnitt ueber den Einzelfall hinaus: **eine Zaehlung gehoert gezaehlt,
+> nicht gelistet.**
+>
+> 🟢 **`K-115` IST BEANTWORTET, UND SCHRITT 2 VON ABSCHNITT 4.1 BEKOMMT DEN FUENFTEN
+> HANDGRIFF: IM UEBERNEHMENDEN PROJEKT COMMITTEN** (D-343). Der Punkt war mit `1.2.0`
+> vorgemerkt und bewusst nicht eingetragen - ein Eintrag waere ein Kerneingriff **nach**
+> der Marke gewesen (D-333). Die beiden anderen Fragen sind mit **nein** beantwortet: Der
+> Git-Stand eines Projekts ausserhalb dieses Repositoriums ist fuer keine Pruefung
+> erreichbar, und die Bestandsliste fuehrt weiter die Version und nicht den Commit.
+>
+> 🔴 **UND DAS HEBEN SELBST HAT EINEN BEFUND GELIEFERT, DER MIT DEM POSTEN NICHTS
+> ZU TUN HAT** (`K-117`). In `devpacks/otp-generator` liegen **525** Kerndateien im
+> Arbeitsbaum und **483** im Versionierten - **42 fehlen**, weil die projekteigene
+> `.gitignore`-Zeile `build/` auch `.koolie/core/build/` trifft; betroffen ist die
+> **gesamte Quelle des Hauptdokuments**. Im zweiten Projekt tritt es nicht auf.
+> ➡️ *Ein Kern, der ausgeliefert, aber nicht versioniert wird, ist beim naechsten
+> Klonen dieses Projekts unvollstaendig* - und der Validator sieht es nicht, weil er
+> den Arbeitsbaum misst. ⚠️ **Der Eintrag hat zugleich den benannten Preis von D-330
+> faellig gemacht:** Er ist ein Kerneingriff NACH dem Heben, also musste erneut
+> gehoben werden. *Heben und Commit gehoeren als Paar.*
+
+### Geaendert
+
+- `docs/ROADMAP.md`: drei `Geplant`-Abschnitte berichtigt - die Umbenennung heisst jetzt
+  *"Erledigt mit 0.88.0"*, `openai-codex` steht auf `1.4.0`, die Projekt-Overlays auf
+  `1.5.0`. Releasetabelle um `1.3.0` ergaenzt, `1.4.0` bis `1.6.0` gerueckt,
+  Standueberschrift auf `1.3.0`. Neuer Abschnitt *"Was die Erhebung von 1.3.0 gemessen
+  hat"* mit allen zehn Befunden.
+- `governance/RELEASE_PROCESS.md` Abschnitt 4.1: Schritt 2 traegt den fuenften Handgriff;
+  der Absatz darunter nennt den gemessenen Anlass.
+- `checklists/11-framework-release.md`: derselbe Handgriff im Pruefpunkt; der Pruefpunkt
+  zu den Erzeugnissen nennt seinen zweiten Ausfall.
+- `governance/DECISION_LOG.md`: **D-341** bis **D-345**, `K-115` (geklaert) und `K-116`
+  (offen); `K-110` im Zuschnitt verengt.
+- `tests/scripts/validate-framework.py`: **Pruefung 85**.
+- `tests/scripts/probe-pruefungen.py`: vier Einheiten zu Pruefung 85.
+
+### Migrationshinweise
+
+Keine. Kein Overlay-Traeger aendert seine Gestalt; die Installation erzeugt dieselben
+Artefakte wie mit `1.2.0`.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 85 misst die Zielangabe, nicht den Stand des Postens** (`K-116`).
+- **Kein Client Pack `openai-codex`.** Das Framework kennt weiterhin zwei Packs; dieses
+  Release hat die Erhebung gefahren, nicht den Bau (D-341).
+- **Die Befunde E1 bis E10 sind am Prompt-Eingang gemessen, nicht an einem Lauf.** Was die
+  Engine **durchsetzt**, steht damit nicht fest; `[TECHNISCH]` bleibt an eine reale
+  Installation gebunden (D-344).
+
 ## [1.2.0] - 2026-09-23
 
 **Die Chronik, die ihr eigenes Release nicht zu Ende zaehlt - und eine Vorlage, die nur

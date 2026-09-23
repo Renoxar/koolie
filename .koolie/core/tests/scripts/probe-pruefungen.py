@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 84, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 85, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -8015,6 +8015,121 @@ def sonden_vorlage_kein_pack() -> None:
 buendel(sonden_vorlage_kein_pack,
         "Pruefung 84 haelt die Vorlage aus der Packmenge heraus, und die Gegenprobe "
         "misst die Ausnahme selbst und nicht nur die Meldung")
+
+
+# --- Pruefung 85: eine Zielangabe ueberlebt ihr Release nicht (CR-2026-132) --------
+#
+# VIER EINHEITEN, UND DIE ZWEITE GEGENPROBE IST DIE, DIE MAN WEGLASSEN WUERDE.
+#   85a (Gegenprobe) - die berichtigte ROADMAP laeuft durch, und die Pruefung ist dabei
+#                      nachweislich gelaufen.
+#   85b (Gegenprobe) - 🔴 EINE ZIELANGABE IN DER ZUKUNFT MUSS DURCHLAUFEN. Ohne diese
+#                      Einheit koennte die Pruefung jede Ueberschrift melden und saehe
+#                      dabei genauso gruen aus wie eine, die die Sache misst. Sie
+#                      traegt zugleich die benannte Grenze: Ein Abschnitt, dessen Ziel
+#                      in der Zukunft liegt, kann laengst erledigt sein und kommt durch
+#                      (K-116).
+#   85a (Sonde)      - eine Zielangabe, die VERSION erreicht hat, wird gemeldet - der
+#                      gemessene Fall aus dem Vorbedingungsdurchgang von 1.3.0.
+#   85b (Sonde)      - der verlorene Anker: verschwindet die Zielangabe aus der
+#                      Ueberschrift, meldet die Pruefung es, statt leise zu bestehen
+#                      (D-23). Das ist zugleich die Probe auf D-124: Ein Posten ohne
+#                      Zahl bleibt liegen - und entzoege sich dieser Pruefung.
+M85_ERREICHT = "ist erreicht. Entweder ist der Posten"
+M85_OHNE_ZIEL = "nennen kein Ziel-Release"
+M85_ANKER = "keine Ueberschrift '### Geplant: …' gefunden"
+
+P85_ROADMAP = ".koolie/core/docs/ROADMAP.md"
+P85_VERSION = ".koolie/core/VERSION"
+
+
+def _85_ueberschrift(text: str) -> str:
+    """Die erste Planueberschrift mit Zielangabe - ausgerechnet, nicht gewusst."""
+    for zeile in text.splitlines():
+        if zeile.startswith("### Geplant:") and "Ziel-Release" in zeile:
+            return zeile
+    raise Praeparationsfehler(
+        "Sonden zu 85: keine Ueberschrift '### Geplant: … Ziel-Release …' in %s - die "
+        "Sonden haben ihren Gegenstand verloren" % P85_ROADMAP)
+
+
+def sonden_zielangabe() -> None:
+    """Wirkungsnachweis zu Pruefung 85."""
+    root = kopie()
+    try:
+        rpfad = P(root, *P85_ROADMAP.split("/"))
+        rtext = lies(rpfad)
+        stand = lies(P(root, *P85_VERSION.split("/"))).strip()
+        kopf = _85_ueberschrift(rtext)
+
+        # --- Gegenprobe 85a: die berichtigte ROADMAP laeuft durch ------------------
+        aus = validator_ausgabe(root)
+        ok = (M85_ERREICHT not in aus and M85_OHNE_ZIEL not in aus
+              and M85_ANKER not in aus)
+        melde("GEGENPROBE", "85a", ok,
+              "Die berichtigte ROADMAP laeuft durch - jede Zielangabe eines "
+              "Planabschnitts liegt ueber %s, und die Pruefung ist dabei nachweislich "
+              "gelaufen" % stand)
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "Ziel-Release" in z)[:400])
+
+        # --- Gegenprobe 85b: EINE ZIELANGABE IN DER ZUKUNFT LAEUFT DURCH -----------
+        # 🔴 DIE EINHEIT, DIE MAN WEGLASSEN WUERDE. Ohne sie waere nicht gemessen, dass
+        # die Pruefung die SACHE prueft und nicht die Schreibweise - eine Pruefung, die
+        # jede Planueberschrift meldet, saehe an Sonde 85a genauso gruen aus.
+        haupt = int(stand.split(".")[0])
+        zukunft = re.sub(r"Ziel-Release\s*\**\s*`?~?[\d.]+`?\**",
+                         "Ziel-Release **%d.0.0**" % (haupt + 1), kopf, count=1)
+        if zukunft == kopf:
+            raise Praeparationsfehler("Gegenprobe 85b hat nichts geaendert")
+        schreib(rpfad, rtext.replace(kopf, zukunft, 1))
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "85b", M85_ERREICHT not in aus,
+              "Eine Zielangabe in der ZUKUNFT laeuft durch - die Pruefung misst die "
+              "Zahl gegen VERSION und nicht die Schreibweise. Sie traegt damit ihre "
+              "benannte Grenze: ein Abschnitt, dessen Ziel noch aussteht, kann laengst "
+              "erledigt sein und kommt durch (K-116)")
+        if M85_ERREICHT in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "Ziel-Release" in z)[:400])
+
+        # --- Sonde 85a: eine Zielangabe, die VERSION erreicht hat ------------------
+        vorher = baumhash(root)
+        erreicht = re.sub(r"Ziel-Release\s*\**\s*`?~?[\d.]+`?\**",
+                          "Ziel-Release **0.1.0**", kopf, count=1)
+        schreib(rpfad, rtext.replace(kopf, erreicht, 1))
+        if baumhash(root) == vorher:
+            raise Praeparationsfehler("Sonde 85a hat nichts geschrieben")
+        aus = validator_ausgabe(root)
+        melde("SONDE", "85a", M85_ERREICHT in aus,
+              "Ein Planabschnitt, dessen Ziel-Release erreicht ist, wird gemeldet - der "
+              "gemessene Fall: ALLE DREI Abschnitte standen so da, einer davon seit "
+              "fuenfzehn Releases (D-342)")
+        if M85_ERREICHT not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 85b: der verlorene Anker ----------------------------------------
+        ohne = re.sub(r"\s*–?\s*Ziel-Release\s*\**\s*`?~?[\d.]+`?\**", "", kopf, count=1)
+        if ohne == kopf:
+            raise Praeparationsfehler("Sonde 85b hat nichts geaendert")
+        schreib(rpfad, rtext.replace(kopf, ohne, 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "85b", M85_OHNE_ZIEL in aus,
+              "Eine Planueberschrift OHNE Zielangabe wird gemeldet - sonst waere das "
+              "Streichen der Zahl der billigste Weg, diese Pruefung loszuwerden, und "
+              "ein Posten ohne Zahl bleibt in diesem Projekt liegen (D-124, D-342)")
+        if M85_OHNE_ZIEL not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(rpfad, rtext)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_zielangabe,
+        "Pruefung 85 haelt die Zielangabe eines Planabschnitts gegen VERSION, und die "
+        "zweite Gegenprobe belegt, dass sie die Zahl misst und nicht die Schreibweise")
 
 
 if LISTE:
