@@ -924,9 +924,9 @@ Overlay zu einer Anpassung.
 2. ⚠️ **`K-110`: Kann eine Prüfung die Erzeugnisse der Lieferung überhaupt erreichen?**
    Der Preis ist in zwei aufeinanderfolgenden Releases angefallen – das Archiv mit der
    falschen Zeilenendeform (D-328), die Word-Fassung auf `v1.0.0` (D-332).
-3. ⚠️ **`K-111`: Ist die Marke der richtige Ort der Freigabe?** Beide vorhandenen
-   Marken tragen die Zeile **innerhalb der Signatur**, und seit `1.1.0` schreiben 4.1 und
-   `FW-CL-11` es vor. ⚠️ **Keine Prüfung kann es durchsetzen** – der Markentext liegt
+3. ⚠️ **`K-111`: Ist die Marke der richtige Ort der Freigabe?** **Alle drei**
+   vorhandenen Marken tragen die Zeile **innerhalb der Signatur** – `v1.1.0` als erste,
+   weil 4.1 und `FW-CL-11` es seit diesem Release vorschreiben. ⚠️ **Keine Prüfung kann es durchsetzen** – der Markentext liegt
    im Tag-Objekt, nicht im Arbeitsbaum. Drei Fragen liegen vor.
 4. 🔴 **`K-108`: Wird veröffentlicht, und was geht mit?** Unverändert offen; die
    Vorbereitung ist erledigt, die Entscheidung steht aus.
@@ -3202,6 +3202,28 @@ und der **zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede.**
 🟢 **Beide übernehmenden Projekte stehen auf `1.1.0`, und zum ersten Mal wurden sie
 VOR dem Release-Commit gehoben** (D-330) – Prüfung 82 ist in beiden grün.
 
+🟢 **DIE AUSLIEFERUNG IST VOLLZOGEN, UND DIE NACHWEISKETTE IST ZUM ERSTEN MAL
+VOLLSTÄNDIG IN DER RICHTIGEN REIHENFOLGE GELAUFEN.** Marke `v1.1.0` auf `4783f93`,
+annotiert und SSH-signiert (`Good "git" signature … ED25519`), mit der Freigabezeile
+**innerhalb der Signatur**. Das Archiv ist **aus der Marke** erzeugt und **im Erzeugnis
+nachgezählt**: **525 Dateien** – deckungsgleich mit `git ls-files` –, **518 Träger auf
+reinem LF**, kein CRLF und kein gemischter, Lizenz in Wurzel **und** Kern, **null**
+Einträge aus `build/out/`. Prüfsumme `831822b3…43a4ddc`, als Anhang am Gitea-Release,
+**vom Server zurückgeholt und gegengeprüft**.
+
+🔴 **EINE GRENZE, DIE NIRGENDS STAND UND STRUKTURELL IST: DIESE DATEI KANN IHRE EIGENE
+MARKE NICHT NENNEN.** Die Marke entsteht aus dem Commit, der die Übergabe enthält – was
+im Release-Archiv liegt, beschreibt den Stand **vor** der Auslieferung. ➡️ *Ein Träger,
+der in seinem eigenen Erzeugnis liegt, kann nicht berichten, was mit dem Erzeugnis
+geschehen ist.* **Das ist dieselbe Bauform wie `B16` in `1.0.0`** – dort blieb die
+Freigabezeile leer, weil der letzte Handgriff im Baum lag –, und sie ist hier nicht
+behebbar, sondern nur benennbar. ⚠️ **Der Absatz oben ist deshalb NACH der Auslieferung
+eingetragen worden**, in einem eigenen Commit; **kein Kernträger und kein Prüfmittel war
+darunter**, die Übergabe liegt außerhalb des Kerns (D-216, D-333), und die Abnahme von
+`1.1.0` steht unverändert. *Der Unterschied zum Fall von `1.0.1` ist genau dieser: Dort
+wurde die **Bestandsliste** nachträglich fortgeschrieben, und die erreichte die
+ausgelieferten Kopien nicht mehr.*
+
 *(Der folgende Absatz ist der Stand von `1.0.1` und bleibt als Herleitung stehen:)*
 🟢 **`1.0.0` IST DA, UND `1.0.1` BERICHTIGT SEINE ARCHIVREGEL.** Das Release stand bei **1.0.1**, alles gemergt, **kein offener Antrag, kein
 Restbranch**, Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen** über **81
@@ -3393,7 +3415,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/koolie` | `main` = **1.1.0**, Validator 0/0 über **82 Prüfungen**. 🟢 **Marken: `v1.0.0` und `v1.0.1`**, annotiert und SSH-signiert, je mit Release-Archiv und Prüfsumme als Anhang am Gitea-Release. Die Prüfvorrichtung liegt unter `.git/allowed_signers` (D-327), **nicht versioniert** |
+| Framework | `devpacks/koolie` | `main` = **1.1.0** (`4783f93`), Validator 0/0 über **82 Prüfungen**, Arbeitsbaum sauber, kein offener Branch. 🟢 **Drei Marken: `v1.0.0`, `v1.0.1` und `v1.1.0`**, annotiert und SSH-signiert, **alle drei mit Freigabezeile innerhalb der Signatur**, je mit Release-Archiv und Prüfsumme als Anhang am Gitea-Release. Die Archive liegen unter `devpacks/koolie-releases/` – `koolie-1.1.0.tar.gz`, 2,57 MB, SHA-256 `831822b3…43a4ddc`. Die Prüfvorrichtung liegt unter `.git/allowed_signers` (D-327), **nicht versioniert** |
 | Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `1.1.0` gehoben (2026-09-23), und zum ersten Mal VOR dem Release-Commit** (D-330). Overlay **`0.3.3`**, Client Pack `claude-code`. Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**; der Fehler ist Projektarbeit (gesperrter Begriff in `CHANGELOG.md`). ⚠️ **Der Overlay-Wert steht in DREI Trägern, und der Validator meldet sie nacheinander** – hier sind dafür drei Läufe angefallen |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `1.1.0` gehoben (2026-09-23), vor dem Release-Commit**, Overlay **`1.1.0`**, Validator `--strict-overlay` **0 Fehler / 1 Warnung** (die bekannte Zeichenzahl der Laufzeitfassung, `K-88`: 6.023 von 6.000). Die **31** Präparationen `UEB-01` bis `UEB-31` sind unberührt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
