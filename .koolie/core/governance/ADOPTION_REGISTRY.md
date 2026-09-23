@@ -3,11 +3,11 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REG` |
-| Version | `0.1.1` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | alle Projekte, die den Framework-Kern übernommen haben |
-| Entstehung | `CR-2026-128`, **D-322** (2026-09-23) |
+| Entstehung | `CR-2026-128`, **D-322** (2026-09-23); Verfahren und Prüfung mit `CR-2026-130`, **D-330** / **D-331** |
 | Pflicht aus | `.koolie/core/governance/RELEASE_PROCESS.md` Abschnitt 4 Punkt 4 (Auditierbarkeit) |
 
 ## 1. Wozu diese Liste da ist
@@ -28,15 +28,28 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.0.1** | `0.3.2` | 2026-09-23 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.0.1** | `1.0.1` | 2026-09-23 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.1.0** | `0.3.3` | 2026-09-23 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.1.0** | `1.1.0` | 2026-09-23 |
 
-🔴 **Diese Zeilen standen nach `1.0.1` einen halben Tag lang auf `1.0.0`, während die
-Projekte `1.0.1` trugen.** Ursache: Sie wurden **nach** dem Merge gehoben statt davor –
-und damit war `FW-CL-11` Prüfpunkt 20 (*„übernehmende Projekte informiert"*) zum
-Merge-Zeitpunkt nicht erfüllt. ➡️ *Eine Liste, die erst nach dem Release fortgeschrieben
-wird, ist beim Release falsch.* ⚠️ **Zu entscheiden: Gehört das Heben vor den
-Release-Commit, und muß `RELEASE_PROCESS.md` Abschnitt 4.1 die Reihenfolge nennen?**
+🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
+Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`
+Abschnitt 4.1 nennt die Reihenfolge, `FW-CL-11` führt dafür einen eigenen Prüfpunkt
+(D-329) – und **Prüfung 82** hält die Spalte `Framework-Version` gegen
+`.koolie/core/VERSION` (D-331).
+
+🔴 **Die Herleitung, und sie war teurer als gebucht.** Diese Zeilen standen nach `1.0.1`
+einen halben Tag auf `1.0.0`, während die Projekte `1.0.1` trugen – und das war nur die
+erste von **zwei** Stellen. Gemessen am 2026-09-23 im Vorbedingungsdurchgang von
+`1.1.0`: Das Framework hatte seine Liste berichtigt, die **ausgelieferten Kopien** in
+beiden übernehmenden Projekten trugen weiter `1.0.0` neben einer `VERSION` `1.0.1`.
+➡️ ***Wer eine Liste nach dem Heben fortschreibt, schreibt sie an einer Stelle fort und
+liefert sie an zwei.***
+
+🟢 **Deshalb nennt diese Liste den ZIELSTAND, bevor gehoben wird.** Schritt 1 des
+Verfahrens schreibt sie fort, Schritt 2 hebt – die Kopie trägt dann denselben Stand wie
+das Original. ⚠️ **Und genau darin liegt die Grenze von Prüfung 82:** Sie mißt die
+**Behauptung** dieser Zeile und nicht den Stand des Projekts. Wer die Zeile ändert, ohne
+zu heben, kommt durch (D-331).
 
 ⚠️ **Der Pfad ist der des Arbeitsplatzes und keine Adresse.** Was ein Projekt für den
 Nachweis identifiziert, ist sein Repositorium; die Pfadspalte sagt nur, wo es auf diesem
