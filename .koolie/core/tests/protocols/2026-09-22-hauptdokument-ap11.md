@@ -5,7 +5,8 @@
 | Datum | 2026-09-22 |
 | Release | `0.89.0` |
 | Änderungsantrag | `CR-2026-124` |
-| Art | Vorbedingungsdurchgang, Werkzeugberichtigung, Textarbeit an 32 Trägern, eine neue Prüfung – **keine Sitzung, kein Kontingent, kein Modelllauf** |
+| Art | Vorbedingungsdurchgang, Werkzeugberichtigung, Textarbeit, eine neue Prüfung – **keine Sitzung, kein Kontingent, kein Modelllauf** |
+| Umfang (nachgezählt 2026-09-23, `CR-2026-125`) | **36 geänderte Träger** im Release-Commit: **15** der 34 Kapitelquellen, **17** weitere Textträger, **3** Werkzeuge und `VERSION`. ⚠️ **Das Feld „Art" nannte bis dahin „Textarbeit an 32 Trägern" ohne Zählregel.** Die 32 hat einen Gegenstand – 36 minus drei Werkzeuge und `VERSION` –, aber er stand nicht daneben, und dasselbe Release hat im Durchgang vor dem Commit eine **andere** 32 als selbst erzeugt verworfen. *Eine Zahl ohne ihre Zählregel ist von einer geratenen nicht zu unterscheiden.* |
 | Gegenstand | Das Hauptdokument (`.koolie/core/build/doc/`, 34 Kapitelquellen) gegen den Stand `0.89.0` setzen; die befristete Neutralitätsausnahme für `build/` auflösen; `K-103` schließen |
 | Ergebnis | 🔴 **Der Meßgegenstand ließ sich nicht herstellen: Das Dokument war seit `0.88.0` nicht baubar** (D-309). **Zweiundvierzig Releases Abstand, vierzehn falsche Zahlen, zwei Aufzählungen, die ihre eigene Zahl widerlegen.** 🟢 **Prüfung 77**, `K-103` geschlossen, `K-104` neu, drei Nachbarträger berichtigt |
 
@@ -401,8 +402,8 @@ Zählung über *„das Wort `Gegenzeichnung` kommt vor"* ergab 59 und 52.
 
 | Schritt | Ergebnis |
 |---|---|
-| `assemble.py` (`devin-desktop`) | 🟢 **gebaut** – 1.928.254 Zeichen, 12.840 Zeilen |
-| `assemble.py --client claude-code` | 🟢 **gebaut** – 1.931.925 Zeichen, 12.758 Zeilen |
+| `assemble.py` (`devin-desktop`) | 🟢 **gebaut** – 🔴 **berichtigt am 2026-09-23 (`CR-2026-125`): 1.956.225 Zeichen, 12.888 Zeilen.** Hier stand „1.928.254 / 12.840" – **das war der Bau VOR der Textarbeit dieses Releases**, nicht der abgenommene Baum |
+| `assemble.py --client claude-code` | 🟢 **gebaut** – 🔴 **berichtigt am 2026-09-23: 1.959.896 Zeichen, 12.806 Zeilen.** Hier stand „1.931.925 / 12.758", aus demselben Lauf. **Die Differenz ist für beide Packs dieselbe: +27.971 Zeichen, +48 Zeilen** – und genau das belegt, daß es ein und derselbe zu frühe Lauf war. ➡️ *Eine Abnahmezahl gilt für den Baum, den sie abnimmt – und der entsteht zuletzt.* |
 | `validate-framework.py --root .` | 🟢 **0 Fehler, 0 Warnungen** |
 | `probe-pruefungen.py .` **ohne** `PYTHONIOENCODING` | 🟢 **Exit 0, alle Sonden und Gegenproben bestanden** – **428 Einheiten** (255 Sonden, 150 Gegenproben, 23 Selbstproben), 3.870,3 s Rechenzeit in **488,9 s** Wanduhr auf 8 Bahnen (Faktor 7,9) |
 | `probe-pruefungen.py .` **mit** `PYTHONIOENCODING=utf-8` | 🟢 **Exit 0, alle Sonden und Gegenproben bestanden** – dieselben 428 Einheiten, 3.900,1 s in **492,6 s** Wanduhr |

@@ -543,7 +543,25 @@ Prüft (statisch, ohne laufenden KI-Client):
      getragen. GRENZE: Sie misst die VERSION, nicht den INHALT. Ein Dokument, dessen
      Zahlen veralten, waehrend jemand die Versionszeile mitzieht, laeuft durch - was
      dagegen hilft, ist der Durchgang vor dem Commit und keine Pruefung.
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 77 laeuft als eigenes
+ 78. Die zaehlbaren Aussagen des Hauptdokuments (D-315): Der Satz ueber den
+     Pruefapparat in build/doc/26-qs-test.md nennt die GEZAEHLTE Zahl der
+     Pruefungen, der versionierten Dateien des Kerns und der Markdown-Dateien
+     darunter. ANLASS: 0.89.0 hat das Dokument nach 42 Releases auf den Stand
+     gesetzt und geschrieben, die Behebung brauche eine PRUEFUNG und nicht nur
+     eine Textaenderung. Gebaut wurde Pruefung 77, und die misst die VERSION.
+     EIN Release spaeter standen dort "76 Pruefungen ueber 502 versionierte
+     Dateien, davon 450 Markdown" - richtig waren 77, 504 und 452, und die
+     beiden fehlenden Dateien waren der Antrag und das Protokoll DESSELBEN
+     Releases. ZUSCHNITT (D-318): nur die GEGENWARTSFORM. Datierte Zahlen in
+     den ausgewiesenen Zeitdokumenten veralten nicht und werden nicht geprueft
+ 79. Die Lizenz liegt an zwei Stellen und ist dieselbe (D-317): LICENSE in der
+     Wurzel (dort suchen die Hostingdienste sie) und <CORE_DIR>/LICENSE (dort
+     wandert sie mit, wenn ein uebernehmendes Projekt den Kern als Ganzes
+     kopiert) tragen byteweise denselben Inhalt, und dieser Inhalt ist die
+     GPL-3.0. ANLASS: Zwei Stellen mit demselben Inhalt laufen auseinander,
+     sobald eine angefasst wird - der haeufigste Befundtyp dieses
+     Repositoriums, und die Antwort darauf ist dieselbe wie bei Pruefung 76
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 79 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -828,11 +846,32 @@ def iter_text_files(root: str):
     # handgeschriebenen Quellen des Hauptdokuments liegen aber darunter und gehoeren
     # geprueft - gerade weil aus ihnen ein Lieferbestandteil entsteht. Vier Backticks
     # brechen genau hier die Assemblierung, und ein Secret erschiene im ausgelieferten
-    # Dokument. Das Werkzeug daneben (assemble.py, build/README.md) bleibt aussen vor:
-    # Es fuehrt eigene Marker in spitzen Klammern, die keine Framework-Platzhalter sind.
-    doc = os.path.join(root, KERN, "build", "doc")
-    if os.path.isdir(doc):
-        yield from _walk_text_files(doc, ignoriert)
+    # Dokument.
+    #
+    # 🔴 BIS 0.89.0 STAND HIER NUR build/doc - UND DIE DREI TRAEGER DANEBEN ERREICHTE
+    # KEINE EINZIGE PRUEFUNG (D-313, CR-2026-125): assemble.py, build-docx.py und
+    # build/README.md. Begruendet war das mit EINER Frage - die Werkzeuge fuehren eigene
+    # Marker in spitzen Klammern, die keine Framework-Platzhalter sind. Gewirkt hat es auf
+    # ZWOELF Pruefungen, die ueber diesen Iterator laufen. Gemessen beim Oeffnen am
+    # 2026-09-23: zwei Fehler und zwei Warnungen. Die zwei Warnungen SIND die Begruendung
+    # und haben jetzt eine eigene, benannte Ausnahme bei der einen Frage, fuer die sie
+    # gilt (OHNE_PLATZHALTERREGISTER). Die zwei Fehler sind Pruefung 14 am Erzeuger der
+    # Word-Fassung: Er haette den ueberholten Dokumenttitel samt CLIENTNAMEN in die
+    # Dokumenteigenschaften der Lieferung gestempelt.
+    # ➡️ Dieselbe Auflösung wie bei D-311: eine benannte Ausnahme ueber benannte Traeger
+    #    statt einer stummen ueber ein Verzeichnis. EINE AUSNAHME GILT SO WEIT WIE IHRE
+    #    BEGRUENDUNG UND NICHT SO WEIT WIE IHR MECHANISMUS.
+    #
+    # `out/` bleibt aussen vor und das ist kein Versehen: Es ist das ERZEUGNIS, steht in
+    # der .gitignore und ist in einer frischen Auscheckung nicht da. Eine Pruefung dagegen
+    # waere im Framework gruen und in jeder Installation rot - der Konstruktionsfehler,
+    # den Pruefung 75 mit 0.88.0 zweimal bezahlt hat.
+    bau = os.path.join(root, KERN, "build")
+    if os.path.isdir(bau):
+        for pfad in _walk_text_files(bau, ignoriert):
+            if os.path.relpath(pfad, bau).replace(os.sep, "/").startswith("out/"):
+                continue
+            yield pfad
 
 
 def parse_frontmatter(text: str):
@@ -1552,7 +1591,7 @@ def check_content(root: str) -> None:
                                                "onboarding", "templates", "governance", "pilot",
                                                "build", "docs", "examples"))):
             err(f"{rel}: Codeblock mit vier oder mehr Backticks (bricht die Dokumentassemblierung)")
-        if registry:
+        if registry and rel not in OHNE_PLATZHALTERREGISTER:
             for ph in set(PLACEHOLDER_RE.findall(text)):
                 if ph not in registry and ph not in ("TBD",):
                     unknown_placeholders.setdefault(ph, set()).add(rel)
@@ -2110,6 +2149,21 @@ NEUTRAL_DOKUMENT = (
     KERN + "/build/doc/32-abschluss.md",
 )
 NEUTRAL_AUSNAHMEN = NEUTRAL_CHRONIK + NEUTRAL_ABBILDUNG + NEUTRAL_DOKUMENT
+
+# --- Die Ausnahme, die bis 0.89.0 ein Verzeichnis war (D-313) ----------------------
+#
+# Die beiden Werkzeuge unter build/ und ihre README fuehren eigene Marker in spitzen
+# Klammern - <CORE> und <VERSION> stehen dort fuer den Wert, den das Werkzeug zur
+# Laufzeit einsetzt. Sie sind KEINE Framework-Platzhalter und gehoeren in kein Register.
+#
+# 🔴 GENAU DAS WAR BIS 0.89.0 DER GRUND, DIE DREI TRAEGER GANZ AUS iter_text_files
+# HERAUSZUHALTEN - eine Begruendung fuer EINE Frage, wirksam auf ZWOELF Pruefungen.
+# Was sie mitverdeckt hat, steht im Kopfkommentar von iter_text_files.
+OHNE_PLATZHALTERREGISTER = (
+    KERN + "/build/assemble.py",
+    KERN + "/build/build-docx.py",
+    KERN + "/build/README.md",
+)
 
 # Eine ANDERE Frage mit derselben Antwortliste, und deshalb eine eigene Konstante:
 # Welches Dokument traegt ueberhaupt eine eigene Artefaktversion? Chronik traegt keine -
@@ -8571,6 +8625,138 @@ def check_dokumentstand(root: str) -> None:
             f"Zahl behauptet einen Bau, den es nicht gegeben hat (D-312)")
 
 
+# ---------------------------------------------------------------------------
+# Pruefung 78: Die zaehlbaren Aussagen des Hauptdokuments (CR-2026-125, D-315)
+# ---------------------------------------------------------------------------
+#
+# ANLASS, UND ER IST DAS RELEASE DAVOR. 0.89.0 hat das Hauptdokument nach ZWEIUNDVIERZIG
+# Releases auf den geltenden Stand gesetzt und dabei vierzehn stehengebliebene Zahlen
+# berichtigt. Sein eigenes Protokoll schreibt den Grund auf:
+#     "Das ist die Bauform von Pruefung 40 an einem groesseren Gegenstand - und der
+#      Grund, warum die Behebung eine PRUEFUNG braucht und nicht nur eine Textaenderung."
+# Gebaut wurde dann Pruefung 77, und die misst die VERSION, nicht den INHALT. Gemessen am
+# 2026-09-23, EIN Release spaeter: Der Satz in 26-qs-test.md nannte "76 Pruefungen ueber
+# 502 versionierte Dateien, davon 450 Markdown-Dateien". Richtig waren 77, 504 und 452 -
+# und die beiden Dateien, die fehlten, waren der Antrag und das Protokoll DESSELBEN
+# Releases. DREI ZAHLEN IN EINEM SATZ, UEBERHOLT IM RELEASE, DAS DAS DOKUMENT AUF DEN
+# GELTENDEN STAND GESETZT HAT.
+#
+# DIE BAUFORM IST DIE VON PRUEFUNG 40: den Satz AUSRECHNEN und woertlich verlangen. Ein
+# Vergleich einzelner Zahlen liesse offen, in welchem Satz sie stehen; ein woertlicher
+# Sollsatz sagt zugleich, wie er zu schreiben ist.
+#
+# ZUSCHNITT, UND ER IST DER GANZE PUNKT (D-318): Diese Pruefung gilt der GEGENWARTSFORM.
+# "Der Validator fuehrt 79 Pruefungen" ist eine Aussage ueber jetzt und veraltet.
+# "Gezaehlt am 2026-09-22: 312 Decision Records" ist eine DATIERTE Aussage und veraltet
+# nie - sie muss nur fuer ihr Datum stimmen. Die datierten Zahlen stehen in 29-grenzen.md
+# und 32-abschluss.md, beide ausgewiesene Zeitdokumente (D-273, D-311), und werden hier
+# ausdruecklich NICHT geprueft. Eine Pruefung, die ein Zeitdokument fortzuschreiben
+# verlangt, hat seinen Zweck nicht verstanden.
+#
+# GRENZE, benannt: Sie misst DREI Zahlen in EINEM Satz. Jede andere Zahl des Dokuments
+# laeuft weiter durch - das ist der Rest von K-104, und er ist nicht kleiner geworden,
+# nur gezaehlt.
+P78_TRAEGER = KERN + "/build/doc/26-qs-test.md"
+P78_ANKER = "Der Validator führt **"
+P78_SATZ = ("Der Validator führt **{0} Prüfungen** über {1} versionierte Dateien des "
+            "Kerns, davon {2} Markdown-Dateien")
+
+
+def check_dokumentzahlen(root: str) -> None:
+    """Pruefung 78 (D-315): Die Gegenwartszahlen des Hauptdokuments gegen den Bestand."""
+    pfad = os.path.join(root, *P78_TRAEGER.split("/"))
+    if not os.path.isfile(pfad):
+        err(f"{P78_TRAEGER}: fehlt. Prüfung 78 hält dort die zählbaren Aussagen des "
+            f"Hauptdokuments gegen den Bestand (D-315)")
+        return
+    text = read(pfad)
+    # --- Gegenstand 1: der Anker ---------------------------------------------------
+    if text.count(P78_ANKER) != 1:
+        err(f"{P78_TRAEGER}: der Satz über den Prüfapparat steht nicht genau einmal "
+            f"(gesucht: '{P78_ANKER}', gefunden: {text.count(P78_ANKER)}x). Prüfung 78 "
+            f"hat ihren Gegenstand verloren und bestünde sonst leise (D-23)")
+        return
+    # --- Gegenstand 2: die Zahl der Pruefungen --------------------------------------
+    vpfad = os.path.join(root, KERN, "tests", "scripts", "validate-framework.py")
+    if not os.path.isfile(vpfad):
+        return  # Pruefung 40 meldet den verlorenen Traeger bereits
+    doc = read(vpfad)
+    doc = doc.split('"""')[1] if doc.count('"""') >= 2 else ""
+    if REGISTER_ANKER not in doc or REGISTER_ENDE not in doc:
+        return  # Pruefung 40 meldet das verlorene Register bereits
+    liste = doc.split(REGISTER_ANKER, 1)[1].split(REGISTER_ENDE, 1)[0]
+    gefuehrt = sorted({int(n) for n in re.findall(r"^\s{0,2}(\d+)[a-z]?\. ", liste, re.M)})
+    if not gefuehrt:
+        return  # ebenfalls Pruefung 40
+    # --- Gegenstand 3: der Bestand ---------------------------------------------------
+    dateien = _verfolgte_dateien(root)
+    if dateien is None:
+        warn("Prüfung 78: kein Git-Bestand lesbar – die Zahl der versionierten Dateien "
+             "ist an diesem Ort nicht prüfbar. Das ist KEIN Messergebnis (D-23)")
+        return
+    soll = P78_SATZ.format(gefuehrt[-1], len(dateien),
+                           sum(1 for d in dateien if d.endswith(".md")))
+    if soll not in text:
+        err(f"{P78_TRAEGER}: der Satz über den Prüfapparat nennt nicht die gezählten "
+            f"Werte. Erwartet wörtlich: '{soll}'. Gezählt wurden {gefuehrt[-1]} "
+            f"Prüfungen im Register, {len(dateien)} versionierte Dateien unter {KERN}/ "
+            f"und {sum(1 for d in dateien if d.endswith('.md'))} davon als Markdown. "
+            f"Bis 0.89.0 standen hier 76, 502 und 450 – alle drei waren in DEM Release "
+            f"überholt, das das Dokument auf den geltenden Stand gesetzt hat (D-315)")
+
+
+# ---------------------------------------------------------------------------
+# Pruefung 79: Die Lizenz liegt an zwei Stellen und ist dieselbe (CR-2026-126, D-317)
+# ---------------------------------------------------------------------------
+#
+# ZWEI STELLEN, UND BEIDE WERDEN GEBRAUCHT: Die Wurzel, weil die Hostingdienste die
+# Lizenz dort suchen und ein Repositorium ohne erkannte Lizenz als "alle Rechte
+# vorbehalten" gilt. Der Kern, weil ein uebernehmendes Projekt ihn ALS GANZES kopiert
+# (docs/ADOPTION_GUIDE.md Schritt 2) - eine Lizenzdatei, die nur in der Wurzel liegt,
+# wandert dabei nicht mit, und ein Werk ohne seine Lizenz weiterzugeben ist nach
+# §4 GPL-3.0 unzulaessig.
+#
+# WARUM DAS EINE PRUEFUNG BRAUCHT: Zwei Stellen mit demselben Inhalt laufen auseinander,
+# sobald eine von beiden angefasst wird. Das ist in diesem Repositorium der haeufigste
+# Befundtyp, und die Antwort darauf ist dieselbe wie bei Pruefung 76: nicht "bitte beide
+# pflegen", sondern ein Vergleich, der meldet.
+#
+# GRENZE, benannt: Sie vergleicht die beiden Dateien MITEINANDER und prueft, dass es die
+# GPL-3.0 ist. Sie prueft nicht, ob der Text der amtlichen Fassung der Free Software
+# Foundation entspricht - dafuer waere ein Netzzugriff noetig, und eine Pruefung, die
+# das Netz braucht, ist in einer Installation nicht fahrbar.
+P79_WURZEL = "LICENSE"
+P79_KERN = KERN + "/LICENSE"
+P79_MARKE = "GNU GENERAL PUBLIC LICENSE"
+P79_VERSION = "Version 3, 29 June 2007"
+
+
+def check_lizenz(root: str) -> None:
+    """Pruefung 79 (D-317): Die Lizenz liegt an beiden Stellen und ist dieselbe."""
+    inhalte = {}
+    for rel in (P79_WURZEL, P79_KERN):
+        pfad = os.path.join(root, *rel.split("/"))
+        if not os.path.isfile(pfad):
+            err(f"{rel}: fehlt. Die Lizenz MUSS an beiden Stellen liegen – in der Wurzel "
+                f"für die Erkennung durch die Hostingdienste, im Kern, weil ein "
+                f"übernehmendes Projekt ihn als Ganzes kopiert und die Lizenz sonst nicht "
+                f"mitwandert (§4 GPL-3.0, D-317)")
+            return
+        with open(pfad, "rb") as fh:
+            inhalte[rel] = fh.read()
+    if inhalte[P79_WURZEL] != inhalte[P79_KERN]:
+        err(f"{P79_KERN}: trägt nicht denselben Inhalt wie {P79_WURZEL} "
+            f"({len(inhalte[P79_WURZEL])} gegen {len(inhalte[P79_KERN])} Bytes). Zwei "
+            f"Lizenzdateien mit verschiedenem Inhalt lassen offen, welche gilt – und für "
+            f"ein übernehmendes Projekt gilt die aus dem Kern (D-317)")
+        return
+    text = inhalte[P79_WURZEL].decode("utf-8", "replace")
+    if P79_MARKE not in text or P79_VERSION not in text:
+        err(f"{P79_WURZEL}: trägt nicht die GNU General Public License Version 3 "
+            f"(gesucht: '{P79_MARKE}' und '{P79_VERSION}'). Prüfung 79 hätte sonst nur "
+            f"belegt, dass zwei Dateien gleich sind – auch zwei leere sind das (D-23)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -8663,6 +8849,8 @@ def main() -> int:
     check_altname_restbestand(root, man)
     check_kernlage(root)
     check_dokumentstand(root)
+    check_dokumentzahlen(root)
+    check_lizenz(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

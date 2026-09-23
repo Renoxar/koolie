@@ -180,3 +180,13 @@ Im Framework-Repository ist `--strict-overlay` erwartungsgemäß rot: `.koolie/p
 ## Wichtige Konventionen
 
 Verbindlichkeit über **MUSS/SOLL/KANN/DARF NICHT**; produktbezogene Aussagen tragen Belegstatus `[DOK]`/`[EMPF]`/`[KONZ]` oder `BELEG OFFEN` mit Grund und Datum; variable Inhalte ausschließlich als registrierte Platzhalter (`.koolie/core/docs/PLACEHOLDER_REGISTRY.md`); Beispiele sind stets als synthetisch gekennzeichnet; Personen werden nirgends genannt – nur Rollen.
+
+## Lizenz
+
+Dieses Framework steht unter der **GNU General Public License, Version 3** (`LICENSE`) – es ist freie Software im Sinne der Open-Source-Definition. Copyright © 2026 `<FRAMEWORK_OWNER>`.
+
+**Zusätzliche Erlaubnis nach §7 GPL-3.0:** Dateien, die aus den mitgelieferten Vorlagen entstehen, und jede Ausgabe der Werkzeuge dieses Frameworks unterliegen **nicht** dieser Lizenz. Das Urheberrecht daran liegt bei dem Projekt, das sie erzeugt hat.
+
+**Die GPL bindet die Weitergabe, nicht den Gebrauch.** Wer dieses Framework benutzt – auch in einem Unternehmen, auch für ein kommerzielles Produkt –, hat keine einzige Pflicht daraus; das eigene Produkt ist keine Ableitung, und eigener Code neben `.koolie/core/` bleibt frei (§5, *mere aggregation*). Was im Einzelnen gilt und wo die eine wirklich berührte Stelle liegt, steht in `.koolie/core/LICENSE-HINWEIS.md`.
+
+Die Lizenzdatei liegt an **zwei** Stellen und trägt an beiden denselben Inhalt: in der Wurzel und unter `.koolie/core/LICENSE`, weil ein übernehmendes Projekt den Kern als Ganzes kopiert und ein Werk ohne seine Lizenz weiterzugeben nach §4 GPL-3.0 unzulässig ist. **Prüfung 79 hält beide gegeneinander.**
