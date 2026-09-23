@@ -42,6 +42,7 @@ import re
 import hashlib
 import os
 import shutil
+import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -574,9 +575,21 @@ def render_agent(text: str, man: dict) -> str:
     return "---\n" + fm + "---\n" + rumpf
 
 
-def render_for_client(text: str, man: dict, src_rel: str) -> str:
-    """Waehlt die Transformation anhand der Quelle und loest danach die Platzhalter auf."""
+def render_for_client(text: str, man: dict, src_rel: str, dst_rel: str = "") -> str:
+    """Waehlt die Transformation anhand der Quelle und loest danach die Platzhalter auf.
+
+    DAS ZIEL ENTSCHEIDET MIT, SEIT ES EINE QUELLE MIT ZWEI ZIELEN GIBT (CR-2026-133,
+    D-346). Bei einem Client, dessen Berechtigungsschicht in zwei Traeger zerfaellt -
+    Pfade in der Konfigurationsdatei, Befehle in einer eigenen Regeldatei -, wird
+    dieselbe Kernquelle zweimal gerendert. Die Quelle allein traegt die Auskunft
+    darueber nicht mehr.
+    """
     if src_rel == "framework/runtime/permissions.json":
+        policy = clientmap.exec_policy_file(man)
+        if policy and dst_rel == resolve_placeholders(policy, man):
+            return clientmap.render_exec_policy(text, man)
+        if clientmap.permissions_format(man) == "toml":
+            return clientmap.render_permissions_toml(text, man)
         # Kennt der Client keine eigene Hook-Datei, wandern die Hooks hier mit hinein.
         hooks = (clientmap.load_source(HERE, "hooks.json")
                  if clientmap.hooks_in_permissions(man) else None)
@@ -650,10 +663,10 @@ def framework_skill_files(man: dict) -> list[tuple[str, str]]:
     return out
 
 
-def write_rendered(src: str, dst: str, man: dict, dry: bool) -> None:
+def write_rendered(src: str, dst: str, man: dict, dry: bool, dst_rel: str = "") -> None:
     if dry:
         return
-    text = render_for_client(read_text(src), man, quell_kennung(src))
+    text = render_for_client(read_text(src), man, quell_kennung(src), dst_rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     with open(dst, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(text)
@@ -669,10 +682,10 @@ def quell_kennung(src: str) -> str:
     return os.path.relpath(src, HERE).replace(os.sep, "/")
 
 
-def rendered_matches(src: str, dst: str, man: dict) -> bool:
+def rendered_matches(src: str, dst: str, man: dict, dst_rel: str = "") -> bool:
     if not os.path.exists(dst):
         return False
-    soll = render_for_client(read_text(src), man, quell_kennung(src))
+    soll = render_for_client(read_text(src), man, quell_kennung(src), dst_rel)
     return read_text(dst) == soll
 
 
@@ -691,13 +704,57 @@ def pruefe_abbildung(root: str, man: dict) -> None:
     hinterliess ein halb angelegtes Projekt - gescheitert ist das eine, halb gelungen
     das andere. Der Vorlauf kostet einen zweiten Rendervorgang und keine Schreiboperation.
     """
-    quellen = [s for s, _ in activated_pack_relpaths(root, man)]
-    quellen += [s for s, _ in framework_skill_files(man)]
+    quellen = list(activated_pack_relpaths(root, man))
+    quellen += framework_skill_files(man)
     for schluessel in ("shared_core", "shared_seed"):
-        quellen += [s for s, _ in shared_files(man, schluessel)]
-    for src_rel in quellen:
+        quellen += shared_files(man, schluessel)
+    for src_rel, dst_rel in quellen:
         src = os.path.join(HERE, *src_rel.split("/"))
-        render_for_client(read_text(src), man, quell_kennung(src))
+        render_for_client(read_text(src), man, quell_kennung(src), dst_rel)
+
+
+def ignorierte_kerndateien(root: str) -> list[str]:
+    """Die geschriebenen Kerndateien, die das aufnehmende Projekt ignoriert.
+
+    ANLASS, UND ER IST GEMESSEN (`K-117`, CR-2026-133, D-349). Beim Heben auf `1.3.0`
+    lagen in einem der beiden aufnehmenden Projekte 525 Kerndateien im Arbeitsbaum und
+    483 im Versionierten: Die projekteigene `.gitignore`-Zeile `build/` trifft auch
+    `<CORE_DIR>/build/`, und damit die gesamte Quelle des Hauptdokuments.
+      ➡️ Ein Kern, der ausgeliefert, aber nicht versioniert wird, ist beim naechsten
+         Klonen dieses Projekts unvollstaendig.
+    Der Validator sieht es nicht, weil er den ARBEITSBAUM misst; Pruefung 81 sieht es
+    nicht, weil sie die Zeilenendeform der VERFOLGTEN Traeger misst - also gerade
+    derer, die noch da sind.
+
+    DIES IST EINE AUSKUNFT UND KEINE SCHRANKE, und das ist die Entscheidung
+    (D-349, Bauform von D-34): Das `.gitignore` gehoert dem Projekt. Das Framework
+    sagt, was es beobachtet, und ueberlaesst dem Projekt, was daraus folgt; der
+    Uebernahmeleitfaden nennt die Negativregel.
+
+    Ohne Git - oder ausserhalb eines Repositoriums - gibt die Funktion eine leere
+    Liste zurueck. Eine Auskunft, die nicht erhoben werden kann, wird nicht behauptet.
+    """
+    kern = os.path.join(root, *clientmap.CORE_REL.split("/"))
+    if not os.path.isdir(kern):
+        return []
+    dateien: list[str] = []
+    for dirpath, dirnames, filenames in os.walk(kern):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        for fn in filenames:
+            rel = os.path.relpath(os.path.join(dirpath, fn), root).replace(os.sep, "/")
+            dateien.append(rel)
+    if not dateien:
+        return []
+    try:
+        proc = subprocess.run(["git", "-C", root, "check-ignore", "--stdin"],
+                              input="\n".join(dateien), capture_output=True,
+                              text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return []
+    # Exit 0 = mindestens einer ignoriert, 1 = keiner, alles andere ist kein Ergebnis.
+    if proc.returncode not in (0, 1):
+        return []
+    return sorted(z.strip().replace("\\", "/") for z in proc.stdout.splitlines() if z.strip())
 
 
 def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
@@ -730,12 +787,12 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
         dst = os.path.join(root, dst_rel)
         if not os.path.exists(dst):
             continue
-        if rendered_matches(src, dst, man):
+        if rendered_matches(src, dst, man, dst_rel):
             rep.unchanged.append(dst_rel)
         elif mode == "check":
             rep.drifted.append(f"{dst_rel}  (Pack-Quelle: {src_rel})")
         else:
-            write_rendered(src, dst, man, dry)
+            write_rendered(src, dst, man, dry, dst_rel)
             rep.updated.append(f"{dst_rel}  (aus dem Pack aktualisiert)")
 
     # Framework-Skills: eine Quelle, je Client gerendert.
@@ -746,14 +803,14 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
             if mode == "check":
                 rep.missing.append(dst_rel)
             else:
-                write_rendered(src, dst, man, dry)
+                write_rendered(src, dst, man, dry, dst_rel)
                 rep.created.append(dst_rel)
-        elif rendered_matches(src, dst, man):
+        elif rendered_matches(src, dst, man, dst_rel):
             rep.unchanged.append(dst_rel)
         elif mode == "check":
             rep.drifted.append(f"{dst_rel}  (Quelle: {src_rel})")
         else:
-            write_rendered(src, dst, man, dry)
+            write_rendered(src, dst, man, dry, dst_rel)
             rep.updated.append(dst_rel)
 
     # Geteilte Core-Bestandteile aus dem Kern (Vorlagen, spaeter weitere).
@@ -764,14 +821,14 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
             if mode == "check":
                 rep.missing.append(dst_rel)
             else:
-                write_rendered(src, dst, man, dry)
+                write_rendered(src, dst, man, dry, dst_rel)
                 rep.created.append(dst_rel)
-        elif rendered_matches(src, dst, man):
+        elif rendered_matches(src, dst, man, dst_rel):
             rep.unchanged.append(dst_rel)
         elif mode == "check":
             rep.drifted.append(f"{dst_rel}  (Quelle: {src_rel})")
         else:
-            write_rendered(src, dst, man, dry)
+            write_rendered(src, dst, man, dry, dst_rel)
             rep.updated.append(dst_rel)
 
     for rel in seed_relpaths(template, man):
@@ -794,7 +851,7 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
         elif mode == "check":
             rep.missing.append(dst_rel)
         else:
-            write_rendered(src, dst, man, dry)
+            write_rendered(src, dst, man, dry, dst_rel)
             rep.created.append(dst_rel)
 
     return rep
@@ -1148,6 +1205,20 @@ def main() -> int:
         print(f"Hinweis: {man['permissions_file']} wurde nicht angefasst, weil sie Projektwerte enthaelt.")
         print("Pruefe nach einem Release-Wechsel, ob die Kernregeln noch vollstaendig sind:")
         print("  python .koolie/core/tests/scripts/validate-framework.py --strict-overlay")
+
+    ignoriert = ignorierte_kerndateien(root)
+    if ignoriert:
+        print()
+        print(f"HINWEIS ({len(ignoriert)}): Dieses Projekt IGNORIERT Kerndateien, die "
+              f"soeben geschrieben wurden.")
+        for rel in ignoriert[:8]:
+            print(f"  {rel}")
+        if len(ignoriert) > 8:
+            print(f"  ... und {len(ignoriert) - 8} weitere")
+        print("Sie liegen im Arbeitsbaum, aber nicht im Versionierten - beim naechsten")
+        print("Klonen dieses Projekts fehlen sie. Abhilfe: eine Negativregel im")
+        print(f"'.gitignore' des Projekts, etwa '!{clientmap.CORE_REL}/**'. Das '.gitignore'")
+        print("gehoert dem Projekt; dies ist eine Auskunft und keine Schranke.")
 
     print()
     print("Diese Pfade gehoeren dem Projekt und werden von install.py nie geschrieben:")

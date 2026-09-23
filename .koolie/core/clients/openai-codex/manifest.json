@@ -1,0 +1,197 @@
+{
+  "_comment": "Maschinenlesbare Pfad- und Semantikabbildung dieses Client Packs. Die menschenlesbare Fassung mit Faehigkeitsmatrix steht in CLIENT_PACK.md. DREI DINGE SIND HIER ANDERS ALS BEI DEN BEIDEN AELTEREN PACKS, und alle drei sind gemessen (CR-2026-133, D-346 bis D-348): (1) Die Berechtigungsschicht zerfaellt in ZWEI Traeger - Pfade in der Konfigurationsdatei (TOML, permissions_format), Befehle in einer eigenen Regeldatei (exec_policy_file). Es gibt hier keine Koerbe aus Werkzeug(Muster)-Zeilen, und deshalb auch kein permission_tools. (2) Die gesamte projektlokale Schicht - Konfiguration, Hooks und Befehlsregeln - laedt NUR, wenn das Projekt in der Benutzerkonfiguration des Clients als vertraut eingetragen ist; Skills laden auch ohne. (3) Die Sperrform des Schutz-Hooks ist eine andere: Die bisherige Form blockiert bei diesem Client NICHTS, gemessen mit Gegenlauf. hook_block_form sagt die Form, die er liest.",
+  "client": "openai-codex",
+  "runtime_dir": ".codex",
+  "root_instruction_file": "AGENTS.md",
+  "permissions_file": ".codex/config.toml",
+  "permissions_format": "toml",
+  "_permissions_format_note": "Die Ausgabeform der Berechtigungsdatei. Der Standard ist 'json'; ein Pack, das eine andere Form braucht, SAGT sie und erbt sie nicht durch Schweigen. Pruefung 87 fuehrt die Pruefungen auf, die an die Form 'json' gebunden sind und dieses Pack deshalb nicht erreichen - eine erklaerte Luecke statt einer stillen.",
+  "exec_policy_file": ".codex/rules/koolie.rules",
+  "_exec_policy_file_note": "Die zweite Haelfte der Berechtigungsschicht. Gemessen am 2026-09-23: Der Client laedt Regeldateien mit der Endung .rules aus <Projekt>/.codex/rules/ und aus dem Benutzerverzeichnis des Clients; ein Befehl, den diese Datei verbietet, wird abgewiesen, und der Client nennt die Begruendung dieser Datei woertlich. Sie liegt projektlokal und ist damit versioniert - das ist die Haelfte von B1, die dieser Client traegt.",
+  "skills_dir": ".codex/skills",
+  "agents_dir": ".codex/agents",
+  "pack_runtime_dir": ".codex/rules",
+  "has_rule_triggers": false,
+  "core_skill_prefix": "fw-",
+  "core_paths": [
+    ".codex/README.md"
+  ],
+  "seed_paths": [],
+  "project_owned_hint": [
+    ".codex/rules/2N-overlay-<name>.md        (Overlay-Regelerweiterungen)",
+    ".codex/rules/40-tech-<name>.md           (Packs ohne Quelle im Kern)",
+    ".codex/config.toml                       (Projektwerte, MCP-Server, eigene Schluessel)",
+    ".codex/skills/prj-*/                     (projektspezifische Skills)",
+    ".koolie/project-overlay/tech-packs/**            (projekteigene Packs)",
+    ".koolie/project-overlay/**                       (das gesamte Overlay)"
+  ],
+  "runtime_placeholders": {
+    "<RUNTIME_DIR>": ".codex",
+    "<ROOT_INSTRUCTION_FILE>": "AGENTS.md",
+    "<ROOT_INSTRUCTION_LOCAL>": "AGENTS.override.md",
+    "<PERMISSIONS_FILE>": ".codex/config.toml",
+    "<SKILLS_DIR>": ".codex/skills",
+    "<RULES_DIR>": ".codex/rules",
+    "<AGENTS_DIR>": ".codex/agents",
+    "<HOOKS_FILE>": ".codex/hooks.json",
+    "<MCP_FILE>": ".codex/config.toml",
+    "<CLIENT_NAME>": "OpenAI Codex CLI"
+  },
+  "_runtime_placeholders_note": "<ROOT_INSTRUCTION_LOCAL> ist bei diesem Client KEINE Ergaenzung, sondern eine VERDRAENGUNG: Liegt AGENTS.override.md im Projekt, steht die Wurzel-Anweisung des Frameworks in KEINER Nachricht der Sitzung - gemessen mit Gegenprobe am 2026-09-23. Deshalb liefert dieses Pack fuer sie KEINE Beispieldatei aus (shared_core fuehrt sie nicht), waehrend der deny-Korb des Kerns sie schreibgeschuetzt stellt, und deshalb meldet Pruefung 86 ihr Vorhandensein im Projektbaum. <MCP_FILE> zeigt auf dieselbe Datei wie <PERMISSIONS_FILE>: Dieser Client fuehrt MCP-Server als Tabelle seiner Konfiguration und liest keine eigene MCP-Datei (gemessen: .mcp.json bleibt unbeachtet).",
+  "root_instruction_override": true,
+  "_root_instruction_override_note": "Dieser Client kennt eine Datei, die die Wurzel-Anweisung nicht ergaenzt, sondern ERSETZT - gemessen mit Gegenprobe am 2026-09-23. Das Feld sagt es ausdruecklich, und Pruefung 88 meldet die Datei, wenn sie im Projekt liegt.",
+  "permission_profile_name": "koolie",
+  "permission_profile_description": "Rechteprofil des Koolie-Frameworks: Lesen ueberall, Schreiben nur im Arbeitsbereich, und die Traeger des Frameworks und des Overlays nur lesend.",
+  "permission_path_special": ":workspace",
+  "permission_path_base": {
+    ":root": "read",
+    ":workspace": "write"
+  },
+  "_permission_path_base_note": "Der Grundstock jedes Profils, und er ist nicht Kosmetik. Gemessen am 2026-09-23: Ein aktives Rechteprofil OHNE ':root = read' erzeugt eine geteilte Leseeinschraenkung, und der unerhoehte Windows-Sandkasten kann sie nicht durchsetzen - der Client BRICHT DANN AB, statt ungesandboxt zu laufen (fail-closed, und damit richtig). Mit dieser Grundlage laeuft er, und ein Schreibverbot auf einem Teilbaum ist ausdrueckbar: Der Teilbaum bekommt 'read'.",
+  "permission_tools": {
+    "read": [],
+    "search": [],
+    "write": [],
+    "exec": [],
+    "fetch": [],
+    "mcp": [],
+    "skill": []
+  },
+  "_permission_tools_note": "ALLE LEER, UND DAS IST DIE AUSSAGE ueber den Mechanismus, nicht ueber den Belegstand (D-155, D-238). Die Berechtigungsschicht dieses Clients kennt KEINE Werkzeugnamen: Sie bindet Pfade an eine Zugriffsart und Befehle an Praefixmuster - gemessen am 2026-09-23, samt der Fehlermeldung, mit der sie einen Schluessel abweist, der kein Pfad ist. Eine Regel der Gestalt Werkzeug(Muster) hat hier keinen Ort. Was die Koerbe des Kerns traegt, steht in permission_path_base und permission_profile_name (Pfadseite) und in exec_policy_file (Befehlsseite). Weil damit zwoelf Pruefungen ins Leere liefen, fuehrt der Validator seit 1.4.0 FORMATGEBUNDENE_PRUEFUNGEN, und Pruefung 87 haelt die Liste gegen Abschnitt 5 dieses Packs.",
+  "permission_tools_bare": [],
+  "permission_path_prefix": "",
+  "permission_exec_match": "prefix",
+  "permission_exec_suffix": "",
+  "_permission_exec_note": "Die Befehlsseite wirkt praefixbasiert - gemessen am 2026-09-23 mit dem Auswerter des Clients selbst: prefix_rule(pattern = [\"git\", \"push\"]) trifft 'git push origin main' und trifft 'git -C . push' NICHT. Das ist dieselbe Breite und dieselbe benannte Grenze wie beim Pack claude-code. Ein Praefixzeichen gibt es hier nicht; die Regelsprache zaehlt Tokens.",
+  "hook_handler_extra": {
+    "enabled": true
+  },
+  "_hook_handler_extra_note": "Gemessen am 2026-09-23: Ein Hook-Eintrag ohne 'enabled': true laeuft nicht, und der Client meldet es nicht. Das Feld ist damit die Bedingung dafuer, dass der Schutz-Hook ueberhaupt aufgerufen wird.",
+  "hooks_file_wrapper": "hooks",
+  "_hooks_file_wrapper_note": "Die Hook-Datei dieses Clients fuehrt die Ereignisse unter einem Schluessel der obersten Ebene. Gemessen am 2026-09-23: Ohne ihn meldet der Client 'unknown field `PreToolUse`' und LAEDT DIE DATEI NICHT - er startet trotzdem. Ein ausgelieferter Schutz-Hook, der nie laeuft, ist genau die Lage von AP2-DD-10.",
+  "hook_block_form": "hook-specific-output",
+  "_hook_block_form_note": "DER SCHWERSTE BEFUND DIESES PACKS (D-347). Die bisherige Sperrform des Schutz-Hooks - {\"decision\": \"block\"} und Exit 2 - blockiert bei diesem Client NICHTS: Gemessen am 2026-09-23 mit Gegenlauf, der Client meldet 'PreToolUse Failed' und FUEHRT DIE OPERATION AUS; der Koederinhalt kam woertlich heraus. Dieselbe Sperre als hookSpecificOutput.permissionDecision = 'deny' blockiert - und zwar AUCH in dem Modus, der Rueckfragen und Sandkasten abschaltet. Die Abbildung haengt die Form als --sperrform an das Hook-Kommando, aus demselben Grund wie --fail-closed (D-31). Pruefung 86 haelt fest, dass das Skript die genannte Form kennt.",
+  "hook_tools": {
+    "read": [],
+    "search": [],
+    "exec": [
+      "Bash"
+    ],
+    "write": [
+      "apply_patch"
+    ]
+  },
+  "hook_tools_absent": [
+    "read",
+    "search"
+  ],
+  "_hook_tools_absent_note": "Dieser Client fuehrt KEIN eigenes Lese- und kein eigenes Suchwerkzeug - Lesen und Suchen laufen ueber die Shell und damit unter dem Werkzeugnamen des Ausfuehrungsverbs. Gemessen am 2026-09-23 an einer realen Installation: Ein Matcher 'Read' und ein Matcher 'Grep' loesen in keinem Lauf aus, waehrend 'Bash' bei jedem Lesezugriff ausloest, den das Modell ueber die Shell faehrt. Die Abwesenheit ist damit erhoben und nicht angenommen; der Kanal ist ueber 'exec' gedeckt und nicht offen. GEMESSEN IST AUSSERDEM EINE ALIASBILDUNG: Die Matcher 'Edit' und 'Write' treffen dasselbe Werkzeug wie 'apply_patch'. Sie stehen hier trotzdem NICHT, weil der Hook sonst je Schreibaufruf dreimal liefe - dieselbe Sperre dreimal ist keine dreifache Sperre. Erhebungsstand 2026-09-23, tests/protocols/2026-09-23-bau-openai-codex.md; was hier fehlt, ist unerhoben.",
+  "hook_project_dir_expr": ".",
+  "_hook_project_dir_expr_note": "DIESER CLIENT SAGT SEIN PROJEKTVERZEICHNIS NICHT, ER STEHT DARIN. Gemessen am 2026-09-23 an einer realen Installation: Die Umgebung des Hook-Prozesses fuehrt ausser dem Verweis auf ihr eigenes Benutzerverzeichnis keine Variable des Clients - kein Projektverzeichnis, keine Sitzungsangabe -, und sein ARBEITSVERZEICHNIS ist das Projektverzeichnis. Das Kommando bindet deshalb den relativen Punkt und keine Variable. Eine Variable, die es nicht gibt, haette hier ein Kommando erzeugt, das startet und nichts findet - der Befundtyp, der bei AP2-DD-10 acht Releases lang wirkungslose Hooks getragen hat.",
+  "hook_fail_closed": false,
+  "_hook_fail_closed_note": "Das Eingabeschema dieses Clients ist am 2026-09-23 an einer realen Installation AUFGEZEICHNET - PreToolUse fuehrt session_id, turn_id, transcript_path, cwd, hook_event_name, model, permission_mode, tool_name, tool_input und tool_use_id -, aber der VOLLSTAENDIGE Bestand der Ereignisse und ihrer Umschlaege ist es nicht. Fail-closed bei einem nur teilweise erhobenen Schema waere keine Haertung, sondern eine Sitzung, die bei der ersten unbekannten Eingabeform blockiert (D-31). Der Wert geht auf true, sobald der Bestand erhoben ist; die Zeile H2 des Packs fuehrt die Bedingung.",
+  "skill_frontmatter": {
+    "tools_format": "list",
+    "tool_names": {},
+    "_tool_names_note": "LEER, UND DAS IST DIE AUSSAGE: Kein Verb ist abgebildet, alle fuenf stehen in tool_names_unmapped. Die Abbildung waere geraten - der Bestand der Frontmatter-Felder dieses Clients ist unerhoben (2026-09-23, tests/protocols/2026-09-23-bau-openai-codex.md).",
+    "tool_names_unmapped": [
+      "read",
+      "grep",
+      "glob",
+      "edit",
+      "exec"
+    ],
+    "_tool_names_unmapped_note": "Dieses Pack bildet die Werkzeugverben des Frontmatters NICHT ab, und das ist eine Aussage ueber den Belegstand (Bauform wie hook_tools_absent nach D-47, D-78). Gemessen am 2026-09-23 ist, dass dieser Client Skills aus zwei projektlokalen Ablagen laedt und sie samt Herkunft in den Sitzungskontext stellt. NICHT gemessen ist, ob und wie ein Frontmatter-Feld den Werkzeugbestand eines Skills oder eines Unteragenten begrenzt, und unbekannte Frontmatter-Felder meldet dieser Client nicht. Eine Abbildung ohne Messung waere eine Zusage ohne Mechanismus; die Quellform bleibt deshalb unveraendert stehen, und die Zeilen S3 und A1 des Packs sagen, was das wert ist. Erhebungsstand 2026-09-23, tests/protocols/2026-09-23-bau-openai-codex.md; was hier fehlt, ist unerhoben.",
+    "drop_fields": [],
+    "_drop_fields_note": "LEER, UND DAS IST DIE ENTSCHEIDUNG (Bauform wie devin-desktop). Die zusagentragenden Felder 'permissions' und 'triggers' erreichen die installierte Fassung unveraendert. Sie zu verwerfen haette nach D-50 einen benannten Ersatz verlangt - und einen Ersatz zu benennen, dessen Feld bei diesem Client unerhoben ist, waere eine geratene Zusage. Ein Feld, das der Client nicht kennt, bleibt wirkungslos; ein Feld, das er kennt und das wir verworfen haetten, waere ein Verlust."
+  },
+  "shared_core": [
+    {
+      "src": "framework/runtime/root-instruction.md",
+      "dst": "<ROOT_INSTRUCTION_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/00-framework-core.md",
+      "dst": "<RULES_DIR>/00-framework-core.md"
+    },
+    {
+      "src": "framework/runtime/rules/10-privacy-security.md",
+      "dst": "<RULES_DIR>/10-privacy-security.md"
+    },
+    {
+      "src": "framework/runtime/rules/15-development-rules.md",
+      "dst": "<RULES_DIR>/15-development-rules.md"
+    },
+    {
+      "src": "framework/runtime/agents/fw-reviewer.md",
+      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+    },
+    {
+      "src": "templates/rules/21-overlay-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/21-overlay-TEMPLATE.md.template"
+    },
+    {
+      "src": "templates/rules/40-tech-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/40-tech-TEMPLATE.md.template"
+    },
+    {
+      "src": "framework/runtime/hooks.json",
+      "dst": "<HOOKS_FILE>"
+    },
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": ".codex/rules/koolie.rules"
+    }
+  ],
+  "_shared_core_note": "ZWEI ABWEICHUNGEN GEGENUEBER DEN AELTEREN PACKS, beide mit gemessenem Grund. (1) Die Beispieldatei zur nutzerlokalen Wurzel-Anweisung wird NICHT ausgeliefert: Bei diesem Client verdraengt AGENTS.override.md die Wurzel-Anweisung vollstaendig, und eine Vorlage, die zum Anlegen dieser Datei auffordert, waere eine Anleitung zum lautlosen Abschalten der Ebene 1. (2) Die MCP-Beispieldatei wird nicht ausgeliefert: Dieser Client liest keine eigene MCP-Datei, sondern eine Tabelle seiner Konfiguration (gemessen). Dafuer steht hier die Befehlsregeldatei - dieselbe Kernquelle wie die Berechtigungsdatei, ein anderes Ziel; sie traegt keine Projektwerte und wird deshalb bei jedem --update neu geschrieben.",
+  "shared_seed": [
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/20-project-overlay.md",
+      "dst": "<RULES_DIR>/20-project-overlay.md"
+    },
+    {
+      "src": "templates/project-overlay",
+      "dst": ".koolie/project-overlay"
+    }
+  ],
+  "rule_frontmatter": "comment",
+  "_rule_triggers_note": "KEIN rule_triggers, UND DAS IST EINE AUSSAGE (D-348). Gemessen am 2026-09-23 mit drei Sonden: Dieser Client kennt keine Regeldateien mit Ladebedingungen. Was ungefragt laedt, ist genau die Wurzel-Anweisungsdatei des Projekts (und eine gleichnamige im Benutzerverzeichnis des Clients); eine Anweisungsdatei in einem Unterverzeichnis steht NICHT vorab im Kontext, und eine Einbindung mit '@' bleibt wirkungslos. Der Geltungsbereich ist der Verzeichnisbaum, nicht ein Muster. Der Ersatz ist benannt und wird geliefert: root_instruction_imports nennt die Regeldateien in der Wurzel-Anweisung, mit der Auflage, sie zu Beginn der Sitzung zu lesen. Damit sind R2 und R3 bei diesem Pack [TEXTUELL] statt [TECHNISCH] - kein Ladetrigger wird ersatzlos verworfen (D-26, D-27), aber der Ersatz ist schwaecher, und die Zeilen R2 und R3 sagen es.",
+  "root_instruction_imports": [
+    "- `<RULES_DIR>/00-framework-core.md` (Ebene 3, Rahmenregeln)",
+    "- `<RULES_DIR>/10-privacy-security.md` (Ebene 3, Datenschutz und Sicherheit)",
+    "- `<RULES_DIR>/15-development-rules.md` (Ebene 3, Entwicklungsregeln)",
+    "- `<RULES_DIR>/20-project-overlay.md` (Ebene 4, Project Overlay)",
+    "- `<RULES_DIR>/30-*.md` (Ebene 6, Role Packs) und `<RULES_DIR>/40-*.md` (Ebene 5, Technology Packs), soweit vorhanden"
+  ],
+  "root_instruction_imports_intro": "Dein Client laedt von sich aus nur diese Datei. Die folgenden Regeldateien sind Bestandteil dieser Anweisung und **zu Beginn der Sitzung zu lesen**, bevor du die erste Aufgabe bearbeitest; sie gelten wie der Text dieser Datei:",
+  "agent_frontmatter": {
+    "tools_field": "allowed-tools",
+    "tools_format": "list",
+    "tool_names": {},
+    "_tool_names_note": "LEER, UND DAS IST DIE AUSSAGE: Kein Verb ist abgebildet, alle fuenf stehen in tool_names_unmapped. Die Abbildung waere geraten - der Bestand der Frontmatter-Felder dieses Clients ist unerhoben (2026-09-23, tests/protocols/2026-09-23-bau-openai-codex.md).",
+    "tool_names_unmapped": [
+      "read",
+      "grep",
+      "glob",
+      "edit",
+      "exec"
+    ],
+    "_tool_names_unmapped_note": "Dieses Pack bildet die Werkzeugverben des Frontmatters NICHT ab, und das ist eine Aussage ueber den Belegstand (Bauform wie hook_tools_absent nach D-47, D-78). Gemessen am 2026-09-23 ist, dass dieser Client Skills aus zwei projektlokalen Ablagen laedt und sie samt Herkunft in den Sitzungskontext stellt. NICHT gemessen ist, ob und wie ein Frontmatter-Feld den Werkzeugbestand eines Skills oder eines Unteragenten begrenzt, und unbekannte Frontmatter-Felder meldet dieser Client nicht. Eine Abbildung ohne Messung waere eine Zusage ohne Mechanismus; die Quellform bleibt deshalb unveraendert stehen, und die Zeilen S3 und A1 des Packs sagen, was das wert ist. Erhebungsstand 2026-09-23, tests/protocols/2026-09-23-bau-openai-codex.md; was hier fehlt, ist unerhoben.",
+    "_agent_role_note": "Das Agentenprofil des Frameworks wird als Markdown unter <AGENTS_DIR> abgelegt. Die Rollendatei, die dieser Client liest, ist eine TOML-Datei mit den Pflichtfeldern name, description und developer_instructions - gemessen am 2026-09-23, samt der Meldung, die ein fehlendes Pflichtfeld erzeugt. Die Abbildung darauf ist NICHT gebaut, weil die Wirkung unerhoben ist; Zeile A1 des Packs fuehrt sie als [NICHT ABBILDBAR] mit benanntem Ersatz."
+  },
+  "agent_start_tools": [],
+  "agent_start_tools_absent": [
+    "unerhoben"
+  ],
+  "_agent_start_tools_absent_note": "Dieser Client startet Unteragenten - der Prompt-Eingang fuehrt am 2026-09-23 die Werkzeuge spawn_agent, followup_task, send_message, wait_agent, interrupt_agent und list_agents in einer eigenen Nachricht auf. NICHT gemessen ist, unter welchem Namen ein solcher Start durch den Schutz-Hook laeuft und ob die Werkzeugaufrufe des Unteragenten den Hook erreichen. Die Namen stehen deshalb NICHT in agent_start_tools: Eine Abbildung ohne Messung waere dieselbe Lage, aus der AP2-CC-13 kam. Pruefung 34 laesst ein Pack mit dieser Erklaerung nur durch, solange Zeile A1 nicht [TECHNISCH] sagt - sie sagt es nicht. Erhebungsstand 2026-09-23, tests/protocols/2026-09-23-bau-openai-codex.md; was hier fehlt, ist unerhoben.",
+  "hook_path_fields": [
+    "file_path",
+    "path",
+    "command"
+  ],
+  "_hook_path_fields_note": "Die Felder von tool_input, die bei diesem Client einen Pfad tragen koennen. Gemessen am 2026-09-23: Das Ausfuehrungswerkzeug fuehrt 'command' mit der vollstaendigen Befehlszeile; das Schreibwerkzeug fuehrt EBENFALLS 'command', und der Pfad steht INNERHALB des Patchtextes ('*** Add File: neu.txt'), nicht in einem eigenen Feld. ➡️ Ein Pfadfeld, das keinen Pfad fuehrt, ist der Grund, warum die Zeile B4 dieses Packs die Musterpruefung ueber den Text und nicht ueber den Feldwert fuehrt. file_path und path stehen vorsorglich; fuer sie ist kein Beleg erhoben."
+}

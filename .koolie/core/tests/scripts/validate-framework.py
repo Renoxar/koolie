@@ -653,7 +653,43 @@ Prüft (statisch, ohne laufenden KI-Client):
      erledigt sein und kommt durch; dieselbe Bauform wie 77 (Version, nicht Inhalt) und
      82 (Behauptung, nicht Tatsache), K-116. PREIS: Wer einen Posten verschiebt, fasst
      die Ueberschrift an - und genau das ist der Zweck
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 85 laeuft als eigenes
+ 86. Die Sperrform des Schutz-Hooks wirkt beim genannten Client (D-347): Ein Pack, das
+     eine eigene Sperrform nennt (hook_block_form), bekommt sie nur, wenn das Skript
+     sie kennt, fuer sie WIRKLICH eine Sperre dieser Form ausgibt und die erzeugte
+     Hook-Konfiguration sie am Kommando durchreicht. ANLASS, gemessen am 2026-09-23 an
+     einer realen Installation von openai-codex: Die bis dahin einzige Sperrform -
+     {"decision": "block"} und Exit 2 - bewirkt bei diesem Client NICHTS. Der Client
+     meldet den Hook als fehlgeschlagen und FUEHRT DIE OPERATION AUS; im Gegenlauf kam
+     der Koederinhalt woertlich heraus. Dieselbe Sperre in seiner Form blockiert, und
+     zwar auch im Betriebsmodus ohne Rueckfragen und ohne Sandkasten.
+     ➡️ EIN HOOK, DER LAEUFT UND DESSEN SPERRFORM DER CLIENT NICHT LIEST, IST EINE
+     ZUSAGE OHNE MECHANISMUS - und nichts meldet es. Geprueft wird die Kette und nicht
+     das Manifestfeld, dieselbe Bauform wie Pruefung 17
+ 87. Die formatgebundenen Pruefungen stehen im Pack (D-346): Ein Client Pack, dessen
+     Berechtigungsdatei eine andere Ausgabeform hat als JSON (permissions_format),
+     nennt in Abschnitt 5 seines CLIENT_PACK.md jede Nummer aus
+     FORMATGEBUNDENE_PRUEFUNGEN - und keine, die dort nicht steht. ANLASS: Mit dem
+     dritten Pack gibt es zum ersten Mal zwei Ausgabeformen; sechs Pruefungen lesen die
+     eine und haben fuer die andere keinen Gegenstand. Sie still zu ueberspringen waere
+     die Bauform von 0.57.0 - zwei Stellen, die einander decken: Der Validator liefe
+     gruen, und niemand wuesste, dass sechs Pruefungen dieses Pack nicht erreichen.
+     ➡️ EINE LUECKE, DIE ERKLAERT IST, IST EINE AUSSAGE; EINE, DIE NUR BESTEHT, IST EIN
+     BLINDER FLECK. ⚠️ GRENZE: Sie prueft die NENNUNG, nicht die Richtigkeit der
+     Begruendung - dieselbe Bauform wie Pruefung 19
+ 88. Keine Datei, die die Wurzel-Anweisung verdraengt (D-341): Bei einem Client, dessen
+     Pack root_instruction_override fuehrt, darf die Datei aus
+     <ROOT_INSTRUCTION_LOCAL> nicht im Projektbaum liegen. ANLASS, gemessen mit
+     Gegenprobe in der Erhebung von 1.3.0: Liegt AGENTS.override.md im Projekt, steht
+     die Wurzel-Anweisung des Frameworks in KEINER Nachricht der Sitzung; ohne sie
+     steht sie darin. Ein Projekt, das die Datei in sein .gitignore schreibt - der
+     naheliegende Ort fuer eine persoenliche Fassung -, haette eine unversionierte
+     Ebene 1 je Arbeitsplatz. ➡️ EINE WURZEL-ANWEISUNG, DIE EINE UNGEPRUEFTE DATEI IM
+     SELBEN VERZEICHNIS ERSETZEN KANN, IST KEINE EBENE 1 - SIE IST EIN STANDARD. Der
+     Schutz hat drei Teile: Der deny-Korb stellt die Datei schreibgeschuetzt, der
+     Schutz-Hook fuehrt sie in seinen Mustern, und diese Pruefung meldet sie, wenn sie
+     trotzdem da ist - ein Mensch kann sie weiterhin anlegen, und dann soll es nicht
+     still bleiben
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 88 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -692,6 +728,43 @@ from overlay_status import (  # noqa: E402
 
 # Name des Kernverzeichnisses. Er steht hier einmal statt an drei Stellen im Skript.
 KERN = ".koolie/core"
+
+# ---------------------------------------------------------------------------
+# AUSGABEFORM DER BERECHTIGUNGSDATEI - UND DIE PRUEFUNGEN, DIE AN IHR HAENGEN
+# ---------------------------------------------------------------------------
+# ANLASS (CR-2026-133, D-346). Bis 1.3.0 hatte jedes Client Pack dieselbe Ausgabeform:
+# eine JSON-Datei mit den Koerben deny/ask/allow aus Regeln der Gestalt
+# Werkzeug(Muster). Zwoelf Pruefungen lesen sie so. Das dritte Pack hat diese Gestalt
+# nicht - es bindet Pfade an Zugriffsarten in einer TOML-Tabelle und Befehle in einer
+# eigenen Regelsprache.
+#
+# EINE PRUEFUNG, DIE EINE FREMDE FORM LIEST, MELDET EINEN FEHLER, DEN ES NICHT GIBT;
+# EINE, DIE SIE STILL UEBERSPRINGT, MISST EIN PACK NICHT UND SAGT ES NICHT.
+# ➡️ Deshalb steht die Menge hier, sie wird benannt, und Pruefung 87 haelt sie gegen den
+#    Abschnitt 5 des betroffenen Packs. Aus einer stillen Luecke wird eine erklaerte.
+#
+# Ein Pack sagt seine Form im Manifest (permissions_format); der Standard ist "json" -
+# eine Form wird gesagt, nicht durch Schweigen geerbt.
+FORMATGEBUNDENE_PRUEFUNGEN = {
+    2: "Berechtigungsdatei als JSON, Kernregeln unter _core_rules_integrity",
+    37: "Die drei Koerbe der installierten Datei gegen die Kernquelle",
+    42: "Der Befehlsschlitz traegt den Befehl, den das Overlay erklaert",
+    43: "Die Berechtigungsdatei traegt den Hook, den das Pack dort fuehrt",
+    54: "Deklarierte Zusatzschluessel stehen auf ihrer Ebene",
+    76: "Das Pack steht im eigenen deny-Korb",
+}
+
+
+def formatgebunden(man: dict, nummer: int) -> bool:
+    """Wahr, wenn diese Pruefung an die Form 'json' gebunden ist und das Pack eine
+    andere fuehrt. Der Aufrufer kehrt dann zurueck, ohne zu melden - die Auslassung
+    steht in FORMATGEBUNDENE_PRUEFUNGEN und wird von Pruefung 87 eingefordert."""
+    if nummer not in FORMATGEBUNDENE_PRUEFUNGEN:
+        raise KeyError(
+            f"Pruefung {nummer} beruft sich auf die Ausgabeform, steht aber nicht in "
+            f"FORMATGEBUNDENE_PRUEFUNGEN. Eine Auslassung, die nirgends steht, ist die "
+            f"stille Luecke, die D-346 abgestellt hat")
+    return man.get("permissions_format", "json") != "json"
 
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
@@ -1066,6 +1139,8 @@ def soll_kernregeln(root: str, man: dict) -> list[str]:
 
 
 def check_config(root: str, man: dict) -> None:
+    if formatgebunden(man, 2):
+        return
     rel = man["permissions_file"]
     path = os.path.join(root, *rel.split("/"))
     if not os.path.exists(path):
@@ -1455,11 +1530,25 @@ def check_rules(root: str, man: dict) -> None:
             if trig == "glob" and not fm.get("globs"):
                 err(f"{rel}: trigger glob ohne globs")
         else:
-            # Ohne eigene Ladebedingung entscheidet der Import. Eine Kernregel muss
-            # eingebunden sein, sonst waere sie wirkungslos.
-            eingebunden = f"@{rel}" in wurzel_text
+            # Ohne eigene Ladebedingung entscheidet die Einbindung. Eine Kernregel muss
+            # in der Wurzel-Anweisung GENANNT sein, sonst waere sie wirkungslos.
+            #
+            # BIS 1.3.0 VERLANGTE DIESE ZEILE DIE FORM `@<pfad>`, UND DIE FORM WAR
+            # GERATEN (CR-2026-133, D-348): Kein ausgeliefertes Pack war so gebaut, und
+            # die `@`-Schreibweise stammte aus der Wurzel-Anweisung eines anderen
+            # Clients. Am 2026-09-23 ist sie zum ersten Mal an einem Client gemessen
+            # worden, der Regeldateien wirklich nicht von sich aus laedt - und dort
+            # bewirkt `@<pfad>` NICHTS: Die Sonde stand im Prompt-Eingang nicht.
+            #   ➡️ Eine Prüfung, die eine ungemessene Schreibweise verlangt, misst die
+            #      Schreibweise und nicht die Sache.
+            # Geprueft wird deshalb die NENNUNG. Sie ist die schwaechere Form, und das
+            # ist ehrlich: Was eine Nennung bewirkt, haengt am Modell und nicht an der
+            # Engine - die Zeilen R2 und R3 des betroffenen Packs sagen es.
+            eingebunden = rel in wurzel_text
             if fn.startswith(KERNREGEL_PRAEFIXE) and not eingebunden:
-                err(f"{rel}: nicht in {wurzel_rel} eingebunden (@{rel}) – die Regel wäre wirkungslos")
+                err(f"{rel}: nicht in {wurzel_rel} genannt – die Regel wäre wirkungslos, "
+                    f"weil dieser Client Regeldateien nicht von sich aus lädt "
+                    f"(manifest.json: has_rule_triggers = false)")
             if eingebunden:
                 stets_geladen += len(text)
             if text.startswith("---"):
@@ -9535,6 +9624,198 @@ def check_zielangabe(root: str) -> None:
             f"ZIELANGABE, nicht den STAND des Postens (D-342, `K-116`)")
 
 
+
+# ---------------------------------------------------------------------------
+# PRUEFUNG 86: DIE SPERRFORM DES SCHUTZ-HOOKS
+# ---------------------------------------------------------------------------
+# ANLASS, UND ER IST GEMESSEN (CR-2026-133, D-347). Ein Hook, der laeuft, ist nicht
+# dasselbe wie ein Hook, der sperrt. Am 2026-09-23 ist an einer realen Installation von
+# openai-codex gemessen worden, was die bis dahin einzige Sperrform des Schutz-Hooks -
+# das Objekt {"decision": "block"} und Exit-Code 2 - bei diesem Client bewirkt: NICHTS.
+# Der Client meldet den Hook als fehlgeschlagen und fuehrt die Operation aus; im
+# Gegenlauf kam der Koederinhalt woertlich heraus. Dieselbe Sperre in der Form, die
+# dieser Client liest, blockiert - und zwar auch in dem Betriebsmodus, der Rueckfragen
+# und Sandkasten abschaltet.
+#   ➡️ Eine Sperre ist eine AUSSAGE AN DEN CLIENT, und ihre Form ist clientgebunden.
+#      Ein Pack, das die falsche nennt, liefert einen Schutz-Hook aus, der laeuft,
+#      etwas ausgibt und nichts verhindert - und nichts meldet es.
+#
+# GEPRUEFT WIRD DIE KETTE, NICHT DAS MANIFESTFELD - dieselbe Bauform wie Pruefung 17:
+#   (1) die vom Pack genannte Form steht in der Formenliste des Skripts,
+#   (2) das Skript gibt fuer sie wirklich eine Sperre dieser Form aus (Aufruf mit einer
+#       Eingabe, die es blockieren muss),
+#   (3) die erzeugte Hook-Konfiguration reicht die Form am Kommando durch.
+# Ohne (2) bliebe es bei einem Listenvergleich, und ein Listenvergleich belegt
+# Uebereinstimmung, nicht Wirkung.
+def check_sperrform(root: str, man: dict) -> None:
+    """Pruefung 86 (D-347): Die Sperrform des Schutz-Hooks wirkt beim genannten Client."""
+    kern = os.path.join(root, KERN)
+    skript = os.path.join(kern, "tests", "scripts", "hook-check-secrets.py")
+    if not os.path.exists(skript):
+        return
+    quelle = read(skript)
+    m = re.search(r"^SPERRFORMEN\s*=\s*\(([^)]*)\)", quelle, re.M)
+    if not m:
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: keine Liste SPERRFORMEN. "
+            f"Ohne sie kann kein Pack seine Sperrform nennen, und Prüfung 86 hätte "
+            f"keinen Gegenstand (D-23)")
+        return
+    bekannt = set(re.findall(r'"([^"]+)"', m.group(1)))
+
+    form = man.get("hook_block_form")
+    if form and form not in bekannt:
+        err(f"clients/{man.get('client', '?')}/manifest.json: hook_block_form "
+            f"'{form}' kennt das Skript des Schutz-Hooks nicht. Bekannt sind "
+            f"{', '.join(sorted(bekannt))}. Eine Sperrform, die das Skript nicht kennt, "
+            f"fällt auf die Standardform zurück – und die ist bei diesem Client "
+            f"gemessen wirkungslos (D-347)")
+        return
+
+    # (2) Wirkung: Das Skript blockiert eine Eingabe, die es blockieren MUSS, und gibt
+    # dabei die verlangte Form aus.
+    eingabe = json.dumps({
+        "hook_event_name": "PreToolUse", "cwd": root,
+        "tool_name": "Write", "tool_input": {"file_path": ".env"}})
+    argumente = [sys.executable, skript]
+    if form:
+        argumente += ["--sperrform", form]
+    try:
+        lauf = subprocess.run(argumente, input=eingabe, capture_output=True,
+                              text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError) as exc:
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: nicht ausführbar ({exc}); "
+            f"Prüfung 86 kann die Sperrform nicht an ihrer Wirkung messen")
+        return
+    try:
+        ausgabe = json.loads(lauf.stdout.strip() or "{}")
+    except json.JSONDecodeError:
+        ausgabe = {}
+    if form == "hook-specific-output":
+        entscheidung = (ausgabe.get("hookSpecificOutput") or {}).get("permissionDecision")
+        if entscheidung != "deny" or lauf.returncode != 0:
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: Sperrform "
+                f"'hook-specific-output' verlangt permissionDecision 'deny' und "
+                f"Exit 0; gemessen wurden '{entscheidung}' und Exit {lauf.returncode}. "
+                f"Ein Exit ungleich 0 ist bei diesem Client ein FEHLGESCHLAGENER Hook, "
+                f"und ein fehlgeschlagener Hook lässt die Operation laufen (D-347)")
+    else:
+        if ausgabe.get("decision") != "block" or lauf.returncode != 2:
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: Standard-Sperrform "
+                f"verlangt decision 'block' und Exit 2; gemessen wurden "
+                f"'{ausgabe.get('decision')}' und Exit {lauf.returncode}")
+
+    # (3) Die erzeugte Konfiguration reicht die Form durch.
+    if not form:
+        return
+    hooks_rel = (man.get("runtime_placeholders") or {}).get("<HOOKS_FILE>")
+    if not hooks_rel:
+        return
+    pfad = os.path.join(root, *hooks_rel.split("/"))
+    if not os.path.exists(pfad):
+        return
+    text = read(pfad)
+    if "hook-check-secrets.py" in text and f"--sperrform {form}" not in text:
+        err(f"{hooks_rel}: das Kommando des Schutz-Hooks trägt die Sperrform "
+            f"'{form}' nicht. Das Pack nennt sie, die erzeugte Datei reicht sie nicht "
+            f"durch – der Hook liefe mit der Standardform und sperrte bei diesem "
+            f"Client nichts (D-347)")
+
+
+# ---------------------------------------------------------------------------
+# PRUEFUNG 87: DIE FORMATGEBUNDENEN PRUEFUNGEN STEHEN IM PACK
+# ---------------------------------------------------------------------------
+# ANLASS (CR-2026-133, D-346). Mit dem dritten Client Pack gibt es zum ersten Mal zwei
+# Ausgabeformen der Berechtigungsdatei. Zwoelf Pruefungen lesen die eine; fuer die
+# andere haben sie keinen Gegenstand. Sie still zu ueberspringen, waere die Bauform von
+# 0.57.0 - "zwei Stellen, die einander decken": Der Validator liefe gruen, und niemand
+# wuesste, dass sechs Pruefungen dieses Pack nicht erreichen.
+#   ➡️ Eine Luecke, die erklaert ist, ist eine Aussage; eine, die nur besteht, ist ein
+#      blinder Fleck.
+# Diese Pruefung verlangt deshalb: Ein Pack mit einer anderen Ausgabeform nennt in
+# Abschnitt 5 seines CLIENT_PACK.md JEDE Nummer aus FORMATGEBUNDENE_PRUEFUNGEN - und
+# keine Nummer mehr, die dort nicht steht.
+# ⚠️ GRENZE, BENANNT: Sie prueft die NENNUNG, nicht die Richtigkeit der Begruendung -
+#    dieselbe Bauform wie Pruefung 19. Und sie haengt daran, dass jemand eine neu
+#    guardete Pruefung in die Menge eintraegt; die Funktion `formatgebunden` erzwingt
+#    das, indem sie eine unbekannte Nummer als Fehler wirft.
+def check_formatgebundene_pruefungen(root: str) -> None:
+    """Pruefung 87 (D-346): Ein Pack mit eigener Ausgabeform nennt die Pruefungen,
+    die es damit nicht erreichen."""
+    packs = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(packs):
+        return
+    for name in sorted(os.listdir(packs)):
+        mf = os.path.join(packs, name, "manifest.json")
+        if not os.path.exists(mf):
+            continue
+        try:
+            man = json.loads(read(mf))
+        except (OSError, ValueError):
+            continue
+        if man.get("permissions_format", "json") == "json":
+            continue
+        pack = os.path.join(packs, name, "CLIENT_PACK.md")
+        if not os.path.exists(pack):
+            continue
+        text = read(pack)
+        abschnitt = re.split(r"^## 5\.", text, maxsplit=1, flags=re.M)
+        if len(abschnitt) < 2:
+            err(f"{KERN}/clients/{name}/CLIENT_PACK.md: Abschnitt 5 fehlt; dort gehört "
+                f"die Liste der Prüfungen, die dieses Pack wegen seiner Ausgabeform "
+                f"'{man['permissions_format']}' nicht erreichen (D-346)")
+            continue
+        rumpf = re.split(r"^## 6\.", abschnitt[1], maxsplit=1, flags=re.M)[0]
+        genannt = {int(n) for n in re.findall(r"Prüfung\s+(\d+)", rumpf)}
+        fehlend = sorted(set(FORMATGEBUNDENE_PRUEFUNGEN) - genannt)
+        if fehlend:
+            err(f"{KERN}/clients/{name}/CLIENT_PACK.md Abschnitt 5: die Prüfung(en) "
+                f"{', '.join(str(n) for n in fehlend)} sind an die Ausgabeform 'json' "
+                f"gebunden und erreichen dieses Pack nicht – der Abschnitt nennt sie "
+                f"nicht. Eine Lücke, die nirgends steht, ist ein blinder Fleck (D-346)")
+        zuviel = sorted(genannt - set(FORMATGEBUNDENE_PRUEFUNGEN))
+        if zuviel:
+            err(f"{KERN}/clients/{name}/CLIENT_PACK.md Abschnitt 5: die Prüfung(en) "
+                f"{', '.join(str(n) for n in zuviel)} werden als formatgebunden "
+                f"genannt, stehen aber nicht in FORMATGEBUNDENE_PRUEFUNGEN. Eine "
+                f"behauptete Lücke, die es nicht gibt, ist so falsch wie eine "
+                f"verschwiegene (D-346)")
+
+
+# ---------------------------------------------------------------------------
+# PRUEFUNG 88: DIE DATEI, DIE DIE WURZEL-ANWEISUNG VERDRAENGT
+# ---------------------------------------------------------------------------
+# ANLASS, UND ER IST DER SCHWERSTE BEFUND DER ERHEBUNG VON 1.3.0 (D-341, hier
+# durchgesetzt mit CR-2026-133). Bei einem Client kann eine Datei NEBEN der
+# Wurzel-Anweisung diese vollstaendig ersetzen: Liegt sie im Projekt, steht die
+# Wurzel-Anweisung des Frameworks in KEINER Nachricht der Sitzung - gemessen mit
+# Gegenprobe. Ein aufnehmendes Projekt, das die Datei in sein `.gitignore` schreibt -
+# der naheliegende Ort fuer eine persoenliche Fassung -, haette damit eine
+# unversionierte Ebene 1 je Arbeitsplatz.
+#   ➡️ Eine Wurzel-Anweisung, die eine ungepruefte Datei im selben Verzeichnis ersetzen
+#      kann, ist keine Ebene 1 - sie ist ein Standard.
+# Welches Pack eine solche Datei kennt, sagt das Manifest (root_instruction_override).
+# Der Schutz besteht aus drei Teilen, und dies ist der dritte: Der deny-Korb stellt die
+# Datei schreibgeschuetzt, der Schutz-Hook fuehrt sie in seinen Mustern - und diese
+# Pruefung MELDET SIE, wenn sie trotzdem da ist. Die ersten beiden verhindern, dass der
+# Agent sie anlegt; ein Mensch kann es weiterhin, und dann soll es nicht still bleiben.
+def check_verdraengende_wurzelanweisung(root: str, man: dict) -> None:
+    """Pruefung 88 (D-341, D-347): Keine Datei, die die Wurzel-Anweisung verdraengt."""
+    if not man.get("root_instruction_override"):
+        return
+    rel = (man.get("runtime_placeholders") or {}).get("<ROOT_INSTRUCTION_LOCAL>")
+    if not rel:
+        err(f"clients/{man.get('client', '?')}/manifest.json: root_instruction_override "
+            f"ist gesetzt, aber <ROOT_INSTRUCTION_LOCAL> fehlt in runtime_placeholders – "
+            f"Prüfung 88 wüsste nicht, welche Datei sie meldet (D-23)")
+        return
+    if os.path.exists(os.path.join(root, *rel.split("/"))):
+        err(f"{rel}: liegt im Projekt und VERDRÄNGT bei diesem Client die "
+            f"Wurzel-Anweisung {man.get('root_instruction_file', '?')} vollständig – "
+            f"deren Text steht dann in keiner Nachricht der Sitzung. Ebene 1 der "
+            f"Prioritätshierarchie wäre damit durch eine ungeprüfte Datei ersetzt, und "
+            f"bis 1.4.0 meldete es nichts (D-341)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -9635,6 +9916,9 @@ def main() -> int:
     check_chronikspanne(root)
     check_vorlage_kein_pack(root)
     check_zielangabe(root)
+    check_sperrform(root, man)
+    check_formatgebundene_pruefungen(root)
+    check_verdraengende_wurzelanweisung(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

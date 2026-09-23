@@ -84,21 +84,42 @@ SECRET_PATTERNS = [
 # entschied sie verschieden (gemessen mit os.path.samefile als Vorpruefung). Auf POSIX ist
 # re.I eine Verschaerfung - dieselbe Begruendung, mit der ein Muster schon bisher AGENTS
 # und CLAUDE gemeinsam fuehrt: Ein zusaetzlich geschuetzter Pfad ist keine Lockerung.
+# DIE GRENZE VOR EINEM PFAD - UND WARUM SIE SEIT 1.4.0 AUCH EIN LEERZEICHEN IST
+# (CR-2026-133, D-347). Bis 1.3.0 hiess sie `(^|[\\/])`: Ein Pfad musste am Anfang der
+# Zeichenkette stehen oder auf einen Schraegstrich folgen. Das traegt, solange der Pfad
+# in einem eigenen Feld oder als eigenes Befehlstoken steht - und genau das ist beim
+# dritten Client Pack nicht mehr der Fall. Gemessen am 2026-09-23 an einer realen
+# Installation: Das Schreibwerkzeug von openai-codex fuehrt keinen Pfad in einem Feld;
+# es fuehrt einen PATCHTEXT, und der Pfad steht darin hinter einem Leerzeichen
+# ("*** Add File: .koolie/core/notiz.txt"). Der Hook lief, sah den Text - und die
+# Musterpruefung traf nicht. Die Datei wurde angelegt.
+#   ➡️ Eine Grenze, die nur den Schraegstrich kennt, misst die Schreibweise und nicht
+#      die Sache.
+# Die Erweiterung ist eine VERSCHAERFUNG und gilt fuer alle drei Packs: Es kommen
+# Treffer hinzu, es faellt keiner weg.
+_GRENZE = r"(^|[\s\\/])"
+
 SECRET_PATH_PATTERNS = [
-    re.compile(r"(^|[\\/])\.env(\.|$)", re.I),
+    re.compile(_GRENZE + r"\.env(\.|$)", re.I),
     re.compile(r"\.(pem|key|p12|pfx|jks|keystore)$", re.I),
-    re.compile(r"(^|[\\/])id_(rsa|ed25519|ecdsa)", re.I),
-    re.compile(r"(^|[\\/])secrets?[\\/]", re.I),
+    re.compile(_GRENZE + r"id_(rsa|ed25519|ecdsa)", re.I),
+    re.compile(_GRENZE + r"secrets?[\\/]", re.I),
 ]
 
 STRUCTURE_PATH_PATTERNS = [
     # Wurzel-Anweisungsdatei und Laufzeitschicht heissen je nach Client anders. Bewusst
-    # beide Formen: Das Skript wird von allen Client Packs geteilt, und ein zusaetzlich
+    # alle Formen: Das Skript wird von allen Client Packs geteilt, und ein zusaetzlich
     # geschuetzter Pfad ist eine Verschaerfung, keine Lockerung.
-    re.compile(r"(^|[\\/])(AGENTS|CLAUDE)\.md$", re.I),
-    re.compile(r"(^|[\\/])\.(devin|claude)[\\/]", re.I),
-    re.compile(r"(^|[\\/])\.koolie[\\/]project-overlay[\\/]", re.I),
-    re.compile(r"(^|[\\/])framework[\\/]core[\\/]", re.I),
+    #
+    # AGENTS.override.md STEHT SEIT 1.4.0 MIT, und der Grund ist gemessen: Bei
+    # openai-codex verdraengt diese Datei die Wurzel-Anweisung VOLLSTAENDIG - liegt sie
+    # im Projekt, steht die Anweisung des Frameworks in keiner Nachricht der Sitzung.
+    # Eine Datei, die Ebene 1 lautlos ersetzt, ist mindestens so schutzwuerdig wie die
+    # Ebene selbst.
+    re.compile(_GRENZE + r"(AGENTS|CLAUDE)(\.[A-Za-z0-9_-]+)?\.md$", re.I),
+    re.compile(_GRENZE + r"\.(devin|claude|codex)[\\/]", re.I),
+    re.compile(_GRENZE + r"\.koolie[\\/]project-overlay[\\/]", re.I),
+    re.compile(_GRENZE + r"framework[\\/]core[\\/]", re.I),
 ]
 
 # Fuer schreibende Werkzeuge gelten beide Ziele. Die Zusatzmuster aus der Umgebung
@@ -263,7 +284,7 @@ TOKEN_DECKEL = 64
 _CORE_MUSTER = r"[\\/]".join(re.escape(_s) for _s in CORE_REL.split("/"))
 
 PROTECTED_WRITE_PATH_PATTERNS = [
-    re.compile(r"(^|[\\/])" + _CORE_MUSTER + r"[\\/]", re.I),
+    re.compile(_GRENZE + _CORE_MUSTER + r"[\\/]", re.I),
 ]
 
 # Zusätzliche projektspezifische Muster können über die Umgebungsvariable
@@ -318,7 +339,43 @@ def fail_closed() -> bool:
     return "--fail-closed" in sys.argv[1:] or os.environ.get("FW_HOOK_FAIL_CLOSED") == "1"
 
 
+# DIE SPERRFORMEN, UND WARUM ES MEHR ALS EINE GIBT (CR-2026-133, D-347).
+# Eine Sperre ist eine Aussage an den Client, und ihre Form ist clientgebunden. Bis
+# 1.3.0 kannte dieses Skript genau eine: das Objekt {"decision": "block"} auf stdout
+# und Exit-Code 2. Am 2026-09-23 ist an einer realen Installation von openai-codex
+# gemessen worden, was diese Form dort bewirkt: NICHTS. Der Client meldet den Hook als
+# fehlgeschlagen und fuehrt die Operation aus - im Lauf kam der Koederinhalt woertlich
+# heraus. Dieselbe Sperre in der Form, die dieser Client liest, blockiert; und sie
+# blockiert auch in dem Modus, der Rueckfragen und Sandkasten abschaltet.
+#   ➡️ Ein Hook, der laeuft, dessen Sperrform der Client aber nicht liest, ist eine
+#      Zusage ohne Mechanismus - und nichts meldet es.
+# Welche Form gilt, sagt das Client Pack (hook_block_form im Manifest); die Abbildung
+# haengt sie als --sperrform an das Kommando, aus demselben Grund wie --fail-closed
+# (D-31). Ohne Angabe bleibt es bei der bisherigen Form - ein Pack erbt die neue Form
+# nicht durch Schweigen.
+SPERRFORMEN = ("decision-block", "hook-specific-output")
+
+
+def sperrform() -> str:
+    argv = sys.argv[1:]
+    if "--sperrform" in argv:
+        i = argv.index("--sperrform")
+        if i + 1 < len(argv) and argv[i + 1] in SPERRFORMEN:
+            return argv[i + 1]
+    return "decision-block"
+
+
 def block(reason: str) -> None:
+    form = sperrform()
+    if form == "hook-specific-output":
+        # Diese Form traegt ihren Grund IM Objekt und endet mit Exit 0: Der Client
+        # liest die Entscheidung, nicht den Exit-Code. Ein Exit 2 waere hier ein
+        # fehlgeschlagener Hook und damit eine durchgelassene Operation.
+        print(json.dumps({"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": reason}}, ensure_ascii=False))
+        sys.exit(0)
     print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
     sys.exit(2)
 

@@ -484,20 +484,46 @@ def _hook_befehl(script: str, man: dict, enforcing: bool = False,
     eines Packs nicht (D-30, fortgeschrieben mit CR-2026-037).
     """
     variable = man.get("hook_project_dir_var")
-    if not variable:
+    ausdruck = man.get("hook_project_dir_expr")
+    if not variable and not ausdruck:
         raise AbbildungsFehler(
             f"{man.get('client', '?')}/manifest.json: Feld hook_project_dir_var fehlt")
-    befehl = (python_interpreter() + ' "$' + variable + '/'
+    # WARUM ES DANEBEN EINEN AUSDRUCK GIBT (CR-2026-133, D-347). Eine Variable ist
+    # nur eine der Formen, in denen ein Client dem Hook sein Projektverzeichnis sagt -
+    # und bei openai-codex ist es keine: Am 2026-09-23 ist der Hook-Prozess
+    # aufgezeichnet worden, und seine Umgebung fuehrt AUSSER CODEX_HOME nichts; sein
+    # ARBEITSVERZEICHNIS ist das Projektverzeichnis. Eine Variable, die es nicht gibt,
+    # haette das Kommando auf einen Pfad unterhalb der Wurzel zeigen lassen - der Hook
+    # waere gestartet worden und haette nichts gefunden.
+    wurzel = ausdruck if ausdruck else "$" + variable
+    befehl = (python_interpreter() + ' "' + wurzel + '/'
               + core_dir_name(man) + '/' + script + '"')
     if enforcing and man.get("hook_fail_closed") is True:
         befehl += " --fail-closed"
+    if enforcing:
+        # DIE SPERRFORM GEHOERT IN DAS KOMMANDO, UND DER GRUND IST GEMESSEN
+        # (CR-2026-133, D-347). Ein durchsetzender Hook sagt seinem Client, dass er
+        # sperrt - und die Form dieser Aussage ist clientgebunden. Am 2026-09-23 an
+        # einer realen Installation von openai-codex gemessen: Die bisherige Form
+        # ({"decision": "block"} und Exit 2) meldet der Client als FEHLGESCHLAGENEN
+        # Hook und FUEHRT DIE OPERATION AUS - im Gegenlauf kam der Koederinhalt
+        # woertlich heraus. Dieselbe Sperre in der Form, die dieser Client liest,
+        # blockiert - auch im Modus, der Rueckfragen und Sandkasten abschaltet.
+        # ➡️ Ein Hook, der laeuft und dessen Sperrform der Client nicht liest, ist
+        #    eine Zusage ohne Mechanismus, und nichts meldet es.
+        # Der Standard bleibt die bisherige Form; ein Pack, das eine andere braucht,
+        # SAGT sie. Pruefung 86 verlangt von jedem Pack mit durchsetzendem Hook, dass
+        # das Skript die genannte Form kennt.
+        form = man.get("hook_block_form")
+        if form:
+            befehl += " --sperrform " + form
     if needs_project_paths:
         regelablage = man.get("runtime_placeholders", {}).get("<RULES_DIR>")
         if not regelablage:
             raise AbbildungsFehler(
                 f"{man.get('client', '?')}/manifest.json: <RULES_DIR> fehlt in "
                 f"runtime_placeholders; der meldende Hook braucht die Regelablage")
-        befehl += ' "$' + variable + '" "' + regelablage + '"'
+        befehl += ' "' + wurzel + '" "' + regelablage + '"'
     return befehl
 
 
@@ -512,6 +538,11 @@ def _hooks_objekt(quelltext: str, man: dict) -> dict:
             neu: dict = {}
             if "on" in eintrag:
                 neu["matcher"] = _hook_matcher(eintrag["on"], man)
+            # Zusatzfelder, die dieser Client je Hook-Eintrag verlangt. Bei
+            # openai-codex ist das "enabled": true - gemessen am 2026-09-23: ohne
+            # dieses Feld laeuft der Eintrag nicht, und der Client meldet es nicht.
+            # Ein Pack, das kein solches Feld braucht, fuehrt das Manifestfeld nicht.
+            neu.update(man.get("hook_handler_extra") or {})
             # "enforcing" und "needs_project_paths" sind Steuerinformation der
             # Kernquelle und keine Felder des Clients; sie steuern nur, ob das Kommando
             # --fail-closed traegt und ob ihm Projektverzeichnis und Regelablage folgen.
@@ -529,8 +560,20 @@ def _hooks_objekt(quelltext: str, man: dict) -> dict:
 
 
 def render_hooks(quelltext: str, man: dict) -> str:
-    """Eigenstaendige Hook-Datei fuer Clients, die eine kennen."""
-    return json.dumps(_hooks_objekt(quelltext, man), indent=2, ensure_ascii=False) + "\n"
+    """Eigenstaendige Hook-Datei fuer Clients, die eine kennen.
+
+    Manche Clients erwarten die Ereignisse unter einem Schluessel der obersten Ebene
+    statt unmittelbar in der Datei. Welcher das ist, sagt das Pack in
+    hooks_file_wrapper - gemessen, nicht geraten: Bei openai-codex meldet der Client
+    eine Datei ohne diesen Schluessel mit *unknown field `PreToolUse`* und LAEDT SIE
+    NICHT; er startet trotzdem, und ohne die Meldung im Blick haette man einen
+    ausgelieferten Schutz-Hook gehabt, der nie laeuft (D-347).
+    """
+    objekt = _hooks_objekt(quelltext, man)
+    schluessel = man.get("hooks_file_wrapper")
+    if schluessel:
+        objekt = {schluessel: objekt}
+    return json.dumps(objekt, indent=2, ensure_ascii=False) + "\n"
 
 
 # ---------------------------------------------------------------------------
@@ -551,3 +594,254 @@ def hooks_in_permissions(man: dict) -> bool:
 def load_source(core_dir: str, name: str) -> str:
     with open(os.path.join(core_dir, "framework", "runtime", name), encoding="utf-8") as fh:
         return fh.read()
+
+
+# ---------------------------------------------------------------------------
+# Zweite Ausgabeform: Rechteprofil (TOML) und Befehlsregeln (eigene Regelsprache)
+# ---------------------------------------------------------------------------
+#
+# WARUM ES SIE GIBT, UND DER GRUND IST GEMESSEN (CR-2026-133, D-346). Die erste
+# Ausgabeform rendert Koerbe aus Regeln der Gestalt Werkzeug(Muster) in EINE Datei.
+# Der Client openai-codex kennt diese Gestalt nicht. Er bindet Pfade an eine
+# Zugriffsart (read / write / deny) in einem Rechteprofil seiner Konfigurationsdatei,
+# und Befehle an eigene Regeldateien in einer eigenen Sprache. Die Regelmenge des
+# Kerns zerfaellt damit in ZWEI Erzeugnisse, und keines davon ist eine Liste von
+# Werkzeug(Muster)-Zeilen.
+#
+# WAS DABEI AUSFAELLT, FAELLT NICHT LAUTLOS AUS. Gemessen am 2026-09-23
+# (tests/protocols/2026-09-23-bau-openai-codex.md):
+#   * Ein Musterausdruck ist als Schluessel nur mit ABSOLUTEM oder ~/-Vorsatz
+#     zulaessig - und dann nur fuer die Zugriffsart deny. Ein projektrelativer
+#     Schluessel (":workspace/<pfad>") nimmt KEIN Muster. Musterform und
+#     Versionierbarkeit schliessen einander damit aus, und B3 faellt an beiden Enden.
+#   * Ein deny-Leserecht verlangt ausserdem den erhoehten Windows-Sandkasten; auf
+#     einem unerhoehten Arbeitsplatz LAEUFT DER CLIENT DANN NICHT (fail-closed).
+# Diese Ausgabeform rendert den Lesekorb deshalb NICHT und fuehrt seine Regeln in
+# nicht_abgebildete_pfadregeln() auf. Pruefung 87 haelt die Zahl gegen das Pack; das
+# Pack traegt B3 als [NICHT ABBILDBAR] mit Begruendung, Ersatz und Freigabe nach
+# clients/README.md Abschnitt 4. Eine Regel, die den Client am Starten hindert, waere
+# keine Schranke, sondern ein Ausfall.
+
+
+def _toml_zeichenkette(text: str) -> str:
+    return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def _toml_wert(wert: object) -> str:
+    if wert is True:
+        return "true"
+    if wert is False:
+        return "false"
+    if isinstance(wert, int):
+        return str(wert)
+    return _toml_zeichenkette(str(wert))
+
+
+def _profil_schluessel(rohmuster: str, man: dict) -> str | None:
+    """Projektrelativer Schluessel des Rechteprofils - oder None, wenn nicht abbildbar.
+
+    Abbildbar ist genau, was nach dem Aufloesen der Platzhalter KEIN Muster mehr
+    enthaelt: Die Schluesselsyntax dieses Clients nimmt Muster nur mit absolutem oder
+    ~/-Vorsatz an, und ein absoluter Pfad in einem versionierten Traeger waere ein Wert
+    dieser Arbeitsstation. Ein offener Projektplatzhalter bleibt ebenfalls aus - er
+    traegt eine Liste, die der Overlay Owner fuellt, und die Schluesselseite einer
+    TOML-Tabelle kennt keinen Schlitz.
+    """
+    muster = resolve_placeholders(rohmuster, man)
+    if muster.startswith("<"):
+        return None
+    # Ein Teilbaummuster ist die eine Musterform, die dieser Client projektrelativ
+    # nimmt - gemessen am 2026-09-23: ":workspace/.koolie/**" wird angenommen und
+    # steht danach als Teilbaum ":workspace/.koolie" im wirksamen Profil. Alles
+    # andere - ein Namensmuster wie **/*.lock - bleibt aus.
+    if muster.endswith("/**"):
+        muster = muster[:-3]
+    if any(z in muster for z in ("*", "?", "[")):
+        return None
+    vorsatz = man.get("permission_path_special", ":workspace")
+    if muster.startswith("./"):
+        muster = muster[2:]
+    return vorsatz + "/" + muster
+
+
+def _profil_eintraege(quelle: dict, man: dict) -> tuple[dict, list[str]]:
+    """Die Pfadregeln des Kerns als Eintraege des Rechteprofils.
+
+    Rueckgabe: (Eintraege, nicht abgebildete Rohregeln). Die zweite Haelfte ist der
+    Grund, warum dieser Ausgabeform eine Zeile im Pack gehoert.
+    """
+    eintraege: dict[str, str] = {}
+    offen: list[str] = []
+    for schluessel, wert in (man.get("permission_path_base") or {}).items():
+        eintraege[schluessel] = wert
+    for regel in quelle.get("deny", []):
+        verb = regel.get("tool")
+        if verb == "write":
+            schluessel = _profil_schluessel(regel["pattern"], man)
+            if schluessel is None:
+                offen.append("write " + regel["pattern"])
+                continue
+            # Schreibverbot auf einem Teilbaum heisst hier: lesbar, nicht schreibbar.
+            eintraege[schluessel] = "read"
+        elif verb == "read":
+            offen.append("read " + regel["pattern"])
+    return eintraege, offen
+
+
+def nicht_abgebildete_pfadregeln(quelltext: str, man: dict) -> list[str]:
+    """Die Pfadregeln, die diese Ausgabeform nicht traegt - oeffentlich fuer Pruefung 87."""
+    return _profil_eintraege(json.loads(quelltext), man)[1]
+
+
+def _toml_kommentar(man: dict) -> list[str]:
+    kern = core_dir_name(man)
+    pack = man.get("client", "?")
+    return [
+        "Berechtigungsvorlage des Frameworks (Ebene 3), erzeugt fuer das Client Pack "
+        + pack + ".",
+        "Regelmenge: " + kern + "/framework/runtime/permissions.json. Abbildung auf die",
+        "Form dieses Clients: " + kern + "/clients/" + pack + "/manifest.json.",
+        "Inhaltliche Aenderungen gehoeren dorthin und laufen als Aenderungsantrag.",
+        "Diese Datei traegt die PFADSEITE. Die Befehlsseite steht in der Regeldatei, die",
+        "dasselbe Werkzeug erzeugt; beide zusammen sind die Berechtigungsschicht dieses",
+        "Packs.",
+        "Was diese Datei NICHT traegt, steht in Zeile B3 der Faehigkeitsmatrix des Packs:",
+        "Der Lesekorb des Kerns ist hier nicht abbildbar - ein Muster verlangt einen",
+        "absoluten Vorsatz und waere damit ein Wert dieser Arbeitsstation, und ein",
+        "deny-Leserecht verlangt den erhoehten Windows-Sandkasten.",
+        "Die projektlokale Schicht laedt NUR, wenn dieses Projekt in der Benutzer-",
+        "konfiguration des Clients als vertraut eingetragen ist. Ohne diesen Eintrag",
+        "traegt diese Datei nichts.",
+        "Diese Datei traegt ausschliesslich Schluessel, die der Client kennt: Ein",
+        "unbekannter Schluessel wird gemeldet und mit --strict-config zum Fehler. Die",
+        "Kernregeln haelt deshalb der Validator gegen die Kernquelle und nicht eine",
+        "zweite Liste in dieser Datei.",
+    ]
+
+
+def render_permissions_toml(quelltext: str, man: dict) -> str:
+    """Rechteprofil dieses Client Packs aus der neutralen Regelmenge."""
+    quelle = json.loads(quelltext)
+    profil = man.get("permission_profile_name")
+    if not profil:
+        raise AbbildungsFehler(
+            man.get("client", "?") + "/manifest.json: Feld permission_profile_name "
+            "fehlt - ohne Profilnamen gibt es keine Tabelle, in die die Pfadregeln "
+            "gehoeren")
+    eintraege, _ = _profil_eintraege(quelle, man)
+
+    zeilen = ["# " + teil for teil in _toml_kommentar(man)]
+    zeilen.append("")
+    zeilen.append("default_permissions = " + _toml_zeichenkette(profil))
+    zeilen.append("")
+    zeilen.append("[permissions." + profil + "]")
+    beschreibung = man.get("permission_profile_description")
+    if beschreibung:
+        zeilen.append("description = " + _toml_zeichenkette(beschreibung))
+    zeilen.append("")
+    zeilen.append("[permissions." + profil + ".filesystem]")
+    for schluessel in sorted(eintraege):
+        zeilen.append(_toml_zeichenkette(schluessel) + " = "
+                      + _toml_zeichenkette(eintraege[schluessel]))
+    netz = man.get("permission_profile_network")
+    if netz:
+        zeilen.append("")
+        zeilen.append("[permissions." + profil + ".network]")
+        for schluessel in sorted(netz):
+            zeilen.append(schluessel + " = " + _toml_wert(netz[schluessel]))
+    for tabelle in sorted(man.get("permissions_toml_extra") or {}):
+        inhalt = man["permissions_toml_extra"][tabelle]
+        zeilen.append("")
+        zeilen.append("[" + tabelle + "]")
+        for schluessel in sorted(inhalt):
+            zeilen.append(schluessel + " = " + _toml_wert(inhalt[schluessel]))
+    return "\n".join(zeilen) + "\n"
+
+
+def _policy_zeile(regel: dict, man: dict, decision: str) -> str | None:
+    """Eine Befehlsregel in der Regelsprache dieses Clients - oder None bei Schlitz."""
+    woertlich = regel["command"].strip()
+    praefix = regel.get("prefix", woertlich).strip()
+    if not woertlich.startswith(praefix):
+        raise AbbildungsFehler(
+            "permissions.json: prefix '" + praefix + "' ist kein Praefix von command '"
+            + woertlich + "' - die Praefixform waere nicht nachweislich breiter als "
+            "die woertliche")
+    if decision == "allow" and praefix != woertlich:
+        raise AbbildungsFehler(
+            "permissions.json: allow-Regel '" + woertlich + "' hat eine kuerzere "
+            "prefix-Form - bei allow waere das eine Lockerung")
+    aufgeloest = resolve_placeholders(praefix, man)
+    if aufgeloest.startswith("<"):
+        # Offener Projektplatzhalter: Sein Wert gehoert dem Projekt, und diese
+        # Regelsprache kennt keinen Schlitz. Der Befehl bleibt aus - das ist bei
+        # 'prompt' eine Verschaerfung (er laeuft in die Rueckfrage) und bei 'allow'
+        # ebenfalls (er ist nicht vorab freigegeben).
+        return None
+    tokens = ", ".join(_toml_zeichenkette(t) for t in aufgeloest.split())
+    grund = regel.get("justification") or ("Framework-Regel (" + decision + ")")
+    return ("prefix_rule(pattern = [" + tokens + "], decision = "
+            + _toml_zeichenkette(decision) + ", justification = "
+            + _toml_zeichenkette(grund) + ")")
+
+
+#: Korb der Kernquelle -> Entscheidung der Regelsprache dieses Clients.
+POLICY_ENTSCHEIDUNG = {"deny": "forbidden", "ask": "prompt", "allow": "allow"}
+
+
+def _policy_kommentar(man: dict) -> list[str]:
+    kern = core_dir_name(man)
+    pack = man.get("client", "?")
+    return [
+        "Befehlsregeln des Frameworks (Ebene 3), erzeugt fuer das Client Pack " + pack + ".",
+        "Regelmenge: " + kern + "/framework/runtime/permissions.json, Regeln mit tool=exec.",
+        "Reihenfolge der Koerbe: deny vor ask vor allow - forbidden vor prompt vor allow.",
+        "Die Praefixform ist nachweislich mindestens so breit wie die woertliche Form;",
+        "ihre benannte Grenze ist eine andere Schreibweise desselben Befehls.",
+        "Ein Befehlsschlitz des Overlays steht NICHT hier: Sein Wert gehoert dem Projekt,",
+        "und diese Regelsprache kennt keinen Platzhalter. Sein Ausbleiben ist in beiden",
+        "Koerben eine Verschaerfung.",
+    ]
+
+
+def render_exec_policy(quelltext: str, man: dict) -> str:
+    """Befehlsregeln dieses Client Packs aus der neutralen Regelmenge.
+
+    Die Regeldatei liegt projektlokal und ist damit versioniert - das ist die Haelfte
+    von B1, die dieser Client traegt. Gemessen am 2026-09-23 an einer realen
+    Installation: Ein Befehl, den diese Datei verbietet, wird abgewiesen, und der
+    Client nennt dabei die Begruendung dieser Datei woertlich.
+    """
+    quelle = json.loads(quelltext)
+    zeilen = ["# " + teil for teil in _policy_kommentar(man)]
+    zeilen.append("")
+    for korb in ("deny", "ask", "allow"):
+        entscheidung = POLICY_ENTSCHEIDUNG[korb]
+        raus: list[str] = []
+        for regel in quelle.get(korb, []):
+            if regel.get("tool") != "exec":
+                continue
+            gerendert = _policy_zeile(regel, man, entscheidung)
+            if gerendert and gerendert not in raus:
+                raus.append(gerendert)
+        if not raus:
+            continue
+        zeilen.append("# --- " + korb + " -> " + entscheidung + " ---")
+        zeilen.extend(raus)
+        zeilen.append("")
+    return "\n".join(zeilen).rstrip("\n") + "\n"
+
+
+def permissions_format(man: dict) -> str:
+    """Ausgabeform der Berechtigungsdatei dieses Packs ('json' oder 'toml').
+
+    Der Standard ist 'json': Zwei der drei Packs fuehren ihn, und ein fehlendes Feld
+    darf nicht die neue Form bedeuten - ein Pack soll seine Form SAGEN und sie nicht
+    durch Schweigen erben.
+    """
+    return man.get("permissions_format", "json")
+
+
+def exec_policy_file(man: dict) -> str | None:
+    """Zielpfad der Befehlsregeldatei - oder None, wenn das Pack keine fuehrt."""
+    return man.get("exec_policy_file")
