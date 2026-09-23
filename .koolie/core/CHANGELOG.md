@@ -2,6 +2,116 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.4.0] - 2026-09-23
+
+**Das dritte Client Pack - und der Schutz-Hook, der lief und nichts verhinderte**
+(`CR-2026-133` E1 bis E5, **D-346** bis **D-349**, **Pruefungen 86, 87 und 88**, `K-117`
+beantwortet, `K-118` und `K-119` neu). Ein MINOR-Release **mit Kontingent**: 25
+Sitzungslaeufe, 552.435 Token, und dreissig Messungen an Prompt-Eingang,
+Konfigurationsschema und Regelauswerter, die nichts gekostet haben.
+
+> 🔴 **DER SCHWERSTE BEFUND IST KEINER DES PACKS, SONDERN DES KERNS** (D-347). Die bis
+> `1.3.0` einzige Sperrform des Schutz-Hooks - das Objekt `{"decision": "block"}` und
+> Exit-Code 2 - bewirkt bei `openai-codex` **NICHTS**. Gemessen an einer realen
+> Installation, mit Gegenlauf: Der Client meldet *PreToolUse Failed* und **fuehrt die
+> Operation aus**; der Koederinhalt kam woertlich heraus. Dieselbe Sperre als
+> `hookSpecificOutput.permissionDecision = "deny"` blockiert - **und zwar auch in dem
+> Betriebsmodus, der Rueckfragen UND Sandkasten abschaltet**, in einem Baum ohne
+> Regeltexte, mit Positivkontrolle im selben Baum.
+> ➡️ ***Ein Hook, der laeuft und dessen Sperrform der Client nicht liest, ist eine Zusage
+> ohne Mechanismus - und nichts meldet es.***
+> 🆕 **PRUEFUNG 86** misst die **Kette** aus Manifest, Skript und erzeugtem Kommando, nicht
+> das Manifestfeld - dieselbe Bauform wie Pruefung 17.
+>
+> 🔴 **UND DERSELBE HOOK HAT EINEN ZWEITEN BEFUND GELIEFERT, DER ALLE DREI PACKS
+> VERSCHAERFT.** Das Schreibwerkzeug dieses Clients fuehrt **keinen Pfad in einem Feld**;
+> es fuehrt einen **Patchtext**, und der Pfad steht darin hinter einem Leerzeichen
+> (`*** Add File: .koolie/core/notiz.txt`). Die Pfadmuster des Hooks kannten als Grenze
+> nur den Schraegstrich - der Hook lief, sah den Text, und die Datei wurde angelegt.
+> ➡️ ***Eine Grenze, die nur den Schraegstrich kennt, misst die Schreibweise und nicht die
+> Sache.*** Die Grenze ist seither auch ein Leerzeichen; `.codex/` und
+> `AGENTS.override.md` stehen mit in den Mustern. **Alles davon ist eine Verschaerfung:
+> Es kommen Treffer hinzu, es faellt keiner weg.**
+>
+> 🔴 **DIE REGELMENGE DES KERNS HAT AB JETZT ZWEI AUSGABEFORMEN** (D-346). Dieser Client
+> kennt die Gestalt `Werkzeug(Muster)` nicht: Er bindet **Pfade an eine Zugriffsart** in
+> einer TOML-Tabelle und **Befehle an Praefixmuster** in einer eigenen Regeldatei.
+> `clientmap.py` rendert beides aus derselben Kernquelle; **das ZIEL entscheidet ueber die
+> Abbildung**, nicht mehr die Quelle allein. 🔴 **Sechs Pruefungen lesen die Form `json`
+> und erreichen dieses Pack deshalb nicht** (2, 37, 42, 43, 54, 76). Sie still zu
+> ueberspringen waere die Bauform von `0.57.0` - *zwei Stellen, die einander decken*.
+> 🆕 **PRUEFUNG 87** verlangt ihre Nennung in Abschnitt 5 des Packs, in **beide**
+> Richtungen: keine fehlende Nummer, keine zuviel.
+> ➡️ ***Eine Luecke, die erklaert ist, ist eine Aussage; eine, die nur besteht, ist ein
+> blinder Fleck.***
+>
+> 🔴 **ZWEI KERNZUSAGEN SIND `[NICHT ABBILDBAR]`: `B3` UND `B5`.** Der Grund ist gemessen
+> und besteht aus zwei Haelften, die einander verstaerken: Ein Musterausdruck ist als
+> Schluessel der Pfadrechteschicht nur mit **absolutem** oder `~/`-Vorsatz zulaessig - und
+> ein absoluter Pfad in einem versionierten Traeger waere ein Wert dieser Arbeitsstation;
+> ein projektrelativer Schluessel nimmt **kein** Muster. ➡️ ***Musterform und
+> Versionierbarkeit schliessen einander aus.*** Dazu: Ein `deny`-Leserecht verlangt den
+> **erhoehten Windows-Sandkasten**, und ohne ihn laeuft der Client gar nicht - fail-closed,
+> und damit richtig. **Nach `clients/README.md` Abschnitt 4 heisst das: keine
+> Inbetriebnahme ohne Freigabe durch `<SECURITY_CONTACT>`.** 🟢 **Ersatz fuer `B3` ist der
+> Schutz-Hook, und er ist gemessen; fuer `B5` gibt es keinen, und das steht so da.**
+>
+> 🔴 **DIE GANZE PROJEKTLOKALE SCHICHT HAENGT AN EINEM EINTRAG AUSSERHALB DES
+> REPOSITORIUMS.** Konfiguration, Hooks und Befehlsregeln laden nur bei eingetragenem
+> Vertrauen; der Schutz-Hook braucht darueber hinaus sein **eigenes** Vertrauen ueber einen
+> **Hash**, und **jede Hebung des Frameworks aendert diesen Hash**. Gemessen: Ohne ihn
+> laeuft der Hook nicht, der Koederinhalt kommt heraus, und der Diagnoselauf des Clients
+> meldet es nicht. `K-118` fuehrt die Frage weiter, ob eine Pruefung diesen Traeger
+> erreichen kann.
+>
+> 🟢 **ZWEI MECHANIKEN DES KERNS AUS 0.15.0 BEKOMMEN IHREN ERSTEN GEGENSTAND** (D-348).
+> `rule_frontmatter: "comment"` und `root_instruction_imports` standen seit elf Monaten im
+> Kern und waren von keinem Pack erprobt; die ROADMAP fuehrte sie unter *„Bewusst offen
+> gelassen"*. 🔴 **Und die Pruefung darauf verlangte eine geratene Schreibweise:** Sie
+> forderte die Einbindung als `@<pfad>` - gemessen bewirkt genau diese Form bei diesem
+> Client **nichts**. Geprueft wird seither die **Nennung**.
+> ➡️ ***Eine Pruefung, die eine ungemessene Schreibweise verlangt, misst die Schreibweise
+> und nicht die Sache.***
+>
+> 🆕 **PRUEFUNG 88** meldet eine Datei, die die Wurzel-Anweisung **verdraengt** - der
+> schwerste Befund der Erhebung von `1.3.0` bekommt damit seine dritte Linie, neben dem
+> Schreibschutz im `deny`-Korb und den Mustern des Schutz-Hooks.
+>
+> 🟢 **`K-117` IST BEANTWORTET** (D-349): `install.py` meldet am Ende, welche der soeben
+> geschriebenen Kerndateien das aufnehmende Projekt **ignoriert** - eine Auskunft, keine
+> Schranke, nach der Bauform von D-34. Im Pilotprojekt sind es **38 von 525**.
+
+**Neu**
+
+- Client Pack `openai-codex` (`CP-OC`): `CLIENT_PACK.md` mit 34 Matrixzeilen, `manifest.json`
+  mit der zweiten Ausgabeform, `root-template/.codex/README.md`.
+- `clientmap.py`: `render_permissions_toml()`, `render_exec_policy()`, `permissions_format()`,
+  `exec_policy_file()`, `hook_handler_extra`, `hook_block_form`, `hook_project_dir_expr`,
+  `hooks_file_wrapper`.
+- `install.py`: zielabhaengige Abbildung (eine Quelle, zwei Ziele) und die Schlussmeldung
+  ueber ignorierte Kerndateien.
+- `tests/scripts/hook-check-secrets.py`: `--sperrform`, zwei Sperrformen, erweiterte
+  Pfadgrenze, `.codex/` und `AGENTS.override.md` in den Mustern.
+- Pruefungen 86, 87 und 88, je mit zwei Sonden und zwei Gegenproben.
+
+**Migrationshinweise fuer Overlays**
+
+- **Keine.** Kein Traeger des Overlays aendert seine Gestalt.
+- ⚠️ **Fuer ein Projekt, das den Client `openai-codex` einsetzen will:** Der
+  Vertrauenseintrag und das Hook-Vertrauen liegen **ausserhalb** des Repositoriums und sind
+  je Arbeitsplatz zu setzen - **und nach jeder Hebung erneut**, weil sich der Hash des
+  Hooks aendert. Ohne beides traegt von Block B nichts.
+
+**Bekannte Einschraenkungen**
+
+- 🔴 **`B3` und `B5` sind bei `openai-codex` `[NICHT ABBILDBAR]`** - beides Kernzusagen.
+  Ohne Freigabe durch `<SECURITY_CONTACT>` darf das Pack nicht in Betrieb gehen.
+- ⚠️ **Sechs Pruefungen erreichen dieses Pack nicht** (2, 37, 42, 43, 54, 76). Die Liste
+  steht in `FORMATGEBUNDENE_PRUEFUNGEN` und in Abschnitt 5 des Packs.
+- ⚠️ **`FW-AK-01` ist fuer diesen Client nicht gefahren**; es gibt keine Quellenliste, und
+  das Pack traegt keine einzige `[DOK]`-Zeile.
+- ⚠️ **Drei Matrixzeilen sagen `BELEG OFFEN`** (`S2`, `S3`, `M3`), dazu `X2` dauerhaft.
+
 ## [1.3.0] - 2026-09-23
 
 **Die Erhebung zu `openai-codex` - der Client, dessen Wurzelanweisung eine Datei daneben

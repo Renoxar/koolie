@@ -28,8 +28,10 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.3.0** | `0.3.3` | 2026-09-23 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.3.0** | `1.1.0` | 2026-09-23 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.4.0** | `0.3.3` | 2026-09-23 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.4.0** | `1.1.0` | 2026-09-23 |
+
+🔴 **STAND 2026-09-23, UND ER GILT FÜR `1.4.0`: DIE SPALTE STEHT AUF EINER ZAHL, DIE IN BEIDEN PROJEKTEN NOCH NICHT ANGEKOMMEN IST.** Schritt 1 aus `RELEASE_PROCESS.md` Abschnitt 4.1 schreibt diese Liste **vor** dem Release-Commit fort; Schritt 2 – das Heben – ist auf ausdrückliche Entscheidung des Framework Owners **verschoben** worden und ist der erste Handgriff der nächsten Sitzung. ➡️ ***Das ist genau die Grenze, die D-331 benannt hat:*** Prüfung 82 hält diese Spalte gegen `VERSION` und mißt damit die **Behauptung der Zeile**, nicht den **Stand des Projekts**. Der Unterschied zum Fall von `1.1.0`, aus dem D-343 entstanden ist, ist der, daß es hier **dasteht.**
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`

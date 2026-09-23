@@ -14,6 +14,7 @@
 | Client Packs (Abbildung auf KI-Clients) | `.koolie/core/clients/` | `<FRAMEWORK_OWNER>` | `<SECURITY_CONTACT>` für Kernzusagen ohne technische Durchsetzung |
 | Client Pack `devin-desktop` (CP-DD) | `.koolie/core/clients/devin-desktop/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |
 | Client Pack `claude-code` (CP-CC) | `.koolie/core/clients/claude-code/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |
+| Client Pack `openai-codex` (CP-OC) | `.koolie/core/clients/openai-codex/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |
 | Framework-Skills FW-SK-001…012 | Skill-Ablage `fw-*` | `<FRAMEWORK_OWNER>` (bis Benennung Modul-Owner je Gruppe) | – |
 | Prompt-Bibliothek | `.koolie/core/prompts/` | `<FRAMEWORK_OWNER>` | – |
 | Checklisten und Entscheidungsbäume | `.koolie/core/checklists/`, `.koolie/core/decision-trees/` | `<FRAMEWORK_OWNER>` | – |

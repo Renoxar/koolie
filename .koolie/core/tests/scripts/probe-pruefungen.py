@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 85, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 88, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -3089,9 +3089,40 @@ def _41_datum_ohne_fundstelle(root: str) -> None:
 
 
 def _41_gegenstand_weg(root: str) -> None:
-    """Kein Pack fuehrt noch eine Abwesenheitserklaerung - die Pruefung meldet es selbst."""
-    ersetze(_p(root, MAN_DD), ('  "agent_start_tools_absent": [],\r\n', ""))
-    ersetze(_p(root, MAN_CC), ('    "skill_deny_unmapped": "argumentmuster",\r\n', ""))
+    """Kein Pack fuehrt noch eine Abwesenheitserklaerung - die Pruefung meldet es selbst.
+
+    DIE SONDE MUSS JEDES PACK TREFFEN, UND MIT DEM DRITTEN IST SIE DARAN GESCHEITERT
+    (CR-2026-133). Sie nannte bis 1.3.0 zwei Packs beim Namen; `openai-codex` fuehrt
+    gleich vier Abwesenheitserklaerungen, und der Anker war deshalb nicht verloren -
+    die Sonde meldete FEHL, obwohl die Pruefung richtig gearbeitet hat.
+      ➡️ Eine Sonde, die ihre Gegenstaende aufzaehlt, altert mit jedem neuen.
+    Sie raeumt deshalb jetzt JEDES Manifest der Ablage, und zwar ueber die GESTALT der
+    Schluessel (`*_absent`, `*_unmapped`) statt ueber ihre Namen.
+    """
+    def raeumen(obj):
+        if isinstance(obj, dict):
+            for k in [k for k in obj if k.endswith(("_absent", "_unmapped"))]:
+                del obj[k]
+            for v in obj.values():
+                raeumen(v)
+        elif isinstance(obj, list):
+            for v in obj:
+                raeumen(v)
+
+    basis = _p(root, ".koolie/core/clients")
+    treffer = 0
+    for name in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, name, "manifest.json")
+        if not os.path.isfile(pfad):
+            continue
+        daten = json.loads(lies(pfad))
+        raeumen(daten)
+        schreib(pfad, json.dumps(daten, indent=2, ensure_ascii=False) + chr(10))
+        treffer += 1
+    if treffer < 2:
+        raise Praeparationsfehler(
+            "Sonde 41c: weniger als zwei Manifeste gefunden - die Sonde hat ihren "
+            "Gegenstand verloren")
 
 
 def _41_enthaltung_ohne_beleg(root: str) -> None:
@@ -8130,6 +8161,270 @@ def sonden_zielangabe() -> None:
 buendel(sonden_zielangabe,
         "Pruefung 85 haelt die Zielangabe eines Planabschnitts gegen VERSION, und die "
         "zweite Gegenprobe belegt, dass sie die Zahl misst und nicht die Schreibweise")
+
+
+
+# --- Pruefung 86: die Sperrform des Schutz-Hooks (CR-2026-133) ----------------------
+#
+# VIER EINHEITEN, UND DIE ZWEITE GEGENPROBE IST DIE, DIE MAN WEGLASSEN WUERDE.
+#   86a (Gegenprobe) - der ausgelieferte Bestand laeuft durch: Das Pack nennt eine
+#                      Sperrform, das Skript kennt sie, das Kommando reicht sie durch.
+#   86b (Gegenprobe) - 🔴 EIN PACK OHNE EIGENE SPERRFORM MUSS DURCHLAUFEN. Ohne diese
+#                      Einheit koennte die Pruefung jedes Pack melden und saehe an 86a
+#                      genauso gruen aus. Zwei der drei Packs fuehren kein
+#                      hook_block_form, und fuer sie gilt die Standardform.
+#   86a (Sonde)      - eine Sperrform, die das Skript nicht kennt, wird gemeldet. Das
+#                      ist der gemessene Fall in seiner gefaehrlichen Richtung: Der
+#                      Hook laeuft, gibt etwas aus und sperrt nichts.
+#   86b (Sonde)      - der verlorene Durchreich: Verschwindet die Form aus dem Kommando
+#                      der erzeugten Hook-Datei, meldet die Pruefung es. Ohne diese
+#                      Einheit waere die dritte Stufe der Kette ungemessen - und genau
+#                      sie ist die, die im Projekt ankommt.
+M86_UNBEKANNT = "kennt das Skript des Schutz-Hooks nicht"
+M86_KOMMANDO = "das Kommando des Schutz-Hooks trägt die Sperrform"
+
+P86_PACK = "openai-codex"
+
+
+def sonden_sperrform() -> None:
+    """Wirkungsnachweis zu Pruefung 86."""
+    root = installation(P86_PACK)
+    try:
+        mpfad = P(root, ".koolie/core", "clients", P86_PACK, "manifest.json")
+        mtext = lies(mpfad)
+        man = json.loads(mtext)
+        form = man.get("hook_block_form")
+        if not form:
+            raise Praeparationsfehler(
+                "Sonden zu 86: %s fuehrt kein hook_block_form - die Sonden haben "
+                "ihren Gegenstand verloren" % P86_PACK)
+        hpfad = P(root, *man["runtime_placeholders"]["<HOOKS_FILE>"].split("/"))
+        htext = lies(hpfad)
+
+        # --- Gegenprobe 86a: der ausgelieferte Bestand laeuft durch ----------------
+        aus = validator_ausgabe(root)
+        ok = M86_UNBEKANNT not in aus and M86_KOMMANDO not in aus
+        melde("GEGENPROBE", "86a", ok,
+              "Das ausgelieferte Pack laeuft durch: Es nennt die Sperrform '%s', das "
+              "Skript kennt sie und gibt sie aus, und das erzeugte Kommando reicht sie "
+              "durch" % form)
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "Sperrform" in z)[:400])
+
+        # --- Gegenprobe 86b: ein Pack OHNE eigene Sperrform laeuft durch -----------
+        # 🔴 DIE EINHEIT, DIE MAN WEGLASSEN WUERDE. Zwei der drei Packs fuehren kein
+        # hook_block_form; fuer sie gilt die Standardform, und die Pruefung darf sie
+        # nicht melden. Ohne diese Einheit waere nicht gemessen, dass sie die SACHE
+        # prueft und nicht die Anwesenheit eines Feldes.
+        schreib(mpfad, mtext.replace('"hook_block_form": "%s",' % form, "", 1))
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "86b", M86_UNBEKANNT not in aus,
+              "Ein Pack ohne eigene Sperrform laeuft durch - es faellt auf die "
+              "Standardform zurueck, und die pruefen dieselben drei Stufen")
+        if M86_UNBEKANNT in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "Sperrform" in z)[:400])
+        schreib(mpfad, mtext)
+
+        # --- Sonde 86a: eine Sperrform, die das Skript nicht kennt -----------------
+        vorher = baumhash(root)
+        schreib(mpfad, mtext.replace('"hook_block_form": "%s"' % form,
+                                     '"hook_block_form": "gibt-es-nicht"', 1))
+        if baumhash(root) == vorher:
+            raise Praeparationsfehler("Sonde 86a hat nichts geschrieben")
+        aus = validator_ausgabe(root)
+        melde("SONDE", "86a", M86_UNBEKANNT in aus,
+              "Eine Sperrform, die das Skript nicht kennt, wird gemeldet - sonst liefe "
+              "der Hook mit der Standardform, und die ist bei diesem Client gemessen "
+              "wirkungslos (D-347)")
+        if M86_UNBEKANNT not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(mpfad, mtext)
+
+        # --- Sonde 86b: der verlorene Durchreich -----------------------------------
+        schreib(hpfad, htext.replace(" --sperrform " + form, "", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "86b", M86_KOMMANDO in aus,
+              "Faellt die Sperrform aus dem erzeugten Kommando, wird es gemeldet - das "
+              "Manifest allein belegt nichts, im Projekt ankommt das Kommando")
+        if M86_KOMMANDO not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(hpfad, htext)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_sperrform,
+        "Pruefung 86 misst die Sperrform an ihrer Wirkung und an ihrem Durchreich, und "
+        "die zweite Gegenprobe belegt, dass ein Pack ohne eigene Form durchlaeuft")
+
+
+# --- Pruefung 87: die formatgebundenen Pruefungen stehen im Pack (CR-2026-133) ------
+#
+#   87a (Gegenprobe) - das ausgelieferte Pack nennt alle Nummern und laeuft durch.
+#   87b (Gegenprobe) - 🔴 EIN PACK MIT DER FORM 'json' WIRD NICHT GEFRAGT. Ohne diese
+#                      Einheit koennte die Pruefung von jedem Pack die Liste verlangen
+#                      und saehe an 87a genauso gruen aus - zwei der drei Packs haben
+#                      keine Luecke zu erklaeren.
+#   87a (Sonde)      - fehlt eine Nummer, wird sie gemeldet. Der eigentliche Zweck:
+#                      Eine Pruefung, die ein Pack nicht erreicht, steht dort.
+#   87b (Sonde)      - steht eine Nummer zuviel, wird sie gemeldet. Eine behauptete
+#                      Luecke, die es nicht gibt, ist so falsch wie eine verschwiegene.
+M87_FEHLEND = "sind an die Ausgabeform 'json'"
+M87_ZUVIEL = "werden als formatgebunden"
+
+
+def sonden_formatgebunden() -> None:
+    """Wirkungsnachweis zu Pruefung 87."""
+    root = kopie()
+    try:
+        ppfad = P(root, ".koolie/core", "clients", P86_PACK, "CLIENT_PACK.md")
+        ptext = lies(ppfad)
+        nummern = sorted(re.findall(r"^ *(\d+): ", lies(
+            P(root, *VALIDATOR.split("/"))).split("FORMATGEBUNDENE_PRUEFUNGEN = {")[1]
+            .split("}")[0], re.M), key=int)
+        if not nummern:
+            raise Praeparationsfehler(
+                "Sonden zu 87: FORMATGEBUNDENE_PRUEFUNGEN ist leer - die Sonden haben "
+                "ihren Gegenstand verloren")
+
+        # --- Gegenprobe 87a: das ausgelieferte Pack laeuft durch -------------------
+        aus = validator_ausgabe(root)
+        ok = M87_FEHLEND not in aus and M87_ZUVIEL not in aus
+        melde("GEGENPROBE", "87a", ok,
+              "Das ausgelieferte Pack nennt alle %d formatgebundenen Pruefungen in "
+              "Abschnitt 5 und laeuft durch" % len(nummern))
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "formatgebunden" in z
+                or "Ausgabeform" in z)[:400])
+
+        # --- Gegenprobe 87b: ein Pack mit der Form 'json' wird nicht gefragt -------
+        # 🔴 DIE EINHEIT, DIE MAN WEGLASSEN WUERDE.
+        cc = P(root, ".koolie/core", "clients", "claude-code", "CLIENT_PACK.md")
+        ccalt = lies(cc)
+        melde("GEGENPROBE", "87b",
+              ("clients/claude-code/CLIENT_PACK.md Abschnitt 5" not in aus
+               and "clients/devin-desktop/CLIENT_PACK.md Abschnitt 5" not in aus),
+              "Die beiden Packs mit der Ausgabeform 'json' werden nicht gefragt - sie "
+              "haben keine Luecke zu erklaeren, und die Pruefung verlangt von ihnen "
+              "keine Liste")
+        del ccalt, cc
+
+        # --- Sonde 87a: eine fehlende Nummer ---------------------------------------
+        vorher = baumhash(root)
+        weg = "Prüfung " + nummern[0]
+        if weg not in ptext:
+            raise Praeparationsfehler(
+                "Sonde 87a: '%s' steht nicht in Abschnitt 5 des Packs" % weg)
+        schreib(ppfad, ptext.replace(weg, "Pruefung " + nummern[0], 1))
+        if baumhash(root) == vorher:
+            raise Praeparationsfehler("Sonde 87a hat nichts geschrieben")
+        aus = validator_ausgabe(root)
+        melde("SONDE", "87a", M87_FEHLEND in aus,
+              "Eine formatgebundene Pruefung, die das Pack nicht nennt, wird gemeldet - "
+              "eine Luecke, die nirgends steht, ist ein blinder Fleck (D-346)")
+        if M87_FEHLEND not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 87b: eine Nummer zuviel ------------------------------------------
+        schreib(ppfad, ptext.replace("## 6.", "Prüfung 999 erreicht dieses Pack "
+                                     "ebenfalls nicht.\n\n## 6.", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "87b", M87_ZUVIEL in aus,
+              "Eine behauptete Luecke, die es nicht gibt, wird gemeldet - sonst waere "
+              "die Liste eine Erzaehlung und kein Abbild des Pruefapparats")
+        if M87_ZUVIEL not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(ppfad, ptext)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_formatgebunden,
+        "Pruefung 87 verlangt die Liste der formatgebundenen Pruefungen nur von dem "
+        "Pack, das eine andere Ausgabeform fuehrt - und in beide Richtungen")
+
+
+# --- Pruefung 88: die verdraengende Wurzel-Anweisung (CR-2026-133) ------------------
+#
+#   88a (Gegenprobe) - die frische Installation laeuft durch; die Datei gibt es nicht.
+#   88b (Gegenprobe) - 🔴 EIN PACK OHNE VERDRAENGUNG WIRD NICHT GEFRAGT. Bei den beiden
+#                      aelteren Packs ERGAENZT die nutzerlokale Datei, sie ersetzt
+#                      nicht - dort waere ihre Anwesenheit kein Befund. Ohne diese
+#                      Einheit koennte die Pruefung jede nutzerlokale Datei melden und
+#                      saehe an 88a genauso gruen aus.
+#   88a (Sonde)      - liegt die Datei im Projekt, wird sie gemeldet.
+#   88b (Sonde)      - der verlorene Anker: Faellt das Feld root_instruction_override
+#                      weg, prueft die Pruefung nichts mehr - und sagt es, statt leise
+#                      zu bestehen (D-23).
+M88_VERDRAENGT = "VERDRÄNGT bei diesem Client die"
+M88_ANKER = "ist gesetzt, aber <ROOT_INSTRUCTION_LOCAL> fehlt"
+
+
+def sonden_verdraengung() -> None:
+    """Wirkungsnachweis zu Pruefung 88."""
+    root = installation(P86_PACK)
+    try:
+        mpfad = P(root, ".koolie/core", "clients", P86_PACK, "manifest.json")
+        mtext = lies(mpfad)
+        man = json.loads(mtext)
+        lokal = man["runtime_placeholders"]["<ROOT_INSTRUCTION_LOCAL>"]
+        lpfad = P(root, *lokal.split("/"))
+
+        # --- Gegenprobe 88a: die frische Installation laeuft durch ----------------
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "88a", M88_VERDRAENGT not in aus,
+              "Die frische Installation laeuft durch - das Framework legt die "
+              "verdraengende Datei nicht an, und es liefert auch keine Vorlage dafuer")
+
+        # --- Gegenprobe 88b: ein Pack ohne Verdraengung wird nicht gefragt ---------
+        # 🔴 DIE EINHEIT, DIE MAN WEGLASSEN WUERDE.
+        schreib(lpfad, "# Persoenliche Fassung\n")
+        schreib(mpfad, mtext.replace('"root_instruction_override": true,', "", 1))
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "88b", M88_VERDRAENGT not in aus,
+              "Dieselbe Datei bei einem Pack OHNE Verdraengung ist kein Befund - dort "
+              "ergaenzt sie, und eine Ergaenzung ist der dokumentierte Weg")
+        if M88_VERDRAENGT in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "VERDR" in z)[:400])
+        schreib(mpfad, mtext)
+
+        # --- Sonde 88a: die Datei liegt im Projekt ---------------------------------
+        aus = validator_ausgabe(root)
+        melde("SONDE", "88a", M88_VERDRAENGT in aus,
+              "Liegt die verdraengende Datei im Projekt, wird sie gemeldet - sonst "
+              "ersetzt eine ungepruefte Datei die Ebene 1, und nichts sagt es (D-341)")
+        if M88_VERDRAENGT not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 88b: der verlorene Anker ----------------------------------------
+        ohne = json.loads(mtext)
+        ohne["runtime_placeholders"].pop("<ROOT_INSTRUCTION_LOCAL>", None)
+        schreib(mpfad, json.dumps(ohne, indent=2, ensure_ascii=False) + "\n")
+        aus = validator_ausgabe(root)
+        melde("SONDE", "88b", M88_ANKER in aus,
+              "Verschwindet die Angabe, welche Datei verdraengt, meldet die Pruefung "
+              "das selbst - eine Pruefung ohne Gegenstand besteht sonst leise (D-23)")
+        if M88_ANKER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(mpfad, mtext)
+        os.remove(lpfad)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_verdraengung,
+        "Pruefung 88 meldet die Datei, die die Wurzel-Anweisung verdraengt - und die "
+        "zweite Gegenprobe belegt, dass sie nur dort fragt, wo sie verdraengt")
 
 
 if LISTE:
