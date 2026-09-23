@@ -3,11 +3,11 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-LIC` |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | den gesamten Inhalt dieses Frameworks – Kern, Client Packs, Regeltexte, Werkzeuge, Vorlagen und Dokumentation |
-| Entstehung | `CR-2026-126`, **D-316** bis **D-317** (2026-09-23) |
+| Entstehung | `CR-2026-126`, **D-316** bis **D-317** (2026-09-23); Rechteinhaber benannt mit `CR-2026-128`, **D-323** |
 
 ## 1. Lizenz (normativ)
 
@@ -16,7 +16,22 @@ wörtlicher Text der Free Software Foundation). Es ist damit **freie Software im
 Open-Source-Definition** – jede und jeder darf es nutzen, untersuchen, ändern und
 weitergeben.
 
-Copyright © 2026 `<FRAMEWORK_OWNER>`
+Copyright © 2026 René Hildebrand
+
+> 🔴 **Diese eine Zeile nennt eine Person, und sie ist die einzige im ganzen Kern, die
+> das tut** (D-323, `CR-2026-128` E7). Überall sonst gilt die Projektneutralität: Rollen
+> statt Personen, Platzhalter statt Namen. **Hier gilt sie nicht, und der Grund ist
+> keine Ausnahme vom Prinzip, sondern seine Grenze.** Die Neutralitätsregel hält
+> **fremde** Personen aus generischen Bestandteilen – Kunden, Behörden, Kolleginnen und
+> Kollegen. Der **Urheber des Werks** ist keine fremde Person: Ohne ihn hat die Lizenz
+> keinen Zusagenden, die Zusatzerlaubnis aus Abschnitt 2 niemanden, der sie erteilt, und
+> §7 GPL-3.0 keine Rechtsgrundlage.
+>
+> ⚠️ **Der Preis ist benannt:** Der Name wandert mit jeder Kopie des Kerns in jedes
+> übernehmende Projekt. ⚠️ **Und der Widerspruch, der ihn nötig machte, ist gemessen:**
+> Die Historie dieses Repositoriums führt denselben Namen in **122 Commits** und die
+> Adresse in allen **261** – *er stand dort, wo er niemandem nützt, und fehlte dort, wo
+> er rechtlich wirkt* (D-324).
 
 > Dieses Programm ist freie Software: Sie können es unter den Bedingungen der GNU General
 > Public License, Version 3, weitergeben und/oder verändern. Es wird **ohne jede

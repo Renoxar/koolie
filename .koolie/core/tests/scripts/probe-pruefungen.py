@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 80, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 81, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -7003,12 +7003,22 @@ gegenprobe("77a", "Der ausgelieferte Bestand laeuft durch - Dokumentversion, gen
 #                      sie genuegte es, EINE der drei Zahlen zu treffen.
 #   78c (Sonde)      - der verlorene Anker: Faellt der Satz weg, meldet die Pruefung das,
 #                      statt leise zu bestehen (D-23).
+#   78d (Sonde)      - dieselbe Zahl in der ABNAHMEZEILE DER UEBERGABE, seit D-325 der
+#                      zweite Gegenstand. Dort stand sie VIERMAL in Folge auf einem
+#                      ueberholten Wert, waehrend die Pruefung dafuer seit 0.90.0 lief -
+#                      an einer von zwei Stellen (D-295 an einem zweiten Gegenstand).
+#   78e (Sonde)      - der verlorene Anker der zweiten Fundstelle. Eine zweite Stelle
+#                      braucht ihren eigenen; sonst bestuende die Erweiterung leise.
 M78_WERTE = "nennt nicht die gezählten Werte"
 M78_ANKER = "steht nicht genau einmal"
 M78_UNMESSBAR = "kein Git-Bestand lesbar"
+M78_UEBERGABEZAHL = "nennt nicht die gezählte Zahl der Prüfungen"
+M78_UEBERGABEANKER = "die Abnahmezeile über den Prüfapparat steht nicht genau einmal"
 
 P78_OPFER = ".koolie/core/build/doc/26-qs-test.md"
 P78_ANKER = "Der Validator führt **"
+P78_UEBERGABE = "UEBERGABE.md"
+P78_UEBERGABE_ANKER = "Der Prüfapparat steht bei **"
 
 
 def _78_zahl_verstellen(text: str, muster: str) -> str:
@@ -7077,6 +7087,31 @@ def sonden_dokumentzahlen() -> None:
               "Faellt der Satz ueber den Pruefapparat weg, meldet Pruefung 78 den "
               "verlorenen Anker, statt still zu bestehen")
         if M78_ANKER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(pfad, urtext)
+
+        # --- Sonde 78d: dieselbe Zahl in der Abnahmezeile der Uebergabe (D-325) -------
+        upfad = P(root, P78_UEBERGABE)
+        urtext_u = lies(upfad)
+        schreib(upfad, _78_zahl_verstellen(urtext_u, P78_UEBERGABE_ANKER))
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        melde("SONDE", "78d", M78_UEBERGABEZAHL in aus,
+              "Dieselbe verstellte Zahl in der Abnahmezeile der Uebergabe wird gemeldet "
+              "- dort stand sie viermal in Folge auf einem ueberholten Wert")
+        if M78_UEBERGABEZAHL not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 78e: der verlorene Anker in der Uebergabe --------------------------
+        schreib(upfad, urtext_u.replace(P78_UEBERGABE_ANKER, "Der Apparat liegt bei **", 1))
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        melde("SONDE", "78e", M78_UEBERGABEANKER in aus,
+              "Faellt die Abnahmezeile weg, meldet Pruefung 78 auch dort den verlorenen "
+              "Gegenstand - eine zweite Fundstelle braucht ihren eigenen Anker")
+        if M78_UEBERGABEANKER not in aus:
             notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
     finally:
@@ -7452,6 +7487,111 @@ buendel(selbstprobe_ausgesetzt,
         "Das zweite Pruefmittel `validate-output.py` an sechs gebauten Ausgaben: "
         "ausgewiesenes Aussetzen zaehlt als vorhanden, stilles Weglassen bleibt ein "
         "Befund - der erste Wirkungsnachweis, den dieses Werkzeug ueberhaupt hat")
+
+
+# --- Pruefung 81: eine Zeilenendeform je Repositorium (CR-2026-128, D-320) --------
+#
+# EIN BUENDEL, WEIL DIE PRUEFUNG EIN REPOSITORIUM BRAUCHT. Sie liest den Bestand ueber
+# `git ls-files`, und kopie() schliesst `.git` aus - derselbe Griff wie bei Pruefung 75
+# und 78, aus demselben Grund. Ohne `git init` naehme sie in jeder Sonde ihren dritten
+# Ausgang und saehe dabei aus wie eine, die nichts gefunden hat.
+#
+# VIER EINHEITEN, UND DIE ZWEITE IST DER GEMESSENE FALL:
+#   81a (Gegenprobe) - der ausgelieferte Bestand laeuft durch, und die Pruefung ist dabei
+#                      nachweislich gelaufen (keine Unmessbarkeitsmeldung).
+#   81a (Sonde)      - ein Traeger DURCHGEHEND auf der anderen Form wird gemeldet.
+#   81b (Sonde)      - EINE eingeschleppte Zeile der anderen Form wird gemeldet. Das ist
+#                      der Fall vom 2026-09-23: 28 LF-Zeilen in einem CRLF-Bestand, von
+#                      keiner der 80 Pruefungen gesehen, gefunden von einem Suchtext, der
+#                      danach nicht mehr traf.
+#   81c (Sonde)      - ohne Git-Bestand meldet sie die Unmessbarkeit, statt leise zu
+#                      bestehen (D-23). Sie ist die einzige, die OHNE `git init` laeuft.
+#
+# 🔴 KEINE SONDE HAELT EINE FORM WOERTLICH. Sie lesen die vorgefundene Form aus dem
+# Traeger und stellen ihn auf die jeweils andere - dieselbe Lehre wie bei Pruefung 78:
+# Eine Sonde, die einen Wert mitpflegen muss, faellt bei der naechsten Aenderung aus, und
+# zwar als scheinbarer Befund. Auf einem Linux-Arbeitsplatz liegt der Bestand auf LF, und
+# diese Sonden messen dort dasselbe.
+M81_GEMISCHT = "mischt CRLF- und LF-Zeilen"
+M81_ABWEICHEND = "Zeilenenden, während"
+M81_UNMESSBAR = "Prüfung 81: kein Git-Bestand lesbar"
+
+P81_OPFER = ".koolie/core/docs/RUNTIME_GLOSSARY.md"
+
+
+def _81_umstellen(text: str) -> str:
+    """Den Traeger durchgehend auf die jeweils ANDERE Form stellen."""
+    ohne = text.replace("\r\n", "\n")
+    return ohne if "\r\n" in text else ohne.replace("\n", "\r\n")
+
+
+def _81_eine_zeile(text: str) -> str:
+    """Genau EINE Zeile auf die andere Form - der Fall der eingeschleppten Zeile."""
+    if "\r\n" in text:
+        return text.replace("\r\n", "\n", 1)
+    return text.replace("\n", "\r\n", 1)
+
+
+def sonden_zeilenendeform() -> None:
+    """Wirkungsnachweis zu Pruefung 81 an einem echten Repositorium."""
+    root = kopie()
+    try:
+        pfad = P(root, *P81_OPFER.split("/"))
+        urtext = lies(pfad)
+
+        # --- Sonde 81c: ohne Git-Bestand ist sie nicht messbar, und sagt es -----------
+        aus = validator_ausgabe(root)
+        melde("SONDE", "81c", M81_UNMESSBAR in aus,
+              "Ohne Git-Bestand meldet Pruefung 81 die Unmessbarkeit, statt leise zu "
+              "bestehen - ein fehlender Gegenstand ist kein Messergebnis")
+        if M81_UNMESSBAR not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "81" in z)[:400])
+
+        if unterprozess(["git", "init", "-q", root]).returncode != 0:
+            melde("BUENDEL", "-", False, "sonden_zeilenendeform  [git nicht erreichbar]")
+            notiz("        Ohne git liest Pruefung 81 keinen Bestand; sie nimmt dann "
+                  "ihren dritten Ausgang und ist nicht messbar.")
+            return
+        unterprozess(["git", "-C", root, "add", "-A"])
+
+        # --- Gegenprobe 81a: der ausgelieferte Bestand laeuft durch ------------------
+        aus = validator_ausgabe(root)
+        ok = (M81_GEMISCHT not in aus and M81_ABWEICHEND not in aus
+              and M81_UNMESSBAR not in aus)
+        melde("GEGENPROBE", "81a", ok,
+              "Der ausgelieferte Bestand laeuft durch - alle versionierten Texttraeger "
+              "tragen dieselbe Form, und die Pruefung ist dabei nachweislich gelaufen")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "81" in z or "Zeilenende" in z)[:400])
+
+        # --- Sonde 81a: ein Traeger durchgehend auf der anderen Form -----------------
+        schreib(pfad, _81_umstellen(urtext))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "81a", M81_ABWEICHEND in aus,
+              "Ein Traeger durchgehend auf der anderen Zeilenendeform wird gemeldet - "
+              "die Pruefung nennt die Mehrheit und verlangt keine bestimmte Form")
+        if M81_ABWEICHEND not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 81b: EINE eingeschleppte Zeile ------------------------------------
+        schreib(pfad, _81_eine_zeile(urtext))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "81b", M81_GEMISCHT in aus,
+              "Eine einzige eingeschleppte Zeile der anderen Form wird gemeldet - genau "
+              "der Fall, den ein Suchtext fand und keine der achtzig Pruefungen")
+        if M81_GEMISCHT not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_zeilenendeform,
+        "Pruefung 81 haelt die Zeilenendeform des Arbeitsbaums zusammen, an einem "
+        "echten Repositorium und ohne eine Form woertlich zu kennen")
 
 
 if LISTE:

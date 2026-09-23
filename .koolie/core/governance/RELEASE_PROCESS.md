@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.1.4` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -33,7 +33,50 @@
 1. Release-Vorbereitung nach `.koolie/core/checklists/11-framework-release.md` (Konsistenz, Projektneutralität, Produktstand, Testkatalog).
 2. Freigabe durch den Framework Owner; Archiv erzeugen; Version und Changelog veröffentlichen.
 3. Kommunikation an alle übernehmenden Projekte mit Migrationshinweisen (betroffene Overlay-Felder, neue Pflichtprüfungen, deprecatete Skills).
-4. Projekte übernehmen Releases über `.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt „Aktualisierung"; der Framework Owner führt eine Bestandsliste der Projekte mit eingesetzter Version (Auditierbarkeit).
+4. Projekte übernehmen Releases über `.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt „Aktualisierung"; der Framework Owner führt die Bestandsliste der Projekte mit eingesetzter Version in `.koolie/core/governance/ADOPTION_REGISTRY.md` (Auditierbarkeit).
+
+### 4.1 Das Release-Archiv (normativ, seit `1.0.0` – D-321)
+
+**Ein Release ist ab `1.0.0` erst dann eines, wenn es einen benannten Stand hat.** Punkt 2
+verlangt das Archiv seit der Erstfassung, und Abschnitt 8 beginnt die Nachweiskette mit
+ihm; bis `0.91.0` ist in **106 Release-Commits keines erzeugt worden**, und das
+Repositorium führte **null** Marken. *Eine Nachweiskette, deren erstes Glied fehlt, ist
+eine Aufzählung.*
+
+| Schritt | Was | Wer |
+|---|---|---|
+| 1 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`, die Nachricht nennt Release, Antrag und die Entscheidungen | 🔴 **der Framework Owner, nicht ein Werkzeug** |
+| 2 | **Archiv** aus der Marke: `git archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch |
+| 3 | **Ablage außerhalb des Repositoriums**, zusammen mit der Prüfsumme des Archivs | Werkzeug oder Mensch |
+| 4 | Eintrag in `.koolie/core/governance/ADOPTION_REGISTRY.md` und Mitteilung an die übernehmenden Projekte nach Punkt 3 | Framework Owner |
+
+🔴 **Die Signatur braucht eine Prüfvorrichtung, sonst belegt sie die halbe Aussage**
+(D-327). Ohne hinterlegten Unterzeichner meldet `git tag -v` **keine** Bestätigung –
+gemessen unmittelbar nach der ersten Marke dieses Repositoriums. Einmal je Arbeitsplatz:
+
+```
+git config --local gpg.ssh.allowedSignersFile ".git/allowed_signers"
+printf '%s %s\n' "<Adresse des Taggers>" "$(cat ~/.ssh/id_ed25519.pub)" \
+  > .git/allowed_signers
+```
+
+⚠️ **Die Datei liegt unter `.git/` und wird nicht versioniert** – sie bindet eine Adresse
+an einen Schlüssel, und eine Adresse im Kern meldet Prüfung 6 zu Recht. ➡️ *Eine
+Signatur ohne hinterlegten Unterzeichner belegt, daß jemand mit diesem Schlüssel
+unterschrieben hat – nicht, wem der Schlüssel gehört.*
+
+🔴 **Schritt 1 ist nicht delegierbar, und die Begründung ist D-319.** Die Marke sagt
+**wer** freigegeben hat. Ein Werkzeug kann sie technisch setzen und mit einem vorhandenen
+Schlüssel sogar signieren – **und genau deshalb darf es nicht.** Dieselbe Trennung gilt für
+den Freigabe-Commit.
+
+⚠️ **Die Zeilenenden des Archivs stehen seit D-320 fest.** `git archive` folgt der
+`.gitattributes`; ohne sie hinge der Inhalt der Lieferung an der Konfiguration des
+Rechners, der sie erzeugt hat.
+
+⚠️ **Das Archiv enthält nur Versioniertes.** Hauptdokument und Word-Fassung sind
+Erzeugnisse unter `build/out/` und stehen in der `.gitignore`; wer sie mitliefern will,
+legt sie **neben** das Archiv, nicht hinein.
 
 ## 5. Freigabe und Deprecation von Skills (normativ)
 
