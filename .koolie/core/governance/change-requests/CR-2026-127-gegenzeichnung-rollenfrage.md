@@ -9,7 +9,7 @@
 | Ebene laut Entscheidungsbaum 6 | Governance. **Rollenfrage**, keine technische Änderung |
 | Art | Entscheidung (Auslegung einer bestehenden Pflicht) |
 | Dringlichkeit | **blockierend für `1.0.0`.** Solange sie offen ist, ist `AP11` formal nicht abgeschlossen |
-| Status | 🔴 **OFFEN – zur Entscheidung in der Abnahmesitzung vorgelegt** |
+| Status | 🟢 **entschieden am 2026-09-23** (E1 bis E5), umgesetzt mit `0.91.0` |
 
 ---
 
@@ -83,9 +83,14 @@ nachgezogen, gegebenenfalls die Prüfung aus E4 gebaut, Validator und Sondenlauf
 
 ## 6. Entscheidung
 
-🔴 **OFFEN.** Vorgelegt am 2026-09-23 zur Entscheidung durch `<FRAMEWORK_OWNER>` in der
-Abnahmesitzung zu `1.0.0`.
+**Entschieden am 2026-09-23 durch `<FRAMEWORK_OWNER>`.** Festgehalten als **D-319**; `K-107` neu aufgenommen. Umgesetzt mit Release `0.91.0`.
 
-*Dieser Abschnitt bleibt bewußt leer, bis die Entscheidung gefallen ist. Ein Antrag mit
-einem ausgefüllten Abschnitt 6, dessen Entscheidung niemand getroffen hat, ist die
-Fälschung, gegen die dieser Antrag selbst argumentiert.*
+| # | Entscheidung |
+|---|---|
+| **E1** | **Weg C, dann B.** Die Gegenzeichnungspflicht gilt nur für die **zehn Abnahmeprotokolle** des Testkatalogs; die fehlenden **sieben** sind als **Selbstgegenzeichnung** nachgezogen und weisen das in einem eigenen Satz aus. |
+| **E2** | **Weg B für die sieben.** Keine zweite Rolle vorhanden; die Zusage ist **zurückgenommen, nicht erfüllt**, und jeder Abschnitt sagt es. |
+| **E3** | 🔴 **Gegen den eigenen Vorschlag entschieden.** Die offenen `<TBD>` in den **45 Arbeits- und Meßprotokollen** bleiben **stehen**. Der Vorschlag lautete „entfernen“ und ist im Durchgang gefallen: Protokolle sind **Chronik** (D-273), sie stehen in **drei verschiedenen Tabellenformen**, und ein Sweep darüber ist die Bauform aus D-277. **Das `<TBD` hält fest, daß dort einmal eine Gegenzeichnung vorgesehen war.** Die Abgrenzung steht **einmal** an den drei Stellen, an denen sie gilt – `checklists/11`, `tests/protocols/README.md`, `RACI.md`. |
+| **E4** | **Ja, Prüfung 80.** *Eine Entscheidung ohne Mechanismus ist eine Zusage* – und sie war beim ersten Lauf **rot über genau die sieben**. |
+| **E5** | 🆕 **Neu gestellt und mitentschieden: Was IST die Unterschrift?** **Die Zeile sagt, WAS gegengezeichnet wurde; der Commit sagt, WER.** Ein Werkzeug kann die Zeile schreiben – einen Commit unter der Identität des Owners kann es nicht. *Damit wird die Fälschung unmöglich statt nur verboten.* ⚠️ **Preis:** Die Commits sind nicht signiert, die Unterschrift ist so stark wie der Schreibzugriff; `K-107` führt die Frage weiter. |
+
+> 🔴 **Der Text der sieben Abschnitte ist von einem Werkzeug vorbereitet worden, die Freigabe nicht.** Der Owner hat die Protokolle gelesen und den Release-Commit selbst gesetzt. *Der Umfang steht so da, wie er genannt wurde –* *„Protokoll vollständig gelesen“, und keine Silbe mehr.*
