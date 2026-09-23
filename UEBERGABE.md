@@ -964,6 +964,83 @@ aussehen und an einem Präparationswächter hängen.
 
 ---
 
+### 0.56 `1.2.0`: Die Chronik, die ihr eigenes Release nicht zu Ende zählt
+
+> 🟢 **Zwei Befunde aus dem Vorbedingungsdurchgang, beide mit einer Prüfung beantwortet.**
+> `CR-2026-131` E1 bis E6, **D-335** bis **D-340**, **Prüfung 83 und 84** neu, `K-112`
+> bis `K-114` neu. **Ohne Kontingent, ohne Lauf an einem Client.**
+
+#### 🔴 Der Vorbedingungsdurchgang – zum zwanzigsten Mal in Folge der billigste Befund
+
+| # | Befund | gemessen |
+|---|---|---|
+| **V1** | 🟢 Die Tabelle *Nächste freie Kennungen* stimmt – **zum ersten Mal seit vier Releases** | über alle fünf Gattungen nachgezählt |
+| **V2** | 🟢 Das Codex-Konto ist `plus` – die Berichtigung aus `1.1.0` hält | `id_token`, Feld `chatgpt_plan_type` |
+| **V3** | 🔴 **Die Release-Spanne von `1.1.0` endete bei `D-332`, vergeben sind `D-329` bis `D-334`** | Register lückenlos, 334 Zeilen |
+| **V4** | 🔴 **Kein beschreibender Träger nennt alle sechs** – ROADMAP 4, `CHANGELOG.md` 5, Antrag 4, Protokoll 4, und `D-333` steht in keinem | vier Träger, vier Mengen |
+| **V5** | 🔴 **`_template` steht in der Packmenge des Prüfapparats** | mit Probemanifest: 3 Packs, **0 Fehler** |
+| **V6** | ⚠️ Codex stand auf `0.155.1`, verfügbar `0.156.1`; **während der Sitzung vom Owner gehoben.** Folgenlos für dieses Release – der Meßtag ist auf `1.3.0` gerückt, und die geprüfte Clientversion wird **vor** dem Erheben festgeschrieben (D-117, D-202) | `codex doctor` |
+| **V7** | ⚠️ `~/.codex/config.toml` führt weiter einen Vertrauenseintrag auf den **alten** Projektnamen. **Rest der Umbenennung, außerhalb des Repositoriums** | gelesen |
+| **V8** | ⚠️ **`1.0.1` stand in `docs/ROADMAP.md` vor `1.0.0`** – die Tabelle ist über 133 Zeilen monoton und war an genau dieser Stelle nicht | gezählt |
+| **V9–V11** | 🟢 Bestandsliste in allen drei Trägern byte-gleich; Word-Fassung auf `v1.1.0`; Standüberschrift und *„dieses Release"* je **einmal** | gezählt |
+
+🔴 **Keine Prüfung erreichte V3, V4, V5 oder V8.**
+
+#### 🔴 Die Fallen, die in `1.2.0` zugeschnappt sind
+
+| # | Falle | Wo sie zuschnappte |
+|---|---|---|
+| 1 | 🔴 **DIE TEUERSTE, UND SIE STAND WÖRTLICH IN DIESER DATEI.** *„Ein Sondenlauf mißt den Baum, in dem er startet"* – der Fall aus `0.86.0`. Gefahren, als `VERSION` schon auf `1.2.0` stand und die Übergabe noch auf `1.1.0`: **112 von 325 Einheiten meldeten dieselben zwei Fehler**, 509 s verloren. 🟢 **Abhilfe: Die Übergabe wird VOR dem Abnahmelauf gehoben**, nur die Laufzeiten kommen danach (D-94) |
+| 2 | 🔴 **Ein neu angelegter Träger trägt LF, der Kern trägt CRLF.** Prüfung 81 fängt es – **aber erst im Sondenlauf**, weil sie den **Git-Bestand** mißt; der Validatorlauf davor war grün |
+| 3 | 🔴 **Eine Ausnahme kann den Gegenstand einer FREMDEN Sonde aufheben** (D-340). Zweimal hintereinander, und **beide Male war der Validator grün** |
+| 4 | ⚠️ **Die Heredoc-Form bricht an einem Anführungszeichen, und ein Backtick in der Eingabezeile wird zur Kommandosubstitution** – der PR-Text von `1.2.0` stand einmal beschädigt am Server (*„Nur ."*). **Patchblöcke und PR-Texte laufen über Dateien im Ablagebereich, nie über die Eingabezeile** |
+| 5 | ⚠️ **Die Zahl in `26-qs-test.md` bewegt sich mit jedem angelegten Träger.** Sie gehört gesetzt, **nachdem** alle stehen |
+| 6 | 🟢 **Gefangen, bevor sie zuschnappte:** `printf` schreibt LF, und `VERSION` ist ein versionierter Träger |
+
+#### 🔴 Wiederaufnahmepunkt
+
+1. ➡️ **Der Posten: `1.3.0` – Client Pack `openai-codex`**, die neun Schritte aus
+   `clients/README.md` Abschnitt 5. ⚠️ **Mit Kontingent** – der erste Meßtag seit
+   `0.86.0`, auf einem **Plus**-Konto (`K-97`).
+   🟢 **Die Vorbedingungen stehen:** Die drei Eignungsfragen sind beantwortet
+   (Abschnitt 0.55), und **die Vorlage ist mit `1.2.0` hergerichtet** – Schritt 1 nennt
+   sie jetzt bei ihrem Umfang, und **Prüfung 84** hält sie aus der Packmenge heraus.
+   🔴 **Was Kontingent kostet, sind die `[TECHNISCH]`-Belege der Fähigkeitsmatrix** –
+   **31 Zeilen** trägt die Vorlage –, und Abschnitt 4 verlangt dafür eine **reale
+   Installation**; bis dahin sagt die Belegzelle `BELEG OFFEN` mit Grund und Datum.
+   ⚠️ **Zwei Bauformen sind vorab benannt und gehören in den B-Block:** das
+   **Hook-Vertrauensmodell** (V3 aus `1.1.0`, die Entsprechung zu D-281) und die
+   **andere Gestalt der Berechtigungsschicht** (V4 aus `1.1.0`).
+   ⚠️ **Die geprüfte Clientversion vor dem Erheben festschreiben** (D-117, D-202) – der
+   Owner hat während der Sitzung von `0.155.1` auf `0.156.1` gehoben.
+2. 🔴 **`K-115` ist VORGEMERKT und nicht im Register** – der achte Befund der
+   Auslieferung: **Abschnitt 4.1 Schritt 2 endet, bevor sein Ergebnis dauerhaft ist.**
+   Das Committen im übernehmenden Projekt steht in keinem der vier Handgriffe, und in
+   **beiden** Projekten trug der jüngste Commit `VERSION` `1.0.1` – die Hebung auf
+   `1.1.0` ist nie committet worden. **Ein Eintrag ins Decision Log wäre ein
+   Kerneingriff nach der Marke** (D-333); er kommt mit `1.3.0`, zusammen mit der
+   Antwort auf die drei Fragen.
+3. ⚠️ **`K-112`: Erreicht eine Prüfung die NENNUNGEN eines Releases, nicht nur die
+   Spanne?** Prüfung 83 hält die Obergrenze; wer die Spanne richtig führt und eine
+   Kennung im Fließtext nicht nennt, kommt durch.
+4. ⚠️ **`K-113`: Die Marke ist der vollständigste Träger und der einzige ungeprüfte.**
+   Alle vier Marken nennen die Spanne vollständig und tragen die Freigabezeile; kein
+   Träger des Arbeitsbaums tut beides. Hängt an `K-111`.
+5. ⚠️ **`K-114`: Wer setzt den reservierten Sondenbereich durch?** `D`-Kennungen ab 900;
+   der Abstand beträgt heute 560 Kennungen, und **keine Prüfung meldet eine echte
+   Vergabe darüber.**
+6. 🔴 **`K-108`: Wird veröffentlicht, und was geht mit?** Unverändert offen.
+7. ⚠️ **`K-109`, `K-110`, `K-100`, `K-105`** unverändert.
+8. 🟢 **Die Reihenfolge des Hebens ist jetzt an ZWEI Releases erprobt** – `1.1.0` hat sie
+   eingeführt, `1.2.0` hat sie angewandt, und die Bestandsliste war in beiden
+   übernehmenden Projekten grün. **Was sie nicht trägt, ist der Schritt danach** – siehe
+   Punkt 2.
+
+🔴 **Nicht delegierbar:** die **signierte Marke** (D-321) und **jeder Commit, der eine
+Unterschrift trägt** (D-334).
+
+---
+
 ### 0.55 `1.1.0`: Die Reihenfolge des Hebens – und ein Ablauf, der an den Commit gebunden war
 
 > 🟢 **Der Schuldposten aus `1.0.1` ist beantwortet: ja zu beidem.** `CR-2026-130` E1 bis
@@ -3714,7 +3791,7 @@ Läufe je Arbeitssitzung.
 | **B** | 🔴 **`K-108` entscheiden: Wird veröffentlicht, und was geht mit?** Die Historie trägt Klarnamen in 122 Commits und die Adresse in allen 261. Nach D-324 nicht mehr durch Umschreiben vorbereitbar | eine Entscheidung | nicht rückholbar |
 | **C** | ⚠️ **`K-109`: eine Prüfung für *„Rollen statt Personen"* – oder die ausdrückliche Feststellung, daß es keine geben kann** | eine Sitzung, **kein Kontingent** | Prüfapparat |
 | **D** | **`AP13`: Übernahme in weitere Projekte.** Bisher zwei; der Aufwand je Projekt soll sinken, und das ist bisher **behauptet, nicht gemessen** | je Projekt | Roadmap |
-| **E** | **`1.2.0`: Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen. 🟢 **Drei der vier sind mit `1.1.0` vorweggenommen:** die Eignungsfragen stehen an der Konsole beantwortet (Abschnitt 0.55). 🔴 **Was Kontingent kostet, sind die `[TECHNISCH]`-Belege der Fähigkeitsmatrix** – 31 Zeilen, und Abschnitt 4 von `clients/README.md` verlangt dafür eine **reale Installation**. Konto: **Codex Plus** (`K-97`, berichtigt) | mehrere Sitzungen, **mit Kontingent** | Roadmap |
+| **E** | **`1.3.0`: Client Pack `openai-codex`** ⚠️ **(mit `1.2.0` von `1.2.0` gerückt, D-339)** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen. 🟢 **Drei der vier sind mit `1.1.0` vorweggenommen:** die Eignungsfragen stehen an der Konsole beantwortet (Abschnitt 0.55). 🔴 **Was Kontingent kostet, sind die `[TECHNISCH]`-Belege der Fähigkeitsmatrix** – 31 Zeilen, und Abschnitt 4 von `clients/README.md` verlangt dafür eine **reale Installation**. Konto: **Codex Plus** (`K-97`, berichtigt) | mehrere Sitzungen, **mit Kontingent** | Roadmap |
 | **F** | ⚠️ **`K-100` und `B9` zusammen angehen:** In beiden Fällen gibt es zwei Zählformen und kein Vokabular. Das Register führt **107** K-Zeilen, und die Zahl der offenen bleibt unermittelbar | eine Sitzung | Governance |
 | **G** | ⚠️ **`K-105`: der Foliensatz liegt außerhalb des Repositoriums** und steht auf `0.90.0` – überholt durch `0.91.0` **und** `1.0.0`. Keine Prüfung erreicht ihn | – | offen |
 | **H** | **Der `SOLL`-Prüfpunkt `M1`→`M2`→`M3`→`M4`** auf dem Übungsrepositorium. Er ist ausgewiesen, nicht gefahren – der einzige Posten von `FW-CL-11` mit Kontingent | eine Sitzung, **mit Kontingent** | Nachtrag |
