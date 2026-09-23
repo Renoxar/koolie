@@ -1,4 +1,4 @@
-# Übergabe: **Koolie** – Stand 0.89.0 (2026-09-22)
+# Übergabe: **Koolie** – Stand 0.90.0 (2026-09-23)
 
 > 🟢 **DAS HAUPTDOKUMENT STEHT AUF DEM GELTENDEN STAND – UND SEIN ERZEUGER LIEF SEIT
 > `0.88.0` NICHT MEHR** (`0.89.0`, `CR-2026-124`, **D-309** bis **D-312**, **Prüfung 77**,
@@ -90,6 +90,80 @@
 > **zwei**. Nachgetragen wird, was Decision Log (`D-28` bis `D-33`) und `CHANGELOG.md`
 > bereits festhalten; jeder Block sagt in einem eigenen Satz, daß er ein Nachtrag ist und
 > woher er stammt. **Es ist nichts neu entschieden worden.**
+
+> 🟢 **DIE WORD-FASSUNG EXISTIERT – UND DIE DREI TRÄGER NEBEN DEN KAPITELN ERREICHT
+> ENDLICH EINE PRÜFUNG** (`0.90.0`, `CR-2026-125`, `CR-2026-126`, **D-313** bis **D-318**,
+> **Prüfung 78 und 79**, `K-105` und `K-106` neu). **Ohne Kontingent, ohne Lauf an einem
+> Client.** Je 1,9 MB für **beide** Client Packs, **acht eingebettete Diagramme**, im
+> Erzeugnis nachgezählt statt der Meldung geglaubt.
+>
+> 🔴 **DER POSTEN WAR NICHT UNFAHRBAR, SONDERN UNVERSUCHT.** `0.89.0` hat gemessen, daß
+> `pandoc` und das Mermaid-Kommandozeilenwerkzeug fehlen – **die Messung war richtig.** Der
+> Releaseplan hat daraus *„ohne sie ist der Posten unfahrbar"* gemacht. Gemessen am
+> 2026-09-23: **beide in zwei Befehlen installiert**, und der Renderer braucht keinen
+> eigenen Chromium – auf der Zielplattform liegt einer.
+> ➡️ *Eine fehlende Vorbedingung ist ein Posten, keine Grenze. Der Unterschied zwischen
+> „nicht installiert" und „nicht installierbar" ist der zwischen einer Messung und einer
+> Folgerung aus ihr* – und die Folgerung stand zwei Releases lang im Plan.
+>
+> 🔴 **DREI TRÄGER NEBEN `build/doc/` ERREICHTE KEINE EINZIGE PRÜFUNG** (D-313).
+> `SKIP_DIRS` enthält den blanken Verzeichnisnamen `build`, und `iter_text_files` holte
+> genau `build/doc` zurück – `assemble.py`, `build-docx.py` und `build/README.md` lagen
+> daneben. **ZWÖLF Prüfungsfunktionen laufen über diesen Iterator.** 🔴 **Die Begründung im
+> Quelltext nennt EINE Frage** – die Werkzeuge führen eigene Marker in spitzen Klammern,
+> und das ist die Frage von Prüfung 7.
+> ➡️ *Eine Ausnahme gilt so weit wie ihre Begründung und nicht so weit wie ihr Mechanismus.*
+> 🔴 **Das ist D-311 an einer zweiten Stelle.** 🟢 **Der Preis der Öffnung ist gemessen und
+> klein: zwei Fehler, zwei Warnungen** – die zwei Warnungen **sind** die Begründung, und die
+> zwei Fehler standen **im Erzeuger der Lieferung**.
+>
+> 🔴 **DER GEFÄHRLICHSTE BEFUND FIEL ERST IM LAUF: EXIT 0, DATEI GESCHRIEBEN, UND ACHT VON
+> ACHT DIAGRAMMEN FEHLTEN.** Der Bildverweis trug den **absoluten** Pfad; unter Windows
+> enthält der Rückstriche, und pandoc liest einen Rückstrich im Markdown-Link als
+> **Maskierung**. pandoc ersetzt ein nicht gefundenes Bild durch seine Beschreibung und
+> endet mit **Exit 0** – die einzige Spur war eine Warnzeile. **0,9 MB statt 1,9 MB.**
+> 🟢 **Zweifach behoben:** relativer Pfad, und der Lauf bricht ab und löscht die Datei, wenn
+> pandoc eine Ressource meldet. ➡️ *Ein Erzeugnis, dem ein zugesagter Bestandteil fehlt, ist
+> nicht erzeugt.*
+>
+> 🆕 **PRÜFUNG 78 HÄLT DIE GEGENWARTSZAHLEN DES HAUPTDOKUMENTS GEGEN DEN BESTAND** (D-315).
+> **Der Anlaß ist das Release davor:** `0.89.0` hat aufgeschrieben, die Behebung brauche
+> *„eine Prüfung und nicht nur eine Textänderung"* – und dann Prüfung 77 gebaut, die die
+> **Version** mißt und nicht den **Inhalt**. **Ein Release später war der Satz wieder
+> falsch:** *„76 Prüfungen über 502 versionierte Dateien, davon 450 Markdown-Dateien"*;
+> richtig waren **77, 504 und 452**, und die zwei fehlenden Dateien waren **der Antrag und
+> das Protokoll desselben Releases.**
+> ⚠️ **Preis, benannt:** Die Zahl der versionierten Dateien steht erst fest, wenn das
+> Release fertig ist. *Und eine Zahl, die niemand vor dem Ende setzen kann, ist genau die,
+> die niemand setzt.*
+>
+> 🆕 **DIE ERSTE LIZENZ DES PROJEKTS: GPL-3.0** (`CR-2026-126`, D-316, D-317), mit einer
+> **Zusatzerlaubnis nach §7** für Vorlagenergebnisse und Werkzeugausgaben.
+> 🔴 **Die beiden Bedingungen des Owners schlossen einander aus** – *„echtes Open Source"*
+> und *„niemand darf den Kern verkaufen"*; **§1 und §6 der OSI-Definition verbieten genau
+> diese Einschränkung.** 🟢 **Die GPL löst den Widerspruch, ohne ihn zu verbieten:** Der
+> Verkauf bleibt erlaubt, aber jeder Käufer bekommt den Quelltext unter derselben Lizenz mit
+> und darf ihn weitergeben. **Damit fällt das Geschäftsmodell *umbenennen und proprietär
+> verkaufen* weg, ohne daß die Lizenz jemandem etwas verbietet.** ⚠️ **Preis, benannt:**
+> pauschale GPL-Verbote in manchen Organisationen; die Zusatzerlaubnis und
+> `LICENSE-HINWEIS.md` Abschnitt 3 sind die Antwort darauf.
+>
+> 🔴 **EINE ZAHL, DIE MAN NICHT ERMITTELN KANN, IST KEIN FEHLENDER WERT, SONDERN EIN BEFUND
+> ÜBER IHREN GEGENSTAND.** Die Zahl der offenen Klärungspunkte ist mit keinem Werkzeug
+> belastbar zu zählen: **drei Zählungen, drei Ergebnisse** (50, 64, 15 nicht erkennbar).
+> Ursache ist `K-100` – die K-Zeilen stehen in **zwei** Tabellenformen mit der Statuszelle
+> an verschiedenen Stellen, und die Statuswerte folgen **keinem Vokabular**. Das Register
+> führt **104 Zeilen**, diese Übergabe nannte 13 offene. **`K-100` ist damit teurer als eine
+> Verschiebung von 27 Zeilen.**
+>
+> ⚠️ **DIE GEGENZEICHNUNG IST NICHT GEFAHREN, UND DER GRUND IST EINE ROLLENFRAGE.** An
+> diesem Framework arbeitet **eine** Person; eine Gegenzeichnung ist die Handlung einer
+> **zweiten**. Die drei Wege und ihre Preise stehen als **`CR-2026-127`** vorgelegt und sind
+> **ausdrücklich offen** gelassen. ➡️ *Ein Antrag mit einem ausgefüllten Abschnitt 6, dessen
+> Entscheidung niemand getroffen hat, ist die Fälschung, gegen die er selbst argumentiert.*
+> 🟢 **Dazu vorbereitet: das Freigabeprotokoll `FW-CL-11`** mit jedem der 22 Prüfpunkte auf
+> seinem gemessenen Stand – **18 gedeckt, vier brauchen einen Menschen, keiner ist
+> abgehakt.**
 
 > 🟢 **ERLEDIGT MIT `0.88.1` – der Kopfblock bleibt als Herleitung stehen:**
 > 🟢 **DER VORTRAG AM 24.09. IST VORBEREITET, UND `KOOLIE` TRÄGT SEINE NAMENSABLEITUNG**
@@ -507,6 +581,139 @@ aussehen und an einem Präparationswächter hängen.
 | `0.78.2` | **`K-80` entschieden** | 🔴 **Ein einzelnes `CR` ohne folgenden `LF` nimmt git die Normalisierung** – 14 Träger, und es waren genau die 14, die git nicht normalisiert hat (D-217). **Prüfung 66** liest seither **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt. 🟢 **Die Übergabe steht seither im Release-Commit**, ohne Antragsnummer; **Prüfung 67** rechnet die Titelzeile gegen `VERSION` (D-216) |
 | `0.79.0` | **Meßtag Bündel 4**, 50 Läufe, 61,19 USD – **acht von neunzehn** | 🔴 **`HEAD` stand an allen 38 Bäumen auf `main`.** Der Vorbedingungsdurchgang hatte geprüft, ob der Branch **da** ist; der Lauf braucht, daß er **ausgecheckt** ist – *ein Vorhandensein belegt sich selbst, ein Zustand nicht* (D-218). 🔴 **`{ command: "git branch -D", prefix: "git branch" }` sperrt über sein Präfix auch das bloße Auflisten** – 25 Abweisungen in 23 von 50 Läufen; **Prüfung 68** (D-219). 🟢 **Der Zuschnitt braucht neben Vollständigkeit eine AUSRICHTUNG** (D-221). 🟢 **Der Meßapparat liegt seither versioniert im Kern** (D-222) |
 | `0.79.1` | Der Aufräumer stirbt an seiner Erfolgsmeldung | **Ein Werkzeug prüft seinen BERICHTSWEG in beiden Kodierungsumgebungen, nicht nur seinen Lauf** (D-223). Das Skript war nie in der zweiten gefahren; eines von siebzehn betroffen |
+
+---
+
+### 0.52 `0.90.0`: Die Word-Fassung – und die drei Träger, die keine Prüfung erreicht hat
+
+> 🟢 **Der Rest von `AP11` ist bis auf die Gegenzeichnung gefahren.** Die Word-Fassung
+> existiert für **beide** Client Packs. `CR-2026-125`, `CR-2026-126`, **D-313** bis
+> **D-318**, **Prüfung 78 und 79**, `K-105` und `K-106` neu, `CR-2026-127` **offen
+> vorgelegt**. **Ohne Kontingent.**
+
+#### 🔴 Der Vorbedingungsdurchgang – zum sechzehnten Mal in Folge der billigste Befund
+
+Er hat zweierlei gefunden, und **keines davon war ein fehlendes Werkzeug**.
+
+**Erstens:** `winget` und `npm` liegen auf diesem Arbeitsplatz, Edge ohnehin. `pandoc 3.11`
+und `@mermaid-js/mermaid-cli` waren in **zwei Befehlen** installiert, und der Renderer läuft
+über den vorhandenen Browser statt über ein Container-Chromium.
+➡️ *Eine fehlende Vorbedingung ist ein Posten, keine Grenze.*
+
+**Zweitens, und das ist der Befund des Releases:** Der Iterator des Validators wurde
+abgefragt, bevor irgendetwas angefaßt wurde.
+
+```text
+Träger insgesamt, die iter_text_files liefert: 582
+davon unterhalb von build/: 34   (alle in build/doc)
+
+.koolie/core/build/assemble.py:    NICHT ERREICHT
+.koolie/core/build/build-docx.py:  NICHT ERREICHT
+.koolie/core/build/README.md:      NICHT ERREICHT
+```
+
+🔴 **Zwölf Prüfungsfunktionen laufen über diesen Iterator** – 6, 7, 12, 13, 14 (zweiteilig),
+48, 50, 58, 63, 66, 71 und die Mermaid-Prüfung. **Alle zwölf verlieren dieselben drei
+Träger.** Die Begründung im Quelltext nennt **eine** Frage: die eigenen Marker in spitzen
+Klammern – die Frage von Prüfung 7.
+
+🟢 **Der Preis der Öffnung, gemessen statt geschätzt: zwei Fehler, zwei Warnungen.** Die
+zwei Warnungen **sind** die Begründung und haben jetzt eine **benannte** Ausnahme über
+**drei benannte Träger** (`OHNE_PLATZHALTERREGISTER`) – *dieselbe Auflösung wie bei D-311.*
+🔴 **Und die zwei Fehler standen im Erzeuger der Lieferung:** `build-docx.py` schrieb den
+**überholten** Dokumenttitel samt **Clientnamen** in die Dokumenteigenschaften der
+Word-Datei. Prüfung 77 erreicht das nicht – sie mißt `00-kopf.md`, nicht den Erzeuger.
+
+#### 🔴 Exit 0, Datei geschrieben, und kein einziges Diagramm darin
+
+| | erster Lauf | nach der Behebung |
+|---|---|---|
+| Größe | 0,9 MB | **1,9 MB** |
+| Bilder in `word/media/` | **0 von 8** | **8**, einzeln nachgezählt |
+| Rückmeldung des Werkzeugs | *„geschrieben"*, **Exit 0** | *„8 Diagramme eingebettet"* |
+
+Der Bildverweis trug den **absoluten** Pfad. Unter Windows enthält der Rückstriche, und
+pandoc liest einen Rückstrich im Markdown-Link als **Maskierung**: Aus `…\koolie\.koolie\…`
+wurde `…koolie.koolie\…`. **pandoc ersetzt ein nicht gefundenes Bild durch seine
+Beschreibung und endet mit Exit 0.**
+
+🟢 **Zweifach behoben**, und der zweite Teil ist der wichtige: relativer Pfad **und** ein
+Abbruch, der die Datei löscht, wenn pandoc eine Ressource meldet.
+➡️ *Ein Erzeugnis, dem ein zugesagter Bestandteil fehlt, ist nicht erzeugt.*
+
+#### 🔴 Drei Zahlen, überholt im Release, das das Dokument auf den Stand gesetzt hat
+
+| Angabe in `26-qs-test.md` | gemessen zum Stand `0.89.0` |
+|---|---|
+| *„76 Prüfungen"* | **77** – Prüfung 77 kam **mit** `0.89.0` |
+| *„502 versionierte Dateien"* | **504** – Antrag und Protokoll **desselben** Releases |
+| *„450 Markdown-Dateien"* | **452** – dieselben zwei |
+
+Gegengeprüft an den Commits: `e7f5df5` (0.88.1) führt 502/450, `bdb9d2b` (0.89.0) führt
+504/452. 🟢 **Prüfung 78 schließt die Lücke** – nach der Bauform von Prüfung 40: den Satz
+ausrechnen, wörtlich verlangen.
+
+#### 🟢 Die Lizenz – und warum die beiden Bedingungen einander ausschlossen
+
+| Bedingung | Lage |
+|---|---|
+| *„echtes Open Source"* | OSI-Definition **§1** und **§6** |
+| *„niemand darf den Kern verkaufen"* | genau die Einschränkung, die §1 und §6 **verbieten** |
+
+🟢 **GPL-3.0 löst es, ohne es zu verbieten:** Der Verkauf bleibt erlaubt – nur bekommt jeder
+Käufer den Quelltext unter derselben Lizenz mit. **Das Geschäftsmodell *umbenennen und
+proprietär verkaufen* fällt weg, ohne daß die Lizenz jemandem etwas verbietet.**
+🆕 **Zusatzerlaubnis nach §7** für Vorlagenergebnisse und Werkzeugausgaben – ohne sie wäre
+ein ausgefülltes Overlay formal eine geänderte Fassung eines GPL-Werks.
+🆕 **Prüfung 79** hält die Lizenz an ihren zwei nötigen Stellen gegeneinander.
+
+#### 🔴 Zweimal hat der eigene Apparat den eigenen Eingriff gefangen
+
+| Wo | Was |
+|---|---|
+| Prüfung 50 | Die Berichtigung der Kennungsmengen schrieb die **zusammengesetzte Sondenkennung ausgeschrieben** in zwei Kapitelquellen – genau das, was der Decision Log verbietet, **weil sie gemeldet werden soll** |
+| Gegenprobe 46b | Der neue Klärungspunkt `K-106` nannte `K-99` wörtlich, und der Kollisionswächter zählt jede Nennung außerhalb des schützenden Absatzes |
+
+➡️ *Wer über eine synthetische Kennung schreibt, vergibt sie.* **Beide Male hat der Apparat
+gemeldet, und beide Male vor dem Commit.**
+
+#### ⚠️ Der Durchgang vor dem Commit trägt sich zum fünfunddreißigsten Mal
+
+| Zahl | zuerst genannt | nachgezählt |
+|---|---|---|
+| Vorbedingung des Postens | „unfahrbar" | 🔴 **behebbar** – zwei Befehle |
+| Diagramme in der ersten Word-Fassung | „geschrieben (0,9 MB)" | 🔴 **null von acht**, mit Exit 0 |
+| Abnahmezahlen von `0.89.0` | 1.928.254 / 12.840 | 🔴 **1.956.225 / 12.888** – der Bau **vor** der Textarbeit |
+| „Textarbeit an 32 Trägern" | 32 | 🔴 **36 / 15 / 32** – die Zahl hat einen Gegenstand, aber keine Regel daneben |
+| belegte synthetische Kennungen | „sechs, darunter `K-96`" | 🔴 **fünf**, und `K-96` ist eine **echte, offene** Zeile in sieben Trägern |
+| Zahlen des Hauptdokuments | 76 / 502 / 450 | 🔴 **77 / 504 / 452** |
+| datierte Zahlen | 308 / 101 / `K-103` | 🔴 **312 / 102 / `K-104`** – falsch für ihr **eigenes** Datum |
+| offene Klärungspunkte | „13" | 🔴 **nicht belastbar ermittelbar** – drei Zählungen, drei Ergebnisse |
+| Träger ohne Prüfung | – | 🟢 **drei**, und **zwölf** Prüfungen verlieren sie |
+| Prüfungen | – | 🟢 **79** |
+
+> 🔴 **Zwei der zehn Zeilen sind eigene Zahlen dieses Hauses.** ⚠️ **Und eine ist neu in
+> ihrer Art:** *Eine Zahl, die man nicht ermitteln kann, ist kein fehlender Wert, sondern
+> ein Befund über ihren Gegenstand.*
+
+#### 🔴 Wiederaufnahmepunkt
+
+1. 🔴 **Die Abnahmesitzung mit dem Owner.** Vier Prüfpunkte von `FW-CL-11` brauchen einen
+   Menschen, und einer blockiert: **die Rollenfrage der Gegenzeichnung** (`CR-2026-127`
+   E1 – drei Wege, Preise benannt, Empfehlung **C dann B**). Dazu die **manuelle
+   Stichprobe**, die **Aktualitätsprüfung gegen die Clientdokumentation** (Netzzugriff,
+   liegt außerhalb des freigegebenen Arbeitsbereichs) und die **dokumentierte Freigabe**.
+   🟢 **Vorbereitet liegt** `tests/protocols/2026-09-23-freigabelauf-1.0.0-vorbereitung.md`
+   – 22 Prüfpunkte, **18 gedeckt, vier offen, keiner abgehakt.**
+2. ⚠️ **`K-100` ist teurer geworden, und das ist gemessen.** Die Verschiebung der 27 Zeilen
+   genügt nicht – ohne ein **Statusvokabular** bleibt die Zahl der offenen Punkte auch
+   danach unzählbar. Dieselbe Bauform wie Prüfung 47 für die Steckbriefe.
+3. ⚠️ **Offen:** `K-85`, `K-86`, `K-92`, `K-93`, `K-94`, `K-96`, `K-98`, `K-100`, `K-101`,
+   `K-102`, `K-104` und **neu `K-105`** (das Vortragsmittel außerhalb des Repositoriums)
+   und **`K-106`** (eine Behauptung **über** die Menge der synthetischen Kennungen erreicht
+   Prüfung 50 nicht). 🔴 **Diese Aufzählung ist NICHT die gemessene Menge** – siehe Punkt 2.
+4. 🔴 **Der Bau gehört weiterhin in den Abnahmelauf, und jetzt auch die Word-Fassung** – für
+   **beide** Packs. Keine Prüfung meldet sein Ausbleiben.
 
 ---
 
@@ -2414,12 +2621,13 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.89.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
+`main` = **0.90.0**, alles gemergt, **ein ausdrücklich offener Antrag** (`CR-2026-127`, die Rollenfrage der Gegenzeichnung), **kein Restbranch**,
 Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
-Kodierungsumgebungen grün – **428 Einheiten** (424 + 4 aus Prüfung 77), und der
-**zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede in 458 Zeilen.**
-🟢 **Neu im Abnahmelauf: der Bau des Hauptdokuments, für BEIDE Client Packs** – er hat zwei
-Releases lang nicht stattgefunden, ohne daß es auffiel.
+Kodierungsumgebungen grün – **436 Einheiten** (428 + 8 aus Prüfung 78 und 79), und der
+**zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede in 468 Zeilen.**
+🟢 **Neu im Abnahmelauf: die WORD-Fassung, für BEIDE Client Packs** – neben dem Bau des
+Markdown-Dokuments, der seit `0.89.0` dazugehört. **Beide Lieferungen tragen ihr Pack im
+Namen**, seit gemessen ist, daß sie nicht gleich sind.
 
 🟢 **DAS HAUPTDOKUMENT STEHT AUF DEM GELTENDEN STAND** (`0.89.0`, `CR-2026-124`, D-309 bis
 D-312, **Prüfung 77**). 15 der 34 Kapitelquellen sind geändert, der Namensabsatz steht auf
@@ -2582,7 +2790,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/koolie` | `main` = **0.89.0**, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
+| Framework | `devpacks/koolie` | `main` = **0.90.0**, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
 | Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `0.88.0` gehoben (2026-09-22) – über 34 Releases**, Overlay **`0.3.0`**, Kern unter `.koolie/core/`. **61 Träger von Hand nachgezogen.** Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**, belegt mit einem **Entlastungslauf** gegen das Sicherungsbundle. 🔴 **Neun der zehn Fehler nach dem Heben kamen aus dem VERSIONSSPRUNG, nicht aus der Umbenennung:** sieben Pflichtplatzhalter waren durch ihren **Wert** ersetzt statt gebunden (D-160, seit `0.63.0`), `autoMemoryEnabled` fehlte in der Berechtigungsdatei (D-155), und die Overlay-Version stand in **drei** Trägern – *der Validator meldet sie nacheinander*. ⚠️ **Der verbliebene Fehler ist Projektarbeit** (gesperrter Begriff in `CHANGELOG.md`) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.88.0` gehoben** (2026-09-22), Overlay **`0.88.0`**, Kern unter `.koolie/core/` – **77 Träger von Hand nachgezogen**, Validator `--strict-overlay` **0 Fehler / 1 Warnung**. ⚠️ **Die Warnung ist die Laufzeitfassung des Overlays: von 5.963 auf 6.024 von 6.000 Zeichen gewachsen**, weil `project-overlay` acht Zeichen länger geworden ist – **benannt, nicht geändert** (`K-88`: eine Kürzung wäre ein Eingriff in den Meßgegenstand). 🔴 **Drei Projektdateien nennen kein `leitwerk`, sondern `project-overlay/`** – *die Migrationsfläche von D-270 ist gegen eine Umbenennung OHNE Umzug gemessen.* 🟢 **Zwei Nennungen bleiben bewußt stehen** (`tools/praeparationen.py`, `tools/mentorenblatt/PRAEPARATIONEN.md`): Sie nennen eine Belegablage, und die wird nicht umbenannt (D-300). *Zum Stand von `0.84.0`:* – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
@@ -2632,7 +2840,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 |---|---|
 | Änderungsantrag | **`CR-2026-125`** |
 | Decision Record | **`D-313`** |
-| Klärungspunkt | **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. *Gezählt am 2026-09-22: 101 Registerzeilen, höchste Kennung `K-103`.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **eine der sechs belegten synthetischen Kennungen**, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
+| Klärungspunkt | **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. 🔴 **Nachgezählt am 2026-09-23: 102 Registerzeilen, höchste Kennung `K-104`** – die Zahl stand hier auf „101 / `K-103`" und war schon für ihr eigenes Datum falsch: `K-104` ist in **demselben** Release vergeben worden, das sie geschrieben hat.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **die zusammengesetzte Kennung der Sonde zu Prüfung 50** (bis `0.89.0` stand hier *„eine der sechs belegten synthetischen Kennungen"*, und das war zweimal falsch: es sind fünf, und `K-95` gehört ausdrücklich **nicht** dazu) –, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
@@ -2643,7 +2851,20 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 `UEB-28` längst vergeben waren. **Eine Zahl, die gepflegt werden muß, wird nicht
 gepflegt.** Wer sie braucht, zählt sie: `grep -o 'D-[0-9]\{3\}' governance/DECISION_LOG.md | sort -u | tail -1`.
 
-**Belegte synthetische Kennungen – nie echt vergeben:** `G-99`, `UEB-97`, `UEB-98`, `UEB-99`, `K-99`, `K-96`. 🔴 **Sie stehen seit 0.60.0 IM REPOSITORIUM** – in einem Absatz des Decision Logs, aus dem Prüfung 50 ihre Ausnahmemenge ableitet. `K-96` ist zusammengesetzt (`"K-" + "95"`), weil eine wörtliche Nennung im Prüfapparat selbst ein Befund von Prüfung 50 wäre.
+**Belegte synthetische Kennungen – nie echt vergeben:** `K-99`, `G-99`, `UEB-97`, `UEB-98`, `UEB-99`. **Es sind fünf**, und die Menge steht seit 0.60.0 IM REPOSITORIUM – in einem Absatz des Decision Logs (`DECISION_LOG.md:82`), aus dem Prüfung 50 ihre Ausnahmemenge ableitet.
+
+🔴 **Bis `0.89.0` stand hier eine sechste, und sie war falsch: `K-96`.** Gemessen am 2026-09-23:
+`K-96` ist eine **echte, offene Registerzeile**, in **sieben** verfolgten Trägern genannt; die
+Lücken im K-Register sind **95 und 99**. Der Satz widerlegte sich im selben Atemzug selbst – er
+nannte `K-96` und schrieb daneben, die Kennung sei `"K-" + "95"` zusammengesetzt.
+**Gemessen an der Quelle:** `probe-pruefungen.py:4518` führt `K50_SYNTH = "K-" + "95"`.
+
+🔴 **Und die Kennung der Sonde zu Prüfung 50 gehört GERADE NICHT in diese Menge** – der Decision
+Log sagt es ausdrücklich: *„Die Kennung der Sonde zu Prüfung 50 steht bewusst NICHT in dieser
+Menge – sie soll ja gemeldet werden."* Sie wird nur deshalb zusammengesetzt geschrieben, damit sie
+nicht wörtlich im Kern steht. ➡️ **Drei Träger, drei verschiedene Mengen** (Decision Log: fünf;
+diese Übergabe: sechs; der Prüfapparat: `K-95`). **Prüfung 50 meldet es nicht, weil sie nur
+GENANNTE Kennungen prüft** – eine Behauptung *über* die Menge erreicht sie nicht (`K-106`).
 🔴 **`UEB-08` war bis 0.58.0 die synthetische Kennung der Gegenprobe 44b und ist jetzt
 echt.** Die Gegenprobe steht auf `UEB-97`. **Eine synthetische Kennung nimmt nie die nächste
 freie** – sonst kollidiert sie beim ersten echten Bedarf.

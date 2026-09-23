@@ -197,6 +197,15 @@ def main() -> None:
         out_path = os.path.join(OUT, "hauptdokument.md")
         with open(out_path, "w", encoding="utf-8") as fh:
             fh.write(result)
+        # 🔴 WELCHES PACK DIESER BAU ABBILDET, MUSS NEBEN DEM ERZEUGNIS STEHEN (D-314).
+        # Beide Packs schreiben nach derselben Datei, und die beiden Fassungen sind NICHT
+        # gleich - am 2026-09-23 gemessen: 1.956.225 gegen 1.959.896 Zeichen. Ohne diese
+        # Marke traegt die Word-Fassung beider Baeue denselben Dateinamen, und welche
+        # Lieferung man in der Hand haelt, steht nirgends. Der Dateiname selbst bleibt,
+        # wie er ist: Chronik und Entscheidungen nennen ihn, und ein Erzeugnis umzubenennen
+        # macht aus richtigen Verweisen tote.
+        with open(os.path.join(OUT, "referenzclient.txt"), "w", encoding="utf-8") as fh:
+            fh.write(args.client + "\n")
     finally:
         shutil.rmtree(installation, ignore_errors=True)
     print(f"Referenzclient: {args.client}")

@@ -2,6 +2,156 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [0.90.0] - 2026-09-23
+
+**Der Rest von `AP11`: Die Word-Fassung - und die drei Traeger neben den Kapiteln, die
+keine Pruefung erreicht hat** (`CR-2026-125`, `CR-2026-126`, **D-313** bis **D-318**,
+**Pruefung 78 und 79**, `K-105` und `K-106` neu, `CR-2026-127` **offen vorgelegt**).
+**Ohne Kontingent, ohne Lauf an einem Client.**
+
+> 🟢 **DIE WORD-FASSUNG EXISTIERT - ZUM ERSTEN MAL SEIT `0.9.0` UND ZUM ERSTEN MAL FUER
+> BEIDE CLIENT PACKS GETRENNT.** Je 1,9 MB, **acht eingebettete Diagramme**, im Erzeugnis
+> nachgezaehlt statt der Meldung geglaubt.
+> 🔴 **DER POSTEN WAR NICHT UNFAHRBAR, SONDERN UNVERSUCHT.** `0.89.0` hat gemessen, dass
+> `pandoc` und das Mermaid-Kommandozeilenwerkzeug fehlen - die Messung war richtig. Der
+> Releaseplan hat daraus *"ohne sie ist der Posten unfahrbar"* gemacht. **Gemessen am
+> 2026-09-23: beide in zwei Befehlen installiert**, und der Mermaid-Renderer braucht
+> keinen eigenen Chromium - auf der Zielplattform liegt einer.
+> ➡️ *Eine fehlende Vorbedingung ist ein Posten, keine Grenze. Der Unterschied zwischen
+> "nicht installiert" und "nicht installierbar" ist der zwischen einer Messung und einer
+> Folgerung aus ihr.*
+
+> 🔴 **DREI TRAEGER NEBEN `build/doc/` ERREICHTE KEINE EINZIGE PRUEFUNG** (D-313).
+> `SKIP_DIRS` enthaelt den blanken Verzeichnisnamen `build`, und `iter_text_files` holte
+> genau `build/doc` zurueck: `assemble.py`, `build-docx.py` und `build/README.md` lagen
+> daneben. **ZWOELF Pruefungsfunktionen laufen ueber diesen Iterator.**
+> 🔴 **Die Begruendung im Quelltext nennt EINE Frage** - die Werkzeuge fuehren eigene
+> Marker in spitzen Klammern, und das ist die Frage von Pruefung 7.
+> ➡️ *Eine Ausnahme gilt so weit wie ihre Begruendung und nicht so weit wie ihr
+> Mechanismus.* 🔴 **Das ist D-311 an einer zweiten Stelle.**
+> 🟢 **Der Preis der Oeffnung ist gemessen und klein: zwei Fehler, zwei Warnungen.** Die
+> zwei Warnungen SIND die Begruendung und haben jetzt eine benannte Ausnahme ueber drei
+> benannte Traeger. **Die zwei Fehler standen im Erzeuger der Lieferung:** Er stempelte
+> einen ueberholten Dokumenttitel mit einem CLIENTNAMEN in die Dokumenteigenschaften der
+> Word-Datei.
+
+> 🔴 **DER GEFAEHRLICHSTE BEFUND FIEL ERST IM LAUF: EXIT 0, DATEI GESCHRIEBEN, UND ACHT
+> VON ACHT DIAGRAMMEN FEHLTEN.** Der Bildverweis trug den ABSOLUTEN Pfad; unter Windows
+> enthaelt der Rueckstriche, und pandoc liest einen Rueckstrich im Markdown-Link als
+> MASKIERUNG. pandoc ersetzt ein nicht gefundenes Bild durch seine Beschreibung und endet
+> mit Exit 0 - die einzige Spur war eine Warnzeile. **0,9 MB statt 1,9 MB.**
+> 🟢 **Zweifach behoben:** relativer Pfad, und der Lauf bricht ab und loescht die Datei,
+> wenn pandoc eine Ressource meldet. ➡️ *Ein Erzeugnis, dem ein zugesagter Bestandteil
+> fehlt, ist nicht erzeugt.*
+
+> 🆕 **PRUEFUNG 78 HAELT DIE GEGENWARTSZAHLEN DES HAUPTDOKUMENTS GEGEN DEN BESTAND**
+> (D-315). **Anlass ist das Release davor:** `0.89.0` hat aufgeschrieben, die Behebung
+> brauche *"eine PRUEFUNG und nicht nur eine Textaenderung"* - und dann Pruefung 77
+> gebaut, die die VERSION misst und nicht den INHALT. **Ein Release spaeter war der Satz
+> wieder falsch:** *"76 Pruefungen ueber 502 versionierte Dateien, davon 450
+> Markdown-Dateien"*; richtig waren **77, 504 und 452**, und die zwei fehlenden Dateien
+> waren der Antrag und das Protokoll DESSELBEN Releases.
+> ⚠️ **Preis, benannt und nicht klein:** Die Zahl der versionierten Dateien steht erst
+> fest, wenn das Release fertig ist. *Und eine Zahl, die niemand vor dem Ende setzen kann,
+> ist genau die, die niemand setzt.*
+
+> 🆕 **DIE ERSTE LIZENZ DES PROJEKTS: GPL-3.0** (`CR-2026-126`, D-316, D-317), mit einer
+> **Zusatzerlaubnis nach §7** fuer Vorlagenergebnisse und Werkzeugausgaben.
+> 🔴 **Die beiden Bedingungen des Owners schlossen einander aus** - *"echtes Open Source"*
+> und *"niemand darf den Kern verkaufen"*; §1 und §6 der OSI-Definition verbieten genau
+> diese Einschraenkung. 🟢 **Die GPL loest den Widerspruch, ohne ihn zu verbieten:** Der
+> Verkauf bleibt erlaubt, aber jeder Kaeufer bekommt den Quelltext unter derselben Lizenz
+> mit und darf ihn weitergeben. **Damit faellt das Geschaeftsmodell "umbenennen und
+> proprietaer verkaufen" weg, ohne dass die Lizenz jemandem etwas verbietet.**
+> 🆕 **Pruefung 79** haelt die Lizenz an ihren zwei noetigen Stellen gegeneinander - Wurzel
+> fuer die Hostingdienste, Kern, weil ein uebernehmendes Projekt ihn ALS GANZES kopiert.
+
+> 🔴 **DREI BEFUNDE AM RELEASE `0.89.0` SELBST, BEIM NACHZAEHLEN GEFUNDEN.**
+> **(a)** Die Abnahmetabelle nannte 1.928.254 / 12.840 und 1.931.925 / 12.758 - **das war
+> der Bau VOR der Textarbeit**. Gemessen am fertigen Baum: **1.956.225 / 12.888** und
+> **1.959.896 / 12.806**. *Die Differenz ist fuer beide Packs dieselbe - +27.971 Zeichen,
+> +48 Zeilen -, und genau das belegt, dass es ein und derselbe zu fruehe Lauf war.*
+> **(b)** Das Feld "Art" nannte *"Textarbeit an 32 Traegern"* **ohne Zaehlregel**;
+> gemessen sind es 36 geaenderte Traeger, davon 15 Kapitelquellen und 32 Texttraeger.
+> **(c)** Die Uebergabe fuehrte `K-96` als *"belegte synthetische Kennung"* - **gemessen
+> ist es eine echte, OFFENE Registerzeile in sieben verfolgten Traegern**; die Luecken sind
+> 95 und 99. **Drei Traeger, drei Mengen**, und der Satz widerlegte sich selbst: Er nannte
+> `K-96` und schrieb daneben, die Kennung sei zusammengesetzt (`K-106`).
+
+> 🔴 **EINE ZAHL, DIE MAN NICHT ERMITTELN KANN, IST KEIN FEHLENDER WERT, SONDERN EIN
+> BEFUND UEBER IHREN GEGENSTAND.** Die Zahl der offenen Klaerungspunkte ist mit keinem
+> Werkzeug belastbar zu zaehlen: drei Zaehlungen, drei Ergebnisse (50, 64, 15 nicht
+> erkennbar). Ursache ist `K-100` - die K-Zeilen stehen in ZWEI Tabellenformen mit der
+> Statuszelle an verschiedenen Stellen, und die Statuswerte folgen keinem Vokabular. Das
+> Register fuehrt **104 Zeilen**. **`K-100` ist damit teurer als eine Verschiebung von 27
+> Zeilen** und bleibt ein eigener Posten.
+
+> ⚠️ **DIE GEGENZEICHNUNG IST NICHT GEFAHREN, UND DER GRUND IST EINE ROLLENFRAGE.** An
+> diesem Framework arbeitet EINE Person; eine Gegenzeichnung ist die Handlung einer
+> ZWEITEN. Die drei Wege und ihre Preise stehen als **`CR-2026-127`** vorgelegt und sind
+> **ausdruecklich offen** gelassen. ➡️ *Ein Antrag mit einem ausgefuellten Abschnitt 6,
+> dessen Entscheidung niemand getroffen hat, ist die Faelschung, gegen die er selbst
+> argumentiert.*
+> 🟢 **Dazu vorbereitet: das Freigabeprotokoll `FW-CL-11`** mit jedem der 22 Pruefpunkte
+> auf seinem gemessenen Stand - **18 gedeckt, vier brauchen einen Menschen**, und keiner
+> ist abgehakt.
+
+### Geaendert
+
+- `.koolie/core/build/build-docx.py` - Metadaten aus dem Dokument statt fest verdrahtet;
+  Browsersuche statt Container-Pfad; relative Bildpfade; Abbruch bei nicht geholter
+  Ressource; Client Pack im Namen der Lieferung
+- `.koolie/core/build/assemble.py` - schreibt `referenzclient.txt` neben das Erzeugnis
+- `.koolie/core/build/README.md` - neutraler Titel, 34 Kapitelquellen, Aufrufe aus der
+  Projektwurzel, Vorbedingungen als Tabelle
+- `.koolie/core/build/doc/26-qs-test.md` - 79 / 511 / 458 statt 76 / 502 / 450
+- `.koolie/core/build/doc/29-grenzen.md`, `32-abschluss.md` - die **datierten** Zahlen
+  einmal richtiggestellt (312 / 102 / `K-104` statt 308 / 101 / `K-103`); sie waren fuer
+  ihr EIGENES Datum falsch
+- `.koolie/core/build/doc/00-kopf.md` - Dokumentversion 0.90.0, Stand 2026-09-23
+- `.koolie/core/tests/scripts/validate-framework.py` - Iterator geoeffnet,
+  `OHNE_PLATZHALTERREGISTER`, **Pruefung 78 und 79**, Register und Sondenmenge
+  `6, 14 und 18 bis 79`
+- `.koolie/core/tests/scripts/probe-pruefungen.py` - Buendel `sonden_dokumentzahlen`,
+  Sonden 79a-c, Gegenprobe 79a
+- `.koolie/core/tests/TEST_CATALOG.md` - Sondenmenge `6, 14 und 18 bis 79`
+- `.koolie/core/tests/protocols/2026-09-22-hauptdokument-ap11.md` - Abnahmezahlen und
+  Feld "Art" berichtigt
+- `.koolie/core/governance/DECISION_LOG.md` - **D-313** bis **D-318**, `K-105` und
+  `K-106` neu
+- `UEBERGABE.md`, `.koolie/core/docs/ROADMAP.md`, `README.md`, `.koolie/core/VERSION`
+
+### Neu
+
+- `LICENSE` und `.koolie/core/LICENSE` - GPL-3.0, woertlicher Text, byteweise gleich
+- `.koolie/core/LICENSE-HINWEIS.md` - Urheberrechtsvermerk, Zusatzerlaubnis nach §7 und
+  die Tabelle *"was das fuer ein uebernehmendes Projekt bedeutet"*
+- `.koolie/core/governance/change-requests/CR-2026-125-word-fassung-und-blinder-fleck.md`
+- `.koolie/core/governance/change-requests/CR-2026-126-lizenz-gpl3.md`
+- `.koolie/core/governance/change-requests/CR-2026-127-gegenzeichnung-rollenfrage.md` -
+  **offen**
+- `.koolie/core/tests/protocols/2026-09-23-word-fassung-und-blinder-fleck.md`
+- `.koolie/core/tests/protocols/2026-09-23-freigabelauf-1.0.0-vorbereitung.md`
+
+### Migrationshinweise fuer Overlays
+
+Keine. `build/` wird nicht ausgeliefert, und die Lizenzdateien sind Neuaufnahmen.
+⚠️ **Fuer uebernehmende Projekte neu:** Der Kern traegt ab jetzt eine Lizenz
+(`<CORE_DIR>/LICENSE`). Was das bedeutet - und dass fuer einen ANWENDER keine Pflicht
+entsteht -, steht in `<CORE_DIR>/LICENSE-HINWEIS.md` Abschnitt 3.
+
+### Bekannte Einschraenkungen
+
+- **Pruefung 78 misst DREI Zahlen in EINEM Satz.** Jede andere Zahl des Hauptdokuments
+  laeuft weiter durch; das ist der Rest von `K-104`
+- **Pruefung 79 vergleicht die beiden Lizenzdateien MITEINANDER** und prueft die
+  Lizenzmarke. Ob der Text der amtlichen Fassung entspricht, prueft sie nicht - dafuer
+  waere ein Netzzugriff noetig
+- **`build/out/` bleibt ausserhalb des Iterators** - es ist ein Erzeugnis und in einer
+  frischen Auscheckung nicht da
+- **Die Gegenzeichnung ist offen** (`CR-2026-127`) und damit `AP11` formal nicht
+  abgeschlossen
+
 ## [0.89.0] - 2026-09-22
 
 **`AP11`: Das Hauptdokument gegen den geltenden Stand - und der Erzeuger, der seit der

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 77, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 79, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6979,6 +6979,161 @@ sonde("77c", "Verliert der Kopf seine Versionszeile, meldet Pruefung 77 den verl
 gegenprobe("77a", "Der ausgelieferte Bestand laeuft durch - Dokumentversion, genanntes "
                   "Release und VERSION tragen denselben Wert",
            None, M77_STAND)
+
+
+# --- Pruefung 78: Die zaehlbaren Aussagen des Hauptdokuments (CR-2026-125, D-315) --
+#
+# EIN BUENDEL, WEIL DIE PRUEFUNG EIN REPOSITORIUM BRAUCHT. Sie zaehlt die versionierten
+# Dateien des Kerns ueber `git ls-files`, und kopie() schliesst `.git` ausdruecklich aus.
+# Ohne `git init` naehme sie in JEDER Sonde ihren dritten Ausgang ("nicht messbar") und
+# saehe dabei aus wie eine, die nichts gefunden hat - derselbe Griff wie bei Pruefung 75
+# und 45, aus demselben Grund.
+#
+# 🔴 KEINE SONDE VERANKERT EINE ZAHL WOERTLICH, und das ist die Lehre von 0.89.0: Dort
+# sind zwei Sonden gebrochen, weil sie einen Wert als Suchtext hielten, den ein Release
+# berichtigt hat. Die Sonden hier LESEN die Zahl aus dem Traeger und verstellen sie
+# relativ. Eine Sonde, die eine Zahl mitpflegen muss, faellt bei der naechsten Aenderung
+# aus - und zwar als scheinbarer Befund.
+#
+# VIER EINHEITEN, UND SIE MESSEN VIER VERSCHIEDENE DINGE:
+#   78a (Gegenprobe) - der ausgelieferte Bestand laeuft durch, und die Pruefung ist dabei
+#                      nachweislich gelaufen (keine Unmessbarkeitsmeldung).
+#   78a (Sonde)      - eine verstellte Zahl der Pruefungen wird gemeldet.
+#   78b (Sonde)      - eine verstellte Zahl der versionierten Dateien wird gemeldet. Ohne
+#                      sie genuegte es, EINE der drei Zahlen zu treffen.
+#   78c (Sonde)      - der verlorene Anker: Faellt der Satz weg, meldet die Pruefung das,
+#                      statt leise zu bestehen (D-23).
+M78_WERTE = "nennt nicht die gezählten Werte"
+M78_ANKER = "steht nicht genau einmal"
+M78_UNMESSBAR = "kein Git-Bestand lesbar"
+
+P78_OPFER = ".koolie/core/build/doc/26-qs-test.md"
+P78_ANKER = "Der Validator führt **"
+
+
+def _78_zahl_verstellen(text: str, muster: str) -> str:
+    """Die erste Zahl hinter `muster` um eins erhoehen - ohne sie woertlich zu kennen."""
+    treffer = re.search(re.escape(muster) + r"(\d+)", text)
+    if not treffer:
+        raise Praeparationsfehler(
+            "26-qs-test.md: %r mit folgender Zahl nicht gefunden - die Sonde zu "
+            "Pruefung 78 haette nichts zu verstellen" % muster)
+    neu = str(int(treffer.group(1)) + 1)
+    return text[:treffer.start(1)] + neu + text[treffer.end(1):]
+
+
+def sonden_dokumentzahlen() -> None:
+    """Wirkungsnachweis zu Pruefung 78 an einem echten Repositorium."""
+    root = kopie()
+    try:
+        if unterprozess(["git", "init", "-q", root]).returncode != 0:
+            melde("BUENDEL", "-", False, "sonden_dokumentzahlen  [git nicht erreichbar]")
+            notiz("        Ohne git zaehlt Pruefung 78 keine versionierten Dateien; sie "
+                  "nimmt dann ihren dritten Ausgang und ist nicht messbar.")
+            return
+        unterprozess(["git", "-C", root, "add", "-A"])
+        pfad = P(root, *P78_OPFER.split("/"))
+        urtext = lies(pfad)
+
+        # --- Gegenprobe 78a: der ausgelieferte Bestand laeuft durch ------------------
+        aus = validator_ausgabe(root)
+        ok = (M78_WERTE not in aus and M78_ANKER not in aus
+              and M78_UNMESSBAR not in aus)
+        melde("GEGENPROBE", "78a", ok,
+              "Der ausgelieferte Bestand laeuft durch - die drei Zahlen des Satzes "
+              "decken sich mit dem Bestand, und die Pruefung ist dabei nachweislich "
+              "gelaufen")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "78" in z or "Prüfapparat" in z)[:400])
+
+        # --- Sonde 78a: die Zahl der Pruefungen verstellt ----------------------------
+        schreib(pfad, _78_zahl_verstellen(urtext, P78_ANKER))
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        melde("SONDE", "78a", M78_WERTE in aus,
+              "Eine verstellte Zahl der Pruefungen wird gemeldet - genau diese Zahl "
+              "stand ein Release zu lang auf ihrem alten Wert")
+        if M78_WERTE not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 78b: die Zahl der versionierten Dateien verstellt -----------------
+        schreib(pfad, _78_zahl_verstellen(urtext, "Prüfungen** über "))
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        melde("SONDE", "78b", M78_WERTE in aus,
+              "Eine verstellte Zahl der versionierten Dateien wird ebenfalls gemeldet - "
+              "sonst genuegte es, eine der drei Zahlen zu treffen")
+        if M78_WERTE not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 78c: der verlorene Anker ------------------------------------------
+        schreib(pfad, urtext.replace(P78_ANKER, "Der Validator kennt **", 1))
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        melde("SONDE", "78c", M78_ANKER in aus,
+              "Faellt der Satz ueber den Pruefapparat weg, meldet Pruefung 78 den "
+              "verlorenen Anker, statt still zu bestehen")
+        if M78_ANKER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_dokumentzahlen,
+        "Pruefung 78 haelt die drei Gegenwartszahlen des Hauptdokuments gegen den "
+        "gezaehlten Bestand, an einem echten Repositorium")
+
+
+# --- Pruefung 79: Die Lizenz an zwei Stellen (CR-2026-126, D-317) ------------------
+#
+# DREI SONDEN UND EINE GEGENPROBE. Die dritte ist die, die man weglassen wuerde: Sie
+# ersetzt BEIDE Dateien durch denselben Nicht-Lizenztext. Ohne sie belegte die Pruefung
+# nur, dass zwei Dateien gleich sind - und das sind zwei leere auch.
+M79_UNGLEICH = "trägt nicht denselben Inhalt wie"
+M79_FEHLT = "Die Lizenz MUSS an beiden Stellen liegen"
+M79_MARKE = "trägt nicht die GNU General Public License"
+
+P79_KERNDATEI = ".koolie/core/LICENSE"
+P79_WURZELDATEI = "LICENSE"
+
+
+def _79_auseinander(root: str) -> None:
+    """Sonde: die beiden Lizenzdateien laufen auseinander."""
+    pfad = P(root, *P79_KERNDATEI.split("/"))
+    schreib(pfad, lies(pfad) + "\n<!-- SYNTHETISCH: Zusatz nur in der Kernfassung -->\n")
+
+
+def _79_kernfassung_entfernen(root: str) -> None:
+    """Sonde: die mitwandernde Fassung fehlt - genau der Fall von §4 GPL-3.0."""
+    os.remove(P(root, *P79_KERNDATEI.split("/")))
+
+
+def _79_keine_lizenz(root: str) -> None:
+    """Sonde: beide Dateien gleich, aber keine Lizenz - die Gleichheit allein traegt nicht."""
+    ersatz = "SYNTHETISCH: hier stand einmal ein Lizenztext.\n"
+    for rel in (P79_KERNDATEI, P79_WURZELDATEI):
+        schreib(P(root, *rel.split("/")), ersatz)
+
+
+sonde("79a", "Laufen die beiden Lizenzdateien auseinander, wird es gemeldet - welche "
+             "gilt, stuende sonst nirgends",
+      _79_auseinander, M79_UNGLEICH)
+
+sonde("79b", "Fehlt die mitwandernde Fassung im Kern, wird es gemeldet - ein Werk ohne "
+             "seine Lizenz weiterzugeben ist unzulaessig",
+      _79_kernfassung_entfernen, M79_FEHLT)
+
+sonde("79c", "Zwei gleiche Dateien ohne Lizenztext werden gemeldet - Gleichheit allein "
+             "erfuellen auch zwei leere Dateien",
+      _79_keine_lizenz, M79_MARKE)
+
+gegenprobe("79a", "Der ausgelieferte Bestand laeuft durch - beide Stellen, ein Inhalt, "
+                  "und dieser Inhalt ist die GPL-3.0",
+           None, M79_UNGLEICH)
 
 
 # --- Selbstprobe: der Beschreibungssatz je Einheit (CR-2026-068, D-95) ------------
