@@ -95,9 +95,14 @@ auf sich selbst anwendet.
 > zugleich die schaerfere Regel**, weil sie einen pruefbaren Gegenstand hat: den INHALT
 > des Commits. 🔴 **Die signierte Marke bleibt beim Menschen** (D-321, woertlich).
 >
-> ⚠️ **NEBENBEFUND, GEMELDET UND NICHT GEHEILT (`K-111`):** `FW-CL-11` verlangt die
-> dokumentierte Freigabe als MUSS bei **jedem** Release - gemessen existiert sie
-> **einmal**. `1.0.1` hat keine.
+> 🟢 **UND DER NEBENBEFUND DAZU IST BEIM SETZEN DER MARKE SELBST GEFALLEN.** Vorgelegt war
+> *"`1.0.1` hat keine dokumentierte Freigabe"* - gesucht worden war in den PROTOKOLLEN.
+> **Beide vorhandenen Marken tragen sie**, *"Freigegeben durch den Framework Owner"*,
+> und zwar innerhalb der Signatur. ➡️ *Die Marke ist die Freigabe* - und das bestaetigt
+> D-334 an seinem eigenen Gegenstand. 🔴 **Was bleibt: Kein Traeger schrieb es vor.**
+> Abschnitt 4.1 und `FW-CL-11` nennen die Freigabezeile seit diesem Release; `K-111`
+> fuehrt die Frage weiter, ob die Marke der richtige Ort ist. ⚠️ **Keine Pruefung kann
+> den Markentext erreichen** - er liegt im Tag-Objekt, nicht im Arbeitsbaum.
 
 **Geaendert**
 

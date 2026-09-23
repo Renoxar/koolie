@@ -159,13 +159,16 @@ unbelegt.
 | **Verworfen** | **Die pauschale Fassung beibehalten.** Sie hätte jeden Release-Commit an eine Handlung gebunden, die bei `1.0.1` gemessen niemand für nötig hielt – *eine Regel, die im Bestand keine Spur hinterläßt, ist keine* |
 | **Verworfen** | **Die Trennung ganz aufgeben.** D-319 ist gemessen richtig: Ein Werkzeug, das eine Gegenzeichnung setzt, fälscht sie, und die Fälschung wanderte nur aus der Zeile in die Metadaten |
 
-### E7 – Die dokumentierte Freigabe fehlt in `1.0.1` (V13)
+### E7 – Wo steht die Freigabe eines Releases? (berichtigt)
 
 | | |
 |---|---|
-| **Befund** | 🔴 `FW-CL-11` verlangt *„Freigabe des Releases durch den Framework Owner dokumentiert"* als **MUSS bei jedem Release**. Gemessen: Sie existiert **einmal**, für `1.0.0`. **`1.0.1` hat keine** – derselbe Prüfpunkt, den `1.0.0` beim ersten Anlauf leer gelassen hat (`B16`), ein Release später wieder |
-| **Auflösung** | ⚠️ **Gemeldet, nicht geheilt** (`FW-SC-01`). Eine Freigabe für ein vergangenes Release nachzutragen wäre genau die Fälschung, gegen die D-319 argumentiert. 🆕 **`K-111`** führt die Frage weiter: Wo steht die Freigabe eines Releases, das kein eigenes Freigabeprotokoll hat – und was trägt sie, wenn sie nicht in einem Protokoll steht? |
-| **Warum keine Prüfung** | ⚠️ Der Gegenstand ist eine **Handlung**, kein Träger. Eine Prüfung könnte das Vorhandensein einer Zeile messen, nicht ihre Wahrheit – dieselbe Grenze wie bei Prüfung 80 und bei Prüfung 82 |
+| **Erster Befund, und er war am falschen Gegenstand gemessen** | 🔴 Vorgelegt war: *„`FW-CL-11` verlangt die dokumentierte Freigabe als MUSS bei jedem Release; gemessen existiert sie **einmal**, für `1.0.0`. `1.0.1` hat keine."* **Gesucht worden war in den Protokollen.** |
+| **Nachgemessen** | 🟢 **Beide vorhandenen Marken tragen sie:** *„Freigegeben durch den Framework Owner am 2026-09-23."* – und zwar **signiert**. ➡️ ***Die Marke ist die Freigabe.*** Das bestätigt D-334 an seinem eigenen Gegenstand: Der Commit trägt keine Unterschrift, die **Marke** trägt sie |
+| **Was bleibt** | 🔴 **Kein Träger des Repositoriums schreibt das vor.** Abschnitt 4.1 verlangt von der Markennachricht *„Release, Antrag und die Entscheidungen"* – die Freigabe steht dort nicht, und `FW-CL-11` nennt keinen Ort. **Die beiden vorhandenen Marken tragen sie aus Gewohnheit** |
+| **Und die Gewohnheit war beinahe gebrochen** | ⚠️ Die für `1.1.0` vorbereitete Markennachricht war **mehrzeilig** und nannte die Freigabe **nicht** – das Werkzeug hatte die beiden vorhandenen Marken nicht gelesen, bevor es die dritte vorbereitete. *Erst den Kopf des Trägers lesen, dann messen.* 🟢 **Gefangen, bevor die Marke stand** |
+| **Auflösung** | 🟢 **Abschnitt 4.1 Schritt 4 nennt die Freigabezeile jetzt als Pflichtbestandteil der Markennachricht**, und `FW-CL-11` nennt die Marke als ihren Ort. 🆕 **`K-111`** führt die Frage weiter, ob das der richtige Ort ist |
+| **Grenze, benannt** | ⚠️ **Keine Prüfung kann den Markentext erreichen.** Er liegt im Tag-Objekt, nicht im Arbeitsbaum, und in einer Installation gibt es ihn nicht (D-299) – dieselbe Lage wie beim Archiv und bei den Erzeugnissen (`K-110`) |
 
 ---
 

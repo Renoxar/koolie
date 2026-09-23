@@ -101,12 +101,18 @@
 > Commits ist einer. 🔴 **Die signierte Marke bleibt beim Menschen** – D-321 sagt es
 > wörtlich und ohne Folgerung.
 >
-> ⚠️ **NEBENBEFUND, GEMELDET UND NICHT GEHEILT (`K-111`):** `FW-CL-11` verlangt die
-> **dokumentierte Freigabe** als MUSS bei **jedem** Release – gemessen existiert sie
-> **einmal**, für `1.0.0`. **`1.0.1` hat keine.** Das ist derselbe Prüfpunkt, den
-> `1.0.0` beim ersten Anlauf leer gelassen hat (`B16`), ein Release später wieder. *Eine
-> Freigabe für ein vergangenes Release nachzutragen wäre genau die Fälschung, gegen die
-> D-319 argumentiert.*
+> 🟢 **UND DER NEBENBEFUND DAZU IST BEIM SETZEN DER MARKE SELBST GEFALLEN.** Vorgelegt
+> war: *„`1.0.1` hat keine dokumentierte Freigabe“* – gesucht worden war in den
+> **Protokollen**. **Beide vorhandenen Marken tragen sie**, *„Freigegeben durch den
+> Framework Owner am 2026-09-23.“*, und zwar **innerhalb der Signatur**.
+> ➡️ ***Die Marke ist die Freigabe*** – und das bestätigt D-334 an seinem eigenen
+> Gegenstand.
+> 🔴 **Was bleibt, ist ein anderer Befund: Kein Träger schreibt es vor.** Abschnitt 4.1
+> verlangte *„Release, Antrag und die Entscheidungen“*; die Freigabe stand dort nicht.
+> ⚠️ **Und die Gewohnheit war beinahe gebrochen:** Die für `1.1.0` vorbereitete
+> Marke war **mehrzeilig** und nannte die Freigabe **nicht** – das Werkzeug hatte die
+> beiden vorhandenen nicht gelesen. *Erst den Kopf des Trägers lesen, dann messen.*
+> 🟢 **Gefangen, bevor die Marke stand**; 4.1 und `FW-CL-11` nennen die Zeile jetzt (`K-111`).
 >
 > 🟢 **DIE DREI EIGNUNGSFRAGEN ZU `openai-codex` SIND BEANTWORTET – AN DER KONSOLE, VOR
 > JEDER SITZUNG.** Sie standen als Vorbedingung des nächsten Postens im
@@ -850,7 +856,7 @@ aussehen und an einem Präparationswächter hängen.
 | **V10** | ⚠️ Die Standüberschrift von `docs/ROADMAP.md` stand auf `0.89.0` – **drei Releases alt**, direkt über dem Satz *„Wird mit jedem Release fortgeschrieben"*. `0.89.0` hat genau das schon einmal behoben, damals nach **zweiunddreißig** Releases | gezählt |
 | **V11** | ⚠️ Der Vermerk *„dieses Release"* stand in der Releasetabelle **zweimal** – auf `0.88.1` und auf `1.0.1`. `0.88.0` hat ihn auf einen gesetzt; seither ist er gewandert, ohne daß der alte entfernt wurde | gezählt |
 | **V12** | ⚠️ Abschnitt 3 führte Posten **A** – *„die zwei Handlungen des Menschen zu `1.0.0` abschließen“* – zwei Releases lang als offen, während Abschnitt 0.54 desselben Dokuments sie als **vollzogen** meldet. ➡️ *Die Zusage, deren Widerlegung im eigenen Dokument steht* – an der Übergabe selbst | gelesen |
-| **V13** | ⚠️ **Die dokumentierte Freigabe fehlt in `1.0.1`.** `FW-CL-11` verlangt sie als MUSS bei jedem Release; gemessen existiert sie **einmal**, im Freigabeprotokoll zu `1.0.0`. 🔴 **Gefunden durch eine Rückfrage des Owners**, nicht durch den Durchgang – und die Rückfrage hat zugleich D-334 ausgelöst | gezählt über die Protokolle |
+| **V13** | 🟢 **Die Freigabe steht in der MARKE, nicht im Protokoll** – beide vorhandenen Marken tragen *„Freigegeben durch den Framework Owner“*, signiert. 🔴 **Der erste Anlauf dieses Befundes war am falschen Gegenstand gemessen** (gesucht in den Protokollen) und ist berichtigt, **bevor die Marke stand**. Was bleibt: **kein Träger schreibt es vor** (`K-111`) | Marken gelesen, nicht nur Protokolle |
 
 🔴 **Keine Prüfung erreicht V10, V11, V12 oder V13.**
 
@@ -918,9 +924,10 @@ Overlay zu einer Anpassung.
 2. ⚠️ **`K-110`: Kann eine Prüfung die Erzeugnisse der Lieferung überhaupt erreichen?**
    Der Preis ist in zwei aufeinanderfolgenden Releases angefallen – das Archiv mit der
    falschen Zeilenendeform (D-328), die Word-Fassung auf `v1.0.0` (D-332).
-3. ⚠️ **`K-111`: Wo steht die Freigabe eines Releases, das kein eigenes
-   Freigabeprotokoll hat?** `FW-CL-11` verlangt sie als MUSS bei jedem Release, und
-   gemessen gibt es sie **einmal**. Drei Fragen liegen vor (D-334, `CR-2026-130` E7).
+3. ⚠️ **`K-111`: Ist die Marke der richtige Ort der Freigabe?** Beide vorhandenen
+   Marken tragen die Zeile **innerhalb der Signatur**, und seit `1.1.0` schreiben 4.1 und
+   `FW-CL-11` es vor. ⚠️ **Keine Prüfung kann es durchsetzen** – der Markentext liegt
+   im Tag-Objekt, nicht im Arbeitsbaum. Drei Fragen liegen vor.
 4. 🔴 **`K-108`: Wird veröffentlicht, und was geht mit?** Unverändert offen; die
    Vorbereitung ist erledigt, die Entscheidung steht aus.
 5. ⚠️ **`K-109`: Die Regel *„Rollen statt Personen"* hat keine Prüfung.** Unverändert.
@@ -938,6 +945,7 @@ Overlay zu einer Anpassung.
 | 3 | **Eine Tabelle und der Absatz darunter können einander widersprechen** | Die erste Fassung von Abschnitt 4.1 führte *heben, dann Liste* – und erklärte zwei Absätze weiter das Gegenteil. **Die Tabelle wurde berichtigt, nicht der Widerspruch erklärt** |
 | 4 | **Ein unmaskierter Strich in einer Tabellenzelle zerreißt die Zeile** | D-333 nennt einen Befehl mit einer Pipe; Prüfung 57 hat es gemeldet |
 | 5 | **Ein Register mit zwei Formen: die K-Zeilen tragen sechs Zellen, nicht drei** | `K-110` im ersten Anlauf dreispaltig – das ist `K-100` im Feld |
+| 6 | 🔴 **Wer einen Träger neu anlegt, liest zuerst die vorhandenen derselben Gattung** | Die für `1.1.0` vorbereitete Markennachricht war **mehrzeilig** und nannte die **Freigabe nicht** – beide vorhandenen Marken sind einzeilig und tragen sie *innerhalb der Signatur*. **`v1.1.0` wäre die erste Marke ohne Freigabezeile gewesen**, und `FW-CL-11` Prüfpunkt 21 damit unerfüllt. 🟢 Gefangen, bevor die Marke stand – *erst den Kopf des Trägers lesen, dann messen* |
 
 🔴 **Nicht delegierbar – und der Zuschnitt ist mit diesem Release ENGER geworden** (D-334):
 die **signierte Marke** (D-321, wörtlich) und **jeder Commit, der eine Unterschrift trägt** – eine
@@ -3403,7 +3411,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 🔴 **ZWEI ZÄHLUNGEN, UND BEIDE SIND RICHTIG** (`CR-2026-128` B9, dieselbe Bauform wie `K-100`): Der Apparat meldet **322 angemeldete Einheiten** – seine eigene Definition zählt ein **Bündel einmal**, *„nie einen seiner Teile"*. Die **Ergebniszeilen** sind mehr, weil ein Bündel mehrere schreibt. **Wer eine Zahl über den Apparat nennt, sagt dazu, welche der beiden er meint.**
 
-**Gemessen am Abnahmelauf von `1.1.0`:** **323 angemeldete Einheiten**, **452 Ergebniszeilen** (272 Sonden, 157 Gegenproben, 23 Selbstproben), **0 Unterschiede in 486 Zeilen**, beide Umgebungen *„alle Sonden und Gegenproben bestanden"*. 🟢 **Der Zuwachs ist genau Prüfung 82:** +3 Sonden, +2 Gegenproben. ⚠️ **Der erste Durchgang war rot, und zwar an der richtigen Stelle:** Gegenprobe `78a` meldete **519** statt 517 versionierte Dateien – der Antrag und das Protokoll dieses Releases, die der Validator erst zählt, wenn sie verfolgt sind. *Das ist der benannte Preis von Prüfung 78: die Zahl der versionierten Dateien steht erst fest, wenn das Release fertig ist.* ⚠️ **Ehrlich gebucht, und der erste Anlauf dieses Satzes war schon falsch:** Er sagte, nach dem Abnahmelauf sei *nur diese Zeile* angefaßt worden. Tatsächlich sind danach **vier Markdown-Träger** berichtigt worden – `RELEASE_PROCESS.md`, das Protokoll, das Decision Log und diese Übergabe –, weil der Durchgang vor dem Commit die Zahl des Hebe-Vergleichs gefangen hat (517 gegen 519). **Kein Prüfmittel war darunter**, der Baum ist danach neu gehoben und neu gebaut worden, und der **dritte Durchgang ist zeilengleich zum zweiten**. 🟢 **Gemessen, nicht vorhergesagt: Der dritte Durchgang hat **null** Unterschiede zum zweiten.** ➡️ *Eine Aufzeichnung über eine Änderung ist selbst eine; irgendwo hört man auf und schreibt hin, wo* – hier. **Danach sind nur noch die Laufzeiten des dritten Durchgangs eingetragen worden, und die stehen nach D-94 unterhalb der Trennlinie** – genau deshalb, weil ihr Eintrag sonst die Endfassung änderte, die sie messen. *(zum Stand von `1.0.1`:)* **322 angemeldete Einheiten**, **447 Ergebniszeilen**, **0 Unterschiede in 480 Zeilen** – und **zeilengleich zum Lauf von `1.0.0`**, obwohl ein Release dazwischen liegt. **Laufzeit 499 s und 501 s** Wanduhr auf 8 Bahnen (Faktor 8,0), gemessen am dritten Durchgang. *(zum Stand von `1.0.0`:)* **Laufzeit 451 s und 460 s** Wanduhr auf 8 Bahnen (Faktor 7,9), **zeilengleicher Vergleich 0 Unterschiede in 480 Zeilen** – und der **vierte Durchgang ist zeilengleich zum dritten**. Die Laufzeiten stehen unterhalb der Trennlinie (D-94) und sind nicht Teil des zeilengleichen Vergleichs.
+**Gemessen am Abnahmelauf von `1.1.0`:** **323 angemeldete Einheiten**, **452 Ergebniszeilen** (272 Sonden, 157 Gegenproben, 23 Selbstproben), **0 Unterschiede in 486 Zeilen**, beide Umgebungen *„alle Sonden und Gegenproben bestanden"*. 🟢 **Der Zuwachs ist genau Prüfung 82:** +3 Sonden, +2 Gegenproben. ⚠️ **Der erste Durchgang war rot, und zwar an der richtigen Stelle:** Gegenprobe `78a` meldete **519** statt 517 versionierte Dateien – der Antrag und das Protokoll dieses Releases, die der Validator erst zählt, wenn sie verfolgt sind. *Das ist der benannte Preis von Prüfung 78: die Zahl der versionierten Dateien steht erst fest, wenn das Release fertig ist.* ⚠️ **Ehrlich gebucht, und der erste Anlauf dieses Satzes war schon falsch:** Er sagte, nach dem Abnahmelauf sei *nur diese Zeile* angefaßt worden. Tatsächlich sind danach **vier Markdown-Träger** berichtigt worden – `RELEASE_PROCESS.md`, das Protokoll, das Decision Log und diese Übergabe –, weil der Durchgang vor dem Commit die Zahl des Hebe-Vergleichs gefangen hat (517 gegen 519). **Kein Prüfmittel war darunter**, der Baum ist danach neu gehoben und neu gebaut worden, und der **dritte Durchgang ist zeilengleich zum zweiten**. 🟢 **Gemessen, nicht vorhergesagt: Der dritte Durchgang hat **null** Unterschiede zum zweiten.** 🔴 **Und es gab einen VIERTEN, weil beim Setzen der Marke ein Befund fiel:** Die Freigabe steht in der **Marke**, nicht im Protokoll (`K-111`) – sieben Träger sind daraufhin berichtigt worden, der Baum neu gehoben und neu gebaut. **Auch der vierte Durchgang ist zeilengleich: null Unterschiede zum dritten.** ➡️ *Eine Aufzeichnung über eine Änderung ist selbst eine; irgendwo hört man auf und schreibt hin, wo* – hier. **Danach sind nur noch die Laufzeiten eingetragen worden, und die stehen nach D-94 unterhalb der Trennlinie** – genau deshalb, weil ihr Eintrag sonst die Endfassung änderte, die sie messen. *(zum Stand von `1.0.1`:)* **322 angemeldete Einheiten**, **447 Ergebniszeilen**, **0 Unterschiede in 480 Zeilen** – und **zeilengleich zum Lauf von `1.0.0`**, obwohl ein Release dazwischen liegt. **Laufzeit 513 s und 503 s** Wanduhr auf 8 Bahnen, gemessen am **vierten** Durchgang (dritter: 499 s und 501 s). *(zum Stand von `1.0.0`:)* **Laufzeit 451 s und 460 s** Wanduhr auf 8 Bahnen (Faktor 7,9), **zeilengleicher Vergleich 0 Unterschiede in 480 Zeilen** – und der **vierte Durchgang ist zeilengleich zum dritten**. Die Laufzeiten stehen unterhalb der Trennlinie (D-94) und sind nicht Teil des zeilengleichen Vergleichs.
 
 > 🔴 **DER FERTIGE BAUM ENTSTEHT ERST MIT DER HANDLUNG DES MENSCHEN – UND DESHALB KANN
 > KEIN WERKZEUG GEGEN IHN ABNEHMEN.** Die Regel verlangt, daß der Abnahmelauf gegen den

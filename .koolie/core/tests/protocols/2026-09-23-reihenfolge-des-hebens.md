@@ -176,6 +176,38 @@ Manifest, dann die Laufzeitfassung – drei Läufe für einen Vorgang. **Beim
 Übungsrepositorium, wo alle drei gemeinsam gesetzt wurden, trat die zweite Meldung nie
 auf.** *Die Lehre stand in der Arbeitsanweisung und ist trotzdem zugeschnappt.*
 
+## 8a. 🔴 Ein dritter Befund fiel beim Setzen der Marke
+
+**Der Antrag führte als `E7`:** *„`FW-CL-11` verlangt die dokumentierte Freigabe als MUSS
+bei jedem Release; gemessen existiert sie **einmal**, für `1.0.0`. `1.0.1` hat keine."*
+
+🔴 **Gesucht worden war in den Protokollen.** Beide vorhandenen Marken tragen sie:
+
+```
+v1.0.0   … Alle fuenf Kriterien aus D-11 erfuellt.
+         Freigegeben durch den Framework Owner am 2026-09-23.
+v1.0.1   … CR-2026-129, D-328.
+         Freigegeben durch den Framework Owner am 2026-09-23.
+```
+
+und zwar **innerhalb der Signatur**. ➡️ ***Die Marke ist die Freigabe*** – und das
+bestätigt D-334 an seinem eigenen Gegenstand: Der Commit trägt keine Unterschrift, die
+**Marke** trägt sie.
+
+🔴 **Was bleibt, ist ein anderer Befund: Kein Träger schreibt es vor.** Abschnitt 4.1
+verlangte von der Markennachricht *„Release, Antrag und die Entscheidungen"* – die
+Freigabe stand dort nicht, und `FW-CL-11` nannte keinen Ort. **Die beiden vorhandenen
+Marken tragen sie aus Gewohnheit.**
+
+⚠️ **Und die Gewohnheit war beinahe gebrochen.** Die für `1.1.0` vorbereitete
+Markennachricht war **mehrzeilig** und nannte die Freigabe **nicht** – das Werkzeug hatte
+die beiden vorhandenen Marken nicht gelesen, bevor es die dritte vorbereitete.
+➡️ *Erst den Kopf des Trägers lesen, dann messen.* 🟢 **Gefangen, bevor die Marke stand.**
+
+🟢 **Aufgelöst:** Abschnitt 4.1 Schritt 4 nennt die Freigabezeile als Pflichtbestandteil,
+`FW-CL-11` nennt die Marke als ihren Ort. ⚠️ **Keine Prüfung kann das durchsetzen** – der
+Markentext liegt im Tag-Objekt, nicht im Arbeitsbaum (`K-111`).
+
 ## 9. Was dieses Release nicht leistet
 
 - **Prüfung 82 mißt die Behauptung, nicht die Tatsache** (D-331). Die Projekte liegen
