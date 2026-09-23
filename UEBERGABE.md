@@ -93,6 +93,33 @@
 > ⚠️ **Grenze, benannt:** Der Bereich ist eine Behauptung über künftige Vergaben, und
 > **keine Prüfung setzt ihn durch** (`K-114`); der Abstand beträgt heute 560 Kennungen.
 >
+> 🔴 **UND DIE AUSLIEFERUNG HAT EINEN ACHTEN BEFUND GEBRACHT, NACH DER MARKE UND
+> AUSSERHALB DES KERNS.** Abschnitt 4.1 Schritt 2 führt das Heben in vier Handgriffen –
+> entpacken, `install.py --update`, Overlay nachziehen, validieren. **Das Committen im
+> übernehmenden Projekt steht in keinem davon.** Gemessen beim Abschluß von `1.2.0`:
+> **In beiden Projekten trug der jüngste Commit `VERSION` `1.0.1`** – die Hebung auf
+> `1.1.0` ist **nie committet worden** und lag einen Tag lang als offener Arbeitsbaum da,
+> bis `1.2.0` sie überschrieben hat. Die Vorgänger `1.0.0` und `1.0.1` tragen je einen
+> eigenen Commit; die Gewohnheit gab es also, nur die Regel nicht.
+> ➡️ ***Ein Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist, liefert einen
+> Zustand und keinen Stand.*** 🔴 **Prüfung 82 kann es nicht fangen, und sie sagt es
+> selbst:** Sie mißt die **Behauptung** der Zeile, nicht den Stand des Projekts (D-331) –
+> die benannte Grenze ist an ihrem ersten echten Fall eingetreten. 🟢 **Beide Hebungen
+> sind mit einem kumulativen Commit nachgeholt**, der die übersprungene ausdrücklich
+> nennt. ⚠️ **Der Posten bleibt offen:** ob Abschnitt 4.1 einen fünften Handgriff bekommt,
+> und ob eine Prüfung ihn erreichen kann. **Die Kennung `K-115` ist dafür vorgemerkt und
+> NOCH NICHT im Register** – und der Grund ist dieselbe Regel, die den Befund gefunden hat:
+> 🔴 **Das Decision Log ist ein Kernträger, und die Marke steht.** Ein Eintrag dort wäre ein
+> Kerneingriff **nach** der Auslieferung; das Archiv kennt ihn nicht, und D-333 schließt ihn
+> aus. ⚠️ **Der erste Anlauf dieses Absatzes hat genau das getan und ist zurückgenommen
+> worden** – gemessen: null Kernträger geändert. ➡️ ***Wer einen Befund nach der Marke bucht,
+> bucht ihn außerhalb des Kerns oder gar nicht.*** **`K-115` wird mit `1.3.0` ins Register
+> aufgenommen, zusammen mit der Antwort auf seine drei Fragen:** ob Schritt 2 einen fünften
+> Handgriff bekommt; ob eine Prüfung den Git-Stand eines Projekts **außerhalb** des
+> Repositoriums erreichen kann (dieselbe Grenze wie D-331, sonst bleibt nur ein
+> Verfahrensschritt, `K-110`); oder ob die Bestandsliste künftig den **Commit** statt der
+> Version trägt und damit gegen etwas Nachweisbares prüfbar würde.
+
 > 🟢 **EIN BEFUND IST AUSGEBLIEBEN, UND DAS IST BERICHTENSWERT:** Die Tabelle *Nächste
 > freie Kennungen* stimmt – **zum ersten Mal seit vier Releases**, nachgezählt über alle
 > fünf Gattungen. Sie stand in `1.1.0`, `1.0.0` und `0.80.0` falsch.
@@ -3593,7 +3620,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 |---|---|
 | Änderungsantrag | **`CR-2026-132`** – `CR-2026-131` ist mit `1.2.0` vergeben. *(Der folgende Text ist der alte Stand:)* **`CR-2026-131`** – 🔴 **nachgezählt am 2026-09-23, zum DRITTEN Mal veraltet vorgefunden:** die Tabelle führte `CR-2026-129` als frei, vergeben waren `-129` und `-130` |
 | Decision Record | **`D-341`** – nachgezählt am 2026-09-23, vergeben sind bis **`D-340`**. 🔴 **`D`-Kennungen ab 900 sind ein reservierter Sondenbereich** (D-340) und werden nie echt vergeben. 🔴 **`D-993` ist BELEGT und wird nie echt vergeben** (D-340, Gegenprobe 58b) |
-| Klärungspunkt | **`K-115`** – vergeben bis `K-114` (aus `1.2.0`). *(Der folgende Text ist der alte Stand:)* **`K-112`** – 🔴 **nachgezählt am 2026-09-23: vergeben bis `K-111`**; die Tabelle stand auf `K-105` und war sechs Kennungen zurück. *(Der folgende Text ist der alte Stand:)* **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. 🔴 **Nachgezählt am 2026-09-23: 102 Registerzeilen, höchste Kennung `K-104`** – die Zahl stand hier auf „101 / `K-103`" und war schon für ihr eigenes Datum falsch: `K-104` ist in **demselben** Release vergeben worden, das sie geschrieben hat.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **die zusammengesetzte Kennung der Sonde zu Prüfung 50** (bis `0.89.0` stand hier *„eine der sechs belegten synthetischen Kennungen"*, und das war zweimal falsch: es sind fünf, und `K-95` gehört ausdrücklich **nicht** dazu) –, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
+| Klärungspunkt | **`K-115`** – vergeben bis `K-114` (aus `1.2.0`). ⚠️ **`K-115` ist für den Befund der Auslieferung VORGEMERKT und noch nicht im Register** – ein Eintrag wäre ein Kerneingriff nach der Marke (D-333); er kommt mit `1.3.0`. *(Der folgende Text ist der alte Stand:)* **`K-112`** – 🔴 **nachgezählt am 2026-09-23: vergeben bis `K-111`**; die Tabelle stand auf `K-105` und war sechs Kennungen zurück. *(Der folgende Text ist der alte Stand:)* **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. 🔴 **Nachgezählt am 2026-09-23: 102 Registerzeilen, höchste Kennung `K-104`** – die Zahl stand hier auf „101 / `K-103`" und war schon für ihr eigenes Datum falsch: `K-104` ist in **demselben** Release vergeben worden, das sie geschrieben hat.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **die zusammengesetzte Kennung der Sonde zu Prüfung 50** (bis `0.89.0` stand hier *„eine der sechs belegten synthetischen Kennungen"*, und das war zweimal falsch: es sind fünf, und `K-95` gehört ausdrücklich **nicht** dazu) –, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 
