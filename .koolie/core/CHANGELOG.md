@@ -2,6 +2,129 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.0.0] - 2026-09-23
+
+**`AP12` - der Freigabelauf, und das erste Glied der Nachweiskette, das nie existiert
+hat** (`CR-2026-128` E1 bis E10, **D-320** bis **D-327**, **Pruefung 81** neu und
+**Pruefung 78** erweitert, `K-81` und `K-107` geschlossen, `K-108` und `K-109` neu).
+**Ohne Kontingent, ohne Lauf an einem Client.**
+
+> 🟢 **ALLE FUENF KRITERIEN AUS D-11 SIND ERFUELLT.** Vier rechnet Pruefung 46 bei jedem
+> Lauf aus und haelt sie gegen die Standzeile der Roadmap: kein unbearbeiteter
+> VERIFY-Marker (**0**), kein Testfall auf `offen` (**0**), kein Modulstatus auf
+> `entwurf` (**0**), kein Decision Record auf `entschieden (Vorschlag)` (**0**). Das
+> fuenfte - die Uebernahme in ein zweites Projekt - ist eine Feststellung und wird
+> ausdruecklich NICHT gezaehlt; sie steht ab jetzt in
+> `governance/ADOPTION_REGISTRY.md`.
+
+> 🔴 **ZWOELF BEFUNDE AUS DEM EIGENEN VORBEDINGUNGSDURCHGANG, UND DER ERSTE WIDERLEGT
+> DEN PRUEFKANDIDATEN, MIT DEM DIE SITZUNG BEGANN.** Die Uebergabe fuehrte
+> *"kein versionierter Texttraeger traegt reine LF-Zeilenenden"*. Gemessen ueber alle
+> 517 verfolgten Eintraege: im **Arbeitsbaum** 515 auf CRLF - im **Blob**, also im
+> Versionierten, dieselben 515 auf **reinem LF**.
+> ➡️ *Versioniert ist der Blob, nicht der Arbeitsbaum.*
+> 🔴 **Und es war nie ein neuer Kandidat: Es ist `K-81`, offen seit `0.78.2`** - der
+> Klaerungspunkt beschreibt den Befund woertlich und trug seine eigene Sperre
+> (*"nicht vor dem Messtag, weil `git archive` die Messbaeume baut"*). **Die Sperre war
+> seit `0.86.0` entfallen, und niemand hat nachgesehen.**
+
+> 🔴 **DER SCHWERSTE BEFUND: `git tag` LIEFERT NULL - LOKAL UND AUF DEM SERVER.**
+> `FW-CL-11` verlangt *"Release-Archiv erzeugt und abgelegt"* als **MUSS bei jedem
+> Release**; `RELEASE_PROCESS.md` nennt es die Form JEDER Auslieferung, und die
+> Nachweiskette in Abschnitt 8 beginnt mit ihm. **In 106 Release-Commits ist keines
+> erzeugt worden.** ➡️ *Eine Nachweiskette, deren erstes Glied fehlt, ist eine
+> Aufzaehlung.* 🟢 **Abschnitt 4.1 traegt das Verfahren jetzt in vier Schritten** -
+> und Schritt 1, die signierte Marke, ist **nicht delegierbar** (D-321, dieselbe
+> Trennung wie D-319: die Zeile sagt WAS, der Commit und die Marke sagen WER).
+
+> 🆕 **PRUEFUNG 81 HAELT DIE ZEILENENDEFORM DES ARBEITSBAUMS ZUSAMMEN** (D-320), und
+> eine `.gitattributes` mit `* text=auto` setzt den Blob. 🟢 **Der Preis der Datei ist
+> gemessen und null: sie aendert keinen einzigen Blob.** ⚠️ **Die Pruefung schreibt
+> KEINE Form vor** - sie verlangt, dass es eine ist. *Einheitlichkeit ist in jeder
+> Installation richtig, eine bestimmte Form nur an einem Arbeitsplatz* (D-299).
+> 🟢 **Ihr erster Fund kam aus der eigenen Sitzung:** Das Werkzeug, das diesen Apparat
+> patcht, hatte `probe-pruefungen.py` auf LF umgestellt - 515 gegen 1.
+
+> 🔴 **VIER EIGENE ZAHLEN SIND IN DIESEM DURCHGANG GEFALLEN.** *"22 Pruefpunkte"* in
+> `FW-CL-11` - gemessen **24**, und die Vorbereitung listete selbst 23. *"Klarname in
+> 109 Releases"* - gemessen **106** Release-Commits, der Name in **122 Commits, alle
+> davon Merge-Commits des Servers**, im Dateibestand **null**, und die Adresse unter
+> **beiden** Namen in allen 261. *"Der Pruefapparat steht bei 76"* - gemessen **81**,
+> und die Zeile stand damit zum **vierten Mal** auf einem ueberholten Wert, waehrend
+> die Pruefung dafuer seit `0.90.0` lief und **eine von zwei Stellen** erreichte
+> (D-325). *"Vier Pruefpunkte brauchen einen Menschen"* - der Pruefpunkt Aktualitaet
+> war fuenf Tage vorher mit `FW-AK-01` gefahren, 22 Quellen und beide
+> Produkt-Changelogs.
+
+> 🔴 **UND DER LETZTE BEFUND FIEL BEI DER UMSETZUNG, NICHT DAVOR.** Der Copyright-
+> Vermerk nannte einen Platzhalter; ein GPL-Werk ohne benannten Rechteinhaber hat
+> keinen Zusagenden (D-323). Fuer den Namen war eine Ausnahme im Validator vorgesehen -
+> **und sie ist gemessen unnoetig: Es gibt keine Pruefung, von der sie ausnaehme.**
+> Die Inhaltspruefung kennt Secret-Muster, Adressen, Hostnamen, URLs und die
+> projektlokale Sperrliste - **keinen Personennamen.** Die Regel *"Rollen statt
+> Personen"* steht in zwei normativen Traegern und wird von **keiner der 81
+> Pruefungen** durchgesetzt (`K-109`).
+
+> 🔴 **UND ZWEI PRUEFUNGEN AUS `0.90.0` WAREN IN JEDER INSTALLATION ROT.** Gefunden
+> beim Heben der uebernehmenden Projekte - dem **ersten Lauf beider Pruefungen gegen
+> eines**. Pruefung 78 zaehlte die Kerndateien des Projekts (**500**) gegen eine Zahl,
+> die den **Framework**-Bestand beschreibt (515) und byte-gleich ausgeliefert wird.
+> 🔴 **Und Pruefung 79 verlangte von jedem uebernehmenden Projekt eine GPL-3.0 in
+> SEINER Wurzel** - das Gegenteil dessen, was die Zusatzerlaubnis nach §7 aus D-317
+> erreichen sollte. ➡️ *Das ist D-299 an zwei weiteren Stellen, und die Lehre stand im
+> SELBEN Release, das beide Pruefungen gebaut hat: "Jede neue Pruefung laeuft einmal
+> gegen ein uebernehmendes Projekt, bevor sie als fertig gilt."* **Sie ist notiert und
+> nicht angewandt worden** (D-326).
+
+**Aenderungen**
+
+- `.gitattributes` neu: `* text=auto` setzt die Zeilenendeform im Repositorium (D-320).
+- **Pruefung 81** neu: eine Zeilenendeform je Repositorium, an den Bytes des
+  Arbeitsbaums gemessen, mit drei Sonden und einer Gegenprobe.
+- **Pruefung 78** erweitert (D-325): dieselben Zahlen jetzt auch in der Abnahmezeile
+  der Uebergabe, mit zwei weiteren Sonden. Ein uebernehmendes Projekt fuehrt keine
+  Uebergabe - dort Enthaltung.
+- **Pruefung 78 und 79 berichtigt** (D-326): Im uebernehmenden Projekt haelt 78
+  Enthaltung, und 79 verlangt dort allein die Kernfassung der Lizenz.
+- `governance/RELEASE_PROCESS.md` auf `0.2.0`: **Abschnitt 4.1** traegt das Verfahren
+  fuer Marke und Archiv; die Bestandsliste bekommt ihren Pfad (D-321, D-322).
+- `governance/ADOPTION_REGISTRY.md` neu: die Bestandsliste der uebernehmenden Projekte,
+  die `RELEASE_PROCESS.md` seit der Erstfassung verlangt (D-322).
+- `LICENSE-HINWEIS.md` auf `0.2.0`: Der Copyright-Vermerk nennt den Rechteinhaber
+  (D-323), mit der Begruendung der Grenze im Traeger selbst.
+- Decision Log: **D-320** bis **D-327**; `K-81` und `K-107` geschlossen, `K-108`
+  (Veroeffentlichung) und `K-109` (die Regel ohne Pruefung) neu.
+- Beide uebernehmenden Projekte auf `1.0.0` gehoben.
+- Freigabeprotokoll mit allen **24** Pruefpunkten auf ihrem gemessenen Stand.
+
+**Migrationshinweise fuer Overlays**
+
+**Keine.** Kein Overlay-Feld, kein Platzhalter, keine Regelablage ist beruehrt. Die
+`.gitattributes` liegt in der Wurzel des Framework-Repositoriums und wandert **nicht**
+mit dem Kern; ein uebernehmendes Projekt entscheidet ueber seine eigene.
+
+⚠️ **Was sich fuer uebernehmende Projekte trotzdem aendert: das Versionierungsregime.**
+`RELEASE_PROCESS.md` Abschnitt 1 haelt die MAJOR-Regel aus, solange die Hauptversion 0
+ist. **Ab `1.0.0` gilt sie unveraendert** - jede Struktur- oder Hierarchieaenderung, die
+Overlays anpassen muss, ist von jetzt an ein MAJOR-Release. Das ist eine Folge dieses
+Releases, und sie stand in keinem Plan.
+
+**Bekannte Einschraenkungen**
+
+- **Der SOLL-Pruefpunkt `M1`→`M2`→`M3`→`M4` ist nicht gefahren.** Er braucht ein
+  Sitzungskontingent. *Ein nicht gefahrenes SOLL ist ein Messwert, ein verschwiegenes
+  ist ein Befund* - deshalb steht es hier.
+- **Die Aktualitaetspruefung traegt den Stand vom 2026-09-18**, nicht den des
+  Freigabetages: `devin-desktop` 3.10.31, `claude-code` 2.1.275. Was danach kam, ist
+  Produktbeobachtung nach Abschnitt 6 und nicht Gegenstand dieser Freigabe.
+- **Pruefung 81 misst den Arbeitsbaum, nicht den Blob**, und sie schreibt keine Form
+  vor. Ohne Git-Bestand meldet sie eine Warnung und **kein** Messergebnis.
+- **Die Regel "Rollen statt Personen" hat keine Pruefung** (`K-109`).
+- **Die Zahl der offenen Klaerungspunkte bleibt unermittelbar** (`K-100`). Sie ist kein
+  Pruefpunkt von `FW-CL-11` und kein Kriterium von D-11.
+- **Die Veroeffentlichung ist NICHT entschieden** (`K-108`). `1.0.0` ist ein Release im
+  vorhandenen Repositorium.
+
 ## [0.91.0] - 2026-09-23
 
 **Die Gegenzeichnung - eine Rollenfrage, kein Arbeitsposten** (`CR-2026-127` E1 bis E5,

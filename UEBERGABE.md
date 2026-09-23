@@ -1,4 +1,60 @@
-# Übergabe: **Koolie** – Stand 0.91.0 (2026-09-23)
+# Übergabe: **Koolie** – Stand 1.0.0 (2026-09-23)
+
+> 🟢 **`1.0.0` – `AP12` IST GEFAHREN, UND DAS ERSTE GLIED DER NACHWEISKETTE HAT NIE
+> EXISTIERT** (`CR-2026-128`, **D-320** bis **D-327**, **Prüfung 81** neu und **78**
+> erweitert, `K-81` und `K-107` geschlossen, `K-108` und `K-109` neu). **Ohne
+> Kontingent, ohne Lauf an einem Client.** **Alle fünf Kriterien von D-11 erfüllt.**
+>
+> 🔴 **DER ERSTE BEFUND WIDERLEGT DEN PRÜFKANDIDATEN, MIT DEM DIE SITZUNG BEGANN.** Die
+> Übergabe zu `0.91.0` führte *„kein versionierter Textträger trägt reine LF-Zeilenenden.
+> Der Bestand ist CRLF."* **Gemessen über alle 517 verfolgten Einträge: im ARBEITSBAUM
+> 515 auf CRLF – im BLOB, also im Versionierten, dieselben 515 auf REINEM LF.**
+> ➡️ *Versioniert ist der Blob, nicht der Arbeitsbaum.*
+> 🔴 **Und es war nie ein neuer Kandidat: Es ist `K-81`, offen seit `0.78.2`.** Der
+> Klärungspunkt beschreibt den Befund wörtlich, ist dreizehn Releases alt und trug seine
+> eigene Sperre – *„nicht vor dem Meßtag, weil `git archive` die Meßbäume baut"*. **Die
+> Sperre war seit `0.86.0` entfallen, und niemand hat nachgesehen.**
+>
+> 🔴 **DER SCHWERSTE BEFUND: `git tag` LIEFERT NULL – LOKAL UND AUF DEM SERVER.**
+> `FW-CL-11` verlangt *„Release-Archiv erzeugt und abgelegt"* als **MUSS bei jedem
+> Release**, `RELEASE_PROCESS.md` nennt es die Form **jeder** Auslieferung, und die
+> Nachweiskette in Abschnitt 8 beginnt mit ihm. **In 106 Release-Commits ist keines
+> erzeugt worden.** ➡️ *Eine Nachweiskette, deren erstes Glied fehlt, ist eine
+> Aufzählung.* 🟢 **Abschnitt 4.1 trägt das Verfahren jetzt in vier Schritten** – und
+> Schritt 1, die signierte Marke, ist **nicht delegierbar** (D-321).
+>
+> 🔴 **ZWEI PRÜFUNGEN AUS `0.90.0` WAREN IN JEDER INSTALLATION ROT, UND GEFUNDEN HAT SIE
+> NICHT DER VALIDATOR, SONDERN DAS HEBEN DER PROJEKTE.** Prüfung 78 hielt die
+> Kerndateien eines übernehmenden Projekts (**500**) gegen eine Zahl, die den
+> **Framework**-Bestand beschreibt (515) und byte-gleich ausgeliefert wird. Prüfung 79
+> verlangte von **jedem** übernehmenden Projekt eine **GPL-3.0 in seiner eigenen
+> Wurzel** – das Gegenteil dessen, was die Zusatzerlaubnis nach §7 aus D-317 erreichen
+> sollte. 🔴 **Das ist D-299 an zwei weiteren Stellen, und die Lehre stand im SELBEN
+> Release, das beide Prüfungen gebaut hat:** *„Jede neue Prüfung läuft einmal gegen ein
+> übernehmendes Projekt, bevor sie als fertig gilt."* ➡️ ***Sie ist notiert und nicht
+> angewandt worden*** (D-326).
+>
+> 🔴 **FÜNF EIGENE ZAHLEN SIND IN DIESEM DURCHGANG GEFALLEN.** *„22 Prüfpunkte"* –
+> gemessen **24**, und die Vorbereitung listete selbst 23. *„Klarname in 109 Releases"* –
+> gemessen **106** Release-Commits, der Name in **122 Commits, alle davon Merge-Commits
+> des Servers**, im **Dateibestand null**, und die **Adresse unter beiden Namen in allen
+> 261**: *das Pseudonym anonymisiert nicht.* *„Der Prüfapparat steht bei 76"* – gemessen
+> **81**, zum **vierten Mal** überholt, während die Prüfung dafür seit `0.90.0` lief und
+> **eine von zwei Stellen** erreichte (D-325). *„Vier Prüfpunkte brauchen einen
+> Menschen"* – der Punkt **Aktualität** war fünf Tage vorher mit `FW-AK-01` gefahren, 22
+> Quellen und beide Produkt-Changelogs. Und die Tabelle **Nächste freie Kennungen** stand
+> auf `CR-2026-125` / `D-313` / `K-105`, also **drei Releases** zurück.
+>
+> 🔴 **DER LETZTE BEFUND FIEL BEIM SCHREIBEN DER LÖSUNG.** Für den Klarnamen im
+> Copyright-Vermerk war eine Ausnahme im Validator vorgesehen – **sie ist gemessen
+> unnötig, weil es keine Prüfung gibt, von der sie ausnähme.** Die Inhaltsprüfung kennt
+> Secret-Muster, Adressen, Hostnamen, URLs und die projektlokale Sperrliste – **keinen
+> Personennamen.** Die Regel *„Rollen statt Personen"* steht in zwei normativen Trägern
+> und wird von **keiner der 81 Prüfungen** durchgesetzt (`K-109`).
+>
+> 🟢 **PRÜFUNG 81 HAT SICH BEI IHREM ERSTEN LAUF SELBST BEWIESEN:** Das Werkzeug, das
+> diesen Apparat patcht, hatte `probe-pruefungen.py` auf LF umgestellt – 515 gegen 1,
+> gemeldet mit Dateinamen.
 
 > 🟢 **DAS HAUPTDOKUMENT STEHT AUF DEM GELTENDEN STAND – UND SEIN ERZEUGER LIEF SEIT
 > `0.88.0` NICHT MEHR** (`0.89.0`, `CR-2026-124`, **D-309** bis **D-312**, **Prüfung 77**,
@@ -630,6 +686,95 @@ aussehen und an einem Präparationswächter hängen.
 | `0.78.2` | **`K-80` entschieden** | 🔴 **Ein einzelnes `CR` ohne folgenden `LF` nimmt git die Normalisierung** – 14 Träger, und es waren genau die 14, die git nicht normalisiert hat (D-217). **Prüfung 66** liest seither **Bytes**, weil `read()` im Universal-Newline-Modus jedes `CR` verschluckt. 🟢 **Die Übergabe steht seither im Release-Commit**, ohne Antragsnummer; **Prüfung 67** rechnet die Titelzeile gegen `VERSION` (D-216) |
 | `0.79.0` | **Meßtag Bündel 4**, 50 Läufe, 61,19 USD – **acht von neunzehn** | 🔴 **`HEAD` stand an allen 38 Bäumen auf `main`.** Der Vorbedingungsdurchgang hatte geprüft, ob der Branch **da** ist; der Lauf braucht, daß er **ausgecheckt** ist – *ein Vorhandensein belegt sich selbst, ein Zustand nicht* (D-218). 🔴 **`{ command: "git branch -D", prefix: "git branch" }` sperrt über sein Präfix auch das bloße Auflisten** – 25 Abweisungen in 23 von 50 Läufen; **Prüfung 68** (D-219). 🟢 **Der Zuschnitt braucht neben Vollständigkeit eine AUSRICHTUNG** (D-221). 🟢 **Der Meßapparat liegt seither versioniert im Kern** (D-222) |
 | `0.79.1` | Der Aufräumer stirbt an seiner Erfolgsmeldung | **Ein Werkzeug prüft seinen BERICHTSWEG in beiden Kodierungsumgebungen, nicht nur seinen Lauf** (D-223). Das Skript war nie in der zweiten gefahren; eines von siebzehn betroffen |
+
+---
+
+### 0.54 `1.0.0`: `AP12` – der Freigabelauf, und das erste Glied der Nachweiskette
+
+> 🟢 **`AP12` ist gefahren.** `CR-2026-128` E1 bis E10, **D-320** bis **D-327**,
+> **Prüfung 81** neu und **78** erweitert, `K-81` und `K-107` geschlossen, `K-108` und
+> `K-109` neu. **Ohne Kontingent, ohne Lauf an einem Client.**
+
+#### 🔴 Der Prüfkandidat der Übergabe war am falschen Gegenstand gemessen
+
+| Gegenstand | reines CRLF | reines LF | gemischt |
+|---|---|---|---|
+| **Arbeitsbaum** | **515** | 0 | 0 |
+| **Blob** – das Versionierte | 0 | **515** | 0 |
+
+➡️ ***Versioniert ist der Blob, nicht der Arbeitsbaum.*** Die Aussage war an einem
+Gegenstand richtig und am anderen in ihr Gegenteil verkehrt. 🔴 **Und sie war nie neu:
+Es ist `K-81`, offen seit `0.78.2`** – mit einer Sperre, die seit `0.86.0` entfallen war.
+
+#### 🔴 Vierzehn Befunde, und drei fielen erst beim Bauen
+
+| # | Befund | Wo er fiel |
+|---|---|---|
+| B1 | Die LF-Aussage am falschen Gegenstand; `K-81` dreizehn Releases alt | Vorbedingungen |
+| **B2** | 🔴 **`git tag` liefert null – in 106 Release-Commits kein Archiv** | Vorbedingungen |
+| B3 | Die Bestandsliste gibt es nicht | Vorbedingungen |
+| B4 | Die Aktualitätsprüfung war fünf Tage vorher gefahren und ungesucht | Vorbedingungen |
+| B5 | 24 Prüfpunkte, nicht 22 | Vorbedingungen |
+| B6 | Klarname: 122 Merge-Commits, nicht 109 Releases – und die Adresse unter **beiden** Namen | Vorbedingungen |
+| B7 | Beide übernehmenden Projekte drei Releases zurück | Vorbedingungen |
+| B8 | Der Copyright-Vermerk nennt einen Platzhalter | Vorbedingungen |
+| B9 | Zwei Zählungen des Prüfapparats, beide richtig (`K-100` zweiter Gegenstand) | Vorbedingungen |
+| B10 | `1.0.0` ändert das Versionierungsregime, ausgewiesen von niemandem | Vorbedingungen |
+| B11 | Die Abnahmezeile zum **vierten** Mal überholt – und Prüfung 78 erreichte eine von zwei Stellen | Vorbedingungen |
+| **B12** | 🔴 **Keine Prüfung setzt *„Rollen statt Personen"* durch** | beim Schreiben der Lösung |
+| **B13** | Prüfung 78 im übernehmenden Projekt rot: 500 gegen 515 | **beim Heben** |
+| **B14** | 🔴 **Prüfung 79 verlangte eine GPL-3.0 in der Wurzel JEDES Projekts** | **beim Heben** |
+
+#### 🔴 B14 ist der schwerste, weil er seiner eigenen Entscheidung widerspricht
+
+Die Zusatzerlaubnis nach §7 (D-317) nimmt Ausgaben und ausgefüllte Vorlagen
+**ausdrücklich aus der GPL heraus**, damit ein übernehmendes Projekt nicht zur
+Offenlegung gezwungen wird. **Prüfung 79 schrieb ihm die GPL in die Wurzel.**
+
+🔴 **Beide, B13 und B14, sind D-299 an weiteren Stellen – und die Lehre stand im SELBEN
+Release, das beide Prüfungen gebaut hat:**
+
+> *„Jede neue Prüfung läuft einmal gegen ein übernehmendes Projekt, bevor sie als fertig
+> gilt – `--strict-overlay` ist billiger als der nächste Meßtag."*
+
+➡️ ***Eine Lehre, die in der Übergabe steht und nicht im Ablauf, hat eine Halbwertszeit
+von einem Release.*** **Gefunden hat sie kein Validatorlauf, sondern das Heben der
+Projekte** – ein Posten, der ohne diesen Antrag nicht in diesem Release gelegen hätte.
+
+#### ⚠️ Der Durchgang vor dem Commit trägt sich zum siebenunddreißigsten Mal
+
+| Zahl oder Aussage | zuerst genannt | nachgezählt |
+|---|---|---|
+| Prüfpunkte von `FW-CL-11` | „22" | 🔴 **24** (22 MUSS, 2 SOLL) |
+| Klarname in der Historie | „109 Releases" | 🔴 **122 Commits, alle Merges des Servers**; Releases: **106** |
+| Der Prüfapparat | „76" | 🔴 **81**, zum vierten Mal überholt |
+| Prüfpunkte, die einen Menschen brauchen | „drei" | 🔴 **zwei** – Aktualität war gefahren |
+| Nächste freie Kennungen | `CR-2026-125` / `D-313` / `K-105` | 🔴 drei Releases zurück |
+| Die Ausnahme für den Klarnamen | „wird gebraucht" | 🔴 **es gibt nichts auszunehmen** |
+| Einheiten des Apparats | „441" | ⚠️ **322 angemeldete** – beide richtig, je nach Regel |
+
+#### 🔴 Zwei Befunde fielen erst NACH dem Freigabe-Commit
+
+| Befund | gemessen |
+|---|---|
+| **B16** 🔴 **Die Freigabezeile blieb beim ersten Anlauf leer.** Der Commit war gesetzt, die Marke signiert – und Abschnitt 7.1 des Freigabeprotokolls trug weiter drei `<TBD>`. **Prüfpunkt 21 war damit nicht erfüllt**, und zwar an genau der Stelle, die D-319 trennt: Der Commit sagt **wer**, die Zeile sagt **was**. ➡️ *Wer die Unterschrift auf zwei Träger verteilt, kann einen davon vergessen – und der vergessene ist der, den ein Werkzeug nicht nachtragen darf.* 🟢 Aufgelöst durch den Owner, in demselben Commit (`--amend`), und die Marke neu gesetzt | 🔴 **Nicht vom Validator gefunden** – `<TBD>` in einem Arbeitsprotokoll ist nach D-319 zulässig, und Prüfung 80 gilt ausdrücklich nur für Abnahmeprotokolle |
+| **B18** 🔴 **Der Klarname stand falsch im Copyright-Vermerk – abgeleitet aus der Git-Historie.** Er stand im Bestand nirgends, also hat das Werkzeug die Schreibweise aus dem Autorenfeld genommen. **Die Historie führt ihn in allen 122 Merge-Commits falsch.** ➡️ *Der Gegenstand eines Namens ist die Person, nicht das Repositorium – eine Angabe aus der nächstgelegenen Quelle ist keine geprüfte Angabe.* | 🟢 **Gefunden hat es die manuelle Stichprobe des Owners (Prüfpunkt 9) – und keine der 81 Prüfungen konnte es.** Das ist `K-109` im Feld, und zugleich der Beleg dafür, warum `FW-CL-11` die Stichprobe *„zusätzlich zur automatischen Prüfung"* verlangt. ⚠️ **Die Historie bleibt falsch** – sie wird nach D-324 nicht umgeschrieben; für künftige Merges ist das **Profil des Servers** die Stelle (`K-108`) |
+| **B17** ⚠️ **Die Signatur war da und nicht prüfbar.** `git tag -v v1.0.0` bestätigte sie nicht – Ursache war ein fehlendes `gpg.ssh.allowedSignersFile`, nicht eine fehlende Unterschrift (**D-327**) | 🟢 Nach der Einrichtung: `Good "git" signature … with ED25519 key`. Die Datei liegt unter `.git/`, **nicht versioniert** – sie trägt eine Adresse |
+
+#### 🔴 Wiederaufnahmepunkt
+
+1. 🔴 **Zwei Handlungen des Menschen stehen aus, und keine ist delegierbar:** die
+   **manuelle Stichprobe** (Prüfpunkt 9, Vorlage in Abschnitt 6 des Freigabeprotokolls)
+   und die **dokumentierte Freigabe** (Prüfpunkt 21). Dazu die **signierte Marke** als
+   Schritt 1 des Archivverfahrens. Die Befehle liegen als Datei bereit.
+2. 🔴 **`K-108`: Wird veröffentlicht, und was geht mit?** Die Historie trägt den
+   Klarnamen in 122 Commits und die Adresse in allen 261 – **unter beiden Namen**. Nach
+   D-324 ist das nicht mehr durch ein Umschreiben vorbereitbar.
+3. ⚠️ **`K-109`: Die Regel *„Rollen statt Personen"* hat keine Prüfung.** Sie steht in
+   zwei normativen Trägern, und alle 81 Prüfungen liefen grün, während ein Klarname in
+   einen Kernträger geschrieben wurde.
+4. ⚠️ **`K-100` bleibt teurer als gebucht**, und `B9` zeigt dieselbe Bauform an einem
+   zweiten Gegenstand: zwei Zählungen, beide richtig, kein Vokabular.
 
 ---
 
@@ -2739,10 +2884,31 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-`main` = **0.91.0**, alles gemergt, **kein offener Antrag, kein Restbranch**,
-Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in beiden
-Kodierungsumgebungen grün – **436 Einheiten** (428 + 8 aus Prüfung 78 und 79), und der
-**zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede in 468 Zeilen.**
+🟢 **`1.0.0` IST DA.** `main` = **1.0.0**, alles gemergt, **kein offener Antrag, kein
+Restbranch**, Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen** über **81
+Prüfungen**, Sondenlauf in **beiden** Kodierungsumgebungen grün, und der **zeilengleiche
+Vergleich nach D-49 zeigt 0 Unterschiede.** Die genauen Zahlen stehen in der
+Abnahmezeile weiter unten – **sie wird seit D-325 von Prüfung 78 gehalten und muß nicht
+mehr von Hand gepflegt werden.**
+
+🔴 **WAS `1.0.0` NICHT HEISST.** Es heißt *„technisch validiert und übertragbar"* nach
+D-11 und **nicht** *„im Realbetrieb erprobt"* – `AP8` bis `AP10` sind projektseitig und
+ausdrücklich keine Vorbedingung (`CR-2026-001`). ⚠️ **Und eine Folge steht in keinem
+Plan:** `RELEASE_PROCESS.md` Abschnitt 1 hält die MAJOR-Regel aus, *solange die
+Hauptversion 0 ist*. **Ab jetzt gilt sie** – jede Struktur- oder Hierarchieänderung, die
+Overlays anpassen muß, ist ein MAJOR-Release.
+
+🔴 **ZWEI HANDLUNGEN DES MENSCHEN STEHEN NOCH AUS, UND BEIDE SIND NICHT DELEGIERBAR:**
+die **manuelle Stichprobe** (Prüfpunkt 9) und die **dokumentierte Freigabe** (Prüfpunkt
+21), dazu die **signierte Marke** als Schritt 1 des Archivverfahrens. Das Protokoll
+`tests/protocols/2026-09-23-freigabelauf-1.0.0.md` führt **alle 24 Prüfpunkte** auf ihrem
+gemessenen Stand – **21 gedeckt, keiner abgehakt.**
+
+*(Der folgende Absatz ist der Stand von `0.91.0` und bleibt als Herleitung stehen:)*
+Das Release stand bei **0.91.0**, alles gemergt, **kein offener Antrag, kein
+Restbranch**, Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen**, Sondenlauf in
+beiden Kodierungsumgebungen grün – **436 Einheiten** (428 + 8 aus Prüfung 78 und 79),
+und der **zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede in 468 Zeilen.**
 🟢 **Neu im Abnahmelauf: die WORD-Fassung, für BEIDE Client Packs** – neben dem Bau des
 Markdown-Dokuments, der seit `0.89.0` dazugehört. **Beide Lieferungen tragen ihr Pack im
 Namen**, seit gemessen ist, daß sie nicht gleich sind.
@@ -2908,9 +3074,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/koolie` | `main` = **0.91.0**, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
-| Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `0.88.0` gehoben (2026-09-22) – über 34 Releases**, Overlay **`0.3.0`**, Kern unter `.koolie/core/`. **61 Träger von Hand nachgezogen.** Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**, belegt mit einem **Entlastungslauf** gegen das Sicherungsbundle. 🔴 **Neun der zehn Fehler nach dem Heben kamen aus dem VERSIONSSPRUNG, nicht aus der Umbenennung:** sieben Pflichtplatzhalter waren durch ihren **Wert** ersetzt statt gebunden (D-160, seit `0.63.0`), `autoMemoryEnabled` fehlte in der Berechtigungsdatei (D-155), und die Overlay-Version stand in **drei** Trägern – *der Validator meldet sie nacheinander*. ⚠️ **Der verbliebene Fehler ist Projektarbeit** (gesperrter Begriff in `CHANGELOG.md`) |
-| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `0.88.0` gehoben** (2026-09-22), Overlay **`0.88.0`**, Kern unter `.koolie/core/` – **77 Träger von Hand nachgezogen**, Validator `--strict-overlay` **0 Fehler / 1 Warnung**. ⚠️ **Die Warnung ist die Laufzeitfassung des Overlays: von 5.963 auf 6.024 von 6.000 Zeichen gewachsen**, weil `project-overlay` acht Zeichen länger geworden ist – **benannt, nicht geändert** (`K-88`: eine Kürzung wäre ein Eingriff in den Meßgegenstand). 🔴 **Drei Projektdateien nennen kein `leitwerk`, sondern `project-overlay/`** – *die Migrationsfläche von D-270 ist gegen eine Umbenennung OHNE Umzug gemessen.* 🟢 **Zwei Nennungen bleiben bewußt stehen** (`tools/praeparationen.py`, `tools/mentorenblatt/PRAEPARATIONEN.md`): Sie nennen eine Belegablage, und die wird nicht umbenannt (D-300). *Zum Stand von `0.84.0`:* – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
+| Framework | `devpacks/koolie` | `main` = **1.0.0**, Validator 0/0 über 81 Prüfungen. 🟢 **Die Bestandsliste der übernehmenden Projekte steht seit `1.0.0` im Kern** (`governance/ADOPTION_REGISTRY.md`, D-322) – *(zum Stand von `0.91.0`:)* das Release stand bei 0.91.0, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
+| Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `1.0.0` gehoben (2026-09-23)**, Overlay **`0.3.1`**, Client Pack `claude-code`. Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**; der Fehler ist Projektarbeit (gesperrter Begriff in der Projekt-`CHANGELOG.md`). 🔴 **Dieses Heben hat zwei Framework-Befunde gefunden** (D-326): Prüfung 78 und 79 waren hier strukturell rot. *(zum Stand von `0.88.0`:)* 🟢 **Auf Framework `0.88.0` gehoben (2026-09-22) – über 34 Releases**, Overlay **`0.3.0`**, Kern unter `.koolie/core/`. **61 Träger von Hand nachgezogen.** Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**, belegt mit einem **Entlastungslauf** gegen das Sicherungsbundle. 🔴 **Neun der zehn Fehler nach dem Heben kamen aus dem VERSIONSSPRUNG, nicht aus der Umbenennung:** sieben Pflichtplatzhalter waren durch ihren **Wert** ersetzt statt gebunden (D-160, seit `0.63.0`), `autoMemoryEnabled` fehlte in der Berechtigungsdatei (D-155), und die Overlay-Version stand in **drei** Trägern – *der Validator meldet sie nacheinander*. ⚠️ **Der verbliebene Fehler ist Projektarbeit** (gesperrter Begriff in `CHANGELOG.md`) |
+| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `1.0.0` gehoben** (2026-09-23), Overlay **`1.0.0`**, Validator `--strict-overlay` **0 Fehler / 1 Warnung** (die bekannte Zeichenzahl der Laufzeitfassung, `K-88`). *(zum Stand von `0.88.0`:)* 🟢 **Auf Framework `0.88.0` gehoben** (2026-09-22), Overlay **`0.88.0`**, Kern unter `.koolie/core/` – **77 Träger von Hand nachgezogen**, Validator `--strict-overlay` **0 Fehler / 1 Warnung**. ⚠️ **Die Warnung ist die Laufzeitfassung des Overlays: von 5.963 auf 6.024 von 6.000 Zeichen gewachsen**, weil `project-overlay` acht Zeichen länger geworden ist – **benannt, nicht geändert** (`K-88`: eine Kürzung wäre ein Eingriff in den Meßgegenstand). 🔴 **Drei Projektdateien nennen kein `leitwerk`, sondern `project-overlay/`** – *die Migrationsfläche von D-270 ist gegen eine Umbenennung OHNE Umzug gemessen.* 🟢 **Zwei Nennungen bleiben bewußt stehen** (`tools/praeparationen.py`, `tools/mentorenblatt/PRAEPARATIONEN.md`): Sie nennen eine Belegablage, und die wird nicht umbenannt (D-300). *Zum Stand von `0.84.0`:* – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
 | Meßbäume Bündel 5 | `C:\lw-b5` | *(nach der Abnahme entfernt)* – 30 Zellbäume und sieben Basen, aus `umgebungen-bauen-b5.py` und `baeume-b5.py` in rund zwanzig Minuten neu baubar |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
@@ -2922,7 +3088,30 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 | ~~Belege 0.59.0~~ | 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-18-s4/`~~ | **WEG** (D-283) |
 | 🟢 Belege `AP2`-Rest | `devpacks/leitwerk-erhebungen-2026-09-22-ap2/` | **Angelegt mit `0.86.0`: 333 Dateien** – 70 Mitschriften mit Werkzeugaufrufen, Prompts, ein verworfener Lauf unter `verworfen/`, **unversioniert** |
 
-**Abnahme:** Der Prüfapparat steht bei **76** – ausgerechnet, nicht gepflegt. **424 Einheiten** (252 Sonden, 149 Gegenproben, 23 Selbstproben), Laufzeit **478 s** und **494 s** Wanduhr auf 8 Bahnen (Faktor 7,9), gemessen am 2026-09-22 am **Abnahmelauf** von `0.88.1` (der Durchgang davor lag bei 469 s und 461 s). ⚠️ **Diese Zeile stand bis `0.88.0` auf 74 Prüfungen, 302 Einheiten und 410 s** – drei Releases alt, und `0.88.0` hat zwei Prüfungen und neun Einheiten hinzugefügt, ohne sie anzufassen. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt – zum dritten Mal an derselben Zeile.* — *zum Stand von 0.85.2:* ⚠️ **Sie stand auf 67 Prüfungen, 243 Einheiten und 300 s** – drei Releases alt; die Zahlen sind am 2026-09-22 aus dem Lauf selbst genommen. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt.* 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
+**Abnahme:** Der Prüfapparat steht bei **81 Prüfungen** – 🟢 **und diese Zahl hält seit D-325 Prüfung 78, nicht mehr die Hand.** ⚠️ **Sie stand hier VIERMAL in Folge auf einem überholten Wert**, zuletzt auf 76 gegen 80, während die Prüfung dafür seit `0.90.0` lief und **eine von zwei Stellen** erreichte – *das ist D-295 an einem zweiten Gegenstand.*
+
+🔴 **ZWEI ZÄHLUNGEN, UND BEIDE SIND RICHTIG** (`CR-2026-128` B9, dieselbe Bauform wie `K-100`): Der Apparat meldet **322 angemeldete Einheiten** – seine eigene Definition zählt ein **Bündel einmal**, *„nie einen seiner Teile"*. Die **Ergebniszeilen** sind mehr, weil ein Bündel mehrere schreibt. **Wer eine Zahl über den Apparat nennt, sagt dazu, welche der beiden er meint.**
+
+**Gemessen am Abnahmelauf von `1.0.0`:** **322 angemeldete Einheiten**, **447 Ergebniszeilen** (269 Sonden, 155 Gegenproben, 23 Selbstproben), **Laufzeit 451 s und 460 s** Wanduhr auf 8 Bahnen (Faktor 7,9), **zeilengleicher Vergleich 0 Unterschiede in 480 Zeilen** – und der **vierte Durchgang ist zeilengleich zum dritten**. Die Laufzeiten stehen unterhalb der Trennlinie (D-94) und sind nicht Teil des zeilengleichen Vergleichs.
+
+> 🔴 **DER FERTIGE BAUM ENTSTEHT ERST MIT DER HANDLUNG DES MENSCHEN – UND DESHALB KANN
+> KEIN WERKZEUG GEGEN IHN ABNEHMEN.** Die Regel verlangt, daß der Abnahmelauf gegen den
+> **fertigen** Baum ein eigener Lauf ist. Bei `1.0.0` liegt der letzte Handgriff daran
+> aber **im Baum**: die Freigabezeile in Abschnitt 7.1 des Freigabeprotokolls, drei
+> Zellen. Sobald der Owner sie füllt, ist der Baum ein anderer als der abgenommene.
+> ➡️ *Der letzte Handgriff am Baum ist der, den das Werkzeug nicht tun darf.*
+> 🟢 **Die Deckung ist benannt und billig:** Nach dem Füllen der Zeile läuft **der
+> Validator**, und **Prüfung 81** fängt dabei genau den Fall, der in dieser Sitzung
+> **zweimal** eingetreten ist – ein Werkzeug, das den Träger auf LF umstellt.
+> ⚠️ **Ehrlich gebucht:** Zwischen dem dritten und dem vierten Durchgang sind vier
+> Zahlen in vier Markdown-Trägern berichtigt worden (`D-320 bis D-325` → `D-326`,
+> „dreizehn Träger" → **sechzehn**, „325 Decision Records" → **326**, „21 von 24" →
+> **20 von 24**). **Kein Prüfmittel war darunter**, und der vierte Durchgang ist
+> zeilengleich zum dritten. ⚠️ **Und diese Buchung selbst kam danach hinzu** – zwei
+> Markdown-Träger, wieder kein Prüfmittel. *Eine Aufzeichnung über eine Änderung ist
+> selbst eine; irgendwo hört man auf und schreibt hin, wo.*
+
+*(Zum Stand von `0.88.1`:)* Der Prüfapparat stand bei **76** – ausgerechnet, nicht gepflegt. **424 Einheiten** (252 Sonden, 149 Gegenproben, 23 Selbstproben), Laufzeit **478 s** und **494 s** Wanduhr auf 8 Bahnen (Faktor 7,9), gemessen am 2026-09-22 am **Abnahmelauf** von `0.88.1` (der Durchgang davor lag bei 469 s und 461 s). ⚠️ **Diese Zeile stand bis `0.88.0` auf 74 Prüfungen, 302 Einheiten und 410 s** – drei Releases alt, und `0.88.0` hat zwei Prüfungen und neun Einheiten hinzugefügt, ohne sie anzufassen. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt – zum dritten Mal an derselben Zeile.* — *zum Stand von 0.85.2:* ⚠️ **Sie stand auf 67 Prüfungen, 243 Einheiten und 300 s** – drei Releases alt; die Zahlen sind am 2026-09-22 aus dem Lauf selbst genommen. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt.* 🟢 **Für Zwischenprüfungen gibt es seit 0.69.0 `--nur`** – die fünf Einheiten zu Prüfung 63 in 8,5 s.
 
 ### 🟢 Was mit `0.66.0` erledigt ist – und was daran neu gelernt wurde
 
@@ -2956,8 +3145,8 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-125`** |
-| Decision Record | **`D-313`** |
+| Änderungsantrag | **`CR-2026-129`** |
+| Decision Record | **`D-327`** |
 | Klärungspunkt | **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. 🔴 **Nachgezählt am 2026-09-23: 102 Registerzeilen, höchste Kennung `K-104`** – die Zahl stand hier auf „101 / `K-103`" und war schon für ihr eigenes Datum falsch: `K-104` ist in **demselben** Release vergeben worden, das sie geschrieben hat.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **die zusammengesetzte Kennung der Sonde zu Prüfung 50** (bis `0.89.0` stand hier *„eine der sechs belegten synthetischen Kennungen"*, und das war zweimal falsch: es sind fünf, und `K-95` gehört ausdrücklich **nicht** dazu) –, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
@@ -2986,12 +3175,30 @@ GENANNTE Kennungen prüft** – eine Behauptung *über* die Menge erreicht sie n
 🔴 **`UEB-08` war bis 0.58.0 die synthetische Kennung der Gegenprobe 44b und ist jetzt
 echt.** Die Gegenprobe steht auf `UEB-97`. **Eine synthetische Kennung nimmt nie die nächste
 freie** – sonst kollidiert sie beim ersten echten Bedarf.
-**Offene Klärungspunkte:** 🆕 **NEU AUS 0.89.0: `K-104`** – ob eine Prüfung auf die **Aussagen** der Wurzel-README doch baubar ist. `0.88.1` hat sie abgelehnt, weil sie *„im Framework grün und in jeder Installation rot"* wäre; **derselbe Einwand ist bei Prüfung 75 acht Stunden später mechanisch gelöst worden** – sie unterscheidet am Vorhandensein von `UEBERGABE.md`, wo sie läuft. 🟢 **`K-103` ist mit 0.89.0 geschlossen** (`CR-2026-124`): beide Befunde berichtigt, und die eigenen Zahlen des Punktes sind dabei gefallen (81/77/4 statt 80/73). 🔴 **NEU AUS 0.82.0: `K-88`** – Prüfung 55b prüft eine **Teilzeichenkette** (`if name in text`). Von 26 Pflichtplatzhaltern, die die Laufzeitschicht nennt, sind im Übungs-Overlay **14 nirgends** mit spitzen Klammern gebunden, ohne den Änderungsverlauf des Overlays **15** – und die Prüfung meldet **null**. **Nach** dem Meßtag von Bündel 5 zu entscheiden: Vierzehn Platzhalter zu binden ist ein Eingriff in den Meßgegenstand, und die Laufzeitfassung steht mit 5.963 Zeichen dicht an ihrer SOLL-Grenze von 6.000. 🟢 **`K-87` ist mit 0.82.0 entschieden** (D-242): `ohnepack`, und der dritte Zuschnitt entfällt samt fünfzehn Läufen. 🔴 **Aus 0.79.2: `K-84`** – acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt haben, und ihre **35 abgenommenen Zellen** stehen auf der Fassung davor. Wörtlich angewandt ginge Kriterium 2 auf rund **63** statt auf 32. **Nicht vor dem Nachlauf zu entscheiden.** 🟢 **`K-83` ist mit 0.79.2 entschieden** (D-226): keine Ausnahmemenge – D-120 hatte die Frage längst beantwortet, das Werkzeug kannte sie nur im Kopfkommentar. 🟢 **`K-80` ist mit 0.78.2 entschieden** (D-216). 🔴 **Neu aus 0.78.2: `K-81`** (welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt – `core.autocrlf` ist eine Einstellung des Arbeitsplatzes, nicht des Repositoriums; **nicht vor dem Meßtag**, weil `git archive` die Meßbäume baut). 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
+**Offene Klärungspunkte:** 🔴 **NEU AUS 1.0.0: `K-108`** – wird veröffentlicht, und was geht mit? Die Historie trägt den Klarnamen in **122 Merge-Commits** und die Adresse in **allen 261**, unter **beiden** Namen; nach D-324 ist das nicht mehr durch ein Umschreiben vorbereitbar. 🔴 **NEU AUS 1.0.0: `K-109`** – die Regel *„Rollen statt Personen“* steht in zwei normativen Trägern und wird von **keiner der 81 Prüfungen** durchgesetzt; gemessen, als ein Klarname in einen Kernträger geschrieben wurde und alle 81 grün liefen. 🟢 **`K-81` ist mit `1.0.0` geschlossen** (D-320) – offen seit `0.78.2`, und die Antwort kostete **null Blobs**. 🟢 **`K-107` ist mit `1.0.0` geschlossen** (D-321, D-324). 🆕 **NEU AUS 0.89.0: `K-104`** – ob eine Prüfung auf die **Aussagen** der Wurzel-README doch baubar ist. `0.88.1` hat sie abgelehnt, weil sie *„im Framework grün und in jeder Installation rot"* wäre; **derselbe Einwand ist bei Prüfung 75 acht Stunden später mechanisch gelöst worden** – sie unterscheidet am Vorhandensein von `UEBERGABE.md`, wo sie läuft. 🟢 **`K-103` ist mit 0.89.0 geschlossen** (`CR-2026-124`): beide Befunde berichtigt, und die eigenen Zahlen des Punktes sind dabei gefallen (81/77/4 statt 80/73). 🔴 **NEU AUS 0.82.0: `K-88`** – Prüfung 55b prüft eine **Teilzeichenkette** (`if name in text`). Von 26 Pflichtplatzhaltern, die die Laufzeitschicht nennt, sind im Übungs-Overlay **14 nirgends** mit spitzen Klammern gebunden, ohne den Änderungsverlauf des Overlays **15** – und die Prüfung meldet **null**. **Nach** dem Meßtag von Bündel 5 zu entscheiden: Vierzehn Platzhalter zu binden ist ein Eingriff in den Meßgegenstand, und die Laufzeitfassung steht mit 5.963 Zeichen dicht an ihrer SOLL-Grenze von 6.000. 🟢 **`K-87` ist mit 0.82.0 entschieden** (D-242): `ohnepack`, und der dritte Zuschnitt entfällt samt fünfzehn Läufen. 🔴 **Aus 0.79.2: `K-84`** – acht von dreizehn Skills tragen eine Version, die ihre eigenen Meßbefunde erzeugt haben, und ihre **35 abgenommenen Zellen** stehen auf der Fassung davor. Wörtlich angewandt ginge Kriterium 2 auf rund **63** statt auf 32. **Nicht vor dem Nachlauf zu entscheiden.** 🟢 **`K-83` ist mit 0.79.2 entschieden** (D-226): keine Ausnahmemenge – D-120 hatte die Frage längst beantwortet, das Werkzeug kannte sie nur im Kopfkommentar. 🟢 **`K-80` ist mit 0.78.2 entschieden** (D-216). 🔴 **Neu aus 0.78.2: `K-81`** (welche Zeilenende-Form im Repositorium gilt und wer sie durchsetzt – `core.autocrlf` ist eine Einstellung des Arbeitsplatzes, nicht des Repositoriums; **nicht vor dem Meßtag**, weil `git archive` die Meßbäume baut). 🔴 **Neu aus 0.78.0: `K-79`** (zehn Werte des Quell-Overlays stehen in **keiner** Schicht, die den Client bindet – darunter `<DEFAULT_BRANCH>`, das Argument von **zwölf der neunzehn Zellen** von Bündel 4, und `<MR_TEMPLATE_PATH>`, das `fw-mr-description` als Vorbedingung nennt. Die Laufzeitfassung bindet vier **andere**. Das ist `K-69` mit einem Preis; **vor dem Meßtag ausdrücklich nicht gebunden**, weil eine Bindung den Meßgegenstand änderte). K-04, K-05, K-11, K-12, K-13, K-17, K-18, K-20, K-31, K-32, K-34, K-35,
 K-37, K-38, K-39, K-40, K-41, K-42, K-43, K-44, K-45, K-46, **K-47, K-48, K-49** (aus 0.55.0); **K-51** (aus 0.56.2). 🟢 **`K-50` ist mit `0.85.2` geschlossen** (D-270). 🆕 **`K-73` ist mit 0.71.0 beantwortet, soweit er sich beantworten ließ** (D-195): **Die Sperre weist ab, sie entfernt nicht** – das Modell setzt den Aufruf ab. **Welche Schicht abweist, bleibt wahrscheinlich, nicht isoliert:** Die eigens gebauten Zuschnitte haben gar keinen Aufruf abgesetzt. 🔴 **Neu aus 0.71.0: `K-74`** (die Ausgabemarken `[HALT]` und `[RÜCKFRAGE]` stehen mit **145 Fundstellen in 54 anweisenden Trägern** im Kern und sind in keinem Kernmodul und keinem Glossar erklärt – **vor Bündel 3 zu entscheiden**). 🔴 **Neu aus 0.72.0: `K-75`** (sieben Entscheidungen zur Auslieferung als Installationsbibliothek und zum Unterverzeichnis `.koolie/`; **zwei davon haben eine Frist**, weil sie in die Umbenennung gehören). 🟢 **`K-72` ist mit 0.67.1 erledigt** (D-184). 🆕 **Neu aus 0.59.0/0.59.1: `K-54`** (die Laufzeitschicht kennt den Ausnahmeprozess nicht und verbietet zugleich unbedingt jede Lockerung – ein Lauf hat daraufhin eine registrierte Ausnahme für unwirksam erklärt), **`K-55`** (wie baut man eine Scope-Falle, die ein regelkonform lesender Lauf überhaupt antrifft?) und **`K-56`** (ein Testblatt ist eine Aufzeichnung und wird als Regelquelle ausgeliefert). **`K-52` ist mit 0.57.1 erledigt** (D-129), **`K-53` mit 0.59.0** (D-140), **`K-55` mit 0.60.0** (D-145). 🔴 **Neu aus 0.60.0: `K-57`** (neun von zwölf `fw-*`-Skills sind für das Modell gesperrt – der Standardarbeitsablauf ist im nicht-interaktiven Betrieb nur erreichbar, wenn der Prompt jeden Skill nennt, und dann mißt man den Prompt) und **`K-58`** (Abschnitt 17 sagt *du darfst*; ein Lauf hat daraus *untersagt* gemacht – die Werkzeugmeldung schlug den Regeltext). **Und `K-34` und `K-55` standen überhaupt nicht im Register**, obwohl sie in sieben beziehungsweise sechs Trägern genannt wurden – Prüfung 50 fängt das jetzt. 🔴 **Neu aus 0.61.0: `K-59`** (der zweite Einsatzkontext steht in drei der sechs anweisenden Fassungen nicht – jede Sitzung an diesem Framework steht in ihm, und die Texte, die sie lädt, sagen *nur lesend*), **`K-60`** (ob ein KI-Client die zwanzig Grenzfälle wirklich so einstuft, mißt kein Testfall – `FW-KO-05` prüft die Texte) und **`K-61`** (ein `bestanden` eines Konsistenztests altert mit jeder Änderung an seinem Gegenstand: `FW-KO-02` steht seit dem 10.09. auf `bestanden`, und drei der vier Befunde von 0.61.0 liegen in seinem Gegenstand). 🟢 **`K-66` ist mit 0.64.0 erledigt** (D-163 bis D-168). 🔴 **Neu aus 0.65.0: `K-69`** (der Wertabgleich zwischen Quell-Overlay und geladener Schicht deckt **einen** Platzhalter; `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` haben dieselbe Gestalt und sind **ungeprüft, nicht geprüft-und-gut** – hängt an `K-67`). 🔴 **Neu aus 0.64.0: `K-68`** (der Backend-Strang des Übungsrepositoriums ist auf keinem Arbeitsplatz dieses Projekts übersetzbar – `UEB-14` und zwei Zellen hängen daran; sie ist gelesen, nie gelaufen). 🔴 **Aus 0.63.0: `K-66`** (21 von 81 Blattzellen haben keinen Gegenstand – `fw-docs-update` vollständig; Herrichtung ist eigener Posten `0.65.0`) und **`K-67`** (die Overlay-Vorlage kennt drei Formen, einen Platzhalter zu binden, und eine davon ist *gar nicht*). 🔴 **Neu aus 0.67.0: `K-72`** (`SK-002-P01` verlangt eine Übungsmethode mit Tests **und** einem ungetesteten Fehlerpfad – von acht Modulen mit Tests ist **genau eines unpräpariert** (`BookForm.tsx`), und es hat keinen Fehlerpfad; die beiden mit einem tragen `UEB-05` beziehungsweise `UEB-03`. **Das ist D-137 eine Ebene höher:** Dort verdrängt eine Präparation den Gegenstand einer anderen Präparation, hier den einer **Zelle**. 🔴 **Vor `0.68.0` zu entscheiden** – entweder eine sechzehnte Präparation oder die ausdrückliche Feststellung, daß die Zelle auf `books.ts` gefahren wird und der Injektionsbefund im Protokoll als erwartete Nebenwirkung steht). 🆕 **`K-71` ist nicht geschlossen, aber beantwortet, soweit er sich beantworten ließ:** Der verlangte einbahnige Lauf ist gefahren und grün – **er grenzt die Nebenläufigkeit trotzdem nicht ein, weil auch die beiden achtbahnigen Läufe desselben Tages grün sind.** Stand: einmal beobachtet, in vier Läufen nicht reproduziert. 🔴 **Neu aus 0.62.0: `K-62`** (26 von 44 `[DOK]`-Zeilen der Fähigkeitsmatrizen nennen ihre Quelle nicht – ohne sie kostet jede Wiederholung von `FW-AK-01` denselben vollen Durchgang; eigener Posten `~0.65.0`), **`K-63`** (die Kontoquelle der Skills bei `claude-code` ist standardmäßig an und aus der ausgelieferten Datei **nicht** abschaltbar – die neue Bauform des Releases), **`K-64`** (die organisationsseitige Skillquelle von `devin-desktop`, *„Indexed repos"*, liegt außerhalb jeder Datei des Frameworks – zugleich der erste dokumentierte Datenpunkt zu `X2`/`K-20`) und **`K-65`** (der clientseitige Schalter für fremde Agentenprotokolle ist entfallen; die Freigabezeile des Overlays bleibt als **organisatorische Auflage** ohne technische Seite).
 
 ---
 
-## 2. Der Fokus: 1.0.0 = D-11, fünf Kriterien
+## 2. Der Fokus nach `1.0.0` – D-11 ist erfüllt
+
+> 🟢 **ALLE FÜNF KRITERIEN AUS D-11 SIND ERFÜLLT, UND `1.0.0` IST GEFAHREN**
+> (`CR-2026-128`, `AP12`). Vier rechnet **Prüfung 46** bei jedem Validatorlauf aus und
+> hält sie gegen die Standzeile in `.koolie/core/docs/ROADMAP.md`; **Abweichung in beide
+> Richtungen ist ein Fehler.** Das fünfte – die Übernahme in ein zweites Projekt – ist
+> eine **Feststellung**, keine Zahl, und Prüfung 46 enthält sich ausdrücklich.
+> 🔴 **Genau deshalb stand sein Nachweis bis `1.0.0` drei Releases zurück**, und genau
+> deshalb führt ihn seit D-322 `governance/ADOPTION_REGISTRY.md`.
+>
+> ⚠️ **Was `1.0.0` NICHT sagt:** daß das Framework im Realbetrieb erprobt ist. `AP8` bis
+> `AP10` sind projektseitig und ausdrücklich keine Vorbedingung (`CR-2026-001`).
+> ⚠️ **Und was sich ändert, ohne daß es in einem Plan stand:** Ab `1.0.0` gilt die
+> MAJOR-Regel aus `RELEASE_PROCESS.md` Abschnitt 1 wieder – jede Struktur- oder
+> Hierarchieänderung, die Overlays anpassen muß, ist ein **MAJOR-Release**.
+
+*(Die folgende Tabelle ist der Stand vor `1.0.0` und bleibt als Herleitung stehen.)*
+
+## 2a. Der Weg dorthin: D-11, fünf Kriterien
 
 **Prüfung 46 rechnet die vier zählbaren Kriterien bei jedem Validatorlauf aus** und hält sie gegen
 die Standzeile in `.koolie/core/docs/ROADMAP.md`. **Abweichung in beide Richtungen ist ein Fehler.**
@@ -3023,6 +3230,29 @@ Läufe je Arbeitssitzung.
 ---
 
 ## 3. Nächste Schritte
+
+> 🟢 **`1.0.0` IST GEFAHREN. WAS JETZT ANSTEHT, IST KEIN ARBEITSVORRAT MEHR, SONDERN
+> EINE WAHL.** Es gibt keinen Posten, der ein Kriterium bewegt – alle vier zählbaren
+> stehen auf null, das fünfte ist festgestellt.
+
+| # | Was | Aufwand | Art |
+|---|---|---|---|
+| **A** | 🔴 **Die zwei Handlungen des Menschen zu `1.0.0` abschließen:** manuelle Stichprobe (Prüfpunkt 9), dokumentierte Freigabe (Prüfpunkt 21), signierte Marke (Archivverfahren Schritt 1). **Keine davon ist delegierbar** | 30 Minuten | Abschluß |
+| **B** | 🔴 **`K-108` entscheiden: Wird veröffentlicht, und was geht mit?** Die Historie trägt Klarnamen in 122 Commits und die Adresse in allen 261. Nach D-324 nicht mehr durch Umschreiben vorbereitbar | eine Entscheidung | nicht rückholbar |
+| **C** | ⚠️ **`K-109`: eine Prüfung für *„Rollen statt Personen"* – oder die ausdrückliche Feststellung, daß es keine geben kann** | eine Sitzung, **kein Kontingent** | Prüfapparat |
+| **D** | **`AP13`: Übernahme in weitere Projekte.** Bisher zwei; der Aufwand je Projekt soll sinken, und das ist bisher **behauptet, nicht gemessen** | je Projekt | Roadmap |
+| **E** | **`1.1.0`: Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen. Ein Codex-Pro-Abonnement steht zur Verfügung (`K-97`) | mehrere Sitzungen, **mit Kontingent** | Roadmap |
+| **F** | ⚠️ **`K-100` und `B9` zusammen angehen:** In beiden Fällen gibt es zwei Zählformen und kein Vokabular. Das Register führt **107** K-Zeilen, und die Zahl der offenen bleibt unermittelbar | eine Sitzung | Governance |
+| **G** | ⚠️ **`K-105`: der Foliensatz liegt außerhalb des Repositoriums** und steht auf `0.90.0` – überholt durch `0.91.0` **und** `1.0.0`. Keine Prüfung erreicht ihn | – | offen |
+| **H** | **Der `SOLL`-Prüfpunkt `M1`→`M2`→`M3`→`M4`** auf dem Übungsrepositorium. Er ist ausgewiesen, nicht gefahren – der einzige Posten von `FW-CL-11` mit Kontingent | eine Sitzung, **mit Kontingent** | Nachtrag |
+
+⚠️ **VOR dem ersten Handgriff: die Vorbedingungen der Klasse durchgehen.** Das war
+**achtzehnmal** in Folge der billigste Befund – und in `1.0.0` hat derselbe Durchgang
+**elf** Befunde geliefert, drei weitere fielen bei der Umsetzung.
+
+*(Der folgende Abschnitt ist der Stand vor `1.0.0` und bleibt als Herleitung stehen.)*
+
+## 3a. Der Weg bis `1.0.0`
 
 **Erster Handgriff: `git fetch`, dann lesen.** Im Repositorium ist nichts aufzuräumen, daneben auch
 nichts – und seit dem 17.09. auch nicht mehr **außerhalb**: Die alten
@@ -3065,7 +3295,7 @@ dem 13.09. auf ein längst gelöschtes Scratchpad zeigten. 🔴 **Das hier genan
 ### Vorbedingungen für Kandidat 1 – erfüllt, mit vier benannten Hindernissen
 
 Verfahren Nr. 1 bindet **jeden** Sitzungstest an „das synthetische Übungsrepository mit aktivem
-Übungs-Overlay" (`devpacks/test-devin-framework`). Es steht auf **0.82.0**, Validator grün, die
+Übungs-Overlay" (`devpacks/test-devin-framework`). Es steht auf **1.0.0** (gehoben am 2026-09-23; die Angabe stand hier bis dahin auf `0.82.0` und war sechs Releases alt), Validator grün, die
 **einunddreißig** Präparationen `UEB-01` bis `UEB-31` sind angelegt und registriert. 🔴 **Elf
 von ihnen liegen NICHT dauerhaft im Repositorium** und werden je Lauf oder je Meßbaum
 gesetzt und danach entfernt – `UEB-07`, `UEB-08`, `UEB-21`, `UEB-23` bis `UEB-26`,

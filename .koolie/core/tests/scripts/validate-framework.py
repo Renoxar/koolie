@@ -574,7 +574,22 @@ Prüft (statisch, ohne laufenden KI-Client):
      beiden - ein Gegenstand, der unter zwei Regeln derselbe ist, ist der
      richtige. GRENZE: Sie verlangt eine Unterschrift und erzeugt keine. Die
      Zeile sagt, WAS gegengezeichnet wurde; der Commit sagt, WER
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 80 laeuft als eigenes
+ 81. Eine Zeilenendeform je Repositorium (D-320, schliesst K-81): Alle versionierten
+     Texttraeger des Arbeitsbaums tragen DIESELBE Form, und keiner mischt beide in
+     sich. ANLASS: Eine Sitzung hat 28 LF-Zeilen in einen durchgehenden CRLF-Bestand
+     eingeschleppt; gefunden hat es keine der 80 Pruefungen, sondern ein Suchtext, der
+     danach nicht mehr traf. Pruefung 66 prueft die GEGENRICHTUNG und greift nicht.
+     🔴 UND DER AUSLOESENDE BEFUND WAR AM FALSCHEN GEGENSTAND GEMESSEN: "kein
+     versionierter Traeger traegt reine LF" gilt fuer den ARBEITSBAUM (515 CRLF); im
+     BLOB, also im Versionierten, liegen dieselben 515 auf reinem LF. Ursache ist
+     core.autocrlf, eine Einstellung des Arbeitsplatzes - genau die Frage, die K-81
+     seit 0.78.2 offen fuehrte. ZUSCHNITT: der Arbeitsbaum; den Blob setzt seit D-320
+     die .gitattributes mit `text=auto`, und die aendert gemessen null Blobs. SIE
+     SCHREIBT KEINE FORM VOR, sondern verlangt, dass es eine ist - Einheitlichkeit ist
+     in jeder Installation richtig, eine bestimmte Form nur an einem Arbeitsplatz.
+     GRENZE: Sie liest Bytes und misst den Arbeitsbaum; ohne Git-Bestand meldet sie
+     eine Warnung und KEIN Messergebnis
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 81 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -8669,14 +8684,43 @@ def check_dokumentstand(root: str) -> None:
 # GRENZE, benannt: Sie misst DREI Zahlen in EINEM Satz. Jede andere Zahl des Dokuments
 # laeuft weiter durch - das ist der Rest von K-104, und er ist nicht kleiner geworden,
 # nur gezaehlt.
+#
+# 🆕 ZWEITER GEGENSTAND SEIT 1.0.0 (D-325, CR-2026-128): DIE ABNAHMEZEILE DER UEBERGABE.
+# Dieselbe Zahl steht dort - und stand am 2026-09-23 zum VIERTEN Mal auf einem
+# ueberholten Wert (76 statt 80). Daneben trug die Zeile die Lehre aus ihrem dritten
+# Vorkommen: "Eine Zahl, die gepflegt werden muss, wird nicht gepflegt."
+# 🔴 DIE PRUEFUNG DAFUER GAB ES SEIT 0.90.0 - SIE ERREICHTE EINE VON ZWEI STELLEN.
+# ➡️ Das ist D-295 an einem zweiten Gegenstand: Der Zaehlbereich war kleiner als die
+#    Wirkungsflaeche. Wer eine Zahl prueft, sucht ihre zweite Fundstelle.
+#
+# ENTHALTUNG: Ein uebernehmendes Projekt fuehrt keine UEBERGABE.md. Dort wird dieser
+# zweite Gegenstand still uebersprungen - dieselbe Unterscheidung wie bei Pruefung 67
+# und 75, und aus demselben Grund (D-299).
+#
+# GRENZE des zweiten Gegenstands: Geprueft wird die Zahl der PRUEFUNGEN, nicht die der
+# Sondeneinheiten. Die ist ohne einen Lauf nicht auszurechnen - und sie hat nach B9 von
+# CR-2026-128 ohnehin ZWEI richtige Werte, je nachdem ob ein Buendel einmal oder mit
+# allen seinen Zeilen zaehlt. Eine Pruefung, die eine von zwei richtigen Zahlen
+# verlangt, waere schlimmer als keine.
 P78_TRAEGER = KERN + "/build/doc/26-qs-test.md"
 P78_ANKER = "Der Validator führt **"
 P78_SATZ = ("Der Validator führt **{0} Prüfungen** über {1} versionierte Dateien des "
             "Kerns, davon {2} Markdown-Dateien")
+P78_UEBERGABE_ANKER = "Der Prüfapparat steht bei **"
+P78_UEBERGABE_SATZ = "Der Prüfapparat steht bei **{0} Prüfungen**"
 
 
 def check_dokumentzahlen(root: str) -> None:
     """Pruefung 78 (D-315): Die Gegenwartszahlen des Hauptdokuments gegen den Bestand."""
+    # 🔴 ENTHALTUNG IM UEBERNEHMENDEN PROJEKT (D-326, gemessen am 2026-09-23).
+    # Der Satz beschreibt den Bestand des FRAMEWORK-Repositoriums und wird byte-gleich
+    # ausgeliefert (D-25). Ein uebernehmendes Projekt fuehrt weniger Kerndateien - beim
+    # ersten Lauf dieser Pruefung gegen eines waren es 500 gegen 515 -, und es pflegt den
+    # Traeger nicht. Ohne diese Unterscheidung waere sie im Framework gruen und in JEDER
+    # Installation rot; das ist der Konstruktionsfehler aus D-299, und die Lehre stand im
+    # SELBEN Release, das diese Pruefung gebaut hat.
+    if not os.path.isfile(os.path.join(root, UEBERGABE_DATEI)):
+        return
     pfad = os.path.join(root, *P78_TRAEGER.split("/"))
     if not os.path.isfile(pfad):
         err(f"{P78_TRAEGER}: fehlt. Prüfung 78 hält dort die zählbaren Aussagen des "
@@ -8716,6 +8760,24 @@ def check_dokumentzahlen(root: str) -> None:
             f"und {sum(1 for d in dateien if d.endswith('.md'))} davon als Markdown. "
             f"Bis 0.89.0 standen hier 76, 502 und 450 – alle drei waren in DEM Release "
             f"überholt, das das Dokument auf den geltenden Stand gesetzt hat (D-315)")
+    # --- Gegenstand 4: dieselbe Zahl in der Abnahmezeile der Uebergabe (D-325) -------
+    upfad = os.path.join(root, UEBERGABE_DATEI)
+    if not os.path.isfile(upfad):
+        return  # ein uebernehmendes Projekt fuehrt keine Uebergabe - Enthaltung
+    utext = read(upfad)
+    if utext.count(P78_UEBERGABE_ANKER) != 1:
+        err(f"{UEBERGABE_DATEI}: die Abnahmezeile über den Prüfapparat steht nicht genau "
+            f"einmal (gesucht: '{P78_UEBERGABE_ANKER}', gefunden: "
+            f"{utext.count(P78_UEBERGABE_ANKER)}x). Prüfung 78 hat ihren zweiten "
+            f"Gegenstand verloren und bestünde dort leise (D-23, D-325)")
+        return
+    usoll = P78_UEBERGABE_SATZ.format(gefuehrt[-1])
+    if usoll not in utext:
+        err(f"{UEBERGABE_DATEI}: die Abnahmezeile nennt nicht die gezählte Zahl der "
+            f"Prüfungen. Erwartet wörtlich: '{usoll}'. Gezählt wurden {gefuehrt[-1]} im "
+            f"Register. Diese Zahl stand dort viermal in Folge auf einem überholten "
+            f"Wert, zuletzt auf 76 gegen 80 – und die Prüfung dafür gab es seit 0.90.0, "
+            f"sie erreichte nur das Hauptdokument (D-325)")
 
 
 # ---------------------------------------------------------------------------
@@ -8738,6 +8800,23 @@ def check_dokumentzahlen(root: str) -> None:
 # GPL-3.0 ist. Sie prueft nicht, ob der Text der amtlichen Fassung der Free Software
 # Foundation entspricht - dafuer waere ein Netzzugriff noetig, und eine Pruefung, die
 # das Netz braucht, ist in einer Installation nicht fahrbar.
+#
+# 🔴 BERICHTIGT MIT 1.0.0 (D-326, CR-2026-128 B14): DIE WURZELFASSUNG GILT NUR IM
+# FRAMEWORK-REPOSITORIUM. Gemessen am 2026-09-23 beim ersten Lauf dieser Pruefung gegen
+# ein uebernehmendes Projekt: Sie meldete "LICENSE: fehlt" - und verlangte damit von
+# JEDEM uebernehmenden Projekt eine GPL-3.0 in SEINER Wurzel.
+# 🔴 DAS WAERE DAS GEGENTEIL DESSEN, WAS DIESELBE ENTSCHEIDUNG WOLLTE: Die
+# Zusatzerlaubnis nach §7 (D-317, Abschnitt 2 des Lizenzhinweises) nimmt die Ausgaben
+# und ausgefuellten Vorlagen ausdruecklich AUS der GPL heraus, damit ein Projekt nicht
+# zur Offenlegung gezwungen wird. Eine Pruefung, die dem Projekt die GPL in die Wurzel
+# schreibt, hebt genau das wieder auf.
+# ➡️ EINE PRUEFUNG, DIE IM FRAMEWORK GRUEN UND IN JEDER INSTALLATION ROT IST, IST FALSCH
+#    GEBAUT (D-299) - und die Lehre stand im SELBEN Release, das diese Pruefung gebaut
+#    hat: "Jede neue Pruefung laeuft einmal gegen ein uebernehmendes Projekt, bevor sie
+#    als fertig gilt." Sie ist notiert und nicht angewandt worden.
+#
+# ZUSCHNITT seit 1.0.0: Im uebernehmenden Projekt gilt allein die KERNFASSUNG - sie ist
+# die, die nach §4 GPL-3.0 mitwandern muss. Die Wurzel gehoert dem Projekt.
 P79_WURZEL = "LICENSE"
 P79_KERN = KERN + "/LICENSE"
 P79_MARKE = "GNU GENERAL PUBLIC LICENSE"
@@ -8746,8 +8825,12 @@ P79_VERSION = "Version 3, 29 June 2007"
 
 def check_lizenz(root: str) -> None:
     """Pruefung 79 (D-317): Die Lizenz liegt an beiden Stellen und ist dieselbe."""
+    # Das Framework-Repositorium fuehrt die Uebergabe; ein uebernehmendes Projekt nicht.
+    # Dort gilt allein die Kernfassung - die Wurzel gehoert dem Projekt (D-326).
+    eigenes_repo = os.path.isfile(os.path.join(root, UEBERGABE_DATEI))
+    stellen = (P79_WURZEL, P79_KERN) if eigenes_repo else (P79_KERN,)
     inhalte = {}
-    for rel in (P79_WURZEL, P79_KERN):
+    for rel in stellen:
         pfad = os.path.join(root, *rel.split("/"))
         if not os.path.isfile(pfad):
             err(f"{rel}: fehlt. Die Lizenz MUSS an beiden Stellen liegen – in der Wurzel "
@@ -8757,6 +8840,14 @@ def check_lizenz(root: str) -> None:
             return
         with open(pfad, "rb") as fh:
             inhalte[rel] = fh.read()
+    if not eigenes_repo:
+        # Kein Vergleich moeglich und keiner noetig: Was mitwandern muss, ist da.
+        text = inhalte[P79_KERN].decode("utf-8", "replace")
+        if P79_MARKE not in text or P79_VERSION not in text:
+            err(f"{P79_KERN}: trägt nicht die GNU General Public License Version 3 "
+                f"(gesucht: '{P79_MARKE}' und '{P79_VERSION}'). Der Kern wandert mit "
+                f"seiner Lizenz oder gar nicht (§4 GPL-3.0, D-317, D-326)")
+        return
     if inhalte[P79_WURZEL] != inhalte[P79_KERN]:
         err(f"{P79_KERN}: trägt nicht denselben Inhalt wie {P79_WURZEL} "
             f"({len(inhalte[P79_WURZEL])} gegen {len(inhalte[P79_KERN])} Bytes). Zwei "
@@ -8841,6 +8932,112 @@ def check_gegenzeichnung(root: str) -> None:
                 f"kein Feld, das ein Werkzeug füllt – ist keine zweite Rolle vorhanden, "
                 f"wird selbst gegengezeichnet und der Abschnitt weist das ausdrücklich "
                 f"aus (D-319, `CR-2026-127` E1)")
+
+
+# Pruefung 81: eine Zeilenendeform je Repositorium (CR-2026-128, D-320, K-81)
+# ---------------------------------------------------------------------------
+#
+# ANLASS, und er ist ein eigener Fehler. Eine Sitzung hat 28 LF-Zeilen in einen Bestand
+# eingeschleppt, der durchgehend CRLF traegt. Gefunden hat es KEINE der 80 Pruefungen,
+# sondern ein Suchtext, der danach nicht mehr traf. Pruefung 66 prueft die
+# GEGENRICHTUNG - einen Wagenruecklauf ohne Zeilenvorschub - und greift hier nicht.
+#
+# 🔴 UND DER BEFUND, DER IHN AUSLOESTE, WAR AM FALSCHEN GEGENSTAND GEMESSEN. Die
+# Uebergabe schrieb "kein VERSIONIERTER Texttraeger traegt reine LF". Gemessen am
+# 2026-09-23 ueber alle 517 verfolgten Eintraege: im ARBEITSBAUM 515 auf CRLF, im BLOB
+# 515 auf reinem LF. Versioniert ist der Blob. Die Aussage ist an einem Gegenstand
+# richtig und am anderen in ihr Gegenteil verkehrt.
+# ➡️ WER EINE ZEILENENDEFORM MISST, SAGT DAZU, WELCHEN GEGENSTAND ER GEMESSEN HAT.
+#
+# ZUSCHNITT: DEN ARBEITSBAUM, NICHT DEN BLOB. Der Blob ist seit D-320 durch die
+# .gitattributes gesetzt (`* text=auto`) - dort braucht es keine Pruefung, sondern eine
+# Datei. Was die .gitattributes NICHT sieht, ist der Arbeitsbaum zwischen zwei
+# Auscheckungen, und genau dort lag der Fall.
+#
+# SIE SCHREIBT KEINE FORM VOR. Sie verlangt, dass es EINE ist. Ein Linux-Arbeitsbaum
+# traegt LF, ein Windows-Arbeitsbaum CRLF, und beide sind richtig; ein Bestand, der
+# beides mischt, ist es nirgends. ➡️ EINHEITLICHKEIT IST IN JEDER INSTALLATION RICHTIG,
+# EINE BESTIMMTE FORM NUR AN EINEM ARBEITSPLATZ. Damit ist der Konstruktionsfehler
+# ausgeschlossen, den D-299 benannt hat: im Framework gruen und in jeder Installation rot.
+#
+# ZAEHLBEREICH wie bei Pruefung 75: die verfolgten Dateien. Im Framework-Repositorium
+# (erkennbar an UEBERGABE.md) alle; in einem uebernehmenden Projekt nur die
+# ausgelieferten - was ein Projekt in SEINEN Dateien fuer eine Form fuehrt, geht das
+# Framework nichts an.
+#
+# GRENZE, benannt: Sie liest BYTES und misst den Arbeitsbaum. Welche Form im
+# Repositorium ankommt, entscheidet die .gitattributes und nicht diese Pruefung. Ohne
+# Git-Bestand meldet sie eine Warnung und KEIN Messergebnis (D-23).
+P81_GEMISCHT = "gemischt"
+
+
+def _p81_form(pfad: str) -> str | None:
+    """Die Zeilenendeform eines Traegers, an seinen Bytes gemessen."""
+    try:
+        with open(pfad, "rb") as fh:
+            roh = fh.read()
+    except OSError:
+        return None
+    if b"\x00" in roh[:8000]:
+        return None
+    lf = roh.count(b"\n")
+    if not lf:
+        return None          # ein Traeger ohne Zeilenumbruch traegt keine Form
+    crlf = roh.count(b"\r\n")
+    if crlf == lf:
+        return "CRLF"
+    if crlf == 0:
+        return "LF"
+    return P81_GEMISCHT
+
+
+def check_zeilenendeform(root: str) -> None:
+    """Pruefung 81 (D-320): Alle versionierten Texttraeger tragen dieselbe Form."""
+    dateien = _p75_verfolgt(root)
+    if dateien is None:
+        warn("Prüfung 81: kein Git-Bestand lesbar – die Zeilenendeform ist an diesem "
+             "Ort nicht prüfbar. Das ist KEIN Messergebnis (D-23)")
+        return
+    bestand = set(dateien)
+    eigenes_repo = UEBERGABE_DATEI in bestand
+    ausgeliefert = (KERN + "/",)
+    formen: dict[str, list[str]] = {}
+    for rel in sorted(bestand):
+        if not eigenes_repo and not rel.startswith(ausgeliefert):
+            continue
+        if os.path.splitext(rel)[1] not in TEXT_EXT and os.path.basename(rel) not in (
+                "VERSION", ".gitignore", ".gitattributes"):
+            continue
+        pfad = os.path.join(root, *rel.split("/"))
+        if not os.path.isfile(pfad):
+            continue
+        form = _p81_form(pfad)
+        if form is None:
+            continue
+        formen.setdefault(form, []).append(rel)
+    if not formen:
+        err("Prüfung 81: kein einziger versionierter Textträger gelesen – sie hätte "
+            "nichts zu prüfen und bestünde leise (D-23)")
+        return
+    # --- Gegenstand 1: kein Traeger mischt beide Formen in sich ---------------------
+    for rel in formen.get(P81_GEMISCHT, []):
+        err(f"{rel}: mischt CRLF- und LF-Zeilen in derselben Datei. Ein gemischter "
+            f"Träger ist an keinem Arbeitsplatz richtig; er entsteht, wenn ein Werkzeug "
+            f"einzelne Zeilen in der jeweils anderen Form nachträgt (D-320, `K-81`)")
+    # --- Gegenstand 2: der Bestand traegt EINE Form ---------------------------------
+    rein = {f: n for f, n in formen.items() if f != P81_GEMISCHT}
+    if len(rein) < 2:
+        return
+    haupt = max(rein, key=lambda f: len(rein[f]))
+    for form, namen in sorted(rein.items()):
+        if form == haupt:
+            continue
+        for rel in namen:
+            err(f"{rel}: trägt {form}-Zeilenenden, während {len(rein[haupt])} von "
+                f"{sum(len(n) for n in rein.values())} versionierten Textträgern "
+                f"{haupt} tragen. Diese Prüfung schreibt keine Form vor – sie verlangt, "
+                f"daß es eine ist (D-320, `K-81`). Welche Form im Repositorium ankommt, "
+                f"setzt `.gitattributes`, nicht der Arbeitsplatz")
 
 
 def main() -> int:
@@ -8938,6 +9135,7 @@ def main() -> int:
     check_dokumentzahlen(root)
     check_lizenz(root)
     check_gegenzeichnung(root)
+    check_zeilenendeform(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

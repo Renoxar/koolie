@@ -1,0 +1,16 @@
+# Die Zeilenendeform des Repositoriums (D-320, CR-2026-128 E1, schliesst K-81).
+#
+# `text=auto` laesst git jeden Texttraeger im BLOB auf LF normalisieren, gleich mit
+# welcher Einstellung ein Arbeitsplatz ihn geschrieben hat. Ohne diese Datei haengt die
+# Form an `core.autocrlf` des jeweiligen Rechners - einer Einstellung AUSSERHALB des
+# Repositoriums. Gemessen am 2026-09-23: sie aendert null Blobs, alle 515 liegen bereits
+# auf LF; ihr Gegenstand ist der ZWEITE Arbeitsplatz und das Release-Archiv, das ab
+# 1.0.0 aus `git archive` entsteht.
+#
+# Bewusst OHNE `eol=` : Diese Datei setzt den Blob, nicht den Arbeitsbaum. Welche Form
+# der Arbeitsbaum traegt, entscheidet der Arbeitsplatz - dass er EINE traegt, prueft
+# Pruefung 81.
+#
+# GRENZE (D-217): Ein Traeger mit einem einzelnen Wagenruecklauf gilt git als binaer und
+# wird von `text=auto` NICHT angefasst. Genau dafuer gibt es Pruefung 66.
+* text=auto
