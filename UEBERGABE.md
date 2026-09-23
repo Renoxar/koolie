@@ -1,4 +1,30 @@
-# Übergabe: **Koolie** – Stand 1.0.0 (2026-09-23)
+# Übergabe: **Koolie** – Stand 1.0.1 (2026-09-23)
+
+> 🟢 **`1.0.1` – DIE ZEILENENDEN DES ARCHIVS, UND EINE ZUSAGE, DIE KEINE DREI STUNDEN
+> HIELT** (`CR-2026-129`, **D-328**, D-320 in der Reichweite begrenzt). Ein Patch-Release
+> ohne Kontingent und **ohne neue Prüfung**.
+>
+> 🔴 **DAS ERSTE RELEASE-ARCHIV DIESES PROJEKTS HAT DIE REGEL WIDERLEGT, DIE ES ERZEUGEN
+> LIESS.** Abschnitt 4.1 sagte: *„Die Zeilenenden des Archivs stehen seit D-320 fest."*
+> **Gemessen, dreimal dieselbe Marke `v1.0.0`, nur `core.autocrlf` verstellt:** `true` →
+> **520 CRLF**, `false` → **520 CRLF**, `input` → **520 LF** – **bei unverändertem
+> Blob.** ➡️ *`git archive` schreibt im ARBEITSBAUM-Format aus, nicht im Blob-Format.*
+> 🔴 **Zwei Arbeitsplätze erzeugten aus derselben signierten Marke zwei Archive mit zwei
+> Prüfsummen** – genau die Abhängigkeit, die D-320 beseitigt zu haben schien.
+>
+> 🔴 **GEFUNDEN HAT ES DAS NACHZÄHLEN IM ERZEUGNIS, NICHT DER LAUF.** `git archive`
+> meldete Exit 0 und schrieb eine Datei. ➡️ *Ein Erzeugnis mit Exit 0 ist kein Beleg* –
+> dieselbe Lehre wie am Word-Bau von `0.90.0`, an einem zweiten Gegenstand. **Das
+> Nachzählen ist seither Schritt 3 des Verfahrens.**
+>
+> ⚠️ **UND DIE AUFLÖSUNG IST SCHWÄCHER ALS EINE PRÜFUNG.** Der Gegenstand liegt
+> **außerhalb** des Repositoriums; eine Prüfung dagegen wäre im Framework grün und in
+> jeder Installation ohne Archiv rot (D-299). Was bleibt, ist ein Verfahrensschritt –
+> **benannt, nicht verschwiegen.**
+>
+> ➡️ ***Eine Entscheidung gilt so weit wie ihr gemessener Gegenstand und nicht so weit
+> wie die Folgerung aus ihr.*** D-320 hat den **Blob** gemessen; daß damit auch das
+> **Archiv** feststehe, war eine Folgerung – und sie stand eine Regel lang unbelegt da.
 
 > 🟢 **`1.0.0` – `AP12` IST GEFAHREN, UND DAS ERSTE GLIED DER NACHWEISKETTE HAT NIE
 > EXISTIERT** (`CR-2026-128`, **D-320** bis **D-327**, **Prüfung 81** neu und **78**
@@ -2884,7 +2910,7 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-🟢 **`1.0.0` IST DA.** `main` = **1.0.0**, alles gemergt, **kein offener Antrag, kein
+🟢 **`1.0.0` IST DA, UND `1.0.1` BERICHTIGT SEINE ARCHIVREGEL.** `main` = **1.0.1**, alles gemergt, **kein offener Antrag, kein
 Restbranch**, Arbeitsbaum sauber, Validator **0 Fehler, 0 Warnungen** über **81
 Prüfungen**, Sondenlauf in **beiden** Kodierungsumgebungen grün, und der **zeilengleiche
 Vergleich nach D-49 zeigt 0 Unterschiede.** Die genauen Zahlen stehen in der
@@ -3074,7 +3100,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/koolie` | `main` = **1.0.0**, Validator 0/0 über 81 Prüfungen. 🟢 **Die Bestandsliste der übernehmenden Projekte steht seit `1.0.0` im Kern** (`governance/ADOPTION_REGISTRY.md`, D-322) – *(zum Stand von `0.91.0`:)* das Release stand bei 0.91.0, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
+| Framework | `devpacks/koolie` | `main` = **1.0.1**, Validator 0/0 über 81 Prüfungen. 🟢 **Die erste Marke des Repositoriums steht: `v1.0.0`, annotiert und SSH-signiert**, dazu das erste Release-Archiv unter `devpacks/koolie-releases/` (außerhalb des Repositoriums, mit Prüfsumme). *(zum Stand von `1.0.0`:)* Validator 0/0 über 81 Prüfungen. 🟢 **Die Bestandsliste der übernehmenden Projekte steht seit `1.0.0` im Kern** (`governance/ADOPTION_REGISTRY.md`, D-322) – *(zum Stand von `0.91.0`:)* das Release stand bei 0.91.0, Validator 0/0. 🔴 **Das Verzeichnis heißt seit `0.88.0` `koolie`** (D-274) – Gitea legt beim Umbenennen eine **301**-Weiterleitung an, und sie endet lautlos, sobald der alte Name neu belegt wird. **Er bleibt unbelegt.** |
 | Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `1.0.0` gehoben (2026-09-23)**, Overlay **`0.3.1`**, Client Pack `claude-code`. Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**; der Fehler ist Projektarbeit (gesperrter Begriff in der Projekt-`CHANGELOG.md`). 🔴 **Dieses Heben hat zwei Framework-Befunde gefunden** (D-326): Prüfung 78 und 79 waren hier strukturell rot. *(zum Stand von `0.88.0`:)* 🟢 **Auf Framework `0.88.0` gehoben (2026-09-22) – über 34 Releases**, Overlay **`0.3.0`**, Kern unter `.koolie/core/`. **61 Träger von Hand nachgezogen.** Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**, belegt mit einem **Entlastungslauf** gegen das Sicherungsbundle. 🔴 **Neun der zehn Fehler nach dem Heben kamen aus dem VERSIONSSPRUNG, nicht aus der Umbenennung:** sieben Pflichtplatzhalter waren durch ihren **Wert** ersetzt statt gebunden (D-160, seit `0.63.0`), `autoMemoryEnabled` fehlte in der Berechtigungsdatei (D-155), und die Overlay-Version stand in **drei** Trägern – *der Validator meldet sie nacheinander*. ⚠️ **Der verbliebene Fehler ist Projektarbeit** (gesperrter Begriff in `CHANGELOG.md`) |
 | Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `1.0.0` gehoben** (2026-09-23), Overlay **`1.0.0`**, Validator `--strict-overlay` **0 Fehler / 1 Warnung** (die bekannte Zeichenzahl der Laufzeitfassung, `K-88`). *(zum Stand von `0.88.0`:)* 🟢 **Auf Framework `0.88.0` gehoben** (2026-09-22), Overlay **`0.88.0`**, Kern unter `.koolie/core/` – **77 Träger von Hand nachgezogen**, Validator `--strict-overlay` **0 Fehler / 1 Warnung**. ⚠️ **Die Warnung ist die Laufzeitfassung des Overlays: von 5.963 auf 6.024 von 6.000 Zeichen gewachsen**, weil `project-overlay` acht Zeichen länger geworden ist – **benannt, nicht geändert** (`K-88`: eine Kürzung wäre ein Eingriff in den Meßgegenstand). 🔴 **Drei Projektdateien nennen kein `leitwerk`, sondern `project-overlay/`** – *die Migrationsfläche von D-270 ist gegen eine Umbenennung OHNE Umzug gemessen.* 🟢 **Zwei Nennungen bleiben bewußt stehen** (`tools/praeparationen.py`, `tools/mentorenblatt/PRAEPARATIONEN.md`): Sie nennen eine Belegablage, und die wird nicht umbenannt (D-300). *Zum Stand von `0.84.0`:* – `install.py --update` hat **vier** Dateien angefaßt und der Trockenlauf **vier** vorhergesagt; 🔴 **vierzehn Pflichtplatzhalter sind jetzt gebunden** (`K-88`, D-257), die Laufzeitfassung ist unberührt, Validator `--strict-overlay` 0/0, kein Remote, Suite **59 grün**, `tsc --noEmit` sauber. 🟢 **Einunddreißig Präparationen** (`UEB-01` bis `UEB-31`) – 🔴 **davon elf NICHT dauerhaft im Repositorium** (gezählt aus `tools/praeparationen.py`)**:** `UEB-07` und `UEB-08` je Lauf, `UEB-21`, `UEB-23` bis `UEB-26`, `UEB-28` bis **`UEB-31`** je **Meßbaum** (Quellen in `tools/praeparationen/`; `UEB-30` ist die erste, die keine Datei anlegt und keine ersetzt – sie nimmt eine **Wertzelle** des Overlays zurück), und `UEB-27` hat überhaupt keinen Pfad – sie liegt in der Commit-Betreffzeile und entsteht erst beim Bau des Meßbaums (D-207), **59 grüne Frontend-Tests** (gemessen 2026-09-19; die Zahl stand hier bis 0.77.0 auf 51), drei Übungsdokumente in `docs/`; **das Aufgabenblatt liegt seit 0.64.0 in `tools/`** und damit im gesperrten Bereich (D-168). 🔴 **`UEB-07` gehört ab 0.60.0 in den MESSBAUM gesetzt, nicht hierher** – `praeparationen.py` löst den Ort aus dem Manifest des installierten Packs auf und weist eine Quelle ab, die ihren Erwartungswert trägt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
@@ -3092,7 +3118,7 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 🔴 **ZWEI ZÄHLUNGEN, UND BEIDE SIND RICHTIG** (`CR-2026-128` B9, dieselbe Bauform wie `K-100`): Der Apparat meldet **322 angemeldete Einheiten** – seine eigene Definition zählt ein **Bündel einmal**, *„nie einen seiner Teile"*. Die **Ergebniszeilen** sind mehr, weil ein Bündel mehrere schreibt. **Wer eine Zahl über den Apparat nennt, sagt dazu, welche der beiden er meint.**
 
-**Gemessen am Abnahmelauf von `1.0.0`:** **322 angemeldete Einheiten**, **447 Ergebniszeilen** (269 Sonden, 155 Gegenproben, 23 Selbstproben), **Laufzeit 451 s und 460 s** Wanduhr auf 8 Bahnen (Faktor 7,9), **zeilengleicher Vergleich 0 Unterschiede in 480 Zeilen** – und der **vierte Durchgang ist zeilengleich zum dritten**. Die Laufzeiten stehen unterhalb der Trennlinie (D-94) und sind nicht Teil des zeilengleichen Vergleichs.
+**Gemessen am Abnahmelauf von `1.0.1`:** **322 angemeldete Einheiten**, **447 Ergebniszeilen** (269 Sonden, 155 Gegenproben, 23 Selbstproben), **0 Unterschiede in 480 Zeilen** – und **zeilengleich zum Lauf von `1.0.0`**, obwohl ein Release dazwischen liegt. *(zum Stand von `1.0.0`:)* **Laufzeit 451 s und 460 s** Wanduhr auf 8 Bahnen (Faktor 7,9), **zeilengleicher Vergleich 0 Unterschiede in 480 Zeilen** – und der **vierte Durchgang ist zeilengleich zum dritten**. Die Laufzeiten stehen unterhalb der Trennlinie (D-94) und sind nicht Teil des zeilengleichen Vergleichs.
 
 > 🔴 **DER FERTIGE BAUM ENTSTEHT ERST MIT DER HANDLUNG DES MENSCHEN – UND DESHALB KANN
 > KEIN WERKZEUG GEGEN IHN ABNEHMEN.** Die Regel verlangt, daß der Abnahmelauf gegen den
