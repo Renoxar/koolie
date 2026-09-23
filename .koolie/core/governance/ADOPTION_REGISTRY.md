@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REG` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | alle Projekte, die den Framework-Kern übernommen haben |
@@ -28,8 +28,15 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.0.0** | `0.3.0` | 2026-09-23 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.0.0** | `1.0.0` | 2026-09-23 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.0.1** | `0.3.2` | 2026-09-23 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.0.1** | `1.0.1` | 2026-09-23 |
+
+🔴 **Diese Zeilen standen nach `1.0.1` einen halben Tag lang auf `1.0.0`, während die
+Projekte `1.0.1` trugen.** Ursache: Sie wurden **nach** dem Merge gehoben statt davor –
+und damit war `FW-CL-11` Prüfpunkt 20 (*„übernehmende Projekte informiert"*) zum
+Merge-Zeitpunkt nicht erfüllt. ➡️ *Eine Liste, die erst nach dem Release fortgeschrieben
+wird, ist beim Release falsch.* ⚠️ **Zu entscheiden: Gehört das Heben vor den
+Release-Commit, und muß `RELEASE_PROCESS.md` Abschnitt 4.1 die Reihenfolge nennen?**
 
 ⚠️ **Der Pfad ist der des Arbeitsplatzes und keine Adresse.** Was ein Projekt für den
 Nachweis identifiziert, ist sein Repositorium; die Pfadspalte sagt nur, wo es auf diesem
@@ -49,6 +56,10 @@ Rechner liegt.
 **Bei jedem Release, als Teil von `FW-CL-11`** – Prüfpunkt *„Release-Archiv erzeugt und
 abgelegt; übernehmende Projekte informiert"*. Der Ablauf steht in `RELEASE_PROCESS.md`
 Abschnitt 4.1.
+
+🟢 **Die Archive liegen seit `1.0.0` als Anhang am Release des Hostingdienstes**, je mit
+Prüfsumme – das ist die *„Ablage außerhalb des Repositoriums"* aus Abschnitt 4.1 in ihrer
+natürlichen Form: am **signierten** Stand, nicht daneben.
 
 ⚠️ **Keine Prüfung hält diese Liste gegen die Projekte.** Sie kann es nicht: Die Projekte
 liegen außerhalb dieses Repositoriums, und eine Prüfung, die sie sucht, wäre auf jedem
