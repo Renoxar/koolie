@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 81, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 82, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -7592,6 +7592,148 @@ def sonden_zeilenendeform() -> None:
 buendel(sonden_zeilenendeform,
         "Pruefung 81 haelt die Zeilenendeform des Arbeitsbaums zusammen, an einem "
         "echten Repositorium und ohne eine Form woertlich zu kennen")
+
+
+# --- Pruefung 82: die Bestandsliste steht auf dem Stand des Releases (CR-2026-130) -
+#
+# FUENF EINHEITEN, UND DIE ZWEITE GEGENPROBE IST DIE, DIE MAN WEGLASSEN WUERDE.
+#   82a (Gegenprobe) - der ausgelieferte Bestand laeuft durch, und die Pruefung ist
+#                      dabei nachweislich gelaufen (keine Unmessbarkeitsmeldung).
+#   82b (Gegenprobe) - 🔴 DIE D-299-PROBE. Ein uebernehmendes Projekt liegt Releases
+#                      zurueck: VERSION und Bestandsliste tragen BEIDE denselben
+#                      aelteren Stand, weil beide byte-gleich aus demselben Release
+#                      ausgeliefert sind. Die Pruefung muss dort GRUEN sein - ohne
+#                      Ausnahmemenge, ohne Sonderfall. Ohne diese Gegenprobe waere die
+#                      Installationsfestigkeit eine Behauptung im Kopfkommentar statt
+#                      eine gemessene Eigenschaft. Sie ist genau die Bauform, die
+#                      0.90.0 zweimal gekostet hat (D-326).
+#   82a (Sonde)      - eine Zeile auf einen anderen Stand gestellt wird gemeldet, und
+#                      die Meldung nennt das Projekt. Das ist der gemessene Fall aus
+#                      1.0.0 und 1.0.1.
+#   82b (Sonde)      - die Spaltenueberschrift entfernt: der verlorene Anker wird als
+#                      Fehler gemeldet, statt leise zu bestehen (D-23).
+#   82c (Sonde)      - eine Tabelle ohne Datenzeile meldet eine Warnung und KEIN
+#                      Messergebnis.
+#
+# KEINE EINHEIT HAELT EINE VERSIONSNUMMER WOERTLICH. Sie lesen den Stand aus VERSION
+# und rechnen daran - dieselbe Lehre wie bei Pruefung 78 und 81: Eine Sonde, die einen
+# Wert mitpflegen muss, faellt beim naechsten Release aus, und zwar als scheinbarer
+# Befund.
+M82_ABWEICHEND = "steht auf Framework-Version"
+M82_ANKER = "keine Tabelle mit der Spalte"
+M82_LEER = "Prüfung 82 hat nichts gemessen"
+M82_FEHLT = "als Nachweis der Auditierbarkeit"
+
+P82_LISTE = ".koolie/core/governance/ADOPTION_REGISTRY.md"
+P82_VERSION = ".koolie/core/VERSION"
+P82_UEBERGABE = "UEBERGABE.md"
+
+
+def _82_stand(root: str) -> str:
+    return lies(P(root, *P82_VERSION.split("/"))).strip()
+
+
+def _82_anderer(stand: str) -> str:
+    """Ein Stand, der dem echten sicher nicht gleicht - ohne eine Nummer zu kennen."""
+    teile = stand.split(".")
+    try:
+        teile[-1] = str(int(teile[-1]) + 7)
+    except (ValueError, IndexError):
+        return stand + "-abweichend"
+    return ".".join(teile)
+
+
+def sonden_bestandsliste_stand() -> None:
+    """Wirkungsnachweis zu Pruefung 82."""
+    root = kopie()
+    try:
+        pfad = P(root, *P82_LISTE.split("/"))
+        urtext = lies(pfad)
+        stand = _82_stand(root)
+        fremd = _82_anderer(stand)
+
+        # --- Gegenprobe 82a: der ausgelieferte Bestand laeuft durch ------------------
+        aus = validator_ausgabe(root)
+        ok = (M82_ABWEICHEND not in aus and M82_ANKER not in aus
+              and M82_LEER not in aus and M82_FEHLT not in aus)
+        melde("GEGENPROBE", "82a", ok,
+              "Die Bestandsliste des Releases laeuft durch - jede Zeile nennt den "
+              "Stand aus VERSION, und die Pruefung ist dabei nachweislich gelaufen")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "82" in z or "Bestandsliste" in z)[:400])
+
+        # --- Gegenprobe 82b: DIE D-299-PROBE ----------------------------------------
+        # Ein uebernehmendes Projekt: keine UEBERGABE.md, und Liste wie VERSION tragen
+        # denselben AELTEREN Stand. Beide kommen byte-gleich aus demselben Release.
+        uebergabe = P(root, P82_UEBERGABE)
+        gesichert = lies(uebergabe) if os.path.isfile(uebergabe) else None
+        if gesichert is not None:
+            os.remove(uebergabe)
+        schreib(P(root, *P82_VERSION.split("/")), fremd + "\n")
+        schreib(pfad, urtext.replace("**" + stand + "**", "**" + fremd + "**"))
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "82b", M82_ABWEICHEND not in aus,
+              "Ein uebernehmendes Projekt, das Releases zurueckliegt, laeuft durch - "
+              "Liste und VERSION kommen byte-gleich aus demselben Release (D-299)")
+        if M82_ABWEICHEND in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if M82_ABWEICHEND in z)[:400])
+        schreib(P(root, *P82_VERSION.split("/")), stand + "\n")
+        if gesichert is not None:
+            schreib(uebergabe, gesichert)
+        schreib(pfad, urtext)
+
+        # --- Sonde 82a: eine Zeile auf einem anderen Stand ---------------------------
+        vorher = baumhash(root)
+        gestellt = urtext.replace("**" + stand + "**", "**" + fremd + "**", 1)
+        if gestellt == urtext:
+            raise Praeparationsfehler(
+                "Sonde 82a: keine Bestandszeile mit `**%s**` in %s - die Sonde hat "
+                "ihren Gegenstand verloren" % (stand, P82_LISTE))
+        schreib(pfad, gestellt)
+        if baumhash(root) == vorher:
+            raise Praeparationsfehler("Sonde 82a hat nichts geschrieben")
+        aus = validator_ausgabe(root)
+        melde("SONDE", "82a", M82_ABWEICHEND in aus,
+              "Eine Bestandszeile auf einem anderen Stand wird gemeldet, und die "
+              "Meldung nennt das Projekt - der Fall aus 1.0.0 und 1.0.1")
+        if M82_ABWEICHEND not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 82b: der verlorene Anker ------------------------------------------
+        schreib(pfad, urtext.replace("Framework-Version", "Kernstand"))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "82b", M82_ANKER in aus,
+              "Geht die Spaltenueberschrift verloren, meldet die Pruefung es - eine "
+              "Konsistenzpruefung ohne Anker bestuende sonst leise (D-23)")
+        if M82_ANKER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 82c: eine Tabelle ohne Datenzeile ---------------------------------
+        ohne = "\n".join(z for z in urtext.split("\n")
+                         if not z.startswith("| `devpacks/"))
+        if ohne == urtext:
+            raise Praeparationsfehler(
+                "Sonde 82c: keine Bestandszeile erkannt - die Sonde hat ihren "
+                "Gegenstand verloren")
+        schreib(pfad, ohne)
+        aus = validator_ausgabe(root)
+        melde("SONDE", "82c", M82_LEER in aus,
+              "Eine Tabelle ohne Datenzeile meldet eine Warnung und KEIN Messergebnis "
+              "- eine Null ohne Ergebniszeile ist kein Messwert")
+        if M82_LEER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "82" in z)[:400])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_bestandsliste_stand,
+        "Pruefung 82 haelt die Bestandsliste gegen VERSION und ist in einem "
+        "uebernehmenden Projekt gruen, ohne eine Versionsnummer zu kennen")
 
 
 if LISTE:

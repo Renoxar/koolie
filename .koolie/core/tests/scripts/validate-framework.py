@@ -589,7 +589,23 @@ Prüft (statisch, ohne laufenden KI-Client):
      in jeder Installation richtig, eine bestimmte Form nur an einem Arbeitsplatz.
      GRENZE: Sie liest Bytes und misst den Arbeitsbaum; ohne Git-Bestand meldet sie
      eine Warnung und KEIN Messergebnis
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 81 laeuft als eigenes
+ 82. Die Bestandsliste steht auf dem Stand des Releases (D-331): Jede Zeile von
+     governance/ADOPTION_REGISTRY.md nennt in der Spalte `Framework-Version` den
+     Inhalt von VERSION. ANLASS: zweimal in zwei Releases. 1.0.0 hat die Liste
+     angelegt, und ihr erster Eintrag war ihr erster Befund - beide uebernehmenden
+     Projekte standen drei Releases zurueck; 1.0.1 hat es wiederholt. Ursache ist die
+     REIHENFOLGE: Gehoben wurde nach dem Merge, und damit war FW-CL-11 Pruefpunkt 20
+     zum Merge-Zeitpunkt nicht erfuellt. 🔴 UND SIE WAR AN ZWEI STELLEN FALSCH: Das
+     Framework hatte seine Liste berichtigt, die AUSGELIEFERTEN Kopien in beiden
+     Projekten trugen weiter den alten Stand - wer eine Liste nach dem Heben
+     fortschreibt, schreibt sie an einer Stelle fort und liefert sie an zwei.
+     D-299-PROBE BESTANDEN: In einem uebernehmenden Projekt sind Liste und VERSION
+     byte-gleich aus demselben Release ausgeliefert, also gleich - auch mehrere
+     Releases zurueck. 🔴 GRENZE: Sie misst die BEHAUPTUNG der Zeile, nicht den Stand
+     des Projekts; wer die Zeile aendert ohne zu heben, kommt durch. Dieselbe Bauform
+     wie Pruefung 77 (Version, nicht Inhalt). PREIS: Jedes Release fasst diese Tabelle
+     an - wie bei Pruefung 67 und 77
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 82 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -9040,6 +9056,109 @@ def check_zeilenendeform(root: str) -> None:
                 f"setzt `.gitattributes`, nicht der Arbeitsplatz")
 
 
+
+# Pruefung 82: die Bestandsliste steht auf dem Stand des Releases (CR-2026-130, D-331)
+# ---------------------------------------------------------------------------
+#
+# ANLASS, UND ER IST ZWEIMAL IN ZWEI RELEASES AUFGETRETEN. `1.0.0` hat die Bestandsliste
+# angelegt, und ihr erster Eintrag war zugleich ihr erster Befund: Beide uebernehmenden
+# Projekte standen drei Releases hinter `main`, waehrend Kriterium 5 von D-11 als
+# erfuellt gefuehrt wurde. `1.0.1` hat es wiederholt - die Liste stand einen halben Tag
+# auf `1.0.0`, waehrend die Projekte `1.0.1` trugen.
+#
+# URSACHE IST DIE REIHENFOLGE, NICHT DIE SORGFALT. Gehoben wurde NACH dem Merge; damit
+# war `FW-CL-11` Pruefpunkt 20 zum Merge-Zeitpunkt nicht erfuellt.
+# ➡️ EINE LISTE, DIE ERST NACH DEM RELEASE FORTGESCHRIEBEN WIRD, IST BEIM RELEASE FALSCH.
+#
+# 🔴 UND SIE WAR AN ZWEI STELLEN FALSCH, NICHT AN EINER. Gemessen am 2026-09-23 vor dem
+# ersten Handgriff dieses Releases: Das Framework hatte seine Liste auf `1.0.1`
+# berichtigt - die AUSGELIEFERTEN Kopien in beiden uebernehmenden Projekten trugen
+# weiter `1.0.0` neben einer VERSION `1.0.1`. Diese Pruefung waere dort rot gewesen.
+# ➡️ WER EINE LISTE NACH DEM HEBEN FORTSCHREIBT, SCHREIBT SIE AN EINER STELLE FORT UND
+# LIEFERT SIE AN ZWEI. Das ist der gemessene Grund, weshalb ein Verfahrensschritt allein
+# hier nicht getragen haette.
+#
+# ZUSCHNITT: DIE SPALTE `Framework-Version` GEGEN `<KERN>/VERSION`. Mehr ist von hier aus
+# nicht messbar - die Projekte liegen ausserhalb dieses Repositoriums, und eine Pruefung,
+# die sie sucht, waere auf jedem anderen Arbeitsplatz rot (D-299).
+#
+# D-299-PROBE, GEFUEHRT UND BESTANDEN: In einem uebernehmenden Projekt sind Liste und
+# VERSION beide byte-gleich aus DEMSELBEN Release ausgeliefert und tragen deshalb
+# denselben Wert - auch dann, wenn das Projekt mehrere Releases zurueckliegt. Die
+# Pruefung ist dort gruen, und sie braucht dafuer keine Ausnahme.
+#
+# 🔴 GRENZE, BENANNT: SIE MISST DIE BEHAUPTUNG, NICHT DIE TATSACHE. Wer die Zeile
+# aendert, ohne zu heben, kommt durch. Das ist dieselbe Bauform wie bei Pruefung 77, die
+# die VERSION des Hauptdokuments misst und nicht seinen INHALT - und sie steht hier,
+# weil eine Grenze, die man nicht nennt, wie eine Zusage aussieht.
+#
+# ⚠️ PREIS, BENANNT: Jedes Release fasst diese Tabelle an - derselbe Preis wie bei
+# Pruefung 67 und Pruefung 77.
+P82_LISTE = KERN + "/governance/ADOPTION_REGISTRY.md"
+P82_SPALTE = "Framework-Version"
+P82_PROJEKTSPALTE = "Projekt"
+
+
+def check_bestandsliste_stand(root: str) -> None:
+    """Pruefung 82 (D-331): Die Bestandsliste nennt den Stand dieses Releases."""
+    pfad = os.path.join(root, *P82_LISTE.split("/"))
+    if not os.path.isfile(pfad):
+        err(f"{P82_LISTE}: fehlt. `RELEASE_PROCESS.md` Abschnitt 4 Punkt 4 verlangt sie "
+            f"als Nachweis der Auditierbarkeit, und Kriterium 5 von D-11 hängt an ihr "
+            f"(D-322). Prüfung 82 hätte ohne sie ihren Gegenstand verloren")
+        return
+    vpfad = os.path.join(root, KERN, "VERSION")
+    if not os.path.isfile(vpfad):
+        return  # Pruefung 1 meldet die fehlende Pflichtdatei bereits
+    stand = read(vpfad).strip()
+    zeilen = read(pfad).split("\n")
+
+    # --- Den Anker suchen, und sein Fehlen als Fehler melden (D-23) -----------------
+    kopf = None
+    spalte = None
+    projekt = 0
+    for i, roh in enumerate(zeilen):
+        if not roh.lstrip().startswith("|"):
+            continue
+        zellen = tabellenzellen(roh)
+        if P82_SPALTE in zellen:
+            kopf = i
+            spalte = zellen.index(P82_SPALTE)
+            if P82_PROJEKTSPALTE in zellen:
+                projekt = zellen.index(P82_PROJEKTSPALTE)
+            break
+    if kopf is None:
+        err(f"{P82_LISTE}: keine Tabelle mit der Spalte `{P82_SPALTE}`. Prüfung 82 "
+            f"findet ihren Gegenstand über diese Überschrift; geht sie verloren, "
+            f"bestünde die Prüfung leise (D-23)")
+        return
+
+    # --- Die Zeilen des Bestands gegen VERSION halten -------------------------------
+    gemessen = 0
+    for roh in zeilen[kopf + 2:]:
+        if not roh.lstrip().startswith("|"):
+            break  # eine Leerzeile beendet die Tabelle (D-264)
+        zellen = tabellenzellen(roh)
+        if len(zellen) <= spalte:
+            continue
+        wert = zellen[spalte].strip().strip("*`").strip()
+        if not wert:
+            continue
+        gemessen += 1
+        if wert == stand:
+            continue
+        name = zellen[projekt].strip() if len(zellen) > projekt else "(ohne Namen)"
+        err(f"{P82_LISTE}: {name} steht auf Framework-Version {wert}, "
+            f"{KERN}/VERSION führt {stand}. Das Heben der übernehmenden Projekte gehört "
+            f"VOR den Release-Commit (D-330); eine Liste, die erst danach "
+            f"fortgeschrieben wird, ist beim Release falsch. ⚠️ Diese Prüfung mißt die "
+            f"Behauptung der Zeile, nicht den Stand des Projekts (D-331)")
+    if not gemessen:
+        warn(f"{P82_LISTE}: die Tabelle führt keine Zeile mit einem Wert in der Spalte "
+             f"`{P82_SPALTE}`. Prüfung 82 hat nichts gemessen – das ist KEIN "
+             f"Messergebnis (D-23)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -9136,6 +9255,7 @@ def main() -> int:
     check_lizenz(root)
     check_gegenzeichnung(root)
     check_zeilenendeform(root)
+    check_bestandsliste_stand(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

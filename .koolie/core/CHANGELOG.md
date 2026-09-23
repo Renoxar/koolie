@@ -2,6 +2,137 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.1.0] - 2026-09-23
+
+**Die Reihenfolge des Hebens - ein Pruefpunkt, den sein eigenes Verfahren hinter seinen
+Zeitpunkt legt** (`CR-2026-130` E1 bis E7, **D-329** bis **D-334**, **Pruefung 82**,
+`K-110` und `K-111` neu). Ein MINOR-Release ohne Kontingent - und das erste, das die neue Reihenfolge
+auf sich selbst anwendet.
+
+> 🔴 **PRUEFPUNKT 20 VON `FW-CL-11` WAR EIN HAKEN UEBER ZWEI GEGENSTAENDEN, UND IHRE
+> FRUEHESTEN ZEITPUNKTE LIEGEN AUF ENTGEGENGESETZTEN SEITEN DES RELEASE-COMMITS.**
+> *"Release-Archiv erzeugt und abgelegt"* kann fruehestens **nach** dem Commit erfuellt
+> sein - Abschnitt 4.1 Schritt 5 baut das Archiv aus der **Marke**, und die sitzt auf
+> dem Release-Commit. *"Uebernehmende Projekte informiert"* kann **davor** erfuellt
+> werden. **Und die Checkliste wird vor dem Release durchgegangen** - ihre eigene
+> Kopfzeile sagt es.
+> ➡️ *Ein Pruefpunkt, dessen eigenes Verfahren seine Erfuellung hinter den Zeitpunkt
+> legt, an dem er abgehakt wird, ist nicht unerfuellt - er ist falsch geschnitten.*
+>
+> 🔴 **DER SCHULDPOSTEN WAR GROESSER ALS GEBUCHT: DIE LISTE WAR AN ZWEI STELLEN FALSCH,
+> NICHT AN EINER.** Gemessen am 2026-09-23 im Vorbedingungsdurchgang, vor dem ersten
+> Handgriff: Das Framework hatte seine Bestandsliste mit `1.0.1` berichtigt - die
+> **ausgelieferten Kopien** in **beiden** uebernehmenden Projekten trugen weiter `1.0.0`
+> neben einer `VERSION` `1.0.1`. **Pruefung 82 waere dort rot gewesen.**
+> ➡️ ***Wer eine Liste nach dem Heben fortschreibt, schreibt sie an einer Stelle fort und
+> liefert sie an zwei.*** 🟢 **Das ist zugleich der gemessene Beleg dafuer, dass ein
+> Verfahrensschritt allein hier nicht getragen haette** - D-326 hat die Halbwertszeit
+> einer Lehre ohne Pruefung mit **einem Release** gemessen.
+>
+> 🟢 **DAS HEBEN IST EIN LAUF GEGEN EINE FREMDE INSTALLATION, NICHT DIE FORTSCHREIBUNG
+> EINER TABELLE** (D-330). In `1.0.0` hat **es** `B13` und `B14` gefunden - Pruefung 78
+> und 79 aus `0.90.0`, in **jeder** Installation rot -, und kein Validatorlauf. Wer es
+> hinter den Merge legt, verlegt einen Pruefschritt hinter die Freigabe, die er absichern
+> soll. **Abschnitt 4.1 fuehrt die Schritte seither in sieben Punkten mit ausgewiesener
+> Lage** - drei vor dem Freigabe-Commit, vier danach -, und die Bestandsliste nennt den
+> **Zielstand**, bevor gehoben wird.
+>
+> 🆕 **PRUEFUNG 82 HAELT DIE SPALTE `Framework-Version` GEGEN `VERSION`** (D-331), mit
+> drei Sonden und **zwei** Gegenproben. 🔴 **Die zweite Gegenprobe ist die, die man
+> weglassen wuerde, und sie traegt den ganzen Zuschnitt:** Ein uebernehmendes Projekt,
+> das Releases zurueckliegt, muss **gruen** sein - Liste und `VERSION` kommen byte-gleich
+> aus demselben Release. Ohne sie waere die Installationsfestigkeit eine Behauptung im
+> Kopfkommentar statt eine gemessene Eigenschaft (D-299).
+> ⚠️ **Grenze, benannt: Sie misst die BEHAUPTUNG der Zeile, nicht den Stand des
+> Projekts.** Wer die Zeile aendert, ohne zu heben, kommt durch - dieselbe Bauform wie
+> Pruefung 77, die die *Version* des Hauptdokuments misst und nicht seinen *Inhalt*.
+> ⚠️ **Preis, benannt:** Jedes Release fasst diese Tabelle an, wie bei Pruefung 67 und 77.
+>
+> 🔴 **DIE WORD-FASSUNG STAND AUF `v1.0.0`** (D-332). `1.0.1` hat den Dokumentkopf auf
+> `1.0.1` gehoben **und** `RELEASE_PROCESS.md` geaendert - einen Traeger, den
+> `25-governance.md` einbettet - und die Word-Fassung nicht neu gebaut. Sie ist seit
+> `0.90.0` ein zugesagter Lieferbestandteil. ➡️ *Eine Zusage ueber einen Vorgang, den man
+> nicht ausgefuehrt hat, ist eine Vermutung mit Zeitform* - an einem zweiten Gegenstand.
+> 🟢 **Abschnitt 4.1 fuehrt den Bau der Erzeugnisse jetzt als eigenen Schritt**; bis
+> hierher sagte er nur, **wohin** sie gehoeren.
+> ⚠️ **Wieder ein Verfahrensschritt statt einer Pruefung, und damit schwaecher:** Die
+> Erzeugnisse liegen unter `build/out/` und stehen in der `.gitignore`. **`K-110` fuehrt
+> die Frage weiter**, ob eine Pruefung sie ueberhaupt erreichen kann.
+>
+> 🔴 **DIE EIGENE EINSTUFUNG IST IM DURCHGANG GEFALLEN.** Der Posten war als **PATCH**
+> vorgelegt - *Korrektur am Verfahren*. Gemessen an Abschnitt 1 traegt das nur ohne
+> Pruefung 82: **eine neue Pruefung ist eine neue Regel**, keine Formulierung, und ein
+> uebernehmendes Projekt bekommt mit ihr eine neue Fehlermoeglichkeit im Validator.
+> ➡️ *Eine Einstufung gilt so weit wie ihr Gegenstand* - der Gegenstand der Vorlage war
+> die Checkliste, nicht der Pruefapparat. **Das ist D-328 an der eigenen Vorlage**, und
+> es ist die erste Anwendung des Versionierungsregimes, das `1.0.0` wieder in Kraft
+> gesetzt hat.
+>
+> ⚠️ **DREI NACHBARBEFUNDE AUS DEMSELBEN DURCHGANG, ALLE BILLIG UND ALLE BEHOBEN.**
+> **(1)** Die Tabelle *Naechste freie Kennungen* der Uebergabe war zum **dritten** Mal
+> veraltet: sie fuehrte `CR-2026-129` / `D-327` / `K-105` als frei, vergeben waren
+> `CR-2026-129` / `D-328` / `K-109`. **(2)** Die Standueberschrift von `docs/ROADMAP.md`
+> stand auf `0.89.0` - **drei Releases alt**, direkt ueber dem Satz *"Wird mit jedem
+> Release fortgeschrieben"*. `0.89.0` hat genau das schon einmal behoben, damals nach
+> **zweiunddreissig** Releases. **(3)** Der Vermerk *"dieses Release"* stand in der
+> Releasetabelle **zweimal** - auf `0.88.1` und auf `1.0.1`. `0.88.0` hat ihn auf einen
+> gesetzt; seither ist er gewandert, ohne dass der alte entfernt wurde. **Keine Pruefung
+> haelt eine der drei Stellen.**
+
+> 🔴 **EINE RUECKFRAGE DES OWNERS HAT DIE LETZTE EIGENE AUFLAGE ZU FALL GEBRACHT**
+> (D-334). Die Uebergabe zu `1.0.0` fuehrte *"Nicht delegierbar, ab jetzt bei JEDEM
+> Release: der Freigabe-Commit und die signierte Marke (D-319, D-321)"*. **Gemessen an
+> beiden zitierten Entscheidungen geht die Auflage ueber beide hinaus:** D-319 hat die
+> **Gegenzeichnung eines Abnahmeprotokolls** zum Gegenstand, D-321 ausdruecklich nur das
+> **Tag** - der Commit steht dort nicht. 🔴 **Und die Folgerung hatte keinen
+> Anwendungsfall:** Eine dokumentierte Freigabe gibt es einmal, fuer `1.0.0`; `1.0.1`
+> hat keine, und bis `0.91.0` hat das Werkzeug alle Release-Commits gesetzt.
+> ➡️ *Eine Entscheidung gilt so weit wie ihr gemessener Gegenstand und nicht so weit wie
+> die Folgerung aus ihr* - **D-328 an einem dritten Gegenstand, und diesmal war die
+> Folgerung die eigene.**
+> 🟢 **Es gilt seither:** Ein Commit ist genau dann nicht delegierbar, wenn er eine
+> **Unterschrift traegt** - eine Gegenzeichnung oder eine Freigabezeile. **Das ist
+> zugleich die schaerfere Regel**, weil sie einen pruefbaren Gegenstand hat: den INHALT
+> des Commits. 🔴 **Die signierte Marke bleibt beim Menschen** (D-321, woertlich).
+>
+> ⚠️ **NEBENBEFUND, GEMELDET UND NICHT GEHEILT (`K-111`):** `FW-CL-11` verlangt die
+> dokumentierte Freigabe als MUSS bei **jedem** Release - gemessen existiert sie
+> **einmal**. `1.0.1` hat keine.
+
+**Geaendert**
+
+- `governance/RELEASE_PROCESS.md` `0.2.1` -> `0.3.0`: Abschnitt 4.1 fuehrt sieben
+  Schritte mit ausgewiesener Lage zum Freigabe-Commit (D-330, D-332).
+- `checklists/11-framework-release.md` `0.3.0` -> `0.4.0`: Pruefpunkt 20 geteilt; aus
+  einem werden drei, zwei davon vor dem Commit (D-329, D-332). **24 -> 26 Pruefpunkte.**
+- `governance/ADOPTION_REGISTRY.md` `0.1.1` -> `0.2.0`: die offene Frage ist
+  beantwortet; die Liste nennt den Zielstand, bevor gehoben wird.
+- `tests/scripts/validate-framework.py`: **Pruefung 82** samt Registereintrag.
+- `tests/scripts/probe-pruefungen.py`: Buendel `sonden_bestandsliste_stand` mit drei
+  Sonden und zwei Gegenproben. **322 -> 323 Einheiten.**
+- `governance/DECISION_LOG.md`: **D-329** bis **D-334**, `K-110`, `K-111`.
+- `docs/ROADMAP.md`: Standueberschrift nachgezogen, Vermerk vereinheitlicht; das Client
+  Pack `openai-codex` rueckt auf `1.2.0`, die beiden folgenden Posten wandern mit.
+
+**Migrationshinweise fuer Overlays**
+
+Keine. Kein Overlay-Feld ist beruehrt, keine Laufzeitschicht geaendert. 🔴 **Die
+uebernehmenden Projekte werden dennoch gehoben** - ausnahmslos, und mit diesem Release
+zum ersten Mal **vor** dem Freigabe-Commit (D-330). Eine Ausnahme *"nur wenn ein
+ausgeliefertes Artefakt beruehrt ist"* verlangte eine Einstufung, die keine Pruefung
+nachrechnen kann; `1.0.1` waere genau der Fall gewesen, in dem sie falsch entschieden
+haette.
+
+**Bekannte Einschraenkungen**
+
+- **Pruefung 82 misst die Behauptung der Bestandszeile, nicht den Stand des Projekts**
+  (D-331). Die Projekte liegen ausserhalb dieses Repositoriums; eine Pruefung, die sie
+  sucht, waere auf jedem anderen Arbeitsplatz rot (D-299).
+- **Keine Pruefung erreicht die Erzeugnisse der Lieferung** - Hauptdokument und
+  Word-Fassung unter `build/out/`, das Release-Archiv ganz ausserhalb des
+  Repositoriums. Der Ersatz ist an beiden Stellen ein Verfahrensschritt, und damit
+  schwaecher (`K-110`, D-328, D-332).
+
 ## [1.0.1] - 2026-09-23
 
 **Die Zeilenenden des Archivs - eine Zusage, die ihr eigenes Werkzeug nicht haelt**
