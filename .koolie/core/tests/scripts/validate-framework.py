@@ -634,7 +634,26 @@ Prüft (statisch, ohne laufenden KI-Client):
      LINK_PATH_EXCEPTIONS) und nicht dort, wo die Packmenge ENTSTEHT; seit D-336 steht
      sie in `_client_packs()`. 🔴 GRENZE: Sie prueft die ANWESENHEIT von Bestandteilen,
      nicht deren Inhalt
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 84 laeuft als eigenes
+ 85. Eine Zielangabe ueberlebt ihr eigenes Release nicht (D-342): Jede Ueberschrift
+     "### Geplant: … – Ziel-Release <Version>" in docs/ROADMAP.md nennt eine Version,
+     die groesser ist als .koolie/core/VERSION. ANLASS, gemessen im
+     Vorbedingungsdurchgang von 1.3.0: ALLE DREI vorhandenen Abschnitte nannten eine
+     Version, die die Gegenwart ueberholt hatte - die Umbenennung auf ~0.68.0
+     (erledigt mit 0.88.0, seit fuenfzehn Releases "Geplant"), openai-codex auf 1.1.0
+     (die Releasetabelle DERSELBEN Datei fuehrt ihn auf 1.3.0) und die Projekt-Overlays
+     auf 1.2.0 (ausgeliefert, Posten nicht gefahren). ➡️ EINE ZIELANGABE IST EINE ZAHL,
+     DIE VOR IHREM GEGENSTAND GESCHRIEBEN WIRD - die Bauform von Pruefung 83, hier an
+     der PLANSEITE derselben Datei statt an der Chronikseite. URSACHE GEMESSEN: Die
+     Verschiebungen sind je einzeln ausgewiesen worden (D-127, D-339), und keine hat
+     die Ueberschrift angefasst - wer eine Zahl an zwei Stellen fuehrt, pflegt eine.
+     D-299-PROBE BESTANDEN: Beide Traeger liegen im Kern und werden byte-gleich
+     ausgeliefert; ein uebernehmendes Projekt traegt dieselbe ROADMAP und dieselbe
+     VERSION aus demselben Release. 🔴 GRENZE: Sie misst die ZIELANGABE, nicht den
+     STAND des Postens - ein Abschnitt, dessen Ziel in der Zukunft liegt, kann laengst
+     erledigt sein und kommt durch; dieselbe Bauform wie 77 (Version, nicht Inhalt) und
+     82 (Behauptung, nicht Tatsache), K-116. PREIS: Wer einen Posten verschiebt, fasst
+     die Ueberschrift an - und genau das ist der Zweck
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 85 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -9418,6 +9437,104 @@ def check_vorlage_kein_pack(root: str) -> None:
             f"gehoert entschieden (D-336)")
 
 
+# Pruefung 85: eine Zielangabe ueberlebt ihr eigenes Release nicht (CR-2026-132, D-342)
+# ---------------------------------------------------------------------------
+#
+# ANLASS, GEMESSEN IM VORBEDINGUNGSDURCHGANG VON 1.3.0. `docs/ROADMAP.md` fuehrt neben
+# der Releasetabelle Abschnitte der Form
+#     ### Geplant: <Posten> - Ziel-Release **<Version>**
+# ALLE DREI vorhandenen nannten eine Version, die die Gegenwart ueberholt hatte:
+#   * die Umbenennung auf Koolie mit "~0.68.0" - erledigt mit 0.88.0, und der Abschnitt
+#     heisst seit fuenfzehn Releases "Geplant";
+#   * das Client Pack openai-codex mit "1.1.0" - waehrend die Releasetabelle DERSELBEN
+#     Datei ihn auf 1.3.0 fuehrt, rund 1.280 Zeilen entfernt;
+#   * die Projekt-Overlays als Installationsparameter mit "1.2.0" - ausgeliefert, und
+#     der Posten ist nicht gefahren.
+#
+# ➡️ EINE ZIELANGABE IST EINE ZAHL, DIE VOR IHREM GEGENSTAND GESCHRIEBEN WIRD. Das ist
+# die Bauform von Pruefung 83, hier an der PLANSEITE derselben Datei statt an der
+# Chronikseite - und der Beleg dafuer, dass dieselbe Bauform an zwei Enden eines
+# Traegers auftreten kann, ohne dass die eine Pruefung die andere Stelle sieht.
+#
+# URSACHE GEMESSEN: Die Verschiebungen sind je einzeln ausgewiesen worden - D-127 hat
+# den Posten auf 1.1.0 gesetzt, D-339 auf 1.3.0 -, und KEINE von ihnen hat die
+# Ueberschrift angefasst, weil die Releasetabelle als der eine Ort galt.
+# ➡️ WER EINE ZAHL AN ZWEI STELLEN FUEHRT, PFLEGT EINE.
+#
+# D-299-PROBE, GEFUEHRT UND BESTANDEN: Beide Traeger - ROADMAP und VERSION - liegen im
+# Kern und werden byte-gleich ausgeliefert. Ein uebernehmendes Projekt, das Releases
+# zurueckliegt, traegt beide aus demselben Release; die Pruefung ist dort gruen und
+# braucht keine Ausnahme.
+#
+# 🔴 GRENZE, BENANNT: SIE MISST DIE ZIELANGABE, NICHT DEN STAND DES POSTENS. Ein
+# Abschnitt, dessen Ziel in der Zukunft liegt, kann laengst erledigt sein und kommt
+# durch - dieselbe Bauform wie Pruefung 77 (Version, nicht Inhalt) und 82 (Behauptung,
+# nicht Tatsache). Sie steht hier, weil eine Grenze, die man nicht nennt, wie eine
+# Zusage aussieht; `K-116` fuehrt die Frage weiter.
+#
+# ⚠️ PREIS, BENANNT: Wer einen Posten verschiebt, fasst die Ueberschrift an - und genau
+# das ist der Zweck. Es ist derselbe Preis wie bei Pruefung 67, 77, 82 und 83, nur faellt
+# er hier nicht je Release an, sondern je Verschiebung.
+P85_ROADMAP = KERN + "/docs/ROADMAP.md"
+P85_UEBERSCHRIFT = "### Geplant:"
+P85_ZIEL_RE = re.compile(r"Ziel-Release\s*\**\s*`?~?(\d+)\.(\d+)\.(\d+)`?")
+
+
+def _p85_version(text: str) -> tuple[int, int, int] | None:
+    """Die drei Zahlen einer Versionsangabe - oder None."""
+    m = re.match(r"\s*(\d+)\.(\d+)\.(\d+)\s*$", text)
+    return (int(m.group(1)), int(m.group(2)), int(m.group(3))) if m else None
+
+
+def check_zielangabe(root: str) -> None:
+    """Pruefung 85 (D-342): Ein Planabschnitt nennt kein erreichtes Ziel-Release."""
+    rpfad = os.path.join(root, *P85_ROADMAP.split("/"))
+    vpfad = os.path.join(root, KERN, "VERSION")
+    if not os.path.isfile(rpfad):
+        err(f"{P85_ROADMAP}: fehlt - Pruefung 85 haette ihren Gegenstand verloren und "
+            f"bestuende sonst leise (D-23, D-342)")
+        return
+    if not os.path.isfile(vpfad):
+        return  # Pruefung 1 meldet die fehlende Pflichtdatei bereits
+    stand = _p85_version(read(vpfad))
+    if stand is None:
+        return  # Pruefung 67 meldet eine unlesbare VERSION bereits
+
+    ueberschriften = [z for z in read(rpfad).splitlines()
+                      if z.startswith(P85_UEBERSCHRIFT)]
+    if not ueberschriften:
+        err(f"{P85_ROADMAP}: keine Ueberschrift '{P85_UEBERSCHRIFT} …' gefunden. "
+            f"Pruefung 85 findet ihren Gegenstand ueber diese Schreibweise; geht sie "
+            f"verloren, bestuende die Pruefung leise (D-23, D-342)")
+        return
+
+    # 🔴 DER ANKER IST ZWEITEILIG, UND BEIDE TEILE WERDEN GEMELDET. Eine Ueberschrift
+    # OHNE Zielangabe ist kein stiller Durchlauf, sondern der billigste Weg, diese
+    # Pruefung loszuwerden - genau die Bauform, die D-124 mit "ein Posten ohne Zahl
+    # bleibt lange liegen" bereits einmal entschieden hat.
+    ohne_ziel = [z for z in ueberschriften if not P85_ZIEL_RE.search(z)]
+    if ohne_ziel:
+        err(f"{P85_ROADMAP}: {len(ohne_ziel)} Planabschnitt(e) nennen kein "
+            f"Ziel-Release: {'; '.join(z[:70] for z in ohne_ziel)}. Ein Posten ohne "
+            f"Zahl bleibt in diesem Projekt erfahrungsgemaess lange liegen (D-124) - "
+            f"und er entzieht sich zugleich dieser Pruefung (D-342)")
+
+    for zeile in ueberschriften:
+        m = P85_ZIEL_RE.search(zeile)
+        if not m:
+            continue
+        ziel = (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        if ziel > stand:
+            continue
+        err(f"{P85_ROADMAP}: der Abschnitt '{zeile[:70]}…' nennt das Ziel-Release "
+            f"{m.group(1)}.{m.group(2)}.{m.group(3)}, und "
+            f"{'.'.join(str(n) for n in stand)} ist erreicht. Entweder ist der Posten "
+            f"gefahren - dann ist er nicht mehr 'Geplant' - oder er ist ueberfaellig "
+            f"und braucht eine neue Zahl. ➡️ Eine Zielangabe ist eine Zahl, die vor "
+            f"ihrem Gegenstand geschrieben wird. ⚠️ Diese Pruefung misst die "
+            f"ZIELANGABE, nicht den STAND des Postens (D-342, `K-116`)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -9517,6 +9634,7 @@ def main() -> int:
     check_bestandsliste_stand(root)
     check_chronikspanne(root)
     check_vorlage_kein_pack(root)
+    check_zielangabe(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

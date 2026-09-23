@@ -50,7 +50,7 @@ aus der **Marke** entsteht und die Marke auf dem Release-Commit sitzt.
 | Schritt | Was | Wer | Lage |
 |---|---|---|---|
 | 1 | **Bestandsliste fortschreiben:** `.koolie/core/governance/ADOPTION_REGISTRY.md` nennt je Projekt den Stand, auf den es gehoben wurde. **Prüfung 82 hält die Spalte gegen `VERSION`** | Werkzeug oder Mensch | **vor** dem Commit |
-| 2 | 🔴 **Übernehmende Projekte heben**, und zwar aus dem **Arbeitsbaum**, beschränkt auf das Verfolgte (D-333): `rm -rf .koolie/core`, dann `(cd <framework> && git ls-files -z .koolie/core \| tar --null -T - -cf -) \| tar -xf - -C .`; danach `install.py --update`, den Overlay-Wert in **drei** Trägern nachziehen und `validate-framework.py --strict-overlay` dort fahren. **Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt** | Werkzeug oder Mensch | **vor** dem Commit, **nach dem letzten Eingriff in den Kern** |
+| 2 | 🔴 **Übernehmende Projekte heben**, und zwar aus dem **Arbeitsbaum**, beschränkt auf das Verfolgte (D-333): `rm -rf .koolie/core`, dann `(cd <framework> && git ls-files -z .koolie/core \| tar --null -T - -cf -) \| tar -xf - -C .`; danach `install.py --update`, den Overlay-Wert in **drei** Trägern nachziehen, `validate-framework.py --strict-overlay` dort fahren **und im übernehmenden Projekt committen** (D-343). **Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt** | Werkzeug oder Mensch | **vor** dem Commit, **nach dem letzten Eingriff in den Kern** |
 | 3 | **Erzeugnisse der Lieferung bauen:** Hauptdokument (`build/assemble.py`) und Word-Fassung (`build/build-docx.py`) **je Client Pack**, und im Erzeugnis nachzählen | Werkzeug oder Mensch | **vor** dem Commit |
 | 4 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`. Die Nachricht nennt Release, Antrag, die Entscheidungen **und die Freigabezeile** – *„Freigegeben durch den Framework Owner am `<JJJJ-MM-TT>`"* (D-334, `K-111`). 🔴 **Damit trägt die Marke die Unterschrift, und genau deshalb setzt sie der Mensch** | 🔴 **der Framework Owner, nicht ein Werkzeug** | **nach** dem Commit |
 | 5 | **Archiv** aus der Marke, mit **ausdrücklicher** Zeilenendeform: `git -c core.eol=lf -c core.autocrlf=input archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch | **nach** dem Commit |
@@ -85,6 +85,21 @@ einmal angefaßt werden, und danach trugen beide Projekte einen Stand, den es ni
 🟢 **Die Übergabe darf danach noch geschrieben werden** – sie liegt **außerhalb** des
 Kerns (D-216) und wird in kein Projekt installiert. *Sie ist der einzige Träger des
 Release-Commits, der das darf, und sie darf es nur deshalb.*
+
+🔴 **UND SCHRITT 2 ENDETE BIS `1.3.0`, BEVOR SEIN ERGEBNIS DAUERHAFT WAR** (D-343).
+Vier Handgriffe standen hier – entpacken, `install.py --update`, Overlay nachziehen,
+validieren –, und **das Committen im übernehmenden Projekt stand in keinem davon.**
+Gemessen beim Abschluß von `1.2.0`: In **beiden** Projekten trug der jüngste Commit
+`VERSION` `1.0.1`; die Hebung auf `1.1.0` ist **nie committet worden** und lag einen Tag
+lang als offener Arbeitsbaum da, bis `1.2.0` sie überschrieb. Die Vorgänger `1.0.0` und
+`1.0.1` tragen je einen eigenen Commit – **die Gewohnheit gab es also, nur die Regel
+nicht.** ➡️ ***Ein Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist,
+liefert einen Zustand und keinen Stand.***
+⚠️ **Grenze, benannt:** Prüfung 82 kann es nicht fangen und sagt es selbst – sie mißt die
+**Behauptung** der Bestandsliste, nicht den Stand des Projekts (D-331). Der Git-Stand
+eines Projekts **außerhalb** dieses Repositoriums ist für keine Prüfung erreichbar
+(D-299). **Es bleibt ein Verfahrensschritt** – aber einer, dessen Gegenstand **im**
+übernehmenden Repositorium liegt und dort jederzeit sichtbar ist.
 
 🔴 **DIE QUELLE IST DER ARBEITSBAUM, NICHT `HEAD`** (D-333). Der eingespielte Ablauf hob
 mit `git archive HEAD`, und das ist **vor** dem Commit der Stand von vorhin. Gemessen:

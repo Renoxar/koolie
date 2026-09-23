@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.2.0 (2026-09-23)
+## Stand nach Release 1.3.0 (2026-09-23)
 
 Wird mit jedem Release fortgeschrieben. 🔴 **Und das hat sie zweiunddreißig Releases lang nicht getan:** Die Überschrift stand bis 0.88.1 auf `0.56.0` – dem Release, das sie eingeführt hat. *Eine Zusage über die eigene Pflege, die niemand nachzählt, ist die Bauform dieses Repositoriums in ihrer Grundform* (berichtigt mit `CR-2026-124`, `AP11`). Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -142,9 +142,10 @@ die Störung.**
 | ~~**1.0.1**~~ ✅ | 🟢 **DIE ZEILENENDEN DES ARCHIVS – EINE ZUSAGE, DIE IHR EIGENES WERKZEUG NICHT HÄLT** (`CR-2026-129`, **D-328**, D-320 in der Reichweite begrenzt). 🔴 **Das erste Release-Archiv dieses Projekts hat die Regel widerlegt, die es erzeugen ließ – keine drei Stunden nach ihrer Aufnahme.** Dreimal dieselbe Marke, nur `core.autocrlf` verstellt: **zweimal CRLF, einmal LF**, bei unverändertem Blob. *`git archive` schreibt im Arbeitsbaum-Format aus, nicht im Blob-Format.* 🔴 **Gefunden hat es das Nachzählen im Erzeugnis, nicht der Lauf** – `git archive` meldete Exit 0. ⚠️ **Die Auflösung ist ein Verfahrensschritt und damit schwächer als eine Prüfung, und das steht so da** | – (alle vier Zahlen bleiben **0**) | nein |
 | ~~**1.1.0**~~ ✅ | 🟢 **DIE REIHENFOLGE DES HEBENS – EIN PRÜFPUNKT, DEN SEIN EIGENES VERFAHREN HINTER SEINEN ZEITPUNKT LEGT** (`CR-2026-130`, **D-329** bis **D-334**, **Prüfung 82**, `K-110` und `K-111` neu). 🔴 **Prüfpunkt 20 von `FW-CL-11` war EIN Haken über ZWEI Gegenständen, deren früheste Zeitpunkte auf entgegengesetzten Seiten des Release-Commits liegen:** Das Archiv entsteht aus der Marke und kann frühestens **nach** dem Commit erzeugt werden, das Heben kann **davor** geschehen – und die Checkliste wird **vor** dem Release durchgegangen. 🔴 **Der Schuldposten war größer als gebucht:** Die Bestandsliste war nicht an einer Stelle falsch, sondern an **zwei** – `1.0.1` hatte sie im Framework berichtigt, die **ausgelieferten Kopien** in beiden übernehmenden Projekten trugen weiter `1.0.0` neben einer `VERSION` `1.0.1`. ➡️ *Wer eine Liste nach dem Heben fortschreibt, schreibt sie an einer Stelle fort und liefert sie an zwei.* 🟢 **Prüfung 82** hält die Spalte `Framework-Version` gegen `VERSION`; ⚠️ **sie mißt die Behauptung, nicht die Tatsache**, und das steht so da | – (alle vier Zahlen bleiben **0**) | nein |
 | ~~**1.2.0**~~ ✅ | *dieses Release:* 🟢 **DIE CHRONIK, DIE IHR EIGENES RELEASE NICHT ZU ENDE ZÄHLT – UND EINE VORLAGE, DIE NUR DURCH IHRE UNVOLLSTÄNDIGKEIT UNGEPRÜFT BLEIBT** (`CR-2026-131`, **D-335** bis **D-340**, **Prüfung 83 und 84**, `K-112` und `K-113` neu). 🟢 **Prüfung 83 hat sich beim Abnahmelauf SELBST bewiesen:** Sie meldete die Sondenkennung von Prüfung 58 – die synthetische Kennung, die die Gegenprobe von Prüfung 58 ins Register legt – als höchste vergebene, und dahinter lag ein Befund, den **keine der 82 bisherigen Prüfungen sehen konnte** (D-340). 🔴 **Die Spanne dieses Registers endete bei `D-332`, vergeben waren `D-329` bis `D-334`** – `D-333` und `D-334` sind *beim Umsetzen* gefallen, die Zeile war da längst geschrieben. ➡️ *Eine Zahl, die vor ihrem Gegenstand geschrieben wird, ist zum Zeitpunkt ihrer Niederschrift richtig und danach nicht mehr.* 🔴 **Und von vier beschreibenden Trägern nennt keiner alle sechs:** `D-333` steht in keinem – **nur die Marke nennt die Menge vollständig, und sie ist der einzige Träger, den keine Prüfung erreichen kann** (`K-113`). 🔴 **Der zweite Befund lag auf dem Weg des nächsten Postens:** `_template` stand in der Packmenge des Prüfapparats, und was die Vorlage vor allen 82 Prüfungen schützte, war **allein ihr fehlendes Manifest** – gemessen mit einem Probemanifest: drei Packs, **0 Fehler**. ➡️ *Eine Vorlage, die nur deshalb keine Prüfung auslöst, weil ihr ein Bestandteil fehlt, ist nicht ausgenommen – sie ist unvollständig.* ⚠️ **Der Releaseplan rückt dafür um eins**, ausgewiesen statt stillschweigend (D-339) | – (alle vier Zahlen bleiben **0**) | nein |
-| **1.3.0** | ⚠️ **Mit `1.2.0` von `1.2.0` auf `1.3.0` gerückt** (D-339) – die Herrichtung der Vorlage war eine Vorbedingung dieses Postens und schnappte sonst mitten im Lauf zu. **Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5, davon vier Erhebungen. 🟢 **Mit `0.86.1` fahrbar geworden:** Für echte Clienttests steht ein **Codex-Plus-Abonnement** zur Verfügung. 🔴 **Bis `1.1.0` stand hier *„Pro“* – achtzehn Releases lang, und gemessen ist es `plus` (`K-97`, Nachtrag).** 🟢 **Die drei Eignungsfragen sind mit `1.1.0` an der Konsole beantwortet, vor jeder Sitzung:** durchsetzende Berechtigungsschicht mit Verweigerungsvorrang ✓ (`permissions.filesystem`, `deny_read`, `execpolicy`, Betriebssystem-Sandbox), Hook vor dem Werkzeugaufruf ✓ (`PreToolUse` mit `permissionDecision`), Suchwerkzeug ✓ (mitgeliefertes `rg`). ⚠️ **Zwei Bauformen gehören vorab in den B-Block:** das **Hook-Vertrauensmodell** (ein nicht freigegebener Hook läuft nicht) und die **andere Gestalt der Berechtigungsschicht** – Pfadmengen und Regeln statt Werkzeug und Muster. ⚠️ **Die Eignungsfragen bleiben dieselben** – durchsetzende Berechtigungsschicht mit Verweigerungsvorrang, Hook vor dem Werkzeugaufruf, ein Suchwerkzeug –, **und drei davon sind an der Konsole erhebbar, bevor eine Sitzung anfällt**: Das hat `0.86.0` für `devin-desktop` vorgeführt (Werkzeugbestand aus der Mitschrift, `skills show`, `doctor`). 🔴 **Verwirft es `permissions` oder `triggers`, muß es den Ersatz benennen** | – | ja (AP2-Lauf) |
-| **1.4.0** | **Das optionale Projekt-Overlay „General Development"**, gewählt über `--overlay general` (D-126) | – | nein |
-| **1.5.0** | **Die Auslieferung als Installationsbibliothek** (`CR-2026-098`, `K-75`). Ein Zielprojekt bekommt das Framework heute als **Kopie des ganzen Repositoriums** – mit Tests, Änderungsanträgen und Protokollen – und installiert von dort. 🟢 **Dieser Weg bleibt**; daneben tritt ein Installer, dem man Projektpfad, Client und Overlay nennt, und ein **wählbarer Lieferumfang**: alles oder nur das zur Nutzung Nötige. 🔴 **Hier und nicht früher**, weil der Posten den **Übernahmeweg** ändert und der gegen den dann geltenden Bestand gebaut werden muß – nach der Umbenennung, nach `AP11` und nach den beiden Erweiterungen, die **neue Träger mit Pfaden** anlegen. Ein Mindestpaket, das davor geschnitten wird, schneidet an einem Bestand, den es danach nicht mehr gibt. 🔴 **Drei Dinge hängen daran, alle belegt:** Die Hook-Kommandos der erzeugten Berechtigungsdatei zeigen auf den Kern **im Zielprojekt**; das Heben ersetzt das **Verzeichnis**, nicht einzelne Dateien; und die Prüfungen 45 und 59 laufen gegen den Kern im Zielprojekt | – | nein |
+| ~~**1.3.0**~~ ✅ | *dieses Release:* 🟢 **DIE ERHEBUNG ZU `openai-codex` – DER CLIENT, DESSEN WURZELANWEISUNG EINE DATEI DANEBEN ERSETZT** (`CR-2026-132`, **D-341** bis **D-345**, **Prüfung 85**, `K-115` geklärt, `K-116` neu). 🟢 **Zehn Messungen am Prompt-Eingang, sechs davon mit Gegenprobe, und null Kontingent** – `codex debug prompt-input` gibt aus, was das Modell zu sehen bekommt, **ohne eine Anfrage zu stellen** (D-344). 🔴 **Drei Befunde ändern die BAUFORM des Packs, nicht seinen Inhalt, und deshalb rückt der Bau auf `1.4.0`** (D-341): Eine Datei neben `AGENTS.md` **verdrängt die Wurzel-Anweisung vollständig** – gemessen mit Gegenprobe; die **gesamte** projektlokale Schicht (Konfiguration, Hooks, Exec-Policies) lädt nur bei einem Vertrauenseintrag in der **Benutzer**konfiguration – A/B gemessen –, **und sie kann lockern**: `approval_policy = "never"` im Projekt schlägt den Benutzerstandard; und die Pfadrechteschicht kennt **keine Muster**, womit die Kernzusage **B3** in ihrer Musterform nicht abbildbar ist. 🔴 **Auf diesem Arbeitsplatz kann der Sandkasten `deny`-Leserechte gar nicht durchsetzen – und der Client läuft dann nicht.** 🔴 **Und der eigene Plan hatte drei Zielangaben, die ihr Release überlebt haben** – `~0.68.0` (erledigt seit fünfzehn Releases), `1.1.0` (die Releasetabelle derselben Datei sagte `1.3.0`) und `1.2.0` (ausgeliefert, nicht gefahren); **Prüfung 85** hält die Angabe seither gegen `VERSION`. 🔴 **Und ein Befund dieses Durchgangs hat sich als MESSFEHLER erwiesen und bleibt gebucht** (D-345): `V4` meldete die Word-Fassung auf `v1.1.0` – die Verzeichnisliste war auf zehn Zeilen beschnitten, und die beiden Träger von `1.2.0` standen auf Zeile elf und zwölf. ➡️ *Eine Messung, die ihre Ausgabe beschneidet, mißt die Beschneidung* – **gefunden hat es der Bau selbst** | – (alle vier Zahlen bleiben **0**) | nein |
+| **1.4.0** | ⚠️ **Mit `1.3.0` von `1.3.0` auf `1.4.0` gerückt** (D-341) – die Erhebung hat drei Befunde geliefert, die die **Bauform** des Packs ändern, und ein Pack, das davor entsteht, entsteht zweimal. **Client Pack `openai-codex`** – die neun Schritte aus `clients/README.md` Abschnitt 5. 🟢 **Die Erhebungen sind mit `1.3.0` gefahren und kosten kein Kontingent** (D-344); was Kontingent kostet, sind die `[TECHNISCH]`-Belege der Fähigkeitsmatrix – **31 Zeilen** trägt die Vorlage –, und Abschnitt 4 verlangt dafür eine **reale Installation**. 🔴 **Drei Entscheidungen stehen VOR dem ersten Trägerbyte:** ob `clientmap.py` eine zweite Ausgabeform bekommt (die Pfadrechte des Clients kennen keine Muster, `B3`); wie das **Vertrauensmodell** über der projektlokalen Schicht im B-Block ausgewiesen wird (`B1`, `H1`, `H2`); und wie die **verdrängbare Wurzel-Anweisung** in `R1` steht. ⚠️ **`B3` und `B9` sind Kernzusagen** – nach `clients/README.md` Abschnitt 4 brauchen sie eine Begründung im Pack, eine Ausnahme im Overlay und eine Freigabe durch `<SECURITY_CONTACT>` | – | ja (AP2-Lauf) |
+| **1.5.0** | ⚠️ **Mit `1.3.0` von `1.4.0` gerückt** (D-341) – **Das optionale Projekt-Overlay „General Development"**, gewählt über `--overlay general` (D-126) | – | nein |
+| **1.6.0** | ⚠️ **Mit `1.3.0` von `1.5.0` gerückt** (D-341) – **Die Auslieferung als Installationsbibliothek** (`CR-2026-098`, `K-75`). Ein Zielprojekt bekommt das Framework heute als **Kopie des ganzen Repositoriums** – mit Tests, Änderungsanträgen und Protokollen – und installiert von dort. 🟢 **Dieser Weg bleibt**; daneben tritt ein Installer, dem man Projektpfad, Client und Overlay nennt, und ein **wählbarer Lieferumfang**: alles oder nur das zur Nutzung Nötige. 🔴 **Hier und nicht früher**, weil der Posten den **Übernahmeweg** ändert und der gegen den dann geltenden Bestand gebaut werden muß – nach der Umbenennung, nach `AP11` und nach den beiden Erweiterungen, die **neue Träger mit Pfaden** anlegen. Ein Mindestpaket, das davor geschnitten wird, schneidet an einem Bestand, den es danach nicht mehr gibt. 🔴 **Drei Dinge hängen daran, alle belegt:** Die Hook-Kommandos der erzeugten Berechtigungsdatei zeigen auf den Kern **im Zielprojekt**; das Heben ersetzt das **Verzeichnis**, nicht einzelne Dateien; und die Prüfungen 45 und 59 laufen gegen den Kern im Zielprojekt | – | nein |
 
 > 🆕 **Mit `0.85.0` sind die vier verbleibenden Posten um zwanzig Nummern gewandert** – von `~0.66.0` bis `~0.69.0` auf `~0.86.0` bis `~0.89.0`. **Das sind nicht zwanzig Einschübe, sondern dieselbe Verschiebung, die der Plan seit `0.62.0` mitschleppt:** Der Posten von `K-62` stand hier auf `~0.65.0` und ist als `0.85.0` gelaufen, und die Posten dahinter standen seither auf Nummern, die längst vergeben waren. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt – hier war es die ganze untere Hälfte der Tabelle.*
 >
@@ -2377,7 +2378,13 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
-### Geplant: Projekt-Overlays als Installationsparameter – Ziel-Release **1.2.0**
+### Geplant: Projekt-Overlays als Installationsparameter – Ziel-Release **1.5.0**
+
+> 🔴 **Diese Überschrift stand bis `1.3.0` auf `1.2.0` – und `1.2.0` ist ausgeliefert,
+> ohne daß der Posten gefahren wäre.** Gefunden im Vorbedingungsdurchgang von `1.3.0`
+> (`CR-2026-132`, D-342); **Prüfung 85** hält die Angabe seither gegen
+> `.koolie/core/VERSION`. ⚠️ **Die Verschiebung auf `1.5.0` folgt aus D-341:** Der Bau
+> des Client Packs `openai-codex` rückt auf `1.4.0`, und dieser Posten steht dahinter.
 
 Der `<FRAMEWORK_OWNER>` hat am 2026-09-15 angeregt, bei der Erstinstallation ein
 **Projekt-Overlay als Parameter** mitgeben zu können: ein vorbereitetes Standard-Overlay
@@ -2418,10 +2425,21 @@ eine Quelle zu einer Auswahl machen.
   `--check-overlay-ready` gemessen wie jedes andere; ein Muster, das seine eigene Prüfung
   nicht besteht, ist keine Hilfe, sondern eine Fehlerquelle in jeder Erstinstallation.
 
-### Geplant: Client Pack `openai-codex` – Ziel-Release **1.1.0**
+### Geplant: Client Pack `openai-codex` – Ziel-Release **1.4.0**
+
+> 🔴 **Diese Überschrift stand bis `1.3.0` auf `1.1.0`, während die Releasetabelle
+> derselben Datei den Posten auf `1.3.0` führte** – zwei Stellen, rund 1.280 Zeilen
+> auseinander, mit verschiedenen Zahlen. **Die Verschiebungen sind je einzeln
+> ausgewiesen worden** (D-127, D-339), und **keine hat diese Überschrift angefaßt.**
+> ➡️ *Wer eine Zahl an zwei Stellen führt, pflegt eine.* **Prüfung 85** hält sie
+> seither gegen `.koolie/core/VERSION` (`CR-2026-132`, D-342).
+>
+> 🟢 **`1.3.0` hat die Erhebung gefahren** (`CR-2026-132`, D-341 bis D-345), **der Bau
+> ist `1.4.0`.** Was die Erhebung ergeben hat, steht unten unter *„Was die Erhebung von
+> `1.3.0` gemessen hat"* – und drei ihrer Befunde ändern die **Bauform** des Packs.
 
 Ein drittes Client Pack ist vorgesehen (Projektentscheidung vom 2026-09-12). **Ziel-Release ist
-`1.1.0`** – nach der Umbenennung, weil ein neues Pack neue Träger **mit Pfaden** anlegt und
+`1.4.0`** – nach der Umbenennung, weil ein neues Pack neue Träger **mit Pfaden** anlegt und
 sonst zweimal umbenannt würde (D-124, `CR-2026-078` E2). **Mit D-127 liegt die Umbenennung
 vor 1.0.0**, dieses Pack entsteht also von Anfang an unter dem endgültigen Namen. **Vor der Aufnahme sind die Voraussetzungen zu klären, nicht danach:**
 
@@ -2464,7 +2482,43 @@ Träger:** `clients/devin-desktop/CLIENT_PACK.md`, und er geht nicht über eine 
 `AP2` – Zielversion festlegen, Pack gegen sie prüfen, die beiden Steckbriefzellen füllen. Die
 Abnahme je Träger ist nicht maschinell; das Vokabular hält seit 0.51.0 Prüfung 47.
 
-### Geplant: Die Umbenennung auf `Koolie` – Ziel-Release **`~0.68.0`**, der letzte inhaltliche Schritt vor 1.0.0
+#### Was die Erhebung von `1.3.0` gemessen hat – zehn Befunde, null Kontingent
+
+**Das Meßmittel ist `codex debug prompt-input`** (D-344): Es gibt die Entwickler- und
+Nutzernachrichten aus, die der Client der nächsten Anfrage voranstellt – **ohne eine
+Anfrage zu stellen.** Die Entsprechung der Mitschrift, mit der `0.86.0` das Pack
+`devin-desktop` gemessen hat, und billiger: die Mitschrift entsteht aus einem Lauf,
+dieser Ausdruck aus keinem. **Alle Messungen liefen gegen ein eigenes `CODEX_HOME` im
+Ablagebereich; die Konfiguration des Arbeitsplatzes ist nicht angefaßt worden.**
+
+| # | Befund | Folge für das Pack |
+|---|---|---|
+| **E1** | 🔴 **Eine Datei neben der Wurzel-Anweisung verdrängt sie vollständig** – gemessen mit Gegenprobe: mit ihr fehlt die Wurzel-Anweisung in **jeder** Nachricht der Sitzung, ohne sie steht sie darin | **R1** ist bedingt. ➡️ *Eine Wurzel-Anweisung, die eine ungeprüfte Datei im selben Verzeichnis ersetzen kann, ist keine Ebene 1 – sie ist ein Standard* |
+| **E2** | 🔴 **Die gesamte projektlokale Schicht – Konfiguration, Hooks, Exec-Policies – lädt nur bei einem Vertrauenseintrag in der Benutzerkonfiguration** – A/B mit zwei Benutzerverzeichnissen und identischem Projekt | **B1** ist bedingt: Ein versionierter Träger, der nicht lädt, trägt nichts |
+| **E3** | 🔴 **Und sie kann LOCKERN:** `approval_policy = "never"` und der Sandkastenmodus ohne Schranken im **Projekt** schlagen den **Benutzer**standard | **B9** hat ein gemessenes Spiegelbild – die Richtung der Verschärfung stimmt hier nicht |
+| **E4** | 🔴 **Die Pfadrechteschicht kennt keine Muster** – ihre Schlüssel müssen absolute Pfade, `~/`-Pfade oder Sonderziele sein | **B3** ist in seiner Musterform nicht abbildbar. **Kernzusage** – `clients/README.md` Abschnitt 4 greift |
+| **E5** | 🔴 **Auf diesem Arbeitsplatz kann der Sandkasten `deny`-Leserechte gar nicht durchsetzen – und der Client läuft dann nicht** (fail-closed, gemessen) | **B3** ist dort `[NICHT ABBILDBAR]`, und die Betriebsmodus-Vorbemerkung des B-Blocks (D-35) trägt einen zweiten Fall |
+| **E6** | 🔴 **Hooks tragen ein Vertrauensmodell über einen Hash**, und es gibt einen Schalter, der es übergeht | **H1**/**H2**: *Ein Schutz-Hook, der nicht läuft, blockiert nichts* (AP2-CC-13). **Jede Hebung des Frameworks ändert den Hash** |
+| **E7** | ⚠️ **Das Benutzerverzeichnis des Clients führt eine eigene Anweisungsdatei**, die in jede Sitzung lädt | Abschnitt 7.1 des Packs (D-34) – eine Zeile, kein Abwesenheitsbeleg |
+| **E8** | 🟢 **Skills laden projektlokal aus zwei Ablagen, eine dritte naheliegende nicht**, und die Menge ist **mit Herkunft vollständig aufzählbar** | **S5** gemessen erfüllt; die Pfadabbildung nennt **beide** Ablagen |
+| **E9** | ⚠️ **Regeldateien mit Ladebedingungen gibt es nicht** – der Geltungsbereich ist der Verzeichnisbaum, nicht ein Muster | **R2**/**R3** haben eine andere Gestalt; `rule_triggers` braucht eine eigene Auflösung |
+| **E10** | 🟢 **Ein projektlokal nicht unterstützter Schlüssel wird benannt**, nicht verschwiegen | Gute Nachricht für die Installation: Ein falsch abgebildeter Schlüssel fällt nicht lautlos aus |
+
+🔴 **Drei Entscheidungen stehen damit VOR dem ersten Trägerbyte von `1.4.0`:** ob
+`clientmap.py` eine **zweite Ausgabeform** bekommt (E4); wie das **Vertrauensmodell** im
+B-Block ausgewiesen wird (E2, E6); und wie die **verdrängbare Wurzel-Anweisung** in `R1`
+steht (E1). **Zwei der betroffenen Zeilen sind Kernzusagen** (`B3`, `B9`).
+
+### Erledigt mit `0.88.0`: Die Umbenennung auf `Koolie` – der letzte inhaltliche Schritt vor 1.0.0
+
+> 🔴 **Dieser Abschnitt hieß bis `1.3.0` „Geplant" und nannte das Ziel-Release
+> `~0.68.0` – fünfzehn Releases, nachdem er gefahren war** (`0.88.0`, `CR-2026-122`,
+> D-298 bis D-304). Gefunden im Vorbedingungsdurchgang von `1.3.0` (`CR-2026-132`,
+> D-342). ⚠️ **Prüfung 85 hätte ihn nur deshalb gefangen, weil seine Zielangabe
+> zufällig auch veraltet war** – eine Zielangabe in der Zukunft hätte dieselbe
+> Überschrift durchgelassen. ➡️ *Eine Prüfung, die den richtigen Fall aus dem falschen
+> Grund fängt, ist beim nächsten Fall blind* (`K-116`). **Der Text darunter bleibt als
+> Herleitung stehen** (D-02).
 
 Der `<FRAMEWORK_OWNER>` hat am 2026-09-18 entschieden, den Namen `leitwerk` durch einen
 griffigeren zu ersetzen (`CR-2026-078` E3, D-125). **Gewählt ist `Koolie`** – der
