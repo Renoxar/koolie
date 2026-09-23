@@ -37,6 +37,8 @@ Es ist eine **Abbildungsschicht**: Es übersetzt die Ebenen 3 bis 7 in die Artef
 | `manifest.json` | Dieselben Abbildungen maschinenlesbar; `install.py` und `validate-framework.py` lesen sie. **Ohne Manifest ist ein Pack nicht installierbar** |
 | `root-template/` | Nur noch die Artefakte, die tatsächlich clientspezifisch sind – seit 0.26.0 **eine** erklärende README je Pack (die Laufzeit-README; die der Regelablage ist in sie aufgegangen, D-36) |
 
+🔴 **Die Vorlage `_template/` trägt von diesen drei Bestandteilen genau einen: `CLIENT_PACK.md`.** Das ist seit D-336 ausgewiesen – und der Grund ist gemessen: `_client_packs()` nahm bis `1.2.0` jedes Verzeichnis unter `clients/` auf, das eine `CLIENT_PACK.md` trägt, und `_template` erfüllt das. **Was die Vorlage vor allen 82 Prüfungen schützte, war allein ihr fehlendes Manifest** – nachgemessen am 2026-09-23 mit einer Kopie des Manifests von `claude-code`: drei Packs mit Manifest, Validator **0 Fehler, 0 Warnungen**. ➡️ *Eine Vorlage, die nur deshalb keine Prüfung auslöst, weil ihr ein Bestandteil fehlt, ist nicht ausgenommen – sie ist unvollständig.* **Prüfung 84** hält seither fest, daß die Vorlage eine Vorlage bleibt.
+
 Alles andere liegt einmal im Kern und wird bei der Installation in die Form dieses Clients gebracht: Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills, Overlay-Laufzeitregel und die beiden Vorlagen als **Formtransformation** (D-16, D-17, D-20), Berechtigungen und Hooks als **Semantikabbildung** (D-18). `seed_paths` ist in beiden Packs leer – die gesamte Saat kommt aus dem Kern. Der Unterschied ist wesentlich: Bei einer Formtransformation ist der Inhalt derselbe und nur die Schreibweise anders. Bei der Semantikabbildung unterscheiden sich die Werkzeuge selbst – ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich und dort über ein Präfix. Weil an genau diesen Regeln die Kernzusagen hängen, prüft die Abbildung drei Eigenschaften und bricht ab, wenn eine verletzt ist:
 
 | Zusicherung | Warum |
@@ -73,7 +75,7 @@ Die Delegationsverbote V1 bis V12 (`.koolie/core/framework/core/09-risk-model.md
 
 ## 5. Ein Client Pack erstellen
 
-1. `_template/` nach `<client-name>/` kopieren und alle Platzhalter ersetzen.
+1. `_template/CLIENT_PACK.md` nach `<client-name>/` kopieren und alle Platzhalter ersetzen. 🔴 **Die Vorlage trägt genau diesen einen Bestandteil, und das ist seit D-336 eine Entscheidung, keine Lücke.** `manifest.json` (Schritt 5) und `root-template/` (Schritt 4) entstehen in ihren eigenen Schritten – eine vollständige Vorlage wäre ein Pack ohne Client, und jede Prüfung müßte sie einzeln ausnehmen. **Prüfung 84 hält die Vorlage aus der Packmenge heraus**, und `_client_packs()` nimmt sie nicht auf. *Bis `1.2.0` stand hier „`_template/` kopieren" – und geliefert hat das eines von drei Bestandteilen.*
 2. Pfadabbildung eintragen: Wo erwartet dieser Client Anweisungsdatei, Regeln, Skills, Berechtigungen, Hooks?
 3. Fähigkeitsmatrix ausfüllen. Jede Zeile ohne Beleg sagt `BELEG OFFEN` mit Grund und Datum. Der B-Block trägt die **Vorbemerkung zur Betriebsmodus-Abhängigkeit** von `[TECHNISCH]`, ergänzt um den eigenen Belegstand (D-35). Keine Prüfung meldet ihr Fehlen – sie ist eine Anweisung, und das ist hier bewusst so entschieden (`CR-2026-033` E4).
 4. `root-template/` anlegen: **nur die erklärende README der Laufzeitschicht**. Die Wurzelartefakte selbst kommen aus dem Kern und werden bei der Installation in die Form dieses Clients gebracht – `seed_paths` bleibt leer (D-20, `CR-2026-010`).

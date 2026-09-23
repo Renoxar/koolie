@@ -1,4 +1,107 @@
-# Übergabe: **Koolie** – Stand 1.1.0 (2026-09-23)
+# Übergabe: **Koolie** – Stand 1.2.0 (2026-09-23)
+
+> 🟢 **`1.2.0` – DIE CHRONIK, DIE IHR EIGENES RELEASE NICHT ZU ENDE ZÄHLT – UND EINE
+> VORLAGE, DIE NUR DURCH IHRE UNVOLLSTÄNDIGKEIT UNGEPRÜFT BLEIBT** (`CR-2026-131` E1
+> bis E6, **D-335** bis **D-340**, **Prüfung 83 und 84** neu, `K-112` und `K-113` neu).
+> Ein MINOR-Release **ohne Kontingent**, und beide Befunde stammen aus dem
+> Vorbedingungsdurchgang vor dem nächsten Posten – zum **zwanzigsten** Mal in Folge der
+> billigste Befund eines Releases.
+>
+> 🔴 **DIE RELEASE-SPANNE VON `1.1.0` ENDETE BEI `D-332`, VERGEBEN WAREN `D-329` BIS
+> `D-334`.** `docs/ROADMAP.md` führt je Release die Spanne seiner Entscheidungen, und
+> über **vierzehn** Releases mit dieser Schreibweise ist sie lückenlos – genau die letzte
+> war um **zwei** zu niedrig. **Die Ursache ist gemessen und steht im eigenen Release:**
+> `D-333` und `D-334` sind *beim Umsetzen* gefallen, `K-111` sogar erst beim Setzen der
+> Marke; die Zeile war da längst geschrieben.
+> ➡️ ***Eine Zahl, die vor ihrem Gegenstand geschrieben wird, ist zum Zeitpunkt ihrer
+> Niederschrift richtig und danach nicht mehr.*** **Das ist die Bauform von Prüfung 40 –
+> hier innerhalb eines EINZIGEN Releases statt über zweiundvierzig.**
+>
+> 🔴 **DER SCHWERERE TEIL: KEIN BESCHREIBENDER TRÄGER NENNT ALLE SECHS.** ROADMAP vier,
+> `CHANGELOG.md` fünf, Antrag vier, Protokoll vier – **und `D-333` steht in keinem
+> davon.** Es steht im Register, im Protokoll und in den **beiden normativen Trägern, die
+> es geändert hat**, also dort, wo es **wirkt**, und nirgends dort, wo das Release
+> **erklärt** wird. Und `D-333` ist die Entscheidung, die den **schwersten** Befund von
+> `1.1.0` behoben hat.
+> 🟢 **Vollständig nennt die Menge genau ein Träger: die Marke** (*„D-329 bis D-334"*).
+> ➡️ ***Der einzige Träger, der die Menge vollständig nennt, ist der, den keine Prüfung
+> erreichen kann*** – der Markentext liegt im Tag-Objekt, nicht im Arbeitsbaum.
+> **Das ist `K-111` an einem zweiten Gegenstand** (`K-113`).
+>
+> 🔴 **PRÜFUNG 58 FÄNGT DIE VERWAISTE NENNUNG, NICHT DIE VERWAISTE KENNUNG.** Sie hält
+> die Gegenrichtung – *jede genannte Kennung steht im Register*. Die fehlende Richtung
+> ist die, die die Chronik unvollständig läßt.
+>
+> 🆕 **PRÜFUNG 83 HÄLT DIE HÖCHSTE RELEASE-SPANNE GEGEN DAS REGISTER** (D-335), mit drei
+> Sonden und **zwei** Gegenproben. 🟢 **Sie hat bei ihrem ersten Lauf ihren eigenen Anlaß
+> gemeldet** – wie Prüfung 81 in `1.0.0`. 🔴 **Die zweite Gegenprobe ist die, die man
+> weglassen würde, und sie trägt den Zuschnitt:** Die Releasetabelle ist **nicht
+> sortiert** – gemessen stand `1.0.1` **vor** `1.0.0` (D-337) –, und deshalb nimmt die
+> Prüfung die **höchste** Obergrenze und nicht die zuletzt geschriebene.
+> ⚠️ **Grenze, benannt: sie mißt die OBERGRENZE, nicht die Vollständigkeit der
+> Nennungen** – dieselbe Bauform wie Prüfung 77 (*Version, nicht Inhalt*) und 82
+> (*Behauptung, nicht Tatsache*); `K-112` führt die Frage weiter. ⚠️ **Preis, benannt:**
+> Jedes Release faßt diese Zeile an, wie bei Prüfung 67, 77 und 82.
+>
+> 🔴 **DER ZWEITE BEFUND LAG AUF DEM WEG DES NÄCHSTEN POSTENS, UND ER IST TEURER.**
+> `_client_packs()` nahm jedes Verzeichnis unter `clients/` auf, das eine
+> `CLIENT_PACK.md` trägt – **und `_template` erfüllt das.** Was die Vorlage vor allen 82
+> Prüfungen schützte, war **allein ihr fehlendes `manifest.json`**; der Docstring hielt
+> die Annahme fest statt einer Ausnahme. **Gemessen am 2026-09-23 mit einem
+> Probemanifest** – einer Kopie des Manifests von `claude-code`, also einem, das einen
+> **fremden** Client beschreibt –: **drei Packs mit Manifest, Validator 0 Fehler, 0
+> Warnungen.** **Und `clients/README.md` Schritt 5 verlangt genau dieses Manifest für
+> jedes neue Pack.**
+> ➡️ ***Eine Vorlage, die nur deshalb keine Prüfung auslöst, weil ihr ein Bestandteil
+> fehlt, ist nicht ausgenommen – sie ist unvollständig.*** Und der Tag, an dem jemand sie
+> nach der eigenen Anleitung vervollständigt, ist der Tag, an dem sie geprüft wird, ohne
+> daß es jemand entschieden hat.
+> 🔴 **Die Bauform *„zwei Stellen, die einander decken"*** (`0.57.0`). ⚠️ **Und die
+> Ausnahme existierte bereits an zwei anderen Stellen** – Prüfung 73 und die
+> Pfadausnahmen – und nicht dort, wo die Packmenge **entsteht**.
+> ➡️ *Wer eine Ausnahme an zwei Stellen führt und an der dritten vergißt, hat sie nicht
+> vergessen – er hat keine Stelle, an der sie steht.*
+>
+> 🔴 **DIE TEUERSTE FALLE DIESES RELEASES STAND WÖRTLICH IN DIESER DATEI.** *„Ein
+> Sondenlauf mißt den Baum, in dem er startet; wer ihn nebenher fahren läßt, mißt den
+> Baum von vorhin"* – der Fall aus `0.86.0`. **Der volle Lauf wurde gefahren, als
+> `VERSION` schon auf `1.2.0` stand und diese Datei noch auf `1.1.0`.** **112 von 325
+> Einheiten meldeten dieselben zwei Fehler**, die nichts mit ihrem Gegenstand zu tun
+> haben; **509 Sekunden verloren.** ➡️ ***Die Lehre stand da, war gelesen, und ist
+> trotzdem zugeschnappt*** – **D-326 an einem dritten Gegenstand.** 🟢 **Diese Datei ist
+> deshalb VOR dem Abnahmelauf gehoben worden**, und nur die Laufzeiten stehen unterhalb
+> der Trennlinie (D-94). 🔴 **Keine Prüfung erreicht die Reihenfolge**, und das ist der
+> eigentliche Befund.
+>
+> 🔴 **UND DER ABNAHMELAUF HAT EINEN BEFUND GEBRACHT, DEN KEINE DER 82 BISHERIGEN
+> PRÜFUNGEN SEHEN KONNTE** (D-340). Die Gegenprobe 58b legt eine Registerzeile mit ihrer
+> Sondenkennung an; **Prüfung 83 las sie als höchste vergebene und meldete 654 fehlende
+> Entscheidungen.** 🔴 **Die Auflösung ist ZWEIMAL gefallen, und beide Male im vollen
+> Sondenlauf.** Anlauf 1 stellte die Kennung in die Menge der belegten synthetischen
+> Kennungen – **Sonde 58a verlor ihren Gegenstand**, weil Prüfung 58 genau jene Menge vom
+> **Melden** ausnimmt und die Sonde prüft, daß gemeldet wird. Anlauf 2 nannte sie in einem
+> eigenen Absatz **wörtlich** – **Prüfung 58 meldete die Nennung.**
+> ➡️ ***Zwei Prüfungen, die dieselbe Kennung ansehen, stellen nicht dieselbe Frage*** –
+> Zugehörigkeit gegen Grenze. ➡️ ***Eine Ausnahme, die ihren Gegenstand nennen muß, um zu
+> wirken, erzeugt den Befund, den sie verhindern soll.***
+> 🟢 **Erst ein reservierter BEREICH löst beides:** `D`-Kennungen ab 900 zählen bei
+> Prüfung 83 nicht als Obergrenze. Er nennt keine Kennung und trägt die nächste
+> Sondenkennung ohne Nachtrag.
+> 🔴 **Das ist D-243 zweimal hintereinander, an einem Paar von SONDEN statt an einem Paar
+> von Regeltexten – und der gemessene Beleg, daß der Abnahmelauf gegen den fertigen Baum
+> kein Formalakt ist: BEIDE Auflösungen sahen am Validator grün aus.**
+> ⚠️ **Grenze, benannt:** Der Bereich ist eine Behauptung über künftige Vergaben, und
+> **keine Prüfung setzt ihn durch** (`K-114`); der Abstand beträgt heute 560 Kennungen.
+>
+> 🟢 **EIN BEFUND IST AUSGEBLIEBEN, UND DAS IST BERICHTENSWERT:** Die Tabelle *Nächste
+> freie Kennungen* stimmt – **zum ersten Mal seit vier Releases**, nachgezählt über alle
+> fünf Gattungen. Sie stand in `1.1.0`, `1.0.0` und `0.80.0` falsch.
+>
+> ⚠️ **DER RELEASEPLAN RÜCKT UM EINS** (D-339): `openai-codex` von `1.2.0` auf `1.3.0`,
+> das Overlay *„General Development"* auf `1.4.0`, die Installationsbibliothek auf
+> `1.5.0`. **Ausgewiesen statt stillschweigend.** Der Zuschnitt folgt einem erprobten
+> Muster: `0.81.0` Vorbedingungen, `0.82.0` Herrichtung, `0.83.0` Meßtag – **drei Nummern
+> für einen Posten.**
 
 > 🟢 **`1.1.0` – DIE REIHENFOLGE DES HEBENS, UND EIN PRÜFPUNKT, DEN SEIN EIGENES
 > VERFAHREN HINTER SEINEN ZEITPUNKT LEGT** (`CR-2026-130` E1 bis E5, **D-329** bis
@@ -3195,7 +3298,7 @@ sagte damit **mehr, als aus einem Kontrollauf folgt**.
 
 ## 1. Lage
 
-🟢 **`1.1.0` ORDNET DIE REIHENFOLGE DES HEBENS.** `main` = **1.1.0**, alles gemergt,
+🟢 **`1.2.0` GIBT DER CHRONIK EINE PRÜFUNG.** `main` = **1.2.0**, alles gemergt,
 **kein offener Antrag, kein Restbranch**, Arbeitsbaum sauber, Validator **0 Fehler, 0
 Warnungen** über **82 Prüfungen**, Sondenlauf in **beiden** Kodierungsumgebungen grün,
 und der **zeilengleiche Vergleich nach D-49 zeigt 0 Unterschiede.**
@@ -3415,9 +3518,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Umgebung | Pfad | Stand |
 |---|---|---|
-| Framework | `devpacks/koolie` | `main` = **1.1.0** (`4783f93`), Validator 0/0 über **82 Prüfungen**, Arbeitsbaum sauber, kein offener Branch. 🟢 **Drei Marken: `v1.0.0`, `v1.0.1` und `v1.1.0`**, annotiert und SSH-signiert, **alle drei mit Freigabezeile innerhalb der Signatur**, je mit Release-Archiv und Prüfsumme als Anhang am Gitea-Release. Die Archive liegen unter `devpacks/koolie-releases/` – `koolie-1.1.0.tar.gz`, 2,57 MB, SHA-256 `831822b3…43a4ddc`. Die Prüfvorrichtung liegt unter `.git/allowed_signers` (D-327), **nicht versioniert** |
-| Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `1.1.0` gehoben (2026-09-23), und zum ersten Mal VOR dem Release-Commit** (D-330). Overlay **`0.3.3`**, Client Pack `claude-code`. Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**; der Fehler ist Projektarbeit (gesperrter Begriff in `CHANGELOG.md`). ⚠️ **Der Overlay-Wert steht in DREI Trägern, und der Validator meldet sie nacheinander** – hier sind dafür drei Läufe angefallen |
-| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `1.1.0` gehoben (2026-09-23), vor dem Release-Commit**, Overlay **`1.1.0`**, Validator `--strict-overlay` **0 Fehler / 1 Warnung** (die bekannte Zeichenzahl der Laufzeitfassung, `K-88`: 6.023 von 6.000). Die **31** Präparationen `UEB-01` bis `UEB-31` sind unberührt |
+| Framework | `devpacks/koolie` | `main` = **1.2.0**, Validator 0/0 über **84 Prüfungen**, Arbeitsbaum sauber, kein offener Branch. 🟢 **Drei Marken: `v1.0.0`, `v1.0.1` und `v1.1.0`**, annotiert und SSH-signiert, **alle drei mit Freigabezeile innerhalb der Signatur**, je mit Release-Archiv und Prüfsumme als Anhang am Gitea-Release. Die Archive liegen unter `devpacks/koolie-releases/` – `koolie-1.1.0.tar.gz`, 2,57 MB, SHA-256 `831822b3…43a4ddc`. Die Prüfvorrichtung liegt unter `.git/allowed_signers` (D-327), **nicht versioniert** |
+| Pilot | `devpacks/otp-generator` | 🟢 **Auf Framework `1.2.0` gehoben (2026-09-23), vor dem Release-Commit** (D-330), zum **zweiten** Mal in dieser Reihenfolge. Overlay **`0.3.3`**, Client Pack `claude-code`. Validator `--strict-overlay` **1 Fehler / 2 Warnungen – derselbe Stand wie vor dem Heben**; der Fehler ist Projektarbeit (gesperrter Begriff in `CHANGELOG.md`). ⚠️ **Der Overlay-Wert steht in DREI Trägern, und der Validator meldet sie nacheinander** – hier sind dafür drei Läufe angefallen |
+| Übungsrepositorium | `devpacks/test-devin-framework` | 🟢 **Auf Framework `1.2.0` gehoben (2026-09-23), vor dem Release-Commit**, Overlay **`1.1.0`**, Validator `--strict-overlay` **0 Fehler / 1 Warnung** (die bekannte Zeichenzahl der Laufzeitfassung, `K-88`: 6.023 von 6.000). Die **31** Präparationen `UEB-01` bis `UEB-31` sind unberührt |
 | Belege Bündel 5 | `devpacks/leitwerk-erhebungen-2026-09-22-b5/` | 🟢 **Angelegt mit `0.83.0`: 124 Belegdateien, rund 19 MB, unversioniert** – dazu die fünfzehn Dossiers und die dreißig Prompts. **Der Pfad wird über `LW_ERHEBUNG` gesagt** (D-224) |
 | Meßbäume Bündel 5 | `C:\lw-b5` | *(nach der Abnahme entfernt)* – 30 Zellbäume und sieben Basen, aus `umgebungen-bauen-b5.py` und `baeume-b5.py` in rund zwanzig Minuten neu baubar |
 | Messumgebungen 0.54.0 | *(gelöscht)* | Die vier Zuschnitte des ersten Sitzungstests sind **jederzeit neu baubar** – Skripte siehe Abschnitt 6, *Sitzungstests fahren* |
@@ -3429,9 +3532,11 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 | ~~Belege 0.59.0~~ | 🔴 ~~`devpacks/leitwerk-erhebungen-2026-09-18-s4/`~~ | **WEG** (D-283) |
 | 🟢 Belege `AP2`-Rest | `devpacks/leitwerk-erhebungen-2026-09-22-ap2/` | **Angelegt mit `0.86.0`: 333 Dateien** – 70 Mitschriften mit Werkzeugaufrufen, Prompts, ein verworfener Lauf unter `verworfen/`, **unversioniert** |
 
-**Abnahme:** Der Prüfapparat steht bei **82 Prüfungen** – 🟢 **und diese Zahl hält seit D-325 Prüfung 78, nicht mehr die Hand.** ⚠️ **Sie stand hier VIERMAL in Folge auf einem überholten Wert**, zuletzt auf 76 gegen 80, während die Prüfung dafür seit `0.90.0` lief und **eine von zwei Stellen** erreichte – *das ist D-295 an einem zweiten Gegenstand.*
+**Abnahme:** Der Prüfapparat steht bei **84 Prüfungen** – 🟢 **und diese Zahl hält seit D-325 Prüfung 78, nicht mehr die Hand.** ⚠️ **Sie stand hier VIERMAL in Folge auf einem überholten Wert**, zuletzt auf 76 gegen 80, während die Prüfung dafür seit `0.90.0` lief und **eine von zwei Stellen** erreichte – *das ist D-295 an einem zweiten Gegenstand.*
 
 🔴 **ZWEI ZÄHLUNGEN, UND BEIDE SIND RICHTIG** (`CR-2026-128` B9, dieselbe Bauform wie `K-100`): Der Apparat meldet **322 angemeldete Einheiten** – seine eigene Definition zählt ein **Bündel einmal**, *„nie einen seiner Teile"*. Die **Ergebniszeilen** sind mehr, weil ein Bündel mehrere schreibt. **Wer eine Zahl über den Apparat nennt, sagt dazu, welche der beiden er meint.**
+
+**Gemessen am Abnahmelauf von `1.2.0`:** **325 angemeldete Einheiten**, **463 Ergebniszeilen**, **0 Unterschiede in 499 Zeilen**, beide Umgebungen **Exit 0** und *„alle Sonden und Gegenproben bestanden"*. Laufzeit **4.136 s** Rechenzeit in **525 s** Wanduhr (Umgebung 1) und **4.213 s** in **534 s** (Umgebung 2), je acht Bahnen. 🔴 **Dazu kamen DREI verworfene Läufe von zusammen rund 1.590 s:** der verfrühte aus Falle 1 und die beiden, die die gefallenen Auflösungen von D-340 gemessen haben. ➡️ *Zwei davon waren kein Verlust, sondern der Preis der Messung – sie haben zwei falsche Auflösungen widerlegt, und der Validator war beide Male grün.*
 
 **Gemessen am Abnahmelauf von `1.1.0`:** **323 angemeldete Einheiten**, **452 Ergebniszeilen** (272 Sonden, 157 Gegenproben, 23 Selbstproben), **0 Unterschiede in 486 Zeilen**, beide Umgebungen *„alle Sonden und Gegenproben bestanden"*. 🟢 **Der Zuwachs ist genau Prüfung 82:** +3 Sonden, +2 Gegenproben. ⚠️ **Der erste Durchgang war rot, und zwar an der richtigen Stelle:** Gegenprobe `78a` meldete **519** statt 517 versionierte Dateien – der Antrag und das Protokoll dieses Releases, die der Validator erst zählt, wenn sie verfolgt sind. *Das ist der benannte Preis von Prüfung 78: die Zahl der versionierten Dateien steht erst fest, wenn das Release fertig ist.* ⚠️ **Ehrlich gebucht, und der erste Anlauf dieses Satzes war schon falsch:** Er sagte, nach dem Abnahmelauf sei *nur diese Zeile* angefaßt worden. Tatsächlich sind danach **vier Markdown-Träger** berichtigt worden – `RELEASE_PROCESS.md`, das Protokoll, das Decision Log und diese Übergabe –, weil der Durchgang vor dem Commit die Zahl des Hebe-Vergleichs gefangen hat (517 gegen 519). **Kein Prüfmittel war darunter**, der Baum ist danach neu gehoben und neu gebaut worden, und der **dritte Durchgang ist zeilengleich zum zweiten**. 🟢 **Gemessen, nicht vorhergesagt: Der dritte Durchgang hat **null** Unterschiede zum zweiten.** 🔴 **Und es gab einen VIERTEN, weil beim Setzen der Marke ein Befund fiel:** Die Freigabe steht in der **Marke**, nicht im Protokoll (`K-111`) – sieben Träger sind daraufhin berichtigt worden, der Baum neu gehoben und neu gebaut. **Auch der vierte Durchgang ist zeilengleich: null Unterschiede zum dritten.** ➡️ *Eine Aufzeichnung über eine Änderung ist selbst eine; irgendwo hört man auf und schreibt hin, wo* – hier. **Danach sind nur noch die Laufzeiten eingetragen worden, und die stehen nach D-94 unterhalb der Trennlinie** – genau deshalb, weil ihr Eintrag sonst die Endfassung änderte, die sie messen. *(zum Stand von `1.0.1`:)* **322 angemeldete Einheiten**, **447 Ergebniszeilen**, **0 Unterschiede in 480 Zeilen** – und **zeilengleich zum Lauf von `1.0.0`**, obwohl ein Release dazwischen liegt. **Laufzeit 513 s und 503 s** Wanduhr auf 8 Bahnen, gemessen am **vierten** Durchgang (dritter: 499 s und 501 s). *(zum Stand von `1.0.0`:)* **Laufzeit 451 s und 460 s** Wanduhr auf 8 Bahnen (Faktor 7,9), **zeilengleicher Vergleich 0 Unterschiede in 480 Zeilen** – und der **vierte Durchgang ist zeilengleich zum dritten**. Die Laufzeiten stehen unterhalb der Trennlinie (D-94) und sind nicht Teil des zeilengleichen Vergleichs.
 
@@ -3486,9 +3591,9 @@ Das Heben ist kein Rückstand, sondern Routine – der Ablauf steht in Abschnitt
 
 | Gattung | nächste frei |
 |---|---|
-| Änderungsantrag | **`CR-2026-131`** – 🔴 **nachgezählt am 2026-09-23, zum DRITTEN Mal veraltet vorgefunden:** die Tabelle führte `CR-2026-129` als frei, vergeben waren `-129` und `-130` |
-| Decision Record | **`D-335`** – die Tabelle stand auf `D-327`, vergeben sind bis **`D-334`** |
-| Klärungspunkt | **`K-112`** – 🔴 **nachgezählt am 2026-09-23: vergeben bis `K-111`**; die Tabelle stand auf `K-105` und war sechs Kennungen zurück. *(Der folgende Text ist der alte Stand:)* **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. 🔴 **Nachgezählt am 2026-09-23: 102 Registerzeilen, höchste Kennung `K-104`** – die Zahl stand hier auf „101 / `K-103`" und war schon für ihr eigenes Datum falsch: `K-104` ist in **demselben** Release vergeben worden, das sie geschrieben hat.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **die zusammengesetzte Kennung der Sonde zu Prüfung 50** (bis `0.89.0` stand hier *„eine der sechs belegten synthetischen Kennungen"*, und das war zweimal falsch: es sind fünf, und `K-95` gehört ausdrücklich **nicht** dazu) –, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
+| Änderungsantrag | **`CR-2026-132`** – `CR-2026-131` ist mit `1.2.0` vergeben. *(Der folgende Text ist der alte Stand:)* **`CR-2026-131`** – 🔴 **nachgezählt am 2026-09-23, zum DRITTEN Mal veraltet vorgefunden:** die Tabelle führte `CR-2026-129` als frei, vergeben waren `-129` und `-130` |
+| Decision Record | **`D-341`** – nachgezählt am 2026-09-23, vergeben sind bis **`D-340`**. 🔴 **`D`-Kennungen ab 900 sind ein reservierter Sondenbereich** (D-340) und werden nie echt vergeben. 🔴 **`D-993` ist BELEGT und wird nie echt vergeben** (D-340, Gegenprobe 58b) |
+| Klärungspunkt | **`K-115`** – vergeben bis `K-114` (aus `1.2.0`). *(Der folgende Text ist der alte Stand:)* **`K-112`** – 🔴 **nachgezählt am 2026-09-23: vergeben bis `K-111`**; die Tabelle stand auf `K-105` und war sechs Kennungen zurück. *(Der folgende Text ist der alte Stand:)* **`K-105`** – 🟢 `0.89.0` hat **einen** vergeben (`K-104`, die Frage nach einer Prüfung auf die Aussagen der Wurzel-README) und **einen geschlossen** (`K-103`). ⚠️ `0.88.1` hat **drei** vergeben (`K-101` die Ableitung in sechs Trägern, `K-102` die Zurechenbarkeit über Bündel 1 bis 3, `K-103` die ungeprüfte Wurzel-README) und **keinen** geschlossen. 🔴 **Nachgezählt am 2026-09-23: 102 Registerzeilen, höchste Kennung `K-104`** – die Zahl stand hier auf „101 / `K-103`" und war schon für ihr eigenes Datum falsch: `K-104` ist in **demselben** Release vergeben worden, das sie geschrieben hat.* — *zum Stand von 0.88.0:* ⚠️ `0.88.0` hat **`K-100`** vergeben (27 Klärungspunkte in der falschen Tabelle) und **zwei geschlossen** (`K-84`, `K-97`). 🔴 **`K-99` IST DIE BELEGTE SYNTHETISCHE KENNUNG UND WIRD ÜBERSPRUNGEN** (Gegenprobe 46b); eine echte Vergabe darauf kollidierte beim nächsten Sondenlauf, und **genau das ist `0.86.0` mit `K-95` passiert.** ⚠️ `0.87.0` hat `K-98` vergeben und **keinen** geschlossen. *Nachzählen, nicht glauben.* — *zum Stand von 0.86.1:* ⚠️ `0.86.0` hat **vier** vergeben (`K-92`, `K-93`, `K-94` und **`K-96`**) und **keinen** geschlossen. 🔴 **`K-95` ist übersprungen, und das ist der zweite Fall dieser Art:** Der vierte Punkt hieß zuerst `K-95` – **die zusammengesetzte Kennung der Sonde zu Prüfung 50** (bis `0.89.0` stand hier *„eine der sechs belegten synthetischen Kennungen"*, und das war zweimal falsch: es sind fünf, und `K-95` gehört ausdrücklich **nicht** dazu) –, und der Sondenlauf hat die Kollision gemeldet (`50a`/`50b`: *„K-95 steht bereits im Register – die Sonde zu 50 braucht eine freie Kennung"*). *Eine synthetische Kennung nimmt nie die nächste freie* – der Satz steht hier seit `0.58.0`, und er hat sich zum zweiten Mal bewährt, diesmal an der Gegenrichtung |
 | Grenzfall | **`G-21`** |
 | Übungspräparation | **`UEB-32`** – `UEB-30` und `UEB-31` sind mit `0.82.0` gebaut |
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 82, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 84, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -7734,6 +7734,287 @@ def sonden_bestandsliste_stand() -> None:
 buendel(sonden_bestandsliste_stand,
         "Pruefung 82 haelt die Bestandsliste gegen VERSION und ist in einem "
         "uebernehmenden Projekt gruen, ohne eine Versionsnummer zu kennen")
+
+
+
+# --- Pruefung 83: die Chronik zaehlt ihr eigenes Release zu Ende (CR-2026-131) -----
+#
+# FUENF EINHEITEN, UND DIE ZWEITE GEGENPROBE IST DIE, DIE MAN WEGLASSEN WUERDE.
+#   83a (Gegenprobe) - die berichtigte Chronik laeuft durch, und die Pruefung ist
+#                      dabei nachweislich gelaufen (keine Ankermeldung).
+#   83b (Gegenprobe) - 🔴 DIE, DIE DEN ZUSCHNITT TRAEGT. Die Releasetabelle ist NICHT
+#                      sortiert: gemessen am 2026-09-23 stand `1.0.1` VOR `1.0.0`
+#                      (D-337). Eine Spanne, die NICHT die hoechste ist, wird hinter
+#                      die hoechste gestellt - die Pruefung muss GRUEN bleiben, weil
+#                      sie die hoechste Obergrenze nimmt und nicht die zuletzt
+#                      geschriebene. Ohne diese Gegenprobe waere die Reihenfolgefestig-
+#                      keit eine Behauptung im Kopfkommentar statt eine gemessene
+#                      Eigenschaft - genau die Bauform, die 0.90.0 zweimal gekostet
+#                      hat (D-326, D-299).
+#   83a (Sonde)      - eine Entscheidung wird ins Register gehaengt, ohne die Spanne
+#                      zu heben: der gemessene Fall aus 1.1.0 wird gemeldet, und die
+#                      Meldung nennt die fehlende Kennung.
+#   83b (Sonde)      - die Spannenschreibweise entfernt: der verlorene Anker wird als
+#                      Fehler gemeldet, statt leise zu bestehen (D-23).
+#   83c (Sonde)      - eine Spanne ueber die hoechste Kennung hinaus: die Chronik
+#                      nennt eine Entscheidung, die es nicht gibt.
+#
+# KEINE EINHEIT HAELT EINE KENNUNG WOERTLICH. Sie lesen die hoechste aus dem Register
+# und rechnen daran - dieselbe Lehre wie bei Pruefung 78, 81 und 82: Eine Sonde, die
+# einen Wert mitpflegen muss, faellt beim naechsten Release aus, und zwar als
+# scheinbarer Befund.
+M83_FEHLEND = "In der Chronik fehlen"
+M83_UEBER = "das Register fuehrt hoechstens"
+M83_ANKER = "keine Release-Spanne der Form"
+M83_REGISTER = "keine Registerzeile '| D-NNN |' gefunden - Pruefung 83"
+
+P83_ROADMAP = ".koolie/core/docs/ROADMAP.md"
+P83_REGISTER = ".koolie/core/governance/DECISION_LOG.md"
+
+
+def _83_hoechste(root: str) -> int:
+    """Die hoechste vergebene D-Kennung - ausgerechnet, nicht gewusst."""
+    text = lies(P(root, *P83_REGISTER.split("/")))
+    return max(int(n) for n in re.findall(r"^\|\s*(?:\*\*)?D-(\d+)", text, re.M))
+
+
+def _83_spanne(root: str) -> tuple:
+    """(Volltext, Untergrenze, Obergrenze) der hoechsten Spanne in der ROADMAP."""
+    text = lies(P(root, *P83_ROADMAP.split("/")))
+    treffer = re.findall(r"\*\*D-(\d+)\*\*\s*bis\s*\*\*D-(\d+)\*\*", text)
+    a, b = max(treffer, key=lambda t: int(t[1]))
+    return text, int(a), int(b)
+
+
+def sonden_chronikspanne() -> None:
+    """Wirkungsnachweis zu Pruefung 83."""
+    root = kopie()
+    try:
+        rpfad = P(root, *P83_ROADMAP.split("/"))
+        dpfad = P(root, *P83_REGISTER.split("/"))
+        rtext, unten, oben = _83_spanne(root)
+        dtext = lies(dpfad)
+        hoechste = _83_hoechste(root)
+        woertlich = "**D-%d** bis **D-%d**" % (unten, oben)
+
+        # --- Gegenprobe 83a: die berichtigte Chronik laeuft durch -------------------
+        aus = validator_ausgabe(root)
+        ok = (M83_FEHLEND not in aus and M83_UEBER not in aus
+              and M83_ANKER not in aus and M83_REGISTER not in aus)
+        melde("GEGENPROBE", "83a", ok,
+              "Die berichtigte Chronik laeuft durch - die hoechste Release-Spanne "
+              "endet bei der hoechsten vergebenen Kennung, und die Pruefung ist dabei "
+              "nachweislich gelaufen")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "83" in z or "Spanne" in z)[:400])
+
+        # --- Gegenprobe 83b: DIE REIHENFOLGEPROBE (D-337) ---------------------------
+        # Eine NIEDRIGERE Spanne wird HINTER die hoechste gestellt. Die Pruefung nimmt
+        # die hoechste Obergrenze, nicht die zuletzt geschriebene - genau deshalb ist
+        # sie gegen eine unsortierte Releasetabelle fest.
+        nachzuegler = "\n| **PROBE** | **D-%d** bis **D-%d** | Probe 83b |\n" % (
+            unten, max(unten, oben - 1))
+        schreib(rpfad, rtext + nachzuegler)
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "83b", M83_FEHLEND not in aus and M83_UEBER not in aus,
+              "Eine niedrigere Spanne HINTER der hoechsten laeuft durch - die Pruefung "
+              "nimmt die hoechste Obergrenze, nicht die zuletzt geschriebene. Gemessen "
+              "stand `1.0.1` vor `1.0.0` (D-337)")
+        if M83_FEHLEND in aus or M83_UEBER in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "ROADMAP" in z)[:400])
+        schreib(rpfad, rtext)
+
+        # --- Sonde 83a: eine Entscheidung ohne Hebung der Spanne --------------------
+        vorher = baumhash(root)
+        neue = hoechste + 1
+        zeile = ("| D-%d | **Probe 83a.** | Probe | Probe | Probe | 2026-01-01 |"
+                 % neue)
+        anker = "| D-%d |" % hoechste
+        if anker not in dtext:
+            raise Praeparationsfehler(
+                "Sonde 83a: keine Registerzeile `%s` - die Sonde hat ihren "
+                "Gegenstand verloren" % anker)
+        stelle = dtext.index("\n", dtext.index(anker))
+        schreib(dpfad, dtext[:stelle] + "\n" + zeile + dtext[stelle:])
+        if baumhash(root) == vorher:
+            raise Praeparationsfehler("Sonde 83a hat nichts geschrieben")
+        aus = validator_ausgabe(root)
+        ok = M83_FEHLEND in aus and ("D-%d" % neue) in aus
+        melde("SONDE", "83a", ok,
+              "Eine Entscheidung, die ins Register faellt, ohne dass die Spanne "
+              "nachgezogen wird, wird gemeldet - und die Meldung nennt die fehlende "
+              "Kennung. Der gemessene Fall aus 1.1.0")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(dpfad, dtext)
+
+        # --- Sonde 83b: der verlorene Anker -----------------------------------------
+        if woertlich not in rtext:
+            raise Praeparationsfehler(
+                "Sonde 83b: die Spanne `%s` steht nicht woertlich in %s - die Sonde "
+                "hat ihren Gegenstand verloren" % (woertlich, P83_ROADMAP))
+        ohne = rtext.replace("** bis **D-", "** und **D-")
+        schreib(rpfad, ohne)
+        aus = validator_ausgabe(root)
+        melde("SONDE", "83b", M83_ANKER in aus,
+              "Geht die Spannenschreibweise verloren, meldet die Pruefung es - eine "
+              "Konsistenzpruefung ohne Anker bestuende sonst leise (D-23)")
+        if M83_ANKER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(rpfad, rtext)
+
+        # --- Gegenprobe 83c: DIE SYNTHETISCHE KENNUNG GEHOERT HERAUS ---------------
+        # 🔴 DIESE EINHEIT IST EIN GEMESSENER BEFUND, NICHT EINE VORSICHTSMASSNAHME.
+        # Die Gegenprobe 58b legt eine Registerzeile mit die Sondenkennung von Prüfung 58 an - der Kennung, die
+        # den Sonden gehoert. Beim ersten Abnahmelauf von 1.2.0 las diese Pruefung sie
+        # als hoechste vergebene und meldete 654 fehlende Entscheidungen. Der Befund
+        # dahinter war groesser: die Sondenkennung von Prüfung 58 stand in KEINER Liste der belegten
+        # synthetischen Kennungen, obwohl der Apparat sie seit 0.70.0 benutzt - und
+        # Pruefung 50 wie 58 konnten es nie sehen, weil sie eine GENANNTE Kennung ohne
+        # Registerzeile melden und diese hier ihre Zeile selbst anlegt.
+        # ➡️ Erst eine Pruefung, die die OBERGRENZE misst statt der Zugehoerigkeit,
+        # trifft sie. Diese Einheit haelt fest, dass sie herausgenommen bleibt.
+        synth = "D-" + "993"
+        zeile_s = ("| %s | Sondenentscheidung | Sondenbegruendung | Sondenalternative "
+                   "| entschieden | 2026-01-01 |" % synth)
+        stelle = dtext.index("\n", dtext.index(anker))
+        schreib(dpfad, dtext[:stelle] + "\n" + zeile_s + dtext[stelle:])
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "83c", M83_FEHLEND not in aus and M83_UEBER not in aus,
+              "Die synthetische Kennung des Pruefapparats hebt die Obergrenze NICHT - "
+              "sie gehoert den Sonden und wird nie echt vergeben. Gemessen als Befund "
+              "am ersten Abnahmelauf von 1.2.0 (D-335)")
+        if M83_FEHLEND in aus or M83_UEBER in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "ROADMAP" in z)[:400])
+        schreib(dpfad, dtext)
+
+        # --- Sonde 83c: eine Spanne ueber die hoechste Kennung hinaus ---------------
+        zuweit = rtext.replace(woertlich,
+                               "**D-%d** bis **D-%d**" % (unten, hoechste + 5), 1)
+        if zuweit == rtext:
+            raise Praeparationsfehler("Sonde 83c hat nichts geaendert")
+        schreib(rpfad, zuweit)
+        aus = validator_ausgabe(root)
+        melde("SONDE", "83c", M83_UEBER in aus,
+              "Eine Spanne ueber die hoechste vergebene Kennung hinaus wird gemeldet - "
+              "die Chronik nennt sonst eine Entscheidung, die es nicht gibt")
+        if M83_UEBER not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_chronikspanne,
+        "Pruefung 83 haelt die Chronik gegen das Register und ist gegen eine "
+        "unsortierte Releasetabelle fest, ohne eine Kennung woertlich zu kennen")
+
+
+# --- Pruefung 84: die Vorlage ist kein Client Pack (CR-2026-131) -------------------
+#
+# VIER EINHEITEN, UND DIE GEGENPROBE IST HIER DIE HAELFTE DES BEFUNDES.
+#   84a (Gegenprobe) - 🔴 DIE MESSUNG, DIE D-336 AUSGELOEST HAT, ALS DAUERHAFTE
+#                      EINHEIT. Die Vorlage mit einem Probemanifest laeuft NICHT mehr
+#                      als drittes Pack mit: `_client_packs()` nimmt sie seit D-336
+#                      nicht auf. Gemessen am 2026-09-23 war genau das der Befund -
+#                      drei Packs mit Manifest und 0 Fehler. Diese Einheit haelt fest,
+#                      dass die Ausnahme greift, und nicht nur, dass Pruefung 84
+#                      meldet.
+#   84b (Gegenprobe) - die unveraenderte Vorlage laeuft durch, und die Pruefung ist
+#                      dabei nachweislich gelaufen.
+#   84a (Sonde)      - ein manifest.json in der Vorlage wird gemeldet.
+#   84b (Sonde)      - ein root-template/ in der Vorlage wird gemeldet.
+#   84c (Sonde)      - die fehlende CLIENT_PACK.md wird gemeldet, statt leise zu
+#                      bestehen (D-23).
+M84_BESTANDTEIL = "die Vorlage traegt einen Bestandteil"
+M84_FEHLT = "Sie ist der einzige Bestandteil, den die Vorlage traegt"
+M84_VERZEICHNIS = "nimmt sie seit D-336 ausdruecklich NICHT auf"
+
+P84_VORLAGE = ".koolie/core/clients/_template"
+P84_VORBILD = ".koolie/core/clients/claude-code"
+
+
+def sonden_vorlage_kein_pack() -> None:
+    """Wirkungsnachweis zu Pruefung 84."""
+    root = kopie()
+    try:
+        vdir = P(root, *P84_VORLAGE.split("/"))
+        vorbild = P(root, *P84_VORBILD.split("/"))
+        mpfad = os.path.join(vdir, "manifest.json")
+        cpfad = os.path.join(vdir, "CLIENT_PACK.md")
+        ctext = lies(cpfad)
+
+        # --- Gegenprobe 84b: die unveraenderte Vorlage laeuft durch -----------------
+        aus = validator_ausgabe(root)
+        ok = (M84_BESTANDTEIL not in aus and M84_FEHLT not in aus
+              and M84_VERZEICHNIS not in aus)
+        melde("GEGENPROBE", "84b", ok,
+              "Die unveraenderte Vorlage laeuft durch - sie traegt genau eine "
+              "CLIENT_PACK.md, und die Pruefung ist dabei nachweislich gelaufen")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "_template" in z)[:400])
+
+        # --- Gegenprobe 84a: DIE MESSUNG, DIE D-336 AUSGELOEST HAT ------------------
+        # Ein Probemanifest in der Vorlage - eine Kopie des Manifests eines ECHTEN
+        # Clients. Vor D-336 lief die Vorlage damit als drittes Pack durch alle
+        # Pruefungen, und der Validator meldete NULL. Danach meldet Pruefung 84 den
+        # Bestandteil, und KEINE andere Pruefung nimmt die Vorlage als Pack auf.
+        schreib(mpfad, lies(os.path.join(vorbild, "manifest.json")))
+        aus = validator_ausgabe(root)
+        fremd = [z for z in aus.splitlines()
+                 if "_template" in z and M84_BESTANDTEIL not in z]
+        melde("GEGENPROBE", "84a", not fremd,
+              "Die Vorlage mit Probemanifest loest KEINE Packpruefung aus - "
+              "`_client_packs()` nimmt sie seit D-336 nicht auf. Vor D-336 lief sie "
+              "als drittes Pack durch, und der Validator meldete null")
+        if fremd:
+            notiz("        Ausgabe:", " | ".join(fremd)[:400])
+
+        # --- Sonde 84a: ein manifest.json in der Vorlage ----------------------------
+        melde("SONDE", "84a", M84_BESTANDTEIL in aus,
+              "Ein manifest.json in der Vorlage wird gemeldet - eine Vorlage, die nur "
+              "durch ihre Unvollstaendigkeit ungeprueft bleibt, ist nicht ausgenommen")
+        if M84_BESTANDTEIL not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        os.remove(mpfad)
+
+        # --- Sonde 84b: ein root-template/ in der Vorlage ---------------------------
+        rt = os.path.join(vdir, "root-template")
+        os.makedirs(rt, exist_ok=True)
+        schreib(os.path.join(rt, "README.md"), "# Probe 84b\n")
+        aus = validator_ausgabe(root)
+        melde("SONDE", "84b", M84_BESTANDTEIL in aus,
+              "Ein root-template/ in der Vorlage wird gemeldet - derselbe Zuschnitt "
+              "wie beim Manifest, und beide stehen in clients/README.md Abschnitt 3")
+        if M84_BESTANDTEIL not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        shutil.rmtree(rt)
+
+        # --- Sonde 84c: die fehlende CLIENT_PACK.md ---------------------------------
+        os.remove(cpfad)
+        aus = validator_ausgabe(root)
+        melde("SONDE", "84c", M84_FEHLT in aus,
+              "Geht die CLIENT_PACK.md der Vorlage verloren, meldet die Pruefung es - "
+              "ohne ihren Gegenstand bestuende sie leise (D-23)")
+        if M84_FEHLT not in aus:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(cpfad, ctext)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_vorlage_kein_pack,
+        "Pruefung 84 haelt die Vorlage aus der Packmenge heraus, und die Gegenprobe "
+        "misst die Ausnahme selbst und nicht nur die Meldung")
 
 
 if LISTE:

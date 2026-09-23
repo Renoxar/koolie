@@ -604,8 +604,37 @@ Prüft (statisch, ohne laufenden KI-Client):
      Releases zurueck. 🔴 GRENZE: Sie misst die BEHAUPTUNG der Zeile, nicht den Stand
      des Projekts; wer die Zeile aendert ohne zu heben, kommt durch. Dieselbe Bauform
      wie Pruefung 77 (Version, nicht Inhalt). PREIS: Jedes Release fasst diese Tabelle
-     an - wie bei Pruefung 67 und 77
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 82 laeuft als eigenes
+ an - wie bei Pruefung 67 und 77
+ 83. Die Chronik zaehlt ihr eigenes Release zu Ende (D-335): Die hoechste
+     Release-Spanne "**D-NNN** bis **D-NNN**" in docs/ROADMAP.md endet bei der
+     hoechsten vergebenen Kennung des Decision Logs. ANLASS: 1.1.0 stand auf
+     "D-329 bis D-332", vergeben sind D-329 bis D-334. URSACHE GEMESSEN: D-333 und
+     D-334 sind BEIM UMSETZEN gefallen, die Zeile war da laengst geschrieben - eine
+     Zahl, die vor ihrem Gegenstand geschrieben wird, ist danach nicht mehr richtig.
+     🔴 DER SCHWERERE TEIL: Von vier beschreibenden Traegern nennt keiner alle sechs,
+     und D-333 steht in keinem - nur die MARKE nennt die Menge vollstaendig, und sie
+     ist der einzige Traeger, den keine Pruefung erreichen kann (K-111, K-113).
+     WARUM PRUEFUNG 58 ES NICHT FAENGT: Sie haelt die Gegenrichtung (jede genannte
+     Kennung steht im Register); hier fehlt die Nennung einer vergebenen Kennung.
+     D-299-PROBE BESTANDEN: Beide Traeger liegen im Kern und werden byte-gleich
+     ausgeliefert. 🔴 GRENZE: Sie misst die OBERGRENZE, nicht die Vollstaendigkeit der
+     Nennungen - dieselbe Bauform wie 77 und 82 (K-112). PREIS: Jedes Release fasst
+     diese Zeile an - wie bei Pruefung 67, 77 und 82
+ 84. Die Client-Pack-Vorlage ist kein Client Pack (D-336): clients/_template traegt
+     genau eine CLIENT_PACK.md und weder manifest.json noch root-template/. ANLASS:
+     `_client_packs()` nahm jedes Verzeichnis mit CLIENT_PACK.md auf, und _template
+     erfuellt das - was die Vorlage vor allen Pruefungen schuetzte, war allein ihr
+     fehlendes Manifest. GEMESSEN am 2026-09-23 mit einem Probemanifest (Kopie des
+     Manifests von claude-code, also eines FREMDEN Clients): drei Packs mit Manifest,
+     Validator 0 Fehler, 0 Warnungen. Und clients/README.md Schritt 5 verlangt genau
+     dieses Manifest fuer jedes neue Pack. ➡️ EINE VORLAGE, DIE NUR DESHALB KEINE
+     PRUEFUNG AUSLOEST, WEIL IHR EIN BESTANDTEIL FEHLT, IST NICHT AUSGENOMMEN - SIE IST
+     UNVOLLSTAENDIG. 🔴 Die Bauform "zwei Stellen, die einander decken" (0.57.0).
+     ⚠️ Die Ausnahme existierte an zwei anderen Stellen (Pruefung 73,
+     LINK_PATH_EXCEPTIONS) und nicht dort, wo die Packmenge ENTSTEHT; seit D-336 steht
+     sie in `_client_packs()`. 🔴 GRENZE: Sie prueft die ANWESENHEIT von Bestandteilen,
+     nicht deren Inhalt
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 84 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -2684,12 +2713,25 @@ DATUM_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 
 def _client_packs(root: str) -> list[tuple[str, str, dict]]:
-    """(Kennung, Verzeichnis, Manifest) je Client Pack; _template ohne Manifest."""
+    """(Kennung, Verzeichnis, Manifest) je Client Pack; OHNE die Vorlage `_template`.
+
+    🔴 D-336: Bis 1.2.0 stand hier "_template ohne Manifest" - eine Annahme, keine
+    Ausnahme. `_template` traegt eine CLIENT_PACK.md und stand damit in dieser Menge;
+    was es vor allen Pruefungen schuetzte, war allein sein fehlendes `manifest.json`.
+    Gemessen am 2026-09-23 mit einem Probemanifest: drei Packs mit Manifest, Validator
+    0 Fehler. Und `clients/README.md` Schritt 5 verlangt genau dieses Manifest fuer
+    jedes neue Pack.
+    ➡️ Eine Vorlage, die nur durch ihre Unvollstaendigkeit ungeprueft bleibt, ist nicht
+    ausgenommen. Die Ausnahme steht seit D-336 HIER, wo die Packmenge entsteht - und
+    Pruefung 84 haelt fest, was sie voraussetzt.
+    """
     raus: list[tuple[str, str, dict]] = []
     cdir = os.path.join(root, KERN, "clients")
     if not os.path.isdir(cdir):
         return raus
     for name in sorted(os.listdir(cdir)):
+        if name == "_template":
+            continue  # die Vorlage ist kein Pack (D-336, Pruefung 84)
         pdir = os.path.join(cdir, name)
         if not os.path.isdir(pdir):
             continue
@@ -9159,6 +9201,223 @@ def check_bestandsliste_stand(root: str) -> None:
              f"Messergebnis (D-23)")
 
 
+
+# Pruefung 83: die Chronik zaehlt ihr eigenes Release zu Ende (CR-2026-131, D-335)
+# ---------------------------------------------------------------------------
+#
+# ANLASS, GEMESSEN IM VORBEDINGUNGSDURCHGANG VON 1.2.0. `docs/ROADMAP.md` fuehrt je
+# Release eine Zeile mit der SPANNE der Entscheidungen, die es vergeben hat. Ueber
+# vierzehn Releases mit Spannenschreibweise ist sie lueckenlos - und die letzte war um
+# zwei zu niedrig: `1.1.0` stand auf "D-329 bis D-332", vergeben sind D-329 bis D-334.
+#
+# DIE URSACHE IST GEMESSEN UND STEHT IM EIGENEN RELEASE. D-333 und D-334 sind BEIM
+# UMSETZEN gefallen; die Uebergabe zu 1.1.0 sagt es woertlich. Die ROADMAP-Zeile war zu
+# diesem Zeitpunkt laengst geschrieben.
+# ➡️ EINE ZAHL, DIE VOR IHREM GEGENSTAND GESCHRIEBEN WIRD, IST ZUM ZEITPUNKT IHRER
+# NIEDERSCHRIFT RICHTIG UND DANACH NICHT MEHR. Das ist die Bauform von Pruefung 40 -
+# hier INNERHALB eines einzigen Releases statt ueber zweiundvierzig.
+#
+# 🔴 DER SCHWERERE TEIL: KEIN BESCHREIBENDER TRAEGER NENNT ALLE SECHS. Vier Traeger
+# beschreiben 1.1.0 - ROADMAP vier, CHANGELOG fuenf, Antrag vier, Protokoll vier. D-333
+# steht in keinem davon. Es steht im Register, im Protokoll und in den beiden normativen
+# Traegern, die es GEAENDERT hat - also dort, wo es wirkt, und nirgends dort, wo das
+# Release erklaert wird. Und D-333 ist die Entscheidung, die den SCHWERSTEN Befund von
+# 1.1.0 behoben hat.
+# 🟢 Der einzige Traeger, der die Menge vollstaendig nennt, ist die MARKE ("D-329 bis
+# D-334") - und sie ist der einzige, den keine Pruefung erreichen kann: Der Markentext
+# liegt im Tag-Objekt, nicht im Arbeitsbaum (`K-111`, `K-113`).
+#
+# WARUM PRUEFUNG 58 ES NICHT FAENGT. Sie haelt die Gegenrichtung - jede GENANNTE Kennung
+# steht im Register. Der Befund hier ist eine VERGEBENE Kennung, die nirgends genannt
+# wird.
+# ➡️ PRUEFUNG 58 FAENGT DIE VERWAISTE NENNUNG, NICHT DIE VERWAISTE KENNUNG.
+#
+# D-299-PROBE, GEFUEHRT UND BESTANDEN: Beide Traeger liegen im Kern und werden
+# byte-gleich ausgeliefert. Ein uebernehmendes Projekt, das Releases zurueckliegt, traegt
+# dieselbe ROADMAP und dasselbe Register aus demselben Release - die Pruefung ist dort
+# gruen und braucht keine Ausnahme.
+#
+# 🔴 GRENZE, BENANNT: SIE MISST DIE OBERGRENZE, NICHT DIE VOLLSTAENDIGKEIT DER
+# NENNUNGEN. Ein Traeger, der die Spanne richtig fuehrt und D-333 im Fliesstext nicht
+# nennt, kommt durch. Das ist dieselbe Bauform wie bei Pruefung 77 (Version, nicht
+# Inhalt) und 82 (Behauptung, nicht Tatsache) - und sie steht hier, weil eine Grenze,
+# die man nicht nennt, wie eine Zusage aussieht. `K-112` fuehrt die Frage weiter.
+#
+# ⚠️ PREIS, BENANNT: Jedes Release fasst diese Zeile an - derselbe Preis wie bei
+# Pruefung 67, 77 und 82.
+P83_ROADMAP = KERN + "/docs/ROADMAP.md"
+P83_REGISTER = KERN + "/governance/DECISION_LOG.md"
+P83_SPANNE_RE = re.compile(r"\*\*D-(\d+)\*\*\s*bis\s*\*\*D-(\d+)\*\*")
+P83_ZEILE_RE = re.compile(r"^\|\s*(?:\*\*)?D-(\d+)", re.M)
+P83_SONDEN_ANKER = "**Reservierter Kennungsbereich für Sonden"
+P83_GRENZE_RE = re.compile(r"ab (\d+) zählen nicht als Obergrenze")
+
+
+def _p83_sondengrenze(logtext: str) -> int:
+    """Ab welcher D-Nummer eine Kennung den Sonden gehoert (D-340).
+
+    EIN BEREICH UND KEINE LISTE, und der Grund ist gemessen: Eine Liste muesste die
+    Kennung WOERTLICH nennen - und dann meldet Pruefung 58 genau diese Nennung, weil
+    sie in keiner Registerzeile steht. Eine Ausnahme, die ihren Gegenstand nennen muss,
+    um zu wirken, erzeugt den Befund, den sie verhindern soll.
+
+    NICHT dieselbe Sache wie `_synthetische_kennungen()`: Jene Menge wird nie im
+    Register gefuehrt und vom MELDEN ausgenommen; dieser Bereich wird von einer
+    Gegenprobe selbst eingetragen und muss weiterhin gemeldet werden koennen - nur als
+    OBERGRENZE zaehlt er nicht. Null heisst: der Anker ist verloren; der Aufrufer
+    meldet das.
+    """
+    for zeile in logtext.splitlines():
+        if zeile.lstrip().startswith(P83_SONDEN_ANKER):
+            m = P83_GRENZE_RE.search(zeile)
+            return int(m.group(1)) if m else 0
+    return 0
+
+
+def check_chronikspanne(root: str) -> None:
+    """Pruefung 83 (D-335): Die letzte Release-Spanne endet bei der hoechsten Kennung."""
+    rpfad = os.path.join(root, *P83_ROADMAP.split("/"))
+    dpfad = os.path.join(root, *P83_REGISTER.split("/"))
+    if not os.path.isfile(rpfad):
+        err(f"{P83_ROADMAP}: fehlt - Pruefung 83 haette ihren Gegenstand verloren und "
+            f"bestuende sonst leise (D-23, D-335)")
+        return
+    if not os.path.isfile(dpfad):
+        return  # Pruefung 50 und 58 melden den fehlenden Traeger bereits
+
+    dtext = read(dpfad)
+    # 🔴 DIESE PRUEFUNG BRAUCHT IHRE EIGENE AUSNAHMEMENGE, UND ZWAR EINE ANDERE ALS
+    # PRUEFUNG 50 UND 58 (D-340). Der Anlass ist gemessen und hat zwei Stufen:
+    #
+    # STUFE 1, gefunden beim ersten Abnahmelauf von 1.2.0: Die Gegenprobe 58b legt eine
+    # Registerzeile mit ihrer Sondenkennung an, und diese Pruefung las sie als hoechste -
+    # 654 gemeldete Luecken.
+    #
+    # STUFE 2, gefunden beim ZWEITEN Abnahmelauf, nachdem die Sondenkennung von Pruefung 58 in die Menge der
+    # belegten synthetischen Kennungen eingetragen war: SONDE 58a VERLOR IHREN
+    # GEGENSTAND. Pruefung 58 nimmt jene Menge vom Melden aus - und Sonde 58a prueft
+    # genau, dass diese Kennung GEMELDET wird. Das Decision Log sagt denselben Satz
+    # ueber die Sondenkennung von Pruefung 50: "sie soll ja gemeldet werden".
+    # ➡️ ZWEI PRUEFUNGEN, DIE DIESELBE KENNUNG ANSEHEN, STELLEN NICHT DIESELBE FRAGE -
+    # die eine fragt nach ZUGEHOERIGKEIT, die andere nach einer GRENZE. Das ist D-243
+    # (zwei Regeln, die einander die Voraussetzung entziehen) an einem Paar von SONDEN.
+    #
+    # Deshalb ein EIGENER Anker im selben Absatz des Decision Logs, mit eigener
+    # Begruendung. Leere Menge heisst: der Anker ist verloren - das wird gemeldet.
+    grenze = _p83_sondengrenze(dtext)
+    if not grenze:
+        err(f"{P83_REGISTER}: der Absatz '{P83_SONDEN_ANKER}…' fehlt oder nennt keine "
+            f"Bereichsgrenze. Pruefung 83 leitet ihre Ausnahme daraus ab; ohne ihn "
+            f"liest sie eine Sondenkennung als hoechste vergebene Entscheidung "
+            f"(D-23, D-340)")
+        return
+    vergeben = [int(n) for n in P83_ZEILE_RE.findall(dtext) if int(n) < grenze]
+    if not vergeben:
+        err(f"{P83_REGISTER}: keine Registerzeile '| D-NNN |' gefunden - Pruefung 83 "
+            f"findet ihren Vergleichswert dort; geht er verloren, bestuende sie leise "
+            f"(D-23, D-335)")
+        return
+    hoechste = max(vergeben)
+
+    spannen = P83_SPANNE_RE.findall(read(rpfad))
+    if not spannen:
+        err(f"{P83_ROADMAP}: keine Release-Spanne der Form '**D-NNN** bis **D-NNN**' "
+            f"gefunden. Pruefung 83 findet ihren Gegenstand ueber diese Schreibweise; "
+            f"geht sie verloren, bestuende die Pruefung leise (D-23, D-335)")
+        return
+
+    # Die hoechste Obergrenze aller Spannen - nicht die zuletzt geschriebene. Die
+    # Releasetabelle ist nicht garantiert sortiert: gemessen am 2026-09-23 stand `1.0.1`
+    # VOR `1.0.0`, und eine Pruefung, die sich auf die Reihenfolge verlaesst, misst dann
+    # die falsche Zeile (D-337).
+    obergrenze = max(int(b) for _a, b in spannen)
+    if obergrenze == hoechste:
+        return
+    if obergrenze > hoechste:
+        err(f"{P83_ROADMAP}: die hoechste Release-Spanne endet bei D-{obergrenze}, das "
+            f"Register fuehrt hoechstens D-{hoechste}. Die Chronik nennt eine "
+            f"Entscheidung, die es nicht gibt - Pruefung 58 meldet sie zusaetzlich als "
+            f"nicht gefuehrte Kennung (D-335)")
+        return
+    fehlend = ", ".join(f"D-{n}" for n in range(obergrenze + 1, hoechste + 1))
+    err(f"{P83_ROADMAP}: die hoechste Release-Spanne endet bei D-{obergrenze}, vergeben "
+        f"ist bis D-{hoechste}. In der Chronik fehlen {fehlend}. Eine Entscheidung, die "
+        f"beim Umsetzen faellt, faellt NACH der Zeile, die sie nennen soll - und eine "
+        f"Zahl, die vor ihrem Gegenstand geschrieben wird, ist danach nicht mehr richtig. "
+        f"⚠️ Diese Pruefung misst die OBERGRENZE, nicht die Vollstaendigkeit der "
+        f"Nennungen (D-335, `K-112`)")
+
+
+# Pruefung 84: die Vorlage ist keine Client Pack (CR-2026-131, D-336)
+# ---------------------------------------------------------------------------
+#
+# ANLASS, GEMESSEN MIT EINEM PROBEMANIFEST UND WIEDER ENTFERNT. `clients/README.md`
+# Abschnitt 5 Schritt 1 sagt "`_template/` nach `<client-name>/` kopieren", Schritt 5
+# sagt "`manifest.json` anlegen", und Abschnitt 3 sagt "Ohne Manifest ist ein Pack nicht
+# installierbar". Die Vorlage traegt EINES VON DREI Bestandteilen.
+#
+# 🔴 UND SIE STEHT IN DER PACKMENGE DES PRUEFAPPARATS. `_client_packs()` nimmt jedes
+# Verzeichnis unter `clients/` auf, das eine CLIENT_PACK.md traegt - `_template` erfuellt
+# das. Der Docstring der Funktion hielt die Annahme fest, die sie trug: "_template ohne
+# Manifest".
+#
+# GEMESSEN am 2026-09-23: Ein Probemanifest angelegt (eine Kopie des Manifests von
+# `claude-code`, also eines, das einen FREMDEN Client beschreibt), Validator gefahren,
+# Probemanifest entfernt. `_client_packs()` lieferte drei Packs MIT Manifest, und der
+# Validator meldete 0 Fehler, 0 Warnungen.
+# ➡️ EINE VORLAGE, DIE NUR DESHALB KEINE PRUEFUNG AUSLOEST, WEIL IHR EIN BESTANDTEIL
+# FEHLT, IST NICHT AUSGENOMMEN - SIE IST UNVOLLSTAENDIG. Und der Tag, an dem jemand sie
+# nach der eigenen Anleitung vervollstaendigt, ist der Tag, an dem sie geprueft wird,
+# ohne dass es jemand entschieden hat.
+#
+# 🔴 DIE BAUFORM "ZWEI STELLEN, DIE EINANDER DECKEN" (0.57.0): Die unvollstaendige
+# Vorlage verhindert, dass die fehlende Ausnahme je auffaellt. Einzeln waere jede
+# aufgefallen; zusammen sahen sie aus wie ein Lauf ohne Befund.
+#
+# ⚠️ UND DIE AUSNAHME EXISTIERTE BEREITS - AN ZWEI ANDEREN STELLEN. Pruefung 73 schliesst
+# `_template` ausdruecklich aus, und LINK_PATH_EXCEPTIONS fuehrt den Pfad mit Begruendung.
+# Der zentrale Iterator tat es nicht.
+# ➡️ WER EINE AUSNAHME AN ZWEI STELLEN FUEHRT UND AN DER DRITTEN VERGISST, HAT SIE NICHT
+# VERGESSEN - ER HAT KEINE STELLE, AN DER SIE STEHT. Seit D-336 steht sie in
+# `_client_packs()`, also dort, wo die Packmenge ENTSTEHT.
+#
+# ZUSCHNITT: Diese Pruefung haelt fest, was die Ausnahme voraussetzt - dass die Vorlage
+# eine Vorlage BLEIBT. Traegt sie die Bestandteile eines vollstaendigen Packs, ist
+# entweder die Ausnahme falsch oder die Vorlage ein Pack; beides gehoert entschieden und
+# nicht stillschweigend gefahren.
+#
+# 🔴 GRENZE, BENANNT: Sie prueft die ANWESENHEIT von Bestandteilen, nicht deren Inhalt.
+# Eine `CLIENT_PACK.md`, die einen echten Client beschreibt statt Platzhalter zu fuehren,
+# kommt durch - das faengt Pruefung 7 ueber die Markerform.
+P84_VORLAGE = "_template"
+P84_VERBOTEN = ("manifest.json", "root-template")
+
+
+def check_vorlage_kein_pack(root: str) -> None:
+    """Pruefung 84 (D-336): Die Client-Pack-Vorlage traegt keine Packbestandteile."""
+    vdir = os.path.join(root, KERN, "clients", P84_VORLAGE)
+    if not os.path.isdir(vdir):
+        err(f"{KERN}/clients/{P84_VORLAGE}/: fehlt. `clients/README.md` Abschnitt 5 "
+            f"Schritt 1 baut jedes neue Client Pack aus ihr, und `_client_packs()` "
+            f"nimmt sie seit D-336 ausdruecklich NICHT auf - ohne den Gegenstand "
+            f"bestuende Pruefung 84 leise (D-23, D-336)")
+        return
+    if not os.path.isfile(os.path.join(vdir, "CLIENT_PACK.md")):
+        err(f"{KERN}/clients/{P84_VORLAGE}/CLIENT_PACK.md: fehlt. Sie ist der einzige "
+            f"Bestandteil, den die Vorlage traegt (D-336)")
+    for name in P84_VERBOTEN:
+        pfad = os.path.join(vdir, name)
+        if not os.path.exists(pfad):
+            continue
+        err(f"{KERN}/clients/{P84_VORLAGE}/{name}: die Vorlage traegt einen Bestandteil, "
+            f"den nur ein vollstaendiges Client Pack traegt. `_client_packs()` nimmt "
+            f"`{P84_VORLAGE}` seit D-336 nicht auf - damit liefe dieser Bestandteil "
+            f"ungeprueft mit, waehrend er in jedem echten Pack geprueft wird. Gemessen "
+            f"am 2026-09-23 mit einem Probemanifest: alle Pruefungen blieben gruen. "
+            f"Entweder ist die Ausnahme falsch oder die Vorlage ein Pack - beides "
+            f"gehoert entschieden (D-336)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -9256,6 +9515,8 @@ def main() -> int:
     check_gegenzeichnung(root)
     check_zeilenendeform(root)
     check_bestandsliste_stand(root)
+    check_chronikspanne(root)
+    check_vorlage_kein_pack(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
