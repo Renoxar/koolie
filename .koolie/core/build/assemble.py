@@ -47,6 +47,7 @@ CORE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOC = os.path.join(CORE, "build", "doc")
 OUT = os.path.join(CORE, "build", "out")
 EMBED_RE = re.compile(r"^\{\{(EMBED|EMBED-RAW):([^:}]+)(?::([^}]+))?\}\}\s*$", re.M)
+LOKAL_RE = re.compile(r"^\{\{LOKALE-ERGAENZUNG\}\}[ \t]*$", re.M)
 
 sys.path.insert(0, CORE)
 import clientmap  # noqa: E402  (liegt im Kernverzeichnis)
@@ -175,7 +176,37 @@ def process(text: str, man: dict, installation: str) -> str:
             fm_compact = "; ".join(l.strip() for l in fm.splitlines() if l.strip())
             prefix += f" · **Frontmatter (Laufzeit):** `{fm_compact}`"
         return prefix + "\n\n" + shift_headings(body, shift) + "\n"
-    return EMBED_RE.sub(repl, text)
+    return EMBED_RE.sub(repl, LOKAL_RE.sub(lambda m: lokale_ergaenzung(man), text))
+
+
+def lokale_ergaenzung(man: dict) -> str:
+    """Die persoenliche Ergaenzungsdatei - oder die Erklaerung, weshalb es sie nicht gibt.
+
+    🔴 BIS 1.4.1 WAR DAS HAUPTDOKUMENT FUER `openai-codex` NICHT BAUBAR (CR-2026-135).
+    Kapitel 16 bettete `<ROOT_INSTRUCTION_LOCAL>.example` fuer jedes Pack ein; dieses Pack
+    liefert die Vorlage bewusst NICHT aus, weil die Datei bei ihm die Wurzel-Anweisung
+    VERDRAENGT statt sie zu ergaenzen (D-341). Der Bau brach ab - und `1.4.0` hat Schritt
+    3 aus RELEASE_PROCESS.md 4.1 fuer das neue Pack nie gefahren.
+
+    Die Weiche ist das Manifestfeld `root_instruction_override`, nicht das Fehlen der
+    Datei: Fehlt sie bei einem Pack OHNE dieses Feld, bricht der Bau weiter ab. Eine
+    Einbettung, die bei jedem Fehlen still eine Erklaerung einsetzte, waere die Ausnahme,
+    die alles ausnimmt.
+    """
+    if not man.get("root_instruction_override"):
+        return ("Ergänzend gehört zur Vorlage die persönliche, nicht versionierte "
+                "Ergänzungsdatei – zulässig nur zum Einschränken und für "
+                "Arbeitsvorlieben, nie zum Erweitern von Freigaben:\n\n"
+                "{{EMBED:<ROOT_INSTRUCTION_LOCAL>.example}}")
+    lokal = man["runtime_placeholders"]["<ROOT_INSTRUCTION_LOCAL>"]
+    return (f"🔴 **Eine persönliche Ergänzungsdatei gibt es bei diesem Client Pack nicht** "
+            f"(`{man['client']}`). Die Datei an ihrer Stelle, `{lokal}`, ergänzt "
+            f"`{man['root_instruction_file']}` nicht, sondern **verdrängt** sie vollständig: "
+            f"Liegt sie im Projekt, steht die Wurzel-Anweisung des Frameworks in keiner "
+            f"Nachricht der Sitzung (D-341, gemessen mit Gegenprobe). Das Pack liefert "
+            f"deshalb keine Vorlage aus, der `deny`-Korb stellt die Datei schreibgeschützt, "
+            f"der Schutz-Hook führt sie in seinen Mustern, und Prüfung 88 meldet sie, wenn "
+            f"sie trotzdem im Projektbaum liegt.")
 
 
 def main() -> None:
@@ -185,6 +216,13 @@ def main() -> None:
     args = ap.parse_args()
 
     man = lade_manifest(args.client)
+    # Ein abgebrochener Bau darf kein Erzeugnis des VORIGEN Baus stehen lassen: Sonst
+    # setzt build-docx.py daraus eine Word-Fassung zusammen und benennt sie nach dem
+    # vorigen Pack - gemessen am 2026-09-24, als der Bau fuer openai-codex abbrach und
+    # danach die Fassung fuer devin-desktop ein zweites Mal entstand (CR-2026-135).
+    for alt in ("hauptdokument.md", "referenzclient.txt"):
+        if os.path.exists(os.path.join(OUT, alt)):
+            os.remove(os.path.join(OUT, alt))
     installation = referenzinstallation(args.client)
     try:
         os.makedirs(OUT, exist_ok=True)

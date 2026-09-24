@@ -733,6 +733,15 @@ def ignorierte_kerndateien(root: str) -> list[str]:
 
     Ohne Git - oder ausserhalb eines Repositoriums - gibt die Funktion eine leere
     Liste zurueck. Eine Auskunft, die nicht erhoben werden kann, wird nicht behauptet.
+
+    DIE PFADE GEHEN ALS BYTES MIT NUL-TRENNUNG HIN UND ZURUECK (`-z`, CR-2026-135,
+    D-352). Bis 1.4.1 gingen sie mit `text=True` als Zeilen hin: Unter Windows wird
+    daraus `\\r\\n`, git bekam jeden Pfad mit angehaengtem `\\r`, verglich ihn so gegen
+    die Muster und gab ihn gequotet zurueck. Ein Verzeichnismuster (`build/`) traf
+    trotzdem, weil es am Elternverzeichnis greift; ein DATEImuster (`*.md`) traf nie -
+    gemessen: git meldet zwei ignorierte Dateien, die Funktion null. Und ohne `-z`
+    quotet git jeden Pfad mit Nicht-ASCII-Zeichen (`core.quotePath`); die Ausgabe ist
+    dann kein Pfad mehr. `-z` schaltet beides ab.
     """
     kern = os.path.join(root, *clientmap.CORE_REL.split("/"))
     if not os.path.isdir(kern):
@@ -746,15 +755,16 @@ def ignorierte_kerndateien(root: str) -> list[str]:
     if not dateien:
         return []
     try:
-        proc = subprocess.run(["git", "-C", root, "check-ignore", "--stdin"],
-                              input="\n".join(dateien), capture_output=True,
-                              text=True, timeout=60)
+        proc = subprocess.run(["git", "-C", root, "check-ignore", "-z", "--stdin"],
+                              input=b"\0".join(d.encode("utf-8") for d in dateien) + b"\0",
+                              capture_output=True, timeout=60)
     except (OSError, subprocess.SubprocessError):
         return []
     # Exit 0 = mindestens einer ignoriert, 1 = keiner, alles andere ist kein Ergebnis.
     if proc.returncode not in (0, 1):
         return []
-    return sorted(z.strip().replace("\\", "/") for z in proc.stdout.splitlines() if z.strip())
+    return sorted(z.decode("utf-8", "replace").replace("\\", "/")
+                  for z in proc.stdout.split(b"\0") if z)
 
 
 def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:

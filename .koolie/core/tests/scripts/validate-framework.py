@@ -5537,14 +5537,29 @@ def _verfolgte_dateien(root: str) -> list | None:
     leere Liste ist ein Messergebnis, None ist keins.
     """
     try:
-        lauf = subprocess.run(["git", "-C", root, "ls-files", "--", KERN],
+        lauf = subprocess.run(["git", "-C", root, "ls-files", "-z", "--", KERN],
                               capture_output=True, text=True, encoding="utf-8",
                               errors="replace", timeout=30)
     except (OSError, subprocess.SubprocessError):
         return None
     if lauf.returncode != 0:
         return None
-    return [z.strip() for z in (lauf.stdout or "").splitlines() if z.strip()]
+    return _git_pfade(lauf.stdout)
+
+
+def _git_pfade(ausgabe: str | None) -> list:
+    """Die Pfade einer `git ... -z`-Ausgabe (CR-2026-135, D-352).
+
+    OHNE `-z` IST DIE AUSGABE KEIN PFAD MEHR, SOBALD ER EIN NICHT-ASCII-ZEICHEN TRAEGT.
+    git quotet ihn dann (`core.quotePath`, Vorgabe an) - aus einem U-Umlaut wird
+    `"docs/\\303\\234bersicht.md"`, samt Anfuehrungszeichen. Die Pruefungen 75 und 81
+    fanden unter diesem Namen keine Datei und gingen LEISE weiter; 78 zaehlte ihn als
+    Datei, aber nicht als Markdown - das schliessende Anfuehrungszeichen steht hinter
+    der Endung. Gemessen: Ein Traeger mit U-Umlaut im Namen und gemischten
+    Zeilenenden war fuer Pruefung 81 unsichtbar (Sonde 81e). Dieselbe Ursache wie in
+    `install.py` - eine Pfadliste als Textzeilen statt NUL-getrennt.
+    """
+    return [z for z in (ausgabe or "").split("\0") if z]
 
 
 def check_bytecode_versioniert(root: str) -> None:
@@ -8586,14 +8601,14 @@ def _p75_verfolgt(root: str) -> list | None:
     Pruefung ist ausdruecklich groesser (D-295).
     """
     try:
-        lauf = subprocess.run(["git", "-C", root, "ls-files"],
+        lauf = subprocess.run(["git", "-C", root, "ls-files", "-z"],
                               capture_output=True, text=True, encoding="utf-8",
                               errors="replace", timeout=30)
     except (OSError, subprocess.SubprocessError):
         return None
     if lauf.returncode != 0:
         return None
-    return [z.strip() for z in (lauf.stdout or "").splitlines() if z.strip()]
+    return _git_pfade(lauf.stdout)
 
 
 def check_altname_restbestand(root: str, man: dict) -> None:
