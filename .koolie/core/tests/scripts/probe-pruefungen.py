@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 88, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
-Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
+Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien) und fuer den Praeparationswaechter dieses
 Skripts selbst.
 
 Die Aufzaehlung der Pruefungen steht hier in der Schreibweise, die Pruefung 40 aus den
@@ -1271,6 +1271,78 @@ def sonden_erstinstallation() -> None:
 buendel(sonden_erstinstallation,
         "Die Erstinstallation bricht vor einer vorhandenen Projektdatei ab, statt sie zu "
         "ueberschreiben - und schreibt dabei nichts")
+
+
+# --- D-349/D-352: die Auskunft ueber ignorierte Kerndateien -----------------------
+#
+# 🔴 DIE AUSKUNFT AUS 1.4.0 HATTE KEINE SONDE, UND SIE ZAEHLTE UNTER WINDOWS ZU WENIG.
+# `ignorierte_kerndateien()` gab die Pfade mit `text=True` an `git check-ignore --stdin`;
+# unter Windows kam jeder mit angehaengtem `\r` an. Ein Verzeichnismuster (`build/`)
+# traf trotzdem - der Fall, an dem die Auskunft gebaut wurde -, ein DATEImuster (`*.md`)
+# nie. Gemessen am 2026-09-24: git meldet zwei ignorierte Dateien, die Funktion null
+# (CR-2026-135).
+#
+# DREI EINHEITEN, JEDE MIT EINER UNABHAENGIG GEZAEHLTEN ERWARTUNG. Die Zahl im Hinweis
+# wird gegen einen `os.walk` ueber den Kern gehalten, nicht gegen eine gepflegte Zahl:
+#   D349  (Sonde)      - `*.md`: jede Markdown-Datei des Kerns wird gezaehlt. Gegen den
+#                        Vorstand faellt sie unter Windows mit 0.
+#   D349a (Gegenprobe) - `build/`: das Verzeichnismuster, der Anlassfall von K-117,
+#                        zaehlt weiter genau die Dateien unter `build/`.
+#   D349b (Gegenprobe) - ein Muster, das nichts trifft: kein Hinweis. Eine Auskunft,
+#                        die immer etwas meldet, besteht jede Sonde.
+M349_HINWEIS = re.compile(r"HINWEIS \((\d+)\): Dieses Projekt IGNORIERT Kerndateien")
+
+
+def _349_kern(root: str, passt) -> int:
+    """Die Kerndateien, die ein Muster treffen sollte - gezaehlt, nicht gepflegt."""
+    kern = os.path.join(root, ".koolie", "core")
+    n = 0
+    for dirpath, dirnames, filenames in os.walk(kern):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        for fn in filenames:
+            rel = os.path.relpath(os.path.join(dirpath, fn), kern).replace(os.sep, "/")
+            n += 1 if passt(rel) else 0
+    return n
+
+
+def sonden_ignorierte_kerndateien() -> None:
+    """Wirkungsnachweis fuer die Auskunft aus D-349 an einem echten Repositorium."""
+    root = installation("claude-code")
+    try:
+        if unterprozess(["git", "init", "-q", root]).returncode != 0:
+            melde("BUENDEL", "-", False,
+                  "sonden_ignorierte_kerndateien  [git nicht erreichbar]")
+            notiz("        Ohne git gibt die Auskunft bewusst nichts aus - nicht messbar.")
+            return
+        werkzeug = os.path.join(root, ".koolie", "core", "install.py")
+        faelle = (
+            ("SONDE", "D349", "*.md", lambda rel: rel.endswith(".md"),
+             "Ein Dateimuster im Projekt-.gitignore wird gezaehlt - jede Markdown-Datei "
+             "des Kerns, auch unter Windows"),
+            ("GEGENPROBE", "D349a", "build/", lambda rel: rel.startswith("build/"),
+             "Ein Verzeichnismuster zaehlt weiter genau die Dateien darunter - der "
+             "Anlassfall der Auskunft bleibt erhalten"),
+            ("GEGENPROBE", "D349b", "*.sonde-trifft-nichts", lambda rel: False,
+             "Ein Muster, das keine Kerndatei trifft, erzeugt keinen Hinweis"),
+        )
+        for art, kennung, muster, passt, was in faelle:
+            schreib(os.path.join(root, ".gitignore"), muster + "\n")
+            p = unterprozess([sys.executable, werkzeug, "--update", "--root", root])
+            aus = (p.stdout or "") + (p.stderr or "")
+            soll = _349_kern(root, passt)
+            treffer = M349_HINWEIS.search(aus)
+            ist = int(treffer.group(1)) if treffer else 0
+            melde(art, kennung, p.returncode == 0 and ist == soll, was)
+            if p.returncode != 0 or ist != soll:
+                notiz("        Muster %s: gemeldet %d, gezaehlt %d, Exit %d"
+                      % (muster, ist, soll, p.returncode))
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_ignorierte_kerndateien,
+        "Die Auskunft ueber ignorierte Kerndateien zaehlt Datei- und Verzeichnismuster "
+        "richtig und schweigt, wenn nichts ignoriert wird")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
@@ -7415,7 +7487,7 @@ buendel(selbstprobe_ausgesetzt,
 # und 78, aus demselben Grund. Ohne `git init` naehme sie in jeder Sonde ihren dritten
 # Ausgang und saehe dabei aus wie eine, die nichts gefunden hat.
 #
-# VIER EINHEITEN, UND DIE ZWEITE IST DER GEMESSENE FALL:
+# SIEBEN EINHEITEN, UND 81b IST DER GEMESSENE FALL:
 #   81a (Gegenprobe) - der ausgelieferte Bestand laeuft durch, und die Pruefung ist dabei
 #                      nachweislich gelaufen (keine Unmessbarkeitsmeldung).
 #   81a (Sonde)      - ein Traeger DURCHGEHEND auf der anderen Form wird gemeldet.
@@ -7425,6 +7497,10 @@ buendel(selbstprobe_ausgesetzt,
 #                      danach nicht mehr traf.
 #   81c (Sonde)      - ohne Git-Bestand meldet sie die Unmessbarkeit, statt leise zu
 #                      bestehen (D-23). Sie ist die einzige, die OHNE `git init` laeuft.
+#   81e (Sonde)      - 🆕 seit 1.4.2 (D-352): derselbe Fall wie 81b, in einer Datei mit
+#                      Umlaut im Namen. Ohne `-z` quotet git den Pfad, die Pruefung fand
+#                      unter dem gequoteten Namen keine Datei und ging LEISE weiter -
+#                      gegen den Vorstand faellt diese Sonde.
 #   81d (Sonde)      - 🆕 seit 1.4.1 (D-351): Eine Datei der WURZEL, ausserhalb des
 #                      Kerns, auf der anderen Form wird im Quellrepositorium gemeldet.
 #                      Das belegt den Anker: Bis 1.4.0 war er UEBERGABE.md, und seit
@@ -7446,6 +7522,8 @@ M81_UNMESSBAR = "Prüfung 81: kein Git-Bestand lesbar"
 P81_OPFER = ".koolie/core/docs/RUNTIME_GLOSSARY.md"
 P81_WURZEL = "README.md"
 P81_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
+# Der Name traegt ein Nicht-ASCII-Zeichen, damit git ihn ohne `-z` quotet (D-352).
+P81_UMLAUT = ".koolie/core/docs/Übersicht-sonde-81e.md"
 
 
 def _81_umstellen(text: str) -> str:
@@ -7515,6 +7593,21 @@ def sonden_zeilenendeform() -> None:
             notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
         schreib(pfad, urtext)
+
+        # --- Sonde 81e: derselbe Fall unter einem Namen mit Umlaut (D-352) -----------
+        upfad = P(root, *P81_UMLAUT.split("/"))
+        schreib(upfad, _81_eine_zeile(urtext))
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        treffer = P81_UMLAUT + ": mischt" in aus
+        melde("SONDE", "81e", treffer,
+              "Ein Traeger mit Umlaut im Dateinamen und einer eingeschleppten Zeile wird "
+              "gemeldet - git quotet solche Pfade ohne -z")
+        if not treffer:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        os.remove(upfad)
+        unterprozess(["git", "-C", root, "add", "-A"])
 
         # --- Sonde 81d: eine Wurzeldatei auf der anderen Form (D-351) -----------------
         wpfad = P(root, *P81_WURZEL.split("/"))

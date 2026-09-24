@@ -5,6 +5,4 @@ Die zentrale Agentenanweisung ist die produktionsnahe Vorlage der Datei der Wurz
 🔴 **Der Abstand zur Grenze ist klein und wird gemessen, nicht geschätzt.** An der **erzeugten** Datei gezählt am 2026-09-22: **11.887 Zeichen beim Pack `devin-desktop`** und 11.894 bei `claude-code` – 113 beziehungsweise 106 Zeichen unter der Grenze. Gemessen wird an der erzeugten Datei und nicht an der Quelle, weil die Platzhalter beim Erzeugen aufgelöst werden und die Länge sich dabei ändert; die Quelle allein ist 11.924 Zeichen lang. **Die Grenze ist dabei eine Vorgabe des Frameworks und keine Produkteigenschaft:** Ein Abgleich gegen die Herstellerdokumentation hat für Regeldateien keine Zeichengrenze gefunden (Anhang 31.5, V1).
 
 {{EMBED:<ROOT_INSTRUCTION_FILE>}}
-Ergänzend gehört zur Vorlage die persönliche, nicht versionierte Ergänzungsdatei – zulässig nur zum Einschränken und für Arbeitsvorlieben, nie zum Erweitern von Freigaben:
-
-{{EMBED:<ROOT_INSTRUCTION_LOCAL>.example}}
+{{LOKALE-ERGAENZUNG}}

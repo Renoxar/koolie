@@ -2,6 +2,69 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.4.2] - 2026-09-24
+
+**Die Auskunft, die unter Windows nur Verzeichnisse sah - und drei Pruefungen, denen ein
+Umlaut den Pfad nahm** (`CR-2026-135` E1 bis E4, **D-352**, `K-120` und `K-121` neu).
+Ein Patch-Release ohne Kontingent und **ohne neue Pruefung**: vier Sondeneinheiten
+kommen hinzu, drei davon an einer Auskunft, die bis dahin keine hatte.
+
+> 🔴 **DIE AUSKUNFT AUS D-349 ZAEHLTE UNTER WINDOWS ZU WENIG.** `install.py` gab die
+> Pfade mit `text=True` an `git check-ignore --stdin`; unter Windows kam jeder mit
+> angehaengtem `\r` an. Ein Verzeichnismuster (`build/`) traf trotzdem - der Anlassfall
+> von `K-117` -, ein **Dateimuster (`*.md`) nie**. Gemessen: git meldet zwei ignorierte
+> Dateien, die Auskunft null; im Sondenlauf gegen den Vorstand **0 gegen 476**.
+>
+> 🔴 **DIE ZWEITE STELLE IN DERSELBEN RICHTUNG.** Die Pruefungen 45, 75, 78 und 81
+> lesen `git ls-files` zeilenweise, und git quotet jeden Pfad mit Nicht-ASCII-Zeichen.
+> Pruefung 81 fand unter dem gequoteten Namen keine Datei, 75 keine Textendung - beide
+> gingen **leise** weiter; 78 zaehlte die Datei, aber nicht als Markdown. Gegenbeweis:
+> ein Traeger mit Umlaut im Namen und gemischten Zeilenenden, Validator `1.4.1` 0
+> Treffer, `1.4.2` 1. ➡️ ***Eine Pfadliste als Text ist eine Liste von Schreibweisen,
+> nicht von Pfaden.***
+
+**Behoben**
+
+- `install.py` `ignorierte_kerndateien()`: `git check-ignore -z --stdin`, Ein- und
+  Ausgabe als NUL-getrennte Bytes (D-352).
+- `validate-framework.py`: `_verfolgte_dateien()` und `_p75_verfolgt()` lesen
+  `git ls-files -z` ueber die neue `_git_pfade()` - fuer die Pruefungen 45, 75, 78
+  und 81.
+- 🔴 **Das Hauptdokument war fuer `openai-codex` nicht baubar** - Schritt 3 aus
+  `RELEASE_PROCESS.md` 4.1 ist fuer das dritte Pack nie gelaufen. Kapitel 16 bettete
+  `<ROOT_INSTRUCTION_LOCAL>.example` fuer jedes Pack ein, und dieses Pack liefert die
+  Vorlage bewusst nicht aus (D-341). Neu: Direktive `{{LOKALE-ERGAENZUNG}}` in
+  `build/assemble.py`, Weiche ist `root_instruction_override`; ohne das Feld bricht
+  eine fehlende Datei den Bau weiter ab. `claude-code` und `devin-desktop` bleiben
+  zeichengleich.
+- `build/assemble.py` entfernt vor dem Bau `hauptdokument.md` und
+  `referenzclient.txt` des vorigen Laufs. Nach dem Abbruch fuer `openai-codex` hatte
+  `build-docx.py` daraus die Fassung des VORIGEN Packs ein zweites Mal gebaut und
+  Erfolg gemeldet.
+- `clients/openai-codex/manifest.json`: Die Notiz nannte Pruefung 86 als die, die
+  `AGENTS.override.md` meldet; es ist Pruefung 88.
+
+**Hinzugefuegt**
+
+- Sondenbuendel `sonden_ignorierte_kerndateien`: **Sonde `D349`** (`*.md`),
+  **Gegenproben `D349a`** (`build/`) und **`D349b`** (nichts ignoriert, kein Hinweis) -
+  jede gegen einen `os.walk` ueber den Kern gezaehlt. **Sonde 81e** (Umlaut im
+  Dateinamen). `D349` und `81e` fallen gegen den Vorstand.
+- `governance/DECISION_LOG.md`: **`K-120`** (Overlay-Werte an einem Ort; vor `1.5.0`
+  einzuordnen) und **`K-121`** (die Schreibrueckfrage bei `devin-desktop` als
+  Overlay-Wert) - zwei Fragen des Framework Owners.
+
+**Migrationshinweise fuer Overlays**
+
+- **Keine.** Nach dem Heben kann die Auskunft von `install.py` **mehr** Dateien nennen
+  als bisher, und eine der Pruefungen 75, 78 oder 81 kann **neu** melden - dann, wenn
+  das Projekt einen Traeger mit Nicht-ASCII-Namen fuehrt, der schon abwich. Das ist der
+  Befund, den die alte Fassung verschwieg.
+
+**Bekannte Einschraenkungen**
+
+- Die Auskunft bleibt eine Auskunft (D-349): ohne Git keine Aussage.
+
 ## [1.4.1] - 2026-09-24
 
 **Die Uebergabe wird ein lokales Arbeitsdokument - und vier Pruefungen verlieren den
