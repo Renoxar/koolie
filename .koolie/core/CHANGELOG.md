@@ -2,6 +2,57 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.4.3] - 2026-09-24
+
+**Die Frage nach dem einen Ort der Overlay-Werte - und der Traeger, den sie dafuer
+vorschlug, traegt sie nicht** (`CR-2026-136` E1 bis E4, **D-353**, `K-120` beantwortet).
+Ein Patch-Release, das **einordnet** und nichts baut: kein Werkzeug, keine Pruefung,
+kein Overlay-Feld.
+
+> 🔴 **`overlay-manifest.yaml` IST DAS DOKUMENTENREGISTER, NICHT DIE WERTQUELLE.**
+> `K-120` schlug es als einzige Quelle der Projektwerte vor. Es fuehrt von ihnen nur die
+> Overlay-Version; die Pfad- und Befehlswerte stehen in der Bindungstabelle von
+> `OVERLAY.md`. Die "bis zu vier Traeger" sind **zwei Dreiergruppen**: die
+> Overlay-Version in `OVERLAY.md`, Register und Laufzeitfassung - ein Pfadwert in
+> `OVERLAY.md`, Laufzeitfassung und Berechtigungsdatei.
+>
+> 🔴 **EIN ERZEUGEN BEI `--update` HAETTE PROJEKTARBEIT UEBERSCHRIEBEN.** Gemessen an
+> beiden uebernehmenden Projekten: 37 Eintraege der Berechtigungsdateien stehen nur im
+> Projekt, 30 davon aus einem Platzhalter ableitbar, 4 setzen `<READ_ONLY_PATHS>` um,
+> das die Kernquelle nicht abbildet, 3 sind echte Projektzusaetze. Die Laufzeitfassung
+> ist zu gut der Haelfte Projektprosa. Beide Dateien bleiben Saat; ein Erzeugen waere
+> MAJOR.
+>
+> 🔴 **UND EIN VORBEFUELLTES MUSTER ERREICHT DIE BERECHTIGUNGSDATEI HEUTE NICHT.** An
+> einer Wegwerf-Installation steht `Read(<EXCLUDED_PATHS>)` woertlich im `deny`-Korb,
+> waehrend `OVERLAY.md` den Wert schon nennt; Pruefung 59 enthaelt sich. ➡️ ***Ein
+> Muster, das Werte vorschlaegt, erreicht die Schicht nicht, die sie durchsetzt.***
+
+**Entschieden**
+
+- **D-353:** Quelle der Projektwerte ist die Bindungstabelle in `OVERLAY.md`;
+  Laufzeitfassung und Berechtigungsdatei bleiben Saat und werden in `1.x` nicht
+  erzeugt.
+- `1.5.0` bekommt einen **Fuellschritt bei der Erstinstallation**: Mit
+  `--overlay general` fuellt `install.py` die Schlitze der Kernquelle einmal aus dem
+  Muster - einem Traeger des Kerns, nicht des Projekts (Abgrenzung zu D-76).
+- **`K-69`** (Wertabgleich fuer die vier uebrigen Pfadplatzhalter) wird Voraussetzung
+  von `1.5.0`, dazu die Frage, ob die Kernquelle `<READ_ONLY_PATHS>` abbildet.
+- **`K-67`** (eine verbindliche Bindungsform) bleibt offen: Sie verlangte den Umbau
+  jeder Overlay-Datei und waere MAJOR.
+- **`K-121`** Frage (3) beantwortet: Die Schreibrueckfrage haengt an `K-120`; als
+  Overlay-Wert traegt sie erst, wenn eine Pruefung sie gegen die Quelle haelt.
+
+**Migrationshinweise fuer Overlays**
+
+- **Keine.** Kein Traeger ausserhalb von `governance/`, `docs/`, `build/doc/` und den
+  Versionsangaben ist beruehrt.
+
+**Bekannte Einschraenkungen**
+
+- Die Handpflege der Projektwerte an drei Stellen bleibt bis `1.5.0` ungeprueft fuer
+  `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>`.
+
 ## [1.4.2] - 2026-09-24
 
 **Die Auskunft, die unter Windows nur Verzeichnisse sah - und drei Pruefungen, denen ein
