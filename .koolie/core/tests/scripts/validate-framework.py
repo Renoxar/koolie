@@ -365,25 +365,14 @@ Prüft (statisch, ohne laufenden KI-Client):
      jedes CR schon ein Zeilenvorschub, bevor eine Pruefung hinsieht. Diese liest
      Bytes. GRENZE: Gemessen wird das Zeichen, nicht die Zeilenende-Form eines
      Traegers - welche Form gilt, entscheidet kein Validator (K-81)
- 67. Die Uebergabe nennt den Stand, den VERSION fuehrt (D-216): DREI GEGENSTAENDE.
-     (a) Die Titelzeile von UEBERGABE.md nennt genau die Version aus
-     <CORE_DIR>/VERSION. (b) Jede Lagezeile im Fliesstext, die `main` eine
-     Version zuschreibt, nennt dieselbe - die Konvention dazu ist eine Zeile
-     lang und braucht keine Ausnahmeliste: DEN ZWEIGNAMEN TRAEGT NUR EINE
-     AUSSAGE UEBER DEN JETZIGEN STAND, ein Chronikabschnitt sagt `das Release`. (c) Die Uebergabe nennt keine Nummer
-     eines Merge Requests. 🔴 (b) IST DER GEMESSENE FALL, UND (a) HAETTE IHN
-     NICHT GEFANGEN: Der Nachtrag vom 2026-09-20 hob Titelzeile und Abschnitt 1
-     und liess den KOPFBLOCK auf dem Vorstand stehen. Der Gegenbeweis gegen den
-     unberuehrten Stand hat es gezeigt - die erste Fassung dieser Pruefung meldete
-     dort nur die Antragsnummern. ANLASS:
-     K-80. Bis 0.78.1 entstand die Uebergabe NACH dem Merge; der Nachtrag hob die
-     Titelzeile und Abschnitt 1 und liess den Kopfblock auf dem Vorstand stehen -
-     zwei Staende in einem Dokument, keine Stunde nach dem Release. Die Nummer des
-     Merge Requests war der einzige Grund, ueberhaupt nach dem Merge zu schreiben;
-     sie entfaellt, und was bleibt, ist eine Zahl, die eine Pruefung nachrechnet
-     statt eines Menschen. ENTHALTUNG: Ohne UEBERGABE.md meldet diese Pruefung
-     nichts - die Uebergabe ist ein Traeger des QUELLrepositoriums und wird in kein
-     Projekt installiert; in einer Installation hat sie keinen Gegenstand
+ 67. ENTFALLEN mit 1.4.1 (D-350). Sie hielt die Titelzeile der Uebergabe
+     gegen <CORE_DIR>/VERSION und wies eine Merge-Request-Nummer ab (D-216).
+     Seit 1.4.1 ist UEBERGABE.md ein lokales Arbeitsdokument und nicht mehr
+     versioniert; eine frische Auscheckung fuehrt sie nicht, und eine Pruefung
+     darauf liefe nur an einem Arbeitsplatz. Die Nummer bleibt stehen, damit
+     das Register lueckenlos bleibt (Pruefung 40) und keine andere Pruefung
+     sie erbt. PREIS, benannt: Stand und Zahlen der Uebergabe prueft seither
+     niemand - sie sind wieder Zahlen, die gepflegt werden muessen
  68. Das Praefix, das mehr sperrt als sein Befehl (D-219): Jede exec-Regel in
      framework/runtime/permissions.json, deren `prefix` kuerzer ist als ihr
      `command`, traegt ein Feld `_uebererfasst` mit der Begruendung. ANLASS, und er
@@ -539,8 +528,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      VERSION - die Gleichheit der beiden untereinander traegt den Vergleich mit
      VERSION, denn eine Zeile, die zwei verschiedene Staende nennt, laesst offen,
      welcher gemeint ist. PREIS, benannt: Jedes Release fasst diese Zeile an. Das ist
-     derselbe Preis, den Pruefung 67 fuer die Uebergabe verlangt, und er hat dort
-     getragen. GRENZE: Sie misst die VERSION, nicht den INHALT. Ein Dokument, dessen
+     derselbe Preis, den bis 1.4.0 Pruefung 67 fuer die Uebergabe verlangt hat,
+     und er hat dort getragen. GRENZE: Sie misst die VERSION, nicht den INHALT. Ein Dokument, dessen
      Zahlen veralten, waehrend jemand die Versionszeile mitzieht, laeuft durch - was
      dagegen hilft, ist der Durchgang vor dem Commit und keine Pruefung.
  78. Die zaehlbaren Aussagen des Hauptdokuments (D-315): Der Satz ueber den
@@ -553,7 +542,9 @@ Prüft (statisch, ohne laufenden KI-Client):
      Dateien, davon 450 Markdown" - richtig waren 77, 504 und 452, und die
      beiden fehlenden Dateien waren der Antrag und das Protokoll DESSELBEN
      Releases. ZUSCHNITT (D-318): nur die GEGENWARTSFORM. Datierte Zahlen in
-     den ausgewiesenen Zeitdokumenten veralten nicht und werden nicht geprueft
+     den ausgewiesenen Zeitdokumenten veralten nicht und werden nicht geprueft.
+     Die Abnahmezeile der Uebergabe, seit 1.0.0 ihr zweiter Gegenstand (D-325),
+     ist mit 1.4.1 entfallen (D-350)
  79. Die Lizenz liegt an zwei Stellen und ist dieselbe (D-317): LICENSE in der
      Wurzel (dort suchen die Hostingdienste sie) und <CORE_DIR>/LICENSE (dort
      wandert sie mit, wenn ein uebernehmendes Projekt den Kern als Ganzes
@@ -689,7 +680,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      Schutz-Hook fuehrt sie in seinen Mustern, und diese Pruefung meldet sie, wenn sie
      trotzdem da ist - ein Mensch kann sie weiterhin anlegen, und dann soll es nicht
      still bleiben
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 88 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 88 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -7783,64 +7774,28 @@ def check_verirrtes_steuerzeichen(root: str) -> None:
             f"Gegenstand verloren und bestünde sonst leise (D-23)")
 
 
-# --- Pruefung 67: die Uebergabe nennt den Stand ------------------------------------
+# --- Pruefung 67: ENTFALLEN mit 1.4.1 (D-350) --------------------------------------
 #
-# Sie ist die pruefbare Haelfte von D-216. Die REIHENFOLGE - Uebergabe im
-# Release-Commit, nicht danach - sieht ein Validator nicht; was er sieht, ist die
-# Zahl, die durch die falsche Reihenfolge veraltet. Deshalb steht hier der Stand und
-# nicht der Ablauf.
+# Sie hielt die Titelzeile der Uebergabe gegen VERSION (D-216). Seit 1.4.1 ist die
+# Uebergabe ein lokales Arbeitsdokument und nicht mehr versioniert; ihr Gegenstand
+# fehlt in jeder frischen Auscheckung. Die Nummer bleibt im Register, damit es
+# lueckenlos bleibt und keine andere Pruefung sie erbt.
 #
-# 🔴 UND DESHALB IST (b) KEINE KOSMETIK: Die Nummer des Merge Requests war der
-# einzige Wert der Uebergabe, den man vor dem Anlegen des Antrags nicht kennt - also
-# der einzige Grund, ueberhaupt nach dem Merge zu schreiben. Faellt sie, faellt der
-# Grund. Eine Pruefung, die sie fernhaelt, haelt die Reihenfolge.
-UEBERGABE_DATEI = "UEBERGABE.md"
-UEBERGABE_TITEL = re.compile(r"^#\s.*?\bStand\s+(\d+\.\d+\.\d+)", re.M)
-UEBERGABE_MR_NUMMER = re.compile(r"#\d")
-# `main` ist **0.78.2** / `main` = **0.78.2** - die beiden Schreibweisen, in denen
-# die Uebergabe eine Lage BEHAUPTET. Eine Jahreszahl oder eine Version in einem
-# Chronikabschnitt trifft das Muster nicht: Es verlangt den Backtick-Namen des
-# Zweigs davor, und den traegt nur eine Aussage ueber den JETZIGEN Stand.
-UEBERGABE_LAGE = re.compile(r"`main`\s*(?:ist|=)\s*\**(\d+\.\d+\.\d+)")
+# DAS KENNZEICHEN DES QUELLREPOSITORIUMS (D-351). Bis 1.4.0 unterschieden die
+# Pruefungen 75, 78, 79 und 81 an UEBERGABE.md, ob sie im Framework-Repositorium oder
+# in einem uebernehmenden Projekt laufen. Mit der Uebergabe ist dieser Anker aus dem
+# Versionierten verschwunden - und die Pruefungen 75 und 81 lesen `git ls-files`:
+# Sie haetten das Quellrepositorium LEISE fuer ein Projekt gehalten und nur noch das
+# Ausgelieferte geprueft, auch auf dem Arbeitsplatz, der die Datei noch fuehrt.
+# ➡️ Ein Anker, der nur an einem Arbeitsplatz liegt, ist keiner.
+# Das Kennzeichen ist deshalb eine eigene, versionierte Datei NEBEN dem Kern: Das
+# Heben kopiert nur den Kern, und install.py legt sie nicht an.
+QUELLREPO_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
 
 
-def check_uebergabestand(root: str) -> None:
-    """Pruefung 67 (D-216): Die Uebergabe nennt den Stand und keine MR-Nummer."""
-    pfad = os.path.join(root, UEBERGABE_DATEI)
-    if not os.path.isfile(pfad):
-        # Enthaltung, und sie ist strukturell: Die Uebergabe ist ein Traeger des
-        # Quellrepositoriums (D-214) und wird in kein Projekt installiert. In einer
-        # Installation hat diese Pruefung keinen Gegenstand - nicht einen fehlenden.
-        return
-    vpfad = os.path.join(root, KERN, "VERSION")
-    if not os.path.isfile(vpfad):
-        return  # Pruefung 1 meldet die fehlende Pflichtdatei bereits
-    stand = read(vpfad).strip()
-    text = read(pfad)
-    m = UEBERGABE_TITEL.search(text)
-    if not m:
-        err(f"{UEBERGABE_DATEI}: keine Titelzeile der Form `# … Stand X.Y.Z` – Prüfung "
-            f"67 hält sie gegen {KERN}/VERSION und hat ohne sie ihren Gegenstand "
-            f"verloren (D-216)")
-        return
-    if m.group(1) != stand:
-        err(f"{UEBERGABE_DATEI}: die Titelzeile nennt den Stand {m.group(1)}, {KERN}/VERSION "
-            f"führt {stand}. Die Übergabe gehört in den Release-Commit; steht sie "
-            f"daneben, trägt `main` das Release und nicht die Übergabe dazu (D-216)")
-    for lage in set(UEBERGABE_LAGE.findall(text)):
-        if lage != stand:
-            err(f"{UEBERGABE_DATEI}: eine Lagezeile schreibt `main` den Stand "
-                f"{lage} zu, {KERN}/VERSION führt {stand}. Das ist der gemessene "
-                f"Fall vom 2026-09-20: Der Nachtrag nach dem Merge hebt den "
-                f"Abschnitt, den er schreibt, und lässt den Kopfblock stehen "
-                f"(D-216)")
-    nummern = UEBERGABE_MR_NUMMER.findall(text)
-    if nummern:
-        err(f"{UEBERGABE_DATEI}: {len(nummern)} Nennung(en) einer Merge-Request-Nummer "
-            f"(`#` mit folgender Ziffer). Sie ist vor dem Anlegen des Antrags nicht "
-            f"bekannt und war der einzige Grund, die Übergabe nach dem Merge zu "
-            f"schreiben; die Aussage, auf die es ankommt – alles gemergt, kein "
-            f"offener Antrag – beantwortet git (D-216)")
+def ist_quellrepositorium(root: str) -> bool:
+    """Traegt dieser Baum das Kennzeichen des Framework-Repositoriums (D-351)?"""
+    return os.path.isfile(os.path.join(root, *QUELLREPO_KENNZEICHEN.split("/")))
 
 
 # --- Pruefung 68: Das Praefix, das mehr sperrt als sein Befehl ----------------------
@@ -8550,9 +8505,10 @@ def check_matrixzeile_in_tabelle(root: str) -> None:
 #     Gemessen am 2026-09-22 im Uebungsrepositorium: zwei solche Nennungen, beide
 #     legitim nach D-300, und die Pruefung meldete sie als Fehler (D-299).
 #
-# ERKANNT WIRD DAS AN DER UEBERGABE. Sie liegt seit 0.78.1 im Framework-Repositorium
-# (D-216) und wandert NICHT in ein Zielprojekt; `install.py` legt sie nicht an, und
-# `git archive` des Kerns bringt sie nicht mit. Ein Anker, der sich selbst belegt.
+# ERKANNT WIRD DAS AM KENNZEICHEN DES QUELLREPOSITORIUMS (D-351). Bis 1.4.0 war es
+# die Uebergabe; seit sie nicht mehr versioniert ist (D-350), traegt eine eigene
+# Datei den Anker. Sie wandert NICHT in ein Zielprojekt; `install.py` legt sie nicht
+# an, und das Heben kopiert nur den Kern. Ein Anker, der sich selbst belegt.
 # ➡️ Eine Pruefung, die im Framework gruen und in jeder Installation rot ist, ist
 #    falsch gebaut - dieselbe Ueberlegung, mit der Pruefung 46 ihren Zaehlbereich auf
 #    den Kern beschraenkt: Was nicht in jeder Installation gleich ist, gehoert nicht in
@@ -8614,7 +8570,6 @@ P75_AUSNAHMEN = {
     KERN + "/build/doc/32-abschluss.md",
     KERN + "/docs/ROADMAP.md",
     KERN + "/clientmap.py",
-    "UEBERGABE.md",
     # (d) Der Pruefapparat dieser Pruefung selbst
     KERN + "/tests/scripts/probe-pruefungen.py",
 }
@@ -8653,8 +8608,9 @@ def check_altname_restbestand(root: str, man: dict) -> None:
              "ist an diesem Ort nicht prüfbar. Das ist KEIN Messergebnis (D-23)")
         return
     bestand = set(dateien)
-    # Das Framework-Repositorium fuehrt die Uebergabe; ein uebernehmendes Projekt nicht.
-    eigenes_repo = "UEBERGABE.md" in bestand
+    # Das Framework-Repositorium fuehrt das Kennzeichen; ein uebernehmendes Projekt
+    # nicht (D-351). Gelesen am VERSIONIERTEN Bestand, wie der Zaehlbereich selbst.
+    eigenes_repo = QUELLREPO_KENNZEICHEN in bestand
     ausgeliefert = tuple(
         d + "/" for d in (KERN, man.get("runtime_dir", "")) if d) + tuple(
         f for f in (man.get("root_instruction_file", ""),) if f)
@@ -8683,7 +8639,7 @@ def check_altname_restbestand(root: str, man: dict) -> None:
     for rel in sorted(P75_AUSNAHMEN - gefunden):
         # EIN TRAEGER, DEN DIESE INSTALLATION NICHT FUEHRT, IST KEINE LEERE AUSNAHME.
         # Die Menge beschreibt den Bestand des Framework-Repositoriums; ein
-        # uebernehmendes Projekt hat einen anderen - es fuehrt keine UEBERGABE.md, und
+        # uebernehmendes Projekt hat einen anderen - es fuehrt kein Kennzeichen, und
         # sein Kern ist erst nach dem ersten `git add` verfolgt. Ohne diese
         # Unterscheidung waere die Pruefung im Framework gruen und in JEDER
         # Installation rot; gemessen am 2026-09-22 im Uebungsrepositorium, mit neun
@@ -8770,9 +8726,10 @@ def check_kernlage(root: str) -> None:
 # Pruefung 77: Das Hauptdokument nennt den Stand, auf dem es gebaut ist
 # ---------------------------------------------------------------------------
 #
-# Sie ist die Schwester von Pruefung 67. Dort haelt die Titelzeile der Uebergabe gegen
-# VERSION, hier die Kopfzeile des Hauptdokuments - und der Unterschied ist, dass die
-# Uebergabe jede Sitzung gelesen wird und das Hauptdokument nur zur Auslieferung.
+# Sie war die Schwester der mit 1.4.1 entfallenen Pruefung 67 (D-350). Dort hielt die
+# Titelzeile der Uebergabe gegen VERSION, hier die Kopfzeile des Hauptdokuments - und
+# der Unterschied war, dass die Uebergabe jede Sitzung gelesen wurde und das
+# Hauptdokument nur zur Auslieferung.
 # Genau deshalb ist es zweiundvierzig Releases zurueckgefallen, ohne dass es jemandem
 # aufgefallen waere.
 #
@@ -8851,29 +8808,18 @@ def check_dokumentstand(root: str) -> None:
 # laeuft weiter durch - das ist der Rest von K-104, und er ist nicht kleiner geworden,
 # nur gezaehlt.
 #
-# 🆕 ZWEITER GEGENSTAND SEIT 1.0.0 (D-325, CR-2026-128): DIE ABNAHMEZEILE DER UEBERGABE.
-# Dieselbe Zahl steht dort - und stand am 2026-09-23 zum VIERTEN Mal auf einem
-# ueberholten Wert (76 statt 80). Daneben trug die Zeile die Lehre aus ihrem dritten
-# Vorkommen: "Eine Zahl, die gepflegt werden muss, wird nicht gepflegt."
-# 🔴 DIE PRUEFUNG DAFUER GAB ES SEIT 0.90.0 - SIE ERREICHTE EINE VON ZWEI STELLEN.
-# ➡️ Das ist D-295 an einem zweiten Gegenstand: Der Zaehlbereich war kleiner als die
-#    Wirkungsflaeche. Wer eine Zahl prueft, sucht ihre zweite Fundstelle.
+# ZWEITER GEGENSTAND VON 1.0.0 BIS 1.4.0 (D-325): DIE ABNAHMEZEILE DER UEBERGABE.
+# ENTFALLEN mit 1.4.1 (D-350) - die Uebergabe ist nicht mehr versioniert, und eine
+# Pruefung gegen einen Traeger, den eine frische Auscheckung nicht fuehrt, liefe nur
+# an einem Arbeitsplatz. Die Lehre bleibt stehen, weil sie ueber die Uebergabe
+# hinausreicht: WER EINE ZAHL PRUEFT, SUCHT IHRE ZWEITE FUNDSTELLE (D-295).
 #
-# ENTHALTUNG: Ein uebernehmendes Projekt fuehrt keine UEBERGABE.md. Dort wird dieser
-# zweite Gegenstand still uebersprungen - dieselbe Unterscheidung wie bei Pruefung 67
-# und 75, und aus demselben Grund (D-299).
-#
-# GRENZE des zweiten Gegenstands: Geprueft wird die Zahl der PRUEFUNGEN, nicht die der
-# Sondeneinheiten. Die ist ohne einen Lauf nicht auszurechnen - und sie hat nach B9 von
-# CR-2026-128 ohnehin ZWEI richtige Werte, je nachdem ob ein Buendel einmal oder mit
-# allen seinen Zeilen zaehlt. Eine Pruefung, die eine von zwei richtigen Zahlen
-# verlangt, waere schlimmer als keine.
+# ENTHALTUNG: Ein uebernehmendes Projekt fuehrt das Kennzeichen des
+# Quellrepositoriums nicht (D-351). Dort enthaelt sich die ganze Pruefung (D-326).
 P78_TRAEGER = KERN + "/build/doc/26-qs-test.md"
 P78_ANKER = "Der Validator führt **"
 P78_SATZ = ("Der Validator führt **{0} Prüfungen** über {1} versionierte Dateien des "
             "Kerns, davon {2} Markdown-Dateien")
-P78_UEBERGABE_ANKER = "Der Prüfapparat steht bei **"
-P78_UEBERGABE_SATZ = "Der Prüfapparat steht bei **{0} Prüfungen**"
 
 
 def check_dokumentzahlen(root: str) -> None:
@@ -8885,7 +8831,7 @@ def check_dokumentzahlen(root: str) -> None:
     # Traeger nicht. Ohne diese Unterscheidung waere sie im Framework gruen und in JEDER
     # Installation rot; das ist der Konstruktionsfehler aus D-299, und die Lehre stand im
     # SELBEN Release, das diese Pruefung gebaut hat.
-    if not os.path.isfile(os.path.join(root, UEBERGABE_DATEI)):
+    if not ist_quellrepositorium(root):
         return
     pfad = os.path.join(root, *P78_TRAEGER.split("/"))
     if not os.path.isfile(pfad):
@@ -8926,24 +8872,6 @@ def check_dokumentzahlen(root: str) -> None:
             f"und {sum(1 for d in dateien if d.endswith('.md'))} davon als Markdown. "
             f"Bis 0.89.0 standen hier 76, 502 und 450 – alle drei waren in DEM Release "
             f"überholt, das das Dokument auf den geltenden Stand gesetzt hat (D-315)")
-    # --- Gegenstand 4: dieselbe Zahl in der Abnahmezeile der Uebergabe (D-325) -------
-    upfad = os.path.join(root, UEBERGABE_DATEI)
-    if not os.path.isfile(upfad):
-        return  # ein uebernehmendes Projekt fuehrt keine Uebergabe - Enthaltung
-    utext = read(upfad)
-    if utext.count(P78_UEBERGABE_ANKER) != 1:
-        err(f"{UEBERGABE_DATEI}: die Abnahmezeile über den Prüfapparat steht nicht genau "
-            f"einmal (gesucht: '{P78_UEBERGABE_ANKER}', gefunden: "
-            f"{utext.count(P78_UEBERGABE_ANKER)}x). Prüfung 78 hat ihren zweiten "
-            f"Gegenstand verloren und bestünde dort leise (D-23, D-325)")
-        return
-    usoll = P78_UEBERGABE_SATZ.format(gefuehrt[-1])
-    if usoll not in utext:
-        err(f"{UEBERGABE_DATEI}: die Abnahmezeile nennt nicht die gezählte Zahl der "
-            f"Prüfungen. Erwartet wörtlich: '{usoll}'. Gezählt wurden {gefuehrt[-1]} im "
-            f"Register. Diese Zahl stand dort viermal in Folge auf einem überholten "
-            f"Wert, zuletzt auf 76 gegen 80 – und die Prüfung dafür gab es seit 0.90.0, "
-            f"sie erreichte nur das Hauptdokument (D-325)")
 
 
 # ---------------------------------------------------------------------------
@@ -8991,9 +8919,10 @@ P79_VERSION = "Version 3, 29 June 2007"
 
 def check_lizenz(root: str) -> None:
     """Pruefung 79 (D-317): Die Lizenz liegt an beiden Stellen und ist dieselbe."""
-    # Das Framework-Repositorium fuehrt die Uebergabe; ein uebernehmendes Projekt nicht.
-    # Dort gilt allein die Kernfassung - die Wurzel gehoert dem Projekt (D-326).
-    eigenes_repo = os.path.isfile(os.path.join(root, UEBERGABE_DATEI))
+    # Das Framework-Repositorium fuehrt das Kennzeichen; ein uebernehmendes Projekt
+    # nicht (D-351). Dort gilt allein die Kernfassung - die Wurzel gehoert dem
+    # Projekt (D-326).
+    eigenes_repo = ist_quellrepositorium(root)
     stellen = (P79_WURZEL, P79_KERN) if eigenes_repo else (P79_KERN,)
     inhalte = {}
     for rel in stellen:
@@ -9127,7 +9056,7 @@ def check_gegenzeichnung(root: str) -> None:
 # ausgeschlossen, den D-299 benannt hat: im Framework gruen und in jeder Installation rot.
 #
 # ZAEHLBEREICH wie bei Pruefung 75: die verfolgten Dateien. Im Framework-Repositorium
-# (erkennbar an UEBERGABE.md) alle; in einem uebernehmenden Projekt nur die
+# (erkennbar am Kennzeichen, D-351) alle; in einem uebernehmenden Projekt nur die
 # ausgelieferten - was ein Projekt in SEINEN Dateien fuer eine Form fuehrt, geht das
 # Framework nichts an.
 #
@@ -9165,7 +9094,7 @@ def check_zeilenendeform(root: str) -> None:
              "Ort nicht prüfbar. Das ist KEIN Messergebnis (D-23)")
         return
     bestand = set(dateien)
-    eigenes_repo = UEBERGABE_DATEI in bestand
+    eigenes_repo = QUELLREPO_KENNZEICHEN in bestand
     ausgeliefert = (KERN + "/",)
     formen: dict[str, list[str]] = {}
     for rel in sorted(bestand):
@@ -9898,7 +9827,6 @@ def main() -> int:
     check_ausgabemarke_gedeckt(root)
     check_ergebnisstatus_beleg(root)
     check_verirrtes_steuerzeichen(root)
-    check_uebergabestand(root)
     check_praefix_uebererfassung(root)
     check_werkzeugnamen(root)
     check_arbeitsplatzpfad(root)

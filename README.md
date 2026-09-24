@@ -6,7 +6,7 @@ Dieses Framework treibt die Entwicklung nicht und ersetzt niemanden – es hält
 
 Projektneutral, wiederverwendbar und erweiterbar – mit methodischem Vorgehensmodell und sofort nutzbarer technischer Referenzimplementierung. Erste Anwendung: strukturierte Einführung und Onboarding neuer Entwicklerinnen und Entwickler in einem bestehenden Projekt; Übertragung auf weitere Projekte über ein austauschbares Project Overlay.
 
-Welcher KI-Client zum Einsatz kommt, entscheidet ein **Client Pack** (`.koolie/core/clients/`) – derzeit `devin-desktop` und `claude-code`. Der Kern ist werkzeugneutral; welche Zusagen ein Client technisch durchsetzt und welche nur als Anweisung im Kontext stehen, weist die Fähigkeitsmatrix des jeweiligen Packs aus.
+Welcher KI-Client zum Einsatz kommt, entscheidet ein **Client Pack** (`.koolie/core/clients/`) – derzeit `devin-desktop`, `claude-code` und `openai-codex`. Der Kern ist werkzeugneutral; welche Zusagen ein Client technisch durchsetzt und welche nur als Anweisung im Kontext stehen, weist die Fähigkeitsmatrix des jeweiligen Packs aus.
 
 **Version:** siehe `.koolie/core/VERSION` · **Änderungen:** `.koolie/core/CHANGELOG.md` · **Status:** kein Modulträger auf `entwurf` – 77 von 77 stehen auf `pilot` · **Owner:** `<FRAMEWORK_OWNER>` (`.koolie/core/OWNERS.md`)
 
@@ -41,7 +41,7 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 ├── <Wurzel-Anweisungsdatei>             # Agentenanweisung (aus dem Kern installiert)
 ├── <persönliche Ergänzung>.example      # Vorlage, nicht versioniert
 ├── <Laufzeitschicht>/                   # vollständig erzeugt – nie von Hand schreiben
-│   ├── <Berechtigungsdatei>             # Kernregeln + Projektwerte – UND die Hooks
+│   ├── <Berechtigungsdatei>             # Kernregeln + Projektwerte (je Pack: samt Hooks)
 │   ├── agents/fw-reviewer.md            # nur lesendes Review-Subagentenprofil
 │   ├── rules/00-, 10-, 15-*.md          # Core-Kurzfassungen ....... aus dem Kern
 │   ├── rules/20-project-overlay.md      # Overlay-Laufzeitfassung ... Projekt
@@ -88,15 +88,25 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 └── <Projektcode>                        # backend/, frontend/, src/ …
 ```
 
-> **Eine eigene Hook-Datei gibt es nicht.** Bei beiden ausgelieferten Packs steht die
-> Hook-Konfiguration **in der Berechtigungsdatei** – dort ist gemessen, dass der Client sie
-> liest, und aus einer eigenen Hook-Datei wurde nachweislich kein Hook ausgeführt (D-32).
+> **Wo die Hook-Konfiguration steht, entscheidet das Pack – und es ist gemessen, nicht
+> gewählt.** Bei `devin-desktop` und `claude-code` steht sie **in der Berechtigungsdatei**:
+> Dort ist gemessen, dass der Client sie liest, und aus einer eigenen Hook-Datei wurde
+> nachweislich kein Hook ausgeführt (D-32). Bei `openai-codex` ist es umgekehrt: Er liest
+> die Hooks **nur** aus einer eigenen Datei (`.codex/hooks.json`), und seine
+> Berechtigungsschicht zerfällt in ein Rechteprofil (`.codex/config.toml`) und eine
+> Befehlsregeldatei (`.codex/rules/koolie.rules`, D-346). ⚠️ **Die gesamte projektlokale
+> Schicht dieses Clients lädt nur, wenn das Projekt in seiner Benutzerkonfiguration als
+> vertraut eingetragen ist, und dem Schutz-Hook muss zusätzlich einzeln vertraut werden** –
+> beides liegt außerhalb des Repositoriums (`clients/openai-codex/CLIENT_PACK.md`
+> Abschnitt 1b).
 
 ## Framework in ein Projekt übernehmen
 
 ```bash
-# 1. Den Kern in das Projekt-Repository kopieren
-cp -r .koolie/core/ /pfad/zum/projekt/
+# 1. Den Kern aus dem entpackten Release-Archiv in das Projekt-Repository kopieren
+#    (Ziel ist <projekt>/.koolie/core – nicht <projekt>/core)
+mkdir -p /pfad/zum/projekt/.koolie
+cp -r .koolie/core /pfad/zum/projekt/.koolie/
 
 # 2. Im Projekt die Wurzeldateien anlegen
 cd /pfad/zum/projekt
@@ -110,11 +120,13 @@ python .koolie/core/tests/scripts/validate-framework.py --strict-overlay
 
 | | wird bei `--update` überschrieben | bleibt unberührt |
 |---|---|---|
-| Kern | Wurzel-Anweisungsdatei, Regelablage `00-`, `10-`, `15-`, Skill-Ablage `fw-*`, Agentenprofile, die `*-TEMPLATE`-Vorlagen | – |
+| Kern | Wurzel-Anweisungsdatei, Regelablage `00-`, `10-`, `15-`, Skill-Ablage `fw-*`, Agentenprofile, die `*-TEMPLATE`-Vorlagen; bei `openai-codex` zusätzlich die Hook-Datei und die Befehlsregeldatei | – |
 | Aktivierte Packs | ihre kopierten Bestandteile (Regelablage `30-`, `40-` und Skill-Ablage `role-*`, `tech-*`), sofern das Pack im Kern liegt | – |
-| Projekt | – | Berechtigungsdatei **samt Hook-Konfiguration**, Regelablage `20-`, `2N-`, Skill-Ablage `prj-*`, `.koolie/project-overlay/**`, projekteigene Packs |
+| Projekt | – | Berechtigungsdatei (bei `devin-desktop` und `claude-code` **samt Hook-Konfiguration**), Regelablage `20-`, `2N-`, Skill-Ablage `prj-*`, `.koolie/project-overlay/**`, projekteigene Packs |
 
-> **Die Hook-Konfiguration wird von `--update` NICHT erneuert.** Bei beiden Packs steht sie in der Berechtigungsdatei, und die gehört dem Projekt: Sie wird nur bei der Erstinstallation angelegt. Das ist eine bewusste Eigentumsentscheidung – es heißt aber, dass eine Änderung an den Hooks eines Releases **von Hand nachzutragen** ist. Der jeweilige `CHANGELOG.md`-Eintrag nennt solche Fälle unter „Migrationshinweise"; zuletzt betraf es 0.30.0 (die Suchwerkzeuge im Schutz-Hook).
+> **Bei `devin-desktop` und `claude-code` wird die Hook-Konfiguration von `--update` NICHT erneuert.** Sie steht dort in der Berechtigungsdatei, und die gehört dem Projekt: Sie wird nur bei der Erstinstallation angelegt. Das ist eine bewusste Eigentumsentscheidung – es heißt aber, dass eine Änderung an den Hooks eines Releases **von Hand nachzutragen** ist. Der jeweilige `CHANGELOG.md`-Eintrag nennt solche Fälle unter „Migrationshinweise"; zuletzt betraf es 0.30.0 (die Suchwerkzeuge im Schutz-Hook).
+>
+> **Bei `openai-codex` ist es umgekehrt:** Die Hook-Datei gehört zum Kern und wird bei jedem `--update` neu geschrieben. ⚠️ **Damit ändert sich ihr Hash, und der Client führt den Schutz-Hook danach erst wieder aus, wenn ihm erneut vertraut wurde** – ohne das läuft er gar nicht, und nichts meldet es (`CHANGELOG.md` zu 1.4.0, Migrationshinweise).
 
 Weitere Aufrufe:
 
@@ -149,7 +161,7 @@ Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei.
 | Pfad-, Werkzeug- und Hook-Abbildung eines Clients | `.koolie/core/clients/<client>/manifest.json` |
 | Fähigkeitsmatrix eines Clients | `.koolie/core/clients/<client>/CLIENT_PACK.md` |
 
-Das `root-template/` eines Packs enthält **nur noch die README der Laufzeitschicht**; `seed_paths` ist in beiden Manifesten leer, die gesamte Saat kommt aus dem Kern. **Niemals in die erzeugte Laufzeitschicht im Wurzelverzeichnis schreiben** – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
+Das `root-template/` eines Packs enthält **nur noch die README der Laufzeitschicht**; `seed_paths` ist in allen drei Manifesten leer, die gesamte Saat kommt aus dem Kern. **Niemals in die erzeugte Laufzeitschicht im Wurzelverzeichnis schreiben** – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
 
 Welcher Client verwendet wird, entscheidet `--client`; `python .koolie/core/install.py --list-clients` zeigt die verfügbaren. Welche Zusagen des Frameworks ein Client **technisch durchsetzt** und welche nur als Anweisung im Kontext stehen, steht in der Fähigkeitsmatrix seines Client Packs (`.koolie/core/clients/README.md`).
 

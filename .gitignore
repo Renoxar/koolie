@@ -1,5 +1,10 @@
 # Persönliche, nicht zu teilende Devin-Konfiguration (Framework-Konvention)
 AGENTS.local.md
+# Die Übergabe ist seit 1.4.1 ein lokales Arbeitsdokument und wird nicht mehr
+# versioniert (D-350, CR-2026-134) - ebenso ihre Vorlage. Die Git-Historie trägt
+# die Fassungen bis 1.4.0.
+UEBERGABE.md
+UEBERGABE.local.md.example
 # Die lokale Beilage der Übergabe: Servername, Konto, Arbeitsplatzpfade.
 # 🔴 Sie gehört NICHT ins Repositorium - mit ihren Werten meldet der Validator
 # gegen UEBERGABE.md drei Fehler (zwei IP-Fundstellen und eine

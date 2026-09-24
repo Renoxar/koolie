@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14 und 18 bis 88, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 88, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation) und fuer den Praeparationswaechter dieses
 Skripts selbst.
@@ -6057,94 +6057,12 @@ gegenprobe("66b", "Ein Traeger durchgehend auf LF wird NICHT gemeldet: gemessen 
            _66_auf_lf, M66)
 
 
-# --- 67: die Uebergabe nennt den Stand (D-216) ------------------------------------
+# --- 67: ENTFALLEN mit 1.4.1 (D-350) ----------------------------------------------
 #
-# Die dritte Sonde ist die Ankersonde: Ohne Titelzeile mit Stand faende Pruefung 67
-# nichts und bestuende leise. Die zweite Gegenprobe ist die ENTHALTUNG - ohne
-# UEBERGABE.md meldet sie nichts, und genau so laeuft sie in jeder Installation. Sie
-# steht hier, weil eine Enthaltung, die niemand gemessen hat, von einer Pruefung, die
-# ihren Gegenstand verloren hat, nicht zu unterscheiden ist.
-M67_STAND = "die Titelzeile nennt den Stand"
-M67_NUMMER = "Nennung(en) einer Merge-Request-Nummer"
-M67_ANKER = "keine Titelzeile der Form"
-M67_LAGE = "eine Lagezeile schreibt `main` den Stand"
-P67_UEBERGABE = "UEBERGABE.md"
-
-
-def _67_titelzeile(root: str, ersatz: str) -> None:
-    """Die erste Zeile der Uebergabe durch eine andere ersetzen."""
-    pfad = P(root, P67_UEBERGABE)
-    text = lies(pfad)
-    erste = text.split(chr(10), 1)[0]
-    if not erste.startswith("# "):
-        raise Praeparationsfehler(
-            "UEBERGABE.md beginnt nicht mit einer Ueberschrift - die Sonde zu 67 "
-            "haette keinen Anker")
-    schreib(pfad, text.replace(erste, ersatz, 1))
-
-
-def _67_falscher_stand(root: str) -> None:
-    """Ein Stand, den VERSION nicht fuehrt - genau der Fall vom 2026-09-20."""
-    _67_titelzeile(root, "# Uebergabe: Sondenfassung - Stand 9.9.9 (Sondendatum)")
-
-
-def _67_ohne_stand(root: str) -> None:
-    """Ankersonde: eine Titelzeile ohne Standangabe."""
-    _67_titelzeile(root, "# Uebergabe: Sondenfassung ohne Standangabe")
-
-
-def _67_mr_nummer(root: str) -> None:
-    """Eine Nummer eines Merge Requests - die Zahl, die vor dem Merge niemand kennt."""
-    pfad = P(root, P67_UEBERGABE)
-    text = lies(pfad)
-    schreib(pfad, text + chr(10) + "Sondenzeile: alles gemergt, Antrag "
-            + chr(35) + "4711 ist durch." + chr(10))
-
-
-def _67_ohne_uebergabe(root: str) -> None:
-    """Gegenprobe: keine Uebergabe - die Lage jeder Installation.
-
-    Die Uebergabe ist ein Traeger des Quellrepositoriums (D-214); `install.py`
-    schreibt sie nirgendwo hin. Die Enthaltung ist damit strukturell und nicht eine
-    Pruefung, die ihren Gegenstand verloren hat.
-    """
-    os.remove(P(root, P67_UEBERGABE))
-
-
-sonde("67a", "Die Titelzeile der Uebergabe nennt einen anderen Stand als VERSION - genau der Zustand, den der Nachtrag nach dem Merge hinterliess",
-      _67_falscher_stand, M67_STAND)
-
-sonde("67b", "Eine Nummer eines Merge Requests in der Uebergabe - der einzige Wert, den man vor dem Anlegen des Antrags nicht kennt",
-      _67_mr_nummer, M67_NUMMER)
-
-def _67_lagezeile(root: str) -> None:
-    """Der gemessene Fall: die Titelzeile stimmt, eine Lagezeile nicht.
-
-    Genau so sah UEBERGABE.md am 2026-09-20 aus - Titelzeile und Abschnitt 1 auf
-    dem neuen Stand, der Kopfblock auf dem alten. Die erste Fassung von Pruefung
-    67 hat es NICHT gemeldet; der Gegenbeweis gegen den Vorstand hat es gezeigt.
-    """
-    pfad = P(root, P67_UEBERGABE)
-    text = lies(pfad)
-    marke = "`main` = **"
-    if marke not in text:
-        raise Praeparationsfehler(
-            "UEBERGABE.md fuehrt keine Lagezeile '%s' mehr - die Sonde zu 67d "
-            "haette keinen Anker" % marke)
-    schreib(pfad, text.replace(marke, "`main` = **9.9.9** statt **", 1))
-
-
-sonde("67c", "Ohne Standangabe in der Titelzeile meldet Pruefung 67 den verlorenen Gegenstand, statt leise zu bestehen",
-      _67_ohne_stand, M67_ANKER)
-
-sonde("67d", "Die Titelzeile stimmt und eine Lagezeile nicht - der gemessene Fall, den die erste Fassung dieser Pruefung durchgelassen hat",
-      _67_lagezeile, M67_LAGE)
-
-gegenprobe("67a", "Das unveraenderte Repositorium bleibt unbeanstandet - Titelzeile und VERSION nennen denselben Stand",
-           None, M67_STAND)
-
-gegenprobe("67b", "Ohne UEBERGABE.md meldet Pruefung 67 nichts - die Enthaltung jeder Installation, hier einmal gemessen",
-           _67_ohne_uebergabe, M67_STAND)
+# Pruefung 67 hielt die Titelzeile der Uebergabe gegen VERSION. Seit 1.4.1 ist die
+# Uebergabe nicht mehr versioniert, und mit der Pruefung entfallen ihre vier Sonden
+# und zwei Gegenproben. Eine Sonde auf einen Traeger, den eine frische Auscheckung
+# nicht fuehrt, belegte nur, was auf einem Arbeitsplatz liegt.
 
 
 # --- 68: das Praefix, das mehr sperrt als sein Befehl (D-219) ----------------------
@@ -6958,8 +6876,9 @@ gegenprobe("76a", "Der ausgelieferte Bestand laeuft durch - vier Stellen, ein We
 # welcher gemeint ist, stuende nirgends.
 #
 # WARUM AN 00-kopf.md UND NICHT AN VERSION PRAEPARIERT WIRD: VERSION traegt der
-# Validator selbst gegen die Uebergabe (Pruefung 67) und gegen die Artefaktversionen
-# (Pruefung 13). Wer dort verstellt, loest drei Meldungen aus und misst keine davon.
+# Validator selbst gegen die Artefaktversionen (Pruefung 13), bis 1.4.0 auch gegen
+# die Uebergabe (Pruefung 67). Wer dort verstellt, loest mehrere Meldungen aus und
+# misst keine davon.
 M77_STAND = "die Kopfzeile nennt den Stand"
 M77_UNEINIG = "und das Framework-Release"
 M77_ANKER = "keine Zeile der Form"
@@ -7034,22 +6953,14 @@ gegenprobe("77a", "Der ausgelieferte Bestand laeuft durch - Dokumentversion, gen
 #                      sie genuegte es, EINE der drei Zahlen zu treffen.
 #   78c (Sonde)      - der verlorene Anker: Faellt der Satz weg, meldet die Pruefung das,
 #                      statt leise zu bestehen (D-23).
-#   78d (Sonde)      - dieselbe Zahl in der ABNAHMEZEILE DER UEBERGABE, seit D-325 der
-#                      zweite Gegenstand. Dort stand sie VIERMAL in Folge auf einem
-#                      ueberholten Wert, waehrend die Pruefung dafuer seit 0.90.0 lief -
-#                      an einer von zwei Stellen (D-295 an einem zweiten Gegenstand).
-#   78e (Sonde)      - der verlorene Anker der zweiten Fundstelle. Eine zweite Stelle
-#                      braucht ihren eigenen; sonst bestuende die Erweiterung leise.
+#   78d, 78e         - ENTFALLEN mit 1.4.1 (D-350): Sie maßen die Abnahmezeile der
+#                      Uebergabe, und die ist nicht mehr versioniert.
 M78_WERTE = "nennt nicht die gezählten Werte"
 M78_ANKER = "steht nicht genau einmal"
 M78_UNMESSBAR = "kein Git-Bestand lesbar"
-M78_UEBERGABEZAHL = "nennt nicht die gezählte Zahl der Prüfungen"
-M78_UEBERGABEANKER = "die Abnahmezeile über den Prüfapparat steht nicht genau einmal"
 
 P78_OPFER = ".koolie/core/build/doc/26-qs-test.md"
 P78_ANKER = "Der Validator führt **"
-P78_UEBERGABE = "UEBERGABE.md"
-P78_UEBERGABE_ANKER = "Der Prüfapparat steht bei **"
 
 
 def _78_zahl_verstellen(text: str, muster: str) -> str:
@@ -7122,29 +7033,6 @@ def sonden_dokumentzahlen() -> None:
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
         schreib(pfad, urtext)
 
-        # --- Sonde 78d: dieselbe Zahl in der Abnahmezeile der Uebergabe (D-325) -------
-        upfad = P(root, P78_UEBERGABE)
-        urtext_u = lies(upfad)
-        schreib(upfad, _78_zahl_verstellen(urtext_u, P78_UEBERGABE_ANKER))
-        unterprozess(["git", "-C", root, "add", "-A"])
-        aus = validator_ausgabe(root)
-        melde("SONDE", "78d", M78_UEBERGABEZAHL in aus,
-              "Dieselbe verstellte Zahl in der Abnahmezeile der Uebergabe wird gemeldet "
-              "- dort stand sie viermal in Folge auf einem ueberholten Wert")
-        if M78_UEBERGABEZAHL not in aus:
-            notiz("        Ausgabe:", " | ".join(
-                z for z in aus.splitlines() if "FEHLER" in z)[:400])
-
-        # --- Sonde 78e: der verlorene Anker in der Uebergabe --------------------------
-        schreib(upfad, urtext_u.replace(P78_UEBERGABE_ANKER, "Der Apparat liegt bei **", 1))
-        unterprozess(["git", "-C", root, "add", "-A"])
-        aus = validator_ausgabe(root)
-        melde("SONDE", "78e", M78_UEBERGABEANKER in aus,
-              "Faellt die Abnahmezeile weg, meldet Pruefung 78 auch dort den verlorenen "
-              "Gegenstand - eine zweite Fundstelle braucht ihren eigenen Anker")
-        if M78_UEBERGABEANKER not in aus:
-            notiz("        Ausgabe:", " | ".join(
-                z for z in aus.splitlines() if "FEHLER" in z)[:400])
     finally:
         aufraeumen(os.path.dirname(root))
 
@@ -7537,6 +7425,14 @@ buendel(selbstprobe_ausgesetzt,
 #                      danach nicht mehr traf.
 #   81c (Sonde)      - ohne Git-Bestand meldet sie die Unmessbarkeit, statt leise zu
 #                      bestehen (D-23). Sie ist die einzige, die OHNE `git init` laeuft.
+#   81d (Sonde)      - 🆕 seit 1.4.1 (D-351): Eine Datei der WURZEL, ausserhalb des
+#                      Kerns, auf der anderen Form wird im Quellrepositorium gemeldet.
+#                      Das belegt den Anker: Bis 1.4.0 war er UEBERGABE.md, und seit
+#                      die nicht mehr versioniert ist, haette die Pruefung die Wurzel
+#                      LEISE uebergangen - gegen den Vorstand faellt diese Sonde.
+#   81b (Gegenprobe) - dieselbe Datei OHNE Kennzeichen, also in einem uebernehmenden
+#                      Projekt: nicht gemeldet. Was ein Projekt in seine eigenen
+#                      Dateien schreibt, geht das Framework nichts an.
 #
 # 🔴 KEINE SONDE HAELT EINE FORM WOERTLICH. Sie lesen die vorgefundene Form aus dem
 # Traeger und stellen ihn auf die jeweils andere - dieselbe Lehre wie bei Pruefung 78:
@@ -7548,6 +7444,8 @@ M81_ABWEICHEND = "Zeilenenden, während"
 M81_UNMESSBAR = "Prüfung 81: kein Git-Bestand lesbar"
 
 P81_OPFER = ".koolie/core/docs/RUNTIME_GLOSSARY.md"
+P81_WURZEL = "README.md"
+P81_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
 
 
 def _81_umstellen(text: str) -> str:
@@ -7616,6 +7514,33 @@ def sonden_zeilenendeform() -> None:
         if M81_GEMISCHT not in aus:
             notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
+        schreib(pfad, urtext)
+
+        # --- Sonde 81d: eine Wurzeldatei auf der anderen Form (D-351) -----------------
+        wpfad = P(root, *P81_WURZEL.split("/"))
+        wurtext = lies(wpfad)
+        schreib(wpfad, _81_umstellen(wurtext))
+        aus = validator_ausgabe(root)
+        treffer = P81_WURZEL + ": trägt" in aus and M81_ABWEICHEND in aus
+        melde("SONDE", "81d", treffer,
+              "Eine Wurzeldatei ausserhalb des Kerns auf der anderen Form wird im "
+              "Quellrepositorium gemeldet - das Kennzeichen macht den Zaehlbereich")
+        if not treffer:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Gegenprobe 81b: dieselbe Datei in einem uebernehmenden Projekt ----------
+        kpfad = P(root, *P81_KENNZEICHEN.split("/"))
+        os.remove(kpfad)
+        unterprozess(["git", "-C", root, "add", "-A"])
+        aus = validator_ausgabe(root)
+        ok = not (P81_WURZEL + ": trägt" in aus)
+        melde("GEGENPROBE", "81b", ok,
+              "Ohne Kennzeichen des Quellrepositoriums bleibt dieselbe Wurzeldatei "
+              "unbeanstandet - sie gehoert dem uebernehmenden Projekt")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(
+                z for z in aus.splitlines() if P81_WURZEL in z)[:400])
     finally:
         aufraeumen(os.path.dirname(root))
 
@@ -7657,7 +7582,7 @@ M82_FEHLT = "als Nachweis der Auditierbarkeit"
 
 P82_LISTE = ".koolie/core/governance/ADOPTION_REGISTRY.md"
 P82_VERSION = ".koolie/core/VERSION"
-P82_UEBERGABE = "UEBERGABE.md"
+P82_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
 
 
 def _82_stand(root: str) -> str:
@@ -7695,12 +7620,13 @@ def sonden_bestandsliste_stand() -> None:
                 z for z in aus.splitlines() if "82" in z or "Bestandsliste" in z)[:400])
 
         # --- Gegenprobe 82b: DIE D-299-PROBE ----------------------------------------
-        # Ein uebernehmendes Projekt: keine UEBERGABE.md, und Liste wie VERSION tragen
-        # denselben AELTEREN Stand. Beide kommen byte-gleich aus demselben Release.
-        uebergabe = P(root, P82_UEBERGABE)
-        gesichert = lies(uebergabe) if os.path.isfile(uebergabe) else None
+        # Ein uebernehmendes Projekt: kein Kennzeichen des Quellrepositoriums (D-351),
+        # und Liste wie VERSION tragen denselben AELTEREN Stand. Beide kommen
+        # byte-gleich aus demselben Release.
+        kennzeichen = P(root, *P82_KENNZEICHEN.split("/"))
+        gesichert = lies(kennzeichen) if os.path.isfile(kennzeichen) else None
         if gesichert is not None:
-            os.remove(uebergabe)
+            os.remove(kennzeichen)
         schreib(P(root, *P82_VERSION.split("/")), fremd + "\n")
         schreib(pfad, urtext.replace("**" + stand + "**", "**" + fremd + "**"))
         aus = validator_ausgabe(root)
@@ -7712,7 +7638,7 @@ def sonden_bestandsliste_stand() -> None:
                 z for z in aus.splitlines() if M82_ABWEICHEND in z)[:400])
         schreib(P(root, *P82_VERSION.split("/")), stand + "\n")
         if gesichert is not None:
-            schreib(uebergabe, gesichert)
+            schreib(kennzeichen, gesichert)
         schreib(pfad, urtext)
 
         # --- Sonde 82a: eine Zeile auf einem anderen Stand ---------------------------

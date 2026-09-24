@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.4` |
+| Version | `0.4.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -60,7 +60,8 @@ bleibt unberührt (P10, Baum 6).
    der KI-Client öffnet (A-01).
 
    ```bash
-   cp -r .koolie/core/ /pfad/zum/projekt/
+   mkdir -p /pfad/zum/projekt/.koolie
+   cp -r .koolie/core /pfad/zum/projekt/.koolie/
    ```
 
 3. **Wurzelbestandteile anlegen:**
@@ -257,7 +258,8 @@ skriptbar:
 
 ```bash
 for repo in repo-a repo-b; do
-  cp -r .koolie/core/ "$repo/"
+  mkdir -p "$repo/.koolie"
+  cp -r .koolie/core "$repo/.koolie/"
   (cd "$repo" && python .koolie/core/install.py --update)
 done
 ```
