@@ -1345,6 +1345,63 @@ buendel(sonden_ignorierte_kerndateien,
         "richtig und schweigt, wenn nichts ignoriert wird")
 
 
+# --- D-354: das Kennzeichen des Quellrepositoriums in einem Projekt ---------------
+#
+# 🔴 WER GANZ `.koolie/` KOPIERT, NIMMT DAS KENNZEICHEN MIT - aus dem Arbeitsbaum wie
+# aus dem Release-Archiv, denn es ist versioniert. Danach haelt der Validator das
+# Projekt fuer das Quellrepositorium, und keine seiner Meldungen nennt den Grund.
+# Gemessen am 2026-09-24 (CR-2026-137): unverfolgt 1 Fehler (Pruefung 79, Lizenz in
+# der Projektwurzel), committet 80 (dazu Pruefung 81 an 79 Projekttraegern).
+#
+# ZWEI EINHEITEN, UND DIE SONDE HAELT ZWEI STELLEN GEGENEINANDER. `install.py` und der
+# Validator fuehren den Pfad des Kennzeichens je fuer sich; die Sonde verlangt, dass an
+# derselben Datei BEIDE anschlagen - die Auskunft und Pruefung 79. Wandert eine der
+# beiden Konstanten, faellt sie.
+#   D354  (Sonde)      - Kennzeichen liegt: Hinweis, Exit 0, und Pruefung 79 verlangt
+#                        die Lizenz in der Wurzel. Gegen den Vorstand faellt sie.
+#   D354a (Gegenprobe) - ohne Kennzeichen: kein Hinweis und keine Lizenzmeldung. Eine
+#                        Auskunft, die immer etwas meldet, besteht jede Sonde.
+M354_HINWEIS = "das Kennzeichen des Framework-Repositoriums selbst"
+M354_VALIDATOR = "LICENSE: fehlt"
+
+
+def sonden_kennzeichen_im_projekt() -> None:
+    """Wirkungsnachweis fuer die Auskunft aus D-354 an einer echten Installation."""
+    root = installation("claude-code")
+    try:
+        werkzeug = os.path.join(root, ".koolie", "core", "install.py")
+        kennzeichen = os.path.join(root, ".koolie", "QUELLREPOSITORIUM.md")
+        faelle = (
+            ("SONDE", "D354", True,
+             "Ein mitkopiertes Kennzeichen wird gemeldet, ohne die Installation "
+             "anzuhalten - und der Validator erkennt dieselbe Datei"),
+            ("GEGENPROBE", "D354a", False,
+             "Ohne Kennzeichen kein Hinweis, und der Validator prueft als Projekt"),
+        )
+        for art, kennung, liegt, was in faelle:
+            if liegt:
+                shutil.copyfile(os.path.join(QUELLE, ".koolie", "QUELLREPOSITORIUM.md"),
+                                kennzeichen)
+            elif os.path.exists(kennzeichen):
+                os.remove(kennzeichen)
+            p = unterprozess([sys.executable, werkzeug, "--update", "--root", root])
+            aus = (p.stdout or "") + (p.stderr or "")
+            hinweis = M354_HINWEIS in aus
+            validator = M354_VALIDATOR in validator_ausgabe(root)
+            ok = p.returncode == 0 and hinweis == liegt and validator == liegt
+            melde(art, kennung, ok, was)
+            if not ok:
+                notiz("        Exit %d, Hinweis %s, Pruefung 79 %s (erwartet je %s)"
+                      % (p.returncode, hinweis, validator, liegt))
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_kennzeichen_im_projekt,
+        "Ein mitkopiertes Kennzeichen des Quellrepositoriums wird bei der Installation "
+        "gemeldet, und install.py und Validator erkennen es an derselben Stelle")
+
+
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
 #
 # Zwei Gegenstaende in einem Block, weil sie dieselbe Entscheidung tragen: Der Suchkanal

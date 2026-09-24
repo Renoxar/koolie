@@ -10,6 +10,9 @@ Stellen; in einem übernehmenden Projekt beschränken sie sich auf das Ausgelief
 Prüfung 78 enthält sich.
 
 **Sie wandert nicht in ein Projekt.** Sie liegt neben dem Kern, nicht in ihm: Das Heben
-kopiert nur `.koolie/core/`, und `install.py` legt sie nicht an. Bis `1.4.0` war dieses
+kopiert nur `.koolie/core/`, und `install.py` legt sie nicht an. ⚠️ **Wer ganz `.koolie/`
+kopiert, nimmt sie trotzdem mit** – aus einem Klon ebenso wie aus dem Release-Archiv,
+denn sie ist versioniert. `install.py` meldet sie dann; in einem Projekt gehört sie
+entfernt (D-354). Bis `1.4.0` war dieses
 Kennzeichen die Übergabe `UEBERGABE.md`; seit `1.4.1` ist die Übergabe ein lokales
 Arbeitsdokument und nicht mehr versioniert (D-350).

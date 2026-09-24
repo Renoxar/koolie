@@ -767,6 +767,34 @@ def ignorierte_kerndateien(root: str) -> list[str]:
                   for z in proc.stdout.split(b"\0") if z)
 
 
+# Das Kennzeichen des Framework-Repositoriums (D-351). Der Validator liest dieselbe
+# Datei unter demselben Pfad (QUELLREPO_KENNZEICHEN); Sonde D354 haelt beide Stellen
+# an einer echten Installation gegeneinander.
+QUELLREPO_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
+
+
+def traegt_quellrepo_kennzeichen(root: str) -> bool:
+    """Liegt im Ziel das Kennzeichen des Framework-Repositoriums?
+
+    ANLASS, UND ER IST GEMESSEN (CR-2026-137, D-354). Das Kennzeichen liegt NEBEN dem
+    Kern, und wer ganz `.koolie/` statt nur `.koolie/core/` kopiert, nimmt es mit - aus
+    dem Arbeitsbaum des Frameworks ebenso wie aus dem Release-Archiv, denn es ist
+    versioniert. Danach haelt der Validator das Projekt fuer das Quellrepositorium:
+    Pruefung 79 verlangt die Lizenz in der Projektwurzel, und sobald das Projekt die
+    Datei committet, misst Pruefung 81 die Zeilenenden jedes Projekttraegers. Keine der
+    Meldungen nennt die Ursache. Aus dem Arbeitsbaum kommt zugleich das Overlay des
+    Frameworks mit und ersetzt das des Projekts - still, weil install.py das Overlay
+    nie anfasst und es deshalb als unberuehrt meldet.
+
+    DIES IST EINE AUSKUNFT UND KEINE SCHRANKE (D-354, Bauform von D-349). Ein Abbruch
+    traefe das Framework-Repositorium selbst, das seine Wurzeldateien mit demselben
+    Aufruf erzeugt; kein Merkmal trennt beide Faelle sicher - auch nicht, ob git die
+    Datei verfolgt, denn ein Projekt, das die Kopie committet hat, sieht dann genauso
+    aus.
+    """
+    return os.path.isfile(os.path.join(root, *QUELLREPO_KENNZEICHEN.split("/")))
+
+
 def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
     rep = Report()
     pruefe_abbildung(root, man)
@@ -1229,6 +1257,19 @@ def main() -> int:
         print("Klonen dieses Projekts fehlen sie. Abhilfe: eine Negativregel im")
         print(f"'.gitignore' des Projekts, etwa '!{clientmap.CORE_REL}/**'. Das '.gitignore'")
         print("gehoert dem Projekt; dies ist eine Auskunft und keine Schranke.")
+
+    if traegt_quellrepo_kennzeichen(root):
+        print()
+        print(f"HINWEIS: In diesem Verzeichnis liegt {QUELLREPO_KENNZEICHEN} - das "
+              f"Kennzeichen des Framework-Repositoriums selbst.")
+        print("Ist dies ein Projekt, wurde beim Kopieren zu viel mitgenommen: Kopiert wird")
+        print(f"nur {clientmap.CORE_REL}/, nie ganz .koolie/. Solange die Datei hier liegt, haelt")
+        print("der Validator das Projekt fuer das Quellrepositorium und prueft Projektdateien")
+        print("mit (Pruefungen 75, 78, 79 und 81). Abhilfe: die Datei entfernen und pruefen, ob")
+        print(".koolie/project-overlay/ noch der Stand des Projekts ist - eine Kopie aus dem")
+        print("Arbeitsbaum des Frameworks bringt dessen Overlay mit.")
+        print("Im Framework-Repositorium selbst ist nichts zu tun. Dies ist eine Auskunft und")
+        print("keine Schranke.")
 
     print()
     print("Diese Pfade gehoeren dem Projekt und werden von install.py nie geschrieben:")

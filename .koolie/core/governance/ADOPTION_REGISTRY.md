@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REG` |
-| Version | `0.2.3` |
+| Version | `0.2.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | alle Projekte, die den Framework-Kern übernommen haben |
@@ -28,10 +28,10 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.4.3** | `0.3.8` | 2026-09-24 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.4.3** | `1.4.2` | 2026-09-24 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.4.4** | `0.3.9` | 2026-09-24 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.4.4** | `1.4.3` | 2026-09-24 |
 
-🟢 **STAND 2026-09-24: BEIDE PROJEKTE TRAGEN `1.4.3`, UND DIE HEBUNG IST DORT COMMITTET.** `1.4.3` ordnet ein und ändert nichts, was ein Projekt erreicht (D-353); **die beiden Berechtigungsdateien dieser Liste sind zugleich sein Meßgegenstand** – 37 Projekteinträge, die ein Erzeugen bei `--update` überschrieben hätte. `1.4.2` berichtigt die Auskunft über ignorierte Kerndateien (D-352); im Pilotprojekt ist sie der erste Lauf der berichtigten Fassung gegen die projekteigene Zeile `build/`. Die Hebung auf `1.4.0` war auf Entscheidung des Framework Owners verschoben; sie ist mit `1.4.1` nachgeholt, in einem Schritt über beide Releases. ⚠️ **Die Spalte `Overlay-Version` stand bis dahin auf `0.3.3` und `1.1.0`, während die Projekte seit `1.3.0` `0.3.5` und `1.3.0` trugen** – Prüfung 82 hält nur die Spalte `Framework-Version` (`CR-2026-134`). *Eine Spalte, die niemand zählt, ist eine, die niemand veralten sieht.*
+🟢 **STAND 2026-09-24: BEIDE PROJEKTE TRAGEN `1.4.4`, UND DIE HEBUNG IST DORT COMMITTET.** `1.4.4` gibt dem Kopierweg des Kerns einen Warnsatz und `install.py` eine Auskunft über ein mitkopiertes Kennzeichen des Quellrepositoriums (D-354); **beide Projekte wurden, wie seit D-333, nur mit `.koolie/core/` gehoben – die Auskunft schweigt dort.** `1.4.3` ordnet ein und ändert nichts, was ein Projekt erreicht (D-353); **die beiden Berechtigungsdateien dieser Liste sind zugleich sein Meßgegenstand** – 37 Projekteinträge, die ein Erzeugen bei `--update` überschrieben hätte. `1.4.2` berichtigt die Auskunft über ignorierte Kerndateien (D-352); im Pilotprojekt ist sie der erste Lauf der berichtigten Fassung gegen die projekteigene Zeile `build/`. Die Hebung auf `1.4.0` war auf Entscheidung des Framework Owners verschoben; sie ist mit `1.4.1` nachgeholt, in einem Schritt über beide Releases. ⚠️ **Die Spalte `Overlay-Version` stand bis dahin auf `0.3.3` und `1.1.0`, während die Projekte seit `1.3.0` `0.3.5` und `1.3.0` trugen** – Prüfung 82 hält nur die Spalte `Framework-Version` (`CR-2026-134`). *Eine Spalte, die niemand zählt, ist eine, die niemand veralten sieht.*
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`
