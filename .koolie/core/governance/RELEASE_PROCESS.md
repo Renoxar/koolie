@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.0` |
+| Version | `0.3.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -82,9 +82,10 @@ Jede Änderung an `.koolie/core/**` nach dem Heben macht die Kopien wieder falsc
 genau das ist am 2026-09-23 beim ersten Durchlauf dieses Verfahrens passiert: Die
 Overlay-Version steht erst **nach** dem Heben fest, die Bestandsliste mußte deshalb noch
 einmal angefaßt werden, und danach trugen beide Projekte einen Stand, den es nicht gibt.
-🟢 **Die Übergabe darf danach noch geschrieben werden** – sie liegt **außerhalb** des
-Kerns (D-216) und wird in kein Projekt installiert. *Sie ist der einzige Träger des
-Release-Commits, der das darf, und sie darf es nur deshalb.*
+🟢 **Die Übergabe darf danach noch geschrieben werden** – sie ist seit `1.4.1` ein
+lokales Arbeitsdokument, wird nicht versioniert (D-350) und in kein Projekt
+installiert. Bis `1.4.0` stand hier, sie sei *der einzige Träger des Release-Commits,
+der das darf*; seither gehört sie keinem Commit mehr an.
 
 🔴 **UND SCHRITT 2 ENDETE BIS `1.3.0`, BEVOR SEIN ERGEBNIS DAUERHAFT WAR** (D-343).
 Vier Handgriffe standen hier – entpacken, `install.py --update`, Overlay nachziehen,

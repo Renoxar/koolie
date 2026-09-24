@@ -2,6 +2,65 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.4.1] - 2026-09-24
+
+**Die Uebergabe wird ein lokales Arbeitsdokument - und vier Pruefungen verlieren den
+Anker, an dem sie das Quellrepositorium erkannten** (`CR-2026-134` E1 bis E4,
+**D-350** und **D-351**, D-214 und D-216 aufgehoben). Ein Patch-Release ohne
+Kontingent und **ohne neue Pruefung**: Pruefung 67 entfaellt, zwei Sondeneinheiten
+kommen an Pruefung 81 hinzu.
+
+> 🔴 **DIE UEBERGABE WAR DER ANKER VON VIER PRUEFUNGEN, UND ZWEI DAVON HAETTEN IHR
+> AUSTRAGEN NICHT BEMERKT.** Die Pruefungen 75, 78, 79 und 81 unterschieden an
+> `UEBERGABE.md`, ob sie im Framework-Repositorium oder in einem uebernehmenden Projekt
+> laufen. 75 und 81 lesen dafuer `git ls-files` - nach dem Austragen haetten sie das
+> Quellrepositorium **leise fuer ein Projekt gehalten**, auch auf dem Arbeitsplatz, der
+> die Datei noch fuehrt. **Gegenbeweis, gemessen:** `README.md` auf LF gestellt, die
+> Uebergabe lokal vorhanden - der Validator aus `1.4.0` meldet 0 Treffer, der neue 1.
+> ➡️ ***Ein Anker, der nur an einem Arbeitsplatz liegt, ist keiner.*** Seither traegt
+> `.koolie/QUELLREPOSITORIUM.md` den Anker - neben dem Kern, damit er nie in ein
+> Projekt wandert (D-351). 🆕 **Sonde 81d** und **Gegenprobe 81b** belegen ihn.
+>
+> 🔴 **DER ERSTE BEFEHL DER UEBERNAHMEANLEITUNG LIEF NICHT.** `cp -r .koolie/core/
+> /pfad/zum/projekt/` legt mit dem Schraegstrich am Quellpfad den Kern unter
+> `<projekt>/core` ab, nicht unter `<projekt>/.koolie/core` - in der README und
+> zweimal im Uebernahmeleitfaden. Gefunden beim Lesen, nicht durch eine Pruefung.
+
+**Geaendert**
+
+- `UEBERGABE.md` und `UEBERGABE.local.md.example` sind aus dem Versionierten genommen
+  und stehen in der `.gitignore` (D-350). **Pruefung 67 entfaellt**, ihre Nummer bleibt
+  im Register als *entfallen*; **Pruefung 78** verliert ihren zweiten Gegenstand, die
+  Abnahmezeile der Uebergabe (D-325). Im Sondenapparat entfallen 67a bis 67d, die
+  Gegenproben 67a und 67b sowie 78d und 78e.
+- **Kennzeichen des Quellrepositoriums** `.koolie/QUELLREPOSITORIUM.md` (D-351),
+  gelesen von den Pruefungen 75, 78, 79 und 81; Gegenprobe 82b nimmt fuer den
+  Projektfall das Kennzeichen weg statt der Uebergabe.
+- `governance/FRAMEWORK_DEV_PROFILE.md` Schritt 7 (`0.1.3`) und
+  `governance/RELEASE_PROCESS.md` Abschnitt 4.1 (`0.3.1`): Die Uebergabe wird lokal
+  fortgeschrieben und gehoert keinem Commit mehr an.
+- **Wurzel-README an `1.4.0` angeglichen:** drei Client Packs statt zwei; die
+  Hook-Ablage je Pack (bei `openai-codex` eine eigene Datei, die zum Kern gehoert und
+  bei `--update` erneuert wird - mit der Folge fuer das Hook-Vertrauen); `seed_paths`
+  in allen drei Manifesten; der Kopierbefehl.
+- `docs/ADOPTION_GUIDE.md` (`0.4.5`): beide Kopierbefehle berichtigt.
+- `build/doc/00-kopf.md`: *"Ausgeliefert werden drei"* statt zwei.
+- `governance/ADOPTION_REGISTRY.md` (`0.2.1`): beide Projekte auf `1.4.1`, und die
+  Spalte `Overlay-Version` stand zwei Releases zurueck (`0.3.3`/`1.1.0` statt
+  `0.3.5`/`1.3.0`) - Pruefung 82 haelt nur die Framework-Version.
+
+**Migrationshinweise fuer Overlays**
+
+- **Keine.** Kein Traeger des Overlays aendert seine Gestalt. Ein Projekt hat keine
+  Uebergabe und kein Kennzeichen; alle vier betroffenen Pruefungen verhalten sich dort
+  wie bisher.
+
+**Bekannte Einschraenkungen**
+
+- **Stand und Zahlen der Uebergabe prueft niemand mehr** (D-350). Wer sie liest, zaehlt
+  nach.
+- **Ein zweiter Arbeitsplatz bekommt die Uebergabe nicht mehr ueber `git clone`.**
+
 ## [1.4.0] - 2026-09-23
 
 **Das dritte Client Pack - und der Schutz-Hook, der lief und nichts verhinderte**

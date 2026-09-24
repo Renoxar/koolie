@@ -4,11 +4,11 @@
 
 | | |
 |---|---|
-| Dokumentversion | 1.4.0 (entspricht Framework-Release 1.4.0) |
-| Stand | 2026-09-23 |
+| Dokumentversion | 1.4.1 (entspricht Framework-Release 1.4.1) |
+| Stand | 2026-09-24 |
 | Status | **Kein Modulträger steht auf `entwurf`.** Gezählt am 2026-09-22 über den ganzen Kern: 81 Träger führen eine Steckbriefzeile, davon **77 auf `pilot`** und vier als Ausfüllschlitz einer Vorlage – Kriterium 3 der 1.0.0-Definition ist seit Release 0.53.0 erfüllt und wird bei jedem Validatorlauf nachgerechnet (Prüfung 46). Die technische Validierung gegen reale Installationen ist als Roadmap-Arbeitspaket AP2 **gefahren und mit Release 0.86.0 zu Ende geführt**; die Protokolle liegen unter `.koolie/core/tests/protocols/`. Was zwischen diesem Stand und 1.0.0 liegt, steht im Releaseplan der Roadmap (Kap. 30) |
 | Vertraulichkeit | projektneutral – enthält keine organisations-, kunden-, personen- oder infrastrukturspezifischen Inhalte; Beispiele sind synthetisch |
-| Zielprodukt | Kein einzelnes. Der Kern ist werkzeugneutral; die Bindung an einen KI-Client leistet ein **Client Pack** (`.koolie/core/clients/`). Ausgeliefert werden zwei: `devin-desktop` und `claude-code`. **Welches Produkt ein Pack abbildet, gegen welche verbindliche Zielversion und mit welchem Stand der Produktbeobachtung, steht im Pack selbst** (Kap. 7a, 15.1) – nicht hier: Diese Angaben ändern sich mit dem Produkt, und der Kern soll sich nicht mit ihm ändern. |
+| Zielprodukt | Kein einzelnes. Der Kern ist werkzeugneutral; die Bindung an einen KI-Client leistet ein **Client Pack** (`.koolie/core/clients/`). Ausgeliefert werden drei: `devin-desktop`, `claude-code` und `openai-codex`. **Welches Produkt ein Pack abbildet, gegen welche verbindliche Zielversion und mit welchem Stand der Produktbeobachtung, steht im Pack selbst** (Kap. 7a, 15.1) – nicht hier: Diese Angaben ändern sich mit dem Produkt, und der Kern soll sich nicht mit ihm ändern. |
 | **Reproduzierbarkeit** | Das Dokument wird aus dem Repository assembliert und baut aus einem frischen Auscheckstand. Laufzeitdateien stammen aus einer Referenzinstallation, die beim Bau entsteht; jede trägt die Angabe, aus welchem Client Pack sie kommt. |
 | Bestandteile der Lieferung | dieses Hauptdokument (Markdown und Word) und das Referenz-Repository – das Repository ist die maßgebliche, versionierte Quelle aller eingebetteten Artefakte |
 | Autorenschaft | erstellt als beauftragte Ausarbeitung; Verantwortungsübernahme durch `<FRAMEWORK_OWNER>` bei Übernahme |

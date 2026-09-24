@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-DEV` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | das Quellrepositorium dieses Frameworks – **nicht** für ein Projekt, das ein Release anwendet |
@@ -83,7 +83,7 @@ Die Reihenfolge ist der Änderungsprozess des Frameworks, nicht ein Betriebsmodu
    nennen das Quellrepositorium seit `0.32.0`, führen aber alle M1, und `fw-docs-update` (M5) sagt
    für ein inaktives Overlay ausdrücklich *„arbeitet der Skill nur lesend"*. Seit `0.84.0`
    verweisen die drei anweisenden Fassungen für **beide** Hälften hierher (D-253, Grenzfall G-11).
-7. **Übergabe** fortschreiben – im Quellrepositorium `UEBERGABE.md` in der Wurzel (D-214). Sie gehört in den **Release-Commit**, nicht in einen Nachtrag danach: Alles, was sie braucht, liegt nach Schritt 5 und 6 vor. **Eine Nummer des Merge Requests steht nicht darin** – sie ist der einzige Wert, den man vor dem Anlegen des Antrags nicht kennt, und damit der einzige Grund, überhaupt nach dem Merge zu schreiben; *alles gemergt, kein offener Antrag* ist die Aussage, auf die es ankommt, und `git` beantwortet sie. Prüfung 67 hält die Titelzeile gegen `<CORE_DIR>/VERSION` (D-216).
+7. **Übergabe** fortschreiben – `UEBERGABE.md` in der Wurzel, **lokal und nicht versioniert** (D-350; von `0.78.1` bis `1.4.0` war sie eingecheckt, D-214). Sie steht in der `.gitignore` wie ihre Beilage `UEBERGABE.local.md`, und keine Prüfung erreicht sie. ⚠️ **Das ist ihr Preis:** Stand und Zahlen der Übergabe hält niemand mehr gegen `<CORE_DIR>/VERSION` – sie gehört deshalb an den Schluss eines Releases, wenn alle Zahlen feststehen, und wer sie liest, zählt nach, statt ihr zu glauben. **Eine Nummer des Merge Requests darf sie wieder nennen**; die Regel dagegen hatte ihren Grund im Release-Commit (D-216), und den gibt es für sie nicht mehr.
 8. **Freigabe und Merge führt der Mensch aus** (V1, V2). Der KI-Client schlägt Commit-Nachricht und
    Merge-Request-Beschreibung vor.
 
