@@ -116,6 +116,15 @@ python .koolie/core/install.py
 python .koolie/core/tests/scripts/validate-framework.py --strict-overlay
 ```
 
+> ⚠️ **Nur `.koolie/core/` kopieren – nie ganz `.koolie/`.** Daneben liegt das
+> Kennzeichen des Framework-Repositoriums (`.koolie/QUELLREPOSITORIUM.md`), und zwar
+> im Release-Archiv ebenso wie in einem Klon. Mitkopiert hält der Validator das Projekt
+> für das Framework-Repositorium und meldet Fehler, deren Ursache er nicht nennt. Aus
+> einem Klon kommt zusätzlich dessen eigenes Overlay mit (`.koolie/project-overlay/`)
+> und **ersetzt beim Heben das des Projekts – ohne Meldung**, weil `install.py` das
+> Overlay nie anfasst. `install.py` weist seit `1.4.4` auf ein mitkopiertes Kennzeichen
+> hin (D-354).
+
 `install.py` unterscheidet dabei **Kern** von **Projekt**:
 
 | | wird bei `--update` überschrieben | bleibt unberührt |

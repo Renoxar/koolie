@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.5` |
+| Version | `0.4.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -63,6 +63,15 @@ bleibt unberührt (P10, Baum 6).
    mkdir -p /pfad/zum/projekt/.koolie
    cp -r .koolie/core /pfad/zum/projekt/.koolie/
    ```
+
+   ⚠️ **Nur `.koolie/core/` kopieren – nie ganz `.koolie/`.** Daneben liegt das
+   Kennzeichen des Framework-Repositoriums (`.koolie/QUELLREPOSITORIUM.md`), im
+   Release-Archiv ebenso wie in einem Klon. Mitkopiert hält der Validator das Projekt für
+   das Framework-Repositorium: Prüfung 79 verlangt die Lizenz in der Projektwurzel, und
+   sobald die Datei committet ist, mißt Prüfung 81 die Zeilenenden jedes Projektträgers –
+   keine der Meldungen nennt die Ursache. Aus einem Klon kommt zusätzlich dessen eigenes
+   Overlay mit (`.koolie/project-overlay/`). `install.py` meldet ein mitkopiertes
+   Kennzeichen; die Abhilfe ist, die Datei zu entfernen (D-354).
 
 3. **Wurzelbestandteile anlegen:**
 
@@ -208,8 +217,10 @@ bleibt unberührt (P10, Baum 6).
 1. Release-Notes und Migrationshinweise lesen
    (`.koolie/core/CHANGELOG.md` des neuen Releases).
 
-2. Das Verzeichnis `.koolie/core/` durch das neue ersetzen, dann die
-   Wurzelbestandteile nachziehen:
+2. Das Verzeichnis `.koolie/core/` durch das neue ersetzen – **nur dieses Verzeichnis**:
+   Eine Kopie von ganz `.koolie/` aus einem Klon des Frameworks ersetzt das Overlay des
+   Projekts durch das des Frameworks, und zwar **ohne Meldung** (Abschnitt 2, Schritt 2;
+   D-354). Dann die Wurzelbestandteile nachziehen:
 
    ```bash
    python .koolie/core/install.py --update
@@ -265,7 +276,9 @@ done
 ```
 
 Die Pfadlisten (Abschnitt 4 des Overlays) sind je Repository spezifisch und werden nicht
-mitkopiert — `install.py` überschreibt `.koolie/project-overlay/` nie.
+mitkopiert — `install.py` überschreibt `.koolie/project-overlay/` nie. ⚠️ **Das gilt nur,
+solange die Schleife `.koolie/core` kopiert:** Ein `cp -r .koolie` überschreibt das Overlay,
+bevor `install.py` läuft, und `install.py` meldet es danach als unberührt (D-354).
 
 ## 5. Deinstallation oder Werkzeugwechsel
 

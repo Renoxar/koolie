@@ -2,6 +2,61 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.4.4] - 2026-09-24
+
+**Der Kopierweg des Kerns - und das Archiv, aus dem er als sicher galt**
+(`CR-2026-137` E1 bis E3, **D-354**). Ein Patch-Release ohne Kontingent und **ohne neue
+Pruefung**: ein Warnsatz an jedem Kopierbefehl, eine Auskunft in `install.py` und zwei
+Sondeneinheiten.
+
+> 🔴 **KEINE DER BEIDEN QUELLEN IST FUER EINE KOPIE VON GANZ `.koolie/` SICHER.** Das
+> Kennzeichen `.koolie/QUELLREPOSITORIUM.md` ist versioniert und liegt deshalb auch im
+> Release-Archiv - die Vorbereitung hatte das Archiv fuer harmlos gehalten. Mitkopiert
+> haelt der Validator das Projekt fuer das Framework-Repositorium: an einer
+> Wegwerf-Installation 1 Fehler (Pruefung 79, Lizenz in der Projektwurzel), nach dem
+> Commit 80 (dazu Pruefung 81 an 79 Projekttraegern). **Keine Meldung nennt die
+> Ursache.**
+>
+> 🔴 **AUS DEM ARBEITSBAUM KOMMT DAS OVERLAY DES FRAMEWORKS MIT - UND ERSETZT DAS DES
+> PROJEKTS OHNE MELDUNG.** Gemessen beim Heben: die Projektmarke in `OVERLAY.md` ist
+> weg, und `install.py --update` fuehrt das Overlay unter *"Projektdateien unberuehrt
+> gelassen"*. ➡️ ***Ein Werkzeug, das einen Pfad nie schreibt, kann nicht melden, was
+> ein anderer Schritt dort geschrieben hat.***
+
+**Behoben**
+
+- `README.md` und `docs/ADOPTION_GUIDE.md` (`0.4.6`): Warnsatz *"Nur `.koolie/core/`
+  kopieren - nie ganz `.koolie/`"* an jedem Kopierbefehl, mit beiden Quellen und
+  beiden Folgen. Der Satz *"`install.py` ueberschreibt `.koolie/project-overlay/`
+  nie"* in Abschnitt 4 des Leitfadens ist eingeschraenkt: Er gilt nur, solange der
+  Kopierbefehl davor es auch nicht tut.
+- `.koolie/QUELLREPOSITORIUM.md`: *"Sie wandert nicht in ein Projekt"* nennt jetzt den
+  Weg, auf dem sie es doch tut.
+
+**Hinzugefuegt**
+
+- `install.py`: **Auskunft** am Ende jeder Erstinstallation und jedes `--update`,
+  solange das Kennzeichen im Ziel liegt - mit beiden Faellen (Projekt: Datei entfernen,
+  Overlay pruefen; Framework-Repositorium: nichts zu tun). Exit-Code unveraendert.
+  **Kein Abbruch:** Das Framework-Repositorium erzeugt seine Wurzeldateien mit
+  demselben Aufruf, und kein Merkmal trennt die Faelle (D-354).
+- Sondenbuendel `sonden_kennzeichen_im_projekt`: **Sonde `D354`** haelt die Auskunft und
+  Pruefung 79 an derselben Datei gegeneinander und faellt gegen den Vorstand;
+  **Gegenprobe `D354a`** belegt das Schweigen ohne Kennzeichen.
+
+**Migrationshinweise fuer Overlays**
+
+- **Keine.** Wer nach dem Heben die neue Auskunft sieht, hat beim Kopieren zu viel
+  mitgenommen: `.koolie/QUELLREPOSITORIUM.md` entfernen und `.koolie/project-overlay/`
+  gegen den letzten Commit des Projekts halten.
+
+**Bekannte Einschraenkungen**
+
+- Die Meldungen der Pruefungen 79 und 81 nennen die Ursache weiterhin nicht. Ein
+  bereits ueberschriebenes Overlay erkennt keine Stelle des Frameworks - dafuer gibt es
+  die Versionierung des Projekts.
+- Im Framework-Repositorium steht die Auskunft bei jedem Lauf von `install.py`.
+
 ## [1.4.3] - 2026-09-24
 
 **Die Frage nach dem einen Ort der Overlay-Werte - und der Traeger, den sie dafuer
