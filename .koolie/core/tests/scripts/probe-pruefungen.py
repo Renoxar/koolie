@@ -4877,7 +4877,7 @@ P52_ALTSATZ = (
 def _52_altsatz_zurueck(root: str) -> None:
     """Der Stand vor 0.61.0: ein Delegationsverbot in der Aufzaehlung mit Freigabefolge."""
     _zeile_ersetzen(P(root, P52_LAUFZEIT),
-                    "Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie,",
+                    "Stufe hoch: Authentifizierung, Autorisierung, Sitzungsverwaltung,",
                     P52_ALTSATZ)
 
 
@@ -9759,11 +9759,24 @@ buendel(sonden_steckbrief,
 # des stets Geladenen haelt eine Warnung bei 40.000.
 # Bis 1.9.0 hatte die Pruefung keine Sonde - eine Durchsicht der Laufzeitschicht, die
 # die Wurzel-Anweisung um hundert Zeichen verlaengert, waere erst im Projekt aufgefallen.
-M4_GRENZE = "Zeichen (> 12.000)"
+M4_GRENZE = "Zeichen (> 12.000, SOLL-Grenze je Datei)"
+M4_BUDGET = "Zeichen, die in jeder Sitzung geladen werden (> 40.000"
+
+
+def _regel_mit_trigger(root: str, man: dict, trigger: str) -> str:
+    rd = os.path.join(root, *man["pack_runtime_dir"].split("/"))
+    for fn in sorted(os.listdir(rd)):
+        p = os.path.join(rd, fn)
+        if fn.endswith(".md") and re.search(r"^trigger:\s*%s\s*$" % trigger, lies(p), re.M):
+            return p
+    raise Praeparationsfehler("Sonden zu 4: keine Regel mit trigger %s" % trigger)
 
 
 def sonden_zeichengrenze() -> None:
-    """Wirkungsnachweis zur Zeichengrenze der Pruefung 4, je Pack gegen die Installation."""
+    """Wirkungsnachweis zur Zeichengrenze der Pruefung 4, je Pack gegen die Installation.
+
+    Seit D-387 ist die Summe des stets Geladenen verbindlich (40.000, Fehler) und die
+    Grenze je Datei eine Warnung (12.000)."""
     ergebnisse = {}
     for pack in ("claude-code", "devin-desktop", "openai-codex"):
         root = installation(pack)
@@ -9776,15 +9789,35 @@ def sonden_zeichengrenze() -> None:
                                           % (man["root_instruction_file"], pack))
             laenge = len(lies(wurzel))
             aus = validator_ausgabe(root)
-            ergebnisse[pack] = (laenge, M4_GRENZE not in aus)
+            ergebnisse[pack] = (laenge, M4_GRENZE not in aus and M4_BUDGET not in aus)
             if pack == "claude-code":
                 schreib(wurzel, lies(wurzel) + "\r\n" + "x" * (12001 - laenge) + "\r\n")
                 aus = validator_ausgabe(root)
-                ok = any(M4_GRENZE in z and man["root_instruction_file"] in z
-                         for z in aus.splitlines())
-                melde("SONDE", "4a", ok,
+                ok = any(z.startswith("WARNUNG") and M4_GRENZE in z
+                         and man["root_instruction_file"] in z for z in aus.splitlines())
+                als_fehler = any(z.startswith("FEHLER") and M4_GRENZE in z
+                                 for z in aus.splitlines())
+                melde("SONDE", "4a", ok and not als_fehler,
                       "Eine installierte Wurzel-Anweisung ueber 12.000 Zeichen wird als "
-                      "Fehler gemeldet")
+                      "Warnung gemeldet, nicht als Fehler (D-387)")
+                if not ok:
+                    notiz("        Ausgabe:", _zeilen_mit(aus, "WARNUNG"))
+            if pack == "devin-desktop":
+                bedingt = _regel_mit_trigger(root, man, "model_decision")
+                schreib(bedingt, lies(bedingt) + "\r\n" + "x" * 30000 + "\r\n")
+                aus = validator_ausgabe(root)
+                melde("GEGENPROBE", "4d", M4_BUDGET not in aus,
+                      "Eine Regel mit trigger model_decision zaehlt nicht zur Summe des stets "
+                      "Geladenen")
+                if M4_BUDGET in aus:
+                    notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+                immer = _regel_mit_trigger(root, man, "always_on")
+                schreib(immer, lies(immer) + "\r\n" + "x" * 30000 + "\r\n")
+                aus = validator_ausgabe(root)
+                ok = any(z.startswith("FEHLER") and M4_BUDGET in z for z in aus.splitlines())
+                melde("SONDE", "4b", ok,
+                      "Wurzel-Anweisung und Regeln mit trigger always_on ueber 40.000 Zeichen "
+                      "werden als Fehler gemeldet (D-387)")
                 if not ok:
                     notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
         finally:
@@ -9792,23 +9825,23 @@ def sonden_zeichengrenze() -> None:
 
     laenge, ok = ergebnisse["claude-code"]
     melde("GEGENPROBE", "4a", ok and laenge <= 12000,
-          "Die ausgelieferte Wurzel-Anweisung des Packs claude-code bleibt unter der "
-          "Grenze (%d Zeichen)" % laenge)
+          "Die ausgelieferte Installation des Packs claude-code meldet weder Budget noch "
+          "Grenze (Wurzel-Anweisung %d Zeichen)" % laenge)
     laenge, ok = ergebnisse["devin-desktop"]
     melde("GEGENPROBE", "4b", ok and laenge <= 12000,
-          "Die ausgelieferte Wurzel-Anweisung des Packs devin-desktop bleibt unter der "
-          "Grenze (%d Zeichen)" % laenge)
+          "Die ausgelieferte Installation des Packs devin-desktop meldet weder Budget noch "
+          "Grenze (Wurzel-Anweisung %d Zeichen)" % laenge)
     laenge, ok = ergebnisse["openai-codex"]
     melde("GEGENPROBE", "4c", ok,
-          "Beim Pack openai-codex meldet die Grenze nichts, weil die Regeln ueber die "
-          "Wurzel-Anweisung eingebunden werden (%d Zeichen)" % laenge)
+          "Beim Pack openai-codex meldet die Grenze je Datei nichts, weil die Regeln ueber "
+          "die Wurzel-Anweisung eingebunden werden, und das Budget haelt (%d Zeichen)" % laenge)
     notiz("        Zeichen je Pack: " + ", ".join(
         "%s %d" % (p, ergebnisse[p][0]) for p in sorted(ergebnisse)))
 
 
 buendel(sonden_zeichengrenze,
-        "Pruefung 4 haelt die installierte Wurzel-Anweisung je Pack unter 12.000 Zeichen, "
-        "ausser wo der Client Regeln nicht selbst laedt")
+        "Pruefung 4 haelt das stets Geladene je Pack unter 40.000 Zeichen und warnt ueber "
+        "12.000 Zeichen je Datei (D-387)")
 
 
 if LISTE:

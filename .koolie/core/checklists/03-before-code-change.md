@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-03` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | nach Preflight und Analyse, unmittelbar bevor der KI-Client erstmals schreiben oder Befehle ausführen soll |
@@ -31,7 +31,7 @@ Sichert die Voraussetzungen aus Schritt 9–10 des Standardarbeitsablaufs, bevor
 ### Arbeitsumgebung
 
 - [ ] **MUSS** Eigener Arbeitsbranch nach `<BRANCHING_MODEL>`/`<BRANCH_PREFIX>`; niemals ein geschützter Branch.
-- [ ] **MUSS** Arbeitsstand sauber (kein fremder Diff); der KI-Client-Änderungen bleiben dadurch einzeln zurechenbar (P7).
+- [ ] **MUSS** Arbeitsstand sauber (kein fremder Diff); die Änderungen des KI-Clients bleiben dadurch einzeln zurechenbar (P7).
 - [ ] **MUSS** Nur freigegebene Befehle vorgesehen (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`, Overlay Abschnitt 6).
 - [ ] **MUSS** Schreibgrenzen benannt: M3 nur `<ALLOWED_PATHS>` abzüglich `<READ_ONLY_PATHS>`; M4 nur `<TEST_PATHS>`; M5 nur `<DOC_PATHS>`.
 

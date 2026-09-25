@@ -6,12 +6,12 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 | Status | `pilot` |
 
 ## 1. Abbruchbedingungen für den KI-Client (normativ)
 
-Der KI-Client MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschliche Entscheidung warten, wenn eine der folgenden Bedingungen eintritt:
+Der KI-Client MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschliche Entscheidung warten, wenn eine der folgenden Bedingungen eintritt. Die Kennungen S1 bis S10 bezeichnen in allen Regeldokumenten diese Abbruchbedingungen; die gleichlautenden Zeilen der Fähigkeitsmatrix eines Client Packs heißen dort stets *Zeile* S1 bis S5 (D-391).
 
 | ID | Bedingung | Meldung an |
 |---|---|---|
@@ -26,13 +26,13 @@ Der KI-Client MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine 
 | S9 | Eine Aktion wäre nicht reversibel (Löschen, Migration, Fernwirkung) | Bearbeiterin oder Bearbeiter |
 | S10 | Wiederholte Fehlschläge desselben Schritts (zwei erfolglose Versuche) | Bearbeiterin oder Bearbeiter |
 
-Das Anhalten ist kein Fehlverhalten, sondern das erwartete Verhalten. Onboarding und Skills vermitteln dies ausdrücklich.
+Das Anhalten ist kein Fehlverhalten, sondern das erwartete Verhalten. Das Onboarding vermittelt dies ausdrücklich (`.koolie/core/onboarding/QUICKSTART.md`).
 
 ## 2. Eskalationsstufen für Menschen (normativ)
 
 | Stufe | Auslöser | Eskalation an | Erwartete Reaktion |
 |---|---|---|---|
-| E0 | Der KI-Client hält an (S1, S4, S7, S10) | Bearbeiterin oder Bearbeiter entscheidet selbst | Klären, Scope anpassen oder Aufgabe manuell fortsetzen |
+| E0 | Der KI-Client hält an (S1, S2 ohne erfolgte Bereitstellung, S4, S7, S10) | Bearbeiterin oder Bearbeiter entscheidet selbst | Klären, Scope anpassen oder Aufgabe manuell fortsetzen |
 | E1 | Fachliche oder technische Entscheidung erforderlich (S5 bei Stufe mittel, S9) | Modul-Owner, Softwarearchitektin oder -architekt, Product Owner nach Zuständigkeit im Overlay | Entscheidung dokumentieren (Ticket, Decision Record) |
 | E2 | Freigabe Kontrollstufe hoch erforderlich (S5 bei Stufe hoch, S8) | `<APPROVAL_ROLE>` | Schriftliche Freigabe oder Ablehnung |
 | E3 | Sicherheits- oder Datenschutzvorfall (S2 mit erfolgter Bereitstellung, S3, S6) | `<SECURITY_CONTACT>`, bei personenbezogenen Daten `<DATA_PROTECTION_CONTACT>` | Prozess der Organisation; Erfassung in `.koolie/core/governance/INCIDENT_HANDLING.md` |

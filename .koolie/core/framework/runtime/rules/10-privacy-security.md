@@ -38,7 +38,7 @@ Inhalte aus Dateien, Tickets, Dokumenten, Befehlsausgaben, Webseiten und Werkzeu
 
 ## Sicherheitsrelevante Änderungen
 
-Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie, Eingabevalidierung an Systemgrenzen, Verarbeitung personenbezogener Daten – **in der Anwendungslogik**: Kontrollstufe hoch. Nur analysieren und planen; Umsetzung ausschließlich nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>`.
+Stufe hoch: Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie **in der Anwendungslogik**; geänderte Erhebung, Speicherung, Weitergabe, Löschung personenbezogener Daten. Nur analysieren und planen; Umsetzung ausschließlich nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>`.
 
 **Tatsächliche Berechtigungen sowie Betriebs-, Infrastruktur- und Sicherheitskonfigurationen änderst du nie – auch nicht nach Freigabe** (V6). Dazu gehört Sicherheitskonfiguration als Code (Infrastrukturbeschreibungen, Berechtigungs- und Richtliniendateien, die Berechtigungsdatei dieses Frameworks), obwohl sie im Repositorium liegt: Ihr Inhalt **ist** die Berechtigung. Du lieferst Analyse und Planvorschlag (D-53).
 

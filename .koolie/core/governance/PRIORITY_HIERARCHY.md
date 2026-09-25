@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-PRIO` |
-| Version | `0.2.2` |
+| Version | `0.2.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Laufzeitfassung | Wurzel-Anweisungsdatei, Abschnitt 2 |
@@ -36,22 +36,23 @@ Bei Widersprüchen zwischen Anweisungen gilt die höhere Ebene:
 
    Welche Quellen ein Client kennt, steht im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts" seines Client Packs; wo der Client eine Importsteuerung kennt, schaltet das Framework fremde Formate ab, statt sie nur auszuweisen (D-37). Beides ist eine Auskunft und ein Standard, keine Schranke: Die Benutzerkonfiguration des Arbeitsplatzes hat Vorrang.
 
-## 3. Widerspruchsprüfung und Begründung der Anpassungen (Auftrag Phase 8)
+## 3. Widerspruchsprüfung und Begründung der Anpassungen
 
-Der Arbeitsauftrag enthält zwei Fassungen der Hierarchie: eine 7-stufige (Phase 8, Rollen- und Technologiepakete gemeinsam auf Stufe 5) und eine 8-stufige (Abschnitt „Project Overlay Erweiterung", Technology Packs Stufe 5 **vor** Role Packs Stufe 6). Die Prüfung ergab:
+Jeder Befund nennt eine Stelle, an der die Hierarchie ohne die Regeln aus Abschnitt 2 widersprüchlich wäre, und ihre Auflösung; die Herleitung steht in den genannten Decision Records.
 
-**Befund 1 – Zwei abweichende Fassungen:** Aufgelöst zugunsten der 8-stufigen Fassung, da sie die speziellere und spätere Vorgabe des Auftrags ist und eine gemeinsame Stufe 5 Konflikte zwischen Rollen- und Technologieregeln unentschieden ließe (Klärungspunkt K-08).
+**Befund 1 – Acht Stufen, Technology und Role Packs getrennt:** Die Hierarchie ist achtstufig, weil eine gemeinsame Stufe für Technology und Role Packs Konflikte zwischen Technologie- und Rollenregeln unentschieden ließe (D-06, K-08).
 
 **Befund 2 – Reihenfolge Technology vor Role Packs:** Konsistent, mit dieser Begründung: Technology Packs beschreiben Umgebungstatsachen und technische Korrektheit (was in einer Sprache oder einem Framework funktioniert und sicher ist); Role Packs beschreiben generische Arbeitsweisen einer Tätigkeit. Wo beide dasselbe Detail regeln, muss die Umgebungstatsache gewinnen, sonst entstünde technisch falscher Code aus „prozessual richtigen" Regeln. Beispiel (synthetisch): Empfiehlt ein Role Pack ein Testmuster, das `<TEST_FRAMEWORK>` in der eingesetzten Version nicht unterstützt, gilt die Technology-Pack-Regel. Echte Konflikte bleiben durch Regel 2.3 selten; sie betreffen nur Handwerkskonventionen.
 
 **Befund 3 – Scheinkonflikt „Core über Overlay" vs. „Overlay definiert die Projektwerte":** Aufgelöst durch das Verschärfungsprinzip (Regel 2.1): Das Overlay füllt vom Core vorgesehene Parameter (`<ALLOWED_PATHS>`, `<TEST_COMMAND>` …) – das ist Konkretisierung, kein Vorrangfall. Vorrang des Core wirkt nur, wenn ein Overlay versucht, Core-Regeln zu lockern (zum Beispiel den Modus ohne Rückfragen zu erlauben, D-05); solche Overlays sind ungültig und fallen in der Validierung beziehungsweise im Release-Prozess auf.
-**Befund 4 – Nutzeranweisung auf der niedrigsten Stufe:** Ohne Regel 2.2 wäre das absurd (ein Mensch könnte der KI-Client nicht stoppen). Mit der Unterscheidung Einschränken (immer möglich) gegen Erweitern (nie über höhere Ebenen hinaus) ist die Stufe 8 konsistent und entspricht Human Accountability: Der Mensch steuert die Aufgabe, kann aber Governance nicht per Prompt aufheben.
+
+**Befund 4 – Nutzeranweisung auf der niedrigsten Stufe:** Ohne Regel 2.2 wäre das absurd (ein Mensch könnte den KI-Client nicht stoppen). Mit der Unterscheidung Einschränken (immer möglich) gegen Erweitern (nie über höhere Ebenen hinaus) ist die Stufe 8 konsistent und entspricht Human Accountability: Der Mensch steuert die Aufgabe, kann aber Governance nicht per Prompt aufheben.
 
 **Befund 5 – Skills (7) unter den Packs (5, 6):** Konsistent, weil Skills Verfahren sind, die Pack- und Overlay-Vorgaben anwenden. Ein Skill, der einer Pack-Konvention widerspricht, ist ein Fehler des Skills (E4-Feedback), kein Vorrangfall. Die Laufzeit-Anordnung ist zugleich technisch plausibel, da Regeln (Ebenen 3–6) als Systemkontext wirken und Skills als aufgabenbezogene Anweisungen `[DOK]`-Mechanismen unterschiedlicher Art sind – die normative Rangfolge stellt dieselbe Ordnung ausdrücklich her, unabhängig vom technischen Ladeweg `[KONZ]`.
 
-**Befund 6 – Eine Quelle, die keine der acht Ebenen führt:** Aufgelöst durch Regel 2.6. `AP2-DD-15` hat gezeigt, dass ein Regeltext aus dem Benutzerprofil in jedem Projekt mitlädt – auch in einem ohne jeden Regeltext – und damit auf einem Rang wirkt, den die Hierarchie nie vergeben hat. Ihn für unwirksam zu erklären wäre eine Zusage ohne Deckung (das Modell liest den Text trotzdem) und verböte die legitime persönliche Einschränkung mit; ihm eine neunte Ebene zu geben, gäbe einer Quelle Rang, die das Framework weder sieht noch kontrolliert (D-06). Die Auflösung ist ein dritter Weg: **ebenenlos, aber nicht folgenlos** – wie Ebene 8 behandelt, einschränken ja, erweitern nein (D-34).
+**Befund 6 – Eine Quelle, die keine der acht Ebenen führt:** Aufgelöst durch Regel 2.6. Ein Regeltext aus dem Benutzerprofil lädt in jedem Projekt mit – auch in einem ohne jeden Regeltext (`AP2-DD-15`) – und wirkt damit auf einem Rang, den die Hierarchie nicht vergibt. Er ist **ebenenlos, aber nicht folgenlos:** wie Ebene 8 behandelt, einschränken ja, erweitern nein (D-34). Eine neunte Ebene erhält er nicht, weil das Framework diese Quelle weder sieht noch kontrolliert (D-06).
 
-**Befund 7 – Eine ebenenfeste Definition mit einer Ausnahme in ihrem eigenen Modul:** Aufgelöst zugunsten der Ebenenfestigkeit (D-52). Regel 2.4 erklärte die K3-Definition für unaufhebbar, während `.koolie/core/framework/core/02-privacy.md` in Abschnitt 2.1 eine Kategorie an eine Overlay-Einstufung band und in Abschnitt 2.2 eine allgemeine Lockerungsmöglichkeit nannte. Damit hätte Ebene 4 die Definition einer Regel der Ebene 3 ändern können – genau der Fall, den Regel 2.1 ausschließt. Die Mehrheit der Texte stand bereits auf der unbedingten Seite: Wurzel-Anweisungsdatei, Laufzeitregel `10-*`, Entscheidungsbaum 1 und Checkliste 02 führen dieselbe Liste ohne Bedingung. Die Gegenrichtung wäre gewesen, die technischen Metadaten aus der absoluten Liste auszugliedern; das wäre eine bewusste Änderung des Schutzmodells und hätte eine Entscheidung des `<DATA_PROTECTION_CONTACT>` gebraucht. **Der Preis der gewählten Auflösung ist benannt:** Eine Konfigurationsdatei mit internen Hostnamen darf nicht unbereinigt bereitgestellt werden; der Weg dafür ist die bereinigte Ableitung, die die Wurzel-Anweisungsdatei ohnehin verlangt.
+**Befund 7 – Eine ebenenfeste Definition mit einer Ausnahme in ihrem eigenen Modul:** Aufgelöst zugunsten der Ebenenfestigkeit (D-52). Die K3-Definition in `.koolie/core/framework/core/02-privacy.md` Abschnitt 2.1 bindet keine Kategorie an eine Overlay-Einstufung und lässt keine Lockerung zu; sonst könnte Ebene 4 die Definition einer Regel der Ebene 3 ändern – genau der Fall, den Regel 2.1 ausschließt. Wurzel-Anweisungsdatei, Laufzeitregel `10-*`, Entscheidungsbaum 1 und Checkliste 02 führen dieselbe Liste ohne Bedingung. **Der Preis der gewählten Auflösung ist benannt:** Eine Konfigurationsdatei mit internen Hostnamen darf nicht unbereinigt bereitgestellt werden; der Weg dafür ist die bereinigte Ableitung, die die Wurzel-Anweisungsdatei ohnehin verlangt.
 
 **Ergebnis:** Die 8-stufige Hierarchie ist mit den Regeln 2.1–2.6 widerspruchsfrei anwendbar. Ohne diese Regeln wäre sie es nicht; sie sind daher normativer Bestandteil dieses Moduls und der Laufzeitfassung in der Wurzel-Anweisungsdatei.
 

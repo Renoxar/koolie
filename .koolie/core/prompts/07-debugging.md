@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-007` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -14,7 +14,7 @@
 
 Die Vorlage strukturiert die Ursachenanalyse eines Fehlers auf Basis eines **bereinigten** Fehlerberichts: Reproduktionshypothese, Ursachenkandidaten mit Fundstellen und Konfidenz, ausgeschlossene Ursachen, benötigte Zusatzinformationen. Es wird nichts behoben und nichts ausgeführt. Liegt der Skill `fw-error-analyze` vor, SOLL er verwendet werden (`/fw-error-analyze`); die Vorlage ersetzt ihn, wenn er nicht verfügbar ist, oder ergänzt ihn um fallspezifische Leitfragen.
 
-(Erläuterung) Der häufigste Fehler beim Debugging mit KI ist das ungeprüfte Einfügen roher Logs. Die Bereinigung nach `.koolie/core/checklists/02-privacy-context.md` ist deshalb Vorbedingung, nicht Nachgedanke.
+(Erläuterung) Die Bereinigung nach `.koolie/core/checklists/02-privacy-context.md` ist Vorbedingung, nicht Nachgedanke, weil rohe Logs Echtdaten, Hostnamen und Kennungen enthalten können, die nach `.koolie/core/framework/core/02-privacy.md` Abschnitt 2.1 immer K3 sind.
 
 ## 2. Einzusetzender Kontext
 
@@ -93,5 +93,5 @@ Regeln:
 | Rohes Produktionslog einfügen („hier, finde den Fehler") | K3-Abfluss (Echtdaten, Hostnamen); Verstoß gegen `02-privacy.md` | Bereinigen nach `.koolie/core/checklists/02-privacy-context.md`, dann diese Vorlage |
 | „Analysiere und behebe gleich mit" | Modusbruch M1→M3 ohne Plan und Freigabe; unprüfbare Änderung | Analyse abschließen, Ursache bestätigen, dann `fw-bugfix-prepare` und `fw-change-small` |
 | Ursache aus der ersten plausiblen Fundstelle übernehmen | Symptomfix; Fehler kehrt zurück | Konfidenz und Ausschlussliste verlangen; Reproduktion vor Fix |
-| Der KI-Client raten lassen, „was der Kunde gemacht hat" | Erfundene Abläufe ohne Beleg | Reproduktionsstand als Parameter liefern oder Hypothese ausdrücklich als Vermutung führen |
+| Den KI-Client raten lassen, „was der Kunde gemacht hat" | Erfundene Abläufe ohne Beleg | Reproduktionsstand als Parameter liefern oder Hypothese ausdrücklich als Vermutung führen |
 | Mehrere unabhängige Fehler in einer Sitzung | Vermischte Analyse, unklare Fundstellen | Ein Fehler je Sitzung (Q1) |

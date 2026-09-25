@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-012` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -12,7 +12,7 @@
 
 ## 1. Zweck
 
-Die Vorlage macht der KI-Client zum geduldigen Erklärwerkzeug im Onboarding: Ein technisches Lernziel wird anhand des realen Projektcodes in aufeinander aufbauenden Schritten erarbeitet – mit Fundstellen, Verständnisfragen zur Selbstkontrolle und klar getrennten „beobachtet/geschlossen"-Aussagen. Sie ersetzt weder die Mentorin oder den Mentor noch das Onboarding-Programm (`.koolie/core/onboarding/GUIDE.md`); sie bereitet Gespräche vor und vertieft Module. Der KI-Client bewertet dabei niemals Personen oder Lernfortschritte (V7) – die Verständnisfragen dienen ausschließlich der Selbstkontrolle der oder des Lernenden.
+Die Vorlage macht den KI-Client zum geduldigen Erklärwerkzeug im Onboarding: Ein technisches Lernziel wird anhand des realen Projektcodes in aufeinander aufbauenden Schritten erarbeitet – mit Fundstellen, Verständnisfragen zur Selbstkontrolle und klar getrennten „beobachtet/geschlossen"-Aussagen. Sie ersetzt weder die Mentorin oder den Mentor noch das Onboarding-Programm (`.koolie/core/onboarding/GUIDE.md`); sie bereitet Gespräche vor und vertieft Module. Der KI-Client bewertet dabei niemals Personen oder Lernfortschritte (V7) – die Verständnisfragen dienen ausschließlich der Selbstkontrolle der oder des Lernenden.
 
 (Erläuterung) Der Unterschied zu FW-PR-001: Dort entsteht ein Überblicksbericht; hier eine dialogische Erklärstrecke zu einem Lernziel („Wie funktioniert die Anfrageverarbeitung von Eingang bis Persistenz?").
 
@@ -84,7 +84,7 @@ Regeln:
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
 | „Erkläre mir das ganze System" | Oberflächliche Tour ohne Lerneffekt | Ein Lernziel je Strecke; Etappen bestätigen lassen |
-| Der KI-Client nach „Warum wurde das so entschieden?" fragen | Plausible, erfundene Begründungen | Historie/Absichten zur Mentorenliste; nur Belegtes erklären lassen |
+| Den KI-Client nach „Warum wurde das so entschieden?" fragen | Plausible, erfundene Begründungen | Historie/Absichten zur Mentorenliste; nur Belegtes erklären lassen |
 | Verständnisfragen als Prüfung des Teams verwenden | Personenbewertung (V7); Vertrauensschaden | Selbstkontrolle der lernenden Person; keine Weitergabe von „Ergebnissen" |
 | Lernstrecke mit echten Tickets oder Falldaten anreichern | K2/K3-Risiko im Lernkontext | Synthetische Übungen aus `.koolie/core/onboarding/exercises/` |
-| Der KI-Client als Ersatz für das Mentorengespräch einsetzen | Fehlende Projektkultur und implizites Wissen | Strecke als Vorbereitung; Fragenliste ins Gespräch mitnehmen |
+| Den KI-Client als Ersatz für das Mentorengespräch einsetzen | Fehlende Projektkultur und implizites Wissen | Strecke als Vorbereitung; Fragenliste ins Gespräch mitnehmen |

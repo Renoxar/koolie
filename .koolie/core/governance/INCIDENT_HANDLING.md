@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-INC` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 
@@ -23,7 +23,7 @@
 
 ## 3. Erfassung (normativ)
 
-Jeder Vorfall mit KI-Bezug erhält einen Eintrag im Vorfallregister des Projekts (`<TBD: Ablageort des Registers, außerhalb des Frameworks-Repositorys möglich>`):
+Jeder Vorfall mit KI-Bezug erhält einen Eintrag im Vorfallregister des Projekts (`<TBD: Ablageort des Registers, außerhalb des Framework-Repositorys möglich>`):
 
 | Feld | Inhalt |
 |---|---|

@@ -101,7 +101,7 @@ Bei Clients mit einer modellentschiedenen Ladebedingung laden `10-` und `15-` nu
 - **Für die Regelwirkung:** eine Verschärfung. Mehr Regeln sind aktiv, nicht weniger.
 - **Für den Kontext:** rund 25.000 Zeichen sind ständig belegt (`CLAUDE.md` und die vier unbedingten Regeltexte einer frischen Installation zusammen). Das Prinzip Least Context wird damit schwächer eingehalten als bei einem Client mit modellentschiedener Bedingung. Least Context ist ein Prinzip zur Ergebnisqualität, keine Sicherheitszusage – die Abweichung ist deshalb vertretbar und in `CLIENT_PACK.md` Zeile R2 ausgewiesen.
 
-Wächst der ständige Kontext durch aktivierte Packs deutlich, ist zu prüfen, ob ein Pack an Dateimuster gebunden werden kann. Der Validator warnt, sobald die unbedingt geladenen Texte zusammen 40.000 Zeichen überschreiten.
+Wächst der ständige Kontext durch aktivierte Packs deutlich, ist zu prüfen, ob ein Pack an Dateimuster gebunden werden kann. Der Validator meldet einen Fehler, sobald die unbedingt geladenen Texte zusammen 40.000 Zeichen überschreiten (D-387).
 
 ### Grenzen dieser Ablage
 

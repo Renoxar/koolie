@@ -1,6 +1,6 @@
 # Checklisten
 
-Operative Prüf- und Arbeitslisten des Frameworks. Checklisten sind normative Kurzform der Core-Regeln für einen konkreten Moment im Arbeitsablauf; bei Widerspruch gilt das jeweilige Core-Modul. Prüfpunkte tragen die Verbindlichkeit **MUSS** oder **SOLL**; die Nachweisführung steht je Liste im Kopf.
+Operative Prüf- und Arbeitslisten des Frameworks. Checklisten sind normative Kurzform der Core-Regeln für einen konkreten Moment im Arbeitsablauf; bei Widerspruch gilt das jeweilige Core-Modul. Prüfpunkte tragen die Verbindlichkeit **MUSS**, **SOLL** oder **KANN**; die Nachweisführung steht je Liste im Kopf.
 
 | ID | Datei | Wann | Wer |
 |---|---|---|---|
