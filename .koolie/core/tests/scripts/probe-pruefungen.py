@@ -6530,6 +6530,288 @@ buendel(sonden_overlay_muster,
         "Dokumente, sechs Verweigerungen und der unveraenderte Weg ohne Muster")
 
 
+# --- D-362: der Kopierweg in ein Projekt, der Dialog und die Starter (CR-2026-140) ---
+#
+# `install.py --target` kopiert NUR den Kern in ein Projekt und ruft danach das kopierte
+# install.py dort auf. Die Sonden fahren es an echten Verzeichnissen, aus BEIDEN
+# Quellformen: einer Kopie ohne Git (so liegt ein entpacktes Release-Archiv da) und
+# einem Klon, aus dem nur Verfolgtes kommen darf (D-333).
+#   T362  (Sonde) - Erstinstallation aus der Archivform: der Kern vollstaendig, ohne
+#                   Bytecode und build/out, ohne Kennzeichen und ohne das Overlay der
+#                   Quelle (D-354), Wurzeldateien angelegt
+#   T362a (Sonde) - ein zweiter Aufruf ohne --update haelt an und veraendert nichts
+#   T362b (Sonde) - --update hebt: Stand der Quelle, Altlast weg, Overlay unberuehrt,
+#                   keine Zwischenverzeichnisse
+#   T362c (Sonde) - scheitert die Installation im Projekt (Kollision), ist der kopierte
+#                   Kern wieder weg und die Projektdatei unveraendert
+#   T362d (Sonde) - --update ohne vorhandenen Kern haelt an, ohne zu schreiben
+#   T362e (Sonde) - Quelle und Ziel dasselbe Verzeichnis: Abbruch
+#   T362f (Sonde) - aus einem Klon kommt eine unverfolgte Datei des Kerns NICHT mit
+#   T362g (Sonde) - der Dialog sammelt die Angaben ein und installiert
+#   T362h (Sonde) - der Dialog bricht mit q ab und schreibt nichts
+#   T363  (Sonde) - die Mindestversion steht in install.py und beiden Startern gleich
+#   T365  (Sonde) - install.cmd traegt keine Sprungmarke (LF im Archiv), und
+#                   install.command ist im Repositorium ausfuehrbar (100755)
+T362_ANTWORTEN = "%s\n1\n1\nj\n"
+
+
+def _362_lauf(kern: str, *argv: str, eingabe=None, werkzeug: str = "install.py"):
+    return unterprozess([sys.executable, os.path.join(kern, werkzeug), *argv],
+                        input=eingabe)
+
+
+def _362_kerndateien(kern: str) -> set:
+    out = set()
+    for dirpath, dirnames, filenames in os.walk(kern):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        for fn in filenames:
+            out.add(os.path.relpath(os.path.join(dirpath, fn), kern).replace(os.sep, "/"))
+    return out
+
+
+def sonden_kopierweg() -> None:
+    """Wirkungsnachweis fuer install.py --target, den Dialog und die Starter (D-362)."""
+    basis = tempfile.mkdtemp(prefix="lw-kopierweg-")
+    quelle = kopie()
+    try:
+        qkern = os.path.join(quelle, ".koolie", "core")
+        # Erzeugnisse, die ein Lauf in einem entpackten Archiv hinterlaesst - sie
+        # duerfen nicht mitkommen.
+        os.makedirs(os.path.join(qkern, "__pycache__"), exist_ok=True)
+        schreib(os.path.join(qkern, "__pycache__", "sonde.cpython-38.pyc"), "x")
+        os.makedirs(os.path.join(qkern, "build", "out"), exist_ok=True)
+        schreib(os.path.join(qkern, "build", "out", "sonde.docx"), "x")
+        erwartet = {r for r in _362_kerndateien(qkern) if not r.startswith("build/out/")}
+
+        # --- T362: Erstinstallation aus der Archivform -------------------------------
+        erst = os.path.join(basis, "erst")
+        os.makedirs(erst)
+        p = _362_lauf(qkern, "--target", erst, "--client", "claude-code")
+        zkern = os.path.join(erst, ".koolie", "core")
+        ist = _362_kerndateien(zkern)
+        qoverlay = os.path.join(quelle, ".koolie", "project-overlay", "OVERLAY.md")
+        zoverlay = os.path.join(erst, ".koolie", "project-overlay", "OVERLAY.md")
+        fehlt = []
+        if ist != erwartet:
+            fehlt.append("Kern: %d zu viel, %d fehlen"
+                         % (len(ist - erwartet), len(erwartet - ist)))
+        if os.path.exists(os.path.join(erst, ".koolie", "QUELLREPOSITORIUM.md")):
+            fehlt.append("Kennzeichen mitkopiert")
+        if not os.path.isfile(zoverlay):
+            fehlt.append("kein Overlay")
+        elif os.path.isfile(qoverlay) and lies(qoverlay) == lies(zoverlay):
+            fehlt.append("Overlay der Quelle mitkopiert")
+        if not os.path.isfile(os.path.join(erst, "CLAUDE.md")):
+            fehlt.append("keine Wurzel-Anweisungsdatei")
+        melde("SONDE", "T362", p.returncode == 0 and not fehlt,
+              "Aus der Archivform kommt der ganze Kern ohne Erzeugnisse, ohne Kennzeichen "
+              "und ohne das Overlay der Quelle, und das Projekt ist installiert")
+        if p.returncode != 0 or fehlt:
+            notiz("        Exit %d; %s" % (p.returncode, "; ".join(fehlt) or "-"))
+
+        # --- T362a: zweiter Aufruf ohne --update --------------------------------------
+        vorher = baumhash(erst)
+        p = _362_lauf(qkern, "--target", erst)
+        ok = (p.returncode == 1 and "Heben auf diesen Stand: --update" in p.stderr
+              and baumhash(erst) == vorher)
+        melde("SONDE", "T362a", ok,
+              "Ein vorhandener Kern wird ohne --update nicht ersetzt")
+        if not ok:
+            notiz("        Exit %d, Baum %s" % (p.returncode,
+                  "unveraendert" if baumhash(erst) == vorher else "VERAENDERT"))
+
+        # --- T362b: Heben ----------------------------------------------------------
+        schreib(os.path.join(zkern, "VERSION"), "0.0.0\n")
+        schreib(os.path.join(zkern, "ALTLAST.md"), "# Altlast\n")
+        schreib(zoverlay, lies(zoverlay) + "\nPROJEKTZEILE-T362b\n")
+        p = _362_lauf(qkern, "--target", erst, "--update")
+        fehlt = []
+        if lies(os.path.join(zkern, "VERSION")).strip() != \
+                lies(os.path.join(qkern, "VERSION")).strip():
+            fehlt.append("VERSION nicht gehoben")
+        if os.path.exists(os.path.join(zkern, "ALTLAST.md")):
+            fehlt.append("Altlast liegt noch")
+        if "PROJEKTZEILE-T362b" not in lies(zoverlay):
+            fehlt.append("Overlay veraendert")
+        for rest in ("core.koolie-neu", "core.koolie-alt"):
+            if os.path.exists(os.path.join(erst, ".koolie", rest)):
+                fehlt.append(rest + " liegt")
+        melde("SONDE", "T362b", p.returncode == 0 and not fehlt,
+              "--update ersetzt den Kern als Verzeichnis und laesst das Overlay stehen")
+        if p.returncode != 0 or fehlt:
+            notiz("        Exit %d; %s" % (p.returncode, "; ".join(fehlt) or "-"))
+
+        # --- T362c: Rueckbau nach gescheiterter Installation ---------------------------
+        kol = os.path.join(basis, "kollision")
+        os.makedirs(kol)
+        schreib(os.path.join(kol, "CLAUDE.md"), "# Projektdatei\n")
+        p = _362_lauf(qkern, "--target", kol, "--client", "claude-code")
+        ok = (p.returncode != 0 and not os.path.exists(os.path.join(kol, ".koolie", "core"))
+              and lies(os.path.join(kol, "CLAUDE.md")) == "# Projektdatei\n")
+        melde("SONDE", "T362c", ok,
+              "Scheitert die Installation im Projekt, wird der kopierte Kern wieder entfernt")
+        if not ok:
+            notiz("        Exit %d, Kern %s" % (p.returncode, "liegt" if os.path.exists(
+                os.path.join(kol, ".koolie", "core")) else "entfernt"))
+
+        # --- T362d: --update ohne Kern ------------------------------------------------
+        leer = os.path.join(basis, "leer")
+        os.makedirs(leer)
+        p = _362_lauf(qkern, "--target", leer, "--update")
+        ok = p.returncode == 1 and not os.listdir(leer)
+        melde("SONDE", "T362d", ok, "--update ohne vorhandenen Kern haelt an, ohne zu schreiben")
+
+        # --- T362e: Quelle gleich Ziel ------------------------------------------------
+        p = _362_lauf(qkern, "--target", quelle)
+        ok = p.returncode == 1 and "Quelle und Ziel sind dasselbe" in p.stderr
+        melde("SONDE", "T362e", ok, "Quelle und Ziel duerfen nicht dasselbe Verzeichnis sein")
+
+        # --- T362f: aus einem Klon nur Verfolgtes --------------------------------------
+        klon = kopie()
+        try:
+            g = unterprozess(["git", "-C", klon, "init", "-q"])
+            if g.returncode == 0:
+                g = unterprozess(["git", "-C", klon, "add", "-A"])
+            if g.returncode != 0:
+                raise Praeparationsfehler("git init/add im Klon: " + (g.stderr or "")[:200])
+            schreib(os.path.join(klon, ".koolie", "core", "UNVERFOLGT-T362f.md"), "# x\n")
+            ziel = os.path.join(basis, "ausklon")
+            os.makedirs(ziel)
+            p = _362_lauf(os.path.join(klon, ".koolie", "core"), "--target", ziel,
+                          "--client", "claude-code")
+            unverfolgt = os.path.exists(os.path.join(ziel, ".koolie", "core",
+                                                     "UNVERFOLGT-T362f.md"))
+            ok = p.returncode == 0 and "Klon - nur Verfolgtes" in p.stdout and not unverfolgt
+            melde("SONDE", "T362f", ok,
+                  "Aus einem Klon kommt nur Verfolgtes - eine unverfolgte Datei bleibt draussen")
+            if not ok:
+                notiz("        Exit %d, Klonweg %s, unverfolgt kopiert %s"
+                      % (p.returncode, "Klon - nur Verfolgtes" in p.stdout, unverfolgt))
+        finally:
+            aufraeumen(os.path.dirname(klon))
+
+        # --- T362g/h: der Dialog --------------------------------------------------------
+        dlg = os.path.join(basis, "dialog")
+        os.makedirs(dlg)
+        p = _362_lauf(qkern, eingabe=T362_ANTWORTEN % dlg, werkzeug="install_dialog.py")
+        ok = p.returncode == 0 and os.path.isfile(os.path.join(dlg, ".koolie", "core",
+                                                               "install.py"))
+        melde("SONDE", "T362g", ok,
+              "Der Dialog sammelt Projekt, Client und Muster ein und installiert")
+        if not ok:
+            notiz("        Exit %d: %s" % (p.returncode, " | ".join(
+                (p.stdout + p.stderr).splitlines()[-4:])))
+        abb = os.path.join(basis, "abbruch")
+        os.makedirs(abb)
+        p = _362_lauf(qkern, eingabe="q\n", werkzeug="install_dialog.py")
+        ok = p.returncode == 1 and "Nichts installiert" in p.stdout and not os.listdir(abb)
+        melde("SONDE", "T362h", ok, "Der Dialog bricht mit q ab und schreibt nichts")
+
+        # --- T363: die Mindestversion an drei Stellen -----------------------------------
+        m = re.search(r"^PYTHON_MINDEST = \((\d+), (\d+)\)",
+                      lies(os.path.join(QUELLE, ".koolie", "core", "install.py")), re.M)
+        if not m:
+            raise Praeparationsfehler("PYTHON_MINDEST in install.py nicht gefunden")
+        zahl = "sys.version_info >= (%s, %s)" % m.groups()
+        text = "Python %s.%s oder neuer" % m.groups()
+        abweichend = [s for s in ("install.cmd", "install.command")
+                      if zahl not in lies(os.path.join(QUELLE, s))
+                      or text not in lies(os.path.join(QUELLE, s))]
+        melde("SONDE", "T363", not abweichend,
+              "install.py und beide Starter nennen dieselbe Mindestversion")
+        if abweichend:
+            notiz("        abweichend: %s (erwartet '%s')" % (", ".join(abweichend), zahl))
+
+        # --- T365: die Bauform der Starter ------------------------------------------------
+        fehlt = []
+        for zeile in lies(os.path.join(QUELLE, "install.cmd")).splitlines():
+            z = zeile.strip().lower()
+            if z.startswith(":") or re.search(r"\bgoto\b|\bcall\s+:", z):
+                if not z.startswith("rem"):
+                    fehlt.append("install.cmd: " + zeile.strip()[:40])
+        g = unterprozess(["git", "-C", QUELLE, "ls-files", "-s", "install.command"])
+        if g.returncode != 0 or not g.stdout.strip():
+            fehlt.append("Modus von install.command nicht lesbar (kein Git-Bestand)")
+        elif not g.stdout.startswith("100755"):
+            fehlt.append("install.command traegt " + g.stdout.split()[0])
+        melde("SONDE", "T365", not fehlt,
+              "install.cmd kommt ohne Sprungmarke aus, install.command ist ausfuehrbar")
+        if fehlt:
+            notiz("        " + "; ".join(fehlt))
+    finally:
+        aufraeumen(os.path.dirname(quelle))
+        aufraeumen(basis)
+
+
+buendel(sonden_kopierweg,
+        "install.py --target aus Archivform und Klon, Heben, Rueckbau und Verweigerungen, "
+        "dazu der Dialog und die Bauform der Starter")
+
+
+# --- D-364: Pruefung 33 ohne PyYAML (CR-2026-140) --------------------------------------
+#
+# Ohne PyYAML las Pruefung 33 aus dem Rohtext des Frontmatters nichts und meldete an
+# jeder claude-code-Installation neun Skills mit leerem disallowed-tools. Der Starter
+# installiert kein PyYAML nach (D-362) - auf einem frischen Zielrechner fehlt es also
+# oft. Die Sonde sperrt den Import ueber ein Stellvertretermodul im Suchpfad.
+#   S364  (Sonde)      - eine verkuerzte Liste wird auch ohne PyYAML gemeldet
+#   S364a (Gegenprobe) - die richtige Installation bleibt ohne PyYAML still
+T364_SPERRE = "raise ImportError('PyYAML gesperrt durch die Sonde S364')\n"
+
+
+def sonden_ohne_pyyaml() -> None:
+    """Pruefung 33 misst ohne PyYAML dasselbe wie mit (D-364)."""
+    root = installation("claude-code")
+    sperre = tempfile.mkdtemp(prefix="lw-ohne-yaml-")
+    try:
+        schreib(os.path.join(sperre, "yaml.py"), T364_SPERRE)
+        umgebung = dict(os.environ, PYTHONPATH=sperre)
+
+        def lauf_ohne() -> str:
+            p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                              "--root", root], env=umgebung)
+            return (p.stdout or "") + (p.stderr or "")
+
+        aus = lauf_ohne()
+        gesperrt = "PyYAML nicht installiert" in aus
+        still = "disallowed-tools traegt" not in aus
+        melde("GEGENPROBE", "S364a", gesperrt and still,
+              "Ohne PyYAML meldet Pruefung 33 an einer richtigen Installation nichts")
+        if not (gesperrt and still):
+            notiz("        PyYAML gesperrt %s, still %s" % (gesperrt, still))
+        skill = os.path.join(root, ".claude", "skills", "fw-plan", "SKILL.md")
+        text = lies(skill)
+        neu = re.sub(r"(?m)^disallowed-tools: .*$", "disallowed-tools: Edit", text)
+        if neu == text:
+            raise Praeparationsfehler("disallowed-tools in fw-plan/SKILL.md nicht gefunden")
+        schreib(skill, neu)
+        aus = lauf_ohne()
+        ok = "fw-plan/SKILL.md: disallowed-tools traegt ['Edit']" in aus
+        melde("SONDE", "S364", ok,
+              "Ohne PyYAML wird eine verkuerzte disallowed-tools-Liste weiter gemeldet")
+    finally:
+        aufraeumen(sperre)
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_ohne_pyyaml,
+        "Pruefung 33 liest disallowed-tools auch ohne PyYAML und meldet nur, was fehlt")
+
+
+# --- 6: die Starter sind Traeger der Inhaltspruefung (D-365) ----------------------------
+
+sonde("6s", "Eine IP-Adresse in install.cmd wird gemeldet (D-365)",
+      lambda root: schreib(os.path.join(root, "install.cmd"),
+                           lies(os.path.join(root, "install.cmd"))
+                           + "rem Server: 10.11.12.13\n"),
+      "FW-CONTENT-IP")
+sonde("6s", "Eine IP-Adresse in install.command wird gemeldet (D-365)",
+      lambda root: schreib(os.path.join(root, "install.command"),
+                           lies(os.path.join(root, "install.command"))
+                           + "# Server: 10.11.12.13\n"),
+      "FW-CONTENT-IP")
+
+
 # --- 8: der registrierte Traeger existiert (CR-2026-139, D-360) --------------------
 #
 # Bis 1.5.0 pruefte Pruefung 8 Schluessel und Aufzaehlungswerte des Overlay-Manifests,

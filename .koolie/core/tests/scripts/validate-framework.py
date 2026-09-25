@@ -775,7 +775,10 @@ def formatgebunden(man: dict, nummer: int) -> bool:
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
 
-TEXT_EXT = {".md", ".json", ".yaml", ".yml", ".txt", ".py", ".template", ".example"}
+# ".cmd" und ".command" seit 1.7.0: die Starter des Installers (D-365). Ohne sie lasen
+# weder die Neutralitaets- noch die Zeilenendepruefungen diese Traeger.
+TEXT_EXT = {".md", ".json", ".yaml", ".yml", ".txt", ".py", ".template", ".example",
+            ".cmd", ".command"}
 SKIP_DIRS = {".git", "build", "node_modules", "__pycache__", "target", "dist", ".venv"}
 # Lockdateien sind erzeugte Abhaengigkeitsmetadaten. Sie enthalten naturgemaess fremde
 # E-Mail-Adressen und Registry-Adressen und werden weder vom Framework noch vom Projekt
@@ -3955,6 +3958,29 @@ def _werkzeugliste(wert) -> list[str]:
     return [str(x) for x in (wert or [])]
 
 
+def _flaches_feld(fm, schluessel: str):
+    """Ein einzeiliges Frontmatter-Feld - auch ohne PyYAML (D-364).
+
+    Ohne PyYAML liefert parse_frontmatter nur den Rohtext. Bis 1.6.0 las Pruefung 33
+    daraus mit .get() NICHTS und meldete an jeder claude-code-Installation neun Skills
+    mit leerem disallowed-tools - falsche Fehler, waehrend die Warnung zu PyYAML
+    behauptete, es werde nur "eingeschraenkt" geprueft. Gemessen am 2026-09-25 mit
+    Python 3.8 ohne PyYAML; die anderen Packs blieben still. Das Feld ist in der
+    erzeugten Fassung eine einzeilige, kommagetrennte Zeichenkette (AP2-CC-09), und
+    genau diese Form liest der Rueckfall - eine Listenform bleibt PyYAML vorbehalten.
+    """
+    fm = fm or {}
+    if "_raw" not in fm:
+        return fm.get(schluessel)
+    for zeile in fm["_raw"].splitlines():
+        if zeile.startswith(schluessel + ":"):
+            wert = zeile[len(schluessel) + 1:].strip()
+            if len(wert) >= 2 and wert[0] == wert[-1] and wert[0] in "\"'":
+                wert = wert[1:-1]
+            return wert
+    return None
+
+
 def check_skill_deny_abbildung(root: str, man: dict) -> None:
     """Pruefung 33: permissions.deny wird abgebildet, und zwar ohne stille Schranken."""
     fmt = (man or {}).get("skill_frontmatter", {})
@@ -4014,7 +4040,7 @@ def check_skill_deny_abbildung(root: str, man: dict) -> None:
                     erwartet.append(w)
 
         ifm, _ = parse_frontmatter(read(ipfad))
-        ist = _werkzeugliste((ifm or {}).get(deny_feld))
+        ist = _werkzeugliste(_flaches_feld(ifm, deny_feld))
         rel = f"{man['skills_dir']}/{name}/SKILL.md"
 
         if set(ist) != set(erwartet):

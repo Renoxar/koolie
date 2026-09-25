@@ -2,6 +2,84 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.7.0] - 2026-09-25
+
+**Der Installer je Zielsystem - und die Pruefung, die ohne PyYAML Fehler erfand**
+(`CR-2026-140` E1 bis E11, **D-362** bis **D-366**, Pruefung 33 korrigiert). Ein
+MINOR-Release ohne Kontingent, Vorgabe des Owners vom 2026-09-25: Windows und macOS,
+Linux bleibt beim bisherigen Weg.
+
+> 🟢 **ZWEI STARTER, EINE INSTALLATIONSLOGIK.** In der Wurzel des Release-Archivs liegen
+> `install.cmd` (Windows) und `install.command` (macOS). Sie suchen ein Python ab 3.8,
+> fragen ueber `install_dialog.py` Projektverzeichnis, KI-Client und Overlay-Muster ab und
+> rufen `install.py --target <projekt>` auf - bei vorhandenem Kern mit `--update`. Ohne
+> Python nennen sie den Installationsweg und halten an; nachinstalliert wird nichts
+> (D-362).
+>
+> 🔴 **`--target` KOPIERT NUR DEN KERN.** Aus einem Klon nur das Verfolgte, aus dem
+> Arbeitsbaum (D-333); aus einem entpackten Archiv alles ausser Bytecode und `build/out/`.
+> Danach installiert das **kopierte** `install.py` im Projekt; scheitert es, ist der
+> kopierte Kern wieder weg bzw. der alte zurueck. Die Falle aus D-354 - ganz `.koolie/`
+> kopiert, Kennzeichen und Overlay der Quelle mitgenommen - kann dieser Weg nicht
+> zuschnappen lassen. Gemessen: Datei fuer Datei gleich dem Handweg.
+>
+> 🟢 **PYTHON AB 3.8 - GEMESSEN, NICHT GESETZT** (D-363). Installationen aller drei Packs
+> sind unter 3.8.20 byteweise gleich denen unter 3.14, der Validator meldet zeilengleich.
+>
+> 🔴 **PRUEFUNG 33 ERFAND OHNE PYYAML NEUN FEHLER.** An jeder `claude-code`-Installation
+> meldete sie ohne PyYAML neun Skills mit leerem `disallowed-tools`, weil sie aus dem
+> Rohtext des Frontmatters nichts las - waehrend die Warnung behauptete, es werde nur
+> eingeschraenkt geprueft. Der Starter installiert kein PyYAML nach; genau dort haette
+> sie angeschlagen. Ein zeilenweiser Rueckfall liest das Feld jetzt (D-364).
+>
+> 🔴 **UND DIE STARTER LAGEN AUSSERHALB DES PRUEFAPPARATS.** `TEXT_EXT` kannte weder
+> `.cmd` noch `.command`. Nach der Aufnahme fand die Inhaltspruefung beim ersten Lauf in
+> beiden eine URL ausserhalb der Allowlist (D-365).
+
+**Hinzugefuegt**
+
+- `install.cmd`, `install.command` in der Wurzel. Der Windows-Starter kommt ohne
+  Sprungmarke aus, weil das Archiv LF liefert; der macOS-Starter traegt Modus `100755`
+  und ist POSIX-sh.
+- `install_dialog.py`: der Dialog - hineingezogener Pfad, Heben bei vorhandenem Kern,
+  sonst Client und Muster; zeigt den Befehl vor der Ausfuehrung; `q` bricht ab.
+- `install.py --target <projekt>` mit `--update`, `--client`, `--overlay`, `--dry-run`;
+  `PYTHON_MINDEST` und Pruefung beim Start.
+- Buendel `sonden_kopierweg` (`T362` bis `T362h`, `T363`, `T365`), Buendel
+  `sonden_ohne_pyyaml` (`S364`, Gegenprobe `S364a`), Sonden `6s` an beiden Startern.
+
+**Geaendert**
+
+- **Pruefung 33** liest `disallowed-tools` ohne PyYAML ueber `_flaches_feld()` (D-364).
+- **`TEXT_EXT`** fuehrt `.cmd` und `.command` (D-365).
+- `docs/ADOPTION_GUIDE.md` (`0.4.9`): der Starter vor dem Handweg, `--target --update`
+  beim Heben; `README.md` dito.
+- `governance/RELEASE_PROCESS.md` (`0.3.2`) Abschnitt 4.1, Schritt 2: `--target
+  <projekt> --update` fasst die drei Handgriffe des Hebens zusammen.
+- `docs/ROADMAP.md`: der Installer ist gefahren; der **waehlbare Lieferumfang** ist ein
+  eigener Posten mit Ziel-Release **`1.8.0`** (D-366) - Hooks und Validator liegen unter
+  `tests/scripts/`, ein Schnitt nach Verzeichnissen braeche jede Installation.
+- Beide uebernehmenden Projekte zum ersten Mal mit `--target --update` gehoben.
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Ein bestehendes Projekt kann ab jetzt aus dem neuen Release heraus gehoben
+  werden: `python <framework>/.koolie/core/install.py --target <projekt> --update` oder
+  der Starter. Die Handgriffe danach bleiben: Overlay-Werte nachziehen, validieren,
+  committen.
+
+**Bekannte Einschraenkungen**
+
+- **Der macOS-Starter ist auf macOS selbst nicht abgenommen** - geprueft unter Git Bash
+  und Linux (`dash`). Die Abnahme auf macOS steht aus.
+- Die Starter sind unsigniert; SmartScreen und Gatekeeper warnen beim ersten Start. Unter
+  macOS ist `sh install.command` im Terminal der sichere Weg.
+- Der Starter prueft das Python, mit dem er installiert; die Hooks waehlen ihren
+  Interpreter bei der Installation selbst. Ob beides dieselbe Fassung ist, prueft keine
+  Stelle.
+- Eine Kopie eines unter Windows ausgecheckten Klons auf einem Mac traegt CRLF; dort
+  laeuft `install.command` erst nach Umwandlung.
+
 ## [1.6.0] - 2026-09-25
 
 **Best Practices im Overlay-Muster "General" - und das Register, das auf nichts zeigen
