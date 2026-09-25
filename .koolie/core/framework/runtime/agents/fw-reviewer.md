@@ -8,8 +8,8 @@ allowed-tools:
 ---
 
 <!-- Subagent-Profil. Mechanismus: <AGENTS_DIR>/<name>.md mit Frontmatter name, description,
-     allowed-tools [DOK]. Dieses Profil ist bewusst ohne edit und exec definiert. Es ersetzt
-     kein menschliches Review (Framework Core 07). Version 0.1.1, Owner <FRAMEWORK_OWNER>. -->
+     Werkzeugliste [DOK]; install.py setzt deren Feldnamen je Client. Bewusst ohne edit und exec.
+     Ersetzt kein menschliches Review (Framework Core 07). Owner <FRAMEWORK_OWNER>. -->
 
 ## Rolle
 

@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 | Status | `pilot` |
 
 ## 1. Gleichbehandlung (normativ)
@@ -25,7 +25,7 @@
 | Q4 | Generierter Code folgt den Coding Conventions des Overlays; bei Widerspruch zwischen KI-Vorschlag und Convention gilt die Convention. | MUSS |
 | Q5 | Kommentare und Commit-Nachrichten beschreiben das Warum, nicht die Tatsache der KI-Nutzung; die KI-Nutzung wird im Merge Request vermerkt (`.koolie/core/templates/MR_AI_DISCLOSURE.md`). | SOLL |
 | Q6 | Tote Pfade, ungenutzte Importe, auskommentierter Code und generische Platzhalterkommentare aus der Generierung werden vor Übernahme entfernt. | MUSS |
-| Q7 | Behauptete Eigenschaften („thread-safe", „abwärtskompatibel", „performanter") werden nur übernommen, wenn sie belegt sind (Test, Messung, Fundstelle). | MUSS |
+| Q7 | Behauptete Eigenschaften („thread-safe“, „abwärtskompatibel“, „performanter“) werden nur übernommen, wenn sie belegt sind (Test, Messung, Fundstelle). | MUSS |
 | Q8 | Änderungen, die mehr als `<CHANGE_SIZE_THRESHOLD>` Dateien berühren, werden in mehrere Merge Requests aufgeteilt oder als Kontrollstufe hoch behandelt. | SOLL |
 
 ## 3. Definition of Done für KI-Aufgaben (normativ)
@@ -45,4 +45,4 @@ Für den Pilot werden je KI-unterstütztem Merge Request erfasst: Kontrollstufe,
 
 ## 5. Erläuterung
 
-Die häufigste Qualitätsfalle ist nicht offensichtlich falscher Code, sondern plausibler Code, der ein Nachbarproblem löst: eine ähnliche Methode ändert, eine Randbedingung anders interpretiert oder ein Muster aus einem anderen Modul kopiert, das hier nicht gilt. Q3 („nur übernehmen, was man erklären kann") und P4 („Fundstellen statt Behauptungen") sind die wirksamsten Gegenmittel.
+Die häufigste Qualitätsfalle ist nicht offensichtlich falscher Code, sondern plausibler Code, der ein Nachbarproblem löst: eine ähnliche Methode ändert, eine Randbedingung anders interpretiert oder ein Muster aus einem anderen Modul kopiert, das hier nicht gilt. Q3 („nur übernehmen, was man erklären kann“) und P4 („Fundstellen statt Behauptungen“) sind die wirksamsten Gegenmittel.

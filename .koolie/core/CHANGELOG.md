@@ -2,6 +2,72 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.9.1] - 2026-09-25
+
+**Die Durchsicht der Klasse B, erster Bereich - und die Grenze ohne Sonde**
+(`CR-2026-143` E1 bis E8, **D-381** bis **D-384**, `K-124` und `K-126` beantwortet,
+`K-130` bis `K-137` neu). Ein Patch-Release ohne Kontingent und **ohne neue
+Pruefungsnummer**: die inhaltliche Durchsicht der Core-Module und der Laufzeitschicht nach
+`docs/DOCUMENTATION_STANDARD.md` (D-380).
+
+> 🟢 **DIE DURCHSICHT AENDERT KEINE REGEL** (D-381). Geschichtsprosa ist durch die geltende
+> Regel mit D-Verweis ersetzt, veraltete Aussagen sind berichtigt; wo zwei Regeln einander
+> widersprechen, steht jetzt ein Klaerungspunkt statt einer Entscheidung (`K-131` bis
+> `K-137`). Massgeblich ist das Core-Modul, die Laufzeitfassung wird auf Widerspruch
+> geprueft.
+>
+> 🔴 **DIE ZEICHENGRENZE HATTE KEINE SONDE.** Die Wurzel-Anweisung steht installiert bei
+> 11.894 (`claude-code`) und 11.887 (`devin-desktop`) von 12.000 Zeichen; eine Durchsicht,
+> die Verweise ergaenzt, haette die Grenze gerissen, und erst das Projekt haette es
+> gemeldet. Keine Laufzeitdatei ist laenger geworden, und Pruefung 4 hat jetzt Sonden je
+> Pack. Ob die Grenze ein Budget fuer die Summe werden soll, ist `K-130` (fuer `1.9.2`).
+
+**Hinzugefuegt**
+
+- **Pruefung 45, Gegenstand 3** (D-383): Im Quellrepositorium schliesst die `.gitignore`
+  jedes Wurzelerzeugnis aller Client Packs aus - abgeleitet aus `shared_core` und
+  `shared_seed` der Manifeste. Sonde 45e, Gegenprobe 45c.
+- Buendel `sonden_zeichengrenze` (D-381): Sonde 4a, Gegenproben 4a bis 4c - die installierte
+  Wurzel-Anweisung je Pack gegen die Grenze von 12.000 Zeichen.
+- Klaerungspunkte `K-130` (Zeichenbudget) und `K-131` bis `K-137` (Befunde der Durchsicht).
+
+**Geaendert**
+
+- Durchsicht der Core-Module `00` bis `09` (`10-error-escalation.md` unveraendert):
+  Herleitungen durch Verweise ersetzt (D-376), Hervorhebungen reduziert, Anfuehrungszeichen
+  vereinheitlicht. Sachlich berichtigt: der Verweis auf Anhang 31.4 (`00`); der Umfang des
+  Schutz-Hooks - er prueft auch Lese- und Suchanfragen (`02`, D-33); der Aufrufweg eines
+  Skills steht in der Faehigkeitsmatrix des Packs, nicht werkzeugneutral als `/skill-name`
+  (`06`); der Ablagepfad der Skills steht im Laufzeitglossar (`08`); ein Querverweis und die
+  Zahl der Faehigkeitsmatrizen in `03`.
+- Laufzeitschicht: nur `agents/fw-reviewer.md` - der Herkunftskommentar nannte den Feldnamen
+  der Quelle als den des Clients; `install.py` setzt ihn je Pack. **Wirkt im Projekt erst nach
+  `install.py --update`** (D-381). Alle uebrigen Laufzeitdateien sind unveraendert und gleich
+  lang.
+- **Modusbegriffe** (D-382, `K-126`): *rueckfragender Standardmodus* statt `Normal`, *Modus
+  ohne Rueckfragen* statt `Bypass` - in den Core-Modulen, im Onboarding (`GUIDE`,
+  `MENTOR_CHECKLIST`, `QUICKSTART`, `REFERENCE`), in `checklists/01-preflight.md`,
+  `governance/EXCEPTION_PROCESS.md`, `governance/PRIORITY_HIERARCHY.md`,
+  `pilot/PILOT_CONCEPT.md`, `prompts/README.md` und der Erlaeuterung von `fw-change-small`
+  (`0.1.5`). Wie der Modus im Client heisst, nennt die Faehigkeitsmatrix des Packs.
+- `.gitignore` der Wurzel (D-383, `K-124`): `/CLAUDE.md`, `/CLAUDE.local.md.example`,
+  `/.mcp.json.example`, `/.claude/`, `/.codex/`, `CLAUDE.local.md`.
+- Versionen aller geaenderten Dokumente mit Steckbrief um PATCH angehoben.
+- `docs/ROADMAP.md` (`0.3.1`): `1.9.1` gefahren; `1.9.2` mit `K-128` und `K-130`, `1.9.3`,
+  und das Code- und Pack-Release `1.10.0` eingeplant (D-384).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Kein Overlay-Feld, keine Pflichtpruefung neu. Gegenstand 3 der Pruefung 45 laeuft
+  nur im Quellrepositorium.
+
+**Bekannte Einschraenkungen**
+
+- Die Befunde `K-131` bis `K-137` sind nicht entschieden - darunter zwei Laufzeitregeln, die
+  strenger sind als ihr Core-Modul (`K-133`, `K-135`).
+- Die Ableitung der `.gitignore`-Zeilen kennt nur Ziele aus `shared_core` und `shared_seed`.
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.9.0] - 2026-09-25
 
 **Der Dokumentationsstandard - und die Roadmap, die zu zwei Dritteln Rueckblick war**

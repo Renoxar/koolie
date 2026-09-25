@@ -24,7 +24,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-005` |
 | Name | `fw-change-small` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -94,7 +94,7 @@ triggers:
 - Befehle außerhalb von `<TEST_COMMAND>` und `<LINT_COMMAND>` ausführen; Commits erstellen; `git push`, `git merge` oder andere Befehle mit Fernwirkung ausführen (V2); in Hintergrund-Subagenten oder Parallelsitzungen laufen (`.koolie/core/framework/core/05-working-model.md` Abschnitt 3.1, R12).
 - Änderungen an Authentifizierung, Autorisierung, Kryptografie, Sitzungsverwaltung oder Sicherheitskonfiguration ohne dokumentierte Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>` umsetzen (R10); Aufgaben der Delegationsverbotsliste (`.koolie/core/framework/core/09-risk-model.md` Abschnitt 4) bearbeiten; das Ergebnis als „geprüft", „freigegeben" oder „bereit für den Merge" bezeichnen (V1).
 
-(Erläuterung) Der Skill läuft im Permission-Modus Normal: Jede Schreib- und Ausführungsanfrage wird vom Menschen einzeln bestätigt `[DOK]`; sitzungsweite Freigaben sind nur für `<TEST_COMMAND>` und `<LINT_COMMAND>` vorgesehen (`.koolie/core/framework/core/05-working-model.md` Abschnitt 3.1). Die Beschränkung auf die bestätigte Zieldateiliste ist über `permissions` nicht ausdrückbar und gilt normativ; geschützte Pfade sichern die `deny`-Regeln in `<PERMISSIONS_FILE>` und der `PreToolUse`-Hook (`<HOOKS_FILE>`; Hook-Mechanismus `[DOK]`, Pfadprüfung `[EMPF]`) technisch ab.
+(Erläuterung) Der Skill läuft im rückfragenden Standardmodus (D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs): Jede Schreib- und Ausführungsanfrage wird vom Menschen einzeln bestätigt `[DOK]`; sitzungsweite Freigaben sind nur für `<TEST_COMMAND>` und `<LINT_COMMAND>` vorgesehen (`.koolie/core/framework/core/05-working-model.md` Abschnitt 3.1). Die Beschränkung auf die bestätigte Zieldateiliste ist über `permissions` nicht ausdrückbar und gilt normativ; geschützte Pfade sichern die `deny`-Regeln in `<PERMISSIONS_FILE>` und der `PreToolUse`-Hook (`<HOOKS_FILE>`; Hook-Mechanismus `[DOK]`, Pfadprüfung `[EMPF]`) technisch ab.
 
 **Rückfragenregeln (MUSS):**
 

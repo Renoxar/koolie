@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.2 |
+| Version | 0.1.3 |
 | Status | `pilot` |
 
 > **Abgrenzung:** Diese Klassifizierung dient der operativen Steuerung des KI-Einsatzes. Sie ist keine rechtliche Klassifizierung und ersetzt keine Bewertung nach Datenschutz-, IT-Sicherheits- oder KI-regulatorischen Vorgaben der Organisation.
@@ -36,12 +36,12 @@
 | R9 | Einführung externer Abhängigkeiten | keine | Aktualisierung einer bestehenden Abhängigkeit (Patch/Minor) | neue Abhängigkeit oder Major-Update (Checkliste `.koolie/core/checklists/07-new-dependency.md`) |
 | R10 | Änderung von Authentifizierung oder Autorisierung | keine | keine (jede Berührung ist mindestens hoch) | jede Änderung |
 | R11 | Änderung von Datenmodellen oder Schnittstellen | keine | interne, abwärtskompatible Erweiterung | Schema-Änderung, Vertragsbruch einer Schnittstelle, Migration |
-| R12 | Automatisierungsgrad der KI-Nutzung | einzelne, überwachte Sitzung im Modus Normal; oder mehrere rein lesende Sitzungen beziehungsweise Subagenten (M1, M2) unter einer aufsichtführenden Person | mehrere Schritte in einer Sitzung mit sitzungsweiten Freigaben; oder parallele schreibende Sitzungen auf disjunkten Schreibzielen | erweiterte Permission-Modi; parallele Sitzungen auf gemeinsamen Schreibzielen; Hintergrund-Subagenten in M3 |
+| R12 | Automatisierungsgrad der KI-Nutzung | einzelne, überwachte Sitzung im rückfragenden Standardmodus (D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs); oder mehrere rein lesende Sitzungen beziehungsweise Subagenten (M1, M2) unter einer aufsichtführenden Person | mehrere Schritte in einer Sitzung mit sitzungsweiten Freigaben; oder parallele schreibende Sitzungen auf disjunkten Schreibzielen | erweiterte Permission-Modi; parallele Sitzungen auf gemeinsamen Schreibzielen; Hintergrund-Subagenten in M3 |
 | R13 | Mögliche Fehlerfolgen | lokal begrenzt, sofort erkennbar | Funktionsstörung in Test oder Produktion, erkennbar durch Monitoring | Datenverlust, Sicherheitsvorfall, Verstoß gegen rechtliche Vorgaben, Reputationsschaden |
 
 `<CHANGE_SIZE_THRESHOLD>` und die Liste kritischer Komponenten werden im Project Overlay festgelegt (`<TBD: Schwellenwert für Änderungsumfang>`).
 
-**Zu R12 (normativ).** Die Spalten unterscheiden nach **Schreibziel und Aufsicht**, nicht nach der Zahl der Sitzungen: rein lesende Parallelarbeit unter Aufsicht niedrig, schreibende Parallelarbeit auf getrennten Zielen mittel, gemeinsame Schreibziele hoch. Bis 0.31.0 stufte R12 **jede** Parallelsitzung als hoch ein, während das Arbeitsmodell sie nur für Aufgaben der Kontrollstufe **niedrig** erlaubte (`.koolie/core/framework/core/05-working-model.md`, Abschnitt 3.1) – die Schnittmenge war leer, und damit war die Regel nicht erfüllbar (D-54). Erweiterte Permission-Modi bleiben **hoch**: Dass die erste Schutzlinie dort ausfällt, ist gemessen (D-35), und diese Einstufung wird nicht gelockert.
+**Zu R12 (normativ).** Die Spalten unterscheiden nach **Schreibziel und Aufsicht**, nicht nach der Zahl der Sitzungen: rein lesende Parallelarbeit unter Aufsicht niedrig, schreibende Parallelarbeit auf getrennten Zielen mittel, gemeinsame Schreibziele hoch (D-54; die Voraussetzungen für Parallelarbeit nennt `.koolie/core/framework/core/05-working-model.md`, Abschnitt 3.1). Erweiterte Permission-Modi bleiben **hoch**: Dass die erste Schutzlinie dort ausfällt, ist gemessen (D-35), und diese Einstufung wird nicht gelockert.
 
 ## 3. Kontrollstufen (normativ)
 
@@ -78,6 +78,6 @@ Das Project Overlay KANN die Liste erweitern (`.koolie/project-overlay/OVERLAY.m
 
 ## 5. Anwendungshinweise (Erläuterung)
 
-Die Einstufung dauert in der Praxis unter einer Minute, wenn sie in den Preflight-Check integriert ist: Bearbeiterin oder Bearbeiter geht die dreizehn Faktoren durch, notiert den höchsten Treffer und trägt Stufe und auslösenden Faktor in die Aufgabenbeschreibung ein (zum Beispiel „Stufe mittel wegen R8"). Diese Angabe wandert in den KI-Nutzungsvermerk des Merge Requests und ermöglicht später die Auswertung im Pilot (`.koolie/core/pilot/METRICS.md`).
+Die Einstufung dauert in der Praxis unter einer Minute, wenn sie in den Preflight-Check integriert ist: Bearbeiterin oder Bearbeiter geht die Risikofaktoren aus Abschnitt 2 durch, notiert den höchsten Treffer und trägt Stufe und auslösenden Faktor in die Aufgabenbeschreibung ein (zum Beispiel „Stufe mittel wegen R8"). Diese Angabe wandert in den KI-Nutzungsvermerk des Merge Requests und ermöglicht später die Auswertung im Pilot (`.koolie/core/pilot/METRICS.md`).
 
 **Beispiel (synthetisch):** Eine Aufgabe „Fehlermeldung im Formular `<FORM_NAME>` korrigieren" berührt eine Datei (R1 niedrig), eine Standardkomponente (R2 niedrig), keine Sicherheitsfunktion (R3 niedrig), zeigt aber Daten eines Nutzers an (R4 mittel, da der Pfad personenbezogene Daten verarbeitet, die Logik aber unverändert bleibt). Ergebnis: Stufe mittel wegen R4 – Umsetzung nur nach bestätigtem Plan.

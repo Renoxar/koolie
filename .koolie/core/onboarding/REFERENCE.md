@@ -5,7 +5,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-REF` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -61,7 +61,7 @@ Der KI-Client hält an bei S1–S10 (Unklarheit, fehlende Freigabe, Secret-Fund,
 
 ## Sitzung, kurz
 
-Neue Aufgabe = neue Sitzung · Modus Normal (nie Bypass; selbsttätige Übernahme nur per Ausnahme, D-05) · Freigaben höchstens sitzungsweise · Preflight CL-01 → Arbeit → Ergebnisbericht → Selbstreview CL-04 → MR mit Nutzungsvermerk (CL-08).
+Neue Aufgabe = neue Sitzung · rückfragender Standardmodus (nie ohne Rückfragen; selbsttätige Übernahme nur per Ausnahme, D-05) · Freigaben höchstens sitzungsweise · Preflight CL-01 → Arbeit → Ergebnisbericht → Selbstreview CL-04 → MR mit Nutzungsvermerk (CL-08).
 
 ## Checklisten und Bäume
 

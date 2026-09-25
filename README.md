@@ -220,7 +220,7 @@ Das `root-template/` eines Packs enthält **nur die README der Laufzeitschicht**
 
 Welcher Client verwendet wird, entscheidet `--client`; `python .koolie/core/install.py --list-clients` zeigt die verfügbaren. Welche Zusagen des Frameworks ein Client **technisch durchsetzt** und welche nur als Anweisung im Kontext stehen, steht in der Fähigkeitsmatrix seines Client Packs (`.koolie/core/clients/README.md`).
 
-In einem **Projekt** gilt das Gegenteil: dort werden Wurzel-Anweisungsdatei, Laufzeitschicht und `.koolie/project-overlay/` versioniert. Die vier entsprechenden Zeilen der `.gitignore` sind beim Übernehmen deshalb nicht mitzunehmen.
+In einem **Projekt** gilt das Gegenteil: dort werden Wurzel-Anweisungsdatei, Laufzeitschicht und `.koolie/project-overlay/` versioniert. Die entsprechenden Zeilen der `.gitignore` sind beim Übernehmen deshalb nicht mitzunehmen.
 
 ## Schnellzugriff nach Rolle
 

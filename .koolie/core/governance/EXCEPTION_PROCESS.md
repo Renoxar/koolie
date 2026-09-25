@@ -3,14 +3,14 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-EXC` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 ## 1. Geltung (normativ)
 
 1. Ausnahmen sind befristete, begründete, kompensierte Abweichungen von MUSS-Regeln des Frameworks oder eines Overlays.
-2. **Nicht ausnahmefähig sind:** die Delegationsverbote V1–V12, die K3-Definition und ihre Bereitstellungsverbote, das Verbot des Bypass-Modus außerhalb dieses Prozesses sowie Ebene-1/2-Vorgaben (Gesetz, Organisation) – Letztere können nur ihre Urheber ändern.
+2. **Nicht ausnahmefähig sind:** die Delegationsverbote V1–V12, die K3-Definition und ihre Bereitstellungsverbote, das Verbot des Modus ohne Rückfragen (D-05) außerhalb dieses Prozesses sowie Ebene-1/2-Vorgaben (Gesetz, Organisation) – Letztere können nur ihre Urheber ändern.
 3. SOLL-Regeln benötigen keine Ausnahme, sondern eine dokumentierte Begründung am Ort der Abweichung.
 
 ## 2. Verfahren (normativ)

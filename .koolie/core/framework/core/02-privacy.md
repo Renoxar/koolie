@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.8 |
+| Version | 0.1.9 |
 | Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
@@ -76,11 +76,11 @@ Vor der Weitergabe an den KI-Client werden Befehlsausgaben und Logauszüge auf p
 
 ### 3.6 Testdaten
 
-der KI-Client arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
+Der KI-Client arbeitet ausschließlich mit synthetischen oder nachweislich anonymisierten Testdaten. Synthetische Daten werden als solche gekennzeichnet (zum Beispiel Namen wie `Testperson-01`).
 
 ### 3.7 Externe Quellen
 
-Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). **Eine Freigabe je Domain ist nicht vorgesehen** und war es nie: In der Berechtigungskonfiguration gewinnt `deny`, eine zusätzliche `allow`-Regel hebt das generelle Verbot nicht auf, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht einmal ausdrückbar. Wer externen Abruf braucht, ersetzt die Verbotsregel über einen Änderungsantrag (`.koolie/core/framework/core/03-security.md` Abschnitt 4, D-59); bis dahin wird freigegebene Dokumentation lokal bereitgestellt.
+Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-Standard laut Anbieterdokumentation `[DOK]`; Framework-Standard für alle Pläne `[KONZ]`). **Eine Freigabe je Domain ist nicht vorgesehen:** In der Berechtigungskonfiguration gewinnt `deny`, eine zusätzliche `allow`-Regel hebt das generelle Verbot nicht auf, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht einmal ausdrückbar. Wer externen Abruf braucht, ersetzt die Verbotsregel über einen Änderungsantrag (`.koolie/core/framework/core/03-security.md` Abschnitt 4, D-59); bis dahin wird freigegebene Dokumentation lokal bereitgestellt.
 
 ### 3.8 MCP-Werkzeuge
 
@@ -123,7 +123,7 @@ Eine Löschung beim Anbieter ist über den vertraglich vereinbarten Weg zu beant
 | Websuche deaktivieren | Team-Einstellung (Enterprise) beziehungsweise keine `Fetch`-Allow-Regeln | `[DOK]` (Enterprise), `[EMPF]` (andere Pläne) |
 | MCP nur nach Freigabe | keine Einträge in der MCP-Konfiguration, bis Freigabe vorliegt; Rückfrage als Standard belassen | `[DOK]` |
 | Training-Opt-out und Zero Data Retention | Data-Controls-Einstellung durch Administrator (Teams) beziehungsweise vertragliche Regelung (Enterprise) | `[DOK]`, Umsetzung `<TBD: Nachweis der Einstellung>` |
-| Prüfung von Werkzeugaufrufen auf Secrets | Hook `PreToolUse` mit Skript, das Schreib- und Ausführungsanfragen auf Secret-Muster prüft und blockiert (`.koolie/core/tests/scripts/hook-check-secrets.py`) | `[DOK]` (Hook-Mechanismus), `[EMPF]` (Skript) |
+| Prüfung von Werkzeugaufrufen auf Secrets | Hook `PreToolUse` mit Skript, das Lese-, Such-, Schreib- und Ausführungsanfragen auf Secret-Muster prüft und blockiert (`.koolie/core/tests/scripts/hook-check-secrets.py`, D-33) | `[DOK]` (Hook-Mechanismus), `[EMPF]` (Skript) |
 | Sandbox für Befehlsausführung | Sandbox-Modus mit Domain-Allowlist; unter Windows laut Dokumentation nicht verfügbar; Netzwerkfilterung laut Dokumentation instabil | `[DOK]`, Einsatz `<TBD: Betriebssystem und Sandbox-Verfügbarkeit>` |
 
 ## 7. Erläuterung

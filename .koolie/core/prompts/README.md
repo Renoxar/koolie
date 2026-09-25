@@ -5,7 +5,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ (Abschnitte 2, 3, 5, 6, 7), Erläuterung (Abschnitte 1, 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.3 |
+| Version | 0.1.4 |
 | Status | `pilot` |
 | Grundlage | `.koolie/core/framework/core/06-prompting-rules.md`, `.koolie/core/framework/core/05-working-model.md`, `.koolie/core/framework/core/09-risk-model.md`, `.koolie/core/framework/core/02-privacy.md` |
 
@@ -76,7 +76,7 @@ Vollständig in `.koolie/core/framework/core/06-prompting-rules.md`; die Kurzfor
 1. Preflight durchführen (`.koolie/core/checklists/01-preflight.md`): Delegierbarkeit (V1–V12), Kontrollstufe mit Faktor nach dem Maximumprinzip, Betriebsmodus, Scope.
 2. Passende Vorlage wählen (Abschnitt 4); prüfen, ob stattdessen der Skill direkt aufzurufen ist (Abschnitt 2).
 3. Parameter befüllen; jeden Wert auf Kontextklasse prüfen; K2-Inhalte nur nach dokumentierter Freigabe und Bereinigung, K3 nie.
-4. Codeblock aus Abschnitt 5 in eine neue KI-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (Permission-Modus Normal `[DOK]`).
+4. Codeblock aus Abschnitt 5 in eine neue KI-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (rückfragender Standardmodus `[DOK]`; D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs).
 5. Ergebnis anhand Abschnitt 7 der Vorlage und der genannten Checklisten prüfen; Ergebnisbericht ablegen (ab Stufe mittel: `<TBD: Ablageort für Ergebnisberichte>`).
 6. Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess; im KI-Nutzungsvermerk KANN die verwendete Prompt-ID neben den Skills genannt werden.
 

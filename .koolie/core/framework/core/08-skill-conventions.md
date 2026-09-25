@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.0 |
+| Version | 0.3.1 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -24,7 +24,7 @@ Skill-Ablage der Laufzeitschicht
     └── CHANGELOG.md    # Änderungsverlauf des Skills
 ```
 
-- Ablageort: die Skill-Ablage der Laufzeitschicht, je Skill ein Unterverzeichnis mit `SKILL.md`. Der konkrete Pfad und etwaige Alternativpfade stehen im Client Pack (`.koolie/core/docs/RUNTIME_GLOSSARY.md`).
+- Ablageort: die Skill-Ablage der Laufzeitschicht, je Skill ein Unterverzeichnis mit `SKILL.md`. Der konkrete Pfad je Client steht in `.koolie/core/docs/RUNTIME_GLOSSARY.md` (Zeile „Skill-Ablage“), etwaige Alternativpfade im Client Pack.
 - Der Verzeichnisname ist der Aufrufname (`/skill-name`) `[DOK]`.
 - Framework-Skills tragen das Präfix `fw-`, projektspezifische Skills `prj-`, Role-Pack-Skills `role-<pack>-`, Technology-Pack-Skills `tech-<pack>-`.
 - Skill-Namen bestehen aus Kleinbuchstaben, Ziffern und Bindestrichen.
@@ -102,8 +102,8 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 **Reichweite dieser Tabelle.** Die fünf Statuswerte und ihre Bedeutung gelten für **jeden** Modulträger des Frameworks; die Spalte *Voraussetzung für Übergang* gilt für Skills. Die Bedingungen für Modulträger, die keine Skills sind, stehen in `01-governance.md` Abschnitt 5 (D-102). **„Testfälle bestanden" ist Bedingung für `aktiv`, nicht für `pilot`** – für `pilot` genügt, dass sie vorliegen (D-103).
 
 - MAJOR: Änderung des Ausgabeformats oder des Scopes; MINOR: neue Schritte oder Prüfungen ohne Formatbruch; PATCH: Korrekturen und Formulierungen.
-- Jede Versionsänderung, die eine **Anweisung** des Skills berührt, erfordert die erneute Ausführung der Testfälle in `TESTS.md`; Ergebnisse werden im Testkatalog vermerkt. **Eine Änderung, die ausschließlich Erläuterung, Schreibweise oder einen Namen betrifft, tut das nicht** – ein Testblatt nimmt ab, was der Skill **anweist**, und was er **erläutert**, hat es nie geprüft (D-303, `K-84`).
-  🔴 **Warum die Grenze gezogen ist, und was sie kostet.** Ohne sie setzt jede Versionshebung die abgenommenen Zellen ihres Testblatts auf die Fassung davor (D-119): `0.79.0` hat die Regel wörtlich angewandt, und Kriterium 2 von D-11 ist **aufwärts** gegangen (D-227) – für Zellen, die sachlich unverändert richtig waren. ⚠️ **Preis, benannt:** Die Grenze zwischen Anweisung und Erläuterung zieht ein Mensch; **keine Prüfung setzt sie durch.** Dieselbe Bauform wie `K-41`. Wer sie zieht, schreibt in den Änderungsverlauf des Skills, **welche** Art von Änderung er vorgenommen hat.
+- Jede Versionsänderung, die eine **Anweisung** des Skills berührt, erfordert die erneute Ausführung der Testfälle in `TESTS.md`; Ergebnisse werden im Testkatalog vermerkt. **Eine Änderung, die ausschließlich Erläuterung, Schreibweise oder einen Namen betrifft, tut das nicht** – ein Testblatt nimmt ab, was der Skill anweist, und was er erläutert, hat es nie geprüft (D-303, `K-84`).
+  ⚠️ Die Grenze zwischen Anweisung und Erläuterung zieht ein Mensch; keine Prüfung setzt sie durch (D-303). Wer sie zieht, schreibt in den Änderungsverlauf des Skills, **welche** Art von Änderung er vorgenommen hat.
 - Die strukturelle Konformität prüft `.koolie/core/tests/scripts/validate-framework.py` (Pflichtabschnitte, Frontmatter, Platzhalter, verbotene Muster).
 
 **Reichweite dieser Konventionen.** Sie gelten für die **Skill-Ablage, die das Framework schreibt**. Skills aus Ablagen außerhalb des Repositoriums – etwa aus dem Benutzerprofil – unterliegen ihnen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken, nie erweitern. Der KI-Client kann sie dennoch aufrufen: Am 2026-09-11 führte eine Installation 81 Skills, 67 davon aus einer fremden Ablage und mit Aufrufbarkeit durch Mensch **und** Modell.

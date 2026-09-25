@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.4 |
+| Version | 0.1.5 |
 | Status | `pilot` |
 
 ## 0. Konventionen dieses Frameworks
@@ -27,7 +27,7 @@ Jede Aussage über einen KI-Client trägt einen Belegstatus:
 
 | Kennzeichen | Bedeutung |
 |---|---|
-| `[DOK]` | Offiziell dokumentierter Mechanismus (Quelle im Anhang „Quellen und Verifikationsbedarf" des Hauptdokuments). |
+| `[DOK]` | Offiziell dokumentierter Mechanismus (Quelle im Anhang 31.4 „Quellen der Produktdokumentation und Belegzuordnung“ des Hauptdokuments). |
 | `[EMPF]` | Technisch begründete Empfehlung, abgeleitet aus dokumentierten Mechanismen und auf Konsistenz geprüft, aber noch nicht in einer Zielinstallation ausgeführt. |
 | `[KONZ]` | Konzeptioneller Vorschlag des Frameworks ohne Produktbezug. |
 | `BELEG OFFEN` | Noch nicht belegt; darf nicht als Tatsache behandelt werden. Die Zelle nennt **Grund und Datum** und, wenn die Frage offen bleibt, ihren Klärungspunkt. **Ein Belegstand trägt keine Frist** (D-291). |

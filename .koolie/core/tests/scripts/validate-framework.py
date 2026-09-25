@@ -142,7 +142,9 @@ Prüft (statisch, ohne laufenden KI-Client):
      und unter <CORE_DIR>/ ist kein Bytecode versioniert. Zwei Gegenstaende, weil
      einer nicht reicht: git liest die .gitignore fuer bereits verfolgte Dateien
      nicht. Gegenstand 2 laeuft nur, wo git erreichbar ist - sonst sagt die
-     Pruefung das als Warnung, statt stumm auszufallen
+     Pruefung das als Warnung, statt stumm auszufallen. Gegenstand 3 (D-383), nur
+     im Quellrepositorium: Die .gitignore schliesst jedes Wurzelerzeugnis aller
+     Client Packs aus - abgeleitet aus shared_core und shared_seed der Manifeste
  46. Der 1.0.0-Stand (D-98, D-99): Die vier maschinell zaehlbaren Kriterien
      aus D-11 werden ausgerechnet und gegen die Standzeile in docs/ROADMAP.md
      gehalten - Markerfundstellen, offene Ergebniszellen, Modulstatus auf
@@ -722,7 +724,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      Version und Status. Ausgenommen mit Grund: README-Verzeichnisse, die
      Laufzeitschicht, Ausfuellvorlagen und Beispielausgaben. GRENZE: Anwesenheit der
      Zeilen; ihren Wert pruefen 13 und 55
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 94 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 94 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -5716,6 +5718,73 @@ def check_bytecode_versioniert(root: str) -> None:
             f"`git rm -r --cached {KERN}/**/__pycache__` und danach die Regel (D-97)")
 
 
+
+# --- 45, Gegenstand 3: Die Erzeugnisse der Packs im Quellrepositorium (D-383, K-124) --
+#
+# Im Quellrepositorium sind Wurzel-Anweisungsdatei, Laufzeitschicht und Overlay
+# ERZEUGNISSE von install.py und werden nicht versioniert (README, Abschnitt "Arbeiten an
+# diesem Repository"). Bis 1.9.0 schloss die .gitignore nur die Erzeugnisse EINES Packs
+# aus; nach `install.py --client` mit einem der anderen beiden waeren deren Dateien
+# versionierbar gewesen (K-124).
+#
+# ABGELEITET, NICHT AUFGEZAEHLT: Was ein Pack in die Wurzel schreibt, steht in seinem
+# Manifest (shared_core, shared_seed). Verlangt wird je Ziel der erste Pfadbestandteil
+# (unter .koolie/ die ersten zwei - der Kern selbst ist versioniert). Ein neues Pack
+# bringt seine Zeilen damit als Befund mit, statt still versionierbar zu sein.
+# Nur im Quellrepositorium: In einem Projekt gilt das Gegenteil (D-383).
+GITIGNORE_ERZEUGNIS_LISTEN = ("shared_core", "shared_seed")
+
+
+def _erzeugnis_wurzeln(root: str) -> dict:
+    """{Wurzelbestandteil: [Packs]} aller Ziele, die install.py im Quellrepositorium anlegt."""
+    kern = os.path.join(root, KERN)
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        warn("clientmap.py nicht gefunden – Gegenstand 3 der Prüfung 45 ist nicht "
+             "gelaufen (D-383)")
+        return {}
+    wurzeln: dict = {}
+    clients = os.path.join(root, KERN, "clients")
+    for pack in sorted(os.listdir(clients)):
+        pfad = os.path.join(clients, pack, "manifest.json")
+        if pack.startswith("_") or not os.path.isfile(pfad):
+            continue
+        man = json.loads(read(pfad))
+        for liste in GITIGNORE_ERZEUGNIS_LISTEN:
+            for eintrag in man.get(liste, []):
+                ziel = clientmap.resolve_placeholders(eintrag["dst"], man).strip("/")
+                teile = ziel.split("/")
+                if teile[0] == ".koolie":
+                    if len(teile) < 2 or teile[1] == "core":
+                        continue
+                    teile = teile[:2]
+                else:
+                    teile = teile[:1]
+                wurzeln.setdefault("/".join(teile), []).append(pack)
+    return wurzeln
+
+
+def check_gitignore_erzeugnisse(root: str) -> None:
+    """Pruefung 45, Gegenstand 3 (D-383): Die .gitignore des Quellrepositoriums schliesst
+    die Wurzelerzeugnisse jedes Packs aus."""
+    if not ist_quellrepositorium(root):
+        return
+    pfad = os.path.join(root, ".gitignore")
+    if not os.path.isfile(pfad):
+        return  # Gegenstand 1 meldet die fehlende Datei
+    zeilen = {z.strip().strip("/") for z in read(pfad).splitlines()
+              if z.strip() and not z.strip().startswith(("#", "!"))}
+    for wurzel, packs in sorted(_erzeugnis_wurzeln(root).items()):
+        if wurzel not in zeilen:
+            err(f".gitignore: schließt das Erzeugnis `/{wurzel}` nicht aus "
+                f"({', '.join(sorted(set(packs)))}). Im Quellrepositorium sind "
+                f"Wurzel-Anweisungsdatei, Laufzeitschicht und Overlay Erzeugnisse von "
+                f"install.py und werden nicht versioniert (Prüfung 45, D-383)")
+
+
 # ---------------------------------------------------------------------------
 # Pruefung 46: Der 1.0.0-Stand wird ausgerechnet, nicht gepflegt
 # ---------------------------------------------------------------------------
@@ -10477,6 +10546,7 @@ def main() -> int:
     check_hookblock(root, man)
     check_praeparationsregister(root)
     check_bytecode_versioniert(root)
+    check_gitignore_erzeugnisse(root)
     check_d11_stand(root)
     check_status_vokabular(root)
     check_tool_neutrality(root)

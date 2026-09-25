@@ -5,7 +5,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-QUICK` |
-| Version | `0.1.0` |
+| Version | `0.1.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -26,7 +26,7 @@ die Kurzfassung auf einer Seite ist `REFERENCE.md`.
 
 1. Lies die Wurzel-Anweisungsdatei des Projekts (10 Minuten) und überflieg `.koolie/project-overlay/OVERLAY.md` Abschnitte 1–6 und 13–16.
 2. Öffne im KI-Client das Übungsrepository, das deine Mentorin oder dein Mentor bereitgestellt hat (Aufbau: `.koolie/core/onboarding/exercises/README.md`).
-3. Prüfe den Permission-Modus: **Normal** (jede Schreib- und Ausführungsanfrage wird einzeln bestätigt). Der Modus ohne Rückfragen (Bypass) ist untersagt; Modi, die Änderungen selbsttätig übernehmen, nur mit dokumentierter Ausnahme (D-05).
+3. Prüfe den Modus des Clients: der **rückfragende Standardmodus** (jede Schreib- und Ausführungsanfrage wird einzeln bestätigt; wie er in deinem Client heißt, nennt die Fähigkeitsmatrix deines Client Packs). Der Modus ohne Rückfragen ist untersagt; Modi, die Änderungen selbsttätig übernehmen, nur mit dokumentierter Ausnahme (D-05).
 4. Preflight: `.koolie/core/checklists/01-preflight.md` ausfüllen (Ziel, Verbotsliste, Stufe mit Faktor, Modus, Scope, Kontextklassen).
 5. Starte mit einer Analyse: `/fw-repo-analyze <übungsmodul> "Wie ist das Modul aufgebaut?"`
 6. Prüfe drei Fundstellen aus der Antwort selbst im Code – das ist der wichtigste Handgriff dieses Frameworks.

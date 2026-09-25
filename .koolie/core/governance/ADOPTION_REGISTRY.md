@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REG` |
-| Version | `0.2.5` |
+| Version | `0.2.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | alle Projekte, die den Framework-Kern übernommen haben |
@@ -28,10 +28,10 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.9.0** | `0.3.14` | 2026-09-25 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.9.0** | `1.4.8` | 2026-09-25 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.9.1** | `0.3.15` | 2026-09-25 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.9.1** | `1.4.9` | 2026-09-25 |
 
-🟢 **STAND 2026-09-25: BEIDE PROJEKTE TRAGEN `1.9.0`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.9.0` ist das Qualitätssicherungsrelease der Dokumentation (D-370, D-371 bis D-380): Es ändert Dokumente des Kerns und bringt die Prüfungen 91 bis 94, die in beiden Projekten gegen den gelieferten Kern laufen; an der Laufzeitschicht ändert sich nur das Reviewprofil `fw-reviewer` (Überschriftenebenen). Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
+🟢 **STAND 2026-09-25: BEIDE PROJEKTE TRAGEN `1.9.1`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.9.1` ist die Durchsicht der Core-Module und der Laufzeitschicht (D-381 bis D-384): Es ändert keinen Regelinhalt; an der Laufzeitschicht ändert sich nur der Herkunftskommentar des Reviewprofils `fw-reviewer`, dazu die Erläuterung des Skills `fw-change-small` (Modusbegriff, D-382). Die Änderungen wirken im Projekt erst nach dem Heben (D-381). Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`

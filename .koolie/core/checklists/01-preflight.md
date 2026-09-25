@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-01` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jeder KI-Sitzung, nach Zuschnitt der Aufgabe |
@@ -40,7 +40,7 @@ Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig einge
 
 ### Sitzung und Werkzeug
 
-- [ ] **MUSS** Neue Sitzung für diese Aufgabe; Permission-Modus Normal; Bypass und Smart nicht aktiv (D-05).
+- [ ] **MUSS** Neue Sitzung für diese Aufgabe; rückfragender Standardmodus; weder der Modus ohne Rückfragen noch ein Modus mit selbsttätiger Übernahme aktiv (D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs).
 - [ ] **MUSS** Freigaben werden nur einmalig oder sitzungsweise erteilt; keine projekt- oder globalen Freigaben.
 - [ ] **SOLL** Arbeitsstand sauber (kein offener Diff fremder Arbeit im Arbeitsbereich).
 - [ ] **KANN** Bei M3/M4: `.koolie/core/checklists/03-before-code-change.md` bereitgelegt.
