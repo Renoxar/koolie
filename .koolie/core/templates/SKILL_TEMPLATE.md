@@ -20,15 +20,19 @@ triggers:
 <!-- ==========================================================================================
      SKILL-TEMPLATE (Framework Core 08 – Skill-Standard) – AUSFÜLLHINWEISE
      - Dieser Kommentarblock und alle <...>-Platzhalter werden beim Ausfüllen ersetzt oder entfernt.
-     - Frontmatter: nur in der Clientdokumentation belegte Felder (name, description, argument-hint,
-       allowed-tools, permissions, triggers; optional model, subagent, agent) [DOK]. Der Verzeichnisname
-       ist der Aufrufname /<skill-name> [DOK]. Wirkung und Syntax von permissions im Skill:
+     - Frontmatter im Quellformat des Frameworks (name, description, argument-hint, allowed-tools,
+       permissions, triggers; optional model, subagent, agent – nur mit Begründung im Metadatenblock).
+       install.py bildet es je Client Pack ab; die installierte Fassung enthält nur in der
+       Clientdokumentation belegte Felder [DOK] (08-skill-conventions.md Abschnitt 3, D-388).
+     - Der Verzeichnisname ist der Aufrufname /<skill-name> [DOK]; Präfix und Schreibweise des Namens:
+       Abschnitt 2 des Skill-Standards. Wirkung und Syntax von permissions im Skill:
        Zeile S3 der Fähigkeitsmatrix des jeweiligen Client Packs.
      - Metadaten des Frameworks (ID, Version, Status, Owner) stehen in der Tabelle unten (D-08).
      - Die Statuszelle ist ein Ausfüllschlitz: Ein neuer Skill beginnt auf entwurf; der Lebenszyklus
        steht in Abschnitt 7 von .koolie/core/framework/core/08-skill-conventions.md (D-104).
      - SKILL.md ist normativ und wird bei jedem Aufruf geladen: knapp halten (Least Context).
-       Beispiele -> EXAMPLES.md, Testfälle -> TESTS.md, Änderungsverlauf -> CHANGELOG.md.
+       Erläuterungen und Beispiele -> EXAMPLES.md, Testfälle -> TESTS.md, Änderungsverlauf -> CHANGELOG.md.
+       Beispiele tragen „Beispiel (synthetisch)“ und nur Platzhalter oder offensichtlich fiktive Bezeichner.
      - Verbindlichkeit: MUSS / SOLL / KANN / DARF NICHT. Abschnitte ohne Kennzeichnung sind normativ;
        Orientierungstexte tragen den Zusatz "(Erläuterung)".
      - Projektneutral: Werte aus dem Overlay als Platzhalter (<TEST_COMMAND>, <ALLOWED_PATHS>, ...).
@@ -39,7 +43,7 @@ triggers:
 |---|---|
 | ID | `<FW-SK-NNN / PRJ-SK-NNN / RP-<PACK>-SK-NNN / TP-<PACK>-SK-NNN>` |
 | Name | `<skill-name>` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `<TBD: Status; ein neuer Skill beginnt auf entwurf>` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER / Modul-Owner / APPROVAL_ROLE>` |
 | Betriebsmodus | `<M1 Read-only Analysis / M2 Guided Planning / M3 Controlled Modification / M4 Test and Validation / M5 Documentation Support>` |

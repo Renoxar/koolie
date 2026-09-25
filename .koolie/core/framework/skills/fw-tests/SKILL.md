@@ -23,7 +23,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-006` |
 | Name | `fw-tests` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
@@ -91,7 +91,7 @@ triggers:
 - Einen durch Tests aufgedeckten Fehler beheben oder den Test daran anpassen.
 - Aufgaben der Delegationsverbotsliste (`.koolie/core/framework/core/09-risk-model.md` Abschnitt 4) bearbeiten.
 
-(Erläuterung) Eine Beschränkung der Schreibrechte auf `<TEST_PATHS>` unter Ausschluss aller übrigen Pfade ist über die Skill-`permissions` nicht ausdrückbar, weil `<TEST_PATHS>` eine Teilmenge von `<ALLOWED_PATHS>` ist und `deny` gegen `allow` gewinnt `[DOK]`. Die Regel gilt daher normativ; die technische Absicherung erfolgt über den `PreToolUse`-Hook mit Pfadprüfung (`<HOOKS_FILE>`; Hook-Mechanismus `[DOK]`, Pfadprüfung `[EMPF]`).
+(Erläuterung) Eine Beschränkung der Schreibrechte allein auf `<TEST_PATHS>` ist über die Skill-`permissions` nicht ausdrückbar, weil `<TEST_PATHS>` eine Teilmenge von `<ALLOWED_PATHS>` ist und `deny` gegen `allow` gewinnt `[DOK]`. Die Regel gilt daher normativ; technisch absichern ließe sie ein `PreToolUse`-Hook mit Pfadprüfung (`<HOOKS_FILE>`; Hook-Mechanismus `[DOK]`, Pfadprüfung `[EMPF]`) – der mitgelieferte Hook tut es nicht.
 
 **Rückfragenregeln (MUSS):**
 
