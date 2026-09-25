@@ -2,6 +2,85 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.6.0] - 2026-09-25
+
+**Best Practices im Overlay-Muster "General" - und das Register, das auf nichts zeigen
+durfte** (`CR-2026-139` E1 bis E10, **D-359** bis **D-361**, Pruefung 8 erweitert). Ein
+MINOR-Release ohne Kontingent, Auftrag des Owners vom 2026-09-25.
+
+> 🟢 **DAS MUSTER `general` LIEFERT SECHS DOKUMENTE ALLGEMEINER PRAKTIKEN.** Coding
+> Guidelines, Definition of Ready, Definition of Done, Qualitaet, Sicherheit, Branching
+> - **nur, was auf jedes Softwareprojekt passt:** keine Werkzeuge, keine Schwellenwerte,
+> keine Vorgaben zu Vorgehensmodell, Teamgroesse oder Plattform, und **keine
+> Wiederholung des Kerns**. Jedes Dokument sagt in einem eigenen Abschnitt, was der Kern
+> fuer KI-unterstuetzte Arbeit schon regelt, und verweist dorthin (D-359).
+>
+> 🔴 **SIE GEBEN NICHTS FREI.** `install.py --overlay general` legt sie an und ersetzt die
+> drei Beispiele der Manifestvorlage durch sechs Eintraege mit Status `entwurf`, Laden
+> `on-demand`, Freigabe als Ausfuellschlitz. Die K1-Liste der Laufzeitfassung bleibt
+> offen - **verbindlich werden die Dokumente erst durch den Overlay Owner** (D-360). Das
+> ist D-355 an einem Gegenstand, der beschreibt statt sperrt.
+>
+> 🔴 **GEGEN DEN KERN GEHALTEN, BEVOR GESCHRIEBEN WURDE: DIE PFADFINDERREGEL
+> WIDERSPRICHT Q1 UND RV1.** *"Code sauberer hinterlassen, als man ihn vorfand"* ist eine
+> der verbreitetsten Clean-Code-Regeln und bricht hier die Scope-Treue. Sie steht nur
+> eingeschraenkt im Dokument: Maengel ausserhalb der Aufgabe benennen, nicht nebenbei
+> beheben.
+>
+> 🔴 **NEBENBEFUND: PRUEFUNG 8 PRUEFTE NICHT, OB EIN REGISTRIERTES DOKUMENT EXISTIERT.**
+> Schluessel, Pflichtfelder und Aufzaehlungswerte ja, `path` nicht - ein Register, das
+> auf nichts zeigt, bestand. Und Pruefung 8 hatte keine einzige Sonde. Seit diesem
+> Release prueft sie `path` und, bei `load: rule`, `rule_file`; beide Projekte bleiben
+> still.
+
+**Hinzugefuegt**
+
+- `framework/overlay-patterns/general/documents/<typ>/muster-general.md` fuer
+  `coding-guidelines`, `definition-of-ready`, `definition-of-done`, `quality`,
+  `security`, `branching-strategy`: je ein Vorschlagsvermerk im Kopf, ein Abschnitt
+  *"Verhaeltnis zum Framework"* und ein Ausfuellschlitz fuer projektspezifische
+  Ergaenzungen. Kein eigener Steckbrief - Modultraeger ist das Muster.
+- `install.py`: `muster_dokumente()` liest die Ablage und haelt ihre Typen gegen die
+  Tabelle *"Die Dokumente"* der Musterdatei und gegen die Dokumentablage der
+  Overlay-Vorlage; jedes Dokument braucht Ueberschrift und Vorschlagsvermerk, sonst
+  Abbruch vor dem ersten Schreibvorgang. `muster_manifest()` ersetzt die Beispiele der
+  Manifestvorlage. Die Dokumente entstehen nur bei der Erstinstallation; der
+  Aenderungsverlauf des Overlays und der Abschlusshinweis nennen sie.
+- Sonden **8a**, **8b** und Gegenprobe **8a** - die ersten zu Pruefung 8. Im Buendel
+  `sonden_overlay_muster` die Sonden **M359** bis **M359b** und die Gegenprobe **M359c**.
+
+**Geaendert**
+
+- `framework/overlay-patterns/general.md` auf `0.2.0`: Abschnitt *"Die Dokumente"* mit
+  der Grenze, einer Tabelle je Typ (was drin ist, was bewusst fehlt) und dem Weg ins
+  Projekt. 🔴 **Die Tabelle wird gelesen, und beim ersten Entwurf haette die
+  Feldtabelle darunter mitgelesen** (`status`, `load` als Typen) - dieselbe Falle wie
+  beim Waechter von `1.5.0`. Der Abschnitt endet jetzt an jeder Ueberschrift.
+- **Pruefung 8**: `path` muss existieren, bei `load: rule` auch `rule_file`, ausser der
+  Pfad traegt einen Ausfuellschlitz (D-360). Die Sondenmenge im Register und im
+  Testkatalog nennt Pruefung 8.
+- `docs/ADOPTION_GUIDE.md` (`0.4.8`): die Dokumente an der Erstinstallation und die
+  Uebernahme von Hand in ein bestehendes Projekt; `README.md` dito.
+- `docs/ROADMAP.md`: der Installer je Zielsystem rueckt auf **`1.7.0`** (D-361) - die
+  dritte Verschiebung nach D-339 und D-341, benannt.
+
+**Migrationshinweise fuer Overlays**
+
+- 🔴 **Pruefung 8 meldet jetzt einen Manifesteintrag, dessen `path` nicht existiert**,
+  und bei `load: rule` eine fehlende `rule_file`. Eintraege, deren Pfad noch einen
+  Ausfuellschlitz traegt (die Beispiele der Vorlage), bleiben still. Abhilfe: den Pfad
+  berichtigen, das Dokument ablegen oder den Eintrag entfernen.
+- Die Musterdokumente wirken nur bei einer Erstinstallation mit `--overlay general`; ein
+  bestehendes Projekt uebernimmt einzelne Dokumente von Hand (`ADOPTION_GUIDE.md`
+  Abschnitt 3).
+
+**Bekannte Einschraenkungen**
+
+- Ob ein Satz eines Musterdokuments wirklich auf *jedes* Projekt passt, prueft keine
+  Maschine. Die Grenze ist eine Redaktionsregel mit Begruendung je Dokument.
+- Bis der Overlay Owner sie freigibt, haben die Musterdokumente keine Wirkung auf den
+  Client.
+
 ## [1.5.0] - 2026-09-25
 
 **Das Overlay-Muster "General Development" - und die Pruefung, die von fuenf

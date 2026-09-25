@@ -824,6 +824,23 @@ MUSTER_QUELLE_RECHTE = "framework/runtime/permissions.json"
 MUSTER_QUELLE_LAUFZEIT = "framework/runtime/rules/20-project-overlay.md"
 MUSTER_QUELLE_OVERLAY = "templates/project-overlay/OVERLAY.md"
 MUSTER_WERTEABSCHNITT = "Die Werte"
+# DER ZWEITE GEGENSTAND: DOKUMENTE (CR-2026-139, D-359, D-360). Ein Muster darf neben
+# den Werten Dokumente mitliefern - allgemeine Praktiken, die auf jedes Projekt passen.
+# Sie liegen unter <muster>/documents/<typ>/, werden bei der Erstinstallation nach
+# .koolie/project-overlay/documents/<typ>/ geschrieben und im Manifest registriert:
+# K1, Status entwurf, Laden on-demand. Sie geben nichts frei - die Liste der
+# freigegebenen K1-Dokumente in der Laufzeitfassung bleibt ein Ausfuellschlitz, bis
+# der Overlay Owner sie fuellt.
+#
+# EIN REGISTER, NICHT ZWEI. Welche Dokumente es gibt, sagt die Ablage; die Tabelle im
+# Abschnitt "Die Dokumente" der Musterdatei beschreibt sie, und install.py haelt beide
+# gegeneinander. Ein Typ ist gueltig, wenn die Dokumentablage der Overlay-Vorlage ein
+# Verzeichnis dieses Namens fuehrt - dieselbe Ablage, in die geschrieben wird.
+MUSTER_DOKUMENTABSCHNITT = "Die Dokumente"
+MUSTER_DOKUMENTVERMERK = "Muster – vom Overlay Owner zu prüfen und anzupassen."
+MUSTER_QUELLE_MANIFEST = "templates/project-overlay/overlay-manifest.yaml"
+MUSTER_DOKUMENTZIEL = ".koolie/project-overlay/documents"
+MUSTER_TYPABLAGE = os.path.join(HERE, "templates", "project-overlay", "documents")
 
 
 class MusterFehler(Exception):
@@ -883,7 +900,97 @@ def muster_laden(name: str) -> dict:
     if not werte or not version:
         raise MusterFehler(f"Das Muster '{name}' traegt keine Version oder keine Werte "
                            f"(Abschnitt '## {MUSTER_WERTEABSCHNITT}')")
-    return {"name": name, "version": version, "werte": werte}
+    return {"name": name, "version": version, "werte": werte,
+            "dokumente": muster_dokumente(name)}
+
+
+def muster_dokumente(name: str) -> list[dict]:
+    """Die Dokumente eines Musters, gegen die Beschreibung in seiner Musterdatei gehalten.
+
+    Jedes Dokument liegt unter <muster>/documents/<typ>/<datei>.md, traegt als erste
+    Zeile eine Ueberschrift der Ebene 1 (sie wird der Titel im Manifest) und den
+    Vorschlagsvermerk. Die Tabelle im Abschnitt "Die Dokumente" nennt in ihrer ersten
+    Spalte genau die Typen, fuer die ein Dokument da ist - nicht mehr und nicht weniger.
+    Jede Abweichung bricht ab, bevor die erste Datei geschrieben ist.
+    """
+    ablage = os.path.join(MUSTER_ABLAGE, name, "documents")
+    beschrieben: set[str] = set()
+    abschnitt = ""
+    for zeile in read_text(os.path.join(MUSTER_ABLAGE, name + ".md")).split("\n"):
+        # Jede Ueberschrift beendet den Abschnitt, auch eine der Ebene 3: Darunter steht
+        # eine Feldtabelle (`status`, `load`), deren erste Spalte sonst als Typ gelaese.
+        if zeile.startswith("#"):
+            abschnitt = zeile.lstrip("#").strip()
+            continue
+        if abschnitt != MUSTER_DOKUMENTABSCHNITT:
+            continue
+        zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+        m = re.fullmatch(r"`([a-z][a-z-]*)`", zellen[0]) if zellen else None
+        if m:
+            beschrieben.add(m.group(1))
+    dokumente: list[dict] = []
+    if os.path.isdir(ablage):
+        for typ in sorted(os.listdir(ablage)):
+            verz = os.path.join(ablage, typ)
+            if not os.path.isdir(verz):
+                continue
+            if not os.path.isdir(os.path.join(MUSTER_TYPABLAGE, typ)):
+                raise MusterFehler(f"Das Muster '{name}' liefert ein Dokument vom Typ "
+                                   f"'{typ}', den die Dokumentablage der Overlay-Vorlage "
+                                   f"nicht kennt")
+            for fn in sorted(os.listdir(verz)):
+                if not fn.endswith(".md"):
+                    continue
+                text = read_text(os.path.join(verz, fn))
+                kopf = text.split("\n", 1)[0].strip()
+                if not kopf.startswith("# ") or MUSTER_DOKUMENTVERMERK not in text:
+                    raise MusterFehler(f"Das Muster '{name}': {typ}/{fn} traegt keine "
+                                       f"Ueberschrift der Ebene 1 in der ersten Zeile oder "
+                                       f"nicht den Vermerk '{MUSTER_DOKUMENTVERMERK}'")
+                dokumente.append({"typ": typ, "datei": fn, "titel": kopf[2:].strip(),
+                                  "quelle": os.path.join(verz, fn)})
+    geliefert = {d["typ"] for d in dokumente}
+    if geliefert != beschrieben:
+        raise MusterFehler(
+            f"Das Muster '{name}': Ablage und Beschreibung stimmen nicht ueberein - "
+            f"nur abgelegt: {', '.join(sorted(geliefert - beschrieben)) or 'nichts'}; "
+            f"nur beschrieben: {', '.join(sorted(beschrieben - geliefert)) or 'nichts'} "
+            f"(Abschnitt '## {MUSTER_DOKUMENTABSCHNITT}')")
+    return dokumente
+
+
+def muster_manifest(text: str, muster: dict) -> str:
+    """Ersetzt die Beispieleintraege der Manifestvorlage durch die Dokumente des Musters.
+
+    Die Vorlage fuehrt unter `documents:` drei Beispiele mit Ausfuellschlitzen. Neben
+    echten Eintraegen waeren sie ein Register mit Eintraegen, die auf nichts zeigen;
+    sie werden deshalb ersetzt, nicht ergaenzt (D-360).
+    """
+    if not muster["dokumente"]:
+        return text
+    anker = "\ndocuments:\n"
+    if text.count(anker) != 1:
+        raise MusterFehler("overlay-manifest.yaml: der Schluessel 'documents:' steht nicht "
+                           "genau einmal am Zeilenanfang - die Eintraege des Musters haetten "
+                           "keinen Ort")
+    eintraege = []
+    for nr, dok in enumerate(muster["dokumente"], start=1):
+        titel = dok["titel"].replace('"', "'")
+        eintraege.append(
+            f'  - id: "DOC-{nr:03d}"\n'
+            f'    type: "{dok["typ"]}"\n'
+            f'    title: "{titel}"\n'
+            f'    path: "{MUSTER_DOKUMENTZIEL}/{dok["typ"]}/{dok["datei"]}"\n'
+            f'    context_class: "K1"\n'
+            f'    status: "entwurf"\n'
+            f'    load: "on-demand"\n'
+            f'    approved_by: "<APPROVAL_ROLE>"\n'
+            f'    approved_on: "<TBD: Datum der Freigabe durch den Overlay Owner>"\n'
+            f'    sanitization: "nicht erforderlich"\n'
+            f'    notes: "Aus dem Overlay-Muster {muster["name"]} {muster["version"]} - vom '
+            f'Overlay Owner zu pruefen und anzupassen; erst nach Freigabe in der '
+            f'Laufzeitfassung als K1-Dokument fuehren"\n')
+    return text[:text.index(anker)] + anker + "\n".join(eintraege)
 
 
 def muster_berechtigungen(quelltext: str, muster: dict) -> str:
@@ -964,9 +1071,14 @@ def muster_overlay(text: str, muster: dict) -> str:
     if alt not in text:
         raise MusterFehler("OVERLAY.md: die Zeile 'Overlay angelegt' im Aenderungsverlauf "
                            "fehlt - der Vermerk des Musters haette keinen Ort")
+    dokumente = ""
+    if muster["dokumente"]:
+        dokumente = (f"; {len(muster['dokumente'])} Musterdokumente unter `documents/` im "
+                     f"Manifest registriert (Status `entwurf`, erst nach Prüfung und "
+                     f"Freigabe durch den Overlay Owner verbindlich)")
     return text.replace(alt, f"| Overlay angelegt aus dem Muster `{muster['name']}` "
                              f"`{muster['version']}` – vorbefüllt: "
-                             f"{', '.join(f'`{p}`' for p in muster['werte'])} |", 1)
+                             f"{', '.join(f'`{p}`' for p in muster['werte'])}{dokumente} |", 1)
 
 
 def render_mit_muster(src: str, man: dict, dst_rel: str, muster: dict | None) -> str:
@@ -980,7 +1092,17 @@ def render_mit_muster(src: str, man: dict, dst_rel: str, muster: dict | None) ->
         text = muster_laufzeitfassung(text, muster)
     if muster and kennung == MUSTER_QUELLE_OVERLAY:
         text = muster_overlay(text, muster)
+    if muster and kennung == MUSTER_QUELLE_MANIFEST:
+        text = muster_manifest(text, muster)
     return text
+
+
+def muster_dokumentziele(muster: dict | None) -> list[tuple[str, str]]:
+    """(Quelle absolut, Ziel relativ zum Projekt) fuer die Dokumente eines Musters."""
+    if not muster:
+        return []
+    return [(d["quelle"], f"{MUSTER_DOKUMENTZIEL}/{d['typ']}/{d['datei']}")
+            for d in muster["dokumente"]]
 
 
 def run(root: str, template: str, man: dict, mode: str, dry: bool,
@@ -1084,6 +1206,20 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool,
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 with open(dst, "w", encoding="utf-8", newline="\n") as fh:
                     fh.write(text)
+            rep.created.append(dst_rel)
+
+    # Die Dokumente eines Musters (D-359): nur bei der Erstinstallation, nie ueber
+    # ein vorhandenes Dokument, danach Eigentum des Projekts wie jede Saat.
+    if mode == "install":
+        for src, dst_rel in muster_dokumentziele(muster):
+            dst = os.path.join(root, *dst_rel.split("/"))
+            if os.path.exists(dst):
+                rep.kept.append(dst_rel)
+                continue
+            if not dry:
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                with open(dst, "w", encoding="utf-8", newline="\n") as fh:
+                    fh.write(read_text(src))
             rep.created.append(dst_rel)
 
     return rep
@@ -1378,7 +1514,8 @@ def main() -> int:
         except MusterFehler as exc:
             print(f"FEHLER: {exc}", file=sys.stderr)
             return 1
-        vorhanden = [dst_rel for _src, dst_rel in shared_files(man, "shared_seed")
+        vorhanden = [dst_rel for _src, dst_rel in
+                     shared_files(man, "shared_seed") + muster_dokumentziele(muster)
                      if os.path.exists(os.path.join(root, *dst_rel.split("/")))]
         if vorhanden:
             print(f"FEHLER: --overlay {args.overlay} fuellt die Saat bei der "
@@ -1488,6 +1625,12 @@ def main() -> int:
                   f"{', '.join(muster['werte'])} - in allen drei Traegern.")
             print("     Die Werte sind Vorschlaege: pruefen, anpassen, und eine Aenderung in")
             print(f"     OVERLAY.md, der Laufzeitfassung und {man['permissions_file']} nachziehen.")
+            if muster["dokumente"]:
+                print(f"     Dazu {len(muster['dokumente'])} Musterdokumente unter "
+                      f"{MUSTER_DOKUMENTZIEL}/, im Manifest mit")
+                print("     Status entwurf registriert. Sie wirken erst, wenn der Overlay Owner "
+                      "sie prueft,")
+                print("     freigibt und in der Laufzeitfassung als K1-Dokumente fuehrt.")
         print(f"  2. Werte in {man['permissions_file']} eintragen - die Kernregeln unter")
         print("     _core_rules_integrity nicht entfernen.")
         print("  3. .koolie/project-overlay/forbidden-terms.txt mit den realen Projekt- und")
