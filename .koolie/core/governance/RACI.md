@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-RACI` |
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -19,13 +19,13 @@
 | Skill deprecaten / zurückziehen | A | R | I | I | – | – | – | – | – | – | – |
 | Project Overlay erstellen und pflegen | C | – | A/R | C | – | C | C | C | C | – | I |
 | Overlay aktivieren (Projektübernahme, CL-10) | C | – | A/R | I | – | C | C | C | – | – | I |
-| K2-Kontextfreigabe (Einzel/Kategorie) | – | – | A/R | R | – | – | C | C (bei Personenbezug A) | – | – | – |
+| K2-Kontextfreigabe (Einzel/Kategorie) | – | – | A/R | R | – | – | C | C (bei Personenbezug A mitzeichnend) | – | – | – |
 | KI-Aufgabe durchführen (Preflight bis Ergebnisbericht) | – | – | – | A/R | – | – | – | – | C | C (im Onboarding) | – |
 | Freigabe Kontrollstufe hoch | – | – | A/R | R | – | C | C (bei R3/R10 A mitzeichnend) | C (bei R4) | – | – | I |
 | Review KI-generierter Änderungen | – | – | – | R (Selbstreview) | A/R | C (Stufe hoch) | C (Stufe hoch) | – | – | – | – |
 | Merge / Release der Projektsoftware | – | – | C | R | C | C | C | – | C | – | A |
 | Neue Abhängigkeit einführen (CL-07) | – | – | A | R | C | C | C | – | – | – | I |
-| Sicherheits-/Datenschutzvorfall mit KI-Bezug behandeln | I | – | C | R (Meldung) | – | – | A/R | A/R (bei Personenbezug) | – | – | I |
+| Sicherheits-/Datenschutzvorfall mit KI-Bezug behandeln | I | – | C | R (Meldung) | – | – | A/R | A/R (bei Personenbezug A mitzeichnend) | – | – | I |
 | Lessons Learned und Feedback auswerten | A/R | R | C | C | C | – | C | – | – | C | I |
 | Ausnahme genehmigen (EXCEPTION_PROCESS) | A (Core) | C | A (Overlay) | R (Antrag) | – | C | C | C | – | – | I |
 | Onboarding durchführen und freigeben | C | – | I | R (Lernende) | – | – | – | – | – | A/R | I |

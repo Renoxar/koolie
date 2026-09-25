@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.4.0` |
+| Version | `0.4.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.10.0 (2026-09-25)
+## Stand nach Release 1.11.0 (2026-09-25)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -22,7 +22,7 @@ validiert und übertragbar".* Fünf Kriterien, alle im Einflussbereich des Frame
 Pilot, Onboarding und organisatorische Freigabe sind **ausdrücklich keine** Vorbedingung,
 sondern Aufgabe der aufnehmenden Organisation.
 
-**Gezählt von Prüfung 46: Kriterium 1 = 0, Kriterium 2 = 0, Kriterium 3 = 0, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 0, Kriterium 2 = 1, Kriterium 3 = 0, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -111,9 +111,12 @@ die Störung.**
 | ~~**1.9.1**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, ERSTER BEREICH – UND DIE GRENZE OHNE SONDE** (`CR-2026-143`, **D-381** bis **D-384**, `K-124` und `K-126` beantwortet, `K-130` bis `K-137` neu). Die Core-Module und die Laufzeitschicht durchgesehen: Regel mit Verweis statt Herleitung, einzelne sachliche Berichtigungen, kein Regelinhalt geändert (D-381); keine Laufzeitdatei länger, und die Zeichengrenze der Prüfung 4 hat erstmals Sonden je Pack. Die Modi heißen im Kern nach der Sache, nicht nach einem Client (D-382); die `.gitignore` des Quellrepositoriums schließt die Erzeugnisse aller drei Packs aus, abgeleitet aus den Manifesten (D-383) | – | nein |
 | ~~**1.9.2**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, ZWEITER BEREICH – UND DAS BUDGET STATT DER GRENZE** (`CR-2026-144`, **D-385** bis **D-392**, `K-128` und `K-130` bis `K-135` beantwortet, `K-138` bis `K-145` neu). `governance/` ohne die Register, `checklists/`, `decision-trees/` und `prompts/` durchgesehen, die Herleitungen in `RELEASE_PROCESS.md` und `FRAMEWORK_DEV_PROFILE.md` auf die Regel mit Verweis gekürzt, kein Regelinhalt geändert (D-385). Prüfung 4 macht die Summe des stets Geladenen verbindlich (40.000 Zeichen, jedes Pack) und die Grenze je Datei zur Warnung (D-387); D-10 schließt den Betrieb ohne beobachtende Person aus, nicht eine Oberfläche (D-386); sechs Befunde aus `1.9.1` in Core-Modulen und Laufzeit entschieden (D-388 bis D-392) | – | nein |
 | ~~**1.9.3**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, DRITTER BEREICH – UND DIE ANWEISUNG, DIE STEHEN BLEIBT** (`CR-2026-145`, **D-393** bis **D-394**, `K-146` bis `K-151` neu). Die Skills, die Vorlagen und die Vorlage des Client Packs durchgesehen; in einer `SKILL.md` keine Anweisung geändert, damit bleiben alle Ergebniszellen abgenommen (D-393, D-303). Zwei Skills in ihrer Erläuterung berichtigt, `SKILL_TEMPLATE.md` an `08-skill-conventions.md` angeglichen, Herleitung in `CLIENT_PACK.md` und `OVERLAY.md` auf den Verweis gekürzt. Vier abgenommene Zellen, deren Ergebnis ihre Erwartung nicht deckt, als `K-148`; ein Client Pack für Kiro als `K-147` vorgemerkt | – | nein |
-| ~~**1.10.0**~~ ✅ | *dieses Release:* 🟢 **DIE CODE- UND PACK-POSTEN DER DURCHSICHT – UND DER HOOK, DEM NACH JEDER HEBUNG NEU VERTRAUT WERDEN MUSS** (`CR-2026-146`, **D-395** bis **D-401**, `K-123`, `K-125`, `K-127`, `K-129`, `K-136`, `K-137`, `K-145` und `K-151` beantwortet, `K-152` neu). `install.py` nennt die Schritte, die das Manifest eines Packs führt – bei `openai-codex` das Vertrauen in Projekt und Schutz-Hook, nach jeder Hebung erneut (D-395); das Hauptdokument bettet alle drei Matrizen ein und die Berechtigungsdatei in ihrer Form (D-396); `--mermaid` ruft den Renderer wie der Bau auf (D-398); die Einzelbefunde der Packs und die Vorlage des Client Packs sind nachgezogen (D-397, D-399); das Onboarding braucht drei Präparationen (D-400); Kiro für `1.12.0` eingeplant, aus der Dokumentation (D-401) | – | nein |
-| **1.11.0** | **Der Mehrprojektfall und die Befunde der Durchsicht von `1.9.2`**: `K-138` je Pack messen (Startort der Sitzung, verschachtelte Installation) und die Einsatzszenarien in den Übernahmeleitfaden; `K-139` bis `K-143` entscheiden (Prompts, Checklisten und Entscheidungsbäume gegen ihre Module); `K-144` die Token-Last mit und ohne Framework messen – gesenkt wird sie nur ohne Lockerung; aus der Durchsicht von `1.9.3` `K-148` (vier abgenommene Zellen), `K-149` (Skills gegen Module und Fähigkeitsmatrix), `K-150` (Register der Skills) und `K-146` (D-303 durch eine Prüfung stützen). Nach `1.10.0` | – | nein |
-| **1.12.0** | **Client Pack für Kiro aus der Dokumentation** (D-401, `K-147`): Erhebung aus der Produktdokumentation, jede Matrixzeile mit `[DOK]` und Quellenkennung, Pack auf `entwurf`, **nicht für den produktiven Einsatz freigegeben bis zur Abnahme**; die Abnahme mit einem Zugang folgt als eigenes Release. Nach `1.11.0` | – | nein |
+| ~~**1.10.0**~~ ✅ | 🟢 **DIE CODE- UND PACK-POSTEN DER DURCHSICHT – UND DER HOOK, DEM NACH JEDER HEBUNG NEU VERTRAUT WERDEN MUSS** (`CR-2026-146`, **D-395** bis **D-401**, `K-123`, `K-125`, `K-127`, `K-129`, `K-136`, `K-137`, `K-145` und `K-151` beantwortet, `K-152` neu). `install.py` nennt die Schritte, die das Manifest eines Packs führt – bei `openai-codex` das Vertrauen in Projekt und Schutz-Hook, nach jeder Hebung erneut (D-395); das Hauptdokument bettet alle drei Matrizen ein und die Berechtigungsdatei in ihrer Form (D-396); `--mermaid` ruft den Renderer wie der Bau auf (D-398); die Einzelbefunde der Packs und die Vorlage des Client Packs sind nachgezogen (D-397, D-399); das Onboarding braucht drei Präparationen (D-400); Kiro für `1.12.0` eingeplant, aus der Dokumentation (D-401) | – | nein |
+| ~~**1.11.0**~~ ✅ | *dieses Release:* 🟢 **DIE REGEL- UND REGISTERPOSTEN DER DURCHSICHT – UND DIE ZELLEN, DIE IHRE ERWARTUNG NICHT DECKTEN** (`CR-2026-147`, **D-402** bis **D-406**, **Prüfung 95** neu, `K-139` bis `K-143`, `K-146`, `K-148` bis `K-150` beantwortet, `K-153` bis `K-155` neu). Prompts, Checklisten, Entscheidungsbäume und Governance-Dokumente folgen ihrem Core-Modul, in beiden Richtungen (D-402); Prüfung 95 verlangt im Änderungsverlauf eines Skills die Art der Änderung (D-403); von vier abgenommenen Zellen trägt eine im Nachlauf, eine bleibt `offen` – **Kriterium 2 steht auf 1** –, eine ist berichtigt, bei einer war es die Präparation (D-404); die Register der Skills sind berichtigt (D-405); der Mehrprojektfall und die Token-Last sind abgespalten, `K-153` für `1.14.0` eingeplant (D-406) | – | nein |
+| **1.12.0** | **Der Mehrprojektfall und die Token-Last – gemessen** (D-406): `K-138` je Pack messen (Startort der Sitzung, verschachtelte Installation) und die Einsatzszenarien in den Übernahmeleitfaden; vorher `K-154`, den Meßapparat nach der Umbenennung instand setzen; `K-144` die Token-Last mit und ohne Framework messen – gesenkt wird sie nur ohne Lockerung – und daraus der **Kostenabschnitt für Entscheider**. Mit Kontingent. Nach `1.11.0` | – | nein |
+| **1.13.0** | **Client Pack für Kiro aus der Dokumentation** (D-401, D-406, `K-147`): Erhebung aus der Produktdokumentation, jede Matrixzeile mit `[DOK]` und Quellenkennung, Pack auf `entwurf`, **nicht für den produktiven Einsatz freigegeben bis zur Abnahme**; die Abnahme mit einem Zugang folgt als eigenes Release. Nach `1.12.0` | – | nein |
+| **1.14.0** | **Die Anweisungen der Skills gegen ihre Module** (D-406, `K-153`): `fw-change-small` (Kontakt bei R4), `fw-refactor` (Plan oder Freigabe bei Stufe hoch), `fw-error-analyze` (K2 nur mit Freigabe), `fw-plan` (Planablage gegen Zeile M4), `fw-code-explain` (Anhalten bei einer gekennzeichneten K3-Fixture, Zelle `SK-002-N03` offen); dazu die Prompts `02` bis `05`. Jede Anweisungsänderung öffnet ein Testblatt (D-303) – mit Nachlauf und Kontingent. Nach `1.13.0` | – | nein |
+| **1.15.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`): Releases auf dem öffentlichen GitHub-Spiegel mit denselben Anhängen, Durchsicht der Historie, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.14.0` | – | nein |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -154,14 +157,21 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
-### Geplant: Der Mehrprojektfall und die Befunde der Durchsicht – Ziel-Release **1.11.0**
+### Geplant: Der Mehrprojektfall und die Token-Last – Ziel-Release **1.12.0**
 
-Gegenstand sind `K-138` (je Pack messen: Startort der Sitzung, verschachtelte Installation; die
-Einsatzszenarien in den Übernahmeleitfaden), `K-139` bis `K-143` (Prompts, Checklisten und
-Entscheidungsbäume gegen ihre Module), `K-144` (die Token-Last mit und ohne Framework messen – gesenkt
-wird sie nur ohne Lockerung) und aus der Durchsicht von `1.9.3` `K-146` und `K-148` bis `K-150`.
-🔴 **`K-148` betrifft die Tragfähigkeit von vier abgenommenen Zellen:** Trägt ein Ergebnis nicht, wird
-die Zelle `offen`, und Kriterium 2 steigt.
+Abgespalten aus dem Posten `1.11.0` (D-406). **Zuerst `K-154`:** Der Meßapparat ist seit der Umbenennung an drei Stellen gebrochen – `validate-output.py` findet den Kern nicht –, und `1.12.0` misst mit ihm. Gegenstand sind danach `K-138` (je Pack messen: Startort der
+Sitzung, verschachtelte Installation; danach die Startort-Bedingung in die Matrizen, die
+Overlay-Vorlage berichtigen, die Einsatzszenarien in den Übernahmeleitfaden) und `K-144` (die
+Token-Last mit und ohne Framework je Pack messen – Eingabe, Cache und Ausgabe getrennt –, gesenkt wird
+sie nur ohne Lockerung; aus den Messwerten der **Kostenabschnitt für Entscheider** im Hauptdokument
+und im Übernahmeleitfaden). Beide brauchen Sitzungen je Pack im Übungsrepositorium, also Kontingent.
+
+### Erledigt mit `1.11.0`: Regel- und Registerposten der Durchsicht
+
+> 🟢 **Gefahren mit `1.11.0`** (`CR-2026-147`, D-402 bis D-406). `K-139` bis `K-143` und `K-149`:
+> Prüfhilfen folgen ihrem Core-Modul, in beiden Richtungen (D-402); `K-146`: Prüfung 95 (D-403);
+> `K-148`: `SK-005-P02` im Nachlauf bestanden, **`SK-002-N03` bleibt `offen`** (Kriterium 2 = 1), eine Zelle und eine Präparation berichtigt (D-404); `K-150`:
+> Register der Skills (D-405). Was nur in einer Anweisung eines Skills lösbar ist, steht in `K-153`.
 
 ### Erledigt mit `1.10.0`: Code- und Pack-Posten der Durchsicht
 
@@ -199,15 +209,31 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > Vorlagen und die Vorlage des Client Packs; zwei Skills in ihrer Erläuterung berichtigt, keine Anweisung
 > geändert. Die Befunde als Klärungspunkte (`K-148` bis `K-151`).
 
+### Geplant: Die Anweisungen der Skills gegen ihre Module – Ziel-Release **1.14.0**
+
+Auftrag des Owners vom 2026-09-25 während `1.11.0`: `K-153` nach dem Client Pack für Kiro (D-406). Gegenstand sind
+vier Anweisungen, die `1.11.0` nicht ändern durfte, weil jede ein Testblatt öffnet (D-303): der Kontakt bei R4 in
+`fw-change-small`, Plan oder Freigabe bei Stufe hoch in `fw-refactor`, K2 ohne Freigabe in `fw-error-analyze`
+und die feste Planablage in `fw-plan`; dazu die Prompts `02` bis `05`. Vor dem Bau zu klären: welche Zellen
+die Änderung öffnet und was der Nachlauf kostet.
+
+### Geplant: Veröffentlichung und Installation über Paketquellen – Ziel-Release **1.15.0**
+
+Idee und Auftrag des Owners vom 2026-09-26 (`K-155`, `CR-2026-147` E9). Gitea bleibt führend; ein öffentliches
+GitHub-Repositorium spiegelt es, beim Push statt alle 24 Stunden. Die Spiegelung trägt Branches und Marken,
+nicht die Releases – das GitHub-Release entsteht in Schritt 7 mit denselben Anhängen. Zuerst die Historie auf
+Veröffentlichbares durchsehen, dann die Paketquellen, naheliegend zuerst PyPI (`pipx`), weil der Installer
+Python ist; dazu Absicherung der Lieferkette und der Hinweis in README und Übernahmeleitfaden.
+
 ### Vorgemerkt ohne Ziel-Release: Übungs- und Meßrepositorium trennen (`K-152`)
 
 Das Übungsrepositorium dient dem Onboarding und den Sitzungstests des Frameworks; ein Projekt braucht
 nur das erste (D-400). Getrennt wird, sobald ein zweites Projekt ein Übungsrepositorium aufbaut.
 
-### Geplant: Client Pack für Kiro aus der Dokumentation – Ziel-Release **1.12.0**
+### Geplant: Client Pack für Kiro aus der Dokumentation – Ziel-Release **1.13.0**
 
 Auftrag des Owners vom 2026-09-25 (D-394), eingeplant nach den MINOR-Releases `1.10.0` und `1.11.0`
-(D-401). **Gebaut wird aus der Dokumentation, weil ein Zugang zum Client fehlt:** Jede Zeile der
+(D-401) und mit der Abspaltung des Messrelease `1.12.0` eine Nummer weiter gerückt (D-406). **Gebaut wird aus der Dokumentation, weil ein Zugang zum Client fehlt:** Jede Zeile der
 Fähigkeitsmatrix trägt den Beleg `[DOK]` mit Quellenkennung, das Pack steht auf `entwurf` und ist **bis
 zur Abnahme nicht für den produktiven Einsatz freigegeben** – ein Schutz-Hook kann nach seiner
 Dokumentation laufen und gemessen nichts verhindern (D-347). Die Abnahme mit einem Zugang ist ein

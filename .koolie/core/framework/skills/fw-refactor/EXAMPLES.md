@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen-, Methoden- und Test
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Refactoring-Protokoll – fw-refactor v0.1.1
+## Refactoring-Protokoll – fw-refactor v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Bereich: src/ordering/domain/OrderValidator.ext · Ziel: doppelte Pflichtfeldprüfung (Zeile 22–35 und 44–49) in eine private Hilfsmethode zusammenführen · Unverändert bleiben: Signatur validate(Order), Fehlertexte, Reihenfolge der Prüfungen, Verwender

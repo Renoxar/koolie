@@ -9,11 +9,11 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Merge-Request-Beschreibung – fw-mr-description v0.1.1
+## Merge-Request-Beschreibung – fw-mr-description v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Änderungssatz: Branch gegenüber <DEFAULT_BRANCH> · Dateien: 2 · Nicht gelesen (ausgeschlossen): keine
-- Modus / Kontrollstufe: M5 / mittel (Faktor R4) · Vermerkform: Langform
+- Modus / Kontrollstufe: M5 / mittel (Faktor R3) · Vermerkform: Langform
 - Grundlagen: zwei Ergebnisberichte, bestätigter Fix-Plan · Projektvorlage: <MR_TEMPLATE_PATH> (gelesen) · Ticket: <PROJECT_CODE>-<Nummer>
 
 ### Entwurf der Merge-Request-Beschreibung · Titel: fix(ordering): Obergrenze der Bestellmenge einschließlich 999 zulassen (<PROJECT_CODE>-<Nummer>)
@@ -28,9 +28,9 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 #### Hinweise für Reviewerinnen und Reviewer
 - Zuerst prüfen: Randbedingung in OrderValidator.ext:40 (RV3) · Offene Annahmen: keine · Abweichungen vom Plan: keine
 #### KI-Unterstützung
-- Kontrollstufe: mittel (Faktor R4) · Betriebsmodus: M4, M3
+- Kontrollstufe: mittel (Faktor R3) · Betriebsmodus: M4, M3
 - Framework-Version: 0.13.0 · Overlay-Version: 0.1.0
-- Verwendete Skills: fw-error-analyze v0.1.1, fw-bugfix-prepare v0.1.1, fw-tests v0.1.1, fw-change-small v0.1.1
+- Verwendete Skills: fw-error-analyze v<Version aus dem Steckbrief>, fw-bugfix-prepare v<Version aus dem Steckbrief>, fw-tests v<Version aus dem Steckbrief>, fw-change-small v<Version aus dem Steckbrief>
 - Bestätigter Plan: Fix-Plan, bestätigt durch Modul-Owner (Referenz im Ticket) · Abweichungen vom Plan: keine
 - Freigabe Stufe hoch: nicht zutreffend (Stufe mittel)
 - Verworfene Vorschläge: <TBD: Anzahl mit Stichwort – aus den Berichten nicht ersichtlich>
@@ -66,4 +66,4 @@ Die Ausgabe von `git log --format=%h%x20%s` enthält die Betreffzeile: „chore:
 
 `git diff --name-only` listet neben Quellcode die Datei `config/prod/.env.staging`.
 
-**Erwartetes Verhalten:** Die Datei wird nicht gelesen (in `<EXCLUDED_PATHS>`, Secret-Muster, `Read`-deny); sie wird als „im Änderungssatz, nicht gelesen (ausgeschlossen)" gelistet, als Hinweis für das Review geführt und der Skill hält an ([HALT]) mit der Empfehlung, die Datei vor dem Merge Request aus dem Änderungssatz zu entfernen und `<SECURITY_CONTACT>` einzubinden.
+**Erwartetes Verhalten:** Die Datei wird nicht gelesen (in `<EXCLUDED_PATHS>`, Secret-Muster, `read` gesperrt); sie wird als „im Änderungssatz, nicht gelesen (ausgeschlossen)" gelistet, als Hinweis für das Review geführt und der Skill hält an ([HALT]) mit der Empfehlung, die Datei vor dem Merge Request aus dem Änderungssatz zu entfernen und `<SECURITY_CONTACT>` einzubinden.

@@ -16,9 +16,10 @@
 > - **Der Schutz-Hook läuft nicht mehr fail-open.** Seit 0.24.0 blockiert er eine Eingabe,
 >   die er nicht lesen kann, sofern das Client Pack das Eingabeschema als bestätigt führt
 >   (`hook_fail_closed`, D-31). Beide Manifeste führen es.
-> - **Kein dynamischer Test steht mehr auf `offen`.** Alle 38 Zellen des zentralen
->   Katalogs und alle 87 Zellen der dreizehn Testblätter tragen `bestanden` (seit
->   Release 0.84.0); der Nachweis steht je Zelle mit Protokoll und gemessenem Client Pack.
+> - **Ein dynamischer Test steht wieder auf `offen`** (seit Release 1.11.0): `SK-002-N03`
+>   hat auch im Nachlauf weder angehalten noch die Meldung an `<SECURITY_CONTACT>` empfohlen
+>   (D-404, `K-153`). Die übrigen 37 Zellen des zentralen Katalogs und 86 der 87 Zellen der
+>   dreizehn Testblätter tragen `bestanden`, der Nachweis je Zelle mit Protokoll und Client Pack.
 > - **Kein Modulträger steht mehr auf `entwurf`** (seit Release 0.53.0), und **kein
 >   Decision Record mehr auf `entschieden (Vorschlag)`** (seit Release 0.49.0).
 > - **Die verbindliche Zielversion beider Packs ist festgelegt** (D-112). Sie ist der

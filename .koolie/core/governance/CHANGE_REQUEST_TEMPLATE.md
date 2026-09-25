@@ -13,7 +13,7 @@
 | Antragstellende Rolle | `<generische Rolle, keine Person>` |
 | Datum | `<JJJJ-MM-TT>` |
 | Betroffene Artefakte | `<Pfade und Versionen>` |
-| Ebene laut Entscheidungsbaum 6 | `<Core / Overlay / Technology Pack / Role Pack / Skill / Ebene B-Verweis>` |
+| Ebene laut Entscheidungsbaum 6 | `<Core / Overlay / Core und Overlay getrennt / Technology Pack / Role Pack / Ebene B-Verweis>` |
 | Art | `<neu / Änderung / Deprecation / Zurückziehung>` |
 | Dringlichkeit | `<regulär (Review-Zyklus) / Hotfix mit Begründung>` |
 

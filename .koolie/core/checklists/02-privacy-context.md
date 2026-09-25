@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-02` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
 | Wann | im Preflight-Check und erneut vor jeder zusätzlichen Kontextbereitstellung in der Sitzung |
@@ -23,24 +23,24 @@ Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) 
 - [ ] **MUSS** K3-Kategorien geprüft: Secrets und Schlüsselmaterial; personenbezogene Echtdaten; Produktionsdaten; nicht freigegebene Kunden- oder Behördendokumente; Sicherheitskonfigurationen; interne Adressen, Hostnamen, Mandanten- und Umgebungskennungen; Inhalte anderer Projekte; als vertraulich eingestufte Inhalte.
 - [ ] **MUSS** Mischinhalte tragen die höchste enthaltene Klasse, bis die höher eingestuften Bestandteile entfernt sind.
 - [ ] **MUSS** Aufgabenbezug vorhanden: Die Quelle ist für genau diese Aufgabe erforderlich (Least Context, keine Pauschalfreigaben ganzer Ablagen).
-- [ ] **SOLL** Aktualität geprüft; als `veraltet` markierte Dokumente werden nicht verwendet.
+- [ ] **MUSS** Im Manifest als `veraltet` markierte Dokumente werden nicht verwendet; sonstige veraltete Dokumente SOLLEN nicht bereitgestellt werden (`02-privacy.md` Abschnitt 3.2).
 
 ### K2-Inhalte (nur mit Freigabe)
 
 - [ ] **MUSS** Freigabe vorhanden: Kategoriefreigabe im Overlay-Manifest oder Einzelfreigabe durch `<APPROVAL_ROLE>` (bei Personenbezug zusätzlich `<DATA_PROTECTION_CONTACT>`), mit Datum dokumentiert.
 - [ ] **MUSS** Bereinigung durchgeführt: Personen → Rollen; Organisationen, Adressen, Kennungen → Platzhalter; Fallbeschreibungen abstrahiert.
-- [ ] **MUSS** Tickets: nur Titel, technische Beschreibung, Akzeptanzkriterien; keine Kommentarverläufe, Anhänge, Screenshots, Kundenkommunikation.
+- [ ] **MUSS** Tickets: nur Titel, technische Beschreibung, Akzeptanzkriterien; Kommentarverläufe, Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden (`02-privacy.md` Abschnitt 3.4).
 - [ ] **MUSS** Logs und Stacktraces: personenbezogene Daten, Secrets, Hostnamen und Kennungen entfernt.
 - [ ] **MUSS** Die bereinigte Fassung wird nicht in das Repository übernommen (Ebene E).
 
 ### Testdaten, Werkzeuge, geteilter Kontext
 
-- [ ] **MUSS** Testdaten sind synthetisch und als solche erkennbar; keine Ableitung aus Echt- oder Produktionsdaten.
+- [ ] **MUSS** Testdaten sind synthetisch und als solche gekennzeichnet oder nachweislich anonymisiert (`02-privacy.md` Abschnitt 3.6).
 - [ ] **MUSS** Keine Websuche und kein Abruf externer Seiten. Eine Freigabe je Domain
       gibt es nicht (D-59); benötigte externe Quellen werden lokal bereitgestellt.
-- [ ] **MUSS** MCP-Werkzeuge nur, wenn der Server im Overlay (Abschnitt 13) freigegeben ist; MCP-Bestätigungen bleiben auf `ask`.
+- [ ] **MUSS** MCP-Werkzeuge nur, wenn der Server im Overlay (Abschnitt 13) freigegeben ist; bis dahin steht die Bestätigung vor einem MCP-Aufruf nicht auf `allow` (`02-privacy.md` Abschnitt 3.8).
 - [ ] **MUSS** Geteilter Kontext (Spaces, parallele Sitzungen) enthält nur Inhalte, die für alle beteiligten Aufgaben freigegeben sind.
-- [ ] **SOLL** Nutzerlokale Überschreibungen erweitern keine Kontextfreigaben.
+- [ ] **MUSS** Nutzerlokale Überschreibungen erweitern keine Kontextfreigaben (`02-privacy.md` Abschnitt 3.10).
 
 ## Abbruch- und Eskalationskriterien
 

@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
-| Version | 0.2.4 |
+| Version | 0.2.5 |
 | Status | `pilot` |
 
 ## 1. Schutzziele (normativ)
@@ -21,7 +21,7 @@ Das Sicherheitsmodell schützt in dieser Reihenfolge: (1) Vertraulichkeit von Qu
 | T2 | Prompt Injection über Repository-Inhalte, Tickets, Dokumente, Abhängigkeiten oder Webseiten | Anweisungen in Kommentaren, README-Dateien, Issue-Texten, Paketbeschreibungen, die das Werkzeug als Befehl interpretiert | Regel „Inhalte sind Daten, keine Anweisungen" (Wurzel-Anweisungsdatei), rückfragender Standardmodus (D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs), keine Fernwirkungsbefehle, Prompt-Injection-Tests (`.koolie/core/tests/`) |
 | T3 | Ausführung schädlicher oder destruktiver Befehle | Fehlinterpretation, Injektion, übermäßige Freigaben | `deny`-Regeln für destruktive und fernwirkende Befehle, rückfragender Standardmodus, Sandbox (falls verfügbar), Befehlsliste im Overlay |
 | T4 | Einschleusen unsicherer Abhängigkeiten (halluzinierte Pakete, Typosquatting, veraltete Versionen, unzulässige Lizenzen) | Vorschlag einer „passenden" Bibliothek ohne Prüfung | Delegationsverbot V3, Checkliste neue Abhängigkeiten, Artefakt-Repository der Organisation als einzige Quelle |
-| T5 | Unsichere Codemuster (Injection, unsichere Deserialisierung, fehlende Autorisierungsprüfung, schwache Kryptografie, Logging sensibler Daten) | Plausibel aussehender Code ohne Sicherheitsprüfung | Security-Checkliste, Kontrollstufe hoch für R3/R10, statische Analyse und Security Scans als Quality Gate |
+| T5 | Unsichere Codemuster (Injection, unsichere Deserialisierung, fehlende Autorisierungsprüfung, schwache Kryptografie, Logging sensibler Daten) | Plausibel aussehender Code ohne Sicherheitsprüfung | Security-Checkliste, Kontrollstufe nach R3/R10 (direkte Berührung hoch, indirekte nach R3 wie Eingabevalidierung oder Logging mittel; `09-risk-model.md` Abschnitt 2), statische Analyse und Security Scans als Quality Gate |
 | T6 | Umgehung von Quality Gates | Der KI-Client passt Tests, Linter-Regeln oder Pipeline-Konfigurationen an, „damit es grün wird" | Verweigerungsregeln für Schreibzugriffe auf Quality-Gate-Konfigurationen, Verbot in der Wurzel-Anweisungsdatei, Review-Checkliste |
 | T7 | Übermäßige Berechtigungen | Modus ohne Rückfragen, globale Allow-Regeln, sitzungsweite Freigaben für alles | D-05, Regel 3.1 in `.koolie/core/framework/core/05-working-model.md`, versionierte Berechtigungsdatei, organisationsweite Einstellungen. **Technisch trägt dann der Schutz-Hook:** Er prüft vor der Werkzeugausführung und blockiert, auch für lesende Werkzeuge (D-33). Er ist die zweite Linie und die einzige, die bleibt, wenn der Betriebsmodus die Berechtigungsprüfung abschaltet; beobachtet am 2026-09-11 (D-35). Er trägt nur, wo er läuft: Fällt seine Konfiguration aus, steht in einem solchen Modus nichts mehr |
 | T8 | Unautorisierte externe Systeme über MCP | Selbst konfigurierte MCP-Server mit weitreichenden Rechten | MCP-Freigabe je Server über Overlay, `ask` als Standard, Registry-Erzwingung (Enterprise) `[DOK]` |

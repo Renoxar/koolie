@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-OC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.1.3 |
+| Version | 0.1.4 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | OpenAI Codex CLI |
@@ -109,7 +109,7 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 >
 > **Dort trägt die zweite Linie:** Im Betriebsmodus, der Rückfragen **und** Sandkasten abschaltet, hat der Schutz-Hook denselben Lesezugriff blockiert, den die Berechtigungsschicht durchließ – gemessen mit Gegenlauf, in einem Baum **ohne** Regeltexte. Erste und zweite Linie fallen unter verschiedenen Bedingungen; das ist die empirische Rechtfertigung des Hooks.
 
-Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei. Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
+Die mit **Kern** markierten Zeilen sind die Kernzusagen; die Berechtigungsdatei dieses Packs ist TOML und führt keinen Block `_core_rules_integrity` (D-395). Eine Abweichung von `[TECHNISCH]` ist begründungspflichtig.
 
 | ID | Zusage des Frameworks | Kern | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
@@ -147,6 +147,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 | M1 | Standardmodus fragt bei Schreiben und Befehlen zurück | `approval_policy = "on-request"`, Sandkasten `read-only` | `[TECHNISCH]` | **gemessen** (`codex doctor`): *approval OnRequest · restricted fs + restricted network*. ⚠️ **Der nicht-interaktive Lauf kennt keine Rückfrage** – dort wird abgewiesen statt gefragt; das ist eine Verschärfung und kein Messwert über den interaktiven Betrieb |
 | M2 | Modus ohne Rückfragen ausschließbar | **Eine Sperre des Modus ist nicht erhoben.** Der Modus selbst heißt `--dangerously-bypass-approvals-and-sandbox` und bezeichnet sich als gefährlich | `[TEXTUELL]` | **Was gemessen ist, ist die Wirkung der zweiten Linie:** In genau diesem Modus hat der Schutz-Hook den Zugriff blockiert, den die Berechtigungsschicht durchließ. ⚠️ **Die Sperre des Modus bleibt unerhoben** – eine Organisationsebene, die ihn ausschlösse, ist für diesen Client nicht gemessen |
 | M3 | Freigabe auf die Sitzung begrenzbar | Der Client kennt eine Freigabe „für die Sitzung" und eine über ein Befehlspräfix | `[TEXTUELL]` | **`BELEG OFFEN`** (2026-09-23): Die Stufen sind in der Bedienoberfläche des Clients benannt; **im nicht-interaktiven Betrieb ist keine davon messbar** – eine Rückfrage an einen Menschen lässt sich so nicht messen. Dieselbe Enthaltung wie bei `devin-desktop` für `ask` und `allow` (D-280) |
+| M4 | Eigener Planungsmodus für Modus M2 | **Unerhoben:** ob der Client einen Planungsmodus mit eigener Plan-Ablage außerhalb des Repositorys führt. Bis dahin ist die Ablage von `fw-plan` und `fw-bugfix-prepare` die Sitzungsausgabe | `[TEXTUELL]` | **`BELEG OFFEN`** (2026-09-25, `K-149`): nicht gemessen; eine Quellenliste gibt es für diesen Client nicht |
 | M6 | Modus mit selbsttätiger Übernahme von Dateiänderungen begrenzbar | Sandkastenmodus `workspace-write` – nach D-05 nur über dokumentierte Ausnahme bei Kontrollstufe niedrig zulässig | `[TEXTUELL]` | `[EMPF]` für die Beschränkung; **eine Abschaltung des Modus ist nicht erhoben**. ⚠️ **Und die projektlokale Schicht kann ihn setzen** (B9) – das ist der Unterschied zu beiden Schwesterpacks |
 | M7 | Modus, der selbst beurteilt, was sicher ist, begrenzbar | **Ein solcher Modus ist für diesen Client nicht erhoben** | `[TEXTUELL]` | **Ersatz, benannt:** Es gibt keinen – die Zusage hat hier keinen Gegenstand, solange kein selbst beurteilender Modus erhoben ist. Eine Zusage ohne Gegenstand ist keine erfüllte Zusage; sie steht hier, damit sie nicht als eine gelesen wird |
 
@@ -163,11 +164,11 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 
 | Klasse | Anzahl | davon Kernzusagen |
 |---|---|---|
-| `[TECHNISCH]` | **10 von 34** | 3 von 6 (B1, B2, B6) |
-| `[TEXTUELL]` | **15 von 34** | 1 von 6 (B4 – Shell und Unterprozess) |
-| `[NICHT ABBILDBAR]` | **9 von 34** | 2 von 6 (B3, B5) |
+| `[TECHNISCH]` | **10 von 35** | 3 von 6 (B1, B2, B6) |
+| `[TEXTUELL]` | **16 von 35** | 1 von 6 (B4 – Shell und Unterprozess) |
+| `[NICHT ABBILDBAR]` | **9 von 35** | 2 von 6 (B3, B5) |
 
-**Belegstand:** `BELEG OFFEN` sagen **S2**, **S3** und **M3**, dazu **X2** dauerhaft. Das ist der schwächste Belegstand der drei Packs, weil dieses Pack am Tag seines Baus entstanden ist: Die Zeilen, die eine reale Installation brauchen, sind gefahren (B2, B4, B6, H1 bis H3, R1, R5, S1, S5), die übrigen nicht. ⚠️ **Die Produktbeobachtung fehlt ganz** – `FW-AK-01` ist für diesen Client nicht gefahren, und es gibt keine Quellenliste.
+**Belegstand:** `BELEG OFFEN` sagen **S2**, **S3**, **M3** und **M4**, dazu **X2** dauerhaft. Das ist der schwächste Belegstand der drei Packs, weil dieses Pack am Tag seines Baus entstanden ist: Die Zeilen, die eine reale Installation brauchen, sind gefahren (B2, B4, B6, H1 bis H3, R1, R5, S1, S5), die übrigen nicht. ⚠️ **Die Produktbeobachtung fehlt ganz** – `FW-AK-01` ist für diesen Client nicht gefahren, und es gibt keine Quellenliste.
 
 ## 4. Kernzusagen ohne technische Durchsetzung
 
@@ -246,3 +247,4 @@ Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums betreffen g
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-23 | **Angelegt (`CR-2026-133`, D-346 bis D-349).** Das dritte Client Pack, und das erste, dessen Belege sämtlich aus Messungen am Client stammen statt aus seiner Dokumentation. **Zwei Kernzusagen sind `[NICHT ABBILDBAR]`** – `B3`, weil Musterform und Versionierbarkeit einander ausschließen und ein `deny`-Leserecht den erhöhten Windows-Sandkasten verlangt; `B5` aus demselben Grund und ohne Ersatz im Schutz-Hook. **Die Sperrform des Schutz-Hooks war bei diesem Client wirkungslos** und ist berichtigt; die Pfadmuster des Hooks kannten als Grenze nur den Schrägstrich und trafen den Patchtext des Schreibwerkzeugs nicht. **Drei neue Prüfungen** (86, 87, 88) | `<FRAMEWORK_OWNER>` |
+| 0.1.4 | 2026-09-25 | Der Satz über die mit **Kern** markierten Zeilen nennt, dass diese Berechtigungsdatei keinen Block `_core_rules_integrity` führt (`CR-2026-147`, D-402; seit D-395 verlangt ihn nur eine JSON-Datei). ⚠️ Die Fassungen `0.1.1` bis `0.1.3` haben hier keine Zeile; sie stehen im Änderungsverlauf des Frameworks zu `1.9.1` bis `1.10.0`. Zeile M4 (Planungsmodus) ergänzt, auf die `fw-plan` und `fw-bugfix-prepare` für die Planablage verweisen: `[TEXTUELL]`, `BELEG OFFEN`; Summen und Belegstand nachgezogen (K-149) | `<FRAMEWORK_OWNER>` |

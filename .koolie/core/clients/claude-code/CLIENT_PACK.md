@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.24.2 |
+| Version | 0.24.3 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -142,6 +142,7 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 | M1 | Standardmodus fragt bei Schreiben und Befehlen zurück | `permissions.defaultMode` auf `default` | `[TECHNISCH]` | `[DOK]` **`QC-5`** (Zuordnung `K-62`) – `defaultMode` steht dort als Schlüssel der Einstellungsdatei |
 | M2 | Modus ohne Rückfragen ausschließbar | Per D-05 untersagt **und** technisch sperrbar: `permissions.disableBypassPermissionsMode` auf `"disable"`, in verwalteten Einstellungen nicht überschreibbar, wirkt aber aus jeder Ebene. Zusätzlich wirken `bypassPermissions` und `auto` seit Clientversion 2.1.257 nicht mehr aus Projekt- oder nutzerlokalen Einstellungen. **Offen:** Ein Subagentenprofil kennt ein eigenes Feld `permissionMode`, das den Wert `bypassPermissions` annimmt; ob die Sperre auch dort greift, ist nicht dokumentiert (AP2-CC-12) | `[TECHNISCH]` (Sperre in verwalteten Einstellungen setzt eine Enterprise-Verwaltung voraus) | [DOK] **`QC-2`** `docs/en/permissions` (AP2, Clientversion 2.1.267, `tests/protocols/2026-09-10-AP2-claude-code.md`) |
 | M3 | Freigabe auf die Sitzung begrenzbar | Rückfragen bieten eine einmalige und eine sitzungsweite Bestätigung an | `[TECHNISCH]` | `[DOK]` – 🔴 **QUELLE NICHT ZUGEORDNET** (`K-62`, 2026-09-22): Keine der sechs Seiten der Quellenliste führt die **Sitzungs-Grant-Stufen**; beim Schwesterpack trägt sie `QD-11`. Eine Zuordnung wäre hier **geraten, und eine geratene sähe wie ein Beleg aus** (D-156). ➡️ **Damit hat der nächste Durchgang von `FW-AK-01` seinen ersten gezielten Auftrag:** eine Zeile gegen eine Seite statt 44 gegen 22 |
+| M4 | Eigener Planungsmodus für Modus M2 | **Unerhoben:** ob der Client einen Planungsmodus mit eigener Plan-Ablage außerhalb des Repositorys führt. Bis dahin ist die Ablage von `fw-plan` und `fw-bugfix-prepare` die Sitzungsausgabe | `[TEXTUELL]` | **`BELEG OFFEN`** (2026-09-25, `K-149`): weder gemessen noch einer Quelle `QC-1` bis `QC-6` zugeordnet |
 
 ### X – Externe Anbindung
 
@@ -156,10 +157,10 @@ Zwei Zusicherungen sichern auch diese Abbildung ab: Ein Ladetrigger ohne Eintrag
 
 | Klasse | Anzahl | davon Kernzusagen | Stand vor AP2 |
 |---|---|---|---|
-| `[TECHNISCH]` | 22 von 31 | 3 von 6 (B1, B2, B6) | 20 |
-| `[TEXTUELL]` | 7 von 31 (R5, R6, B9; dazu B3, B4, B5, B8 – je Kanal teils technisch) | 3 von 6 (B3, B4, B5 – Shell und Unterprozess) | 2 |
-| `[NICHT ABBILDBAR]` | **2 von 31** (S5, B10) | 0 | 4 |
-| ohne Einstufung | 0 von 31 | 0 | – |
+| `[TECHNISCH]` | 22 von 32 | 3 von 6 (B1, B2, B6) | 20 |
+| `[TEXTUELL]` | 8 von 32 (R5, R6, B9, M4; dazu B3, B4, B5, B8 – je Kanal teils technisch) | 3 von 6 (B3, B4, B5 – Shell und Unterprozess) | 2 |
+| `[NICHT ABBILDBAR]` | **2 von 32** (S5, B10) | 0 | 4 |
+| ohne Einstufung | 0 von 32 | 0 | – |
 
 Die Spalte „Stand vor AP2“ bezieht sich auf den kleineren Zeilensatz vor dem ersten Abgleich und wird nicht fortgeschrieben.
 
@@ -169,7 +170,7 @@ Die Spalte „Stand vor AP2“ bezieht sich auf den kleineren Zeilensatz vor dem
 
 Ein Vergleich mit dem Client Pack `devin-desktop` trägt nur eingeschränkt: Beide Packs führen verschiedene Zeilensätze, und ihre Belege sind auf verschiedenen Wegen gewonnen. Die Zahlen jenes Packs stehen in dessen Abschnitt 3.
 
-**Belegstand:** Keine Zeile sagt `BELEG OFFEN`; der frühere VERIFY-Marker auf R5 ist aufgelöst (D-158). Offen ist eine **Teilfrage** innerhalb von M2: ob die Sperre gegen den Modus ohne Rückfragen auch für das Feld `permissionMode` eines Subagentenprofils gilt (AP2-CC-12). Welche Zeilen in einer laufenden Sitzung gemessen oder beobachtet sind, sagt ihre Belegspalte (*„Gemessen am …“*, *„beobachtet am …“*) – darunter S2, S3, S4, A1, B2 (zwei der drei Vorrangpaare, D-134), B6 (D-123), B9, H2, H3 und H4. Für die übrigen Zeilen stehen die Wirkungsnachweise aus; sie sind gegen die Herstellerdokumentation und die erzeugten Artefakte belegt (`tests/protocols/2026-09-10-AP2-claude-code.md`, Abschnitt „Offen“).
+**Belegstand:** Eine Zeile sagt `BELEG OFFEN` – M4 (`K-149`); der frühere VERIFY-Marker auf R5 ist aufgelöst (D-158). Offen ist eine **Teilfrage** innerhalb von M2: ob die Sperre gegen den Modus ohne Rückfragen auch für das Feld `permissionMode` eines Subagentenprofils gilt (AP2-CC-12). Welche Zeilen in einer laufenden Sitzung gemessen oder beobachtet sind, sagt ihre Belegspalte (*„Gemessen am …“*, *„beobachtet am …“*) – darunter S2, S3, S4, A1, B2 (zwei der drei Vorrangpaare, D-134), B6 (D-123), B9, H2, H3 und H4. Für die übrigen Zeilen stehen die Wirkungsnachweise aus; sie sind gegen die Herstellerdokumentation und die erzeugten Artefakte belegt (`tests/protocols/2026-09-10-AP2-claude-code.md`, Abschnitt „Offen“).
 
 ## 4. Kernzusagen ohne technische Durchsetzung
 
@@ -311,6 +312,7 @@ Kanal keinen Ort, an dem seine Entscheidung ankommt**; es bleibt beim Benennen i
 | 0.22.0 | 2026-09-18 | **H3 ist gemessen – von `[DOK]` auf eine Messung mit benannter Grenze** (`CR-2026-091`, D-176). Die Statusmeldung des `SessionStart`-Hooks erreicht die Sitzung – ihre `additionalContext`-Zeichenkette steht wörtlich in der Mitschrift –, **und sie steuert**: Mit geschnittenem Regeltext blieb der Lauf mit Hook nur lesend und änderte ohne ihn eine Produktivzeile. Die Grenze steht in der Zeile: eine Verhaltensdifferenz, keine Zusage | `<FRAMEWORK_OWNER>` |
 | 0.23.0 | 2026-09-19 | 🔴 **Zeile S2 führte zwei Wege als einen, und für einen davon war sie falsch (`CR-2026-094`, D-187).** Der Aufruf mit Schrägstrich ist eine Slash-Befehls-Erweiterung ohne Werkzeugmeldung; die drei Grenzen gelten für den modellseitigen Aufruf, den die Erhebung vom 2026-09-14 gemessen hat. **Zeile S3 nennt seither, was in der Mitschrift steht** (D-188): `command_permissions` trägt genau die Werkzeuge aus `allowed-tools`, und zwei Läufe haben `Bash` aufgerufen, obwohl der Skill es sperrt (`K-73`) | `<FRAMEWORK_OWNER>` |
 | 0.24.0 | 2026-09-22 | 🟢 **Die Markerform ist abgeschafft; die Vorbemerkung nennt `BELEG OFFEN`** (`CR-2026-121`, D-291). 🔴 **Und der Belegstand dieses Packs war seit `0.62.0` falsch** (D-297): Er sagte *„Eine Zeile trägt einen VERIFY-Marker – R5"*, während **der Änderungsverlauf desselben Packs** die Auflösung dieses Markers seit Pack-Version `0.21.0` führt (D-158) und **keine Fundstelle die Form trug** – *die Zusage, deren Widerlegung im eigenen Dokument steht.* **Richtig ist: keine.** Zwei weitere Zahlen desselben Absatzes waren überholt: *„9 von 36"* für das Schwesterpack (richtig: 1) und der Satz, dort sei *„keine einzige Einstufung gegen eine Installation geprüft"* – seit `0.53.0` überholt, seit `0.86.0` grob falsch | `<FRAMEWORK_OWNER>` |
+| 0.24.3 | 2026-09-25 | Zeile M4 (Planungsmodus) ergänzt, auf die `fw-plan` und `fw-bugfix-prepare` für die Planablage verweisen: `[TEXTUELL]`, `BELEG OFFEN`; Summen und Belegstand nachgezogen (`CR-2026-147`, D-402, K-149) | `<FRAMEWORK_OWNER>` |
 | 0.14.0 | 2026-09-13 | **S3 ist zurückgewonnen – von `[NICHT ABBILDBAR]` auf `[TECHNISCH]` mit drei benannten Grenzen** (`CR-2026-057`, D-64 bis D-66). `disallowed-tools` ist **gemessen** eine echte Werkzeugsperre je Skill und schlägt sogar eine ausdrückliche `allow`-Regel; `permissions.deny` der Quelle wird darauf abgebildet, die Werkzeugnamen kommen aus `hook_tools`. Die drei Grenzen – Turnbereich, Aufzählung, keine Argumentmuster – stehen in der Zeile, im Arbeitsmodell und in der Grenzfalltabelle. **Ein Argumentmuster wirkt lautlos gar nicht**; Prüfung 33 weist es ab | `<FRAMEWORK_OWNER>` |
 | 0.15.0 | 2026-09-13 | **Der Unteragent ist erhoben – drei Zeilen bekommen Belege, und zwei davon standen acht Releases auf reiner Dokumentation (`CR-2026-058`, D-67 bis D-70).** **A1** ist gemessen: Ein Profil mit `tools: Read, Grep, Glob` hatte kein Schreibwerkzeug, und `permission_denials` blieb leer – es ist eine **Entfernung aus dem Werkzeugvorrat**, keine Verweigerung. Der Teilsatz zum Startabbruch bleibt ausdrücklich `[DOK]`. **S3** trägt jetzt seine **Reichweite**: Die Sperre gilt auch für einen Unteragenten, den der Skill startet – gemessen mit Kontrolllauf –, und Grenze 2 reicht mit: Mit gesperrtem `Write, Edit` schrieb der Unteragent über `Bash`. **H2** trägt die Reichweite des Hooks: Er erfasst und **blockiert** die Aufrufe eines Unteragenten, auch mit dem benannten Matcher, den `clientmap.py` erzeugt. Neu im Manifest: `agent_start_tools` – das Startwerkzeug stand in keiner Werkzeugliste, obwohl beide Schreibweisen (`Agent`, `Task`) in der Sperre wirken. **Zwei überholte Angaben im Belegstand berichtigt** (`CR-2026-058`, Befund 6) | `<FRAMEWORK_OWNER>` |
 | 0.16.0 | 2026-09-13 | **Die drei Lücken aus 0.36.0 sind geschlossen (`CR-2026-059`, D-72 und D-73).** **S3:** Die Sperre gilt auch für einen Unteragenten mit `run_in_background: true` und reicht **mindestens zwei Ebenen tief**; **bei Widerspruch gewinnt die restriktivere Liste** – ein Profil, das `Write` ausdrücklich nennt, bekam es unter einem sperrenden Skill nicht. Dazu eine **Beobachtung zum Wortlaut des Clients**, der seine eigene Reichweite überzeichnet („for this session", gemessen ist der Turn). **A1:** Ein Profil mit `tools`-Liste hat **kein Startwerkzeug** und kann sich nicht über eine zweite Ebene erweitern – ohne diesen Befund wäre die Zusage „rein lesend" aushebelbar; **Prüfung 35** hält fest, dass das so bleibt | `<FRAMEWORK_OWNER>` |

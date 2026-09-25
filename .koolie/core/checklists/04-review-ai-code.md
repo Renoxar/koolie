@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-04` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | Selbstreview vor jedem Commit mit KI-Beteiligung; unabhängiges Review im Merge Request |
@@ -46,8 +46,8 @@ Operationalisiert die Prüfpunkte RV1–RV12 aus `.koolie/core/framework/core/07
 ### Konsistenz
 
 - [ ] **MUSS** (RV11) Dokumentation, Kommentare und Commit-Nachricht sind konsistent mit der Änderung; Konventionen (`<PROJECT_RULES_PATH>`, `<COMMIT_CONVENTION>`) eingehalten.
-- [ ] **SOLL** Generierte Reste entfernt (ungenutzte Importe, tote Pfade, auskommentierter Code, Platzhalterkommentare) (Q6).
-- [ ] **SOLL** Review-Tiefe entspricht der Kontrollstufe (`.koolie/core/framework/core/07-review-rules.md` Abschnitt 3); bei Stufe mittel führt die Reviewerin oder der Reviewer die Tests selbst aus.
+- [ ] **MUSS** Generierte Reste entfernt (ungenutzte Importe, tote Pfade, auskommentierter Code, Platzhalterkommentare) (Q6, `.koolie/core/framework/core/04-quality.md` Abschnitt 2).
+- [ ] **MUSS** Review-Tiefe entspricht der Kontrollstufe (`.koolie/core/framework/core/07-review-rules.md` Abschnitt 3); ab Stufe mittel führt die Reviewerin oder der Reviewer die Tests selbst aus.
 
 ## Abbruch- und Eskalationskriterien
 

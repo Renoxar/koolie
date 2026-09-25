@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-09` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | während des Onboardings einer neuen Entwicklerin oder eines neuen Entwicklers; Abschluss vor der Freigabe zur selbstständigen Nutzung |
@@ -28,13 +28,15 @@ Führt durch das Onboarding-Programm (`.koolie/core/onboarding/GUIDE.md`) bis zu
 - [ ] **MUSS** Modul 1 – Möglichkeiten und Grenzen: Leitprinzipien P1–P10, Delegationsverbote V1–V12 erklärt bekommen und an Beispielen eingeordnet.
 - [ ] **MUSS** Modul 2 – Datenschutz und Kontextauswahl: Kontextklassen K0–K3 angewendet (Übung mit gemischten Quellen); Verhalten bei K3-Fund erklärt.
 - [ ] **MUSS** Modul 3 – Sichere Arbeitsweise: Standardarbeitsablauf, Betriebsmodi M1–M5, Kontrollstufen mit Maximumprinzip; Preflight-Check zweimal unter Anleitung durchgeführt.
-- [ ] **MUSS** Modul 4 – Framework-Struktur: Wurzel-Anweisungsdatei, Laufzeitschicht, Overlay, Packs, Prioritätshierarchie am Repository gezeigt.
-- [ ] **MUSS** Modul 5 – Skills und Prompting: mindestens `fw-repo-analyze`, `fw-code-explain`, `fw-plan`, `fw-change-small`, `fw-tests` ausgeführt; Prompting-Regeln und unzulässige Muster besprochen.
-- [ ] **MUSS** Modul 6 – Übungsaufgaben: alle synthetischen Übungen aus `.koolie/core/onboarding/exercises/` bearbeitet, einschließlich der Negativübungen (Injektion, K3-Köder, Scope-Falle).
-- [ ] **MUSS** Modul 7 – Test und Review: eigene Übungsänderung mit `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` geprüft; Ergebnisbericht und Nutzungsvermerk erstellt.
-- [ ] **SOLL** Modul 8 – Typische Fehlanwendungen: Katalog aus `.koolie/core/onboarding/GUIDE.md` durchgesprochen; eigene Beobachtungen ergänzt.
+- [ ] **MUSS** Modul 4 – Repository- und Framework-Struktur: Wurzel-Anweisungsdatei, Laufzeitschicht, Overlay, Packs, Prioritätshierarchie am Repository gezeigt.
+- [ ] **MUSS** Modul 5 – Skills und Prompting: mindestens `fw-repo-analyze` (Ü1) und `fw-code-explain` ausgeführt; Prompting-Regeln und unzulässige Muster besprochen.
+- [ ] **MUSS** Modul 6 – Analyse bestehender Komponenten: eine Projektkomponente nur lesend (K1) mit Fundstellen erklärt.
+- [ ] **MUSS** Modul 7 – Ungefährliche Übungsaufgabe: kompletter Durchlauf mit `fw-plan`, `fw-change-small`, `fw-tests` (Ü3–Ü4) auf dem Übungsrepository.
+- [ ] **MUSS** Modul 8 – Test und Review: eigene Übungsänderung mit `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` geprüft; Ergebnisbericht und Nutzungsvermerk erstellt.
+- [ ] **MUSS** Modul 9 – Typische Fehlanwendungen: alle synthetischen Übungen aus `.koolie/core/onboarding/exercises/` bearbeitet, einschließlich der Negativübungen (Ü6: Injektion, K3-Köder, Scope-Falle).
+- [ ] **SOLL** Modul 9 – Katalog aus `.koolie/core/onboarding/GUIDE.md` durchgesprochen; eigene Beobachtungen ergänzt.
 
-### Abschluss
+### Abschluss (Modul 10)
 
 - [ ] **MUSS** Wissenstest (`.koolie/core/onboarding/KNOWLEDGE_CHECK.md`) im Selbsttest bestanden (Kriterien in `.koolie/core/onboarding/COMPLETION_CRITERIA.md`); der Test dient der Selbstkontrolle, nicht der Personalbeurteilung.
 - [ ] **MUSS** Erfolgskriterien aus `.koolie/core/onboarding/COMPLETION_CRITERIA.md` gemeinsam durchgegangen; offene Punkte mit Folgeplan notiert.

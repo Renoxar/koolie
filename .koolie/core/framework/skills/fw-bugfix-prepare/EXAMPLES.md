@@ -9,11 +9,11 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Fix-Plan – fw-bugfix-prepare v0.1.1
+## Fix-Plan – fw-bugfix-prepare v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Fehler: Menge 999 wird als ungültig abgewiesen · Soll-Verhalten: 1 bis 999 einschließlich gültig · Referenz: keine
-- Modus / Kontrollstufe: M2 / mittel (Faktor R4, festgelegt durch Bearbeiterin) · Umsetzungsmodi laut Plan: M4 (Schritt 1), M3 (ab Schritt 2)
+- Modus / Kontrollstufe: M2 / mittel (Faktor R3, festgelegt durch Bearbeiterin) · Umsetzungsmodi laut Plan: M4 (Schritt 1), M3 (ab Schritt 2)
 - Grundlage: fw-error-analyze, Ergebnis in dieser Sitzung
 
 ### Ursache und Reproduktion (übernommen und an den Fundstellen geprüft)

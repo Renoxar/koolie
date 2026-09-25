@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-01` |
-| Version | `0.1.6` |
+| Version | `0.1.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jeder KI-Sitzung, nach Zuschnitt der Aufgabe |
@@ -36,7 +36,7 @@ Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig einge
 - [ ] **MUSS** Erlaubte Pfade für diese Aufgabe benannt; `<EXCLUDED_PATHS>` und `<READ_ONLY_PATHS>` bekannt.
 - [ ] **MUSS** Kontextquellen gelistet und je Quelle die Kontextklasse bestimmt (`.koolie/core/checklists/02-privacy-context.md`); K2 nur mit Freigabe, K3 nie.
 - [ ] **MUSS** Overlay-Status ist `aktiv` (Ausnahme: Onboarding-Übung auf dem Übungsrepository; am Quellrepositorium des Frameworks gilt stattdessen `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md`, das **keine** technische Berechtigung erteilt und dessen Geltung der KI-Client nicht selbst feststellt – D-253).
-- [ ] **SOLL** Passender Skill gewählt (`/fw-…`); freier Prompt nur, wenn kein Skill passt (`.koolie/core/prompts/README.md`). Die Wahl liegt **nicht allein** hier: Der KI-Client prüft sie vor jedem Schritt selbst und begründet einen Verzicht im Ergebnisbericht (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1).
+- [ ] **SOLL** Passender Skill als vorgesehener Weg gewählt (`/fw-…`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1; `.koolie/core/prompts/README.md` Abschnitt 2). Die Wahl liegt **nicht allein** hier: Der KI-Client prüft sie vor jedem Schritt selbst.
 
 ### Sitzung und Werkzeug
 

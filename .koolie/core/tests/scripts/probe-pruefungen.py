@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 94, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 95, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -2006,13 +2006,13 @@ UEBERSICHT_31 = ".koolie/core/clients/README.md"
 
 def _summe_verfaelschen(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 22 von 31 |",
-                                     "| `[TECHNISCH]` | 23 von 31 |", 1))
+    schreib(pfad, lies(pfad).replace("| `[TECHNISCH]` | 22 von 32 |",
+                                     "| `[TECHNISCH]` | 23 von 32 |", 1))
 
 
 def _gesamtzahl_verfaelschen(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| 22 von 31 |", "| 22 von 32 |", 1))
+    schreib(pfad, lies(pfad).replace("| 22 von 32 |", "| 22 von 33 |", 1))
 
 
 def _zusammenfassung_entfernen(root: str) -> None:
@@ -2037,17 +2037,17 @@ def _zeile_mit_summe(root: str) -> None:
     zeile_nach(pfad, "| X2 |",
                "| Z9 | Sonde mit Einstufung | - | `[TECHNISCH]` | `[DOK]` |")
     ersetze(pfad,
-            ("| `[TECHNISCH]` | 22 von 31 |", "| `[TECHNISCH]` | 23 von 32 |"),
-            ("| 7 von 31 (", "| 7 von 32 ("),
-            ("| **2 von 31** (", "| **2 von 32** ("),
-            ("| 0 von 31 |", "| 0 von 32 |"))
+            ("| `[TECHNISCH]` | 22 von 32 |", "| `[TECHNISCH]` | 23 von 33 |"),
+            ("| 8 von 32 (", "| 8 von 33 ("),
+            ("| **2 von 32** (", "| **2 von 33** ("),
+            ("| 0 von 32 |", "| 0 von 33 |"))
     # Seit 0.36.0 rechnet Pruefung 31 dieselbe Zahl auch in der Uebersicht der Ablage nach
     # (D-71). Eine Gegenprobe, die nur das Pack nachzieht, faellt seither an der zweiten
     # Stelle - und genau das ist der Zweck der Erweiterung.
     u = P(root, UEBERSICHT_31.replace("/", os.sep))
     # 0.89.0: Der Statuswert dieser Zeile stand hier woertlich und ist mit CR-2026-124
     # von "entwurf" auf "pilot" berichtigt worden - das Pack selbst sagte schon "pilot".
-    ersetze(u, ("| pilot | 22 von 31 |", "| pilot | 23 von 32 |"))
+    ersetze(u, ("| pilot | 22 von 32 |", "| pilot | 23 von 33 |"))
 
 
 sonde("31a", "Verfaelschte Anzahl je Einstufung in der Zusammenfassung",
@@ -2064,7 +2064,7 @@ sonde("31d", "Eine Matrixzeile ohne Einstufung faellt aus jeder Summe und wird g
 
 def _uebersicht_verfaelschen(root: str) -> None:
     pfad = P(root, UEBERSICHT_31.replace("/", os.sep))
-    schreib(pfad, lies(pfad).replace("| pilot | 22 von 31 |",
+    schreib(pfad, lies(pfad).replace("| pilot | 22 von 32 |",
                                      "| pilot | 25 von 29 |", 1))
 
 
@@ -9950,6 +9950,93 @@ def sonden_zeichengrenze() -> None:
 buendel(sonden_zeichengrenze,
         "Pruefung 4 haelt das stets Geladene je Pack unter 40.000 Zeichen und warnt ueber "
         "12.000 Zeichen je Datei (D-387)")
+
+
+# --- Pruefung 95: der Aenderungsverlauf eines Skills nennt die Art (D-403, CR-2026-147) --
+#
+# Gegenstand ist die Zeile der aktuellen Version und jede Zeile nach dem Stichtag. Die
+# Gegenprobe ist der ausgelieferte Bestand: Er fuehrt aeltere Zeilen ohne die Nennung, und
+# die duerfen nicht gemeldet werden - sonst schriebe die Pruefung Register um (Klasse C).
+M95 = "nennt nicht, ob sie eine Anweisung berührt"
+P95_SKILL = ".koolie/core/framework/skills/fw-docs-update"
+
+
+def sonden_aenderungsart() -> None:
+    """Wirkungsnachweis zu Pruefung 95."""
+    root = kopie()
+    try:
+        cl = P(root, *(P95_SKILL + "/CHANGELOG.md").split("/"))
+        sk = P(root, *(P95_SKILL + "/SKILL.md").split("/"))
+        text = lies(cl)
+        m = re.search(r"^\|\s*Version\s*\|\s*`?([^`|]+?)`?\s*\|", lies(sk), re.M)
+        if m is None:
+            raise Praeparationsfehler("Sonden zu 95: %s/SKILL.md ohne Version" % P95_SKILL)
+        zeilen = text.split("\r\n")
+        aktuell = [z for z in zeilen if re.match(r"\|\s*%s\s*\|" % re.escape(m.group(1)), z)]
+        alt = [z for z in zeilen if re.match(r"\|\s*\d+\.\d+\.\d+\s*\|\s*2026-09-1\d\s*\|", z)
+               and not re.search(r"Anweisung\s+ber(?:ü|ue)hrt", z, re.I)]
+        if len(aktuell) != 1 or not alt:
+            raise Praeparationsfehler("Sonden zu 95: aktuelle Zeile %d-mal, alte Zeile ohne "
+                                      "Nennung %d-mal" % (len(aktuell), len(alt)))
+
+        aus = validator_ausgabe(root)
+        ok = M95 not in aus
+        melde("GEGENPROBE", "95a", ok,
+              "Der ausgelieferte Bestand laeuft durch - aeltere Zeilen ohne Nennung "
+              "werden nicht gemeldet")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "(D-403)"))
+
+        ohne = re.sub(r"\*{0,2}Keine Anweisung ber(?:ü|ue)hrt\*{0,2}", "Berichtigt",
+                      aktuell[0], flags=re.I)
+        if ohne == aktuell[0]:
+            raise Praeparationsfehler("Sonde 95a: die aktuelle Zeile traegt keine Nennung")
+        schreib(cl, text.replace(aktuell[0], ohne, 1))
+        aus = validator_ausgabe(root)
+        ok = any(M95 in z and "fw-docs-update" in z for z in aus.splitlines())
+        melde("SONDE", "95a", ok,
+              "Die Zeile der aktuellen Version ohne Nennung der Art wird gemeldet (D-403)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        # Gegenprobe 95b: ein projekteigener Skill in der Laufzeitablage mit einer Zeile
+        # ohne Nennung - beim ersten Heben meldete die Pruefung genau das im
+        # Uebungsrepositorium (die Erstfassung eines prj-Skills).
+        ablage = P(root, ".devin", "skills")
+        if not os.path.isdir(ablage):
+            raise Praeparationsfehler("Gegenprobe 95b: keine Laufzeitablage .devin/skills "
+                                      "in der Kopie - ohne sie hat die Gegenprobe keinen Gegenstand")
+        prj = os.path.join(ablage, "prj-sonde95")
+        shutil.copytree(P(root, *P95_SKILL.split("/")), prj)
+        schreib(os.path.join(prj, "CHANGELOG.md"),
+                "# prj-sonde95\r\n\r\n| Version | Datum | Änderung | Autor (Rolle) |\r\n"
+                "|---|---|---|---|\r\n| 0.1.0 | 2026-09-24 | Erstfassung | Projekt |\r\n")
+        aus = validator_ausgabe(root)
+        ok = not any(M95 in z and "prj-sonde95" in z for z in aus.splitlines())
+        melde("GEGENPROBE", "95b", ok,
+              "Ein projekteigener Skill wird nicht gemeldet - D-303 regelt die Testblaetter "
+              "des Kerns")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "prj-sonde95"))
+        shutil.rmtree(prj)
+
+        spaet = re.sub(r"2026-09-1\d", "2026-09-24", alt[0], count=1)
+        schreib(cl, text.replace(alt[0], spaet, 1))
+        aus = validator_ausgabe(root)
+        ok = any(M95 in z and "fw-docs-update" in z for z in aus.splitlines())
+        melde("SONDE", "95b", ok,
+              "Eine Zeile nach dem Stichtag ohne Nennung wird gemeldet, auch wenn sie "
+              "nicht die aktuelle Version ist (D-403)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(cl, text)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_aenderungsart,
+        "Pruefung 95 verlangt im Aenderungsverlauf eines Skills die Nennung, ob eine "
+        "Anweisung beruehrt ist - fuer die aktuelle Version und nach dem Stichtag")
 
 
 if LISTE:

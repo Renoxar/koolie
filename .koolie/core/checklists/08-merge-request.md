@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-08` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor dem Erstellen und vor dem Mergen eines Merge Requests mit KI-Beteiligung |
@@ -28,7 +28,7 @@ Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über 
 - [ ] **MUSS** Abhängigkeiten, Lockfiles, CI/CD- und Quality-Gate-Konfiguration unverändert oder über den regulären Prozess begründet (RV6, RV9, `.koolie/core/checklists/07-new-dependency.md`).
 - [ ] **MUSS** Push und Erstellung des Merge Requests erfolgen durch den Menschen (V2).
 - [ ] **SOLL** Commit-Nachrichten folgen `<COMMIT_CONVENTION>`; Änderungsschritte sind einzeln nachvollziehbar (P7).
-- [ ] **SOLL** Offene Punkte und Annahmen aus dem Ergebnisbericht sind im Merge Request sichtbar gemacht.
+- [ ] **MUSS** Offene Punkte und Annahmen aus dem Ergebnisbericht sind adressiert oder im Merge Request sichtbar gemacht (RV12, `.koolie/core/framework/core/07-review-rules.md` Abschnitt 2).
 
 ### Vor dem Mergen (Review und Freigabe)
 
@@ -36,7 +36,7 @@ Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über 
 - [ ] **MUSS** Review-Tiefe entspricht der Kontrollstufe: niedrig – vollständiges Lesen des Diffs; mittel – unabhängiges Review aller RV-Punkte und Planabgleich; hoch – zusätzlich Architektur-/Security-Review und Prüfung des Sitzungsprotokolls (`.koolie/core/framework/core/07-review-rules.md` Abschnitt 3).
 - [ ] **MUSS** Erforderliche Freigaben liegen vor (Stufe hoch: `<APPROVAL_ROLE>`, bei R3/R10 `<SECURITY_CONTACT>`); der KI-Client hat keine Freigabe erteilt (V1).
 - [ ] **MUSS** Alle Review-Befunde sind aufgelöst oder mit Begründung zurückgestellt.
-- [ ] **SOLL** Metrikdaten für den Pilot erfasst (Kontrollstufe, Modus, Review-Iterationen, verworfene Vorschläge – `.koolie/core/pilot/METRICS.md`).
+- [ ] **MUSS** Metrikdaten für den Pilot erfasst (`.koolie/core/framework/core/04-quality.md` Abschnitt 4, `.koolie/core/pilot/METRICS.md`).
 
 ## Abbruch- und Eskalationskriterien
 

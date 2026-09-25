@@ -724,7 +724,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      Version und Status. Ausgenommen mit Grund: README-Verzeichnisse, die
      Laufzeitschicht, Ausfuellvorlagen und Beispielausgaben. GRENZE: Anwesenheit der
      Zeilen; ihren Wert pruefen 13 und 55
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 94 laeuft als eigenes
+ 95. Die Art einer Skill-Aenderung (D-403): Die Zeile der aktuellen Version im
+     Aenderungsverlauf eines Skills und jede Zeile nach dem 2026-09-22 nennt, ob sie
+     eine Anweisung beruehrt (D-303). ANLASS: K-146 - die Einordnung entscheidet, ob
+     die Zellen des Testblatts offen sind, und keine Pruefung sah, ob sie dasteht.
+     Nur die Skills des Kerns; projekteigene Skills bleiben aussen vor.
+     GRENZE: die Nennung, nicht ihre Richtigkeit
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 95 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -10520,6 +10526,52 @@ def check_steckbrief(root: str) -> None:
                 f"Dokument keine zwei Stände (D-375)")
 
 
+# ---------------------------------------------------------------------------
+# PRUEFUNG 95: DER AENDERUNGSVERLAUF EINES SKILLS NENNT DIE ART (CR-2026-147, D-403)
+# ---------------------------------------------------------------------------
+#
+# ANLASS. D-303 oeffnet die Zellen eines Testblatts nur, wenn eine Aenderung eine
+# ANWEISUNG des Skills beruehrt - und die Grenze zieht ein Mensch. Seit D-303 nennt jede
+# neue Zeile eines Skill-Aenderungsverlaufs diese Einordnung ("Keine Anweisung beruehrt"
+# oder "Anweisung beruehrt"), aber keine Pruefung sah, ob sie dasteht (K-146).
+# GEGENSTAND: die Zeile der Version, die der Steckbrief der SKILL.md nennt, und jede
+# Zeile mit einem Datum nach dem Stichtag. Aeltere Zeilen bleiben, wie sie geschrieben
+# wurden (Klasse C). NUR DIE SKILLS DES KERNS: D-303 regelt die Testblaetter des
+# Frameworks; ein projekteigener Skill fuehrt seinen Verlauf nach eigener Regel. Beim
+# ersten Heben mit dieser Pruefung meldete sie im Uebungsrepositorium die Erstfassung
+# eines prj-Skills. Die installierten Kopien der Kernskills sind Kopien der Quelle,
+# die hier geprueft wird.
+# GRENZE: Die Pruefung sieht die NENNUNG, nicht ihre Richtigkeit. Ob eine Aenderung eine
+# Anweisung beruehrt, entscheidet weiter ein Mensch (Preis von D-303, benannt).
+P95_STICHTAG = "2026-09-22"
+P95_ART_RE = re.compile(r"Anweisung\s+ber(?:ü|ue)hrt", re.I)
+P95_ZEILE_RE = re.compile(r"^\|\s*(\d+\.\d+\.\d+)\s*\|\s*(\d{4}-\d\d-\d\d)\s*\|", re.M)
+
+
+def check_skill_aenderungsart(root: str, man: dict) -> None:
+    """Pruefung 95 (D-403): der Aenderungsverlauf eines Skills nennt die Art der Aenderung."""
+    for skills_dir, prefix in skill_dirs(root, man):
+        if not prefix.startswith(KERN + "/"):
+            continue
+        for name in sorted(os.listdir(skills_dir)):
+            sdir = os.path.join(skills_dir, name)
+            skill_path = os.path.join(sdir, "SKILL.md")
+            cl_path = os.path.join(sdir, "CHANGELOG.md")
+            if not (os.path.exists(skill_path) and os.path.exists(cl_path)):
+                continue
+            m = re.search(r"^\|\s*Version\s*\|\s*`?([^`|]+?)`?\s*\|", read(skill_path), re.M)
+            aktuell = m.group(1).strip() if m else None
+            for zeile in read(cl_path).splitlines():
+                z = P95_ZEILE_RE.match(zeile)
+                if not z or not (z.group(1) == aktuell or z.group(2) > P95_STICHTAG):
+                    continue
+                if not P95_ART_RE.search(zeile):
+                    err(f"{prefix}/{name}/CHANGELOG.md: die Zeile {z.group(1)} nennt nicht, "
+                        f"ob sie eine Anweisung berührt ('Keine Anweisung berührt' oder "
+                        f"'Anweisung berührt') – davon hängt ab, ob die Zellen des "
+                        f"Testblatts offen sind (D-303, D-403)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -10628,6 +10680,7 @@ def main() -> int:
     check_rechtschreibung(root)
     check_dokumentform(root)
     check_steckbrief(root)
+    check_skill_aenderungsart(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

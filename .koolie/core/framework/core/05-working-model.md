@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.10 |
+| Version | 0.1.11 |
 | Status | `pilot` |
 
 ## 1. Standardarbeitsablauf (normativ)
@@ -23,7 +23,7 @@ Jede KI-Aufgabe folgt den vierzehn Schritten. Schritte DÜRFEN NICHT übersprung
 | 6 | Befunde mit Fundstellen darstellen | KI-Client | Jede Aussage mit `pfad/datei:zeile` oder Suchmuster belegen | – |
 | 7 | Lösungsoptionen bewerten | KI-Client, Entscheidung Mensch | Mindestens zwei Optionen bei Stufe mittel/hoch; Kriterien: Risiko, Aufwand, Reversibilität, Konsistenz mit Architektur | Skill `fw-change-analyze` |
 | 8 | Vorgehen oder Änderungsplan vorschlagen | KI-Client | Schrittfolge, betroffene Dateien, Tests, Abbruchkriterien | Skill `fw-plan` |
-| 9 | Freigabepunkt vor risikoreichen Änderungen | Mensch | Bestätigung des Plans (Stufe mittel) oder dokumentierte Freigabe `<APPROVAL_ROLE>` (Stufe hoch) | `09-risk-model.md` |
+| 9 | Freigabepunkt vor Änderungen am Produktivcode (Schritt 10, M3) | Mensch | Bestätigung des Plans (Stufe mittel) oder dokumentierte Freigabe `<APPROVAL_ROLE>` (Stufe hoch) | `09-risk-model.md` |
 | 10 | Änderung in kleinen, nachvollziehbaren Schritten umsetzen | KI-Client unter Beobachtung | Ein logischer Schritt je Änderung; nach jedem Schritt Zwischenstand berichten (P7) | Skill `fw-change-small`, `.koolie/core/checklists/03-before-code-change.md` |
 | 11 | Tests und Qualitätsprüfungen ausführen | KI-Client, Bewertung Mensch | Nur im Overlay freigegebene Befehle (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`); Ergebnisse unverändert berichten | `.koolie/core/checklists/05-testing.md` |
 | 12 | Ergebnis, Abweichungen und Restrisiken dokumentieren | KI-Client | Ergebnisbericht nach Standardformat (Abschnitt 3.6) | – |
@@ -118,7 +118,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Den Modus gibt der Mensc
 ### 3.1 Sitzungsdisziplin
 
 1. Eine Sitzung bearbeitet eine Aufgabe. Neue Aufgaben MÜSSEN in neuen Sitzungen begonnen werden (Least Context, Nachvollziehbarkeit).
-2. Sitzungsweite Freigaben („für diese Sitzung erlauben") SOLLEN nur für die im Overlay freigegebenen Test- und Build-Befehle erteilt werden. Projektweite oder globale Freigaben `[DOK]` DÜRFEN NICHT durch einzelne Entwicklerinnen oder Entwickler erteilt werden; sie erfordern einen Änderungsantrag an die Berechtigungsdatei.
+2. Sitzungsweite Freigaben („für diese Sitzung erlauben") SOLLEN nur für die im Overlay freigegebenen Testbefehle erteilt werden. Projektweite oder globale Freigaben `[DOK]` DÜRFEN NICHT durch einzelne Entwicklerinnen oder Entwickler erteilt werden; sie erfordern einen Änderungsantrag an die Berechtigungsdatei.
 3. Parallel laufende Agentensitzungen `[DOK]` sind an **Voraussetzungen** gebunden, nicht an eine Kontrollstufe der Aufgabe: Die Aufgaben MÜSSEN voneinander unabhängig sein, die Schreibziele disjunkt – sie DÜRFEN NICHT auf denselben Dateien arbeiten –, eine Person MUSS die Aufsicht führen, und jede Sitzung MUSS ihre eigene Aufgabe und ihren eigenen Ergebnisbericht haben. Die Einstufung dieser Arbeitsweise leistet R12 (`.koolie/core/framework/core/09-risk-model.md`, Abschnitt 2): rein lesende Parallelarbeit unter Aufsicht niedrig, schreibende auf getrennten Zielen mittel, gemeinsame Schreibziele hoch und damit ausgeschlossen. Jede parallel bearbeitete Aufgabe bleibt an die Betriebsmodi **ihrer eigenen** Kontrollstufe gebunden (D-54).
 4. Hintergrund-Subagenten DÜRFEN NICHT für Modus M3 verwendet werden. **Diese Grenze gilt normativ; technisch abbildbar ist sie nicht** `[MESS]`: Sperrbar ist nur das Startwerkzeug ganz – gemessen am 2026-09-13, `disallowed-tools: Agent` weist den Start ab, und die zweite Schreibweise `Task` ebenso (`tests/protocols/2026-09-13-erhebung-unteragent.md`, D-70). „Nur im Hintergrund" ist dagegen ein Argument (`run_in_background`), und ein Argumentmuster in der Werkzeugsperre wirkt nach D-66 lautlos gar nicht. Wer diese Regel technisch durchsetzen will, sperrt Unteragenten vollständig – das ist mehr, als die Regel sagt, und deshalb bleibt sie eine Anweisung. Was ein Skill sperrt, ist auch im Hintergrund gesperrt – gemessen am 2026-09-13 mit Kontrolllauf (D-72) `[MESS]`. Ein Hintergrund-Unteragent ist also kein Weg, ein entferntes Werkzeug zurückzubekommen, sondern ein Weg, unbeaufsichtigt zu arbeiten – und das untersagt die Regel. Für M1 KANN ein rein lesendes Agentenprofil genutzt werden, sofern der KI-Client eines kennt (Fähigkeitsmatrix des Client Packs, A1); bei `claude-code` ist seine Wirkung gemessen (D-68).
 

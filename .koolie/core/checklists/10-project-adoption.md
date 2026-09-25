@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-10` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | bei Übernahme des Frameworks in ein neues Projekt, vor dem Setzen des Overlay-Status auf `aktiv` |
@@ -34,7 +34,7 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 - [ ] **MUSS** Core-Dateien unverändert (Abgleich gegen das Release-Archiv; Änderungsbedarf läuft als Änderungsantrag an den Framework Owner, nie als lokale Änderung).
 - [ ] **MUSS** `.koolie/project-overlay/OVERLAY.md` vollständig ausgefüllt; sicherheitsrelevante Abschnitte 4, 5, 6, 13, 14, 15 ohne offene `<TBD>`.
 - [ ] **MUSS** `20-project-overlay.md` in der Regelablage synchron zur Overlay-Datei befüllt (bei Clients mit Zeichenlimit unter 6.000 Zeichen).
-- [ ] **MUSS** Berechtigungsdatei mit den Overlay-Werten befüllt (`<ALLOWED_PATHS>`, `<EXCLUDED_PATHS>`, Befehle, CI-/Gate-Pfade); alle Kernregeln aus `_core_rules_integrity` unverändert enthalten.
+- [ ] **MUSS** Berechtigungsdatei mit den Overlay-Werten befüllt (`<ALLOWED_PATHS>`, `<EXCLUDED_PATHS>`, Befehle, CI-/Gate-Pfade); bei einer Berechtigungsdatei im JSON-Format alle Kernregeln aus `_core_rules_integrity` unverändert enthalten (`openai-codex` führt den Block nicht, D-395).
 - [ ] **MUSS** `.koolie/project-overlay/overlay-manifest.yaml` gepflegt; eingebundene Dokumente bereinigt und freigegeben; nicht registrierte Dokumente gelten als K3.
 - [ ] **MUSS** Benötigte Role Packs und Technology Packs aktiviert (Laufzeitfassungen `30-*`, `40-*` erstellt); nicht benötigte nicht geladen.
 - [ ] **MUSS** `.koolie/project-overlay/forbidden-terms.txt` projektlokal mit den realen Namen des Projekts befüllt (Datei verbleibt projektlokal).
