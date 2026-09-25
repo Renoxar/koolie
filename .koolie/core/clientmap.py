@@ -99,6 +99,53 @@ def projektwurzel(kern: str) -> str:
 def core_dir_name(man: dict) -> str:
     return man.get("runtime_placeholders", {}).get("<CORE_DIR>", CORE_REL)
 
+
+# ---------------------------------------------------------------------------
+# DER LIEFERUMFANG EINER INSTALLATION (D-367, CR-2026-141)
+# ---------------------------------------------------------------------------
+# Ein Projekt waehlt beim Installieren den ganzen Kern ("voll") oder nur das zur
+# Nutzung Noetige ("nutzung"). Die Liste des Noetigen wird NICHT aufgezaehlt - sie
+# fehlte nach dem ersten neuen Traeger (D-366). Aufgezaehlt ist das Gegenteil, und es
+# ist nach seinem ABLAGEORT geschlossen: die Nachweisschicht aus Aenderungsantraegen,
+# Abnahmeprotokollen, Erhebungen und dem Bau des Hauptdokuments. Ein neuer Traeger zur
+# Nutzung ist damit von selbst dabei, ein neuer Nachweis von selbst draussen.
+#
+# ZWEI ABLEITUNGEN SIND GEMESSEN GESCHEITERT (2026-09-25, sechs frische
+# Installationen): Die Lesespur taugt nicht - der Validator liest im Projekt alle 549
+# Kerndateien. Die transitive Verweishuelle taugt nicht - mit Verzeichnisverweisen
+# umfasst sie alles, ohne sie behaelt sie 39 Protokolle und verliert die Skillquellen,
+# die --update braucht. OB die Nutzung ohne die Nachweisschicht auskommt, entscheidet
+# deshalb der Validator an einer reduzierten Installation (Sonde L367).
+#
+# Die Wahl steht im Projekt in LIEFERUMFANG neben VERSION; install.py schreibt sie bei
+# jedem --target. Fehlt die Datei, gilt "voll" - so liegt jede Installation vor 1.8.0.
+LIEFERUMFANG_DATEI = "LIEFERUMFANG"
+LIEFERUMFAENGE = ("voll", "nutzung")
+NACHWEIS_ABLAGEN = (
+    "governance/change-requests",
+    "tests/protocols",
+    "tests/erhebungen",
+    "build",
+)
+
+
+def ist_nachweis(rel: str) -> bool:
+    """Liegt der Pfad (relativ zum Kern, mit Schraegstrichen) in der Nachweisschicht?"""
+    return any(rel == a or rel.startswith(a + "/") for a in NACHWEIS_ABLAGEN)
+
+
+def lieferumfang(kern: str) -> str:
+    """Der Lieferumfang, den der Kern unter diesem Pfad fuehrt - roh gelesen.
+
+    Ohne Datei "voll". Einen unbekannten Wert gibt die Funktion unveraendert zurueck;
+    ihn zu melden ist Sache des Aufrufers (Pruefung 90, install.py).
+    """
+    try:
+        with open(os.path.join(kern, LIEFERUMFANG_DATEI), encoding="utf-8") as fh:
+            return fh.read().strip()
+    except OSError:
+        return "voll"
+
 # ---------------------------------------------------------------------------
 # Werkzeugverben des Frontmatters
 # ---------------------------------------------------------------------------

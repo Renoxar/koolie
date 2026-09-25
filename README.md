@@ -106,14 +106,20 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 **Mit dem Starter (seit `1.7.0`):** Das Release-Archiv entpacken und in seiner Wurzel
 `install.cmd` (Windows) oder `install.command` (macOS) per Doppelklick starten. Der
 Starter sucht ein Python ab 3.8 – ohne es nennt er den Installationsweg und hält an –
-und fragt Projektverzeichnis, KI-Client und Overlay-Muster ab. Liegt im Projekt schon
+und fragt Projektverzeichnis, KI-Client, Overlay-Muster und Lieferumfang ab. Liegt im Projekt schon
 ein Kern, bietet er das Heben an. Dahinter steht ein einziger Befehl, der ebenso direkt
 aufrufbar ist:
 
 ```bash
 python .koolie/core/install.py --target /pfad/zum/projekt [--client <name>] [--overlay general]
 python .koolie/core/install.py --target /pfad/zum/projekt --update     # Projekt heben
+python .koolie/core/install.py --target /pfad/zum/projekt --lieferumfang nutzung
 ```
+
+**Der Lieferumfang (seit `1.8.0`):** `voll` – die Vorgabe – liefert den ganzen Kern;
+`nutzung` läßt die Nachweisschicht weg – Änderungsanträge, Abnahmeprotokolle, Erhebungen
+und den Bau des Hauptdokuments, rund 350 von 550 Dateien. Die Wahl gilt beim Heben
+weiter (D-367).
 
 `--target` kopiert **nur** `.koolie/core/` – aus einem Klon nur das Verfolgte – und ruft
 danach die Installation im Projekt auf. ⚠️ Beim ersten Start warnt das System vor dem
@@ -168,7 +174,7 @@ Weitere Aufrufe:
 | Befehl | Zweck |
 |---|---|
 | `python .koolie/core/install.py --update` | Kern auf ein neues Release heben, Projektdateien behalten |
-| `python .koolie/core/install.py --target <projekt> [--update]` | Aus einem Klon oder entpackten Archiv den Kern in ein anderes Projekt kopieren und dort installieren oder heben (seit `1.7.0`); die Starter `install.cmd` und `install.command` fragen die Angaben ab |
+| `python .koolie/core/install.py --target <projekt> [--update] [--lieferumfang voll\|nutzung]` | Aus einem Klon oder entpackten Archiv den Kern in ein anderes Projekt kopieren und dort installieren oder heben (seit `1.7.0`), ganz oder ohne die Nachweisschicht (seit `1.8.0`); die Starter `install.cmd` und `install.command` fragen die Angaben ab |
 | `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
 | `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
 | `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei; `--overlay` ohne Namen zählt die Muster auf (seit `1.5.0`). Seit `1.6.0` dazu sechs Musterdokumente allgemeiner Praktiken (Coding Guidelines, DoR, DoD, Qualität, Sicherheit, Branching), im Manifest als `entwurf` – verbindlich erst nach Freigabe durch den Overlay Owner |

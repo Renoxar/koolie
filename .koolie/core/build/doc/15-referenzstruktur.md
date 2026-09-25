@@ -15,7 +15,7 @@ Der Belegstatus beantwortet die Frage „ist das dokumentiert?“. Die **Fähigk
 
 Der gesamte unveränderliche Kern liegt in **einem** Verzeichnis: `.koolie/core/`. Im Wurzelverzeichnis des Projekts stehen nur die Dinge, die dort stehen müssen: die Wurzel-Anweisungsdatei und die Laufzeitschicht, weil der KI-Client sie ausschließlich dort findet, sowie `.koolie/project-overlay/` als austauschbare Projektkonfiguration. Wie diese Bestandteile heißen, entscheidet das gewählte Client Pack. **Der Baum unten nennt sie deshalb mit ihren Platzhaltern** – so gilt er für beide ausgelieferten Packs; Anhang 31.2 löst jeden davon je Pack auf. Bis Release 0.88.1 stand hier die Fassung eines einzigen Clients, und der Baum behauptete damit für jede Installation, was für eine galt.
 
-Angelegt und aktualisiert werden die Wurzelbestandteile durch `.koolie/core/install.py`. Damit ist die Übernahme in ein Projekt das Kopieren eines Ordners und ein Skriptaufruf (Kap. 28). Seit Release 1.7.0 übernimmt `install.py --target <projekt>` beides in einem Schritt – es kopiert **nur** den Kern und installiert danach mit dem kopierten Skript –, und zwei Starter in der Wurzel des Release-Archivs, `install.cmd` für Windows und `install.command` für macOS, fragen die Angaben dafür ab (D-362). Voraussetzung auf dem Zielrechner ist Python ab 3.8 (D-363).
+Angelegt und aktualisiert werden die Wurzelbestandteile durch `.koolie/core/install.py`. Damit ist die Übernahme in ein Projekt das Kopieren eines Ordners und ein Skriptaufruf (Kap. 28). Seit Release 1.7.0 übernimmt `install.py --target <projekt>` beides in einem Schritt – es kopiert **nur** den Kern und installiert danach mit dem kopierten Skript –, und zwei Starter in der Wurzel des Release-Archivs, `install.cmd` für Windows und `install.command` für macOS, fragen die Angaben dafür ab (D-362). Voraussetzung auf dem Zielrechner ist Python ab 3.8 (D-363). Seit Release 1.8.0 wählt `--lieferumfang` zwischen dem ganzen Kern (`voll`) und dem Kern ohne die Nachweisschicht aus Änderungsanträgen, Abnahmeprotokollen, Erhebungen und `build/` (`nutzung`); die Wahl steht im Projekt in `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter (D-367).
 
 ```text
 <REPOSITORY_NAME>/                       # Projekt-Repository
@@ -36,10 +36,12 @@ Angelegt und aktualisiert werden die Wurzelbestandteile durch `.koolie/core/inst
 │
 ├── .koolie/                             # ein Verzeichnis für Kern und Projektkonfiguration
 │   ├── core/                            # DER KERN – byte-gleich zum Release
+│   │                                    # (bei `nutzung` ohne die mit † markierten Ablagen)
 │   │   ├── install.py                   # legt die Wurzelbestandteile an (--update / --check / --target)
 │   │   ├── install_dialog.py            # Dialog hinter den Startern des Archivs (D-362)
 │   │   ├── clientmap.py                 # Semantikabbildung Berechtigungen und Hooks (Kap. 7a)
 │   │   ├── VERSION · CHANGELOG.md       # Versionsstand, Änderungsverzeichnis
+│   │   ├── LIEFERUMFANG                 # nur im Projekt: voll | nutzung (D-367)
 │   │   ├── OWNERS.md                    # Ownership je Bereich (Governance)
 │   │   ├── clients/                     # ABBILDUNGSSCHICHT – je Client drei Dateien
 │   │   │   ├── README.md · _template/   # Regeln der Schicht, Vorlage für neue Packs
@@ -62,13 +64,13 @@ Angelegt und aktualisiert werden die Wurzelbestandteile durch `.koolie/core/inst
 │   │   │                                # · KNOWLEDGE_CHECK · COMPLETION_CRITERIA · REFERENCE
 │   │   ├── examples/                    # ausschließlich synthetische Beispiele
 │   │   ├── governance/                  # DECISION_LOG · RACI · PRIORITY_HIERARCHY
-│   │   │                                # · RELEASE_PROCESS · change-requests/
+│   │   │                                # · RELEASE_PROCESS · change-requests/ †
 │   │   │                                # · EXCEPTION/FEEDBACK/INCIDENT
 │   │   ├── pilot/                       # PILOT_CONCEPT · METRICS (Kap. 27)
 │   │   ├── docs/                        # ADOPTION_GUIDE · ROADMAP · RUNTIME_GLOSSARY
 │   │   │                                # · PLACEHOLDER_REGISTRY
-│   │   ├── tests/                       # TEST_CATALOG.md · protocols/ · scripts/ · erhebungen/
-│   │   └── build/                       # Assemblierung dieses Dokuments (34 Kapitelquellen)
+│   │   ├── tests/                       # TEST_CATALOG.md · protocols/ † · scripts/ · erhebungen/ †
+│   │   └── build/ †                     # Assemblierung dieses Dokuments (34 Kapitelquellen)
 │   │
 │   └── project-overlay/                 # EBENE 4 (austauschbar; Kap. 17)
 │       ├── OVERLAY.md                   # 21 Abschnitte mit Ausfüllhinweisen
