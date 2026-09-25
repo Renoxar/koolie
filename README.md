@@ -53,6 +53,7 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 ├── .koolie/                             # Kern und Projektkonfiguration, ein Ordner
 │   ├── core/                            # ◀ DER KERN: unveränderlich, byte-gleich
 │   │   ├── install.py · clientmap.py    #   legt die Wurzeldateien an, bildet sie ab
+│   │   ├── install_dialog.py            #   Dialog hinter install.cmd / install.command
 │   │   ├── VERSION · CHANGELOG.md · OWNERS.md
 │   │   ├── clients/                     #   Abbildung auf KI-Clients (keine Regelebene)
 │   │   │   ├── README.md                #     Zweck, Fähigkeitsmatrix, Erstellung
@@ -102,6 +103,29 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 
 ## Framework in ein Projekt übernehmen
 
+**Mit dem Starter (seit `1.7.0`):** Das Release-Archiv entpacken und in seiner Wurzel
+`install.cmd` (Windows) oder `install.command` (macOS) per Doppelklick starten. Der
+Starter sucht ein Python ab 3.8 – ohne es nennt er den Installationsweg und hält an –
+und fragt Projektverzeichnis, KI-Client und Overlay-Muster ab. Liegt im Projekt schon
+ein Kern, bietet er das Heben an. Dahinter steht ein einziger Befehl, der ebenso direkt
+aufrufbar ist:
+
+```bash
+python .koolie/core/install.py --target /pfad/zum/projekt [--client <name>] [--overlay general]
+python .koolie/core/install.py --target /pfad/zum/projekt --update     # Projekt heben
+```
+
+`--target` kopiert **nur** `.koolie/core/` – aus einem Klon nur das Verfolgte – und ruft
+danach die Installation im Projekt auf. ⚠️ Beim ersten Start warnt das System vor dem
+unsignierten Starter: unter Windows SmartScreen (*„Weitere Informationen“ → „Trotzdem
+ausführen“*), unter macOS Gatekeeper (*Systemeinstellungen → Datenschutz & Sicherheit →
+„Dennoch öffnen“*; der sichere Weg ist das Terminal: `sh install.command`). ⚠️ **Der
+macOS-Starter ist unter Git Bash und Linux geprüft, auf macOS selbst noch nicht** – die
+Abnahme dort steht aus (`CR-2026-140`). Linux und andere Unix-Systeme nehmen `--target`
+direkt oder den Handweg unten.
+
+**Von Hand:**
+
 ```bash
 # 1. Den Kern aus dem entpackten Release-Archiv in das Projekt-Repository kopieren
 #    (Ziel ist <projekt>/.koolie/core – nicht <projekt>/core)
@@ -124,7 +148,8 @@ python .koolie/core/tests/scripts/validate-framework.py --strict-overlay
 > einem Klon kommt zusätzlich dessen eigenes Overlay mit (`.koolie/project-overlay/`)
 > und **ersetzt beim Heben das des Projekts – ohne Meldung**, weil `install.py` das
 > Overlay nie anfasst. `install.py` weist seit `1.4.4` auf ein mitkopiertes Kennzeichen
-> hin (D-354).
+> hin (D-354). **`--target` kann diesen Fehler nicht machen:** Es kopiert nur den Kern
+> (D-362).
 
 `install.py` unterscheidet dabei **Kern** von **Projekt**:
 
@@ -143,6 +168,7 @@ Weitere Aufrufe:
 | Befehl | Zweck |
 |---|---|
 | `python .koolie/core/install.py --update` | Kern auf ein neues Release heben, Projektdateien behalten |
+| `python .koolie/core/install.py --target <projekt> [--update]` | Aus einem Klon oder entpackten Archiv den Kern in ein anderes Projekt kopieren und dort installieren oder heben (seit `1.7.0`); die Starter `install.cmd` und `install.command` fragen die Angaben ab |
 | `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
 | `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
 | `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei; `--overlay` ohne Namen zählt die Muster auf (seit `1.5.0`). Seit `1.6.0` dazu sechs Musterdokumente allgemeiner Praktiken (Coding Guidelines, DoR, DoD, Qualität, Sicherheit, Branching), im Manifest als `entwurf` – verbindlich erst nach Freigabe durch den Overlay Owner |

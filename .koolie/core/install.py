@@ -33,6 +33,15 @@ Aufruf (aus dem Wurzelverzeichnis des Projekts):
     python .koolie/core/install.py --check                # nur pruefen, nichts schreiben
     python .koolie/core/install.py --dry-run              # zeigen, was passieren wuerde
 
+Aufruf aus dem Framework (Klon oder entpacktes Release-Archiv) in ein anderes Projekt -
+kopiert nur den Kern und installiert danach dort (D-362):
+
+    python .koolie/core/install.py --target <projekt> [--client <name>] [--overlay <name>]
+    python .koolie/core/install.py --target <projekt> --update      # Projekt heben
+
+Die Starter install.cmd (Windows) und install.command (macOS) in der Wurzel des
+Frameworks fragen diese Angaben ab (install_dialog.py) und rufen genau das auf.
+
 Exit-Code 0 = in Ordnung, 1 = Abweichungen gefunden (bei --check) oder Fehler.
 """
 from __future__ import annotations
@@ -1396,11 +1405,246 @@ def kollisionen(root: str, template: str, man: dict) -> list[str]:
     return sorted(set(out))
 
 
+# --- Der Kopierweg in ein Projekt (D-362, CR-2026-140) ------------------------------
+#
+# Bis 1.6.0 stand der Kopierweg nur im Leitfaden: den Kern von Hand ins Projekt
+# kopieren, dann install.py dort aufrufen. An genau diesem Handgriff sind zwei Befunde
+# entstanden - wer ganz .koolie/ kopiert, nimmt das Kennzeichen und aus dem Arbeitsbaum
+# das Overlay des Frameworks mit (D-354), und wer mit `git archive HEAD` hebt, liefert
+# den Stand von vorhin (D-333). --target geht denselben Weg als Werkzeug: Es kopiert NUR
+# den Kern, aus einem Klon NUR das Verfolgte, und ruft danach die Installation IM
+# Projekt auf - mit dem kopierten install.py, denn die Hook-Kommandos zeigen auf den
+# Kern im Zielprojekt.
+#
+# WAS ES NICHT TUT: Es waehlt keinen Lieferumfang (der ganze Kern, wie bisher - die
+# Hooks und der Validator liegen unter tests/scripts/), es zieht keinen Overlay-Wert
+# nach und es committet nicht. Das bleiben Handgriffe des Projekts.
+
+# Die Mindestversion ist GEMESSEN, nicht gesetzt (D-363): Installation, Validator und
+# Hooks laufen unter 3.8.20 zeilengleich zu 3.14, alle Python-Traeger des Repositoriums
+# kompilieren dort. 3.7 war auf dem Messplatz nicht beschaffbar. Die beiden Starter
+# pruefen dieselbe Zahl - eine Sonde haelt die drei Stellen gegeneinander.
+PYTHON_MINDEST = (3, 8)
+
+ZIEL_NEU = "core.koolie-neu"
+ZIEL_ALT = "core.koolie-alt"
+
+
+def quellwurzel() -> str:
+    """Das Verzeichnis, in dem der Kern dieses install.py liegt: zwei Ebenen hoeher."""
+    return os.path.dirname(os.path.dirname(HERE))
+
+
+def _gleicher_pfad(a: str, b: str) -> bool:
+    return os.path.normcase(os.path.abspath(a)) == os.path.normcase(os.path.abspath(b))
+
+
+def _git(*argv: str):
+    try:
+        return subprocess.run(["git", *argv], capture_output=True)
+    except OSError:
+        return None
+
+
+def quelle_kerndateien() -> tuple[list[str], str]:
+    """Die Dateien des Kerns, relativ zu HERE, und woher die Liste stammt.
+
+    Aus einem Klon des Frameworks nur das Verfolgte, gelesen aus dem Arbeitsbaum (D-333)
+    - sonst kaemen Bytecode, build/out/ und liegengebliebene Entwuerfe mit. Ohne Klon
+    (entpacktes Release-Archiv) alles ausser den Erzeugnissen, die ein Lauf dort
+    hinterlaesst. 🔴 Der Klon wird nur anerkannt, wenn seine Wurzel GENAU die Quellwurzel
+    ist: Ein Archiv, das in einem fremden Repositorium entpackt wurde, ist dort
+    unverfolgt, und `git ls-files` lieferte eine leere Liste.
+    """
+    wurzel = quellwurzel()
+    top = _git("-C", wurzel, "rev-parse", "--show-toplevel")
+    if top is not None and top.returncode == 0 and _gleicher_pfad(
+            top.stdout.decode("utf-8", "replace").strip(), wurzel):
+        p = _git("-C", wurzel, "ls-files", "-z", "--", clientmap.CORE_REL)
+        if p is not None and p.returncode == 0:
+            praefix = clientmap.CORE_REL + "/"
+            rel = sorted(n[len(praefix):] for n in p.stdout.decode("utf-8").split("\0")
+                         if n.startswith(praefix))
+            if "install.py" in rel:
+                return rel, "Klon - nur Verfolgtes, aus dem Arbeitsbaum"
+    rel = []
+    ausgabe = os.path.join(HERE, "build", "out")
+    for dirpath, dirnames, filenames in os.walk(HERE):
+        dirnames[:] = sorted(d for d in dirnames
+                             if d not in ("__pycache__", ".git")
+                             and not _gleicher_pfad(os.path.join(dirpath, d), ausgabe))
+        for fn in sorted(filenames):
+            if fn.endswith((".pyc", ".pyo")):
+                continue
+            rel.append(os.path.relpath(os.path.join(dirpath, fn), HERE).replace(os.sep, "/"))
+    return rel, "Verzeichnis - ohne __pycache__ und build/out"
+
+
+def _loesche_baum(pfad: str) -> None:
+    """Einen Baum loeschen, auch mit schreibgeschuetzten Dateien.
+
+    Ohne onerror/onexc von shutil.rmtree: Die beiden Namen haben sich zwischen den
+    Python-Fassungen abgeloest, und dieses Werkzeug laeuft ab 3.8 (D-363).
+    """
+    for dirpath, dirnames, filenames in os.walk(pfad, topdown=False):
+        for fn in filenames:
+            f = os.path.join(dirpath, fn)
+            try:
+                os.chmod(f, 0o666)
+            except OSError:
+                pass
+            os.remove(f)
+        for d in dirnames:
+            os.rmdir(os.path.join(dirpath, d))
+    os.rmdir(pfad)
+
+
+def kern_version(kern: str) -> str:
+    try:
+        with open(os.path.join(kern, "VERSION"), encoding="utf-8") as fh:
+            return fh.read().strip() or "unbekannt"
+    except OSError:
+        return "unbekannt"
+
+
+def in_projekt_installieren(args) -> int:
+    """--target: den Kern ins Projekt kopieren, dann dort install.py aufrufen."""
+    ziel = os.path.abspath(args.target)
+    if args.check or args.list_skills:
+        print("FEHLER: --target kopiert und installiert. --check und --list-skills "
+              "gehoeren an das install.py im Projekt.", file=sys.stderr)
+        return 1
+    if args.root is not None:
+        print("FEHLER: --target und --root schliessen einander aus - das Ziel ist das "
+              "Projekt, das --target nennt.", file=sys.stderr)
+        return 1
+    if not os.path.isdir(ziel):
+        print(f"FEHLER: Das Projektverzeichnis gibt es nicht: {ziel}", file=sys.stderr)
+        return 1
+    wurzel = quellwurzel()
+    if _gleicher_pfad(ziel, wurzel):
+        print("FEHLER: Quelle und Ziel sind dasselbe Verzeichnis. --target nennt das "
+              "Projekt, in das installiert wird - nicht das, aus dem kopiert wird.",
+              file=sys.stderr)
+        return 1
+    if os.path.normcase(ziel + os.sep).startswith(os.path.normcase(HERE + os.sep)):
+        print("FEHLER: Das Ziel liegt im Kern selbst.", file=sys.stderr)
+        return 1
+
+    zielkern = os.path.join(ziel, *clientmap.CORE_REL.split("/"))
+    ablage = os.path.dirname(zielkern)
+    vorhanden = os.path.isdir(zielkern)
+    if vorhanden and not args.update:
+        print(f"FEHLER: In {ziel} liegt bereits ein Kern (Stand "
+              f"{kern_version(zielkern)}). Eine Erstinstallation wuerde ihn ersetzen.\n"
+              f"Heben auf diesen Stand: --update.", file=sys.stderr)
+        return 1
+    if args.update and not vorhanden:
+        print(f"FEHLER: --update hebt eine vorhandene Installation - in {ziel} liegt "
+              f"kein {clientmap.CORE_REL}/. Fuer eine Erstinstallation --update "
+              f"weglassen.", file=sys.stderr)
+        return 1
+    if vorhanden and not os.path.isfile(os.path.join(zielkern, "install.py")):
+        # Nur ein Verzeichnis, das wie ein Kern aussieht, wird ersetzt - nie ein fremdes.
+        print(f"FEHLER: {zielkern} traegt kein install.py und ist deshalb kein Kern "
+              f"dieses Frameworks. Es wird nicht ersetzt.", file=sys.stderr)
+        return 1
+
+    dateien, herkunft = quelle_kerndateien()
+    fehlen = [rel for rel in dateien if not os.path.isfile(os.path.join(HERE, *rel.split("/")))]
+    if fehlen:
+        print(f"FEHLER: {len(fehlen)} verfolgte Datei(en) des Kerns fehlen im Arbeitsbaum "
+              f"der Quelle, etwa {fehlen[0]}. Kopiert wird nichts.", file=sys.stderr)
+        return 1
+
+    quellstand = kern_version(HERE)
+    print(f"Quelle:  {wurzel}  (Stand {quellstand})")
+    print(f"Ziel:    {ziel}")
+    if vorhanden:
+        print(f"Modus:   Heben von {kern_version(zielkern)} auf {quellstand}")
+    else:
+        print("Modus:   Erstinstallation")
+    print(f"Kern:    {len(dateien)} Dateien ({herkunft}); nur {clientmap.CORE_REL}/, "
+          f"nie ganz .koolie/")
+    if args.dry_run:
+        print()
+        print("dry-run: Es wird nichts geschrieben. Die Installation im Projekt folgt "
+              "erst nach dem Kopieren und wird deshalb hier nicht vorgefuehrt.")
+        return 0
+
+    neu = os.path.join(ablage, ZIEL_NEU)
+    alt = os.path.join(ablage, ZIEL_ALT)
+    for rest in (neu, alt):
+        if os.path.isdir(rest):
+            # Ein Rest eines abgebrochenen Laufs dieses Werkzeugs, an seinem Namen erkannt.
+            _loesche_baum(rest)
+    os.makedirs(ablage, exist_ok=True)
+    try:
+        for rel in dateien:
+            dst = os.path.join(neu, *rel.split("/"))
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(os.path.join(HERE, *rel.split("/")), dst)
+        if vorhanden:
+            os.replace(zielkern, alt)
+        try:
+            os.replace(neu, zielkern)
+        except OSError:
+            if vorhanden:
+                os.replace(alt, zielkern)
+            raise
+    except OSError as exc:
+        if os.path.isdir(neu):
+            _loesche_baum(neu)
+        print(f"FEHLER: Der Kern liess sich nicht nach {zielkern} kopieren: {exc}\n"
+              f"Ist eine Datei darin geoeffnet? Das Projekt ist unveraendert.",
+              file=sys.stderr)
+        return 1
+
+    print()
+    print(f"--- Installation im Projekt, mit {clientmap.CORE_REL}/install.py des Ziels ---")
+    print()
+    argv = [sys.executable, os.path.join(zielkern, "install.py"), "--root", ziel]
+    if args.update:
+        argv.append("--update")
+    if args.client:
+        argv += ["--client", args.client]
+    if args.overlay:
+        argv += ["--overlay", args.overlay]
+    sys.stdout.flush()
+    rc = subprocess.run(argv).returncode
+    if rc != 0:
+        # Die Installation bricht vor ihrem ersten Schreibvorgang ab (Kollisionen,
+        # Muster, Abbildung). Der kopierte Kern gehoert dann niemandem - zurueck damit.
+        _loesche_baum(zielkern)
+        if vorhanden:
+            os.replace(alt, zielkern)
+            print(f"\nDie Installation im Projekt ist gescheitert; der bisherige Kern "
+                  f"(Stand {kern_version(zielkern)}) liegt wieder an seinem Platz.",
+                  file=sys.stderr)
+        else:
+            print(f"\nDie Installation im Projekt ist gescheitert; der kopierte Kern ist "
+                  f"wieder entfernt.", file=sys.stderr)
+        return rc
+    if vorhanden:
+        _loesche_baum(alt)
+        print()
+        print("Das Heben ist erst mit diesen Handgriffen ein Stand "
+              "(RELEASE_PROCESS.md 4.1, Schritt 2):")
+        print("  1. geaenderte Overlay-Werte in allen drei Traegern nachziehen,")
+        print("  2. python .koolie/core/tests/scripts/validate-framework.py "
+              "--strict-overlay,")
+        print("  3. im Projekt committen.")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Installiert die Wurzeldateien des Koolie-Frameworks in ein Projekt.")
-    ap.add_argument("--root", default=os.getcwd(),
+    ap.add_argument("--root", default=None,
                     help="Wurzelverzeichnis des Projekts (Standard: aktuelles Verzeichnis)")
+    ap.add_argument("--target", default=None, metavar="PROJEKT",
+                    help="Den Kern dieses install.py in PROJEKT kopieren und dort installieren; "
+                         "mit --update ein vorhandenes Projekt heben (D-362)")
     ap.add_argument("--update", action="store_true",
                     help="Core-Dateien auf den Stand dieses Releases bringen; Projektdateien bleiben unberuehrt")
     ap.add_argument("--check", action="store_true",
@@ -1417,6 +1661,11 @@ def main() -> int:
                     help="Nur bei der Erstinstallation: ein mitgeliefertes Overlay-Muster statt "
                          "des leeren Overlays (D-126). Ohne NAME: verfuegbare Muster auflisten")
     args = ap.parse_args()
+
+    if sys.version_info < PYTHON_MINDEST:
+        print(f"FEHLER: Koolie braucht Python {'.'.join(map(str, PYTHON_MINDEST))} oder "
+              f"neuer; dieses ist {sys.version.split()[0]} (D-363).", file=sys.stderr)
+        return 1
 
     clients = available_clients()
 
@@ -1452,8 +1701,11 @@ def main() -> int:
         print(".koolie/core/clients/<name>/CLIENT_PACK.md.")
         return 0
 
+    if args.target is not None:
+        return in_projekt_installieren(args)
+
     # Das Ziel steht vor der Clientwahl fest - denn es entscheidet sie.
-    root = os.path.abspath(args.root)
+    root = os.path.abspath(args.root or os.getcwd())
     if os.path.abspath(HERE) == root:
         print("FEHLER: --root zeigt auf .koolie/core/ selbst. Gemeint ist das "
               "Wurzelverzeichnis des Projekts, also eine Ebene darueber.", file=sys.stderr)
