@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.3.3` |
+| Version | `0.4.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.9.3 (2026-09-25)
+## Stand nach Release 1.10.0 (2026-09-25)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -110,9 +110,10 @@ die Störung.**
 | ~~**1.9.0**~~ ✅ | 🟢 **DER DOKUMENTATIONSSTANDARD – UND DIE ROADMAP, DIE ZU ZWEI DRITTELN RÜCKBLICK WAR** (`CR-2026-142`, **D-371** bis **D-380**, **Prüfungen 91 bis 94** neu). Vier Dokumentklassen mit Kriterien je Klasse (`docs/DOCUMENTATION_STANDARD.md`); die Klassen A (Einstieg) und D (Hauptdokument) durchgesehen – Regel mit Verweis statt Herleitung (D-376); Rechtschreibung nach dem geltenden Duden (Prüfung 92); Standüberschrift, Form und Steckbrief als Prüfungen 91, 93, 94; die Zählwerte in Kapitel 31 setzt der Bau ein (D-377); die Roadmap von 337 auf rund 115 KB gekürzt, jede Kennung gemessen erhalten (D-378) | – | nein |
 | ~~**1.9.1**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, ERSTER BEREICH – UND DIE GRENZE OHNE SONDE** (`CR-2026-143`, **D-381** bis **D-384**, `K-124` und `K-126` beantwortet, `K-130` bis `K-137` neu). Die Core-Module und die Laufzeitschicht durchgesehen: Regel mit Verweis statt Herleitung, einzelne sachliche Berichtigungen, kein Regelinhalt geändert (D-381); keine Laufzeitdatei länger, und die Zeichengrenze der Prüfung 4 hat erstmals Sonden je Pack. Die Modi heißen im Kern nach der Sache, nicht nach einem Client (D-382); die `.gitignore` des Quellrepositoriums schließt die Erzeugnisse aller drei Packs aus, abgeleitet aus den Manifesten (D-383) | – | nein |
 | ~~**1.9.2**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, ZWEITER BEREICH – UND DAS BUDGET STATT DER GRENZE** (`CR-2026-144`, **D-385** bis **D-392**, `K-128` und `K-130` bis `K-135` beantwortet, `K-138` bis `K-145` neu). `governance/` ohne die Register, `checklists/`, `decision-trees/` und `prompts/` durchgesehen, die Herleitungen in `RELEASE_PROCESS.md` und `FRAMEWORK_DEV_PROFILE.md` auf die Regel mit Verweis gekürzt, kein Regelinhalt geändert (D-385). Prüfung 4 macht die Summe des stets Geladenen verbindlich (40.000 Zeichen, jedes Pack) und die Grenze je Datei zur Warnung (D-387); D-10 schließt den Betrieb ohne beobachtende Person aus, nicht eine Oberfläche (D-386); sechs Befunde aus `1.9.1` in Core-Modulen und Laufzeit entschieden (D-388 bis D-392) | – | nein |
-| ~~**1.9.3**~~ ✅ | *dieses Release:* 🟢 **DIE DURCHSICHT DER KLASSE B, DRITTER BEREICH – UND DIE ANWEISUNG, DIE STEHEN BLEIBT** (`CR-2026-145`, **D-393** bis **D-394**, `K-146` bis `K-151` neu). Die Skills, die Vorlagen und die Vorlage des Client Packs durchgesehen; in einer `SKILL.md` keine Anweisung geändert, damit bleiben alle Ergebniszellen abgenommen (D-393, D-303). Zwei Skills in ihrer Erläuterung berichtigt, `SKILL_TEMPLATE.md` an `08-skill-conventions.md` angeglichen, Herleitung in `CLIENT_PACK.md` und `OVERLAY.md` auf den Verweis gekürzt. Vier abgenommene Zellen, deren Ergebnis ihre Erwartung nicht deckt, als `K-148`; ein Client Pack für Kiro als `K-147` vorgemerkt | – | nein |
-| **1.10.0** | **Code- und Pack-Posten der Durchsicht** (D-384): `K-123` (`install.py`-Hinweise je Pack), `K-127` (Hauptdokument und `openai-codex`), `K-129` und `K-136` (Einzelbefunde der Packs), `K-145` (Aufruf von `--mermaid`), `K-151` (Vorlage des Client Packs, Kommentar in `clientmap.py`); `K-125` entscheiden oder vertagen. Nach `1.9.3` | – | nein |
+| ~~**1.9.3**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, DRITTER BEREICH – UND DIE ANWEISUNG, DIE STEHEN BLEIBT** (`CR-2026-145`, **D-393** bis **D-394**, `K-146` bis `K-151` neu). Die Skills, die Vorlagen und die Vorlage des Client Packs durchgesehen; in einer `SKILL.md` keine Anweisung geändert, damit bleiben alle Ergebniszellen abgenommen (D-393, D-303). Zwei Skills in ihrer Erläuterung berichtigt, `SKILL_TEMPLATE.md` an `08-skill-conventions.md` angeglichen, Herleitung in `CLIENT_PACK.md` und `OVERLAY.md` auf den Verweis gekürzt. Vier abgenommene Zellen, deren Ergebnis ihre Erwartung nicht deckt, als `K-148`; ein Client Pack für Kiro als `K-147` vorgemerkt | – | nein |
+| ~~**1.10.0**~~ ✅ | *dieses Release:* 🟢 **DIE CODE- UND PACK-POSTEN DER DURCHSICHT – UND DER HOOK, DEM NACH JEDER HEBUNG NEU VERTRAUT WERDEN MUSS** (`CR-2026-146`, **D-395** bis **D-401**, `K-123`, `K-125`, `K-127`, `K-129`, `K-136`, `K-137`, `K-145` und `K-151` beantwortet, `K-152` neu). `install.py` nennt die Schritte, die das Manifest eines Packs führt – bei `openai-codex` das Vertrauen in Projekt und Schutz-Hook, nach jeder Hebung erneut (D-395); das Hauptdokument bettet alle drei Matrizen ein und die Berechtigungsdatei in ihrer Form (D-396); `--mermaid` ruft den Renderer wie der Bau auf (D-398); die Einzelbefunde der Packs und die Vorlage des Client Packs sind nachgezogen (D-397, D-399); das Onboarding braucht drei Präparationen (D-400); Kiro für `1.12.0` eingeplant, aus der Dokumentation (D-401) | – | nein |
 | **1.11.0** | **Der Mehrprojektfall und die Befunde der Durchsicht von `1.9.2`**: `K-138` je Pack messen (Startort der Sitzung, verschachtelte Installation) und die Einsatzszenarien in den Übernahmeleitfaden; `K-139` bis `K-143` entscheiden (Prompts, Checklisten und Entscheidungsbäume gegen ihre Module); `K-144` die Token-Last mit und ohne Framework messen – gesenkt wird sie nur ohne Lockerung; aus der Durchsicht von `1.9.3` `K-148` (vier abgenommene Zellen), `K-149` (Skills gegen Module und Fähigkeitsmatrix), `K-150` (Register der Skills) und `K-146` (D-303 durch eine Prüfung stützen). Nach `1.10.0` | – | nein |
+| **1.12.0** | **Client Pack für Kiro aus der Dokumentation** (D-401, `K-147`): Erhebung aus der Produktdokumentation, jede Matrixzeile mit `[DOK]` und Quellenkennung, Pack auf `entwurf`, **nicht für den produktiven Einsatz freigegeben bis zur Abnahme**; die Abnahme mit einem Zugang folgt als eigenes Release. Nach `1.11.0` | – | nein |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -153,13 +154,23 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
-### Geplant: Code- und Pack-Posten der Durchsicht – Ziel-Release **1.10.0**
+### Geplant: Der Mehrprojektfall und die Befunde der Durchsicht – Ziel-Release **1.11.0**
+
+Gegenstand sind `K-138` (je Pack messen: Startort der Sitzung, verschachtelte Installation; die
+Einsatzszenarien in den Übernahmeleitfaden), `K-139` bis `K-143` (Prompts, Checklisten und
+Entscheidungsbäume gegen ihre Module), `K-144` (die Token-Last mit und ohne Framework messen – gesenkt
+wird sie nur ohne Lockerung) und aus der Durchsicht von `1.9.3` `K-146` und `K-148` bis `K-150`.
+🔴 **`K-148` betrifft die Tragfähigkeit von vier abgenommenen Zellen:** Trägt ein Ergebnis nicht, wird
+die Zelle `offen`, und Kriterium 2 steigt.
+
+### Erledigt mit `1.10.0`: Code- und Pack-Posten der Durchsicht
 
 Ein MINOR-Release nach der Durchsicht der Klasse B (D-384, D-394): Die Befunde, die Code oder ein Client
-Pack ändern, gehören nicht in eine Durchsicht, die keine Regel ändert. Gegenstand sind `K-123`
-(`install.py`-Hinweise je Pack), `K-127` (Hauptdokument und `openai-codex`), `K-129` und `K-136`
-(Einzelbefunde der Packs), `K-145` (Aufruf von `--mermaid`) und `K-151` (Vorlage des Client Packs,
-Kommentar in `clientmap.py`); `K-125` wird entschieden oder vertagt.
+Pack ändern, gehören nicht in eine Durchsicht, die keine Regel ändert.
+
+> 🟢 **Gefahren mit `1.10.0`** (`CR-2026-146`, D-395 bis D-401). `K-123`, `K-127`, `K-129`, `K-136`,
+> `K-145`, `K-151` und – nachgetragen, im Decision Log für diesen Posten vermerkt – `K-137`; `K-125`
+> entschieden, die Trennung der Repositorien als `K-152` vorgemerkt; Kiro für `1.12.0` eingeplant (D-401).
 
 ### Erledigt mit `1.9.3`: Durchsicht der Klasse B in drei Bereichen
 
@@ -188,9 +199,23 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > Vorlagen und die Vorlage des Client Packs; zwei Skills in ihrer Erläuterung berichtigt, keine Anweisung
 > geändert. Die Befunde als Klärungspunkte (`K-148` bis `K-151`).
 
-### Vorgemerkt ohne Ziel-Release: ein Client Pack für Kiro (`K-147`)
+### Vorgemerkt ohne Ziel-Release: Übungs- und Meßrepositorium trennen (`K-152`)
 
-Auftrag des Owners vom 2026-09-25; das Release legt er fest (D-394). Kiro arbeitet als IDE und als
+Das Übungsrepositorium dient dem Onboarding und den Sitzungstests des Frameworks; ein Projekt braucht
+nur das erste (D-400). Getrennt wird, sobald ein zweites Projekt ein Übungsrepositorium aufbaut.
+
+### Geplant: Client Pack für Kiro aus der Dokumentation – Ziel-Release **1.12.0**
+
+Auftrag des Owners vom 2026-09-25 (D-394), eingeplant nach den MINOR-Releases `1.10.0` und `1.11.0`
+(D-401). **Gebaut wird aus der Dokumentation, weil ein Zugang zum Client fehlt:** Jede Zeile der
+Fähigkeitsmatrix trägt den Beleg `[DOK]` mit Quellenkennung, das Pack steht auf `entwurf` und ist **bis
+zur Abnahme nicht für den produktiven Einsatz freigegeben** – ein Schutz-Hook kann nach seiner
+Dokumentation laufen und gemessen nichts verhindern (D-347). Die Abnahme mit einem Zugang ist ein
+eigenes Release. **Erste Entscheidungsfrage vor dem Bau:** das Planartefakt; empfohlen ist, die
+Spezifikationen des Clients als Träger zu nehmen und ihnen die Vorgaben von `role-re-ticket` und
+`PLAN_TEMPLATE.md` über eine stets geladene Regeldatei mitzugeben (`K-147`).
+
+Kiro arbeitet als IDE und als
 Kommandozeilen-Client lokal im Projekt und bringt Regelablage, Skills und blockierende Hooks mit
 (`[DOK]`, nicht gemessen); der autonome Agent in der Sandbox des Anbieters fällt unter D-10. **Vor dem
 Bau zu klären:** das Berechtigungsmodell und welches Planartefakt maßgeblich ist – die Spezifikationen

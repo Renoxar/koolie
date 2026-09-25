@@ -115,8 +115,8 @@ Die folgenden Dateien sind **erzeugt**. Sie stammen aus einer Referenzinstallati
 
 **Berechtigungen** – restriktiver Standard; bei einer Berechtigungsdatei im JSON-Format mit Kernregel-Integritätsblock. Die Regelmenge ist werkzeugneutral; Werkzeugnamen, Musterform und der Integritätsblock entstehen aus der Semantikabbildung des Client Packs (Kap. 7a, `clientmap.py`):
 
-{{EMBED:<PERMISSIONS_FILE>:json}}
-**Hooks** – technische Prüfung vor Werkzeugaufrufen sowie Statusmeldung beim Sitzungsstart (Mechanismus `[DOK]`, Skripte `[EMPF]`; die Skripte selbst tragen den Status `entwurf` – sie sind Werkzeuge und keine Modulträger und zählen für Kriterium 3 der 1.0.0-Definition nicht mit):
+{{EMBED:<PERMISSIONS_FILE>:permissions_format}}
+**Hooks** – technische Prüfung vor Werkzeugaufrufen sowie Statusmeldung beim Sitzungsstart (Einstufung des Mechanismus: Block H der Fähigkeitsmatrix des Packs, D-396; Skripte `[EMPF]`; die Skripte selbst tragen den Status `entwurf` – sie sind Werkzeuge und keine Modulträger und zählen für Kriterium 3 der 1.0.0-Definition nicht mit):
 
 {{EMBED:<HOOKS_FILE>:json}}
 **Subagentenprofil** – nur lesende Review-Zulieferung:

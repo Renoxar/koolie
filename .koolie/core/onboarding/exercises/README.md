@@ -9,7 +9,7 @@ Das Übungsrepository wird im Arbeitspaket „Onboarding" der Roadmap je Projekt
 1. **Framework-Integration:** Wurzel-Anweisungsdatei, Laufzeitschicht und ein Übungs-Overlay mit Status `aktiv`, ausgefüllten Pfaden und Befehlen (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`) – das Übungs-Overlay ist zugleich das Anschauungsbeispiel für ein ausgefülltes Overlay.
 2. **Fachlich neutralen Beispielcode:** zwei bis drei kleine Module mit erfundener Fachlichkeit (zum Beispiel eine Bestellvalidierung `src/ordering` mit `OrderValidator`), inklusive vorhandener Tests für einen Teil des Verhaltens und einer bewussten Testlücke.
 3. **Einen eingebauten synthetischen Fehler** mit reproduzierbarem Fehlverhalten an einer Randbedingung (für Ü3/Ü4), dokumentiert nur im Mentorenblatt.
-4. **Die Präparationen** für die Negativübungen, die Testklassen PI, SC und DS und die dezentralen Testblätter (`TESTS.md` der Skills und Role Packs) – nur im Übungsrepository, im Mentorenblatt klar als Übung markiert und einzeln im Register unten geführt (D-93). Die Zahl der Präparationen ist die Zahl der Registerzeilen; sie steht bewusst nicht in diesem Satz. Wofür eine Präparation gebraucht wird, zeigt die letzte Spalte des Registers: Die Übungen Ü1 bis Ü6 brauchen nur `UEB-01` bis `UEB-03`, alle übrigen brauchen die Sitzungstests des Testkatalogs und der Testblätter.
+4. **Die Präparationen** – für das Onboarding **`UEB-01` bis `UEB-03`**; alle übrigen nur, wenn das Projekt die Sitzungstests der Testklassen PI, SC und DS und der dezentralen Testblätter (`TESTS.md` der Skills und Role Packs) selbst fährt (D-400) – nur im Übungsrepository, im Mentorenblatt klar als Übung markiert und einzeln im Register unten geführt (D-93). Die Zahl der Präparationen ist die Zahl der Registerzeilen; sie steht bewusst nicht in diesem Satz. Wofür eine Präparation gebraucht wird, zeigt die letzte Spalte des Registers: Die Übungen Ü1 bis Ü6 brauchen nur `UEB-01` bis `UEB-03`, alle übrigen brauchen die Sitzungstests des Testkatalogs und der Testblätter.
 5. **Keine realen Inhalte:** keine Ableitungen aus Projektcode, keine realen Namen, Adressen, Kennungen; `.koolie/project-overlay/forbidden-terms.txt` des Projekts gilt auch hier.
 
 ### Register der Präparationen
@@ -24,6 +24,12 @@ durch einen Lauf entsteht – eine Ausgabe, eine Meldung, ein Seiteneffekt –, 
 einen Lauf, und die Belegzelle nennt ihn. Prüfung 44 sieht nur, **dass** die Zelle
 gefüllt ist, nicht **ob** ihre Aussage stimmt; den Lauf führt die Person aus, die die
 Präparation einträgt.
+
+**Herstellwege, die nur das Quellrepositorium hat** (D-400): Quellen unter
+`tools/praeparationen/` liegen im Übungsrepositorium des Frameworks, und
+`historie-bauen-b4.py` unter `tests/erhebungen/` fehlt bei einer Installation mit dem
+Lieferumfang `nutzung`. Wer eine solche Präparation braucht, stellt sie nach der Zeile
+von Hand her; das Onboarding braucht keine davon.
 
 Die Pfadangaben sind die des Beispielaufbaus; ein Projekt setzt seine eigenen
 Modulnamen ein und behält die Kennungen. Ein **Messbaum** ist der Arbeitsbaum, in dem

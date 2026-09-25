@@ -12,7 +12,7 @@
 |---|---|
 | Modul-ID | `CP-<CLIENT_PACK_CODE>` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.1 |
+| Version | 0.3.2 |
 | Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner (Rolle) | `<TBD: Rolle>` |
 | Client | `<TBD: Produktname>` |
@@ -66,7 +66,7 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
-| R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung ungefragt geladen | `AGENTS.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung ungefragt geladen | `.koolie/core/framework/runtime/root-instruction.md` | `<TBD>` | `<TBD>` | `<TBD>` |
 | R2 | Weitere Regeldateien lassen sich mit Ladebedingungen versehen (immer, bei Relevanz, manuell) | Laufzeit-README, Abschnitt „Regelablage" | `<TBD>` | `<TBD>` | `<TBD>` |
 | R3 | Regeln lassen sich an Dateimuster binden, damit ein Technology Pack nur bei passenden Dateien lädt | Ebene 5 | `<TBD>` | `<TBD>` | `<TBD>` |
 | R4 | Regelinhalte unterliegen einem bekannten Zeichenlimit, das das Framework einhalten kann | Laufzeit-README der Regelablage | `<TBD>` | `<TBD>` | `<TBD>` |
@@ -100,6 +100,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 | B7 | Schreiboperationen lösen standardmäßig eine Rückfrage aus | – | `<TBD>` | `<TBD>` | `<TBD>` |
 | B8 | Netzwerkzugriff ist standardmäßig unterbunden | – | `<TBD>` | `<TBD>` | `<TBD>` |
 | B9 | Eine nutzerlokale Konfiguration kann nur verschärfen, nicht lockern | – | `<TBD>` | `<TBD>` | `<TBD>` |
+| B10 | Externer Abruf ist auf freigegebene Domains beschränkbar | – | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### H – Hooks
 
@@ -108,12 +109,14 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 | H1 | Vor einer Werkzeugausführung kann eine eigene Prüfung laufen | Hook-Konfiguration | `<TBD>` | `<TBD>` | `<TBD>` |
 | H2 | Diese Prüfung kann die Ausführung **blockieren** (nicht nur protokollieren) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 | H3 | Beim Sitzungsstart kann eine Statusmeldung erzeugt werden (Overlay aktiv, Version) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
+| H4 | Der Schutz-Hook prüft das Eingabeschema und die Pfadidentität; die Zeile nennt die Zeitlücke zwischen Prüfung und Zugriff | D-63 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### A – Agentenprofile
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
 | A1 | Ein rein lesendes Reviewprofil ist definierbar | `.koolie/core/framework/runtime/agents/fw-reviewer.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| A2 | Ein rein lesendes Analyseprofil für Modus M1 ist verfügbar | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### M – Modi und Sitzungsfreigaben
 
@@ -122,7 +125,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 | M1 | Es gibt einen Standardmodus, der bei Schreiben und Befehlen rückfragt | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 | M2 | Ein Modus, der alle Rückfragen übergeht, lässt sich organisatorisch oder technisch ausschließen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 | M3 | Eine erteilte Freigabe lässt sich auf die Sitzung begrenzen, statt sie dauerhaft zu speichern | Laufzeit-README | `<TBD>` | `<TBD>` | `<TBD>` |
-| M6 | Ein Modus mit automatischer Übernahme von Dateiänderungen lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
+| M6 | Ein Modus mit selbsttätiger Übernahme von Dateiänderungen lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 | M7 | Ein Modus, der selbst beurteilt, was sicher ist, lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### X – Externe Anbindung

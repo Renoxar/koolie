@@ -27,19 +27,19 @@ Diese Platzhalter unterscheiden sich von allen anderen: Sie werden **nicht vom M
 
 Die Begriffsfassung derselben Abbildung steht in `.koolie/core/docs/RUNTIME_GLOSSARY.md`: Fließtext nennt den Begriff, ein Quelltext, der gerendert wird, den Platzhalter.
 
-| Platzhalter | Bedeutung | `devin-desktop` | `claude-code` |
-|---|---|---|---|
-| `<CLIENT_NAME>` | Produktname des Clients. **Nur zum Nennen, nie zum Zuschreiben** (D-129): Sagt ein Text etwas *über* das Produkt, gehört es in dessen Client Pack. Und er hilft **nur in einer gerenderten Quelle** – einziger angewandter Fall: der Titel von `framework/runtime/root-instruction.md` | `Devin Desktop` | `Claude Code` |
-| `<RUNTIME_DIR>` | Laufzeitschicht | `.devin` | `.claude` |
-| `<ROOT_INSTRUCTION_FILE>` | Wurzel-Anweisungsdatei | `AGENTS.md` | `CLAUDE.md` |
-| `<ROOT_INSTRUCTION_LOCAL>` | Nutzerlokale Ergänzung dazu | `AGENTS.local.md` | `CLAUDE.local.md` |
-| `<PERMISSIONS_FILE>` | Berechtigungsdatei | `.devin/config.json` | `.claude/settings.json` |
-| `<SKILLS_DIR>` | Skill-Ablage | `.devin/skills` | `.claude/skills` |
-| `<RULES_DIR>` | Regelablage | `.devin/rules` | `.claude/rules` |
-| `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` |
-| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/config.json` | `.claude/settings.json` |
-| `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` |
-| `<CORE_DIR>` | Name des Kernverzeichnisses | `.koolie/core` | `.koolie/core` |
+| Platzhalter | Bedeutung | `devin-desktop` | `claude-code` | `openai-codex` |
+|---|---|---|---|---|
+| `<CLIENT_NAME>` | Produktname des Clients. **Nur zum Nennen, nie zum Zuschreiben** (D-129): Sagt ein Text etwas *über* das Produkt, gehört es in dessen Client Pack. Und er hilft **nur in einer gerenderten Quelle** – einziger angewandter Fall: der Titel von `framework/runtime/root-instruction.md` | `Devin Desktop` | `Claude Code` | `OpenAI Codex CLI` |
+| `<RUNTIME_DIR>` | Laufzeitschicht | `.devin` | `.claude` | `.codex` |
+| `<ROOT_INSTRUCTION_FILE>` | Wurzel-Anweisungsdatei | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` |
+| `<ROOT_INSTRUCTION_LOCAL>` | Nutzerlokale Ergänzung dazu | `AGENTS.local.md` | `CLAUDE.local.md` | `AGENTS.override.md` – **verdrängt** die Wurzel-Anweisung, statt sie zu ergänzen (D-341) |
+| `<PERMISSIONS_FILE>` | Berechtigungsdatei | `.devin/config.json` | `.claude/settings.json` | `.codex/config.toml` |
+| `<SKILLS_DIR>` | Skill-Ablage | `.devin/skills` | `.claude/skills` | `.codex/skills` |
+| `<RULES_DIR>` | Regelablage | `.devin/rules` | `.claude/rules` | `.codex/rules` |
+| `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` | `.codex/agents` |
+| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/config.json` | `.claude/settings.json` | `.codex/hooks.json` |
+| `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` | `.codex/config.toml` |
+| `<CORE_DIR>` | Name des Kernverzeichnisses | `.koolie/core` | `.koolie/core` | `.koolie/core` |
 
 Ein Client Pack MUSS jeden dieser Platzhalter in seinem `manifest.json` unter `runtime_placeholders` belegen; ein unaufgelöster Laufzeit-Platzhalter in einer Installation ist ein Fehler.
 

@@ -25,6 +25,14 @@
     ".koolie/project-overlay/tech-packs/**            (projekteigene Packs)",
     ".koolie/project-overlay/**                       (das gesamte Overlay)"
   ],
+  "_post_steps_note": "Schritte, die install.py nach einer Installation (post_install_steps) und nach einer Hebung (post_update_steps) zusaetzlich nennt, weil ohne sie ein Teil des Packs nicht traegt - hier die Vertrauensbedingung aus CLIENT_PACK.md Abschnitt 1b. Beides liegt ausserhalb des Repositoriums; das Werkzeug kann es nennen, nicht setzen (K-123, D-395).",
+  "post_install_steps": [
+    "Das Projekt in der Benutzerkonfiguration des Clients als vertraut eintragen - ohne den Eintrag laden Konfiguration, Hooks und Befehlsregeln nicht (CLIENT_PACK.md Abschnitt 1b).",
+    "Dem Schutz-Hook einzeln vertrauen - ohne dieses Vertrauen laeuft er nicht, und nichts meldet es (CLIENT_PACK.md Abschnitt 1b)."
+  ],
+  "post_update_steps": [
+    "Dem Schutz-Hook ERNEUT vertrauen: Das Vertrauen haengt an einem Hash, und eine Hebung aendert den Hook. Ohne neues Vertrauen laeuft das Projekt ab jetzt ohne Schutz-Hook, und nichts meldet es (CLIENT_PACK.md Abschnitt 1b)."
+  ],
   "runtime_placeholders": {
     "<RUNTIME_DIR>": ".codex",
     "<ROOT_INSTRUCTION_FILE>": "AGENTS.md",

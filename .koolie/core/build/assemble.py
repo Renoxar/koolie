@@ -3,7 +3,9 @@
 
 Direktiven in den Kapiteldateien:
   {{EMBED:relpfad}}            -> Datei als Markdown-Codeblock (4 Backticks, Sprache markdown)
-  {{EMBED:relpfad:lang}}       -> wie oben mit Sprachangabe (json, yaml, python, text)
+  {{EMBED:relpfad:lang}}       -> wie oben mit Sprachangabe (json, yaml, python, text);
+                                  lang "permissions_format" = Ausgabeform der Berechtigungsdatei
+                                  aus dem Manifest des Packs (json oder toml, K-127, D-396)
   {{EMBED-RAW:relpfad:shift}}  -> Datei als gerenderten Inhalt einfuegen, Ueberschriften um <shift> Ebenen
                                   verschoben; YAML-Frontmatter wird als Hinweisblock dargestellt
   {{ZAHL:muster[,muster...]}}  -> (im Fliesstext) Zahl der versionierten Kerndateien, die eines der
@@ -171,6 +173,10 @@ def process(text: str, man: dict, installation: str) -> str:
                     if aus_installation else "")
         if kind == "EMBED":
             lang = arg or "markdown"
+            # Die Berechtigungsdatei ist nicht bei jedem Pack JSON; bei openai-codex bettete
+            # der Bau bis 1.9.3 eine TOML-Datei als JSON ein (K-127, D-396).
+            if lang == "permissions_format":
+                lang = clientmap.permissions_format(man)
             if "````" in content:
                 print(f"FEHLER: {rel} enthaelt 4 Backticks", file=sys.stderr)
                 sys.exit(1)

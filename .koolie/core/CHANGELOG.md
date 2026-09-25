@@ -2,6 +2,87 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.10.0] - 2026-09-25
+
+**Die Code- und Pack-Posten der Durchsicht - und der Hook, dem nach jeder Hebung neu vertraut
+werden muss** (`CR-2026-146` E1 bis E11, **D-395** bis **D-401**; `K-123`, `K-125`, `K-127`,
+`K-129`, `K-136`, `K-137`, `K-145` und `K-151` beantwortet, `K-152` neu). Ein MINOR-Release ohne
+Kontingent und **ohne neue Pruefungsnummer**: die Befunde der Durchsicht der Klasse B, die Code
+oder ein Client Pack aendern (D-384).
+
+> 🔴 **BEI `openai-codex` LAEUFT DER SCHUTZ-HOOK NACH EINER HEBUNG NUR, WENN IHM ERNEUT VERTRAUT
+> WIRD - UND `install.py` HAT ES BISHER NICHT GESAGT** (D-395, `K-123`). Das Vertrauen haengt an
+> einem Hash, und eine Hebung aendert den Hook. Jetzt nennt das Werkzeug nach der Installation den
+> Vertrauenseintrag und das Hook-Vertrauen und nach jeder Hebung das erneute Hook-Vertrauen - aus
+> dem Manifest des Packs, nicht aus seinem Namen.
+
+**Hinzugefuegt**
+
+- Manifestfelder `post_install_steps` und `post_update_steps` (wahlfrei); `openai-codex` fuehrt
+  beide. `install.py` gibt sie numeriert aus (D-395).
+- `tests/scripts/mermaid_renderer.py`: Browsersuche und Puppeteer-Konfiguration des
+  Mermaid-Renderers fuer Validator und Word-Fassung gemeinsam (D-398).
+- Sondenbuendel `sonden_schritte_je_pack`: **Sonde `D395`** (`openai-codex` nennt die
+  Vertrauensschritte, nicht den Integritaetsblock), **Gegenprobe `D395a`** (`claude-code` nennt
+  den Integritaetsblock, keinen Vertrauensschritt). `D395` faellt gegen den Vorstand.
+- Sondenbuendel `sonden_mermaid_umgebung`: **Sonde `D398`** (die Meldung ohne Browser gilt als
+  Umgebungsfehler, der Validator uebergibt die Konfiguration des Baus), **Gegenprobe `D398a`**
+  (ein Syntaxfehler bleibt ein Fehler des Diagramms). Beide fallen gegen den Vorstand.
+- Klaerungspunkt `K-152`: Uebungs- und Messrepositorium trennen, ohne Ziel-Release (D-400).
+- `docs/ROADMAP.md` (`0.4.0`): Planabschnitt fuer `1.11.0`, `K-152` vorgemerkt; **das Client Pack
+  fuer Kiro ist fuer `1.12.0` eingeplant** - gebaut aus der Dokumentation, die Abnahme mit einem
+  Zugang als eigenes Release, bis dahin keine produktive Freigabe (D-401, `K-147`).
+
+**Geaendert**
+
+- `install.py`: Den Satz zu `_core_rules_integrity` gibt es nur noch bei einer
+  Berechtigungsdatei im JSON-Format (D-395).
+- `validate-framework.py --mermaid`: ruft den Renderer mit der Konfiguration des Baus; ohne
+  Browser oder bei einem Renderer, der den Browser nicht startet, **eine Warnung** statt eines
+  Fehlers je Block. Die Fehlerausgabe wird weiterhin nicht wiedergegeben (D-39, D-398). Gemessen:
+  vorher acht Fehler, nachher keiner; ein ungueltiger Block bleibt ein Fehler.
+- `build/assemble.py`: Sprachangabe `permissions_format` - die Berechtigungsdatei wird in ihrer
+  Form eingebettet (`toml` bei `openai-codex`, vorher `json`). Kapitel 7a bettet die Matrix von
+  `openai-codex` ein, Kapitel 15.4 nennt die Einstufung der Hooks aus Block H des Packs (D-396).
+- `docs/PLACEHOLDER_REGISTRY.md`: Spalte `openai-codex` bei den Laufzeit-Platzhaltern (D-396).
+- Client Pack `openai-codex` `0.1.3`: Zeile H4 nennt die Zeitluecke zwischen Pruefung und
+  Zugriff; der *Preis*-Satz in R3 war falsch - ein neues Technology Pack braucht kein
+  `--update`; Abschnitt 6 nennt die Schritte, die `install.py` jetzt ausgibt (D-397, D-395).
+- Client Pack `claude-code` `0.24.2`: `claudeMdExcludes` wirkt aus der Berechtigungsdatei wie
+  aus der nutzerlokalen Datei - gemessen mit Gegenlauf (D-397).
+- Client Pack `devin-desktop` `0.14.3`: Anmerkung an der doppelten Version `0.11.0` (D-397).
+- `clients/_template/CLIENT_PACK.md` `0.3.2`: Zeilen B10, H4 und A2; R1 nennt die Kernquelle
+  der Wurzel-Anweisung (Gegenprobe 73c mitgefuehrt); M6 *selbsttaetige Uebernahme* wie im Kern,
+  ebenso in `devin-desktop` und `openai-codex` (D-399).
+- `templates/rules/21-overlay-TEMPLATE.md.template`: was ohne Bindung an Dateimuster geschieht.
+- `framework/core/03-security.md` `0.2.4`: H4 nennt die Zeitluecke in jeder Matrix; die
+  Pfadlisten haelt der Validator in einer Richtung gegen das Overlay (Pruefungen 59 und 89) -
+  der Satz *"mit keinem Overlaytext verglichen"* war seit D-171 falsch (D-397, D-399). Derselbe
+  Satz im Kommentar, den `clientmap.py` in jede Berechtigungsdatei schreibt, ist berichtigt.
+- `framework/core/02-privacy.md` `0.1.10`: Die Indexierung steht in Zeile X2 jedes Packs;
+  `K-20` fragt je Pack (D-397).
+- `onboarding/exercises/README.md`: Das Onboarding braucht `UEB-01` bis `UEB-03`, die uebrigen
+  Praeparationen nur die Sitzungstests; Herstellwege, die nur das Quellrepositorium hat, sind
+  benannt (D-400).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. An der installierten Laufzeitschicht aendern sich nur zwei Stellen, die keine Sitzung
+  laedt: die Regelvorlage `21-overlay-TEMPLATE.md.template` (kommt mit `--update`) und der
+  Kommentar der erzeugten Berechtigungsdatei bei `claude-code` und `devin-desktop` (nur bei
+  einer Erstinstallation - die Datei ist Saat, D-353). Gemessen an Frischinstallationen aus
+  `v1.9.3` und `1.10.0` je Pack.
+- **`openai-codex`:** Nach `install.py --update` dem Schutz-Hook erneut vertrauen - das galt
+  schon vorher und wird jetzt ausgegeben.
+
+**Bekannte Einschraenkungen**
+
+- `install.py` nennt die Vertrauensschritte, prueft aber nicht, ob sie getan sind (`K-118`).
+- Die Unterscheidung eines Umgebungsfehlers des Renderers haengt am Wortlaut seiner Meldung.
+- `K-138` bis `K-144`, `K-146` und `K-148` bis `K-150` stehen fuer `1.11.0` an - darunter vier
+  abgenommene Zellen, deren Ergebnis ihre Erwartung nicht deckt (`K-148`).
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.9.3] - 2026-09-25
 
 **Die Durchsicht der Klasse B, dritter Bereich - und die Anweisung, die stehen bleibt**

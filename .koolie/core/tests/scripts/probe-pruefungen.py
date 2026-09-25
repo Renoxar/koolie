@@ -1403,6 +1403,112 @@ buendel(sonden_kennzeichen_im_projekt,
         "gemeldet, und install.py und Validator erkennen es an derselben Stelle")
 
 
+# --- D-395: die Schritte nach Installation und Hebung je Pack (K-123) -------------
+#
+# 🔴 BEI `openai-codex` TRAEGT OHNE VERTRAUEN NICHTS VON ABSCHNITT B, UND DER HOOK
+# BRAUCHT NACH JEDER HEBUNG NEUES VERTRAUEN - und `install.py` nannte keins von beidem.
+# Seine Schritte waren packneutral und verlangten dazu, `_core_rules_integrity` stehen
+# zu lassen, einen Block, den die TOML-Datei dieses Packs nicht fuehrt. Jetzt nennt das
+# Manifest die Schritte (post_install_steps, post_update_steps), und den Integritaetsblock
+# nennt das Werkzeug nur bei einer Berechtigungsdatei im JSON-Format.
+#   D395  (Sonde)      - openai-codex: Installation nennt das Projekt- und das
+#                        Hook-Vertrauen und nicht den Integritaetsblock; die Hebung
+#                        nennt das erneute Hook-Vertrauen. Gegen den Vorstand faellt sie.
+#   D395a (Gegenprobe) - claude-code: Integritaetsblock genannt, kein Vertrauensschritt,
+#                        kein Zusatzblock bei der Hebung. Ein Werkzeug, das jedem Pack
+#                        die Schritte eines Packs nennt, besteht die Sonde auch.
+M395_INSTALL = "als vertraut eintragen"
+M395_HOOK = "Dem Schutz-Hook einzeln vertrauen"
+M395_UPDATE = "Dem Schutz-Hook ERNEUT vertrauen"
+M395_BLOCK = "_core_rules_integrity"
+
+
+def sonden_schritte_je_pack() -> None:
+    """Wirkungsnachweis fuer die packeigenen Schritte aus D-395 an echten Installationen."""
+    faelle = (
+        ("SONDE", "D395", "openai-codex", True,
+         "openai-codex: Installation und Hebung nennen die Vertrauensschritte, "
+         "nicht den Integritaetsblock"),
+        ("GEGENPROBE", "D395a", "claude-code", False,
+         "claude-code: der Integritaetsblock wird genannt, kein Vertrauensschritt"),
+    )
+    werkzeug = os.path.join(QUELLE, ".koolie", "core", "install.py")
+    for art, kennung, pack, codex, was in faelle:
+        ziel = tempfile.mkdtemp(prefix="lw-inst-")
+        root = os.path.join(ziel, "projekt")
+        os.makedirs(root)
+        try:
+            p = unterprozess([sys.executable, werkzeug, "--client", pack, "--root", root])
+            ein = (p.stdout or "") + (p.stderr or "")
+            q = unterprozess([sys.executable, werkzeug, "--update", "--root", root])
+            heb = (q.stdout or "") + (q.stderr or "")
+            ist = (M395_INSTALL in ein, M395_HOOK in ein, M395_BLOCK in ein,
+                   M395_UPDATE in heb)
+            soll = (codex, codex, not codex, codex)
+            ok = p.returncode == 0 and q.returncode == 0 and ist == soll
+            melde(art, kennung, ok, was)
+            if not ok:
+                notiz("        Exit %d/%d, (Projekt, Hook, Block, erneut) = %s, erwartet %s"
+                      % (p.returncode, q.returncode, ist, soll))
+        finally:
+            aufraeumen(ziel)
+
+
+buendel(sonden_schritte_je_pack,
+        "install.py nennt nach Installation und Hebung die Schritte, die das Manifest "
+        "des Packs fuehrt, und den Integritaetsblock nur, wo es ihn gibt")
+
+
+# --- D-398: der Mermaid-Renderer scheitert an der Umgebung, nicht am Diagramm (K-145) --
+#
+# 🔴 OHNE DEN BROWSER VON PUPPETEER MELDETE `--mermaid` JEDEN BLOCK ALS UNGUELTIG - auch
+# unveraenderte -, waehrend der Bau im selben Arbeitsgang alle Diagramme renderte. Der
+# Validator nimmt jetzt Browser und Konfiguration des Baus (`mermaid_renderer.py`) und
+# erkennt an der Fehlerausgabe, ob der Renderer an der Umgebung gescheitert ist; dann
+# warnt er einmal, statt ueber die Diagramme zu urteilen. Den Renderer selbst ruft keine
+# Sonde auf - er ist eine Vorbedingung des Arbeitsplatzes, und eine Sonde, die an ihm
+# haengt, bestuende auf einem Arbeitsplatz und fiele auf dem naechsten. Gemessen wird die
+# Unterscheidung und die Verdrahtung.
+#   D398  (Sonde)      - die Meldung, mit der der Renderer am 2026-09-25 ohne Browser
+#                        scheiterte, gilt als Umgebungsfehler, und der Validator ruft
+#                        den Renderer mit der Konfiguration aus diesem Modul auf.
+#   D398a (Gegenprobe) - ein Syntaxfehler des Diagramms gilt NICHT als Umgebungsfehler:
+#                        Eine Unterscheidung, die alles zur Umgebung erklaert, machte aus
+#                        der Pruefung eine Warnung, die nie mehr einen Fehler meldet.
+M398_UMGEBUNG = ("Error: Could not find chrome-headless-shell (ver. 153.0.8010.36). "
+                 "This can occur if either")
+M398_SYNTAX = ("Error: Parse error on line 2: ...t TD  A[Start --> B{{{ "
+               "Expecting 'SQE', 'DOUBLECIRCLEEND', 'PE', got 'DIAMOND_START'")
+
+
+def sonden_mermaid_umgebung() -> None:
+    """Wirkungsnachweis fuer die Unterscheidung aus D-398, ohne den Renderer."""
+    skripte = os.path.join(QUELLE, ".koolie", "core", "tests", "scripts")
+    code = ("import sys; sys.path.insert(0, sys.argv[1]); import mermaid_renderer as m; "
+            "print(m.ist_umgebungsfehler(sys.argv[2]), m.ist_umgebungsfehler(sys.argv[3]))")
+    p = unterprozess([sys.executable, "-c", code, skripte, M398_UMGEBUNG, M398_SYNTAX])
+    ist = (p.stdout or "").split()
+    validator = lies(os.path.join(skripte, "validate-framework.py"))
+    verdrahtet = ("mermaid_renderer.puppeteer_konfiguration(" in validator
+                  and '"-p", pptr' in validator)
+    ok = p.returncode == 0 and ist[:1] == ["True"] and verdrahtet
+    melde("SONDE", "D398", ok,
+          "Die Meldung ohne Browser gilt als Umgebungsfehler, und der Validator "
+          "uebergibt die Konfiguration des Baus")
+    if not ok:
+        notiz("        Exit %d, Ausgabe %r, verdrahtet %s" % (p.returncode, ist, verdrahtet))
+    ok = p.returncode == 0 and ist[1:2] == ["False"]
+    melde("GEGENPROBE", "D398a", ok,
+          "Ein Syntaxfehler des Diagramms bleibt ein Fehler des Diagramms")
+    if not ok:
+        notiz("        Exit %d, Ausgabe %r" % (p.returncode, ist))
+
+
+buendel(sonden_mermaid_umgebung,
+        "--mermaid unterscheidet einen Renderer ohne Browser von einem ungueltigen "
+        "Diagramm und ruft ihn wie der Bau auf")
+
+
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
 #
 # Zwei Gegenstaende in einem Block, weil sie dieselbe Entscheidung tragen: Der Suchkanal
@@ -7671,9 +7777,11 @@ def _73_vorlage_leeren(root: str) -> None:
     """Gegenprobe: die Vorlage fuehrt <TBD> und wird nicht gemessen."""
     ersetze(P(root, P73_VORLAGE),
             ("| R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung "
-             "ungefragt geladen | `AGENTS.md` | `<TBD>` | `<TBD>` | `<TBD>` |",
+             "ungefragt geladen | `.koolie/core/framework/runtime/root-instruction.md` "
+             "| `<TBD>` | `<TBD>` | `<TBD>` |",
              "| R1 | Die Wurzel-Anweisungsdatei wird zu Beginn jeder Sitzung "
-             "ungefragt geladen | `AGENTS.md` | `<TBD>` | `<TBD>` | `[DOK]` |"))
+             "ungefragt geladen | `.koolie/core/framework/runtime/root-instruction.md` "
+             "| `<TBD>` | `<TBD>` | `[DOK]` |"))
 
 
 sonde("73a", "Eine [DOK]-Zeile ohne Quellenkennung im Belegkopf wird gemeldet - der "

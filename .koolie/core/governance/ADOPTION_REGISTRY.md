@@ -28,10 +28,10 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.9.3** | `0.3.17` | 2026-09-25 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.9.3** | `1.4.11` | 2026-09-25 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.10.0** | `0.3.18` | 2026-09-25 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.10.0** | `1.4.12` | 2026-09-25 |
 
-🟢 **STAND 2026-09-25: BEIDE PROJEKTE TRAGEN `1.9.3`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.9.3` ist die Durchsicht der Skills, der Vorlagen und der Vorlage des Client Packs (D-393): An der Laufzeitschicht ändern sich nur die Erläuterungen von `fw-docs-update` und `fw-tests`, keine Anweisung; beide Skills werden kürzer. Die Änderungen wirken im Projekt erst nach dem Heben (D-381). Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
+🟢 **STAND 2026-09-25: BEIDE PROJEKTE TRAGEN `1.10.0`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.10.0` sind die Code- und Pack-Posten der Durchsicht (D-395 bis D-400): An der installierten Laufzeitschicht ändert sich nur die Regelvorlage `21-overlay-TEMPLATE.md.template`, die keine Sitzung lädt; neu sind die Schritte nach Installation und Hebung, die `install.py` aus dem Manifest nennt (bei `openai-codex`), und im Kern Werkzeuge, Hauptdokument und Packbeschreibungen. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`

@@ -57,6 +57,7 @@ import os
 import shutil
 import subprocess
 import sys
+import textwrap
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -101,6 +102,19 @@ def client_template(client: str) -> str:
 # ---------------------------------------------------------------------------
 MANIFEST_PFLICHTFELDER = ("client", "skills_dir", "pack_runtime_dir",
                           "core_skill_prefix", "core_paths", "seed_paths")
+
+
+def nachschritte(schritte: list, ab: int) -> None:
+    """Gibt die packeigenen Schritte nach Installation oder Hebung numeriert aus.
+
+    Sie stehen im Manifest (post_install_steps, post_update_steps), weil sie nur ein Pack
+    betreffen - bei openai-codex die Vertrauensbedingung, ohne die Konfiguration und
+    Schutz-Hook nicht laden (K-123, D-395). Lange Saetze werden umbrochen.
+    """
+    for i, schritt in enumerate(schritte, ab):
+        zeilen = textwrap.wrap(schritt, width=80)
+        for j, zeile in enumerate(zeilen):
+            print(f"  {i}. {zeile}" if j == 0 else f"     {zeile}")
 
 
 def load_manifest(client: str) -> dict:
@@ -1966,17 +1980,27 @@ def main() -> int:
                 print("     Status entwurf registriert. Sie wirken erst, wenn der Overlay Owner "
                       "sie prueft,")
                 print("     freigibt und in der Laufzeitfassung als K1-Dokumente fuehrt.")
-        print(f"  2. Werte in {man['permissions_file']} eintragen - die Kernregeln unter")
-        print("     _core_rules_integrity nicht entfernen.")
+        # Den Integritaetsblock fuehrt nur eine Berechtigungsdatei im JSON-Format; die
+        # TOML-Datei eines Packs kennt ihn nicht (K-123, D-395).
+        if clientmap.permissions_format(man) == "json":
+            print(f"  2. Werte in {man['permissions_file']} eintragen - die Kernregeln unter")
+            print("     _core_rules_integrity nicht entfernen.")
+        else:
+            print(f"  2. Werte in {man['permissions_file']} eintragen.")
         print("  3. .koolie/project-overlay/forbidden-terms.txt mit den realen Projekt- und")
         print("     Kundennamen fuellen (bleibt projektlokal).")
         print("  4. .koolie/core/checklists/10-project-adoption.md abarbeiten.")
         print("  5. python .koolie/core/tests/scripts/validate-framework.py --strict-overlay")
+        nachschritte(man.get("post_install_steps", []), 6)
     if mode == "update":
         print()
         print(f"Hinweis: {man['permissions_file']} wurde nicht angefasst, weil sie Projektwerte enthaelt.")
         print("Pruefe nach einem Release-Wechsel, ob die Kernregeln noch vollstaendig sind:")
         print("  python .koolie/core/tests/scripts/validate-framework.py --strict-overlay")
+        if man.get("post_update_steps"):
+            print()
+            print("Fuer dieses Client Pack ausserdem:")
+            nachschritte(man["post_update_steps"], 1)
 
     ignoriert = ignorierte_kerndateien(root)
     if ignoriert:

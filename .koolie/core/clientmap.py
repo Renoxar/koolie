@@ -390,8 +390,10 @@ def _kommentar(man: dict, mit_hooks: bool) -> str:
         "seinen Platzhalter erklaert - ein anderer Befehl an dieser Stelle ist ein "
         "Fehler, auch wenn die Zahl der Zeilen stimmt. Bis 0.43.0 stand der Satz "
         "darueber hier ohne diese Bedingung und versprach zu viel: Ein offener Schlitz "
-        "deckte eine hinzugefuegte Zeile (CR-2026-066, D-90). Ungeprueft bleiben die "
-        "Pfadlisten - ihr Inhalt wird mit keinem Overlaytext verglichen.")
+        "deckte eine hinzugefuegte Zeile (CR-2026-066, D-90). Die Pfadlisten haelt "
+        "der Validator unter --strict-overlay gegen das Overlay, in einer Richtung: "
+        "Jeder ausgeschlossene Pfad braucht hier eine Lese- und eine Schreibsperre, "
+        "jeder nur lesbare eine Schreibsperre (Pruefungen 59 und 89; K-151, D-399).")
     if import_control(man) is not None:
         teile.append(
             "Die Importsteuerung schaltet Regel- und Skillquellen fremder "
