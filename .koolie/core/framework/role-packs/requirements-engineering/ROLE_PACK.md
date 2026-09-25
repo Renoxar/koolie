@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | RP-RE |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.2 |
+| Version | 0.1.3 |
 | Status | pilot |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
@@ -154,4 +154,4 @@ Nicht aktivierte Packs liegen nur im Verzeichnis und werden vom KI-Client nicht 
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-09 | angelegt: Pack, Skill `role-re-ticket`, Laufzeitfassung | `<FRAMEWORK_OWNER>` |
-| 0.1.2 | 2026-09-21 | Abschnitt 9: Die Aktivierung hat vier Schritte statt zwei – die kopierte Laufzeitfassung wird über `install.py --update` in die Form des Client Packs gebracht (3a), und der Skill gehört in die Berechtigungsdatei (3b). Beides gemessen am Meßbaum von Bündel 5 (`CR-2026-115`, D-244; D-238) | `<FRAMEWORK_OWNER>` |
+| 0.1.2 | 2026-09-21 | Abschnitt 9: Die Aktivierung hat vier Schritte statt zwei – die kopierte Laufzeitfassung wird über `install.py --update` in die Form des Client Packs gebracht (3a), und der Skill gehört in die Berechtigungsdatei (3b). Beides gemessen am Messbaum von Bündel 5 (`CR-2026-115`, D-244; D-238) | `<FRAMEWORK_OWNER>` |

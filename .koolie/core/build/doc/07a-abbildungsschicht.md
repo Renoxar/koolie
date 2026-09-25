@@ -4,7 +4,7 @@
 
 Ein Framework, dessen Datenschutz- und Sicherheitszusagen bei einem KI-Client von der Engine erzwungen werden und bei einem anderen nur als Prosa im Prompt stehen, muss diesen Unterschied sichtbar machen. Sonst erzeugt es falsche Sicherheit – genau dort, wo es am meisten schadet.
 
-Die Erstfassung dieses Frameworks bezeichnete ihre kanonische Ebene als werkzeugneutral, nannte aber an 63 Stellen die Laufzeitpfade genau eines Clients. Wer mit einem anderen Werkzeug installierte, las durchgehend Pfade, die bei ihm nicht existieren. Die **Abbildungsschicht** macht diese Bindung explizit und austauschbar.
+Dazu kommt die Pfadfrage: Ein Kern, der die Laufzeitpfade eines bestimmten Clients nennt, ist nicht werkzeugneutral – wer mit einem anderen Werkzeug installiert, liest Pfade, die bei ihm nicht existieren. Die **Abbildungsschicht** macht diese Bindung explizit und austauschbar.
 
 Ein **Client Pack** beantwortet für genau einen Client zwei Fragen:
 
@@ -22,20 +22,20 @@ Die achtstufige Prioritätshierarchie (Kap. 7) bleibt **unverändert**. Ein Clie
 
 Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine von drei Klassen ein – `[TECHNISCH]` (die Engine erzwingt sie), `[TEXTUELL]` (nur Anweisung im Kontext) oder `[NICHT ABBILDBAR]` – und macht damit messbar, was zuvor Behauptung war.
 
-**Die Zeilenzahl ist keine Eigenschaft des Frameworks, sondern eine des Packs.** `claude-code` führt 31 Zeilen, `devin-desktop` dieselben 31 und fünf weitere (A2, M4, M5, M6, M7), für die nur dort ein Mechanismus existiert – zusammen 36. Eine Zusage ohne Mechanismus bekommt keine Zeile; sie bekommt eine Begründung im Pack.
+**Die Zeilenzahl ist keine Eigenschaft des Frameworks, sondern eine des Packs.** `devin-desktop` etwa führt Zeilen (A2, M4, M5, M6, M7), für die `claude-code` keinen Mechanismus hat und die dort deshalb fehlen. Eine Zusage ohne Mechanismus bekommt keine Zeile; sie bekommt eine Begründung im Pack.
 
 Sechs dieser Zusagen sind **Kernzusagen** (B1 bis B6) und entsprechen dem Integritätsblock der Berechtigungsdatei. Weicht eine von `[TECHNISCH]` ab, ist sie im Pack einzeln zu begründen, im Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben.
 
-Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich das zweite Pack – derselbe Kern, ein anderer Client:
+Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Die Matrix des dritten Packs, `openai-codex`, steht in `.koolie/core/clients/openai-codex/CLIENT_PACK.md`. Zum Vergleich hier `claude-code` – derselbe Kern, ein anderer Client:
 
 {{EMBED-RAW:.koolie/core/clients/claude-code/CLIENT_PACK.md:1}}
-Der Vergleich beider Matrizen ist die Probe aufs Exempel: Beide Packs bilden alle sechs Kernzusagen `[TECHNISCH]` ab – **drei davon technisch in jedem Zugriffskanal** (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess tragen sie die Regelschicht.
+Der Vergleich der Matrizen ist die Probe aufs Exempel: `devin-desktop` und `claude-code` bilden alle sechs Kernzusagen ab – **drei davon technisch in jedem Zugriffskanal** (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess tragen sie die Regelschicht. Bei `openai-codex` sind B3 und B5 `[NICHT ABBILDBAR]`; das Pack begründet es, und ein Projekt braucht dafür eine dokumentierte Ausnahme mit Freigabe durch `<SECURITY_CONTACT>` (siehe oben).
 
-**Ein Vergleich der Gesamtzahlen trägt dagegen nicht, und das hat zwei Gründe.** Erstens sind die Matrizen unterschiedlich lang (36 gegen 31 Zeilen). Zweitens – und das wiegt schwerer – **messen die Zahlen Verschiedenes:** Bei `devin-desktop` sind 21 von 36 Zeilen `[TECHNISCH]`, 13 `[TEXTUELL]`, 2 `[NICHT ABBILDBAR]`, und **neun Zeilen sind an einer laufenden Installation beobachtet** (S3, B3, B10, A1, H1, H2, R5, R6, S5); genau eine sagt noch `BELEG OFFEN`. Bei `claude-code` sind es 22 von 31 `[TECHNISCH]`, 7 `[TEXTUELL]`, 2 `[NICHT ABBILDBAR]` (S5, B10) und **keine Zeile ohne Beleg** – aber der Beleg ist dort überwiegend ein Dokumentenabgleich; Messungen liegen für sechs Zeilen vor (S3, S4, A1, die Reichweite von H2, B6 und – zur Hälfte – B2). **Ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung.** Die Summen rechnet Prüfung 31 bei jedem Validatorlauf aus der Matrix nach; sie werden nicht gepflegt.
+**Ein Vergleich der Gesamtzahlen trägt dagegen nicht, und das hat zwei Gründe.** Erstens sind die Matrizen unterschiedlich lang. Zweitens – und das wiegt schwerer – **messen die Zahlen Verschiedenes:** Die Belege sind auf verschiedenen Wegen gewonnen – durch Beobachtung an einer laufenden Installation, durch Messung am Client oder durch Abgleich mit der Herstellerdokumentation –, und welcher Weg für eine Zeile gilt, sagt ihre Belegspalte. Bei `claude-code` ist der Beleg überwiegend ein Dokumentenabgleich, bei `openai-codex` durchweg eine Messung. **Ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung.** Die Summen stehen in Abschnitt 3 jedes Packs; Prüfung 31 rechnet sie bei jedem Validatorlauf aus der Matrix nach.
 
 ## 7a.4 Form und Semantik
 
-Ein Client Pack enthält **drei Dateien** – die Fähigkeitsmatrix `CLIENT_PACK.md`, die maschinenlesbare Abbildung `manifest.json` und eine erklärende README der Laufzeitschicht unter `root-template/`. **Bis Release 0.25.0 waren es vier:** Die zweite README, die der Regelablage, ist mit 0.26.0 in die erste aufgegangen (D-36). Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei sind zwei Fälle zu unterscheiden, und der Unterschied ist wesentlich:
+Ein Client Pack enthält **drei Dateien** – die Fähigkeitsmatrix `CLIENT_PACK.md`, die maschinenlesbare Abbildung `manifest.json` und eine erklärende README der Laufzeitschicht unter `root-template/`. Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei sind zwei Fälle zu unterscheiden, und der Unterschied ist wesentlich:
 
 **Formtransformation.** Der Inhalt ist derselbe, nur die Schreibweise unterscheidet sich – ein Frontmatter-Feld heißt anders, eine Werkzeugliste ist kommagetrennt statt eingerückt. Das betrifft Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills und die Vorlagen.
 
@@ -51,13 +51,13 @@ Für den zweiten Fall genügt Sorgfalt nicht. Eine beim Nachziehen vergessene Re
 | Die Präfixform eines Befehlsverbots muss ein Präfix der wörtlichen Form sein | Damit ist die Präfixform nachweislich mindestens so breit; die Abweichung ist belegbar eine Verschärfung |
 | Bei `allow` müssen wörtliche und Präfixform übereinstimmen | Dort wäre jede Verbreiterung eine Lockerung |
 
-Der Integritätsblock der Berechtigungsdatei wird aus derselben Quelle erzeugt; der Validator gleicht die installierte Datei dagegen ab. Eine entfernte Kernregel fällt dadurch auf, auch wenn das Projekt zugleich die Integritätsliste gekürzt hat.
+Der Integritätsblock der Berechtigungsdatei wird aus derselben Quelle erzeugt; der Validator gleicht die installierte Datei dagegen ab. Eine entfernte Kernregel fällt dadurch auf, auch wenn das Projekt zugleich die Integritätsliste gekürzt hat. Das gilt für Packs mit einer Berechtigungsdatei im JSON-Format; `openai-codex` schreibt seine Berechtigungen im TOML-Format und ohne Integritätsblock – welche Prüfungen dieses Pack deshalb nicht erreichen, führt es selbst in Abschnitt 5.
 
-Die werkzeugneutrale Regelmenge, aus der beide Packs entstehen:
+Die werkzeugneutrale Regelmenge, aus der jedes Pack seine Berechtigungen erzeugt:
 
 {{EMBED:.koolie/core/framework/runtime/permissions.json:json}}
 ## 7a.5 Was das für ein Projekt bedeutet
 
-Die Wahl des Client Packs fällt bei der Erstinstallation (`install.py --client`) und wird im Overlay dokumentiert. Sie ist keine Geschmacksfrage: Bevor ein Pack in Betrieb geht, ist seine Fähigkeitsmatrix zu lesen und jede Kernzusage ohne technische Durchsetzung freizugeben. Ein Wechsel des Clients ist ein eigener Vorgang mit erneuter Bewertung – nicht ein Schalter.
+Die Wahl des Client Packs fällt bei der Erstinstallation (`install.py --client`; der Dialog der Starter fragt sie ab, Kap. 15.2) und wird im Overlay dokumentiert. Sie ist keine Geschmacksfrage: Bevor ein Pack in Betrieb geht, ist seine Fähigkeitsmatrix zu lesen und jede Kernzusage ohne technische Durchsetzung freizugeben. Ein Wechsel des Clients ist ein eigener Vorgang mit erneuter Bewertung – nicht ein Schalter.
 
 Für ein weiteres Client Pack ist Roadmap-AP2 mit der Fähigkeitsmatrix des neuen Packs zu wiederholen. Solange dessen Zielversion nicht festgelegt und geprüft ist, gilt das Pack als **unbelegt**.

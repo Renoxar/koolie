@@ -12,7 +12,8 @@
 
 ## Arbeitsbereich
 - Erlaubte Pfade: `src/**`, `test/**`, `docs/**`
-- Ausgeschlossene Pfade: `deploy/**`, `config/env/**` – zusätzlich immer: Secret-Dateien, Laufzeitschicht, Wurzel-Anweisungsdatei, `.koolie/project-overlay/`
+- Ausgeschlossene Pfade, weder lesen noch ändern: `deploy/**`, `config/env/**` – zusätzlich immer Secret-Dateien
+- Nur lesbar, nie ändern: `src/db/migrations/**` – zusätzlich immer: Wurzel-Anweisungsdatei, Laufzeitschicht, `.koolie/core/`, `.koolie/project-overlay/`
 - Testpfade: `test/**` · Dokumentationspfade: `docs/**`
 - Als kritisch eingestufte Komponenten (mindestens Stufe hoch): `src/auth/**`, `src/export/**`
 
@@ -24,7 +25,7 @@
 ## Technik und Konventionen
 - Technologie-Stack: Sprache X 21, Framework Y 3, Build-Tool Z · Testframework: Testframework T 5
 - Coding Conventions: `.koolie/project-overlay/documents/coding-guidelines/bsv-guidelines.md`
-- Commit-Konvention: Typ + BSV-Ticketnummer + Kurzbeschreibung · Branching: Feature-Branches auf `main`
+- Commit-Konvention: Typ + BSV-Ticketnummer + Kurzbeschreibung · Branching: Feature-Branches auf `main` · Standard-Branch: `main`
 - Definition of Ready / Done: `.koolie/project-overlay/documents/definition-of-ready/dor.md`, `.../definition-of-done/dod.md`
 
 ## Freigegebene Kontextquellen (Overlay-Manifest)

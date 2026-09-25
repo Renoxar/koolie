@@ -8,7 +8,7 @@ Projektneutral, wiederverwendbar und erweiterbar – mit methodischem Vorgehensm
 
 Welcher KI-Client zum Einsatz kommt, entscheidet ein **Client Pack** (`.koolie/core/clients/`) – derzeit `devin-desktop`, `claude-code` und `openai-codex`. Der Kern ist werkzeugneutral; welche Zusagen ein Client technisch durchsetzt und welche nur als Anweisung im Kontext stehen, weist die Fähigkeitsmatrix des jeweiligen Packs aus.
 
-**Version:** siehe `.koolie/core/VERSION` · **Änderungen:** `.koolie/core/CHANGELOG.md` · **Status:** kein Modulträger auf `entwurf` – 77 von 77 stehen auf `pilot` · **Owner:** `<FRAMEWORK_OWNER>` (`.koolie/core/OWNERS.md`)
+**Version:** siehe `.koolie/core/VERSION` · **Änderungen:** `.koolie/core/CHANGELOG.md` · **Status:** kein Modulträger steht auf `entwurf`, alle stehen auf `pilot` · **Owner:** `<FRAMEWORK_OWNER>` (`.koolie/core/OWNERS.md`)
 
 ## Warum Koolie?
 
@@ -19,6 +19,8 @@ Genau das tut dieses Framework mit einem KI-Client: Es macht ihn nicht besser, u
 Ein Koolie ist außerdem eine **Gebrauchsrasse, kein Schauhund**. Das ist hier ein Anspruch: Was in diesem Framework steht, muss im Alltag eines Projekts tragen, nicht in einer Vorführung gut aussehen.
 
 Die Namensentscheidung mit ihrer Begründung und den verworfenen Alternativen steht als D-125 in `.koolie/core/governance/DECISION_LOG.md`.
+
+> Kennungen in diesem Text: `D-…` ist ein Decision Record in `.koolie/core/governance/DECISION_LOG.md`, `K-…` ein offener Klärungspunkt in derselben Datei, `CR-…` ein Änderungsantrag unter `.koolie/core/governance/change-requests/`. Zum Handeln braucht man sie nicht – sie sagen, wo die Begründung steht.
 
 ## Leitidee in drei Sätzen
 
@@ -57,7 +59,7 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 │   │   ├── VERSION · CHANGELOG.md · OWNERS.md
 │   │   ├── clients/                     #   Abbildung auf KI-Clients (keine Regelebene)
 │   │   │   ├── README.md                #     Zweck, Fähigkeitsmatrix, Erstellung
-│   │   │   └── <client>/                #     je Client DREI Dateien:
+│   │   │   └── <client>/                #     je Client drei Bestandteile:
 │   │   │       ├── CLIENT_PACK.md       #       Pfadabbildung + Durchsetzungstiefe
 │   │   │       ├── manifest.json        #       dieselbe Abbildung maschinenlesbar
 │   │   │       └── root-template/       #       die README der Laufzeitschicht
@@ -67,6 +69,7 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 │   │   │   ├── skills/                  #     fw-* : die zwölf Referenz-Skills
 │   │   │   ├── role-packs/              #     Ebene 6 – RP-DEV und RP-RE
 │   │   │   ├── tech-packs/              #     Ebene 5 – Vorlage
+│   │   │   ├── overlay-patterns/        #     Overlay-Muster (--overlay general)
 │   │   │   └── org-policies/            #     Ebene B: Einbindungspunkt
 │   │   ├── prompts/                     #   FW-PR-001…012
 │   │   ├── checklists/                  #   FW-CL-01…11
@@ -89,25 +92,26 @@ Im Wurzelverzeichnis landen nur die Dinge, die ein KI-Client ausschließlich dor
 └── <Projektcode>                        # backend/, frontend/, src/ …
 ```
 
-> **Wo die Hook-Konfiguration steht, entscheidet das Pack – und es ist gemessen, nicht
-> gewählt.** Bei `devin-desktop` und `claude-code` steht sie **in der Berechtigungsdatei**:
-> Dort ist gemessen, dass der Client sie liest, und aus einer eigenen Hook-Datei wurde
-> nachweislich kein Hook ausgeführt (D-32). Bei `openai-codex` ist es umgekehrt: Er liest
-> die Hooks **nur** aus einer eigenen Datei (`.codex/hooks.json`), und seine
-> Berechtigungsschicht zerfällt in ein Rechteprofil (`.codex/config.toml`) und eine
-> Befehlsregeldatei (`.codex/rules/koolie.rules`, D-346). ⚠️ **Die gesamte projektlokale
-> Schicht dieses Clients lädt nur, wenn das Projekt in seiner Benutzerkonfiguration als
-> vertraut eingetragen ist, und dem Schutz-Hook muss zusätzlich einzeln vertraut werden** –
-> beides liegt außerhalb des Repositoriums (`clients/openai-codex/CLIENT_PACK.md`
-> Abschnitt 1b).
+> **Wo die Hook-Konfiguration steht, entscheidet das Pack, und zwar nach Messung am
+> Client.** Bei `devin-desktop` und `claude-code` steht sie in der Berechtigungsdatei,
+> denn nur von dort führt der Client die Hooks aus (D-32). `openai-codex` liest die Hooks
+> nur aus einer eigenen Datei (`.codex/hooks.json`), und seine Berechtigungsschicht
+> zerfällt in ein Rechteprofil (`.codex/config.toml`) und eine Befehlsregeldatei
+> (`.codex/rules/koolie.rules`, D-346). ⚠️ **Die gesamte projektlokale Schicht dieses
+> Clients lädt nur, wenn das Projekt in seiner Benutzerkonfiguration als vertraut
+> eingetragen ist, und dem Schutz-Hook muss zusätzlich einzeln vertraut werden** – beides
+> liegt außerhalb des Repositoriums (`clients/openai-codex/CLIENT_PACK.md` Abschnitt 1b).
 
 ## Framework in ein Projekt übernehmen
 
-**Mit dem Starter (seit `1.7.0`):** Das Release-Archiv entpacken und in seiner Wurzel
+**Mit dem Starter:** Das Release-Archiv entpacken und in seiner Wurzel
 `install.cmd` (Windows) oder `install.command` (macOS) per Doppelklick starten. Der
 Starter sucht ein Python ab 3.8 – ohne es nennt er den Installationsweg und hält an –
-und fragt Projektverzeichnis, KI-Client, Overlay-Muster und Lieferumfang ab. Liegt im Projekt schon
-ein Kern, bietet er das Heben an. Dahinter steht ein einziger Befehl, der ebenso direkt
+und fragt Projektverzeichnis, KI-Client, Overlay-Muster und Lieferumfang ab. Ein
+**Overlay-Muster** ist ein vorbefülltes Overlay für einen häufigen Projekttyp – `general` trägt
+allgemeine Pfadwerte und sechs Musterdokumente als Entwurf; ohne Muster beginnt das Overlay
+leer. Es gibt nichts frei: Aktiviert wird das Overlay erst, wenn das Projekt es geprüft hat. Liegt im Projekt schon
+ein Kern, bietet er das Heben an (D-362). Dahinter steht ein einziger Befehl, der ebenso direkt
 aufrufbar ist:
 
 ```bash
@@ -116,17 +120,21 @@ python .koolie/core/install.py --target /pfad/zum/projekt --update     # Projekt
 python .koolie/core/install.py --target /pfad/zum/projekt --lieferumfang nutzung
 ```
 
-**Der Lieferumfang (seit `1.8.0`):** `voll` – die Vorgabe – liefert den ganzen Kern;
-`nutzung` läßt die Nachweisschicht weg – Änderungsanträge, Abnahmeprotokolle, Erhebungen
-und den Bau des Hauptdokuments, rund 350 von 550 Dateien. Die Wahl gilt beim Heben
+**Der Lieferumfang:** `voll` – die Vorgabe – liefert den ganzen Kern;
+`nutzung` lässt die Nachweisschicht weg – Änderungsanträge, Abnahmeprotokolle, Erhebungen
+und den Bau des Hauptdokuments, zusammen der größere Teil der Dateien. Die Wahl gilt beim Heben
 weiter (D-367).
 
 `--target` kopiert **nur** `.koolie/core/` – aus einem Klon nur das Verfolgte – und ruft
-danach die Installation im Projekt auf. ⚠️ Beim ersten Start warnt das System vor dem
+danach die Installation im Projekt auf. Unter Windows muss der Projektpfad so kurz sein,
+dass kein Pfad im kopierten Kern die Windows-Grenze von 259 Zeichen überschreitet; sonst
+hält `--target` vor der ersten Kopie mit dieser Begründung an (D-368).
+
+⚠️ Beim ersten Start warnt das System vor dem
 unsignierten Starter: unter Windows SmartScreen (*„Weitere Informationen“ → „Trotzdem
 ausführen“*), unter macOS Gatekeeper (*Systemeinstellungen → Datenschutz & Sicherheit →
-„Dennoch öffnen“*; der sichere Weg ist das Terminal: `sh install.command`). ⚠️ **Der
-macOS-Starter ist unter Git Bash und Linux geprüft, auf macOS selbst noch nicht** – die
+„Dennoch öffnen“*; der sichere Weg ist das Terminal: `sh install.command`). Der
+macOS-Starter ist unter Git Bash und Linux geprüft, auf macOS selbst noch nicht – die
 Abnahme dort steht aus (`CR-2026-140`). Linux und andere Unix-Systeme nehmen `--target`
 direkt oder den Handweg unten.
 
@@ -143,7 +151,11 @@ cp -r .koolie/core /pfad/zum/projekt/.koolie/
 cd /pfad/zum/projekt
 python .koolie/core/install.py
 
-# 3. Overlay ausfüllen, dann prüfen
+# 3. Overlay ausfüllen, dann die Aktivierungsreife prüfen
+python .koolie/core/tests/scripts/validate-framework.py --check-overlay-ready
+
+# 4. Overlay-Status auf aktiv setzen und den aktiven Zustand prüfen –
+#    bis dahin arbeitet der Agent im Projekt nur lesend
 python .koolie/core/tests/scripts/validate-framework.py --strict-overlay
 ```
 
@@ -153,9 +165,8 @@ python .koolie/core/tests/scripts/validate-framework.py --strict-overlay
 > für das Framework-Repositorium und meldet Fehler, deren Ursache er nicht nennt. Aus
 > einem Klon kommt zusätzlich dessen eigenes Overlay mit (`.koolie/project-overlay/`)
 > und **ersetzt beim Heben das des Projekts – ohne Meldung**, weil `install.py` das
-> Overlay nie anfasst. `install.py` weist seit `1.4.4` auf ein mitkopiertes Kennzeichen
-> hin (D-354). **`--target` kann diesen Fehler nicht machen:** Es kopiert nur den Kern
-> (D-362).
+> Overlay nie anfasst. `install.py` weist auf ein mitkopiertes Kennzeichen hin (D-354).
+> `--target` kann diesen Fehler nicht machen: Es kopiert nur den Kern (D-362).
 
 `install.py` unterscheidet dabei **Kern** von **Projekt**:
 
@@ -165,19 +176,20 @@ python .koolie/core/tests/scripts/validate-framework.py --strict-overlay
 | Aktivierte Packs | ihre kopierten Bestandteile (Regelablage `30-`, `40-` und Skill-Ablage `role-*`, `tech-*`), sofern das Pack im Kern liegt | – |
 | Projekt | – | Berechtigungsdatei (bei `devin-desktop` und `claude-code` **samt Hook-Konfiguration**), Regelablage `20-`, `2N-`, Skill-Ablage `prj-*`, `.koolie/project-overlay/**`, projekteigene Packs |
 
-> **Bei `devin-desktop` und `claude-code` wird die Hook-Konfiguration von `--update` NICHT erneuert.** Sie steht dort in der Berechtigungsdatei, und die gehört dem Projekt: Sie wird nur bei der Erstinstallation angelegt. Das ist eine bewusste Eigentumsentscheidung – es heißt aber, dass eine Änderung an den Hooks eines Releases **von Hand nachzutragen** ist. Der jeweilige `CHANGELOG.md`-Eintrag nennt solche Fälle unter „Migrationshinweise"; zuletzt betraf es 0.30.0 (die Suchwerkzeuge im Schutz-Hook).
+> **Bei `devin-desktop` und `claude-code` erneuert `--update` die Hook-Konfiguration nicht.** Sie steht dort in der Berechtigungsdatei, und die gehört dem Projekt: Sie wird nur bei der Erstinstallation angelegt. Eine Änderung an den Hooks eines Releases ist deshalb **von Hand nachzutragen**; der jeweilige `CHANGELOG.md`-Eintrag nennt solche Fälle unter „Migrationshinweise“.
 >
-> **Bei `openai-codex` ist es umgekehrt:** Die Hook-Datei gehört zum Kern und wird bei jedem `--update` neu geschrieben. ⚠️ **Damit ändert sich ihr Hash, und der Client führt den Schutz-Hook danach erst wieder aus, wenn ihm erneut vertraut wurde** – ohne das läuft er gar nicht, und nichts meldet es (`CHANGELOG.md` zu 1.4.0, Migrationshinweise).
+> **Bei `openai-codex` ist es umgekehrt:** Die Hook-Datei gehört zum Kern und wird bei jedem `--update` neu geschrieben. ⚠️ **Damit ändert sich ihr Hash, und der Client führt den Schutz-Hook erst wieder aus, wenn ihm erneut vertraut wurde** – ohne das läuft er gar nicht, und nichts meldet es (`CHANGELOG.md` zu 1.4.0, Migrationshinweise).
 
 Weitere Aufrufe:
 
 | Befehl | Zweck |
 |---|---|
 | `python .koolie/core/install.py --update` | Kern auf ein neues Release heben, Projektdateien behalten |
-| `python .koolie/core/install.py --target <projekt> [--update] [--lieferumfang voll\|nutzung]` | Aus einem Klon oder entpackten Archiv den Kern in ein anderes Projekt kopieren und dort installieren oder heben (seit `1.7.0`), ganz oder ohne die Nachweisschicht (seit `1.8.0`); die Starter `install.cmd` und `install.command` fragen die Angaben ab |
+| `python .koolie/core/install.py --target <projekt> [--update] [--lieferumfang voll\|nutzung]` | Aus einem Klon oder entpackten Archiv den Kern in ein anderes Projekt kopieren und dort installieren oder heben, ganz oder ohne die Nachweisschicht; die Starter `install.cmd` und `install.command` fragen die Angaben ab |
 | `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
 | `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
-| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei; `--overlay` ohne Namen zählt die Muster auf (seit `1.5.0`). Seit `1.6.0` dazu sechs Musterdokumente allgemeiner Praktiken (Coding Guidelines, DoR, DoD, Qualität, Sicherheit, Branching), im Manifest als `entwurf` – verbindlich erst nach Freigabe durch den Overlay Owner |
+| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei, dazu sechs Musterdokumente allgemeiner Praktiken (Coding Guidelines, DoR, DoD, Qualität, Sicherheit, Branching), im Manifest als `entwurf` – verbindlich erst nach Freigabe durch den Overlay Owner; `--overlay` ohne Namen zählt die Muster auf |
+| `python .koolie/core/install.py --list-clients` / `--list-skills` | Verfügbare Client Packs beziehungsweise die Skills dieser Installation auflisten |
 
 Der ausführliche Weg mit allen Voraussetzungen, Freigaben und der Aktivierungsreihenfolge steht in `.koolie/core/docs/ADOPTION_GUIDE.md`; der verbindliche Nachweis ist `.koolie/core/checklists/10-project-adoption.md`.
 
@@ -193,7 +205,7 @@ Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei.
 
 > **Die so erzeugte Laufzeitschicht ist hier ein Prüfgegenstand, keine Schranke.** Wie in diesem Repositorium gearbeitet, gelesen und geändert wird, steht in `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md` – dem Entwicklungsprofil des Quellrepositoriums. Es ist der zweite Einsatzkontext des Frameworks neben der Anwendung eines Releases in einem Projekt, und es ist ausdrücklich abgegrenzt: Es liegt unter `governance/` und wird in kein Zielprojekt installiert (D-56).
 
-**Wo eine Änderung hingehört** – die gemeinsamen Quellen liegen seit `CR-2026-010` **im Kern**, nicht mehr im Client Pack:
+**Wo eine Änderung hingehört** – die gemeinsamen Quellen liegen **im Kern**, nicht im Client Pack (`CR-2026-010`):
 
 | Was geändert werden soll | Quelle |
 |---|---|
@@ -204,7 +216,7 @@ Damit gibt es keine zwei auseinanderlaufenden Fassungen derselben Kern-Datei.
 | Pfad-, Werkzeug- und Hook-Abbildung eines Clients | `.koolie/core/clients/<client>/manifest.json` |
 | Fähigkeitsmatrix eines Clients | `.koolie/core/clients/<client>/CLIENT_PACK.md` |
 
-Das `root-template/` eines Packs enthält **nur noch die README der Laufzeitschicht**; `seed_paths` ist in allen drei Manifesten leer, die gesamte Saat kommt aus dem Kern. **Niemals in die erzeugte Laufzeitschicht im Wurzelverzeichnis schreiben** – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
+Das `root-template/` eines Packs enthält **nur die README der Laufzeitschicht**; `seed_paths` ist in allen drei Manifesten leer, die gesamte Saat kommt aus dem Kern. **Niemals in die erzeugte Laufzeitschicht im Wurzelverzeichnis schreiben** – `install.py --check` deckt eine Bearbeitung an der falschen Stelle auf.
 
 Welcher Client verwendet wird, entscheidet `--client`; `python .koolie/core/install.py --list-clients` zeigt die verfügbaren. Welche Zusagen des Frameworks ein Client **technisch durchsetzt** und welche nur als Anweisung im Kontext stehen, steht in der Fähigkeitsmatrix seines Client Packs (`.koolie/core/clients/README.md`).
 
@@ -226,7 +238,8 @@ In einem **Projekt** gilt das Gegenteil: dort werden Wurzel-Anweisungsdatei, Lau
 | Befehl | Prüft |
 |---|---|
 | `python .koolie/core/tests/scripts/validate-framework.py` | Struktur, Frontmatter, Skill-Konformität, verbotene Inhalte, Platzhalter |
-| `… --strict-overlay` | zusätzlich die Aktivierungsreife eines Overlays (nur im Projekt sinnvoll) |
+| `… --check-overlay-ready` | zusätzlich die Aktivierungsreife eines Overlay-Kandidaten, dessen Status noch nicht `aktiv` ist (nur im Projekt sinnvoll, D-57) |
+| `… --strict-overlay` | zusätzlich den aktiven Zustand eines Overlays (nur im Projekt sinnvoll) |
 | `… --mermaid` | zusätzlich die Syntax aller Diagramme (benötigt `mmdc`) |
 | `.koolie/core/tests/TEST_CATALOG.md` | das Verhalten des KI-Clients (Testsitzungen an einer Installation) |
 

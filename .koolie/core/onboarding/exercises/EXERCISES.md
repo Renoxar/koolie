@@ -1,5 +1,12 @@
 # Übungsaufgaben (synthetisch)
 
+| Attribut | Wert |
+|---|---|
+| ID | `FW-OB-EX` |
+| Version | `0.1.0` |
+| Status | `pilot` |
+| Owner (Rolle) | `<FRAMEWORK_OWNER>` |
+
 Alle Aufgaben sind **synthetische Übungen** auf dem Übungsrepository (`README.md` in diesem Verzeichnis). Modul- und Dateinamen wie `src/ordering` oder `OrderValidator` sind erfunden; das Projekt ersetzt sie beim Erstellen des Übungsrepositorys durch die eigenen Übungsmodule. Jede Übung endet mit dem Ergebnisbericht und einem kurzen Gespräch mit der Mentorin oder dem Mentor.
 
 ## Ü1 – Repository analysieren (M1)

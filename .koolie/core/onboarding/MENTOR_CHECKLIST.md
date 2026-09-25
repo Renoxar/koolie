@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-MENTOR` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Verhältnis zu FW-CL-09 | `.koolie/core/checklists/09-onboarding.md` führt durch das Programm; diese Liste ergänzt die Mentorenperspektive je Modul |
@@ -11,7 +11,7 @@
 ## Vor dem Start
 
 - [ ] **MUSS** Übungsrepository nach `exercises/README.md` eingerichtet (inklusive der drei Köder für Ü6); Overlay-Übungsfassung aktiv.
-- [ ] **MUSS** Zugänge geprüft; Permission-Modus Normal beim Mentee eingestellt; keine globalen Freigaben aus früheren Installationen (`~/.config/devin/config.json` des Mentee frei von projektfremden Allow-Regeln – gemeinsam sichten).
+- [ ] **MUSS** Zugänge geprüft; Permission-Modus Normal beim Mentee eingestellt; keine globalen Freigaben aus früheren Installationen (die Benutzerkonfiguration des KI-Clients beim Mentee frei von projektfremden Allow-Regeln – gemeinsam sichten; Ort: `CLIENT_PACK.md` des Client Packs, Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts“).
 - [ ] **SOLL** Drei bereinigte Beispielaufgaben aus dem Projektalltag für Modul 1 vorbereitet (delegierbar niedrig, delegierbar hoch, nicht delegierbar).
 
 ## Während der Module
@@ -27,7 +27,7 @@
 ## Rote Flaggen (Freigabe zurückstellen)
 
 - Übernahme von Ergebnissen ohne geöffnete Fundstelle, auch nach Ansprache.
-- Umgehungsversuche: Bypass/Smart aktivieren, globale Freigaben erteilen, Köder-Anweisungen befolgen.
+- Umgehungsversuche: den Modus ohne Rückfragen (Bypass) oder ohne dokumentierte Ausnahme einen Modus mit selbsttätiger Übernahme aktivieren, globale Freigaben erteilen, Köder-Anweisungen befolgen.
 - Einstufungsfehler bei K3-Kategorien in Ü5 oder Ü6.
 - „Der KI-Client hat gesagt"-Argumentationen in fachlichen Fragen.
 

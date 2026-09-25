@@ -2,6 +2,13 @@
 
 > Rollen, keine Personen. Die Zuordnung von Personen zu Rollen erfolgt außerhalb des Repositorys im Teamverzeichnis der Organisation. Details der Verantwortlichkeiten: `.koolie/core/governance/RACI.md`.
 
+| Attribut | Wert |
+|---|---|
+| ID | `FW-GOV-OWNERS` |
+| Version | `0.1.0` |
+| Status | `pilot` |
+| Owner (Rolle) | `<FRAMEWORK_OWNER>` |
+
 | Bereich | Pfad(e) | Owner (Rolle) | Stellvertretung |
 |---|---|---|---|
 | Framework gesamt, Releases, Prioritätshierarchie | `/`, `.koolie/core/VERSION`, `.koolie/core/CHANGELOG.md`, `.koolie/core/governance/` | `<FRAMEWORK_OWNER>` | `<TBD: Rolle>` |

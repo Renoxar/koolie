@@ -701,7 +701,28 @@ Prüft (statisch, ohne laufenden KI-Client):
      ist - jeweils mit einer HINWEIS-Zeile, die weder als Fehler noch als Warnung zaehlt.
      GRENZE: Ob die Nutzung ohne die Nachweisschicht auskommt, belegt nicht diese
      Pruefung, sondern der zeilengleiche Vergleich mit einer vollen Installation (L367)
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 90 laeuft als eigenes
+ 91. Die Standueberschrift der Roadmap (D-372): "## Stand nach Release X.Y.Z" steht in
+     docs/ROADMAP.md genau einmal und nennt .koolie/core/VERSION. ANLASS: Bei 1.8.0 stand
+     sie auf 1.4.4, direkt ueber "Wird mit jedem Release fortgeschrieben"; bis 0.88.1
+     zweiunddreissig Releases lang auf 0.56.0. GRENZE: Sie prueft die Zahl der
+     Ueberschrift, nicht den Abschnitt darunter - dieselbe Bauform wie 77
+ 92. Die Rechtschreibung (D-373): Dokumente der Klassen A, B und D (D-371) enthalten
+     ausserhalb von Code kein Wort der Schreibung vor 1996 aus einer festen Stammliste
+     (dass, muss, misst, Messbaum ...). ANLASS: 603 alte gegen 1.192 geltende
+     Schreibungen, neunzehn Dokumente mischten beide. Register (C) bleiben, wie sie
+     geschrieben wurden; die Wurzel-README nur im Quellrepositorium. GRENZE: Ein Wort,
+     das nicht auf der Liste steht, kommt durch
+ 93. Die Form (D-374): In jedem Dokument der Klassen A bis D ist jeder Codeblock
+     geschlossen, es gibt genau eine Hauptueberschrift (mit Frontmatter hoechstens eine),
+     keine uebersprungene Ueberschriftenebene, und jede Tabellenzeile hat die Spaltenzahl
+     ihrer Kopfzeile. Ein Waechter: Der Bestand war bis auf eine Datei sauber. GRENZE:
+     Gestalt, nicht Gliederung
+ 94. Der Steckbrief (D-375): Dokumente der Klassen A und B tragen vor dem ersten
+     Abschnitt eine Tabelle "| Attribut | Wert |" mit Kennung (ID oder <Art>-ID),
+     Version und Status. Ausgenommen mit Grund: README-Verzeichnisse, die
+     Laufzeitschicht, Ausfuellvorlagen und Beispielausgaben. GRENZE: Anwesenheit der
+     Zeilen; ihren Wert pruefen 13 und 55
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 94 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -8909,7 +8930,6 @@ P75_AUSNAHMEN = {
     KERN + "/tests/scripts/validate-framework.py",
     # (c) Aussagen ueber den alten Namen
     KERN + "/build/doc/32-abschluss.md",
-    KERN + "/docs/ROADMAP.md",
     KERN + "/clientmap.py",
     # (d) Der Pruefapparat dieser Pruefung selbst
     KERN + "/tests/scripts/probe-pruefungen.py",
@@ -10098,6 +10118,303 @@ def check_verdraengende_wurzelanweisung(root: str, man: dict) -> None:
             f"bis 1.4.0 meldete es nichts (D-341)")
 
 
+# ---------------------------------------------------------------------------
+# PRUEFUNGEN 91 BIS 94: DIE DOKUMENTATION (CR-2026-142, D-371 bis D-375)
+# ---------------------------------------------------------------------------
+#
+# ANLASS. 1.9.0 ist das Qualitaetssicherungsrelease der Dokumentation (D-370). Seine
+# Vorbedingung war, VOR der Durchsicht festzulegen, welche Dokumente es gibt, was je
+# Dokument "in Ordnung" heisst - und was davon eine Maschine pruefen kann. Sonst ist
+# derselbe Befund in drei Releases wieder da: Die Standueberschrift der Roadmap stand
+# bei 1.8.0 vier Releases zurueck, direkt ueber dem Satz "Wird mit jedem Release
+# fortgeschrieben".
+#
+# DIE DOKUMENTKLASSEN STEHEN HIER, AN EINER STELLE (D-371), und
+# docs/DOCUMENTATION_STANDARD.md beschreibt sie, statt sie ein zweites Mal aufzuzaehlen:
+#   A  Einstieg   - wer das Framework zum ersten Mal liest
+#   B  Regeln     - was gilt (Core-Module, Laufzeit, Prozesse, Checklisten, Skills ...)
+#   C  Register   - Belege und Verzeichnisse; ihr Inhalt wird nicht umgeschrieben
+#   D  Hauptdokument - die Kapitelquellen unter build/doc/
+# Die Nachweisschicht (clientmap.NACHWEIS_ABLAGEN) ist keine Klasse - mit einer
+# Ausnahme: build/doc/ liegt darin, weil build/ nicht zur Nutzung gehoert, ist aber
+# das Hauptdokument und damit Klasse D.
+#
+# D-299: Alle vier Pruefungen lesen Traeger, die byte-gleich in jedes Projekt
+# geliefert werden - dort sind sie so gruen wie hier. Die Wurzel-README gehoert dem
+# Quellrepositorium; in einem Projekt gehoert die Wurzel dem Projekt, und sie wird
+# dort nicht gelesen. Fehlt build/doc/ (Lieferumfang "nutzung"), fehlt Klasse D.
+DOK_REGISTER = frozenset({
+    "CHANGELOG.md", "governance/DECISION_LOG.md", "docs/ROADMAP.md",
+    "tests/TEST_CATALOG.md", "tests/EDGE_CASES.md", "docs/PLACEHOLDER_REGISTRY.md",
+    "governance/ADOPTION_REGISTRY.md",
+})
+DOK_REGISTER_RE = re.compile(r"skills/[^/]+/(?:TESTS|EXAMPLES|CHANGELOG)\.md$")
+DOK_EINSTIEG = ("onboarding/", "examples/", "pilot/", "docs/ADOPTION_GUIDE.md",
+                "docs/RUNTIME_GLOSSARY.md", "clients/README.md")
+DOK_EINSTIEG_RE = re.compile(r"clients/[^_/][^/]*/CLIENT_PACK\.md$")
+DOK_NACHWEIS = ("governance/change-requests/", "tests/protocols/", "tests/erhebungen/",
+                "build/")
+
+
+def dokumentklasse(rel: str) -> str | None:
+    """Die Klasse eines Dokuments nach D-371 - projektrelativ, mit '/'. None heisst:
+    kein Dokument dieser Pruefungen (keine Markdown-Datei, Nachweisschicht, Projekt)."""
+    if not rel.endswith(".md"):
+        return None
+    if not rel.startswith(KERN + "/"):
+        return "A" if rel == "README.md" else None
+    k = rel[len(KERN) + 1:]
+    if k.startswith("build/doc/"):
+        return "D"
+    if k.startswith(DOK_NACHWEIS):
+        return None
+    if k in DOK_REGISTER or DOK_REGISTER_RE.search(k):
+        return "C"
+    if k.startswith(DOK_EINSTIEG) or DOK_EINSTIEG_RE.match(k):
+        return "A"
+    return "B"
+
+
+def _dokumente(root: str):
+    """(rel, klasse) aller Dokumente dieses Baums, sortiert."""
+    gefunden = []
+    kern = os.path.join(root, KERN)
+    for dirpath, dirnames, filenames in os.walk(kern):
+        dirnames[:] = sorted(d for d in dirnames if d not in (".git", "__pycache__", "out"))
+        for fn in filenames:
+            rel = os.path.relpath(os.path.join(dirpath, fn), root).replace(os.sep, "/")
+            k = dokumentklasse(rel)
+            if k:
+                gefunden.append((rel, k))
+    if ist_quellrepositorium(root) and os.path.isfile(os.path.join(root, "README.md")):
+        gefunden.append(("README.md", "A"))
+    return sorted(gefunden)
+
+
+DOK_ZAUN_RE = re.compile(r"^\s*(`{3,}|~{3,})")
+
+
+def _ohne_code(text: str) -> tuple[list[str], bool]:
+    """Die Zeilen ohne Codebloecke und Inline-Code - Zeilennummern bleiben erhalten.
+    Zweiter Wert: Ist am Ende ein Codeblock offen?
+
+    Code ist ZITAT: ein Befehl, eine Ausgabe, eine Meldung, die woertlich so lautet.
+    Eine Rechtschreib- oder Formpruefung darin pruefte den zitierten Gegenstand und
+    nicht das Dokument."""
+    zeilen, zaun = [], ""
+    for z in text.split("\n"):
+        m = DOK_ZAUN_RE.match(z)
+        if m:
+            if not zaun:
+                zaun = m.group(1)[0] * 3
+            elif m.group(1).startswith(zaun):
+                zaun = ""
+            zeilen.append("")
+            continue
+        zeilen.append("" if zaun else re.sub(r"`[^`\n]*`", "``", z))
+    return zeilen, bool(zaun)
+
+
+def _frontmatter_ende(zeilen: list[str]) -> int:
+    if zeilen and zeilen[0].strip() == "---":
+        for i in range(1, len(zeilen)):
+            if zeilen[i].strip() == "---":
+                return i + 1
+    return 0
+
+
+# --- Pruefung 91: die Standueberschrift der Roadmap (D-372) -------------------------
+#
+# ANLASS, gemessen beim Bau von 1.8.0: "## Stand nach Release 1.4.4" - vier Releases
+# alt, direkt ueber "Wird mit jedem Release fortgeschrieben". Bis 0.88.1 stand sie auf
+# 0.56.0, zweiunddreissig Releases lang. Eine Ueberschrift, die sagt, von wann sie ist,
+# ist eine Zahl mit einem Gegenstand - und der liegt in VERSION.
+# GRENZE: Sie prueft die ZAHL der Ueberschrift, nicht den Abschnitt darunter - dieselbe
+# Bauform wie 77 (Version, nicht Inhalt). Das Datum in Klammern prueft sie nicht.
+P91_ROADMAP = KERN + "/docs/ROADMAP.md"
+P91_ANKER = "## Stand nach Release "
+P91_RE = re.compile(r"^## Stand nach Release `?(\d+\.\d+\.\d+)`?", re.M)
+
+
+def check_roadmapstand(root: str) -> None:
+    """Pruefung 91 (D-372): Die Standueberschrift der Roadmap nennt VERSION."""
+    rpfad = os.path.join(root, *P91_ROADMAP.split("/"))
+    vpfad = os.path.join(root, KERN, "VERSION")
+    if not os.path.isfile(rpfad) or not os.path.isfile(vpfad):
+        return  # Pruefungen 1 und 85 melden den fehlenden Traeger bereits
+    text = read(rpfad)
+    treffer = P91_RE.findall(text)
+    if len(treffer) != 1:
+        err(f"{P91_ROADMAP}: die Überschrift '{P91_ANKER}X.Y.Z' steht "
+            f"{len(treffer)}-mal statt genau einmal. Prüfung 91 hält sie gegen "
+            f"{KERN}/VERSION und bestünde ohne sie leise (D-23, D-372)")
+        return
+    stand = read(vpfad).strip()
+    if treffer[0] != stand:
+        err(f"{P91_ROADMAP}: die Standüberschrift nennt Release {treffer[0]}, "
+            f"{KERN}/VERSION führt {stand}. Die Überschrift sagt, von wann der Abschnitt "
+            f"darunter ist – bei 1.8.0 stand sie vier Releases zurück, direkt über dem "
+            f"Satz 'Wird mit jedem Release fortgeschrieben' (D-372)")
+
+
+# --- Pruefung 92: die Rechtschreibung (D-373) ----------------------------------------
+#
+# ANLASS, gemessen im Vorbedingungsdurchgang von 1.9.0: 603 Woerter in der Schreibung
+# vor 1996 gegen 1.192 in der geltenden, und NEUNZEHN Dokumente mischten beide - oft im
+# selben Absatz ("dass" neben "daß"). Die Klassen A, B und D schreiben nach dem
+# geltenden Duden; die Register (C) bleiben, wie sie geschrieben wurden (D-371): Ein
+# Beleg wird nicht umgeschrieben, auch nicht orthographisch.
+# WIE: eine feste Liste der Staemme, in denen das "ß" nach kurzem Vokal steht und
+# deshalb heute "ss" ist. Ein allgemeines "ß nach kurzem Vokal" kann keine Maschine
+# ohne Woerterbuch entscheiden ("Maß" gegen "Meß"); eine Liste kann es fuer die Woerter,
+# die hier vorkommen.
+# GRENZE: Ein Wort, das nicht auf der Liste steht, kommt durch. Die Liste ist aus dem
+# gemessenen Bestand gezogen (308 verschiedene Woerter mit "ß", 2026-09-25), nicht aus
+# einem Woerterbuch. Code (Bloecke und Inline) ist Zitat und wird nicht geprueft.
+P92_ALT_RE = re.compile(
+    r"\b(?:[Dd]aß|\w*[Mm]uß\w*|\w*[Mm]üßt\w*|\w*[Mm]iß(?:t|\w)\w*|\w*[Mm]eß\w*|\w*MEß\w*|"
+    r"\w*[Ll]äßt\w*|\w*[Vv]erläßlich\w*|\w*[Ff]aß(?:t|te|ten|bar)\w*|\w*[Pp]aß(?:t|te|ten)?\b|"
+    r"\w*[Ll]aß\b|\w*[Ll]aß(?:fall|t)\w*|\w*[Ww][uü]ß(?:t|te|ten)\w*|\w*[Ss]chluß\w*|"
+    r"\w*[Vv]ergi?ß(?:t|lich\w*)|\w*[Vv]ergeß\w*|\w*[Pp]rozeß\w*|\b[Bb]iß\b|\b[Rr]iß\b|"
+    r"\w*[Ff]luß\w*|\w*[Ss]chuß\w*|\w*[Ee]ngpaß)")
+
+
+def check_rechtschreibung(root: str) -> None:
+    """Pruefung 92 (D-373): Klassen A, B und D ohne Schreibung vor 1996."""
+    for rel, klasse in _dokumente(root):
+        if klasse == "C":
+            continue
+        zeilen, _ = _ohne_code(read(os.path.join(root, *rel.split("/"))))
+        funde = [f"{i + 1}: {w}" for i, z in enumerate(zeilen) for w in P92_ALT_RE.findall(z)]
+        if funde:
+            err(f"{rel}: {len(funde)} Wort/Wörter in der Schreibung vor 1996 "
+                f"({'; '.join(funde[:6])}{' …' if len(funde) > 6 else ''}). Klasse "
+                f"{klasse} schreibt nach dem geltenden Duden: 'dass', 'muss', 'misst', "
+                f"'Messbaum' (D-373)")
+
+
+# --- Pruefung 93: die Form (D-374) ---------------------------------------------------
+#
+# Vier Gegenstaende, alle in jedem Dokument der Klassen A bis D:
+#   (a) jeder Codeblock ist geschlossen - ein offener verschluckt den Rest der Datei,
+#       und die Assemblierung des Hauptdokuments bricht an genau dieser Stelle;
+#   (b) genau eine Hauptueberschrift ('# '); mit YAML-Frontmatter hoechstens eine,
+#       denn dort traegt der Kopf den Namen;
+#   (c) keine uebersprungene Ueberschriftenebene ('##' auf '####');
+#   (d) jede Tabellenzeile hat die Spaltenzahl ihrer Kopfzeile - ein ungeschuetzter
+#       senkrechter Strich verschiebt jede Zelle rechts davon, und der Leser sieht es
+#       nicht, weil die Tabelle trotzdem rendert.
+# ANLASS: Gemessen im Vorbedingungsdurchgang war der Bestand bis auf EINE Datei sauber
+# (ein Agentenprofil mit drei Hauptueberschriften). Die Pruefung ist deshalb ein
+# Waechter und kein Aufraeumen - und genau so billig soll sie bleiben.
+# GRENZE: Sie prueft die Gestalt, nicht die Gliederung - ob die Ueberschriften das
+# Richtige gliedern, bleibt Durchsicht.
+def _tabellenzellen(zeile: str) -> int:
+    z = re.sub(r"`[^`]*`", "C", zeile).replace("\\|", "x").strip()
+    if z.startswith("|"):
+        z = z[1:]
+    if z.endswith("|"):
+        z = z[:-1]
+    return len(z.split("|"))
+
+
+def check_dokumentform(root: str) -> None:
+    """Pruefung 93 (D-374): Codebloecke, Hauptueberschrift, Ebenen, Tabellenspalten."""
+    for rel, _klasse in _dokumente(root):
+        text = read(os.path.join(root, *rel.split("/")))
+        roh = text.split("\n")
+        zeilen, offen = _ohne_code(text)
+        if offen:
+            err(f"{rel}: ein Codeblock ist bis zum Dateiende nicht geschlossen (D-374)")
+            continue
+        fm = _frontmatter_ende(roh)
+        h1 = sum(1 for i, z in enumerate(zeilen) if i >= fm and z.startswith("# "))
+        if (fm and h1 > 1) or (not fm and h1 != 1):
+            err(f"{rel}: {h1} Hauptüberschriften ('# '), erwartet "
+                f"{'höchstens eine (mit Frontmatter)' if fm else 'genau eine'} (D-374)")
+        ebene = 0
+        for i, z in enumerate(zeilen):
+            m = re.match(r"(#{1,6}) ", z)
+            if not m:
+                continue
+            n = len(m.group(1))
+            if ebene and n > ebene + 1:
+                err(f"{rel}:{i + 1}: Überschrift der Ebene {n} direkt unter Ebene "
+                    f"{ebene} – eine Ebene ist übersprungen (D-374)")
+            ebene = n
+        i = 0
+        while i < len(zeilen) - 1:
+            if (zeilen[i].lstrip().startswith("|")
+                    and re.match(r"\s*\|?\s*:?-{3,}", zeilen[i + 1])):
+                soll = _tabellenzellen(zeilen[i])
+                j = i + 2
+                while j < len(zeilen) and zeilen[j].lstrip().startswith("|"):
+                    ist = _tabellenzellen(zeilen[j])
+                    if ist != soll:
+                        err(f"{rel}:{j + 1}: Tabellenzeile mit {ist} statt {soll} "
+                            f"Spalten – ein ungeschützter senkrechter Strich verschiebt "
+                            f"jede Zelle rechts davon (D-374)")
+                    j += 1
+                i = j
+            else:
+                i += 1
+
+
+# --- Pruefung 94: der Steckbrief (D-375) ---------------------------------------------
+#
+# Ein Dokument der Klassen A und B traegt vor seinem ersten Abschnitt einen Steckbrief
+# (Tabelle "| Attribut | Wert |") mit einer Kennung (ID oder <Art>-ID), einer Version und
+# einem Status. Pruefung 13 prueft die FORM eines Versionsfeldes, das da ist; dass es da
+# ist, prueft sie nicht - und 116 von 215 Dokumenten hatten keines.
+# AUSGENOMMEN, jeweils mit Grund:
+#   - README.md: ein Verzeichnis, kein Dokument mit eigenem Stand;
+#   - die Laufzeitschicht (framework/runtime/, role-packs/*/runtime/, root-template/):
+#     sie wird so in die Sitzung geladen, und ihre Laenge ist begrenzt (Pruefung 4);
+#   - Ausfuellvorlagen (templates/, Musterdokumente der Overlay-Muster, der
+#     Antragsvorlage, die Abbildungsvorlage der Organisationsvorgaben): Sie werden
+#     kopiert und gehoeren danach dem Projekt - ein Steckbrief des Frameworks darin
+#     waere eine falsche Herkunftsangabe;
+#   - examples/: Beispielausgaben, deren Gestalt die eines Ergebnisses ist.
+# GRENZE: Sie prueft die ANWESENHEIT der drei Zeilen; ihren Wert prueft Pruefung 13
+# (Version) und Pruefung 55 (Status).
+P94_AUSNAHMEN = ("framework/runtime/", "templates/", "examples/")
+P94_AUSNAHMEN_RE = re.compile(
+    r"(?:^|/)README\.md$|^framework/role-packs/[^/]+/runtime/|^clients/[^/]+/root-template/|"
+    r"^framework/overlay-patterns/[^/]+/documents/|^governance/CHANGE_REQUEST_TEMPLATE\.md$|"
+    r"^framework/org-policies/MAPPING_CLASSIFICATION\.md$")
+P94_KOPF = "| Attribut | Wert |"
+
+
+def check_steckbrief(root: str) -> None:
+    """Pruefung 94 (D-375): Klassen A und B tragen ID, Version und Status."""
+    for rel, klasse in _dokumente(root):
+        if klasse not in "AB" or rel == "README.md":
+            continue
+        k = rel[len(KERN) + 1:]
+        if k.startswith(P94_AUSNAHMEN) or P94_AUSNAHMEN_RE.search(k):
+            continue
+        zeilen = read(os.path.join(root, *rel.split("/"))).split("\n")
+        kopf = []
+        for i, z in enumerate(zeilen):
+            if z.startswith("## "):
+                break
+            if re.sub(r"\s+", " ", z.strip()) == P94_KOPF:
+                j = i + 2
+                kopf = []
+                while j < len(zeilen) and zeilen[j].startswith("|"):
+                    kopf.append(zeilen[j])
+                    j += 1
+                break
+        fehlt = [name for name, rx in (
+            ("ID", r"^\|\s*(?:[\w-]+-)?ID\s*\|"), ("Version", r"^\|\s*Version\b[^|]*\|"),
+            ("Status", r"^\|\s*Status\s*\|")) if not any(re.match(rx, z) for z in kopf)]
+        if fehlt:
+            err(f"{rel}: {'kein Steckbrief' if not kopf else 'Steckbrief ohne ' + ', '.join(fehlt)} "
+                f"vor dem ersten Abschnitt. Klasse {klasse} trägt eine Tabelle "
+                f"'{P94_KOPF}' mit Kennung, Version und Status – sonst unterscheidet das "
+                f"Dokument keine zwei Stände (D-375)")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
@@ -10201,6 +10518,10 @@ def main() -> int:
     check_sperrform(root, man)
     check_formatgebundene_pruefungen(root)
     check_verdraengende_wurzelanweisung(root, man)
+    check_roadmapstand(root)
+    check_rechtschreibung(root)
+    check_dokumentform(root)
+    check_steckbrief(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

@@ -8,4 +8,4 @@ Alle Dateien in diesem Verzeichnis sind **synthetische Beispiele**: erfundene In
 | `example-ergebnisbericht.md` | einen vollständigen Ergebnisbericht einer kleinen Änderung (M3, Stufe niedrig) |
 | `example-mr-description.md` | eine Merge-Request-Beschreibung mit KI-Nutzungsvermerk (Kurzform) |
 
-Weitere ausgefüllte Beispiele entstehen bewusst erst im Zielprojekt (Übungsrepository, AP4/AP8), damit keine erfundenen „realistischen" Werte in generische Bestandteile einsickern.
+Weitere ausgefüllte Beispiele entstehen bewusst erst im Zielprojekt (zum Beispiel im Übungsrepository, `.koolie/core/onboarding/exercises/README.md`), damit keine erfundenen „realistischen" Werte in generische Bestandteile einsickern.

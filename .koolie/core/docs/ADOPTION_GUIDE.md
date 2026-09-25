@@ -3,10 +3,12 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.10` |
+| Version | `0.4.11` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
+
+> Kennungen in diesem Dokument: `D-…` ist ein Decision Record in `.koolie/core/governance/DECISION_LOG.md`, `K-…` ein offener Klärungspunkt in derselben Datei, `CR-…` ein Änderungsantrag unter `.koolie/core/governance/change-requests/`. Zum Handeln braucht man sie nicht – sie sagen, wo die Begründung steht.
 
 ## 1. Grundprinzip
 
@@ -23,7 +25,10 @@ konfigurierbar `[DOK]`:
 | Wurzel-Anweisungsdatei | Zentrale Agentenanweisung, wird vom Client automatisch geladen |
 | Laufzeitschicht | Regelablage, Skill-Ablage, Agentenprofile, Berechtigungsdatei, Hook-Konfiguration |
 
-Die tatsächlichen Pfade unterscheiden sich je Client; sie stehen in
+**Laufzeitschicht** heißt alles, was der KI-Client selbst lädt und ausführt: die Regeltexte,
+die Skills, die Agentenprofile, die Berechtigungen und die Hooks. Der Client findet sie nur an
+den Orten, die er kennt – deshalb heißen und liegen sie je Client anders. Die tatsächlichen
+Pfade stehen in
 `.koolie/core/docs/RUNTIME_GLOSSARY.md` und im `CLIENT_PACK.md` des gewählten Packs.
 
 Deshalb liegen diese Bestandteile **im Kern** – `.koolie/core/framework/runtime/`,
@@ -31,9 +36,9 @@ Deshalb liegen diese Bestandteile **im Kern** – `.koolie/core/framework/runtim
 `.koolie/core/install.py` legt sie in der Form des gewählten Clients an ihrem Platz an.
 Welcher Client gilt, entscheidet `--client`; `--list-clients` zeigt die verfügbaren.
 
-> Das `root-template/` eines Client Packs enthält seit `CR-2026-010` **nur noch die README
-> der Laufzeitschicht**; `seed_paths` ist in beiden Manifesten leer. Wer eine gemeinsame
-> Quelle ändern will, ändert sie im Kern, nicht im Pack.
+> Das `root-template/` eines Client Packs enthält **nur die README der Laufzeitschicht**;
+> `seed_paths` ist in allen Manifesten leer (`CR-2026-010`). Wer eine gemeinsame Quelle
+> ändern will, ändert sie im Kern, nicht im Pack.
 
 **Projektspezifisch sind ausschließlich:**
 
@@ -55,7 +60,7 @@ bleibt unberührt (P10, Baum 6).
    dokumentierte Team-Einstellungen (`.koolie/core/framework/org-policies/`;
    Klärungspunkte K-05/K-06).
 
-   🆕 **Schritt 2 und 3 in einem Zug – der Starter (seit `1.7.0`, D-362):** Im entpackten
+   **Schritt 2 und 3 in einem Zug – der Starter (D-362):** Im entpackten
    Release-Archiv liegen in der Wurzel `install.cmd` (Windows) und `install.command`
    (macOS). Sie suchen ein Python ab 3.8 (D-363), fragen Projektverzeichnis, Client,
    Overlay-Muster und Lieferumfang ab und rufen dann genau einen Befehl auf, der auch
@@ -65,15 +70,15 @@ bleibt unberührt (P10, Baum 6).
    python .koolie/core/install.py --target /pfad/zum/projekt --client <client> [--overlay general] [--lieferumfang nutzung]
    ```
 
-   🆕 **Der Lieferumfang (seit `1.8.0`, D-367):** `voll` – die Vorgabe – kopiert den ganzen
-   Kern. `nutzung` läßt die **Nachweisschicht** weg: Änderungsanträge
+   **Der Lieferumfang (D-367):** `voll` – die Vorgabe – kopiert den ganzen
+   Kern. `nutzung` lässt die **Nachweisschicht** weg: Änderungsanträge
    (`governance/change-requests/`), Abnahmeprotokolle (`tests/protocols/`), Erhebungen
-   (`tests/erhebungen/`) und den Bau des Hauptdokuments (`build/`) – rund 350 von 550
-   Dateien. Alles zur Nutzung bleibt, auch Hooks und Validator. Die Wahl steht danach in
+   (`tests/erhebungen/`) und den Bau des Hauptdokuments (`build/`) – zusammen der größere
+   Teil der Dateien. Alles zur Nutzung bleibt, auch Hooks und Validator. Die Wahl steht danach in
    `.koolie/core/LIEFERUMFANG` und **gilt beim Heben weiter**; gewechselt wird nur mit
    ausdrücklichem `--lieferumfang`. Der Validator nennt in einem reduzierten Projekt das
    Weggelassene in `HINWEIS`-Zeilen, die weder als Fehler noch als Warnung zählen. ⚠️
-   **Preis:** Verweise auf Protokolle zeigen dort ins Leere – die Belege stehen im
+   Preis: Verweise auf Protokolle zeigen dort ins Leere – die Belege stehen im
    Release-Archiv.
 
    `--target` kopiert **nur** `.koolie/core/` – aus einem Klon nur das Verfolgte, aus dem
@@ -81,12 +86,12 @@ bleibt unberührt (P10, Baum 6).
    `install.py` im Projekt auf; scheitert es dort, wird der kopierte Kern wieder entfernt.
    Der Warnhinweis unten zu `.koolie/` betrifft diesen Weg nicht. **Was der Starter nicht
    tut:** Er installiert kein Python und kein PyYAML, und er ersetzt die Schritte ab 4
-   nicht. ⚠️ Unter Windows muß der Pfad zum Projekt kurz genug sein, daß kein Pfad im
+   nicht. ⚠️ Unter Windows muss der Pfad zum Projekt kurz genug sein, dass kein Pfad im
    Kern die Grenze von 259 Zeichen reißt – ab 146 Zeichen Projektpfad (Stand `1.8.0`) hält
    `--target` vor der ersten Kopie mit dieser Begründung an (D-368). ⚠️ Beim ersten Start
    warnt das System vor dem unsignierten Starter (SmartScreen, Gatekeeper); unter macOS
-   ist der sichere Weg `sh install.command` im Terminal. **Der macOS-Starter ist unter
-   Git Bash und Linux geprüft, auf macOS selbst noch nicht** (`CR-2026-140`).
+   ist der sichere Weg `sh install.command` im Terminal. Der macOS-Starter ist unter
+   Git Bash und Linux geprüft, auf macOS selbst noch nicht (`CR-2026-140`).
 
 2. **Kern kopieren (Handweg):** Das Verzeichnis `.koolie/core/` in das Wurzelverzeichnis des
    Projekt-Repositorys kopieren. Bei Monorepos in das Wurzelverzeichnis des Workspace, den
@@ -101,7 +106,7 @@ bleibt unberührt (P10, Baum 6).
    Kennzeichen des Framework-Repositoriums (`.koolie/QUELLREPOSITORIUM.md`), im
    Release-Archiv ebenso wie in einem Klon. Mitkopiert hält der Validator das Projekt für
    das Framework-Repositorium: Prüfung 79 verlangt die Lizenz in der Projektwurzel, und
-   sobald die Datei committet ist, mißt Prüfung 81 die Zeilenenden jedes Projektträgers –
+   sobald die Datei committet ist, misst Prüfung 81 die Zeilenenden jedes Projektträgers –
    keine der Meldungen nennt die Ursache. Aus einem Klon kommt zusätzlich dessen eigenes
    Overlay mit (`.koolie/project-overlay/`). `install.py` meldet ein mitkopiertes
    Kennzeichen; die Abhilfe ist, die Datei zu entfernen (D-354).
@@ -117,9 +122,9 @@ bleibt unberührt (P10, Baum 6).
    ```
 
    **Das Overlay-Muster `general` ist wählbar, nicht Standard** (D-126, D-355). Ohne
-   `--overlay` beginnt das Projekt mit dem leeren Overlay wie bisher. Mit ihm füllt
+   `--overlay` beginnt das Projekt mit dem leeren Overlay. Mit ihm füllt
    `install.py` drei Pfadplatzhalter, deren Wert sich ohne Kenntnis des Projekts sicher
-   angeben läßt – `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>` und
+   angeben lässt – `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>` und
    `<EXCLUDED_PATHS>` –, und zwar **einmal** und in **allen drei** Trägern: Overlay,
    Laufzeitfassung und Berechtigungsdatei. **Das Muster sperrt, es gibt nichts frei:**
    Erlaubte Pfade, Befehle, Rollen und Freigaben bleiben Schlitze, und ein Overlay aus dem
@@ -128,11 +133,11 @@ bleibt unberührt (P10, Baum 6).
    Muster auf. ⚠️ **Liegt die Saat schon, bricht `--overlay` ab** – vorhandene Saat gehört
    dem Projekt, und mit `--update` gibt es das Muster nicht.
 
-   **Seit `1.6.0` bringt das Muster außerdem sechs Dokumente mit** (D-359, D-360):
+   **Das Muster bringt außerdem sechs Dokumente mit** (D-359, D-360):
    allgemeine Praktiken für Coding Guidelines, Definition of Ready, Definition of Done,
-   Qualität, Sicherheit und Branching – nur, was auf jedes Projekt paßt, ohne Werkzeuge und
+   Qualität, Sicherheit und Branching – nur, was auf jedes Projekt passt, ohne Werkzeuge und
    Schwellenwerte. Sie liegen danach unter `.koolie/project-overlay/documents/<typ>/` und
-   stehen im Manifest mit Status `entwurf`. 🔴 **Verbindlich werden sie erst durch den
+   stehen im Manifest mit Status `entwurf`. **Verbindlich werden sie erst durch den
    Overlay Owner:** prüfen, anpassen, im Manifest auf `aktuell` setzen, Freigabe eintragen
    und in der Laufzeitfassung als K1-Dokumente führen. Bis dahin liest der KI-Client sie
    nicht als Vorgabe.
@@ -158,9 +163,7 @@ bleibt unberührt (P10, Baum 6).
    weil sie im Framework-Repository Erzeugnisse sind. Im Projekt gehören sie in die
    Versionierung.
 
-   **Eine Zeile gehört umgekehrt hinein** – und bis 0.46.0 stand sie hier nicht, weshalb
-   sie in **beiden** bekannten Projekten fehlte (abgezählt am 2026-09-15: sechs
-   versionierte Bytecode-Dateien im einen, zwei im anderen):
+   **Eine Zeile gehört umgekehrt hinein** (D-97):
 
    ```gitignore
    # Bytecode der Python-Werkzeuge des Kerns – ein Erzeugnis, kein Quelltext
@@ -212,15 +215,13 @@ bleibt unberührt (P10, Baum 6).
      zwei Zeilen für denselben Platzhalter, ist nicht entschieden, welcher Befehl für den
      Schlitz gilt – Prüfung 42 meldet es (D-91).
    - **Den Schlitz bekommt der Befehl, der auf den Arbeitsplätzen des Projekts tatsächlich
-     läuft.** Gemessen, nicht vermutet: Am 2026-09-14 trug das Übungsrepository drei
-     Maven-Befehle in seiner Berechtigungsdatei, während auf der Maschine weder JDK noch
-     Maven installiert war. Ein Schlitz, der einen nicht ausführbaren Befehl trägt,
-     sichert nichts ab und verdeckt, welcher Befehl wirklich läuft.
+     läuft.** Ein Schlitz, der einen nicht ausführbaren Befehl trägt, sichert nichts ab
+     und verdeckt, welcher Befehl wirklich läuft (Befund am Übungsrepository:
+     `.koolie/core/tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`).
    - **Die übrigen Befehle bleiben gelistet und wirken über die Regelschicht.** Das ist
      eine Anweisung an den KI-Client und keine technische Schranke; die Tabelle sagt es,
      damit niemand mehr erwartet. **Ein Eintrag von Hand in die Berechtigungsdatei ist
-     kein Ersatz:** Prüfung 42 meldet jeden Befehl, den kein Platzhalter erklärt – am
-     Übungsrepository waren es fünf, darunter der Aufruf des Validators selbst.
+     kein Ersatz:** Prüfung 42 meldet jeden Befehl, den kein Platzhalter erklärt (D-90).
 
 5. **Packs aktivieren.** Kein Pack ist nach der Installation aktiv — auch nicht das
    Referenzpack `software-development`. Je benötigtem Pack: Rolle im Overlay Abschnitt 1
@@ -247,11 +248,9 @@ bleibt unberührt (P10, Baum 6).
    ```
 
    Der erste Lauf prüft Struktur, Inhalte und die **Aktivierungsreife eines Kandidaten**:
-   Er erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist. Bis 0.32.0 stand hier
-   `--strict-overlay` – ein Lauf, der `aktiv` verlangte, obwohl Schritt 9 den Status erst
-   danach setzt. Der dokumentierte Ablauf war damit nicht ohne Regelbruch begehbar
-   (B08, D-57). Der zweite
-   prüft, ob eine Core-Datei lokal verändert wurde — das wäre eine Bearbeitung an der
+   Er erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist; `aktiv` setzt erst
+   Schritt 9, und erst dort gilt `--strict-overlay` (D-57). Der zweite
+   prüft, ob eine Core-Datei lokal verändert wurde – das wäre eine Bearbeitung an der
    falschen Stelle. Anschließend die Basistests des Testkatalogs auf dem Übungsrepository
    ausführen und das Übungsrepository für das Onboarding erzeugen
    (`.koolie/core/onboarding/exercises/README.md`).
@@ -282,13 +281,13 @@ bleibt unberührt (P10, Baum 6).
    python .koolie/core/install.py --update
    ```
 
-   🆕 **Oder beides in einem Befehl aus dem neuen Release heraus** (seit `1.7.0`, D-362):
+   **Oder beides in einem Befehl aus dem neuen Release heraus** (D-362):
    `python .koolie/core/install.py --target /pfad/zum/projekt --update` – oder der
    Starter, der ein vorhandenes Projekt erkennt und das Heben anbietet. Das Verzeichnis
    wird als Ganzes ersetzt, nicht Datei für Datei, und erst nach erfolgreichem
    `--update` im Projekt ist der alte Kern weg; scheitert es, liegt er wieder an seinem
    Platz. Der Lieferumfang bleibt dabei, wie er war (`.koolie/core/LIEFERUMFANG`,
-   D-367); wer wechseln will, nennt `--lieferumfang voll` oder `nutzung` ausdrücklich. 🔴
+   D-367); wer wechseln will, nennt `--lieferumfang voll` oder `nutzung` ausdrücklich. ⚠️
    **Nur `--target` kennt den Lieferumfang:** Wer ein reduziertes Projekt von Hand hebt
    (`rm -rf` und Kopie), bekommt den ganzen Kern und verliert die Datei – das Projekt ist
    danach wieder `voll`.
@@ -297,12 +296,17 @@ bleibt unberührt (P10, Baum 6).
 
    `--update` überschreibt die Core-Dateien im Wurzelverzeichnis (Wurzel-Anweisungsdatei,
    Regelablage `00-`, `10-`, `15-`, die `*-TEMPLATE`-Vorlagen, Skill-Ablage `fw-*`,
-   Agentenprofile, Hook-Konfiguration) **und die Bestandteile aktivierter Packs**, deren
+   Agentenprofile; bei `openai-codex` zusätzlich die Hook-Datei und die
+   Befehlsregeldatei) **und die Bestandteile aktivierter Packs**, deren
    Quelle im Kern liegt (Regelablage `30-`, `40-` sowie Skill-Ablage `role-*`, `tech-*`).
    Welche Datei dazuzählt, steht im `manifest.json` des Client Packs. Unberührt bleiben die
-   Projektbestandteile: Berechtigungsdatei, Overlay, `prj-*`-Skills und projekteigene
-   Packs. Die Berechtigungsdatei wird bewusst nicht angefasst, weil sie Projektwerte enthält — prüfe nach dem Wechsel, ob die Kernregeln
-   noch vollständig sind.
+   Projektbestandteile: Berechtigungsdatei (bei `devin-desktop` und `claude-code` samt
+   Hook-Konfiguration), Overlay, `prj-*`-Skills und projekteigene Packs. Die
+   Berechtigungsdatei wird bewusst nicht angefasst, weil sie Projektwerte enthält – prüfe
+   nach dem Wechsel, ob die Kernregeln noch vollständig sind, und trage Hook-Änderungen
+   aus den Migrationshinweisen von Hand nach. ⚠️ Bei `openai-codex` ändert `--update`
+   die Hook-Datei und damit ihren Hash: Der Schutz-Hook läuft erst wieder, wenn ihm
+   erneut vertraut wurde (`.koolie/core/clients/openai-codex/CLIENT_PACK.md` Abschnitt 1b).
 
 3. Overlay-Bestandteile gegen die Migrationshinweise prüfen (neue Pflichtfelder, geänderte
    Platzhalter, deprecatete Skills). Nennt ein Release einen geänderten Kernpfad, betrifft
@@ -315,10 +319,8 @@ bleibt unberührt (P10, Baum 6).
    **Feste Versionswerte in Projektdateien sind dabei die unauffälligste Stelle.** Eine
    Merge-Request-Vorlage, ein `README` oder ein Onboarding-Dokument, das die Framework- oder
    Overlay-Version als **Wert** statt als Platzhalter nennt, veraltet mit dem nächsten Release,
-   ohne dass eine Prüfung anschlägt – der Validator kennt die Projektvorlage nicht. Im
-   Übungsrepository trug die Merge-Request-Vorlage über elf Releases hinweg
-   `Framework-Version: 0.2.0`, also genau in der Datei, aus der die Nachweiskette in jeden
-   Merge Request übernommen wird. Empfehlung: An dieser Stelle Platzhalter eintragen
+   ohne dass eine Prüfung anschlägt – der Validator kennt die Projektvorlage nicht.
+   Empfehlung: An dieser Stelle Platzhalter eintragen
    (`<Inhalt der Datei .koolie/core/VERSION>`), keine Werte.
 
    **Die Musterdokumente des Overlay-Musters `general` erreichen ein bestehendes Projekt
@@ -336,15 +338,28 @@ bleibt unberührt (P10, Baum 6).
 5. Overlay-Änderungsverlauf ergänzen (neue kompatible Framework-Version); Team über relevante
    Änderungen informieren; Onboarding-Materialstand prüfen.
 
+6. **Die Hebung im Projekt committen** – Kern, Laufzeitschicht und Overlay in einem Commit.
+   Erst dann ist der neue Stand dauerhaft; ein gehobener, aber nicht committeter Arbeitsbaum
+   ist ein Zustand, kein Stand (D-343).
+
 ## 4. Mehrere Repositories, ein Projekt
 
 Je Repository, das der KI-Client öffnet, liegt eine vollständige Framework-Integration (Root-Regeln
 wirken je Workspace). Das Overlay KANN geteilt gepflegt und je Repository ausgerollt werden;
-seit der Bündelung ist das Ausrollen ein Kopiervorgang plus Skriptaufruf und damit
-skriptbar:
+das Heben des Kerns ist ein Kopiervorgang plus Skriptaufruf und damit skriptbar – am
+einfachsten mit `--target` aus dem neuen Release heraus, das nur den Kern kopiert:
 
 ```bash
 for repo in repo-a repo-b; do
+  python .koolie/core/install.py --target "$repo" --update
+done
+```
+
+Von Hand sieht dieselbe Schleife so aus:
+
+```bash
+for repo in repo-a repo-b; do
+  rm -rf "$repo/.koolie/core"   # ersetzen, nicht überkopieren: sonst bleiben entfernte Dateien liegen
   mkdir -p "$repo/.koolie"
   cp -r .koolie/core "$repo/.koolie/"
   (cd "$repo" && python .koolie/core/install.py --update)
@@ -377,11 +392,9 @@ diese Prüfung überspringt, senkt das Schutzniveau, ohne dass es jemand bemerkt
 
 ## 6. Warum der Kern gebündelt ist
 
-Bis Release 0.1.0 lagen zwölf Core-Verzeichnisse und vier Core-Dateien direkt im
-Wurzelverzeichnis — unmittelbar neben dem Produktivcode des Projekts. Das hatte zwei
-praktische Folgen: Die Übernahme war fehleranfällig, weil bei jedem Schritt zu entscheiden
-war, welches Verzeichnis zum Framework und welches zum Projekt gehört; und das
-Wurzelverzeichnis eines Projekts wurde unübersichtlich.
+Liegt der gesamte Kern in einem Ordner, muss bei der Übernahme und beim Heben niemand
+entscheiden, welches Verzeichnis zum Framework und welches zum Projekt gehört, und das
+Wurzelverzeichnis des Projekts bleibt übersichtlich.
 
 Die Bündelung ändert nichts an der Ebenenhierarchie und an keiner inhaltlichen Regel. Sie
 trennt physisch, was ohnehin logisch getrennt war: **Der Kern ist ein Ordner, den man
