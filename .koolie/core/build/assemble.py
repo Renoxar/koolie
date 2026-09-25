@@ -6,6 +6,11 @@ Direktiven in den Kapiteldateien:
   {{EMBED:relpfad:lang}}       -> wie oben mit Sprachangabe (json, yaml, python, text)
   {{EMBED-RAW:relpfad:shift}}  -> Datei als gerenderten Inhalt einfuegen, Ueberschriften um <shift> Ebenen
                                   verschoben; YAML-Frontmatter wird als Hinweisblock dargestellt
+  {{ZAHL:muster[,muster...]}}  -> (im Fliesstext) Zahl der versionierten Kerndateien, die eines der
+                                  Muster treffen; "*" = alle, "." = direkt im Kern, "x/" = unter x/,
+                                  sonst fnmatch relativ zum Kern; "installiert" = Dateien der
+                                  Referenzinstallation (D-377)
+  {{VERSION}}, {{CLIENT}}      -> Inhalt von VERSION, Client Pack dieses Baus
 
 Zwei Quellen fuer eingebettete Dateien:
 
@@ -48,6 +53,7 @@ DOC = os.path.join(CORE, "build", "doc")
 OUT = os.path.join(CORE, "build", "out")
 EMBED_RE = re.compile(r"^\{\{(EMBED|EMBED-RAW):([^:}]+)(?::([^}]+))?\}\}\s*$", re.M)
 LOKAL_RE = re.compile(r"^\{\{LOKALE-ERGAENZUNG\}\}[ \t]*$", re.M)
+ZAHL_RE = re.compile(r"\{\{(ZAHL:([^}]+)|VERSION|CLIENT)\}\}")
 
 sys.path.insert(0, CORE)
 import clientmap  # noqa: E402  (liegt im Kernverzeichnis)
@@ -179,6 +185,74 @@ def process(text: str, man: dict, installation: str) -> str:
     return EMBED_RE.sub(repl, LOKAL_RE.sub(lambda m: lokale_ergaenzung(man), text))
 
 
+def kerndateien() -> list:
+    """Die versionierten Dateien des Kerns, relativ zum Kern, mit '/'.
+
+    Aus git, wenn der Kern in einem Arbeitsbaum liegt; sonst aus dem Verzeichnis ohne
+    Bytecode und ohne build/out/ - dieselbe Unterscheidung wie install.py --target.
+    """
+    try:
+        roh = subprocess.run(["git", "-C", CORE, "ls-files", "-z", "."], capture_output=True,
+                             check=True).stdout.decode("utf-8")
+        dateien = [p for p in roh.split("\0") if p]
+        if dateien:
+            return sorted(dateien)
+    except (OSError, subprocess.CalledProcessError):
+        pass
+    dateien = []
+    for dirpath, dirnames, filenames in os.walk(CORE):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        rel = os.path.relpath(dirpath, CORE).replace(os.sep, "/")
+        if rel == "build/out" or rel.startswith("build/out/"):
+            dirnames[:] = []
+            continue
+        for fn in filenames:
+            dateien.append(fn if rel == "." else f"{rel}/{fn}")
+    return sorted(dateien)
+
+
+def zahlen(text: str, dateien: list, man: dict, installation: str) -> str:
+    """Setzt {{ZAHL:...}}, {{VERSION}} und {{CLIENT}} ein (D-377).
+
+    🔴 WARUM DAS HIER STEHT UND NICHT IN EINER PRUEFUNG: Kapitel 31 nannte bis 1.8.0 "502
+    versionierte Dateien" und "123 Aenderungsantraege", gezaehlt zu 0.89.0 - acht Releases
+    alt, bei 559 Dateien. Pruefung 78 haelt EINEN Satz des Dokuments gegen den Bestand und
+    zahlt dafuer, dass die Zahl erst am Ende des Releases feststeht (D-315). Eine Zahl, die
+    der Bau einsetzt, muss niemand setzen - und was niemand setzen muss, veraltet nicht.
+    Ein Muster, das NICHTS trifft, bricht den Bau ab: Es ist fast sicher ein Tippfehler,
+    und eine stille Null im Dokument waere eine falsche Zahl mit gutem Gewissen.
+    """
+    import fnmatch
+
+    def zaehle(muster: str) -> int:
+        if muster == "installiert":
+            return sum(len(f) for _d, _s, f in os.walk(installation))
+        treffer = set()
+        for m in (x.strip() for x in muster.split(",")):
+            if m == "*":
+                t = set(dateien)
+            elif m == ".":
+                t = {d for d in dateien if "/" not in d}
+            elif m.endswith("/"):
+                t = {d for d in dateien if d.startswith(m)}
+            else:
+                t = {d for d in dateien if fnmatch.fnmatchcase(d, m)}
+            if not t:
+                print(f"FEHLER: {{{{ZAHL:{muster}}}}} - '{m}' trifft keine Kerndatei",
+                      file=sys.stderr)
+                sys.exit(1)
+            treffer |= t
+        return len(treffer)
+
+    def repl(m):
+        if m.group(1) == "VERSION":
+            return open(os.path.join(CORE, "VERSION"), encoding="utf-8").read().strip()
+        if m.group(1) == "CLIENT":
+            return man["client"]
+        return str(zaehle(m.group(2)))
+    return ZAHL_RE.sub(repl, text)
+
+
 def lokale_ergaenzung(man: dict) -> str:
     """Die persoenliche Ergaenzungsdatei - oder die Erklaerung, weshalb es sie nicht gibt.
 
@@ -227,10 +301,13 @@ def main() -> None:
     try:
         os.makedirs(OUT, exist_ok=True)
         parts = []
+        dateien = kerndateien()
         for fn in sorted(os.listdir(DOC)):
             if fn.endswith(".md"):
                 roh = open(os.path.join(DOC, fn), encoding="utf-8").read().rstrip("\n")
-                parts.append(process(roh, man, installation))
+                # Die Zahlen VOR den Einbettungen: Eine eingebettete Datei, die die
+                # Direktive nennt, wird zitiert und nicht ausgerechnet.
+                parts.append(process(zahlen(roh, dateien, man, installation), man, installation))
         result = "\n\n".join(parts) + "\n"
         out_path = os.path.join(OUT, "hauptdokument.md")
         with open(out_path, "w", encoding="utf-8") as fh:

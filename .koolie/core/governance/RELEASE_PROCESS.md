@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.3` |
+| Version | `0.3.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -66,7 +66,7 @@ Freigabe, die er absichern soll.
 
 ⚠️ **Preis, benannt:** Wer vor dem Commit hebt, hebt aus einem **unveröffentlichten**
 Stand. Ändert sich der Baum danach noch – und in `1.0.0` hat er sich **genau deswegen**
-geändert –, muß erneut gehoben werden. ➡️ ***Heben und Commit gehören als Paar***, wie
+geändert –, muss erneut gehoben werden. ➡️ ***Heben und Commit gehören als Paar***, wie
 Commit und Marke.
 
 🔴 **UND DIE LISTE WIRD AN ZWEI STELLEN GEFÜHRT, NICHT AN EINER.** Gemessen am
@@ -74,14 +74,14 @@ Commit und Marke.
 **ausgelieferten Kopien** in beiden übernehmenden Projekten trugen weiter `1.0.0` neben
 einer `VERSION` `1.0.1`. *Wer eine Liste nach dem Heben fortschreibt, schreibt sie an
 einer Stelle fort und liefert sie an zwei.* **Deshalb nennt Schritt 1 den Zielstand und Schritt 2 hebt:**
-Die Liste muß den Zielstand tragen, BEVOR gehoben wird – sonst kopiert das Heben den
+Die Liste muss den Zielstand tragen, BEVOR gehoben wird – sonst kopiert das Heben den
 alten Stand in beide Projekte, und genau das ist am 2026-09-23 gemessen worden.
 
 🔴 **UND DAS HEBEN IST DER LETZTE EINGRIFF IN DEN KERN, NICHT DER ERSTE** (D-333).
 Jede Änderung an `.koolie/core/**` nach dem Heben macht die Kopien wieder falsch – und
 genau das ist am 2026-09-23 beim ersten Durchlauf dieses Verfahrens passiert: Die
-Overlay-Version steht erst **nach** dem Heben fest, die Bestandsliste mußte deshalb noch
-einmal angefaßt werden, und danach trugen beide Projekte einen Stand, den es nicht gibt.
+Overlay-Version steht erst **nach** dem Heben fest, die Bestandsliste musste deshalb noch
+einmal angefasst werden, und danach trugen beide Projekte einen Stand, den es nicht gibt.
 🟢 **Die Übergabe darf danach noch geschrieben werden** – sie ist seit `1.4.1` ein
 lokales Arbeitsdokument, wird nicht versioniert (D-350) und in kein Projekt
 installiert. Bis `1.4.0` stand hier, sie sei *der einzige Träger des Release-Commits,
@@ -90,13 +90,13 @@ der das darf*; seither gehört sie keinem Commit mehr an.
 🔴 **UND SCHRITT 2 ENDETE BIS `1.3.0`, BEVOR SEIN ERGEBNIS DAUERHAFT WAR** (D-343).
 Vier Handgriffe standen hier – entpacken, `install.py --update`, Overlay nachziehen,
 validieren –, und **das Committen im übernehmenden Projekt stand in keinem davon.**
-Gemessen beim Abschluß von `1.2.0`: In **beiden** Projekten trug der jüngste Commit
+Gemessen beim Abschluss von `1.2.0`: In **beiden** Projekten trug der jüngste Commit
 `VERSION` `1.0.1`; die Hebung auf `1.1.0` ist **nie committet worden** und lag einen Tag
 lang als offener Arbeitsbaum da, bis `1.2.0` sie überschrieb. Die Vorgänger `1.0.0` und
 `1.0.1` tragen je einen eigenen Commit – **die Gewohnheit gab es also, nur die Regel
 nicht.** ➡️ ***Ein Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist,
 liefert einen Zustand und keinen Stand.***
-⚠️ **Grenze, benannt:** Prüfung 82 kann es nicht fangen und sagt es selbst – sie mißt die
+⚠️ **Grenze, benannt:** Prüfung 82 kann es nicht fangen und sagt es selbst – sie misst die
 **Behauptung** der Bestandsliste, nicht den Stand des Projekts (D-331). Der Git-Stand
 eines Projekts **außerhalb** dieses Repositoriums ist für keine Prüfung erreichbar
 (D-299). **Es bleibt ein Verfahrensschritt** – aber einer, dessen Gegenstand **im**
@@ -130,7 +130,7 @@ printf '%s %s\n' "<Adresse des Taggers>" "$(cat ~/.ssh/id_ed25519.pub)" \
 
 ⚠️ **Die Datei liegt unter `.git/` und wird nicht versioniert** – sie bindet eine Adresse
 an einen Schlüssel, und eine Adresse im Kern meldet Prüfung 6 zu Recht. ➡️ *Eine
-Signatur ohne hinterlegten Unterzeichner belegt, daß jemand mit diesem Schlüssel
+Signatur ohne hinterlegten Unterzeichner belegt, dass jemand mit diesem Schlüssel
 unterschrieben hat – nicht, wem der Schlüssel gehört.*
 
 🔴 **Die Marke ist nicht delegierbar, und die Begründung ist D-319.** Sie sagt **wer** freigegeben hat. Ein Werkzeug kann sie technisch setzen und mit einem vorhandenen Schlüssel sogar signieren – **und genau deshalb darf es nicht.**

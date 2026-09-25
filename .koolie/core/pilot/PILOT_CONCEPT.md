@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PILOT` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | Projektleitung des Pilotprojekts mit `<FRAMEWORK_OWNER>` |
 | Metriken | `METRICS.md` |
@@ -35,8 +35,8 @@ Der Pilot wird unterbrochen und neu bewertet, wenn eines eintritt:
 2. Wiederholte Umgehung zentraler Regeln trotz Nachsteuerung (Bypass-Nutzung, K3-Bereitstellungen).
 3. Deutliche, anhaltende Verschlechterung der Qualitätssignale gegenüber der Referenzbasis (Fehlerquote, Wiedereröffnungen, Pipeline-Fehlschläge) über mehr als einen Review-Punkt.
 4. Breite, begründete Ablehnung durch die Pilotgruppe (Akzeptanzsignale, Feedback) – Werkzeuge gegen das Team einzuführen ist kein Ziel des Frameworks.
-5. Produktänderung, die zentrale Kontrollmechanismen bricht, ohne kurzfristige Abhilfe (Release-Prozess Abschnitt 6).
+5. Produktänderung, die zentrale Kontrollmechanismen bricht, ohne kurzfristige Abhilfe (`.koolie/core/governance/RELEASE_PROCESS.md` Abschnitt 6).
 
 ## 4. Entscheidung am Pilotende (normativ)
 
-Auf Basis des Abschlussberichts (Metriken gegen Referenz, qualitative Auswertung, Vorfälle, Aufwand) entscheidet die Projektleitung mit `<FRAMEWORK_OWNER>` und den beteiligten Rollen: **Fortführung** (Rollout-Plan, Version 1.0.0-Pfad), **Anpassung** (gezielte Änderungsanträge, Pilotverlängerung) oder **Beendigung** (dokumentierte Gründe, Rückbau der Freigaben). Die Entscheidung samt Begründung geht in das Decision Log; kein Ergebnis wird durch Weglassen unbequemer Metriken geschönt.
+Auf Basis des Abschlussberichts (Metriken gegen Referenz, qualitative Auswertung, Vorfälle, Aufwand) entscheidet die Projektleitung mit `<FRAMEWORK_OWNER>` und den beteiligten Rollen: **Fortführung** (Rollout-Plan), **Anpassung** (gezielte Änderungsanträge, Pilotverlängerung) oder **Beendigung** (dokumentierte Gründe, Rückbau der Freigaben). Die Entscheidung samt Begründung geht in das Decision Log; kein Ergebnis wird durch Weglassen unbequemer Metriken geschönt.

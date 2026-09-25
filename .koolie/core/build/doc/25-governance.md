@@ -1,6 +1,6 @@
 # 25 Governance und Lifecycle Management
 
-Das Betriebsmodell macht das Framework selbst zu einem gepflegten Produkt: mit Framework Owner und Modul-Ownern, fachlicher und technischer Verantwortung je Bereich, Review-Zyklus, Semantic Versioning und Release-Prozess, Änderungsanträgen, Freigabe und Deprecation von Skills, definiertem Umgang mit dem Assistenten-Produktänderungen, Vorfallbehandlung, Lessons Learned, Feedback- und Ausnahmeprozess, durchgängiger Auditierbarkeit und dem Verfahren zur Übernahme in weitere Projekte (Kap. 28). Die Prioritätshierarchie – einschließlich der im Auftrag geforderten kritischen Widerspruchsprüfung und der begründeten Anpassungen – ist Bestandteil dieses Kapitels.
+Das Betriebsmodell macht das Framework selbst zu einem gepflegten Produkt: mit Framework Owner und Modul-Ownern, fachlicher und technischer Verantwortung je Bereich, Review-Zyklus, Semantic Versioning und Release-Prozess samt Release-Archiv, Änderungsanträgen, Freigabe und Deprecation von Skills, definiertem Umgang mit Produktänderungen des KI-Clients, Vorfallbehandlung, Lessons Learned, Feedback- und Ausnahmeprozess, durchgängiger Auditierbarkeit und dem Verfahren zur Übernahme in weitere Projekte (Kap. 28). Die Prioritätshierarchie – einschließlich der im Auftrag geforderten kritischen Widerspruchsprüfung und der begründeten Anpassungen – ist Bestandteil dieses Kapitels.
 
 ## 25.1 Prioritätshierarchie mit Widerspruchsprüfung
 

@@ -2,6 +2,89 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.9.0] - 2026-09-25
+
+**Der Dokumentationsstandard - und die Roadmap, die zu zwei Dritteln Rueckblick war**
+(`CR-2026-142` E1 bis E12, **D-371** bis **D-380**, **Pruefungen 91 bis 94** neu,
+`K-123` bis `K-129` neu). Ein MINOR-Release ohne Kontingent - das Qualitaetssicherungsrelease der
+Dokumentation nach D-370.
+
+> 🟢 **ERST DIE KRITERIEN, DANN DIE DURCHSICHT.** Der Vorbedingungsdurchgang hat die
+> Dokumente in vier Klassen geteilt - A Einstieg, B Regeln, C Register, D Hauptdokument -
+> und je Klasse festgelegt, was "aktuell", "schluessig", "verstaendlich" und "Form" heisst
+> (`docs/DOCUMENTATION_STANDARD.md`, D-371). Die Zuordnung steht an einer Stelle,
+> `dokumentklasse()` im Validator. Register werden nicht umgeschrieben; `build/doc/` ist
+> trotz Nachweisschicht das Hauptdokument.
+>
+> 🟢 **WAS EINE MASCHINE PRUEFEN KANN, PRUEFT JETZT EINE.** Pruefung 91 haelt die
+> Standueberschrift der Roadmap gegen `VERSION` (sie stand bei 1.8.0 vier Releases
+> zurueck), 92 die Rechtschreibung nach dem geltenden Duden (603 alte gegen 1.192
+> geltende Schreibungen, neunzehn Dokumente mischten beide), 93 die Form (Codebloecke,
+> Hauptueberschrift, Ebenen, Tabellenspalten), 94 den Steckbrief mit Kennung, Version und
+> Status. Die Zaehlwerte in Kapitel 31 setzt der Bau ein (D-377) - sie standen auf 0.89.0.
+>
+> 🟢 **REGEL MIT VERWEIS STATT HERLEITUNG** (D-376). Die Klassen A und D sind
+> durchgesehen: Geschichtsprosa ("bis x.y.z stand hier ...") ist durch die geltende Regel mit
+> D-Verweis ersetzt, veraltete Gegenwartsaussagen sind berichtigt, Belegzellen bleiben.
+> Eine Kaltleser-Probe - eine frische Sitzung, die nur das Dokument liest - hat
+> README, Uebernahmeleitfaden und Quick-Start gegen ein vorher geschriebenes Soll
+> gezaehlt (D-379).
+>
+> ✂️ **DIE ROADMAP VON 337 AUF RUND 114 KB.** Die Rueckblicke vor 1.0.0 sind gestrichen;
+> jede ihrer Kennungen steht gemessen in einem anderen Traeger (D-378).
+
+**Hinzugefuegt**
+
+- `docs/DOCUMENTATION_STANDARD.md`: vier Dokumentklassen, Kriterien je Klasse, was eine
+  Maschine prueft und was Durchsicht bleibt (D-371).
+- **Pruefung 91** (D-372): die Standueberschrift der Roadmap nennt `VERSION`.
+- **Pruefung 92** (D-373): keine Schreibung vor 1996 in den Klassen A, B und D (feste
+  Stammliste, Code ausgenommen, Register ausgenommen).
+- **Pruefung 93** (D-374): Codebloecke geschlossen, eine Hauptueberschrift, keine
+  uebersprungene Ebene, Tabellenzeilen mit der Spaltenzahl ihres Kopfes.
+- **Pruefung 94** (D-375): Steckbrief mit Kennung, Version und Status in den Klassen A und B.
+- Buendel `sonden_roadmapstand`, `sonden_rechtschreibung`, `sonden_dokumentform`,
+  `sonden_steckbrief`.
+- `build/assemble.py`: Direktiven `{{ZAHL:muster}}`, `{{VERSION}}`, `{{CLIENT}}` (D-377).
+- Steckbriefe fuer `OWNERS.md`, `onboarding/QUICKSTART.md`, `onboarding/REFERENCE.md`,
+  `onboarding/exercises/EXERCISES.md`; Kennung fuer `overlay-patterns/general.md`.
+- `checklists/11-framework-release.md` (`0.4.1`): Pruefpunkt Dokumentationsstandard, Kaltleser-Probe.
+- Klaerungspunkte `K-123` bis `K-129` aus der Durchsicht.
+
+**Geaendert**
+
+- Durchsicht der Klasse A (Wurzel-README, Uebernahmeleitfaden, Laufzeitglossar,
+  `clients/README.md`, die drei `CLIENT_PACK.md`, Onboarding, Beispiele, Pilot) und der
+  Klasse D (alle Kapitelquellen): Geschichtsprosa durch die geltende Regel mit D-Verweis
+  ersetzt (D-376), veraltete Gegenwartsaussagen berichtigt - darunter vier Kapitel, die nur
+  zwei Client Packs kannten, der Verzeichnisbaum in Kap. 15.2, die fehlende Spalte
+  `openai-codex` im Laufzeitglossar, die Aktualisierungsschleife im Leitfaden, die den Kern
+  ueberkopierte statt ihn zu ersetzen, und falsche Prueftabellen im README
+  (`--strict-overlay` statt `--check-overlay-ready` fuer die Aktivierungsreife).
+- Rechtschreibung: 74 Woerter in 14 Dokumenten auf die geltende Schreibung (D-373).
+- `docs/ROADMAP.md` (`0.3.0`): Rueckblicke vor 1.0.0 gestrichen, "Bewusst offen gelassen"
+  berichtigt, `1.9.0` gefahren, **neuer Posten `1.9.1`: Durchsicht der Klasse B** (D-378, D-380).
+- Kapitel 31.1: Zaehlwerte aus dem Bau statt einer Zaehlung von 0.89.0 (D-377).
+- `framework/runtime/agents/fw-reviewer.md` (`0.1.1`): Ueberschriften auf Ebene 2.
+- Zwei Hinweistexte im Manifest von `openai-codex` nannten die falsche Zeile (H2 statt H4)
+  bzw. die falsche Einstufung von R2/R3 - berichtigt.
+- Die Ausnahme `docs/ROADMAP.md` in Pruefung 75 nahm nach der Kuerzung nichts mehr aus -
+  entfernt. Zwei Praeparationen der Sonden zu Pruefung 31 fuegten Tabellenzeilen mit einer
+  Spalte zu viel ein - Pruefung 93 hat es gefunden, berichtigt.
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Die Pruefungen 91 bis 94 lesen nur Dokumente des gelieferten Kerns; in einem
+  Projekt gehoert die Wurzel-README dem Projekt und wird nicht geprueft.
+
+**Bekannte Einschraenkungen**
+
+- Die Klasse B ist nur in Rechtschreibung, Form und Steckbrief durchgesehen; die inhaltliche
+  Durchsicht folgt als `1.9.1` ff. (D-380).
+- Pruefung 92 kennt nur die Staemme ihrer Liste; "verstaendlich" bleibt Durchsicht.
+- Die offenen Befunde der Durchsicht stehen als `K-123` bis `K-129` im Decision Log.
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.8.0] - 2026-09-25
 
 **Der waehlbare Lieferumfang - und die Liste, die sich nicht ableiten liess**

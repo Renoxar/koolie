@@ -2,8 +2,9 @@
 
 | Attribut | Wert |
 |---|---|
+| ID | `FW-OVL-GENERAL` |
 | Name | `general` |
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gewählt über | `python .koolie/core/install.py --overlay general` – **nur bei der Erstinstallation** (D-126) |
@@ -15,7 +16,7 @@
 Ein Projekt, das das Framework übernimmt, beginnt ohne diesen Parameter mit einem
 **leeren** Overlay: Jeder Platzhalter ist ein Schlitz, und bis ein Mensch ihn füllt,
 sperrt die Berechtigungsdatei an seiner Stelle nichts. Dieses Muster füllt die Schlitze,
-deren Wert sich **ohne Kenntnis des Projekts** sicher angeben läßt – und nur diese.
+deren Wert sich **ohne Kenntnis des Projekts** sicher angeben lässt – und nur diese.
 
 Seit Version `0.2.0` liefert es außerdem **Dokumente**: allgemein anerkannte Praktiken
 der Softwareentwicklung für die Bereiche des Overlays, die auf **jedes** Projekt passen
@@ -27,7 +28,7 @@ der Softwareentwicklung für die Bereiche des Overlays, die auf **jedes** Projek
 enthalten** (Entscheidungsbaum 6, Prüfungen 6 und 14). Die Grenze ist deshalb keine
 Auswahl nach Geschmack, sondern eine Richtung: **Jeder Wert dieses Musters verschärft.**
 Er steht ausschließlich in einem `deny`-Eintrag; ein Wert, der auf ein Projekt nicht
-paßt, sperrt eine Datei, die es dort nicht gibt, und kostet nichts.
+passt, sperrt eine Datei, die es dort nicht gibt, und kostet nichts.
 
 ➡️ **Nicht gefüllt wird deshalb alles, was etwas FREIGIBT oder das Projekt BESCHREIBT:**
 `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>`, `<READ_ONLY_PATHS>`, die drei
@@ -44,8 +45,8 @@ Jeder Wert steht in einer eigenen Codespanne.
 | Platzhalter | Werte | Warum ohne Kenntnis des Projekts sicher |
 |---|---|---|
 | `<CI_CONFIG_PATHS>` | `.github/workflows/**`, `.gitlab-ci.yml`, `.gitea/workflows/**`, `Jenkinsfile`, `azure-pipelines.yml`, `bitbucket-pipelines.yml`, `.circleci/**` | Die üblichen Ablagen der verbreiteten CI-Werkzeugklassen. Gesperrt wird nur das **Schreiben**; eine Merge-Request-Vorlage neben `.github/workflows/` bleibt lesbar (D-161) |
-| `<QUALITY_GATE_CONFIG_PATHS>` | `.editorconfig`, `.eslintrc*`, `eslint.config.*`, `.prettierrc*`, `.stylelintrc*`, `sonar-project.properties`, `codecov.yml`, `.codecov.yml`, `.coveragerc`, `.pylintrc`, `.flake8`, `ruff.toml`, `.golangci.yml`, `checkstyle.xml` | Eigenständige Konfigurationsdateien von Linter, Formatierer, Analyse und Abdeckung – Schwellenwerte ändert der KI-Client nie (`OVERLAY.md` Abschnitt 7). ⚠️ **Bewußt nicht:** Sammeldateien wie `pyproject.toml` oder `package.json`, die neben der Prüfkonfiguration auch Abhängigkeiten tragen – sie zu sperren, wäre eine Aussage über das Projekt |
-| `<EXCLUDED_PATHS>` | `**/*.tfstate`, `**/*.tfstate.*`, `**/*.dump` | Zustandsdateien einer Infrastrukturbeschreibung tragen Zugangsdaten im Klartext, Datenbankabzüge echte Daten (K3). ⚠️ **Bewußt nicht:** `deploy/**`, `infra/**` oder `config/prod/**` aus dem Beispiel der Vorlage – sie setzen ein Verzeichnislayout voraus, und eine Lesesperre auf ein Verzeichnis, in dem das Projekt arbeitet, ist keine Verschärfung, sondern ein Hindernis |
+| `<QUALITY_GATE_CONFIG_PATHS>` | `.editorconfig`, `.eslintrc*`, `eslint.config.*`, `.prettierrc*`, `.stylelintrc*`, `sonar-project.properties`, `codecov.yml`, `.codecov.yml`, `.coveragerc`, `.pylintrc`, `.flake8`, `ruff.toml`, `.golangci.yml`, `checkstyle.xml` | Eigenständige Konfigurationsdateien von Linter, Formatierer, Analyse und Abdeckung – Schwellenwerte ändert der KI-Client nie (`OVERLAY.md` Abschnitt 7). ⚠️ **Bewusst nicht:** Sammeldateien wie `pyproject.toml` oder `package.json`, die neben der Prüfkonfiguration auch Abhängigkeiten tragen – sie zu sperren, wäre eine Aussage über das Projekt |
+| `<EXCLUDED_PATHS>` | `**/*.tfstate`, `**/*.tfstate.*`, `**/*.dump` | Zustandsdateien einer Infrastrukturbeschreibung tragen Zugangsdaten im Klartext, Datenbankabzüge echte Daten (K3). ⚠️ **Bewusst nicht:** `deploy/**`, `infra/**` oder `config/prod/**` aus dem Beispiel der Vorlage – sie setzen ein Verzeichnislayout voraus, und eine Lesesperre auf ein Verzeichnis, in dem das Projekt arbeitet, ist keine Verschärfung, sondern ein Hindernis |
 
 ## Wie die Werte in das Projekt kommen
 
@@ -86,7 +87,7 @@ zweiter Gegenstand mit eigener Grenze** (D-359). Ein Dokument gibt nichts frei, 
   07 und 08 –, wird verwiesen, nicht abgeschrieben. Jedes Dokument sagt in einem Abschnitt
   *„Verhältnis zum Framework“*, wo die Grenze liegt; bei Widerspruch gilt der Kern.
 
-➡️ **Was davon nicht überall paßt, kommt nicht hinein** – auch nicht als Beispiel. Die
+➡️ **Was davon nicht überall passt, kommt nicht hinein** – auch nicht als Beispiel. Die
 Stelle für Projektfestlegungen ist der Abschnitt *„Projektspezifische Ergänzungen“* am
 Ende jedes Dokuments und die zugehörige Zeile in `OVERLAY.md`.
 
@@ -94,7 +95,7 @@ Diese Tabelle beschreibt die Ablage unter `overlay-patterns/general/documents/<t
 `install.py` hält ihre erste Spalte gegen die Verzeichnisse und bricht ab, wenn beide
 auseinanderlaufen.
 
-| Typ | Was das Dokument enthält | Was bewußt fehlt |
+| Typ | Was das Dokument enthält | Was bewusst fehlt |
 |---|---|---|
 | `coding-guidelines` | Lesbarkeit, eine Verantwortung je Einheit, KISS/DRY/YAGNI, Fehlerbehandlung, Kommentare zum Warum, kleine Schritte | Benennungsschema, Formatierer, Längengrenzen; die Pfadfinderregel über den Scope hinaus (widerspräche Q1 und RV1) |
 | `definition-of-ready` | Zweck, prüfbare Akzeptanzkriterien, Abgrenzung, Größe, Abhängigkeiten, offene Fragen, nicht-funktionale Anforderungen | Schätzgrößen, Vorgehensmodell; die KI-Zusatzkriterien aus `OVERLAY.md` Abschnitt 11 |
@@ -136,9 +137,9 @@ nicht (D-126); sie übernehmen einzelne Dokumente von Hand
 ## Die Grenze zur Aktivierungsreife
 
 🔴 **Ein Overlay aus diesem Muster ist nicht aktivierungsreif, und das ist gewollt**
-(D-57). Es läßt die Pflichtwerte der Abschnitte 1, 5, 6, 13, 14 und 15 offen; ein Overlay,
+(D-57). Es lässt die Pflichtwerte der Abschnitte 1, 5, 6, 13, 14 und 15 offen; ein Overlay,
 das die Prüfung `--check-overlay-ready` von selbst bestünde, wäre ein aktivierungsreifer
-Zustand, den niemand geprüft hat. **Die Sonde `M355b` hält fest, daß eine frische
+Zustand, den niemand geprüft hat. **Die Sonde `M355b` hält fest, dass eine frische
 Installation mit diesem Muster die Prüfung nicht besteht.**
 
 ## Änderungsverlauf

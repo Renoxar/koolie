@@ -2,6 +2,13 @@
 
 > Kurzreferenz; maßgeblich sind die Wurzel-Anweisungsdatei und `.koolie/core/framework/core/`. Version: siehe `.koolie/core/VERSION`.
 
+| Attribut | Wert |
+|---|---|
+| ID | `FW-OB-REF` |
+| Version | `0.1.0` |
+| Status | `pilot` |
+| Owner (Rolle) | `<FRAMEWORK_OWNER>` |
+
 ## Kontextklassen
 
 | Klasse | Kurz | Umgang |
@@ -19,7 +26,7 @@
 | mittel | nur nach bestätigtem Plan | + unabhängiges Review RV1–RV12, Reviewer testet selbst |
 | hoch | nur mit Freigabe `<APPROVAL_ROLE>` + Begleitung | + Architektur/Security, Sitzungsprotokoll |
 
-Immer mindestens hoch oder verboten: Auth/Krypto (R10), personenbezogene Verarbeitung (R4), Abhängigkeiten (R9), Migrationen (R11), Produktionsnähe (R5).
+Stufe hoch unter anderem bei: jeder Änderung an Authentifizierung oder Autorisierung (R10); Kryptografie, Sitzungsverwaltung, Security-Konfiguration (R3); Änderung an Erhebung, Speicherung, Weitergabe oder Löschung personenbezogener Daten (R4); neue Abhängigkeit oder Major-Update (R9, die Einführung selbst ist verboten – V3); Schema-Änderung oder Migration (R11); unmittelbare Produktionswirkung (R5).
 
 ## Betriebsmodi
 
@@ -54,7 +61,7 @@ Der KI-Client hält an bei S1–S10 (Unklarheit, fehlende Freigabe, Secret-Fund,
 
 ## Sitzung, kurz
 
-Neue Aufgabe = neue Sitzung · Modus Normal (nie Bypass/Smart) · Freigaben höchstens sitzungsweise · Preflight CL-01 → Arbeit → Ergebnisbericht → Selbstreview CL-04 → MR mit Nutzungsvermerk (CL-08).
+Neue Aufgabe = neue Sitzung · Modus Normal (nie Bypass; selbsttätige Übernahme nur per Ausnahme, D-05) · Freigaben höchstens sitzungsweise · Preflight CL-01 → Arbeit → Ergebnisbericht → Selbstreview CL-04 → MR mit Nutzungsvermerk (CL-08).
 
 ## Checklisten und Bäume
 

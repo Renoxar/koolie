@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 90, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 94, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -1921,7 +1921,7 @@ def _zeile_ohne_einstufung(root: str) -> None:
     marke = "| X2 |"
     i = t.index(marke)
     ende = t.index("\r\n", i)
-    schreib(pfad, t[:ende] + "\r\n| Z9 | Sonde ohne Einstufung | - | - | - | - |" + t[ende:])
+    schreib(pfad, t[:ende] + "\r\n| Z9 | Sonde ohne Einstufung | - | - | - |" + t[ende:])
 
 
 def _zeile_mit_summe(root: str) -> None:
@@ -1929,7 +1929,7 @@ def _zeile_mit_summe(root: str) -> None:
     pfad = P(root, PACK_31.replace("/", os.sep))
     frei(pfad, "| Z9 |")
     zeile_nach(pfad, "| X2 |",
-               "| Z9 | Sonde mit Einstufung | - | - | `[TECHNISCH]` | `[DOK]` |")
+               "| Z9 | Sonde mit Einstufung | - | `[TECHNISCH]` | `[DOK]` |")
     ersetze(pfad,
             ("| `[TECHNISCH]` | 22 von 31 |", "| `[TECHNISCH]` | 23 von 32 |"),
             ("| 7 von 31 (", "| 7 von 32 ("),
@@ -9448,6 +9448,279 @@ def sonden_verdraengung() -> None:
 buendel(sonden_verdraengung,
         "Pruefung 88 meldet die Datei, die die Wurzel-Anweisung verdraengt - und die "
         "zweite Gegenprobe belegt, dass sie nur dort fragt, wo sie verdraengt")
+
+
+# --- Pruefungen 91 bis 94: die Dokumentation (CR-2026-142) --------------------------
+#
+# Je Pruefung ein Buendel auf EINER Kopie. Die Gegenproben tragen das Gewicht: Jede der
+# vier Pruefungen liest ueber zweihundert Dokumente, und eine, die zu breit greift,
+# meldete Zitate, Register oder Vorlagen - und saehe an ihrer Sonde genauso gruen aus.
+M91_STAND = "die Standüberschrift nennt Release"
+M91_ANKER = "Prüfung 91 hält sie gegen"
+M92 = "in der Schreibung vor 1996"
+M93_ZAUN = "ein Codeblock ist bis zum Dateiende nicht geschlossen"
+M93_H1 = "Hauptüberschriften ('# ')"
+M93_EBENE = "eine Ebene ist übersprungen"
+M93_TABELLE = "Spalten – ein ungeschützter senkrechter Strich"
+M94_OHNE_ID = "Steckbrief ohne ID"
+M94_KEINER = "kein Steckbrief vor dem ersten Abschnitt"
+
+P91_ROADMAP = ".koolie/core/docs/ROADMAP.md"
+P92_REGEL = ".koolie/core/governance/RELEASE_PROCESS.md"
+P92_KAPITEL = ".koolie/core/build/doc/29-grenzen.md"
+P92_REGISTER = ".koolie/core/CHANGELOG.md"
+P92_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
+P93_REGEL = ".koolie/core/framework/core/05-working-model.md"
+P94_REGEL = ".koolie/core/governance/RACI.md"
+
+
+def _anhaengen(pfad: str, *zeilen: str) -> None:
+    schreib(pfad, lies(pfad).rstrip("\r\n") + "\r\n\r\n" + "\r\n".join(zeilen) + "\r\n")
+
+
+def _zeilen_mit(aus: str, marke: str) -> str:
+    return " | ".join(z for z in aus.splitlines() if marke in z)[:400]
+
+
+def sonden_roadmapstand() -> None:
+    """Wirkungsnachweis zu Pruefung 91."""
+    root = kopie()
+    try:
+        pfad = P(root, *P91_ROADMAP.split("/"))
+        text = lies(pfad)
+        kopf = next((z for z in text.split("\r\n") if z.startswith("## Stand nach Release ")), None)
+        if kopf is None:
+            raise Praeparationsfehler("Sonden zu 91: keine Standueberschrift in %s" % P91_ROADMAP)
+
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "91a", M91_STAND not in aus and M91_ANKER not in aus,
+              "Die Standueberschrift der ausgelieferten Roadmap nennt VERSION und laeuft "
+              "durch")
+
+        alt = re.sub(r"Release `?\d+\.\d+\.\d+`?", "Release 1.4.4", kopf, count=1)
+        if alt == kopf:
+            raise Praeparationsfehler("Sonde 91a hat nichts geaendert")
+        schreib(pfad, text.replace(kopf, alt, 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "91a", M91_STAND in aus,
+              "Eine Standueberschrift, die ein frueheres Release nennt, wird gemeldet - "
+              "der gemessene Fall von 1.8.0: vier Releases zurueck")
+        if M91_STAND not in aus:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        schreib(pfad, text.replace(kopf, "## Stand der Dinge", 1))
+        aus = validator_ausgabe(root)
+        melde("SONDE", "91b", M91_ANKER in aus,
+              "Der verlorene Anker: ohne Standueberschrift meldet die Pruefung es, statt "
+              "leise zu bestehen (D-23)")
+        if M91_ANKER not in aus:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(pfad, text)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_roadmapstand,
+        "Pruefung 91 haelt die Standueberschrift der Roadmap gegen VERSION und meldet "
+        "den verlorenen Anker")
+
+
+def sonden_rechtschreibung() -> None:
+    """Wirkungsnachweis zu Pruefung 92."""
+    root = kopie()
+    try:
+        regel, kapitel, register = (P(root, *x.split("/")) for x in (P92_REGEL, P92_KAPITEL,
+                                                                     P92_REGISTER))
+        texte = {p: lies(p) for p in (regel, kapitel, register)}
+
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "92a", M92 not in aus,
+              "Der ausgelieferte Bestand der Klassen A, B und D laeuft durch - ohne "
+              "Schreibung vor 1996")
+        if M92 in aus:
+            notiz("        Ausgabe:", _zeilen_mit(aus, M92))
+
+        # --- Gegenprobe 92b: Zitat und Register ------------------------------------
+        # 🔴 DIE EINHEIT, DIE MAN WEGLASSEN WUERDE. Code ist Zitat - ein Befehl, eine
+        # Meldung, die woertlich so lautet -, und ein Register wird nicht umgeschrieben
+        # (D-371). Eine Pruefung, die beides meldete, verlangte eine Faelschung.
+        _anhaengen(regel, "Zitat einer alten Meldung: `daß der Lauf mißt`", "",
+                   "```text", "Meßbaum muß bleiben, weil es ein Zitat ist", "```")
+        _anhaengen(register, "Sondenzeile im Register: daß, muß, Meßbaum")
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "92b", M92 not in aus,
+              "Alte Schreibung im Inline-Code, im Codeblock und im CHANGELOG wird NICHT "
+              "gemeldet - Zitat und Register bleiben, wie sie sind")
+        if M92 in aus:
+            notiz("        Ausgabe:", _zeilen_mit(aus, M92))
+        for p, t in texte.items():
+            schreib(p, t)
+
+        # --- Sonde 92a: Klasse B -----------------------------------------------------
+        _anhaengen(regel, "Sondenzeile: Der Schritt mißt, daß nichts fehlt.")
+        aus = validator_ausgabe(root)
+        treffer = [z for z in aus.splitlines() if M92 in z and "RELEASE_PROCESS.md" in z]
+        melde("SONDE", "92a", bool(treffer) and "mißt" in treffer[0] and "daß" in treffer[0],
+              "Alte Schreibung im Fliesstext eines Regeldokuments wird gemeldet, mit "
+              "Zeile und Wort")
+        if not treffer:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(regel, texte[regel])
+
+        # --- Sonde 92b: Klasse D -----------------------------------------------------
+        _anhaengen(kapitel, "Sondenzeile: der Meßbaum.")
+        aus = validator_ausgabe(root)
+        ok = any(M92 in z and "29-grenzen.md" in z for z in aus.splitlines())
+        melde("SONDE", "92b", ok,
+              "Alte Schreibung in einer Kapitelquelle des Hauptdokuments wird gemeldet - "
+              "build/doc gehoert zu Klasse D, obwohl build/ Nachweisschicht ist")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(kapitel, texte[kapitel])
+
+        # --- Gegenprobe 92c: die Wurzel eines Projekts gehoert dem Projekt -----------
+        # D-299: Ohne das Kennzeichen des Quellrepositoriums ist dieser Baum ein
+        # Projekt, und dessen README.md ist nicht Gegenstand dieser Pruefung.
+        readme = P(root, "README.md")
+        rtext = lies(readme)
+        _anhaengen(readme, "Sondenzeile im Projekt: daß.")
+        os.remove(P(root, *P92_KENNZEICHEN.split("/")))
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "92c",
+              not any(M92 in z and z.split()[1].startswith("README.md") for z in aus.splitlines()
+                      if z.startswith("FEHLER")),
+              "In einem Projekt ohne Kennzeichen des Quellrepositoriums wird die "
+              "Wurzel-README nicht geprueft - sie gehoert dem Projekt (D-299)")
+        schreib(readme, rtext)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_rechtschreibung,
+        "Pruefung 92 meldet alte Schreibung in Regel- und Kapiteltexten und laesst Zitat, "
+        "Register und die Wurzel eines Projekts stehen")
+
+
+def sonden_dokumentform() -> None:
+    """Wirkungsnachweis zu Pruefung 93."""
+    root = kopie()
+    try:
+        pfad = P(root, *P93_REGEL.split("/"))
+        text = lies(pfad)
+        alle = (M93_ZAUN, M93_H1, M93_EBENE, M93_TABELLE)
+
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "93a", not any(m in aus for m in alle),
+              "Der ausgelieferte Bestand aller vier Klassen ist formal sauber")
+        if any(m in aus for m in alle):
+            notiz("        Ausgabe:", _zeilen_mit(aus, "(D-374)"))
+
+        # --- Gegenprobe 93b: was wie ein Formfehler aussieht und keiner ist ----------
+        _anhaengen(pfad,
+                   "| Befehl | Wirkung |", "|---|---|",
+                   "| `a | b` | ein senkrechter Strich im Code |",
+                   "| a \\| b | ein geschuetzter Strich |", "",
+                   "```text", "# keine Ueberschrift, sondern eine Zeile im Codeblock",
+                   "#### auch keine", "```")
+        aus = validator_ausgabe(root)
+        melde("GEGENPROBE", "93b", not any(m in aus for m in alle),
+              "Senkrechter Strich im Code und geschuetzt sowie Rautenzeilen im Codeblock "
+              "werden NICHT gemeldet")
+        if any(m in aus for m in alle):
+            notiz("        Ausgabe:", _zeilen_mit(aus, "(D-374)"))
+        schreib(pfad, text)
+
+        def _sonde_93(zeilen: tuple, marke: str) -> tuple:
+            _anhaengen(pfad, *zeilen)
+            aus = validator_ausgabe(root)
+            schreib(pfad, text)
+            ok = any(marke in z and "05-working-model.md" in z for z in aus.splitlines())
+            return ok, aus
+
+        ok, aus = _sonde_93(("```text", "offen bis zum Ende"), M93_ZAUN)
+        melde("SONDE", "93a", ok,
+              "Ein Codeblock, der bis zum Dateiende offen bleibt, wird gemeldet (D-374)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        ok, aus = _sonde_93(("# Zweite Hauptueberschrift",), M93_H1)
+        melde("SONDE", "93b", ok, "Eine zweite Hauptueberschrift wird gemeldet (D-374)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        ok, aus = _sonde_93(("## Sondenabschnitt", "", "#### Sprung ueber eine Ebene"),
+                            M93_EBENE)
+        melde("SONDE", "93c", ok,
+              "Eine uebersprungene Ueberschriftenebene wird gemeldet (D-374)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        ok, aus = _sonde_93(("| A | B |", "|---|---|", "| eins | zwei | drei |"),
+                            M93_TABELLE)
+        melde("SONDE", "93d", ok,
+              "Eine Tabellenzeile mit mehr Spalten als ihre Kopfzeile wird gemeldet (D-374)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_dokumentform,
+        "Pruefung 93 meldet offenen Codeblock, zweite Hauptueberschrift, Ebenensprung und "
+        "verschobene Tabellenspalten - nicht aber Striche und Rauten im Code")
+
+
+def sonden_steckbrief() -> None:
+    """Wirkungsnachweis zu Pruefung 94."""
+    root = kopie()
+    try:
+        pfad = P(root, *P94_REGEL.split("/"))
+        text = lies(pfad)
+        idzeile = next((z for z in text.split("\r\n") if re.match(r"\|\s*ID\s*\|", z)), None)
+        kopf = next((z for z in text.split("\r\n") if re.sub(r"\s+", " ", z) == "| Attribut | Wert |"),
+                    None)
+        if idzeile is None or kopf is None:
+            raise Praeparationsfehler("Sonden zu 94: %s hat keinen Steckbrief mit ID" % P94_REGEL)
+
+        aus = validator_ausgabe(root)
+        ausgenommen = ("framework/runtime/rules/", "templates/", "checklists/README.md",
+                       "examples/")
+        ok = M94_OHNE_ID not in aus and M94_KEINER not in aus
+        melde("GEGENPROBE", "94a", ok,
+              "Der ausgelieferte Bestand laeuft durch - Laufzeitregeln, Vorlagen, "
+              "Beispiele und README-Verzeichnisse ohne Steckbrief sind ausgenommen")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "(D-375)"))
+        # Die Gegenprobe ist nur dann eine, wenn es die Ausgenommenen wirklich gibt.
+        fehlend = [a for a in ausgenommen
+                   if not os.path.exists(P(root, ".koolie", "core", *a.rstrip("/").split("/")))]
+        if fehlend:
+            raise Praeparationsfehler("Gegenprobe 94a: Ausnahmen ohne Gegenstand: %s" % fehlend)
+
+        schreib(pfad, text.replace(idzeile + "\r\n", "", 1))
+        aus = validator_ausgabe(root)
+        ok = any(M94_OHNE_ID in z and "RACI.md" in z for z in aus.splitlines())
+        melde("SONDE", "94a", ok,
+              "Ein Steckbrief ohne Kennungszeile wird gemeldet (D-375)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        schreib(pfad, text.replace(kopf, "| Eigenschaft | Wert |", 1))
+        aus = validator_ausgabe(root)
+        ok = any(M94_KEINER in z and "RACI.md" in z for z in aus.splitlines())
+        melde("SONDE", "94b", ok,
+              "Ein Regeldokument ohne Tabelle 'Attribut | Wert' vor dem ersten Abschnitt "
+              "wird gemeldet (D-375)")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(pfad, text)
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_steckbrief,
+        "Pruefung 94 verlangt Kennung, Version und Status im Steckbrief der Klassen A "
+        "und B und laesst Laufzeit, Vorlagen und Verzeichnisse aus")
 
 
 if LISTE:

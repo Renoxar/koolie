@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-CHECK` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zweck | Selbstkontrolle vor dem Abschlussgespräch – **keine Personalbeurteilung**; Ergebnisse verbleiben bei der oder dem Lernenden |
@@ -23,7 +23,7 @@ Beantworte die Fragen schriftlich ohne Nachschlagen; gleiche danach mit dem Lös
 8. Warum gilt „ein Ziel je Änderung" (Q1/P7) und was tust du, wenn dir während einer Umsetzung ein zweiter Fehler auffällt?
 9. Welche drei Prüfpunkte des Reviews adressieren KI-typische Fehler besonders und was prüfst du dabei konkret (RV2, RV4, RV5)?
 10. Ein bereinigter Stacktrace enthält doch noch eine E-Mail-Adresse und du hast ihn bereits eingefügt. Welche Klasse hat der Inhalt, welche Stop-Bedingung greift und an wen eskalierst du?
-11. Wann darfst du eine sitzungsweite Freigabe erteilen und warum nie „Allow for project" oder „Allow globally"?
+11. Wann darfst du eine sitzungsweite Freigabe erteilen und warum nie eine Freigabe für das ganze Projekt oder global?
 12. Was gehört in das Project Overlay und was ausdrücklich nicht? Nenne je zwei Beispiele.
 13. Welche Voraussetzungen müssen erfüllt sein, bevor `fw-change-small` bei Stufe mittel loslegen darf?
 14. Warum ist die Rückfrage „bist du sicher?" keine Prüfung – und was ist die richtige Alternative?
@@ -41,7 +41,7 @@ Beantworte die Fragen schriftlich ohne Nachschlagen; gleiche danach mit dem Lös
 8. Kleine, thematisch getrennte Änderungen bleiben reviewbar und reversibel. Zweiter Fehler: nicht mitfixen; als eigener Befund in den Ergebnisbericht beziehungsweise ein eigenes Ticket (Scope-Falle aus Ü6c).
 9. RV2: Stichprobe der Fundstellen gegen den Code. RV4: Tests prüfen Verhalten, keine entfernten/abgeschwächten Assertions, keine reine Mock-Verifikation. RV5: verwendete APIs existieren in der eingesetzten Version (Import-/Manifest-Fundstelle, Suche).
 10. K3 (personenbezogenes Datum); S2/S3-Bereich mit erfolgter Bereitstellung → E3: `<DATA_PROTECTION_CONTACT>` und `<SECURITY_CONTACT>`; Verfahren nach `02-privacy.md` Abschnitt 5 (Meldefristen der Organisation beachten).
-11. Sitzungsweite Freigaben nur für die im Overlay freigegebenen Test-/Build-Befehle. Projekt-/globale Freigaben ändern versionierte beziehungsweise persönliche Konfiguration dauerhaft und umgehen den Änderungsprozess (V10, Übersicht der Laufzeitschicht).
+11. Sitzungsweite Freigaben nur für die im Overlay freigegebenen Test-/Build-Befehle. Projekt-/globale Freigaben ändern versionierte beziehungsweise persönliche Konfiguration dauerhaft und umgehen den Änderungsprozess (V10; `CLIENT_PACK.md` des Client Packs, Abschnitt „M – Modi und Sitzungsfreigaben“).
 12. Hinein: projektspezifische Werte – Pfade, Befehle, kritische Komponenten, Rollen, freigegebene Quellen, DoR/DoD. Nicht hinein: universelle Governance-Regeln (Core), Personen, Secrets, interne Adressen, Inhalte anderer Ebenen. Quelle: P10, Baum 6.
 13. Overlay aktiv; Preflight mit Stufe/Faktor; bestätigter Plan; sauberer Arbeitsbranch; Ausgangstests grün; freigegebene Befehle bekannt; Grenzen (Pfade) benannt (`.koolie/core/checklists/03-before-code-change.md`).
 14. Selbstauskünfte eines Sprachmodells sind keine Evidenz; richtig sind Belege: Fundstellen öffnen, Tests ausführen, Diff lesen (P4, Q3, Q7).

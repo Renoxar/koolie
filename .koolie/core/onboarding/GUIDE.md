@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-GUIDE` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
@@ -19,14 +19,14 @@ Nach dem Onboarding kannst du:
 4. KI-Ergebnisse belastbar prüfen (Fundstellen, Testaussagekraft, API-Existenz) und über den regulären Prozess einbringen,
 5. Stopp-Situationen erkennen und richtig eskalieren.
 
-Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontrolliert bereitstellen, Ergebnisse belastbar prüfen** – nicht, möglichst viele Aufgaben zu delegieren. Wer eine Woche lang nur M1-Analysen fährt und dabei das Projekt versteht, nutzt der KI-Client besser als jemand, der am ersten Tag ungeprüfte Diffs produziert.
+Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontrolliert bereitstellen, Ergebnisse belastbar prüfen** – nicht, möglichst viele Aufgaben zu delegieren. Wer eine Woche lang nur M1-Analysen fährt und dabei das Projekt versteht, nutzt den KI-Client besser als jemand, der am ersten Tag ungeprüfte Diffs produziert.
 
 ## Voraussetzungen
 
 - Zugang zu `<REPOSITORY_NAME>` und zum eingesetzten KI-Client; Grundkenntnisse in `<TECH_STACK>` und Git.
 - Datenschutz- und Vertraulichkeitsunterweisung der Organisation absolviert (`<TBD: Referenz>`).
 - Benannte Mentorin oder benannter Mentor; Übungsrepository eingerichtet (`exercises/README.md`).
-- Gelesen: `QUICKSTART.md`, die Wurzel-Anweisungsdatei, Overlay Abschnitte 1–6 und 13–16.
+- Gelesen: `QUICKSTART.md`, die Wurzel-Anweisungsdatei, `.koolie/project-overlay/OVERLAY.md` Abschnitte 1–6 und 13–16.
 
 ## Programmüberblick
 
@@ -43,7 +43,7 @@ Maßstab ist souveräne Nutzung: **Aufgaben angemessen abgrenzen, Kontext kontro
 | 9 | Typische Fehlanwendungen | Katalog unten + Ü6 | Negativübungen bestanden |
 | 10 | Abschluss | `KNOWLEDGE_CHECK.md`, `COMPLETION_CRITERIA.md` | Freigabe dokumentiert |
 
-Reihenfolge ist verbindlich bis Modul 3; danach dürfen Module nach Absprache verschränkt werden. Bis zur Freigabe gilt: Der KI-Client nur in Begleitung oder auf dem Übungsrepository.
+Reihenfolge ist verbindlich bis Modul 3; danach dürfen Module nach Absprache verschränkt werden. Bis zur Freigabe arbeitest du mit dem KI-Client nur in Begleitung oder auf dem Übungsrepository.
 
 ## Modul 1 – Möglichkeiten und Grenzen
 
@@ -55,11 +55,11 @@ Lies `.koolie/core/framework/core/02-privacy.md` und arbeite `.koolie/core/decis
 
 ## Modul 3 – Sichere Arbeitsweise
 
-Lies `.koolie/core/framework/core/05-working-model.md` (14 Schritte, M1–M5) und die Übersicht der Laufzeitschicht (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`.koolie/core/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
+Lies `.koolie/core/framework/core/05-working-model.md` (14 Schritte, M1–M5) und im `CLIENT_PACK.md` deines Client Packs (unter `.koolie/core/clients/`) den Abschnitt „M – Modi und Sitzungsfreigaben“ (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`.koolie/core/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
 
 ## Modul 4 – Repository- und Framework-Struktur
 
-Rundgang mit der Mentorin oder dem Mentor durch: die Wurzel-Anweisungsdatei (Hierarchie der Anweisungen), die Laufzeitschicht (Regeln, Skills, Berechtigungen, Hooks), `.koolie/core/framework/` (Core, Packs), `.koolie/project-overlay/` (die einzige projektspezifische Ebene), `.koolie/core/checklists/`, `.koolie/core/decision-trees/`, `.koolie/core/prompts/`. Verstehe die Prioritätshierarchie (acht Ebenen, Verschärfungsprinzip) und warum ein Projektwechsel nur das Overlay tauscht.
+Rundgang mit der Mentorin oder dem Mentor durch: die Wurzel-Anweisungsdatei (Hierarchie der Anweisungen), die Laufzeitschicht (Regeln, Skills, Berechtigungen, Hooks), `.koolie/core/framework/` (Core, Packs), `.koolie/project-overlay/` (die einzige projektspezifische Ebene), `.koolie/core/checklists/`, `.koolie/core/decision-trees/`, `.koolie/core/prompts/`. Verstehe die Prioritätshierarchie (`.koolie/core/governance/PRIORITY_HIERARCHY.md`: acht Ebenen, Verschärfungsprinzip) und warum ein Projektwechsel nur das Overlay tauscht.
 
 ## Modul 5 – Nutzung von Skills und effektives Prompting
 
@@ -86,7 +86,7 @@ Vertiefe `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` an d
 | „Mach die Tests grün" | Frust über rote Pipeline | M4-Regeln: Ursache verstehen; Tests nie anpassen lassen |
 | Scope-Aufweichung („räum bei der Gelegenheit auf") | Effizienzillusion | Q1/P7: ein Ziel je Änderung; Aufräumen als eigene Aufgabe |
 | Sitzungs-Marathon über mehrere Aufgaben | Kontext „ist ja schon da" | Least Context: neue Aufgabe, neue Sitzung |
-| Bypass/Smart aktivieren | „geht schneller" | D-05: untersagt; Normal bestätigt in Sekunden |
+| Modus ohne Rückfragen (Bypass) aktivieren | „geht schneller" | D-05: untersagt; Modi mit selbsttätiger Übernahme von Änderungen nur per dokumentierter Ausnahme bei Stufe niedrig; Normal bestätigt in Sekunden |
 | Der KI-Client als Entscheidungsinstanz („was sollen wir nehmen?") | Autoritätsillusion | V3: Optionen ja, Entscheidung Mensch |
 | Vertrauen auf die Selbstauskunft des KI-Clients („bist du sicher?") | Anthropomorphisierung | Belege verlangen (Tests, Fundstellen), nicht Beteuerungen |
 

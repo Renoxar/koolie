@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-LIC` |
-| Version | `0.2.0` |
+| Version | `0.2.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | den gesamten Inhalt dieses Frameworks – Kern, Client Packs, Regeltexte, Werkzeuge, Vorlagen und Dokumentation |
@@ -76,7 +76,7 @@ nur benutzt, entsteht keine einzige Pflicht.
 | Mit dem Framework wird ein Produkt entwickelt und verkauft | **keine Pflicht.** Das Produkt ist keine Ableitung: Es enthält keine Zeile dieses Frameworks, und die Ausgabe eines Werkzeugs ist keine Ableitung des Werkzeugs (Abschnitt 2) |
 | Das Projektrepositorium wird veröffentlicht, mit `<CORE_DIR>/` darin | `<CORE_DIR>/` steht unter GPL-3.0 – **es steht ohnehin schon so da.** Der eigene Code daneben bleibt frei: §5 GPL-3.0 nennt das ein *aggregate*, und ein gemeinsames Repositorium ist genau das |
 | Code dieses Frameworks wird **in** ein Produkt hineinkopiert | Dieser Teil wird GPL-3.0. **Das ist gewollt** und der einzige Fall, in dem die Lizenz greift |
-| Das Framework selbst wird weitergegeben, entgeltlich oder unentgeltlich | Es muß unter GPL-3.0 weitergegeben werden, mit Quelltext. **Ein Umbenennen-und-proprietär-Verkaufen ist damit ausgeschlossen** – das war der tragende Grund der Lizenzwahl (D-316) |
+| Das Framework selbst wird weitergegeben, entgeltlich oder unentgeltlich | Es muss unter GPL-3.0 weitergegeben werden, mit Quelltext. **Ein Umbenennen-und-proprietär-Verkaufen ist damit ausgeschlossen** – das war der tragende Grund der Lizenzwahl (D-316) |
 
 ## 4. Die verworfenen Alternativen (Erläuterung)
 
@@ -91,4 +91,4 @@ Beides ist in `CR-2026-126` Abschnitt 4 einzeln vorgelegt und in D-316 entschied
 
 ⚠️ **Der Preis der gewählten Lizenz ist benannt:** Manche Organisationen führen pauschale
 GPL-Verbote. Abschnitt 3 und die Zusatzerlaubnis aus Abschnitt 2 sind die Antwort darauf –
-sie machen nachlesbar, daß für einen Anwender dieses Frameworks **keine** Pflicht entsteht.
+sie machen nachlesbar, dass für einen Anwender dieses Frameworks **keine** Pflicht entsteht.
