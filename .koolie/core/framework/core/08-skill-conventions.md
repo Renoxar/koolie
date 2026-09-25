@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.2 |
+| Version | 0.3.3 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -25,7 +25,7 @@ Skill-Ablage der Laufzeitschicht
 ```
 
 - Ablageort: die Skill-Ablage der Laufzeitschicht, je Skill ein Unterverzeichnis mit `SKILL.md`. Der konkrete Pfad je Client steht in `.koolie/core/docs/RUNTIME_GLOSSARY.md` (Zeile „Skill-Ablage“), etwaige Alternativpfade im Client Pack.
-- Der Verzeichnisname ist der Aufrufname (`/skill-name`) `[DOK]`.
+- Der Verzeichnisname ist der Aufrufname; die Aufrufform je Client (etwa `/skill-name`) nennt Zeile S2 der Fähigkeitsmatrix seines Client Packs.
 - Framework-Skills tragen das Präfix `fw-`, projektspezifische Skills `prj-`, Role-Pack-Skills `role-<pack>-`, Technology-Pack-Skills `tech-<pack>-`.
 - Skill-Namen bestehen aus Kleinbuchstaben, Ziffern und Bindestrichen.
 

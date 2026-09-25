@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Testerstellung – fw-tests v0.1.1
+## Testerstellung – fw-tests v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Komponente: src/ordering/domain/OrderValidator.ext · Fachliche Grundlage: Angabe der Bearbeiterin (Aufruf)

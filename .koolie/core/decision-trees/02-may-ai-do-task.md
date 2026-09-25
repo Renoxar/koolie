@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-02` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | im Preflight, vor der ersten Anweisung; durch die Bearbeiterin oder den Bearbeiter |
@@ -12,10 +12,10 @@
 ## Textbeschreibung (normativ)
 
 1. **Grundvoraussetzungen:** Ist die KI-Nutzung durch die Organisation freigegeben und das Project Overlay `aktiv`? → Nein: keine produktive Nutzung; zulässig sind nur Onboarding-Übungen auf dem synthetischen Übungsrepository.
-2. **Delegationsverbot:** Fällt die Aufgabe unter V1–V12 (Freigaben, Merges/Releases/Deployments, Architektur- und Technologieentscheidungen, Secrets, personenbezogene Echtdaten oder Produktionsdaten, Produktionssysteme, Personenbewertung, rechtliche Bewertung, Sicherheitsvorfall-Entscheidungen, Framework-/Overlay-/Berechtigungsänderungen, Außenkommunikation, Löschungen außerhalb des Arbeitsbereichs)? → **Nicht delegieren.** Prüfen, ob eine zulässige vorbereitende Unterstützung existiert (Spalte „Zulässige Unterstützung" der Verbotsliste); nur diese darf beauftragt werden.
+2. **Delegationsverbot:** Fällt die Aufgabe unter V1–V12 (`.koolie/core/framework/core/09-risk-model.md`, Abschnitt 4)? → **Nicht delegieren.** Prüfen, ob eine zulässige vorbereitende Unterstützung existiert (Spalte „Zulässige Unterstützung" der Verbotsliste); nur diese darf beauftragt werden.
 3. **Kontext beschaffbar:** Ist der für die Aufgabe nötige Kontext vollständig über K0/K1 oder freigegebenes K2 abbildbar (Baum 1)? → Nein: Aufgabe nicht oder nur für die belastbaren Teile delegieren.
 4. **Einstufung:** Kontrollstufe über R1–R13 nach dem Maximumprinzip bestimmen; auslösenden Faktor notieren. Im Zweifel höhere Stufe.
-5. **Stufenvoraussetzungen:** niedrig → bearbeiten. Mittel → bearbeiten, Umsetzung erst nach bestätigtem Plan. Hoch → nur mit dokumentierter Freigabe `<APPROVAL_ROLE>` (bei R3/R10 zusätzlich `<SECURITY_CONTACT>`) und begleitender Person; ohne diese Voraussetzungen nur M1/M2 (Analyse und Planung).
+5. **Stufenvoraussetzungen** (`09-risk-model.md`, Abschnitt 3): niedrig → bearbeiten. Mittel → bearbeiten; M3 erst nach bestätigtem Plan. Hoch → M3 nur mit dokumentierter Freigabe `<APPROVAL_ROLE>` (bei R3/R10 zusätzlich `<SECURITY_CONTACT>`) und begleitender Person; ohne diese Voraussetzungen M1, M2, M4 ohne Änderung an Produktivcode und M5.
 6. **Prüfbarkeit:** Kann die Bearbeiterin oder der Bearbeiter das Ergebnis fachlich prüfen (Q3)? → Nein: erst Prüffähigkeit herstellen (`fw-code-explain`, Mentorin oder Mentor), dann delegieren.
 
 ## Diagramm
@@ -33,9 +33,9 @@ flowchart TD
     D -- "ja" --> E["Kontrollstufe über R1-R13<br/>bestimmen (Maximumprinzip)"]
     E --> F{"Stufe?"}
     F -- "niedrig" --> G{"Ergebnis fachlich<br/>prüfbar? (Q3)"}
-    F -- "mittel" --> H["Bearbeiten:<br/>Umsetzung erst nach<br/>bestätigtem Plan"] --> G
+    F -- "mittel" --> H["Bearbeiten:<br/>M3 erst nach<br/>bestätigtem Plan"] --> G
     F -- "hoch" --> I{"Freigabe APPROVAL_ROLE<br/>(+ SECURITY_CONTACT bei R3/R10)<br/>und Begleitung vorhanden?"}
-    I -- "nein" --> J["Nur M1/M2:<br/>Analyse und Planung"] --> G
+    I -- "nein" --> J["Kein M3: nur M1, M2,<br/>M4 ohne Produktivcode, M5"] --> G
     I -- "ja" --> G
     G -- "nein" --> K["Erst Prüffähigkeit herstellen<br/>(fw-code-explain, Mentor)"]
     G -- "ja" --> OK["Bearbeiten<br/>(Modus über Baum 3)"]

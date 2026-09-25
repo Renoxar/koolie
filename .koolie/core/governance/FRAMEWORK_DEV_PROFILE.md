@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-DEV` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | das Quellrepositorium dieses Frameworks – **nicht** für ein Projekt, das ein Release anwendet |
@@ -95,11 +95,12 @@ Einsatzkontext geschrieben ist.
   aus der in diesem Projekt die Befunde entstehen.
 - **Die Selbstanwendung ist damit unvollständig, und zwar benennbar unvollständig.** Ein
   Shell-Befehl, der in das Kernverzeichnis schreibt, passiert den Hook; die Berechtigungsdatei
-  führt für `exec` ausschließlich Befehlsverbote und keine einzige Pfadregel. Das ist **gemessen**
-  (`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, Läufe B04-1 bis B04-3) und in den
-  Fähigkeitsmatrizen der Packs bei B4, B5 und B8 je Zugriffskanal ausgewiesen (D-47). **Über
-  diesen Kanal entstehen die Änderungen an diesem Framework heute.** Was sie aufhält, ist der
-  Prozess aus Abschnitt 4 und die menschliche Freigabe – nicht der Hook.
+  führt für `exec` ausschließlich Befehlsverbote und keine einzige Pfadregel. **Gemessen** ist
+  das nur für `claude-code` (`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, Läufe B04-1
+  bis B04-3, Framework 0.29.0); für die übrigen Packs ist es **nicht gemessen**. Ausgewiesen ist
+  es in den Fähigkeitsmatrizen der Packs bei B4, B5 und B8 je Zugriffskanal (D-47). **Der
+  Kanal steht offen:** Was eine Änderung über ihn aufhält, ist der Prozess aus Abschnitt 4 und
+  die menschliche Freigabe – nicht der Hook.
 - **Damit ist eine Frage offen, und sie steht als Klärungspunkt K-32:** Schließt Paket 6 den
   Shell-Schreibweg – über eine Isolationsschicht des Betriebssystems oder eine Pfadprüfung im Hook
   –, dann braucht die Entwicklung dieses Frameworks einen ausdrücklich entschiedenen Weg. Dieses

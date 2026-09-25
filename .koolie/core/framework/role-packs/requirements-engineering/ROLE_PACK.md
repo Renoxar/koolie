@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | RP-RE |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.3 |
+| Version | 0.1.4 |
 | Status | pilot |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
@@ -40,7 +40,7 @@ Dieses Pack trennt deshalb verbindlich drei Kategorien:
 |---|---|---|---|
 | **Anforderung** | ausschließlich vom Menschen | EARS-Liste | `shall` |
 | **Befund** | aus dem Code, mit Fundstelle | „Ist-Zustand: …" | Indikativ, nie `shall` |
-| **Randbedingung** | aus Schema, Vertrag, Migration, mit Fundstelle | „Randbedingung (belegt): …" | Indikativ, nie `shall` |
+| **Randbedingung** | aus Schema, Vertrag, Migration, durch Tests zugesichertem Verhalten, mit Fundstelle | „Randbedingung (belegt): …" | Indikativ, nie `shall` |
 
 Ein Befund kann eine Anforderung **auslösen** — aber erst, nachdem ein Mensch entschieden hat, dass das Verhalten so bleiben oder sich ändern soll. Der Skill legt diese Entscheidung offen, statt sie stillschweigend zu treffen.
 
@@ -155,3 +155,4 @@ Nicht aktivierte Packs liegen nur im Verzeichnis und werden vom KI-Client nicht 
 |---|---|---|---|
 | 0.1.0 | 2026-09-09 | angelegt: Pack, Skill `role-re-ticket`, Laufzeitfassung | `<FRAMEWORK_OWNER>` |
 | 0.1.2 | 2026-09-21 | Abschnitt 9: Die Aktivierung hat vier Schritte statt zwei – die kopierte Laufzeitfassung wird über `install.py --update` in die Form des Client Packs gebracht (3a), und der Skill gehört in die Berechtigungsdatei (3b). Beides gemessen am Messbaum von Bündel 5 (`CR-2026-115`, D-244; D-238) | `<FRAMEWORK_OWNER>` |
+| 0.1.4 | 2026-09-25 | Abschnitt 2: Als Herkunft einer Randbedingung gilt auch durch Tests zugesichertes Verhalten, wie in `role-re-ticket` und der Laufzeitfassung (`CR-2026-147`, D-402, K-149) | `<FRAMEWORK_OWNER>` |

@@ -2,6 +2,71 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.11.0] - 2026-09-25
+
+**Die Regel- und Registerposten der Durchsicht - und die Zellen, die ihre Erwartung nicht
+deckten** (`CR-2026-147` E1 bis E9, **D-402** bis **D-406**; `K-139` bis `K-143`, `K-146` und
+`K-148` bis `K-150` beantwortet, `K-153` bis `K-155` neu). Ein MINOR-Release mit **Pruefung 95** und einem
+Nachlauf aus dem Kontingent.
+
+> 🔴 **VIER ABGENOMMENE ZELLEN TRUGEN EIN ERGEBNIS, DAS IHRE ERWARTUNG NICHT DECKTE - UND NUR BEI
+> ZWEIEN LAG ES AM LAUF** (D-404, `K-148`). Nachgemessen, sieben Laeufe, 5,08 USD: `SK-005-P02`
+> besteht; **`SK-002-N03` bleibt `offen`** - zweimal ohne Anhalten und Meldung, ein Befund am
+> Skill (`K-153` (5)). **Kriterium 2 von D-11 steht damit auf 1.** `SK-007-N01` erwartete weniger, als der Skill vorschreibt; bei `SK-011-P01` war der
+> "veraltete Standardwert" der Praeparation ein Konfigurationswert, den der Skill gar nicht
+> uebernehmen darf - der Lauf hatte richtig gehandelt.
+
+**Hinzugefuegt**
+
+- **Pruefung 95** (D-403, `K-146`): Die Zeile der aktuellen Version im Aenderungsverlauf eines
+  Skills und jede Zeile nach dem 2026-09-22 nennt, ob sie eine Anweisung beruehrt (D-303).
+  Nur die Skills des Kerns - beim ersten Heben meldete sie im Uebungsrepositorium einen
+  projekteigenen Skill. Sonden `95a`, `95b`, Gegenproben `95a`, `95b`. Die Pruefung sieht die
+  Nennung, nicht ihre Richtigkeit.
+- Klaerungspunkt `K-153`: fuenf Anweisungen in Skills, die von ihrem Modul oder ihrer Zelle
+  abweichen und sich nur mit einem Nachlauf aendern lassen; `K-154`: der Messapparat ist seit der
+  Umbenennung an drei Stellen gebrochen (`validate-output.py` findet den Kern nicht), fuer `1.12.0`.
+- Klaerungspunkt `K-155`: Installation ueber oeffentliche Paketquellen und Releases auf dem
+  oeffentlichen GitHub-Spiegel, eingeplant fuer `1.15.0`.
+- Zeile M4 (Planablage) in den Matrizen von `claude-code` (`0.24.3`) und `openai-codex`
+  (`0.1.4`), beide `BELEG OFFEN` (`K-149`).
+- `docs/ROADMAP.md` (`0.4.1`): Messrelease `1.12.0` (`K-138`, `K-144`, Kostenabschnitt fuer
+  Entscheider), Kiro auf `1.13.0`, `K-153` auf `1.14.0`, `K-155` auf `1.15.0` (D-406).
+
+**Geaendert**
+
+- Prompts, Checklisten, Entscheidungsbaeume und Governance-Dokumente folgen ihrem Core-Modul, in
+  beiden Richtungen; Lockerungen zuerst (D-402, `K-139` bis `K-143`). Unter anderem: Anhalten bei
+  Injektionsverdacht in allen Prompts (S6), K2 nur mit Freigabe, lesende Git-Befehle nur, wenn im
+  Overlay freigegeben; Skillvorrang wie `05-working-model.md` Abschnitt 1; Checklisten mit der
+  Pflichtstufe ihres Moduls; `_core_rules_integrity` nur bei JSON; Marke vor Archiv.
+- `framework/core/05-working-model.md` `0.1.11`: Schritt 9 ist der Freigabepunkt vor der Aenderung
+  am Produktivcode (M3); es gilt `09-risk-model.md` Abschnitt 3. Sitzungsweite Freigaben nur fuer
+  Testbefehle (3.1 wie M3). Die Laufzeitregel `00-framework-core.md` ist mitgezogen, nicht laenger.
+- Entscheidungsbaeume 01 bis 04 und 06: Text und Diagramm je gemeinsam; die beiden
+  Ebenenzaehlungen in Baum 06 einander zugeordnet (`K-141`).
+- `framework/core/03-security.md` `0.2.5`: T5 stuft nach R3/R10 in `09` Abschnitt 2 ein (`K-143`).
+- `fw-change-small` `0.1.6` (Erlaeuterung) und `fw-mr-description` `0.1.7` (Verweis): **keine
+  Anweisung beruehrt**, die Zellen bleiben abgenommen (D-303, `K-149`).
+- `framework/core/08-skill-conventions.md` `0.3.3`, `templates/SKILL_TEMPLATE.md`: die
+  Aufrufform je Client steht in Zeile S2 (`K-149`).
+- Register der Skills: `<Version aus dem Steckbrief>` statt `v0.1.1` in allen Beispielen, sachlich
+  schiefe Beispiele berichtigt, Verlaeufe in Versionsreihenfolge (D-405, `K-150`).
+- Testblaetter: `SK-005-P02` im Nachlauf bestanden, `SK-002-N03` offen, `SK-007-N01` und
+  `SK-011-P01` berichtigt; `onboarding/exercises/README.md`: `UEB-09` fuehrt einen Konfigurationswert (D-404).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. An der installierten Laufzeitschicht aendern sich die Regel des Standardablaufs und zwei
+  Skills (Erlaeuterung und Verweis); `--update` bringt sie.
+
+**Bekannte Einschraenkungen**
+
+- **Kriterium 2 = 1** (`SK-002-N03`). `K-153`: fuenf Anweisungen in Skills weichen weiter ab - eingeplant fuer
+  `1.14.0`, nach dem Client Pack fuer Kiro.
+- Die Bilanz der Zeilen `BELEG OFFEN` steigt um zwei (M4).
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.10.0] - 2026-09-25
 
 **Die Code- und Pack-Posten der Durchsicht - und der Hook, dem nach jeder Hebung neu vertraut

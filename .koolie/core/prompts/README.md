@@ -5,7 +5,7 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ (Abschnitte 2, 3, 5, 6, 7), Erläuterung (Abschnitte 1, 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.5 |
+| Version | 0.1.6 |
 | Status | `pilot` |
 | Grundlage | `.koolie/core/framework/core/06-prompting-rules.md`, `.koolie/core/framework/core/05-working-model.md`, `.koolie/core/framework/core/09-risk-model.md`, `.koolie/core/framework/core/02-privacy.md` |
 
@@ -15,7 +15,7 @@ Die Prompt-Bibliothek enthält geprüfte Vorlagen (Übersicht in Abschnitt 4) f�
 
 ## 2. Verhältnis Prompt und Skill
 
-1. Liegt für eine Aufgabe ein Skill vor, MUSS er bevorzugt verwendet werden (`.koolie/core/framework/core/06-prompting-rules.md`, Regel 7; wie ein Skill aufgerufen wird, nennt die Fähigkeitsmatrix des Client Packs, Zeile S2). Skills sind versioniert, getestet und über `allowed-tools` und `permissions` technisch abgesichert; eine Prompt-Vorlage ist es nicht.
+1. Liegt für eine Aufgabe ein Skill vor, SOLL er als vorgesehener Weg verwendet werden; ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1; `.koolie/core/framework/core/06-prompting-rules.md`, Regel 7; wie ein Skill aufgerufen wird, nennt die Fähigkeitsmatrix des Client Packs, Zeile S2). Skills sind versioniert, getestet und über `allowed-tools` und `permissions` technisch abgesichert; eine Prompt-Vorlage ist es nicht.
 2. Eine Prompt-Vorlage mit verwandtem Skill KANN als strukturierte Anweisung um den Skill herum verwendet werden oder den Skill ersetzen, wenn dieser in der Laufzeitschicht nicht verfügbar ist. In beiden Fällen gelten die Grenzen des Skills (Betriebsmodus, Kontrollstufen, Delegationsverbote) unverändert.
 3. Prompt-Vorlagen ohne verwandten Skill (FW-PR-008, FW-PR-009) liefern ausschließlich Befunde und Hypothesen mit Fundstellen; die Bewertung erfolgt durch die benannte Rolle (zum Beispiel `<SECURITY_CONTACT>`) beziehungsweise durch Messung. Sie sind auf den Modus M1 beschränkt und ersetzen weder Security Scans noch Penetrationstests noch Messungen.
 4. Eine Prompt-Vorlage erweitert den Handlungsspielraum des Werkzeugs nie über die Wurzel-Anweisungsdatei, die Regeln der Regelablage und das Project Overlay hinaus; sie kann ihn nur einschränken.
@@ -66,7 +66,7 @@ Vollständig in `.koolie/core/framework/core/06-prompting-rules.md`; die Kurzfor
 4. **Keine impliziten Berechtigungen.** Formulierungen wie „mach einfach", „räum auf" oder „alles, was nötig ist" DÜRFEN NICHT verwendet werden.
 5. **Keine Rollenspiele mit Regelwirkung.** Aufforderungen, Regeln zu ignorieren oder Prüfungen zu überspringen, sind unzulässig – auch zu Testzwecken außerhalb des Testkatalogs.
 6. **Ergebnis vor Stil.** Belegte Ergebnisse (Fundstellen, unveränderte Testausgaben) statt Selbstbewertungen.
-7. **Skills bevorzugen.** Freie Prompts nur für Aufgaben ohne passenden Skill (Abschnitt 2).
+7. **Skills bevorzugen.** Freie Prompts sind für Aufgaben ohne passenden Skill vorgesehen; ein anderer Weg wird im Ergebnisbericht benannt und begründet (Abschnitt 2).
 8. **Iterationen kennzeichnen.** Folgeanweisungen benennen, was sich gegenüber dem vorherigen Schritt ändert.
 9. **Sprache.** Anweisungen in der Arbeitssprache des Overlays (`<TBD: Arbeitssprache>`); Bezeichner, Befehle und Pfade unverändert.
 10. **Unzulässige Muster** (Auszug aus Abschnitt 3 des Kerndokuments): „Behebe alle Fehler im Projekt", „Hier ist der Ticket-Export, mach das", „Schreib die Tests so, dass sie durchlaufen", „Push das und erstell den MR", „Welche Bibliothek wäre gut? Bau sie ein."
@@ -85,4 +85,4 @@ Vollständig in `.koolie/core/framework/core/06-prompting-rules.md`; die Kurzfor
 - Jede Vorlage trägt Version (`MAJOR.MINOR.PATCH`) und Status (`entwurf`, `pilot`, `aktiv`, `veraltet`, `zurückgezogen`) analog zum Skill-Standard (`.koolie/core/framework/core/08-skill-conventions.md`, Abschnitt 7). MAJOR: Änderung der Struktur, des Ausgabeformats oder des Scopes; MINOR: neue Schritte, Parameter oder Prüfungen ohne Formatbruch; PATCH: Korrekturen und Formulierungen.
 - Änderungen an Vorlagen erfolgen über den Änderungsprozess des Frameworks (`.koolie/core/framework/core/01-governance.md`); Projekte DÜRFEN Vorlagen in `.koolie/core/prompts/` NICHT anpassen. Projektspezifische Ergänzungen gehören in das Project Overlay, nicht in dieses Verzeichnis (`.koolie/core/decision-trees/06-rule-placement.md`).
 - Die strukturelle Konformität (Platzhalter, verbotene Muster, Codeblöcke) prüft `.koolie/core/tests/scripts/validate-framework.py`; die Wirksamkeit einer Vorlage wird wie bei Skills über Testsitzungen auf dem Übungsrepository bewertet. Systematische Befunde aus Reviews (dieselbe Auffälligkeit bei mehreren Einsätzen) werden als Feedback an `<FRAMEWORK_OWNER>` gemeldet.
-- Alle Vorlagen stehen seit 0.52.0 auf `pilot`; ihre Abnahme steht namentlich in `.koolie/core/tests/protocols/2026-09-15-gegenpruefung-restliche-nicht-skill-traeger.md` (`CR-2026-074`, D-109). **Ihre Übergangsbedingungen stehen in `.koolie/core/framework/core/01-governance.md` Abschnitt 5 und nicht hier** (D-102, D-107). Ein bestandener Sitzungstest ist Voraussetzung für `aktiv`, nicht für `pilot` (D-103, D-107). Für `aktiv` gilt die Testsitzung, dazu die Voraussetzungen des Skill-Standards (Pilotfeedback ausgewertet, Freigabe durch den Framework Owner).
+- Alle Vorlagen stehen seit 0.52.0 auf `pilot`; ihre Abnahme steht namentlich in `.koolie/core/tests/protocols/2026-09-15-gegenpruefung-restliche-nicht-skill-traeger.md` (`CR-2026-074`, D-109). **Ihre Übergangsbedingungen stehen in `.koolie/core/framework/core/01-governance.md` Abschnitt 5 und nicht hier** (D-102, D-107). Ein bestandener Sitzungstest ist Voraussetzung für `aktiv`, nicht für `pilot` (D-103, D-107); die übrigen Voraussetzungen für `aktiv` nennt die Zeile `pilot` → `aktiv` dort.

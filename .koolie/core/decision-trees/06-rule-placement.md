@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DT-06` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anwendung | bei jeder neuen oder geänderten Regel; durch Autorinnen und Autoren von Regeln, geprüft vom Framework Owner beziehungsweise Overlay Owner |
@@ -15,7 +15,7 @@
 2. **Gilt sie für jedes Projekt, jede Rolle und jede Technologie?** (Governance, Datenschutz, Sicherheit, Qualität, Arbeitsmodell, Skill-Standard) → **Framework Core** (Ebene 3). Merksatz: Würde die Regel in einem beliebigen anderen Projekt unverändert gelten, gehört sie in den Core.
 3. **Enthält sie projektspezifische Werte?** (Pfade, Befehle, Komponenten, Rollenbesetzungen, freigegebene Quellen, Schwellenwerte) → **Project Overlay** (Ebene 4). Enthält eine Regel generische Logik **und** projektspezifische Werte, wird sie getrennt: Logik in den Core (mit Platzhalter), Werte in das Overlay.
 4. **Ist sie technologiespezifisch?** (gilt für eine Sprache, ein Framework, ein Build-System – unabhängig davon, wer sie anwendet) → **Technology Pack** (Ebene 5), Laufzeitfassung mit `trigger: glob` auf die Dateimuster.
-5. **Ist sie rollenspezifisch?** (gilt für eine Tätigkeit – Entwicklung, Review, RE, Testing – unabhängig von der Technologie) → **Role Pack** (Ebene 6).
+5. **Ist sie rollenspezifisch?** (gilt für eine Tätigkeit – Entwicklung, Review, RE, Testing – unabhängig von der Technologie) → **Role Pack** (Ebene 6), Laufzeitfassung mit `trigger: model_decision`.
 6. **Ist sie aufgaben- oder sitzungsbezogen?** (gilt nur für eine konkrete Aufgabe) → **Ebene E**: in die Aufgabenanweisung, nicht in das Repository.
 7. **Verschärfungsprinzip:** Egal wo die Regel landet – sie darf höhere Ebenen nur konkretisieren oder verschärfen, nie lockern. Eine Lockerung ist nur als dokumentierte Ausnahme (`.koolie/core/governance/EXCEPTION_PROCESS.md`) oder als Änderung der höheren Ebene selbst möglich.
 8. **Zweifelsfall:** Core vor Pack (eine zu allgemeine Regel im Pack wird dupliziert und inkonsistent); Overlay vor Pack bei projektgebundenen Werten; Entscheidung dokumentieren (Decision Log).
@@ -44,11 +44,15 @@ flowchart TD
     L4 --> V
     L5 --> V
     L6 --> V
+    L1 --> V
+    L7 --> V
+    L8 --> V
     V -- "nein" --> X["Regel anpassen oder<br/>Ausnahmeprozess / Änderung<br/>der höheren Ebene"]
     V -- "ja" --> OK["Regel aufnehmen,<br/>Laufzeitfassung pflegen,<br/>Validator ausführen"]
 ```
 
 ## Hinweise
 
+- **Zwei Zählungen:** Ziffern sind Ebenen von `PRIORITY_HIERARCHY.md` Abschnitt 1, Buchstaben die von P10. Es entsprechen einander A = 3 (die Steckbriefe der Core-Module führen sie als „Ebene 1 – Framework Core“), B = 2 (mit den Verweisblättern der Ebene 1), C = 4, D = 5 und 6, E = 8.
 - **Beispiel (synthetisch):** „Tests laufen mit `<TEST_COMMAND>`" → Logik („Der KI-Client führt nur freigegebene Testbefehle aus") ist Core; der Befehl selbst ist Overlay. „Bei Testframework `<TEST_FRAMEWORK>` keine Feld-Injektion in Testklassen" → Technology Pack. „Ein Reviewer ändert den geprüften Code nicht selbst" → Role Pack Code Review.
 - Jede Regelaufnahme zieht die Pflege der Laufzeitfassung in der Regelablage und einen Validatorlauf nach sich; Release über den Framework- beziehungsweise Overlay-Prozess.

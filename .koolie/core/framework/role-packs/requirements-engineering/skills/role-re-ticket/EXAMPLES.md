@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Das Beispielprojekt „Bestellverwaltung" (
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Aufgabenbeschreibung – role-re-ticket v0.1.1
+## Aufgabenbeschreibung – role-re-ticket v<Version aus dem Steckbrief>
 
 ### Auftrag und Grundlage
 - Absicht: Stornierung einer Bestellung durch die Kundin oder den Kunden vor Versand
@@ -21,12 +21,12 @@ Alle Beispiele sind **synthetisch**. Das Beispielprojekt „Bestellverwaltung" (
 | Nr. | Befund | Fundstelle |
 | B1 | Eine Stornierung existiert bereits, ist aber nur für die Rolle Sachbearbeitung erreichbar. | src/ordering/OrderService.ext:141 |
 | B2 | Der Bestellstatus kennt die Werte NEW, CONFIRMED, SHIPPED, CANCELLED. Ein Übergang von SHIPPED nach CANCELLED ist im Zustandsautomaten nicht vorgesehen. | src/ordering/OrderStatus.ext:8, src/ordering/OrderStateMachine.ext:44 |
-| B3 | Ein Test sichert zu, dass eine stornierte Bestellung nicht erneut bestätigt werden kann. | test/ordering/OrderStateMachineTest.ext:73 |
 
 ### Randbedingungen (belegt, keine Anforderungen)
 | Nr. | Randbedingung | Fundstelle |
 | C1 | Der Schnittstellenvertrag kennt bisher keinen Endpunkt für eine kundenseitige Stornierung. | api-contracts/orders.yaml:112 |
 | C2 | Der Bestellstatus wird in der Datenbank als Aufzählung geführt; neue Werte erfordern eine Migration. | db/migrations/0007_order_status.ext:5 |
+| C3 | Ein Test sichert zu, dass eine stornierte Bestellung nicht erneut bestätigt werden kann. | test/ordering/OrderStateMachineTest.ext:73 |
 
 ### Titel
 Kundenseitige Stornierung einer Bestellung vor Versand ermöglichen
@@ -94,7 +94,7 @@ versandt wurden. Bisher war dafür eine Rückmeldung an den Support nötig.
 
 **Warum falsch:** Alle drei Sätze beschreiben, was der Code heute tut (`OrderStatus.ext:8`, `OrderStateMachineTest.ext:73`, `OrderService.ext:141`). Als `shall`-Anforderung formuliert wird der Ist-Zustand zur Spezifikation seiner selbst: Eine Prüfung gegen diese Anforderungen kann nie fehlschlagen, weil sie aus der Implementierung abgeleitet sind. Niemand hat entschieden, dass es genau diese vier Statuswerte geben soll.
 
-**Erwartetes Verhalten:** Die drei Aussagen gehören unter „Ist-Zustand (Befunde)" mit Fundstelle. In die Anforderungen gehört nur, was für diese Aufgabe **neu gelten soll** — und das kommt vom Menschen (`ROLE_PACK.md` Abschnitt 2).
+**Erwartetes Verhalten:** Zwei der drei Aussagen gehören mit Fundstelle unter „Ist-Zustand (Befunde)", die durch einen Test zugesicherte unter „Randbedingungen (belegt)". In die Anforderungen gehört nur, was für diese Aufgabe **neu gelten soll** — und das kommt vom Menschen (`ROLE_PACK.md` Abschnitt 2).
 
 ## Negativbeispiel (synthetisch): Fehlerfall erfunden
 

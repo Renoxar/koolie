@@ -29,7 +29,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-012` |
 | Name | `fw-mr-description` |
-| Version | `0.1.6` |
+| Version | `0.1.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support (Textentwurf als Sitzungsausgabe; ausschließlich lesende Git-Befehle; kein Schreibzugriff auf Dateien) |
@@ -95,7 +95,7 @@ triggers:
 
 - Merge Request anlegen, aktualisieren oder kommentieren; pushen; mergen; Reviewer zuweisen; Labels oder Status im Review-Werkzeug setzen (V1, V2); Dateien erzeugen oder ändern – auch keine Beschreibungsdatei im Repository; andere als die in Abschnitt 2 gelisteten Befehlsformen ausführen; Tests, Builds oder Lint-Läufe ausführen; Befehle mit Wirkung auf den Arbeitsbereich (`add`, `commit`, `checkout`, `stash`, `rebase`, `reset`).
 - Testergebnisse, Freigaben, Review-Ergebnisse oder Eigenschaften behaupten, die nicht in Ergebnisberichten oder im Diff belegt sind (Q7); Formulierungen wie „freigegeben", „geprüft", „produktionsreif" oder „kann gemergt werden"; den Nutzungsvermerk weglassen, kürzen oder in die Kurzform wechseln; die Kontrollstufe abweichend von der Festlegung des Menschen angeben.
-- Personen nennen (Autorinnen und Autoren, Reviewer, Freigebende – nur Rollen); Ticketinhalte, Kundenangaben, Adressen, Hostnamen, Umgebungskennungen oder Prompts mit K2- oder K3-Inhalten aufnehmen (V7, K3).
+- Personen nennen (Autorinnen und Autoren, Reviewer, Freigebende – nur Rollen); Ticketinhalte, Kundenangaben, Adressen, Hostnamen, Umgebungskennungen oder Prompts mit K2- oder K3-Inhalten aufnehmen (K3; Rollen statt Personen: `.koolie/core/framework/core/02-privacy.md` Abschnitt 3.3).
 - Aufgaben der Delegationsverbotsliste (`.koolie/core/framework/core/09-risk-model.md` Abschnitt 4) bearbeiten.
 
 **Rückfragenregeln (MUSS):**

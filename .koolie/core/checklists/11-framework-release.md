@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-11` |
-| Version | `0.4.2` |
+| Version | `0.4.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jedem Framework-Release (auch Patch-Releases) |
@@ -56,8 +56,8 @@ Die mit **(ab 1.0.0, D-11)** gekennzeichneten Prüfpunkte gelten erst für das R
 - [ ] **MUSS** `.koolie/core/VERSION` nach Semantic Versioning erhöht; `.koolie/core/CHANGELOG.md` mit Änderungen, Migrationshinweisen für Overlays und bekannten Einschränkungen ergänzt.
 - [ ] **MUSS** **Als letzter Eingriff in den Kern, vor dem Release-Commit:** Übernehmende Projekte gehoben – Kern aus dem **Arbeitsbaum** kopiert, beschränkt auf das Verfolgte (D-333), dann `install.py --update` (beides in einem Aufruf mit `--target`, D-362), Overlay-Wert in **drei** Trägern nachgezogen, `validate-framework.py --strict-overlay` dort gefahren **und im übernehmenden Projekt committet** (D-343) – und die Bestandsliste `.koolie/core/governance/ADOPTION_REGISTRY.md` **vorher** auf den Zielstand fortgeschrieben (Prüfung 82). **Ausnahmslos, auch bei einem Patch-Release, das kein ausgeliefertes Artefakt berührt** (D-330), weil das Heben ein Lauf gegen eine fremde Installation ist und findet, was kein Validatorlauf im Framework findet.
 - [ ] **MUSS** **Vor dem Release-Commit:** Erzeugnisse der Lieferung gebaut – Hauptdokument und Word-Fassung **je Client Pack** – und **im Erzeugnis nachgezählt** (D-332). Keine Prüfung erreicht sie, weil sie unter `build/out/` liegen und in der `.gitignore` stehen (`K-110`).
-- [ ] **MUSS** **Nach dem Release-Commit:** Release-Archiv aus der signierten Marke erzeugt, **im Erzeugnis nachgezählt** und samt Prüfsumme außerhalb des Repositoriums abgelegt; Mitteilung mit Migrationshinweisen und betroffenen Overlay-Feldern an die übernehmenden Projekte. **Das Archiv kann vor dem Commit nicht erzeugt werden** – es entsteht aus der Marke, und die sitzt auf dem Release-Commit (D-329). Ablauf: `.koolie/core/governance/RELEASE_PROCESS.md` Abschnitt 4.1.
 - [ ] **MUSS** Freigabe des Releases durch den Framework Owner dokumentiert – **in der Nachricht der signierten Marke** (`RELEASE_PROCESS.md` Abschnitt 4.1 Schritt 4). **Die Marke trägt die Unterschrift, der Release-Commit nicht** (D-334); deshalb setzt sie der Mensch und nicht ein Werkzeug. Keine Prüfung erreicht den Markentext – er liegt im Tag-Objekt, nicht im Arbeitsbaum (`K-111`).
+- [ ] **MUSS** **Nach dem Release-Commit:** Release-Archiv aus der signierten Marke erzeugt, **im Erzeugnis nachgezählt** und samt Prüfsumme außerhalb des Repositoriums abgelegt; Mitteilung mit Migrationshinweisen und betroffenen Overlay-Feldern an die übernehmenden Projekte. **Das Archiv kann vor dem Commit nicht erzeugt werden** – es entsteht aus der Marke, und die sitzt auf dem Release-Commit (D-329). Ablauf: `.koolie/core/governance/RELEASE_PROCESS.md` Abschnitt 4.1 Schritte 5 bis 7.
 - [ ] **MUSS** (ab 1.0.0, D-11) Alle Core-Module, Skills und Packs tragen einen Status oberhalb von `entwurf`; die Statuszeile jedes Modulträgers setzt Prüfung 47 durch (D-105).
 - [ ] **MUSS** (ab 1.0.0, D-11) Kein Decision Record in `.koolie/core/governance/DECISION_LOG.md` trägt den Status `entschieden (Vorschlag)`.
 - [ ] **MUSS** (ab 1.0.0, D-11) Übernahme in mindestens ein zweites Projekt nach `.koolie/core/checklists/10-project-adoption.md` nachgewiesen.

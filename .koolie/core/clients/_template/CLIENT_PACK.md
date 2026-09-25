@@ -12,7 +12,7 @@
 |---|---|
 | Modul-ID | `CP-<CLIENT_PACK_CODE>` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.2 |
+| Version | 0.3.3 |
 | Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner (Rolle) | `<TBD: Rolle>` |
 | Client | `<TBD: Produktname>` |
@@ -87,7 +87,7 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 
 > **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet** (D-35). Schaltet sie der Modus ohne Rückfragen ab, den D-05 untersagt, trägt allein der Schutz-Hook. Diese Vorbemerkung ist **Pflicht** in jedem Pack; sie ist je Client um den eigenen Belegstand zu ergänzen – erhoben oder ausdrücklich nicht erhoben.
 
-Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei. Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
+Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei, sofern sie JSON ist (D-395). Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
 
 | ID | Zusage des Frameworks | Kern | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|

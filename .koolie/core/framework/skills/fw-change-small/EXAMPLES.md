@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Änderungsumsetzung – fw-change-small v0.1.1
+## Änderungsumsetzung – fw-change-small v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Aufgabe: Meldungstext der Mengenprüfung um beide Grenzwerte ergänzen · Referenz: keine · Akzeptanzkriterien: AK1 Grenzwerte in Meldung, AK2 Prüfung unverändert, AK3 Test belegt Meldung · Nicht-Ziele: keine Änderung der Bereichsgrenzen

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-05` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | nach Testerstellung oder -änderung (M4) und vor jedem Merge Request mit Logikänderung |
@@ -22,7 +22,7 @@ Sichert, dass Tests aus KI-Sitzungen aussagekräftig sind und geänderte Logik t
 - [ ] **MUSS** Jeder Test prüft fachliches Verhalten mit klarer Erwartung; der Testname beschreibt das erwartete Verhalten.
 - [ ] **MUSS** Abgedeckt sind Normalfall, relevante Randbedingungen (leer/Null, Grenzwerte, ungültige Eingaben) und Fehlerfälle der geänderten Logik.
 - [ ] **MUSS** Tests sind deterministisch (keine Abhängigkeit von Uhrzeit, Zufall, Reihenfolge, Netz, externen Systemen); Ausnahmen sind begründet und markiert.
-- [ ] **MUSS** Testdaten sind synthetisch und als solche erkennbar; keine Ableitung aus Echt- oder Produktionsdaten.
+- [ ] **MUSS** Testdaten sind synthetisch und als solche gekennzeichnet oder nachweislich anonymisiert (`.koolie/core/framework/core/02-privacy.md` Abschnitt 3.6).
 - [ ] **SOLL** Tests folgen den bestehenden Konventionen (Ablage in `<TEST_PATHS>`, Benennung, Fixtures, `<TEST_FRAMEWORK>`).
 - [ ] **SOLL** Assertions prüfen Ergebnisse und beobachtbares Verhalten, nicht Implementierungsdetails oder reine Mock-Interaktionen.
 
@@ -41,7 +41,7 @@ Sichert, dass Tests aus KI-Sitzungen aussagekräftig sind und geänderte Logik t
 
 ## Abbruch- und Eskalationskriterien
 
-Rote Tests mit Ursache außerhalb des Scopes: anhalten und melden (S7/E0). Testinfrastruktur nicht verfügbar oder Testdaten nur aus Echtdaten ableitbar: anhalten (S2/E1, gegebenenfalls `<DATA_PROTECTION_CONTACT>`). Aufforderungen, Tests „passend zu machen", sind unzulässige Prompt-Muster (`.koolie/core/framework/core/06-prompting-rules.md` Abschnitt 3) und werden zurückgewiesen.
+Rote Tests mit Ursache außerhalb des Scopes: anhalten und melden (S7/E0). Testinfrastruktur nicht verfügbar oder Testdaten nur aus Echtdaten ableitbar: anhalten (Abbruchkriterien von M4, `.koolie/core/framework/core/05-working-model.md` Abschnitt 2.2); Echtdaten sind S2 (E0, nach erfolgter Bereitstellung E3, `.koolie/core/framework/core/10-error-escalation.md`). Aufforderungen, Tests „passend zu machen", sind unzulässige Prompt-Muster (`.koolie/core/framework/core/06-prompting-rules.md` Abschnitt 3) und werden zurückgewiesen.
 
 ## Ergebnis und Nachweis
 

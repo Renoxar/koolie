@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Feldnamen sind 
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Änderungsanalyse – fw-change-analyze v0.1.1
+## Änderungsanalyse – fw-change-analyze v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Aufgabe: Optionales Freitextfeld Lieferhinweis (max. 200 Zeichen) in Erfassung, Validierung, Persistenz und Bestätigung ergänzen · Referenz: keine
@@ -26,12 +26,12 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Feldnamen sind 
 ### Risiken je Faktor
 | Faktor | Stufe | Begründung | Fundstelle oder „durch den Menschen festzulegen" |
 | R1 | mittel | mehrere Dateien eines Moduls plus Migration | siehe Komponentenliste |
-| R4 | mittel | Freitext kann personenbezogene Angaben enthalten; Verarbeitungslogik unverändert | Order.ext:12 |
+| R4 | hoch | Freitext kann personenbezogene Angaben enthalten; das neue Feld ändert die Erhebung | Order.ext:12 |
 | R5 | – | durch den Menschen festzulegen | – |
 | R11 | hoch | Schema-Änderung mit Migration | db/migrations/, Order.ext:12 |
 
 ### Vorschlag der Kontrollstufe (nicht bindend)
-- Vorgeschlagen: hoch (auslösender Faktor R11) · Abweichung zur vorläufigen Einstufung: ja – Migration und Verwender in src/reporting waren in der Aufgabe nicht sichtbar
+- Vorgeschlagen: hoch (auslösende Faktoren R4, R11) · Abweichung zur vorläufigen Einstufung: ja – Migration und Verwender in src/reporting waren in der Aufgabe nicht sichtbar
 - Festlegung durch den Menschen im Preflight; bei Stufe hoch Freigabe durch <APPROVAL_ROLE> erforderlich
 
 ### Fachliche Fragen und technische Entscheidungsbedarfe
@@ -57,7 +57,7 @@ Schritt 1: Feld in Order.ext ergänzen. Schritt 2: Spalte per Migration anlegen.
 Der Lieferhinweis enthält keine personenbezogenen Daten, deshalb entfällt die Datenschutzprüfung.
 ```
 
-**Warum falsch:** Die Kontrollstufe wurde festgelegt statt vorgeschlagen und ohne Faktorbewertung „klein" genannt (Maximumprinzip verletzt, R11 ignoriert); der Skill liefert Planschritte, obwohl Planung `fw-plan` vorbehalten ist; die fachliche Frage zum Personenbezug wurde durch eine Annahme ersetzt (P3); Verwender und Fundstellen fehlen (P4).
+**Warum falsch:** Die Kontrollstufe wurde festgelegt statt vorgeschlagen und ohne Faktorbewertung „klein" genannt (Maximumprinzip verletzt, R4 und R11 ignoriert); der Skill liefert Planschritte, obwohl Planung `fw-plan` vorbehalten ist; die fachliche Frage zum Personenbezug wurde durch eine Annahme ersetzt (P3); Verwender und Fundstellen fehlen (P4).
 
 ## Negativbeispiel (synthetisch): Unbereinigte Aufgabenbeschreibung mit Injektion
 

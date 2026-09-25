@@ -9,9 +9,9 @@ Langform: `.koolie/core/framework/core/05-working-model.md`, `.koolie/core/frame
 
 ## Standardarbeitsablauf
 
-1 Aufgabe verstehen → 2 Scope und Grenzen bestimmen → 3 Datenschutz und Kontextfreigabe prüfen → 4 Rückfragen und offene Punkte erfassen → 5 Ist-Zustand analysieren → 6 Befunde mit Fundstellen darstellen → 7 Lösungsoptionen bewerten → 8 Vorgehen oder Änderungsplan vorschlagen → 9 Freigabepunkt vor risikoreichen Änderungen → 10 Änderung in kleinen Schritten umsetzen → 11 Tests und Qualitätsprüfungen ausführen → 12 Ergebnis, Abweichungen, Restrisiken dokumentieren → 13 menschliche Prüfung ermöglichen → 14 Übernahme über den bestehenden Review- und Freigabeprozess.
+1 Aufgabe verstehen → 2 Scope und Grenzen bestimmen → 3 Datenschutz und Kontextfreigabe prüfen → 4 Rückfragen und offene Punkte erfassen → 5 Ist-Zustand analysieren → 6 Befunde mit Fundstellen darstellen → 7 Lösungsoptionen bewerten → 8 Vorgehen oder Änderungsplan vorschlagen → 9 Freigabepunkt vor Produktivcode-Änderung → 10 Änderung in kleinen Schritten umsetzen → 11 Tests und Qualitätsprüfungen ausführen → 12 Ergebnis, Abweichungen, Restrisiken dokumentieren → 13 menschliche Prüfung ermöglichen → 14 Übernahme über den bestehenden Review- und Freigabeprozess.
 
-Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schritte 7 bis 9 in einer kurzen Interaktion zusammengefasst werden, solange jeder Schritt erkennbar bleibt. Ohne bestätigten Plan (Schritt 9) beginnt bei Kontrollstufe mittel und hoch keine Umsetzung.
+Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schritte 7 bis 9 in einer kurzen Interaktion zusammengefasst werden, solange jeder Schritt erkennbar bleibt. Ohne bestätigten Plan (Schritt 9) wird bei Stufe mittel und hoch kein Produktivcode geändert.
 
 **Skillwahl vor dem Schritt.** Für die Schritte 5, 7, 8, 10, 13 und 14 nennt die Langform je einen Skill. Wo sie einen nennt, ist er der vorgesehene Weg des Schrittes; ein anderer Weg ist zulässig und wird im Ergebnisbericht benannt und begründet. Ein abgewiesener Skill-Aufruf ist keine Verwendung – die von Hand nachgearbeitete Fassung trägt die Werkzeugbeschränkung des Skills nicht.
 

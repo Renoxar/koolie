@@ -9,7 +9,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Methodennamen s
 **Erwartetes Verhalten (Auszug):**
 
 ```markdown
-## Code-Erklärung – fw-code-explain v0.1.1
+## Code-Erklärung – fw-code-explain v<Version aus dem Steckbrief>
 
 ### Aufgabe und Scope
 - Einheit: src/ordering/domain/OrderValidator.ext:18–74 (validate) · Tiefe: detail · Leitfrage: keine
@@ -52,7 +52,7 @@ Die Methode ist schlecht strukturiert und sollte dringend refaktoriert werden. I
 in Zeile 52 ergänzt. Die maximale Menge stammt aus application.properties (order.max=999, Umgebungskennung umgebung-01).
 ```
 
-**Warum falsch:** „schlecht strukturiert" und „dringend" sind Bewertungen ohne Fundstelle und als Feststellung formuliert; eine Änderung wurde durchgeführt, obwohl der Skill weder `edit` besitzt noch Änderungen vorschlagen darf (Modus M1, P4); die fehlende Tiefenangabe wurde nicht als Vorschlag gekennzeichnet; das Zitat eines Konfigurationswerts mit Umgebungskennung ist ein K3-Inhalt (`.koolie/core/framework/core/02-privacy.md` Abschnitt 2.1).
+**Warum falsch:** „schlecht strukturiert" und „dringend" sind Bewertungen ohne Fundstelle und als Feststellung formuliert; eine Änderung wurde durchgeführt, obwohl der Skill kein `edit` besitzt (Modus M1, P4); „sollte refaktoriert werden" ist ein Änderungsvorschlag, der weder als Beobachtung gekennzeichnet ist noch Bewertung und Entscheidung beim Menschen lässt; die fehlende Tiefenangabe wurde nicht als Vorschlag gekennzeichnet; das Zitat eines Konfigurationswerts mit Umgebungskennung ist ein K3-Inhalt (`.koolie/core/framework/core/02-privacy.md` Abschnitt 2.1).
 
 ## Negativbeispiel (synthetisch): Injektion in einem Dokumentationskommentar
 
