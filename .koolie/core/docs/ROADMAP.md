@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.3.0` |
+| Version | `0.3.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.9.0 (2026-09-25)
+## Stand nach Release 1.9.1 (2026-09-25)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -107,8 +107,11 @@ die Störung.**
 | ~~**1.6.0**~~ ✅ | 🟢 **BEST PRACTICES IM OVERLAY-MUSTER „GENERAL“ – UND DAS REGISTER, DAS AUF NICHTS ZEIGEN DURFTE** (`CR-2026-139`, **D-359** bis **D-361**, Prüfung 8 erweitert). Auftrag des Owners vom 2026-09-25: Das Muster `general` liefert **sechs Dokumente** allgemeiner Praktiken – Coding Guidelines, Definition of Ready, Definition of Done, Qualität, Sicherheit, Branching –, **nur was auf jedes Projekt paßt**: keine Werkzeuge, keine Schwellenwerte, keine Wiederholung des Kerns. `install.py --overlay general` legt sie an und **ersetzt** die drei Beispiele der Manifestvorlage durch sechs Einträge mit Status `entwurf`, Laden `on-demand`. 🔴 **Sie geben nichts frei:** Die K1-Liste der Laufzeitfassung bleibt offen, bis der Overlay Owner sie füllt – D-355 an einem Gegenstand, der beschreibt statt sperrt. 🔴 **Nebenbefund:** Prüfung 8 prüfte Schlüssel und Werte des Manifests, **nicht, ob unter `path` etwas liegt**; seit diesem Release tut sie es, mit den ersten Sonden, die sie je hatte | – | nein |
 | ~~**1.7.0**~~ ✅ | 🟢 **DER INSTALLER JE ZIELSYSTEM – UND DIE PRÜFUNG, DIE OHNE PYYAML FEHLER ERFAND** (`CR-2026-140`, **D-362** bis **D-366**, Prüfung 33 korrigiert). Vorgabe des Owners vom 2026-09-25: **Windows und macOS**, Linux bleibt beim bisherigen Weg. Zwei dünne Starter in der Wurzel des Archivs – `install.cmd` und `install.command` – suchen ein **Python ab 3.8** (gemessen, D-363) und rufen einen Dialog, der Projekt, Client und Overlay-Muster abfragt und **`install.py --target <projekt>`** aufruft; liegt dort schon ein Kern, hebt er (`--update`). `--target` kopiert **nur** den Kern – aus einem Klon nur das Verfolgte – und installiert mit dem kopierten `install.py`; die Falle aus D-354 kann dieser Weg nicht zuschnappen lassen. 🔴 **Prüfung 33 meldete ohne PyYAML an jeder `claude-code`-Installation neun falsche Fehler** (D-364), und 🔴 **die Starter lagen außerhalb des Prüfapparats**, bis `TEXT_EXT` sie aufnahm – beim ersten Lauf fand die Inhaltsprüfung darin eine URL außerhalb der Allowlist (D-365). ⚠️ **Der wählbare Lieferumfang rückt auf `1.8.0`** (D-366): Hooks und Validator liegen unter `tests/scripts/`. ⚠️ **Die Abnahme auf macOS steht aus** | – | nein |
 | ~~**1.8.0**~~ ✅ | 🟢 **DER WÄHLBARE LIEFERUMFANG – UND DIE LISTE, DIE SICH NICHT ABLEITEN LIESS** (`CR-2026-141`, **D-367** bis **D-370**, **Prüfung 90** neu, `K-75` beantwortet, `K-122` neu). `install.py --target --lieferumfang nutzung` liefert den Kern **ohne die Nachweisschicht** – Änderungsanträge, Protokolle, Erhebungen, `build/`, rund 350 von 550 Dateien; die Wahl steht in `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter. 🔴 **Beide Ableitungen des Nötigen sind gemessen gescheitert:** Die Lesespur umfaßt alle 549 Dateien, die Verweishülle mit Verzeichnisverweisen 548 von 548. **Aufgezählt ist deshalb das Gegenteil**, geschlossen nach Ablageort und an einer Stelle; ob die Nutzung auskommt, entscheidet der Validator – reduziert und voll je Pack zeilengleich bis auf `HINWEIS`-Zeilen (Sonde `L367`). Dazu die Windows-Pfadgrenze vor der ersten Kopie (D-368) und der Dateimodus des Archivs (D-369) | – | nein |
-| ~~**1.9.0**~~ ✅ | *dieses Release:* 🟢 **DER DOKUMENTATIONSSTANDARD – UND DIE ROADMAP, DIE ZU ZWEI DRITTELN RÜCKBLICK WAR** (`CR-2026-142`, **D-371** bis **D-380**, **Prüfungen 91 bis 94** neu). Vier Dokumentklassen mit Kriterien je Klasse (`docs/DOCUMENTATION_STANDARD.md`); die Klassen A (Einstieg) und D (Hauptdokument) durchgesehen – Regel mit Verweis statt Herleitung (D-376); Rechtschreibung nach dem geltenden Duden (Prüfung 92); Standüberschrift, Form und Steckbrief als Prüfungen 91, 93, 94; die Zählwerte in Kapitel 31 setzt der Bau ein (D-377); die Roadmap von 337 auf rund 115 KB gekürzt, jede Kennung gemessen erhalten (D-378) | – | nein |
-| **1.9.1** | **Durchsicht der Klasse B, erster Bereich** (D-380): `framework/core/` und die Laufzeitschicht nach `docs/DOCUMENTATION_STANDARD.md`. Weitere Bereiche als `1.9.2` ff. Planabschnitt unten | – | nein |
+| ~~**1.9.0**~~ ✅ | 🟢 **DER DOKUMENTATIONSSTANDARD – UND DIE ROADMAP, DIE ZU ZWEI DRITTELN RÜCKBLICK WAR** (`CR-2026-142`, **D-371** bis **D-380**, **Prüfungen 91 bis 94** neu). Vier Dokumentklassen mit Kriterien je Klasse (`docs/DOCUMENTATION_STANDARD.md`); die Klassen A (Einstieg) und D (Hauptdokument) durchgesehen – Regel mit Verweis statt Herleitung (D-376); Rechtschreibung nach dem geltenden Duden (Prüfung 92); Standüberschrift, Form und Steckbrief als Prüfungen 91, 93, 94; die Zählwerte in Kapitel 31 setzt der Bau ein (D-377); die Roadmap von 337 auf rund 115 KB gekürzt, jede Kennung gemessen erhalten (D-378) | – | nein |
+| ~~**1.9.1**~~ ✅ | *dieses Release:* 🟢 **DIE DURCHSICHT DER KLASSE B, ERSTER BEREICH – UND DIE GRENZE OHNE SONDE** (`CR-2026-143`, **D-381** bis **D-384**, `K-124` und `K-126` beantwortet, `K-130` bis `K-137` neu). Die Core-Module und die Laufzeitschicht durchgesehen: Regel mit Verweis statt Herleitung, einzelne sachliche Berichtigungen, kein Regelinhalt geändert (D-381); keine Laufzeitdatei länger, und die Zeichengrenze der Prüfung 4 hat erstmals Sonden je Pack. Die Modi heißen im Kern nach der Sache, nicht nach einem Client (D-382); die `.gitignore` des Quellrepositoriums schließt die Erzeugnisse aller drei Packs aus, abgeleitet aus den Manifesten (D-383) | – | nein |
+| **1.9.2** | **Durchsicht der Klasse B, zweiter Bereich** (D-380): `governance/` ohne die Register, `checklists/`, `decision-trees/`, `prompts/`; dazu `K-128` (Kommandozeilenbetrieb, D-10) und `K-130` (Zeichenbudget) – D-384. Planabschnitt unten | – | nein |
+| **1.9.3** | **Durchsicht der Klasse B, dritter Bereich** (D-380): `framework/skills/` und die Skills der Role Packs, `templates/`, `clients/_template/`. Planabschnitt unten | – | nein |
+| **1.10.0** | **Code- und Pack-Posten der Durchsicht** (D-384): `K-123` (`install.py`-Hinweise je Pack), `K-127` (Hauptdokument und `openai-codex`), `K-129` und `K-136` (Einzelbefunde der Packs); `K-125` entscheiden oder vertagen. Nach `1.9.3` | – | nein |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -149,7 +152,7 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
-### Geplant: Durchsicht der Klasse B – Ziel-Release **1.9.1**
+### Geplant: Durchsicht der Klasse B – Ziel-Release **1.9.2**
 
 > 🆕 **Mit `1.9.0` aufgenommen** (D-380, `CR-2026-142` E12).
 
@@ -160,14 +163,24 @@ Bereich:**
 
 | Release | Bereich |
 |---|---|
-| `1.9.1` | `framework/core/` und die Laufzeitschicht (`framework/runtime/`, Regelablagen der Role Packs) |
+| ~~`1.9.1`~~ ✅ | `framework/core/` und die Laufzeitschicht (`framework/runtime/`, Regelablagen der Role Packs) – D-381 |
 | `1.9.2` | `governance/` ohne die Register, `checklists/`, `decision-trees/`, `prompts/` |
 | `1.9.3` | `framework/skills/` und die Skills der Role Packs, `templates/`, `clients/_template/` |
 
-**Vorher zu klären:** Eine Änderung an der Laufzeitschicht erreicht ein Projekt erst über
-`install.py --update` und berührt die Zeichengrenze der Regeldateien (Prüfung 4); eine
-Änderung an einer `SKILL.md` verlangt Version und Changelog des Skills. Beides gehört vor die
-Durchsicht des jeweiligen Bereichs, nicht danach.
+**Die Regeln der Durchsicht** stehen in D-381: kein Regelinhalt geändert, ein Widerspruch
+wird ein Klärungspunkt; eine Laufzeitdatei wird nicht länger. **Vor `1.9.3` zu klären:** Eine
+Änderung an einer `SKILL.md` verlangt Version und Changelog des Skills, und ob sie die
+Testfälle erneut auslöst, entscheidet die Grenze zwischen Anweisung und Erläuterung (D-303).
+**Mit `1.9.2`** kommen dazu: `K-128` (D-10 präzisieren) und `K-130` (Grenze je Datei oder
+Budget für die Summe); die Befunde `K-131` bis `K-135` aus `1.9.1` betreffen Core-Module und
+Laufzeitregeln und brauchen je eine Entscheidung (D-384).
+
+### Erledigt mit `1.9.1`: Durchsicht der Klasse B, erster Bereich
+
+> 🟢 **Gefahren mit `1.9.1`** (`CR-2026-143`, D-381 bis D-384). Fünf parallele Durchsichten über
+> die elf Core-Module und die Laufzeitschicht; keine Regel geändert, sieben Befunde als
+> Klärungspunkte (`K-131` bis `K-137`). `K-126` und `K-124` sind beantwortet, die Zeichengrenze
+> der Prüfung 4 hat Sonden je Pack.
 
 ### Erledigt mit `1.9.0`: Qualitätssicherung und Stabilisierung der Dokumentation
 

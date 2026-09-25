@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-GUIDE` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
@@ -86,7 +86,7 @@ Vertiefe `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` an d
 | „Mach die Tests grün" | Frust über rote Pipeline | M4-Regeln: Ursache verstehen; Tests nie anpassen lassen |
 | Scope-Aufweichung („räum bei der Gelegenheit auf") | Effizienzillusion | Q1/P7: ein Ziel je Änderung; Aufräumen als eigene Aufgabe |
 | Sitzungs-Marathon über mehrere Aufgaben | Kontext „ist ja schon da" | Least Context: neue Aufgabe, neue Sitzung |
-| Modus ohne Rückfragen (Bypass) aktivieren | „geht schneller" | D-05: untersagt; Modi mit selbsttätiger Übernahme von Änderungen nur per dokumentierter Ausnahme bei Stufe niedrig; Normal bestätigt in Sekunden |
+| Modus ohne Rückfragen aktivieren | „geht schneller“ | D-05: untersagt; Modi mit selbsttätiger Übernahme von Änderungen nur per dokumentierter Ausnahme bei Stufe niedrig; der rückfragende Standardmodus bestätigt in Sekunden (wie die Modi im Client heißen, nennt die Fähigkeitsmatrix des Client Packs) |
 | Der KI-Client als Entscheidungsinstanz („was sollen wir nehmen?") | Autoritätsillusion | V3: Optionen ja, Entscheidung Mensch |
 | Vertrauen auf die Selbstauskunft des KI-Clients („bist du sicher?") | Anthropomorphisierung | Belege verlangen (Tests, Fundstellen), nicht Beteuerungen |
 

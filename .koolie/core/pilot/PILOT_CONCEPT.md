@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PILOT` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | Projektleitung des Pilotprojekts mit `<FRAMEWORK_OWNER>` |
 | Metriken | `METRICS.md` |
@@ -32,7 +32,7 @@
 Der Pilot wird unterbrochen und neu bewertet, wenn eines eintritt:
 
 1. Sicherheits- oder Datenschutzvorfall der Stufe E3 mit Ursache im Framework oder Werkzeug (nicht in einem Einzelfehler, der durch Regeln aufgefangen wurde).
-2. Wiederholte Umgehung zentraler Regeln trotz Nachsteuerung (Bypass-Nutzung, K3-Bereitstellungen).
+2. Wiederholte Umgehung zentraler Regeln trotz Nachsteuerung (Nutzung des Modus ohne Rückfragen, K3-Bereitstellungen).
 3. Deutliche, anhaltende Verschlechterung der Qualitätssignale gegenüber der Referenzbasis (Fehlerquote, Wiedereröffnungen, Pipeline-Fehlschläge) über mehr als einen Review-Punkt.
 4. Breite, begründete Ablehnung durch die Pilotgruppe (Akzeptanzsignale, Feedback) – Werkzeuge gegen das Team einzuführen ist kein Ziel des Frameworks.
 5. Produktänderung, die zentrale Kontrollmechanismen bricht, ohne kurzfristige Abhilfe (`.koolie/core/governance/RELEASE_PROCESS.md` Abschnitt 6).

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 94, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 94, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -3828,6 +3828,32 @@ sonde("45b", "Ohne .gitignore kann die Regel nicht geprueft werden, und die Prue
 gegenprobe("45a", "Eine andere, ebenso wirksame Schreibweise bleibt unbeanstandet - "
                   "eine zu enge Pruefung meldete hier den richtigen Text",
            _45_andere_schreibweise, M45_REGEL)
+
+
+# Gegenstand 3 (D-383, K-124): Im Quellrepositorium schliesst die .gitignore die
+# Wurzelerzeugnisse JEDES Packs aus. Die Kopie ist ein Quellrepositorium - sie traegt
+# das Kennzeichen -, deshalb laeuft der Gegenstand hier und in keiner Installation.
+M45_ERZEUGNIS = "schließt das Erzeugnis `/.codex` nicht aus"
+P45_CODEX = "/.codex/"
+
+
+def _45_erzeugnis_weg(root: str) -> None:
+    """Die Zeile eines Packs, das das Quellrepositorium nicht selbst installiert."""
+    ersetze(P(root, ".gitignore"), (P45_CODEX + "\r\n", ""))
+
+
+def _45_erzeugnis_andere_schreibweise(root: str) -> None:
+    """`.codex` statt `/.codex/` - git schliesst damit dasselbe Verzeichnis aus."""
+    ersetze(P(root, ".gitignore"), (P45_CODEX + "\r\n", ".codex\r\n"))
+
+
+sonde("45e", "Die .gitignore des Quellrepositoriums schliesst das Erzeugnis eines Packs "
+             "nicht mehr aus - es waere nach dessen Installation versionierbar",
+      _45_erzeugnis_weg, M45_ERZEUGNIS)
+
+gegenprobe("45c", "Dieselbe Zeile ohne Schraegstriche bleibt unbeanstandet - git schliesst "
+                  "damit dasselbe Verzeichnis aus",
+           _45_erzeugnis_andere_schreibweise, "schließt das Erzeugnis")
 
 
 def _45_repo(root: str) -> bool:
@@ -9721,6 +9747,68 @@ def sonden_steckbrief() -> None:
 buendel(sonden_steckbrief,
         "Pruefung 94 verlangt Kennung, Version und Status im Steckbrief der Klassen A "
         "und B und laesst Laufzeit, Vorlagen und Verzeichnisse aus")
+
+
+# --- Pruefung 4: die Zeichengrenze der Wurzel-Anweisung (D-381, CR-2026-143) ---------
+#
+# Die Grenze von 12.000 Zeichen ist eine Vorgabe des Frameworks, keine Eigenschaft eines
+# Clients (CR-2026-027 E3). Sie gilt fuer die INSTALLIERTE Fassung, und die ist je Pack
+# verschieden lang: Dieselbe Quelle ergab am 2026-09-25 11.894 Zeichen bei claude-code,
+# 11.887 bei devin-desktop und 12.516 bei openai-codex. Dort gilt sie nicht, weil der
+# Client Regeldateien nicht von sich aus laedt (has_rule_triggers = false); die Summe
+# des stets Geladenen haelt eine Warnung bei 40.000.
+# Bis 1.9.0 hatte die Pruefung keine Sonde - eine Durchsicht der Laufzeitschicht, die
+# die Wurzel-Anweisung um hundert Zeichen verlaengert, waere erst im Projekt aufgefallen.
+M4_GRENZE = "Zeichen (> 12.000)"
+
+
+def sonden_zeichengrenze() -> None:
+    """Wirkungsnachweis zur Zeichengrenze der Pruefung 4, je Pack gegen die Installation."""
+    ergebnisse = {}
+    for pack in ("claude-code", "devin-desktop", "openai-codex"):
+        root = installation(pack)
+        try:
+            man = json.loads(lies(os.path.join(QUELLE, ".koolie/core", "clients", pack,
+                                               "manifest.json")))
+            wurzel = os.path.join(root, *man["root_instruction_file"].split("/"))
+            if not os.path.isfile(wurzel):
+                raise Praeparationsfehler("Sonden zu 4: %s fehlt in der Installation (%s)"
+                                          % (man["root_instruction_file"], pack))
+            laenge = len(lies(wurzel))
+            aus = validator_ausgabe(root)
+            ergebnisse[pack] = (laenge, M4_GRENZE not in aus)
+            if pack == "claude-code":
+                schreib(wurzel, lies(wurzel) + "\r\n" + "x" * (12001 - laenge) + "\r\n")
+                aus = validator_ausgabe(root)
+                ok = any(M4_GRENZE in z and man["root_instruction_file"] in z
+                         for z in aus.splitlines())
+                melde("SONDE", "4a", ok,
+                      "Eine installierte Wurzel-Anweisung ueber 12.000 Zeichen wird als "
+                      "Fehler gemeldet")
+                if not ok:
+                    notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        finally:
+            aufraeumen(os.path.dirname(root))
+
+    laenge, ok = ergebnisse["claude-code"]
+    melde("GEGENPROBE", "4a", ok and laenge <= 12000,
+          "Die ausgelieferte Wurzel-Anweisung des Packs claude-code bleibt unter der "
+          "Grenze (%d Zeichen)" % laenge)
+    laenge, ok = ergebnisse["devin-desktop"]
+    melde("GEGENPROBE", "4b", ok and laenge <= 12000,
+          "Die ausgelieferte Wurzel-Anweisung des Packs devin-desktop bleibt unter der "
+          "Grenze (%d Zeichen)" % laenge)
+    laenge, ok = ergebnisse["openai-codex"]
+    melde("GEGENPROBE", "4c", ok,
+          "Beim Pack openai-codex meldet die Grenze nichts, weil die Regeln ueber die "
+          "Wurzel-Anweisung eingebunden werden (%d Zeichen)" % laenge)
+    notiz("        Zeichen je Pack: " + ", ".join(
+        "%s %d" % (p, ergebnisse[p][0]) for p in sorted(ergebnisse)))
+
+
+buendel(sonden_zeichengrenze,
+        "Pruefung 4 haelt die installierte Wurzel-Anweisung je Pack unter 12.000 Zeichen, "
+        "ausser wo der Client Regeln nicht selbst laedt")
 
 
 if LISTE:

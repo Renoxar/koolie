@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Dokumentversion | 1.9.0 (entspricht Framework-Release 1.9.0) |
+| Dokumentversion | 1.9.1 (entspricht Framework-Release 1.9.1) |
 | Stand | 2026-09-24 |
 | Status | **Kein Modulträger steht auf `entwurf`.** Gezählt am 2026-09-22 über den ganzen Kern: 81 Träger führen eine Steckbriefzeile, davon **77 auf `pilot`** und vier als Ausfüllschlitz einer Vorlage – Kriterium 3 der 1.0.0-Definition ist seit Release 0.53.0 erfüllt und wird bei jedem Validatorlauf nachgerechnet (Prüfung 46). Die technische Validierung gegen reale Installationen ist als Roadmap-Arbeitspaket AP2 **gefahren und mit Release 0.86.0 zu Ende geführt**; die Protokolle liegen unter `.koolie/core/tests/protocols/`. Was zwischen diesem Stand und 1.0.0 liegt, steht im Releaseplan der Roadmap (Kap. 30) |
 | Vertraulichkeit | projektneutral – enthält keine organisations-, kunden-, personen- oder infrastrukturspezifischen Inhalte; Beispiele sind synthetisch |

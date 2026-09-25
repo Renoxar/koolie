@@ -1,5 +1,6 @@
-# Persönliche, nicht zu teilende Devin-Konfiguration (Framework-Konvention)
+# Persönliche, nicht zu teilende Ergänzungen der Wurzel-Anweisung (Framework-Konvention)
 AGENTS.local.md
+CLAUDE.local.md
 # Die Übergabe ist seit 1.4.1 ein lokales Arbeitsdokument und wird nicht mehr
 # versioniert (D-350, CR-2026-134) - ebenso ihre Vorlage. Die Git-Historie trägt
 # die Fassungen bis 1.4.0.
@@ -26,14 +27,22 @@ __pycache__/
 # mit "python .koolie/core/install.py". So kann es keine zwei
 # auseinanderlaufenden Fassungen derselben Core-Datei geben.
 #
-# ACHTUNG: In einem PROJEKT gilt das Gegenteil - dort werden AGENTS.md, .devin/ und
-# .koolie/project-overlay/ versioniert. Diese vier Zeilen sind deshalb beim Übernehmen des
-# Frameworks in ein Projekt NICHT mitzunehmen.
+# ACHTUNG: In einem PROJEKT gilt das Gegenteil - dort werden Wurzel-Anweisungsdatei,
+# Laufzeitschicht und .koolie/project-overlay/ versioniert. Die folgenden Zeilen bis zur
+# nächsten Leerzeile sind deshalb beim Übernehmen des Frameworks in ein Projekt NICHT
+# mitzunehmen.
 # ---------------------------------------------------------------------------
 /AGENTS.md
 /AGENTS.local.md.example
 /.devin/
 /.koolie/project-overlay/
+# Dieselben Erzeugnisse der anderen Client Packs (D-383, K-124). Welche es sind, leitet
+# Pruefung 45 aus shared_core und shared_seed der Manifeste ab.
+/CLAUDE.md
+/CLAUDE.local.md.example
+/.mcp.json.example
+/.claude/
+/.codex/
 
 # Sicherungsdateien aus Sondenlaeufen
 *.bak
