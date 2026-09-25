@@ -109,6 +109,7 @@ mkdir -p /pfad/zum/projekt/.koolie
 cp -r .koolie/core /pfad/zum/projekt/.koolie/
 
 # 2. Im Projekt die Wurzeldateien anlegen
+#    (wahlweise mit vorbefülltem Overlay-Muster: --overlay general)
 cd /pfad/zum/projekt
 python .koolie/core/install.py
 
@@ -144,6 +145,7 @@ Weitere Aufrufe:
 | `python .koolie/core/install.py --update` | Kern auf ein neues Release heben, Projektdateien behalten |
 | `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
 | `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
+| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei; `--overlay` ohne Namen zählt die Muster auf (seit `1.5.0`) |
 
 Der ausführliche Weg mit allen Voraussetzungen, Freigaben und der Aktivierungsreihenfolge steht in `.koolie/core/docs/ADOPTION_GUIDE.md`; der verbindliche Nachweis ist `.koolie/core/checklists/10-project-adoption.md`.
 

@@ -680,7 +680,19 @@ Prüft (statisch, ohne laufenden KI-Client):
      Schutz-Hook fuehrt sie in seinen Mustern, und diese Pruefung meldet sie, wenn sie
      trotzdem da ist - ein Mensch kann sie weiterhin anlegen, und dann soll es nicht
      still bleiben
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 88 laeuft als eigenes
+ 89. Die uebrigen Pfadplatzhalter in den Schichten, die sie tragen (K-69, D-357): Unter
+     --strict-overlay fuer <ALLOWED_PATHS>, <TEST_PATHS>, <DOC_PATHS> und
+     <READ_ONLY_PATHS> dieselben drei Gegenstaende wie Pruefung 59 fuer
+     <EXCLUDED_PATHS>: (a) die Laufzeitfassung NENNT den Platzhalter, (b) ihr Wert ist
+     dieselbe Menge wie in der dreispaltigen Zeile von Abschnitt 4 des Quell-Overlays,
+     (c) jeder Nur-Lese-Pfad hat im deny-Korb eine Schreibsperre. ANLASS: Laufzeitfassung
+     und Berechtigungsdatei bleiben Saat (D-353), die Handpflege an drei Stellen bleibt -
+     und nur eine Pruefung faengt sie auf; von sechs Werten des Uebungs-Overlays wich am
+     2026-09-18 einer ab. Ein Overlay, das anders bindet, bekommt eine eigene Meldung und
+     wird nicht uebergangen. "Kein Wert" hat gemessen mehrere Schreibweisen
+     (`nicht vorhanden`, `keine`) und ist die leere Menge. GRENZE: (c) prueft nur die
+     Richtung Quelle -> Korb, und (c) ist wie bei 59 an die Ausgabeform 'json' gebunden
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 89 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -742,7 +754,9 @@ FORMATGEBUNDENE_PRUEFUNGEN = {
     42: "Der Befehlsschlitz traegt den Befehl, den das Overlay erklaert",
     43: "Die Berechtigungsdatei traegt den Hook, den das Pack dort fuehrt",
     54: "Deklarierte Zusatzschluessel stehen auf ihrer Ebene",
+    59: "Gegenstand (c): die ausgeschlossenen Pfade im deny-Korb",
     76: "Das Pack steht im eigenen deny-Korb",
+    89: "Gegenstand (c): die Nur-Lese-Pfade im deny-Korb",
 }
 
 
@@ -7716,6 +7730,14 @@ def check_overlay_wertabgleich(root: str, man: dict) -> None:
                     f"{', '.join(zuviel) or 'keine'}. Maßgeblich ist "
                     f".koolie/project-overlay/OVERLAY.md; die Laufzeitfassung ist die Schicht, die "
                     f"der Client lädt (D-171)")
+    # Gegenstand (c) liest den deny-Korb einer JSON-Datei. Bis 1.4.4 stand er nicht in
+    # FORMATGEBUNDENE_PRUEFUNGEN und kehrte bei einem Pack mit TOML an json.loads still
+    # zurueck - gemessen mit CR-2026-138 an einer Wegwerf-Installation von openai-codex:
+    # <EXCLUDED_PATHS> in Quelle und Laufzeitfassung gefuellt, in der Berechtigungsdatei
+    # keine Sperre, und diese Pruefung meldete nichts. Die Luecke ist dieselbe; sie ist
+    # jetzt erklaert (D-346) statt verschwiegen.
+    if formatgebunden(man, 59):
+        return
     rel_perm = man["permissions_file"]
     perm_pfad = os.path.join(root, *rel_perm.split("/"))
     if not os.path.isfile(perm_pfad):
@@ -7738,6 +7760,138 @@ def check_overlay_wertabgleich(root: str, man: dict) -> None:
                     f"keine Regel {werkzeug}({glob}) im deny-Korb. Die Berechtigungsdatei "
                     f"ist die Schicht, die technisch sperrt – ein Wert, der nur im Overlay "
                     f"steht, sperrt nichts (D-171)")
+
+
+# --- Pruefung 89: die uebrigen Pfadplatzhalter in den Schichten, die sie tragen ------
+#
+# ANLASS (K-69, CR-2026-136 E4, CR-2026-138 E6). Pruefung 59 vergleicht EINEN
+# Pfadplatzhalter. <ALLOWED_PATHS>, <TEST_PATHS>, <DOC_PATHS> und <READ_ONLY_PATHS> haben
+# dieselbe Gestalt - eine Globliste - und waren ungeprueft, nicht geprueft-und-gut:
+# Gezaehlt am 2026-09-18 wich von sechs Werten des Uebungs-Overlays einer ab. Weil
+# Laufzeitfassung und Berechtigungsdatei Saat bleiben (D-353), faengt nur eine Pruefung
+# die Handpflege an drei Stellen auf.
+#
+# DREI GEGENSTAENDE, dieselben wie bei 59:
+#   (a) Die Laufzeitfassung NENNT jeden der vier Platzhalter. Ein Traeger, der den Wert
+#       nur einsetzt, ist fuer sich stimmig - und niemand sieht, ob sein Wert noch der
+#       der Quelle ist (D-160).
+#   (b) Der Wert hinter dem Platzhalter ist dieselbe Menge wie in der Quelle.
+#   (c) Jeder Nur-Lese-Pfad hat im deny-Korb eine Schreibsperre. Seit 1.5.0 fuehrt die
+#       Kernquelle den Schlitz dafuer (D-356); bis dahin trugen beide uebernehmenden
+#       Projekte die Sperre von Hand - auf dieselbe Weise.
+#
+# DIE QUELLE IST DIE DREISPALTIGE ZEILE VON ABSCHNITT 4, gefunden ueber die
+# Platzhalterzelle. Ein Overlay, das anders bindet, ENTGEHT der Pruefung nicht still: Es
+# bekommt eine eigene Meldung (CR-2026-136 E4, "melden, nicht verschweigen").
+#
+# "KEIN WERT" HAT MEHRERE SCHREIBWEISEN, und sie sind gemessen: Der Pilot fuehrt fuer
+# <DOC_PATHS> in der Quelle `nicht vorhanden`, in der Laufzeitfassung `keine`. Beides
+# ist die leere Menge; wer Zeichenketten vergleicht, meldet einen Unterschied, den es
+# nicht gibt.
+#
+# GRENZE. Der Wert in der Laufzeitfassung endet am ersten " · " oder " – " der Zeile;
+# was danach steht ("zusaetzlich immer ...") ist Erlaeuterung und gehoert nicht zur
+# Menge. Und (c) prueft wie 59 nur die Richtung Quelle -> Korb.
+P89_PLATZHALTER = ("<ALLOWED_PATHS>", "<TEST_PATHS>", "<DOC_PATHS>", "<READ_ONLY_PATHS>")
+P89_KEIN_WERT = {"nicht vorhanden", "keine", "keiner", "kein", "–", "-"}
+
+
+def _p89_menge(werte: list) -> list:
+    """Die Globs einer Wertangabe ohne die Schreibweisen fuer "kein Wert"."""
+    return [g for g in _p59_globs(werte) if g.lower() not in P89_KEIN_WERT]
+
+
+def _p89_quelle(text: str, platzhalter: str):
+    """(Zeile gefunden, Werte oder None bei Ausfuellschlitz) aus Abschnitt 4 des Overlays."""
+    for zeile in text.replace("\r\n", "\n").split("\n"):
+        zellen = tabellenzellen(zeile.strip())
+        for i, zelle in enumerate(zellen[:-1]):
+            if zelle.strip() != f"`{platzhalter}`":
+                continue
+            wert = zellen[i + 1]
+            if TBD_RE.search(wert):
+                return True, None
+            treffer = re.findall(r"`([^`]+)`", wert)
+            return True, _p89_menge(treffer or [wert.strip()])
+    return False, None
+
+
+def _p89_laufzeit(text: str, platzhalter: str):
+    """(Zeile gefunden, Werte oder None bei Ausfuellschlitz) aus der Laufzeitfassung."""
+    token = f"`{platzhalter}`"
+    for zeile in text.replace("\r\n", "\n").split("\n"):
+        if token not in zeile:
+            continue
+        rest = zeile.split(token, 1)[1].lstrip(")").lstrip(":").strip()
+        rest = re.split(r" · | – ", rest, maxsplit=1)[0]
+        if TBD_RE.search(rest):
+            return True, None
+        treffer = [t for t in re.findall(r"`([^`]+)`", rest)
+                   if not PROJEKTPLATZHALTER.fullmatch(t)]
+        return True, _p89_menge(treffer or [rest.strip().rstrip(".")])
+    return False, None
+
+
+def check_overlay_pfadabgleich(root: str, man: dict) -> None:
+    """Pruefung 89 (K-69, D-357): die vier uebrigen Pfadplatzhalter in allen Schichten."""
+    overlay_pfad = os.path.join(root, ".koolie/project-overlay", "OVERLAY.md")
+    if not os.path.isfile(overlay_pfad):
+        return  # Kandidatenphase - dieselbe Enthaltung wie Pruefung 59
+    quelltext = read(overlay_pfad)
+    rel_rt = f"{man['pack_runtime_dir']}/20-project-overlay.md"
+    runtime_pfad = os.path.join(root, *rel_rt.split("/"))
+    laufzeit = read(runtime_pfad) if os.path.isfile(runtime_pfad) else None
+    nur_lesen = None
+    for platzhalter in P89_PLATZHALTER:
+        da, quelle = _p89_quelle(quelltext, platzhalter)
+        if not da:
+            err(f".koolie/project-overlay/OVERLAY.md: keine Zeile mit der Platzhalterzelle "
+                f"`{platzhalter}` in Abschnitt 4. Prüfung 89 liest den Wert aus der "
+                f"dreispaltigen Zeile der Vorlage; ein Overlay, das anders bindet, wird "
+                f"gemeldet und nicht übergangen (K-69, CR-2026-136 E4)")
+            continue
+        if quelle is None:
+            continue  # noch nicht ausgefuellt - das meldet --check-overlay-ready
+        if platzhalter == "<READ_ONLY_PATHS>":
+            nur_lesen = quelle
+        if laufzeit is None:
+            continue
+        da, ist = _p89_laufzeit(laufzeit, platzhalter)
+        if not da:
+            err(f"{rel_rt}: nennt {platzhalter} nicht. Die Laufzeitfassung setzt den Wert "
+                f"damit ein, statt den Platzhalter zu binden – sie ist für sich stimmig, und "
+                f"niemand sieht, ob ihr Wert noch der des Quell-Overlays ist (D-160, K-69)")
+            continue
+        if ist is None:
+            continue  # Ausfuellschlitz in der Laufzeitfassung - Sache von --strict-overlay
+        fehlt = [g for g in quelle if g not in ist]
+        zuviel = [g for g in ist if g not in quelle]
+        if fehlt or zuviel:
+            err(f"{rel_rt}: der Wert von {platzhalter} weicht vom Quell-Overlay ab – dort "
+                f"fehlend: {', '.join(fehlt) or 'keine'}; dort nicht vorgesehen: "
+                f"{', '.join(zuviel) or 'keine'}. Maßgeblich ist "
+                f".koolie/project-overlay/OVERLAY.md (K-69)")
+    if not nur_lesen or formatgebunden(man, 89):
+        return
+    rel_perm = man["permissions_file"]
+    perm_pfad = os.path.join(root, *rel_perm.split("/"))
+    if not os.path.isfile(perm_pfad):
+        return
+    try:
+        cfg = json.loads(read(perm_pfad))
+    except json.JSONDecodeError:
+        return  # check_config hat das bereits gemeldet
+    deny = [r for r in cfg.get("permissions", {}).get("deny", []) if isinstance(r, str)]
+    if any("<READ_ONLY_PATHS>" in r for r in deny):
+        return  # Schlitz noch ungefuellt - das ist Sache von --strict-overlay
+    praefix = man.get("permission_path_prefix", "")
+    for werkzeug in man.get("permission_tools", {}).get("write", ()):
+        for glob in nur_lesen:
+            if any(f"{werkzeug}({p}{glob})" in deny for p in ("", praefix)):
+                continue
+            err(f"{rel_perm}: der Nur-Lese-Pfad `{glob}` des Quell-Overlays hat keine Regel "
+                f"{werkzeug}({glob}) im deny-Korb. Ein Integritätsschutz, der nur im Overlay "
+                f"steht, sperrt nichts (K-69, D-356)")
 
 
 # --- Pruefung 66: das verirrte Steuerzeichen ---------------------------------------
@@ -9867,6 +10021,7 @@ def main() -> int:
         check_platzhalterbindung(root, man)
         check_ausgeschlossene_vorbedingung(root, man)
         check_overlay_wertabgleich(root, man)
+        check_overlay_pfadabgleich(root, man)
     if args.check_overlay_ready:
         check_overlay_ready(root, man)
     if args.mermaid:
