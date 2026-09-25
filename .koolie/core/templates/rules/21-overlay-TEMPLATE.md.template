@@ -6,7 +6,9 @@ trigger: model_decision
 <!-- AUSFÜLLHINWEIS: Kopiere diese Datei nach 2N-overlay-<name>.md (N = 1–9, ohne .template).
      Mechanismus: .koolie/project-overlay/OVERLAY.md Abschnitt 19, Ladeverhalten "rule".
      Für Coding Guidelines ist eine Bindung an die Dateimuster der Sprache geeignet; wie
-     sie bei diesem Client notiert wird, steht in der README der Regelablage.
+     sie bei diesem Client notiert wird, steht in der README der Regelablage. Kennt der
+     Client keine Bindung an Dateimuster, lädt die Regel immer (Zeilen R2 und R3 der
+     Fähigkeitsmatrix seines Packs).
      Unter 12.000 Zeichen bleiben.
      Inhalt: nur Kernregeln des registrierten Dokuments (Manifest-ID nennen), keine Lockerung
      von Framework-Regeln, keine Personen, keine internen Adressen, keine Secrets. -->

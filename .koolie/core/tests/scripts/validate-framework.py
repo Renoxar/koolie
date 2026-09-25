@@ -760,6 +760,9 @@ except ImportError:  # pragma: no cover
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from overlay_status import (  # noqa: E402
     AKTIV, INAKTIV, UNBEKANNT, WIDERSPRUECHLICH, auswerten, status_angaben)
+# Browsersuche und Puppeteer-Konfiguration des Mermaid-Renderers teilt der Validator mit
+# dem Bau der Word-Fassung (K-145, D-398).
+import mermaid_renderer  # noqa: E402
 
 # Name des Kernverzeichnisses. Er steht hier einmal statt an drei Stellen im Skript.
 KERN = ".koolie/core"
@@ -3347,6 +3350,21 @@ def check_mermaid(root: str) -> None:
     if not mmdc:
         warn("mmdc nicht installiert – Mermaid-Syntaxprüfung übersprungen")
         return
+    # Derselbe Browser und dieselbe Konfiguration wie beim Bau (K-145, D-398): Ohne sie
+    # scheiterte der Renderer auf einem Arbeitsplatz ohne den Browser von Puppeteer an
+    # JEDEM Block, und die Pruefung meldete Diagramme als ungueltig, die der Bau renderte.
+    browser = mermaid_renderer.browserpfad()
+    if browser is None:
+        warn("kein Chromium-artiger Browser für den Mermaid-Renderer gefunden – "
+             "Mermaid-Syntaxprüfung übersprungen (Pfad über PUPPETEER_EXECUTABLE_PATH)")
+        return
+    with tempfile.TemporaryDirectory() as konf:
+        pptr = mermaid_renderer.puppeteer_konfiguration(
+            os.path.join(konf, "puppeteer-config.json"), browser)
+        _mermaid_bloecke(root, mmdc, pptr, browser)
+
+
+def _mermaid_bloecke(root: str, mmdc: str, pptr: str, browser: str) -> None:
     for path in iter_text_files(root):
         if not path.endswith(".md"):
             continue
@@ -3357,7 +3375,16 @@ def check_mermaid(root: str) -> None:
                 out = os.path.join(td, "d.svg")
                 with open(src, "w", encoding="utf-8") as fh:
                     fh.write(block)
-                res = subprocess.run([mmdc, "-i", src, "-o", out, "-q"], capture_output=True, text=True)
+                res = subprocess.run([mmdc, "-i", src, "-o", out, "-q", "-p", pptr],
+                                     capture_output=True, text=True, encoding="utf-8",
+                                     errors="replace")
+                if res.returncode != 0 and mermaid_renderer.ist_umgebungsfehler(res.stderr):
+                    # Der Renderer ist an der Umgebung gescheitert, nicht am Block - dann
+                    # scheitert er an jedem Block gleich. Eine Warnung, einmal, und keine
+                    # Aussage ueber die Diagramme (K-145, D-398).
+                    warn(f"Mermaid-Renderer startet den Browser nicht ({os.path.basename(browser)}) "
+                         f"– Mermaid-Syntaxprüfung abgebrochen, kein Block beurteilt")
+                    return
                 if res.returncode != 0:
                     # Die Fehlerausgabe des Renderers zitiert den Quelltext des Blocks. Sie
                     # hier auszugeben traegt Diagramminhalt in Terminal und Protokoll - genau

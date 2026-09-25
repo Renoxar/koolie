@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.9 |
+| Version | 0.1.10 |
 | Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
@@ -17,7 +17,7 @@ Jeder Inhalt, der dem KI-Client als Kontext bereitgestellt wird (geöffnete Date
 
 ### 1.2 Vertragliche und technische Bedingungen sind organisationsspezifisch
 
-Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung stehen in der Fähigkeitsmatrix des jeweiligen Client Packs; sie sind von außen nicht zu beobachten und bleiben als Klärungspunkt offen (`K-20`).
+Die konkreten vertraglichen und technischen Bedingungen (Auftragsverarbeitung, Verarbeitungsorte, Aufbewahrung, Training-Opt-out, Zero Data Retention, Codebasis-Indexierung) sind organisationsspezifisch und MÜSSEN vor der Einführung geprüft und im Overlay referenziert werden: `<TBD: Ergebnis der Datenschutz- und Vertragsprüfung>`. Art und Ort der Codebasis-Indexierung stehen in Zeile X2 der Fähigkeitsmatrix des jeweiligen Client Packs; wo sie von außen nicht zu beobachten sind, sagt die Zeile `BELEG OFFEN (dauerhaft)`, und die Frage bleibt als Klärungspunkt offen (`K-20`, D-397).
 
 ### 1.3 Bis zur Prüfung gilt die restriktivste Auslegung
 

@@ -23,7 +23,6 @@ Windows-Arbeitsplatz existiert beides nicht - das Werkzeug war dort nicht lauffa
 und das ist zwei Releases lang niemandem aufgefallen, weil es nie gelaufen ist.
 """
 import glob
-import json
 import os
 import re
 import shutil
@@ -36,6 +35,12 @@ IMG = os.path.join(OUT, "img")
 SRC = os.path.join(OUT, "hauptdokument.md")
 MD_DOCX = os.path.join(OUT, "hauptdokument.docx.md")
 PPTR = os.path.join(OUT, "puppeteer-config.json")
+
+# Browsersuche und Puppeteer-Konfiguration teilt dieses Werkzeug mit dem Validator
+# (`--mermaid`); bis 1.9.3 standen sie nur hier, und der Validator scheiterte ohne sie an
+# jedem Diagramm (K-145, D-398).
+sys.path.insert(0, os.path.join(ROOT, "tests", "scripts"))
+import mermaid_renderer  # noqa: E402
 
 # --- Vorbedingungen, benannt statt vermutet ---------------------------------------
 #
@@ -50,28 +55,6 @@ if fehlend:
     sys.exit("FEHLER: auf diesem Arbeitsplatz nicht gefunden: " + ", ".join(fehlend)
              + ".\n       pandoc: ueber den Paketverwalter des Arbeitsplatzes"
              + "\n       mmdc:   npm install -g @mermaid-js/mermaid-cli")
-
-
-def browserpfad() -> str | None:
-    """Ein Chromium-artiger Browser fuer den Mermaid-Renderer - oder None.
-
-    Zuerst die ausdrueckliche Angabe der Umgebung, dann die ueblichen Ablageorte. Auf
-    einem Windows-Arbeitsplatz ist Edge immer vorhanden; einen eigenen Chromium
-    herunterzuladen ist damit unnoetig.
-    """
-    gesetzt = os.environ.get("PUPPETEER_EXECUTABLE_PATH")
-    if gesetzt and os.path.exists(gesetzt):
-        return gesetzt
-    kandidaten = [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-        "/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome",
-    ]
-    for pfad in kandidaten:
-        if os.path.exists(pfad):
-            return pfad
-    return None
 
 
 def kopfangaben(text: str) -> dict:
@@ -113,13 +96,11 @@ for alt in glob.glob(os.path.join(IMG, "diagramm-*.png")) + \
         glob.glob(os.path.join(IMG, "diagramm-*.mmd")):
     os.remove(alt)
 
-browser = browserpfad()
+browser = mermaid_renderer.browserpfad()
 if browser is None:
     sys.exit("FEHLER: kein Chromium-artiger Browser gefunden. Der Mermaid-Renderer "
              "braucht einen.\n       Pfad ueber PUPPETEER_EXECUTABLE_PATH angeben.")
-with open(PPTR, "w", encoding="utf-8") as fh:
-    json.dump({"executablePath": browser,
-               "args": ["--no-sandbox", "--disable-gpu"]}, fh)
+mermaid_renderer.puppeteer_konfiguration(PPTR, browser)
 
 blocks = re.findall(r"```mermaid\n(.*?)```", text, re.S)
 print(f"Mermaid-Bloecke: {len(blocks)}")

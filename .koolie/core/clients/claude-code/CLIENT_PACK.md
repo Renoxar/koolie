@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.24.1 |
+| Version | 0.24.2 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -189,7 +189,7 @@ Eine der sechs weicht in der **Form** ab, nicht in der Tiefe – und die Abweich
 
 - **Ein Glob-Muster kann still ins Leere greifen.** Ein `[`, das sich nicht als Klammerausdruck lesen lässt (`photos [2024/**`), macht das Muster ungültig: Es trifft keine Datei, während die übrigen Muster derselben Regel weiterwirken. Die `paths`-Liste einer Regel teilt sich außerdem ein Budget von 1.000 expandierten Mustern und 4 MiB; ein Muster darüber wird unexpandiert verwendet und trifft dann ebenfalls nichts. Beides ist beim Schreiben eines Technology Packs zu beachten – die Regel meldet ihr eigenes Nichtgreifen nicht.
 
-- **Regeldateien sind nutzerlokal ausschließbar – eine Lücke in B9.** `claudeMdExcludes` in `.claude/settings.local.json` nimmt Anweisungs- und Regeldateien über ein Glob-Muster vom Laden aus; die Listen aller Ebenen werden zusammengeführt. Das ist eine **Lockerung** und damit nach der Prioritätshierarchie unzulässig, technisch aber nicht verhindert. Der KI-Client selbst kann die Datei nicht schreiben – `Edit(.claude/**)` steht in `deny` –, ein Mensch schon. Nur verwaltete Einstellungen sind gegen Ausschluss geschützt.
+- **Regeldateien sind nutzerlokal ausschließbar – eine Lücke in B9.** `claudeMdExcludes` in `.claude/settings.local.json` nimmt Anweisungs- und Regeldateien über ein Glob-Muster vom Laden aus; die Listen aller Ebenen werden zusammengeführt. **Gemessen am 2026-09-25 mit Gegenlauf** (D-397): Derselbe Eintrag wirkt aus der nutzerlokalen Datei wie aus der Berechtigungsdatei – ohne Eintrag lud die Sitzung die `CLAUDE.md` des Projekts und die eines Elternverzeichnisses, mit ihm in beiden Dateien nur die des Projekts. Das ist eine **Lockerung** und damit nach der Prioritätshierarchie unzulässig, technisch aber nicht verhindert. Der KI-Client selbst kann die Datei nicht schreiben – `Edit(.claude/**)` steht in `deny` –, ein Mensch schon. Nur verwaltete Einstellungen sind gegen Ausschluss geschützt.
 
 - **Der Schutz-Hook läuft hier fail-closed** (bei `devin-desktop` ebenfalls). Für diesen Client ist das Blockierverhalten über den Exit-Code dokumentiert und in einer Installation beobachtet (WN-5), das Eingabeschema damit bestätigt. Das Manifest führt deshalb `hook_fail_closed: true`, und die Abbildung hängt dem Kommando des durchsetzenden Hooks `--fail-closed` an: Eine Werkzeugeingabe, die der Hook nicht als JSON lesen kann, wird blockiert, statt ungeprüft durchzulaufen.
 
@@ -249,7 +249,7 @@ Was dieser Client aus Ablagen **außerhalb des Repositoriums** lädt. Solche Que
 
 | Quelle | Ladebedingung | Belegstatus | Maßnahme des Frameworks |
 |---|---|---|---|
-| `<Elternverzeichnis>\CLAUDE.md` | lädt zusätzlich zur Anweisungsdatei des Projekts, in jedes darunterliegende Projekt | **Gemessen** (K-22): Ohne Einstellung lud die Sitzung **zwei** `CLAUDE.md` – die des Projekts und eine aus einem Elternverzeichnis, die mit dem Projekt nichts zu tun hat. Die Quelle ist nicht an das Benutzerprofil gebunden; ein Elternverzeichnis genügt | keine Vorgabe (R6). `claudeMdExcludes` in der Berechtigungsdatei nimmt sie aus, wenn ein Projekt das will – **empfohlen, nicht ausgeliefert** |
+| `<Elternverzeichnis>\CLAUDE.md` | lädt zusätzlich zur Anweisungsdatei des Projekts, in jedes darunterliegende Projekt | **Gemessen** (K-22): Ohne Einstellung lud die Sitzung **zwei** `CLAUDE.md` – die des Projekts und eine aus einem Elternverzeichnis, die mit dem Projekt nichts zu tun hat. Die Quelle ist nicht an das Benutzerprofil gebunden; ein Elternverzeichnis genügt | keine Vorgabe (R6). `claudeMdExcludes` in der Berechtigungsdatei nimmt sie aus, wenn ein Projekt das will – **empfohlen, nicht ausgeliefert**; derselbe Eintrag wirkt auch nutzerlokal (Abschnitt 5, gemessen, D-397) |
 | `~\.claude\CLAUDE.md` | laut Herstellerdokumentation nutzerglobale Anweisungsdatei | **Nicht belegt.** Die Datei existiert auf der Messstation nicht; ob diese Ablage zusätzlich lädt, ist damit unbekannt – nicht verneint | keine |
 | `~\.claude\skills\` | Skill-Ablage im Benutzerprofil, lädt in jedes Projekt mit | **Gemessen am 2026-09-12** (S5): 67 Skills standen in einer Sitzung, deren Projekt keinen davon enthält. Seit 2.1.275 tritt die Kontoquelle `~/.claude/skills/synced/` hinzu, standardmäßig an (`FW-AK-01`, `K-63`) | keine; `--list-skills` sieht diese Ablagen nicht (S5). Die Kontoquelle lässt sich aus der ausgelieferten Datei nicht abschalten (X1, Abschnitt 8a) |
 

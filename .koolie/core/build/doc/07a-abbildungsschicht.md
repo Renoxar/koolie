@@ -26,9 +26,12 @@ Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine
 
 Sechs dieser Zusagen sind **Kernzusagen** (B1 bis B6) und entsprechen dem Integritätsblock der Berechtigungsdatei. Weicht eine von `[TECHNISCH]` ab, ist sie im Pack einzeln zu begründen, im Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben.
 
-Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Die Matrix des dritten Packs, `openai-codex`, steht in `.koolie/core/clients/openai-codex/CLIENT_PACK.md`. Zum Vergleich hier `claude-code` – derselbe Kern, ein anderer Client:
+Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich hier die beiden anderen Packs – derselbe Kern, andere Clients. Zuerst `claude-code`:
 
 {{EMBED-RAW:.koolie/core/clients/claude-code/CLIENT_PACK.md:1}}
+Dann `openai-codex`, dessen Belege durchweg Messungen sind (D-396):
+
+{{EMBED-RAW:.koolie/core/clients/openai-codex/CLIENT_PACK.md:1}}
 Der Vergleich der Matrizen ist die Probe aufs Exempel: `devin-desktop` und `claude-code` bilden alle sechs Kernzusagen ab – **drei davon technisch in jedem Zugriffskanal** (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess tragen sie die Regelschicht. Bei `openai-codex` sind B3 und B5 `[NICHT ABBILDBAR]`; das Pack begründet es, und ein Projekt braucht dafür eine dokumentierte Ausnahme mit Freigabe durch `<SECURITY_CONTACT>` (siehe oben).
 
 **Ein Vergleich der Gesamtzahlen trägt dagegen nicht, und das hat zwei Gründe.** Erstens sind die Matrizen unterschiedlich lang. Zweitens – und das wiegt schwerer – **messen die Zahlen Verschiedenes:** Die Belege sind auf verschiedenen Wegen gewonnen – durch Beobachtung an einer laufenden Installation, durch Messung am Client oder durch Abgleich mit der Herstellerdokumentation –, und welcher Weg für eine Zeile gilt, sagt ihre Belegspalte. Bei `claude-code` ist der Beleg überwiegend ein Dokumentenabgleich, bei `openai-codex` durchweg eine Messung. **Ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung.** Die Summen stehen in Abschnitt 3 jedes Packs; Prüfung 31 rechnet sie bei jedem Validatorlauf aus der Matrix nach.
