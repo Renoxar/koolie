@@ -27,6 +27,8 @@ Aufruf (aus dem Wurzelverzeichnis des Projekts):
     python .koolie/core/install.py                        # Erstinstallation, Standard-Client
     python .koolie/core/install.py --client <name>        # anderer Client
     python .koolie/core/install.py --list-clients         # verfuegbare Client Packs
+    python .koolie/core/install.py --overlay general      # Erstinstallation mit Overlay-Muster
+    python .koolie/core/install.py --overlay              # verfuegbare Overlay-Muster
     python .koolie/core/install.py --update               # Core aktualisieren
     python .koolie/core/install.py --check                # nur pruefen, nichts schreiben
     python .koolie/core/install.py --dry-run              # zeigen, was passieren wuerde
@@ -696,21 +698,26 @@ def copy_file(src: str, dst: str, dry: bool) -> None:
     shutil.copy2(src, dst)
 
 
-def pruefe_abbildung(root: str, man: dict) -> None:
+def pruefe_abbildung(root: str, man: dict, muster: dict | None = None) -> None:
     """Rendert jede abzubildende Quelle einmal, bevor die erste Datei geschrieben wird.
 
     D-26 verlangt, dass die Installation scheitert, wenn eine Aussage der Quelle sich
     nicht abbilden laesst. Ohne diesen Vorlauf scheiterte sie mitten im Schreiben und
     hinterliess ein halb angelegtes Projekt - gescheitert ist das eine, halb gelungen
     das andere. Der Vorlauf kostet einen zweiten Rendervorgang und keine Schreiboperation.
+
+    Mit einem Overlay-Muster laeuft der Fuellschritt hier mit: Ein Muster, dessen Anker
+    in einer der drei Saatquellen fehlt, bricht vor dem ersten Schreibvorgang ab
+    (MusterFehler) und nicht nach der Haelfte.
     """
     quellen = list(activated_pack_relpaths(root, man))
     quellen += framework_skill_files(man)
-    for schluessel in ("shared_core", "shared_seed"):
-        quellen += shared_files(man, schluessel)
+    quellen += shared_files(man, "shared_core")
     for src_rel, dst_rel in quellen:
         src = os.path.join(HERE, *src_rel.split("/"))
         render_for_client(read_text(src), man, quell_kennung(src), dst_rel)
+    for src_rel, dst_rel in shared_files(man, "shared_seed"):
+        render_mit_muster(os.path.join(HERE, *src_rel.split("/")), man, dst_rel, muster)
 
 
 def ignorierte_kerndateien(root: str) -> list[str]:
@@ -795,9 +802,191 @@ def traegt_quellrepo_kennzeichen(root: str) -> bool:
     return os.path.isfile(os.path.join(root, *QUELLREPO_KENNZEICHEN.split("/")))
 
 
-def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
+# ---------------------------------------------------------------------------
+# Overlay-Muster (--overlay <name>, D-126) und der Fuellschritt (D-353, D-355)
+# ---------------------------------------------------------------------------
+# ANLASS, UND ER IST GEMESSEN (CR-2026-136, 2.3). Ein Muster, das nur OVERLAY.md
+# vorbefuellt, erreicht die Schicht nicht, die sperrt: An einer Wegwerf-Installation
+# stand Read(<EXCLUDED_PATHS>) danach woertlich im deny-Korb, und Pruefung 59 enthielt
+# sich. Der Fuellschritt schreibt deshalb DREI Traeger aus EINER Quelle - der
+# Wertetabelle des Musters -, und zwar genau einmal, bei der Erstinstallation.
+#
+# ABGRENZUNG ZU D-76. Gelesen wird ein Traeger des KERNS, nicht des Projekts, und
+# zugesagt ist der ANFANGSZUSTAND, kein Kanal. --update liest das Muster nie.
+#
+# DIE GRENZE STEHT IM WERKZEUG, NICHT NUR IM MUSTER (CR-2026-138 E1). Ein Muster darf
+# ausschliesslich Platzhalter fuellen, deren Wert in einem deny-Eintrag steht - es
+# SPERRT, es gibt nichts frei. Fuehrt eine Wertedatei einen anderen Platzhalter, bricht
+# die Installation ab, bevor die erste Datei geschrieben ist.
+MUSTER_ABLAGE = os.path.join(HERE, "framework", "overlay-patterns")
+MUSTER_PLATZHALTER = ("<CI_CONFIG_PATHS>", "<QUALITY_GATE_CONFIG_PATHS>", "<EXCLUDED_PATHS>")
+MUSTER_QUELLE_RECHTE = "framework/runtime/permissions.json"
+MUSTER_QUELLE_LAUFZEIT = "framework/runtime/rules/20-project-overlay.md"
+MUSTER_QUELLE_OVERLAY = "templates/project-overlay/OVERLAY.md"
+MUSTER_WERTEABSCHNITT = "Die Werte"
+
+
+class MusterFehler(Exception):
+    """Ein Muster laesst sich nicht vollstaendig anwenden - die Installation bricht ab."""
+
+
+def verfuegbare_muster() -> list[str]:
+    """Die Namen der mitgelieferten Overlay-Muster (Dateiname ohne .md)."""
+    if not os.path.isdir(MUSTER_ABLAGE):
+        return []
+    return sorted(fn[:-3] for fn in os.listdir(MUSTER_ABLAGE)
+                  if fn.endswith(".md") and fn != "README.md")
+
+
+def muster_laden(name: str) -> dict:
+    """Liest Name, Version und Wertetabelle eines Musters und prueft seine Grenze.
+
+    Die Werte stehen je in einer Codespanne der Spalte "Werte"; die Zeile wird ueber
+    die Platzhalterzelle gefunden, nie ueber eine Spaltennummer - dieselbe Lesart wie
+    Pruefung 42 und 59.
+    """
+    if name not in verfuegbare_muster():
+        raise MusterFehler(f"Unbekanntes Overlay-Muster '{name}'. Verfuegbar: "
+                           f"{', '.join(verfuegbare_muster()) or 'keines'}")
+    pfad = os.path.join(MUSTER_ABLAGE, name + ".md")
+    version = None
+    werte: dict[str, list[str]] = {}
+    abschnitt = ""
+    for zeile in read_text(pfad).split("\n"):
+        if zeile.startswith("## "):
+            abschnitt = zeile[3:].strip()
+            continue
+        zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
+        if zellen and zellen[0] == "Version" and version is None and len(zellen) >= 2:
+            version = zellen[1].strip("`")
+            continue
+        # Nur die Wertetabelle zaehlt. Eine andere Tabelle derselben Datei darf einen
+        # Platzhalter in der ersten Spalte nennen - etwa den Traeger <PERMISSIONS_FILE> -,
+        # ohne dass er zum Musterwert wird (gefunden beim ersten Lauf, CR-2026-138).
+        if abschnitt != MUSTER_WERTEABSCHNITT:
+            continue
+        if len(zellen) < 2:
+            continue
+        m = re.fullmatch(r"`(<[A-Z_]+>)`", zellen[0])
+        if not m:
+            continue
+        platzhalter = m.group(1)
+        if platzhalter not in MUSTER_PLATZHALTER:
+            raise MusterFehler(
+                f"Das Muster '{name}' fuellt {platzhalter}. Ein Muster darf nur sperren: "
+                f"zulaessig sind {', '.join(MUSTER_PLATZHALTER)} (CR-2026-138 E1)")
+        liste = re.findall(r"`([^`]+)`", zellen[1])
+        if not liste or any("<" in w or ">" in w for w in liste):
+            raise MusterFehler(f"Das Muster '{name}' fuehrt fuer {platzhalter} keinen "
+                               f"gueltigen Wert: {zellen[1]}")
+        werte[platzhalter] = liste
+    if not werte or not version:
+        raise MusterFehler(f"Das Muster '{name}' traegt keine Version oder keine Werte "
+                           f"(Abschnitt '## {MUSTER_WERTEABSCHNITT}')")
+    return {"name": name, "version": version, "werte": werte}
+
+
+def muster_berechtigungen(quelltext: str, muster: dict) -> str:
+    """Die Kernquelle der Berechtigungen, jeder Schlitz des Musters je Wert entfaltet.
+
+    Entfaltet wird VOR dem Rendern, also in der neutralen Regelmenge - damit gilt fuer
+    jeden Wert dieselbe Abbildung auf das Client Pack wie fuer jede andere Regel, und
+    ein Pack, das eine Musterform nicht abbilden kann, sagt es auf demselben Weg.
+    """
+    quelle = json.loads(quelltext)
+    gefunden: set[str] = set()
+    for korb in ("deny", "ask", "allow"):
+        neu = []
+        for regel in quelle.get(korb, []):
+            platzhalter = regel.get("pattern")
+            if platzhalter in muster["werte"]:
+                if korb != "deny":
+                    raise MusterFehler(f"permissions.json fuehrt {platzhalter} im {korb}-Korb;"
+                                       f" ein Musterwert dort waere eine Freigabe")
+                gefunden.add(platzhalter)
+                for wert in muster["werte"][platzhalter]:
+                    neu.append({k: (wert if k == "pattern" else v) for k, v in regel.items()})
+            else:
+                neu.append(regel)
+        quelle[korb] = neu
+    fehlt = [p for p in muster["werte"] if p not in gefunden]
+    if fehlt:
+        raise MusterFehler(f"permissions.json fuehrt keinen Schlitz fuer {', '.join(fehlt)}")
+    return json.dumps(quelle, indent=2, ensure_ascii=False) + "\n"
+
+
+def _werte_spannen(werte: list[str]) -> str:
+    return ", ".join(f"`{w}`" for w in werte)
+
+
+def muster_laufzeitfassung(text: str, muster: dict) -> str:
+    """Setzt den Wert hinter jeden gebundenen Platzhalter der Laufzeitfassung.
+
+    Die Bindung bleibt stehen (D-160): ersetzt wird der Ausfuellschlitz HINTER
+    die Klammer mit dem Platzhalter in Codespanne, nicht der Platzhalter selbst. Die Laufzeitfassung fuehrt von den
+    drei Platzhaltern nur <EXCLUDED_PATHS>; die beiden anderen stehen nur in OVERLAY.md
+    und der Berechtigungsdatei.
+    """
+    for platzhalter, werte in muster["werte"].items():
+        anker = f"(`{platzhalter}`): "
+        if anker not in text:
+            if platzhalter == "<EXCLUDED_PATHS>":
+                raise MusterFehler(f"20-project-overlay.md bindet {platzhalter} nicht mehr "
+                                   f"in der Form {anker.strip()} - der Wert kaeme nicht an")
+            continue
+        text, n = re.subn(re.escape(anker) + r"`<TBD[^`]*>`",
+                          lambda _m: anker + _werte_spannen(werte), text, count=1)
+        if n != 1:
+            raise MusterFehler(f"20-project-overlay.md: hinter {anker.strip()} steht kein "
+                               f"Ausfuellschlitz")
+    return text
+
+
+def muster_overlay(text: str, muster: dict) -> str:
+    """Fuellt die Spalte "Wert" der drei Zeilen in Abschnitt 4 und vermerkt das Muster."""
+    zeilen = text.split("\n")
+    offen = set(muster["werte"])
+    for i, zeile in enumerate(zeilen):
+        zellen = zeile.split("|")
+        for j, zelle in enumerate(zellen[:-1]):
+            platzhalter = zelle.strip().strip("`")
+            if platzhalter in offen and zelle.strip() == f"`{platzhalter}`" \
+                    and zellen[j + 1].strip().startswith("`<TBD"):
+                zellen[j + 1] = f" {_werte_spannen(muster['werte'][platzhalter])} "
+                zeilen[i] = "|".join(zellen)
+                offen.discard(platzhalter)
+                break
+    if offen:
+        raise MusterFehler(f"OVERLAY.md: keine Wertzeile mit Ausfuellschlitz fuer "
+                           f"{', '.join(sorted(offen))}")
+    text = "\n".join(zeilen)
+    alt = "| Overlay angelegt |"
+    if alt not in text:
+        raise MusterFehler("OVERLAY.md: die Zeile 'Overlay angelegt' im Aenderungsverlauf "
+                           "fehlt - der Vermerk des Musters haette keinen Ort")
+    return text.replace(alt, f"| Overlay angelegt aus dem Muster `{muster['name']}` "
+                             f"`{muster['version']}` – vorbefüllt: "
+                             f"{', '.join(f'`{p}`' for p in muster['werte'])} |", 1)
+
+
+def render_mit_muster(src: str, man: dict, dst_rel: str, muster: dict | None) -> str:
+    """render_for_client, dazu der Fuellschritt fuer die drei Saattraeger."""
+    kennung = quell_kennung(src)
+    quelle = read_text(src)
+    if muster and kennung == MUSTER_QUELLE_RECHTE:
+        quelle = muster_berechtigungen(quelle, muster)
+    text = render_for_client(quelle, man, kennung, dst_rel)
+    if muster and kennung == MUSTER_QUELLE_LAUFZEIT:
+        text = muster_laufzeitfassung(text, muster)
+    if muster and kennung == MUSTER_QUELLE_OVERLAY:
+        text = muster_overlay(text, muster)
+    return text
+
+
+def run(root: str, template: str, man: dict, mode: str, dry: bool,
+        muster: dict | None = None) -> Report:
     rep = Report()
-    pruefe_abbildung(root, man)
+    pruefe_abbildung(root, man, muster)
 
     for rel in core_relpaths(template, man):
         src = os.path.join(template, rel)
@@ -880,7 +1069,8 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
             copy_file(src, dst, dry)
             rep.created.append(rel)
 
-    # Geteilte Saat aus dem Kern: einmal angelegt, danach Eigentum des Projekts.
+    # Geteilte Saat aus dem Kern: einmal angelegt, danach Eigentum des Projekts. Mit
+    # einem Overlay-Muster fuellt dieser Schritt die Schlitze des Musters (D-355).
     for src_rel, dst_rel in shared_files(man, "shared_seed"):
         src = os.path.join(HERE, *src_rel.split("/"))
         dst = os.path.join(root, *dst_rel.split("/"))
@@ -889,7 +1079,11 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool) -> Report:
         elif mode == "check":
             rep.missing.append(dst_rel)
         else:
-            write_rendered(src, dst, man, dry, dst_rel)
+            if not dry:
+                text = render_mit_muster(src, man, dst_rel, muster)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                with open(dst, "w", encoding="utf-8", newline="\n") as fh:
+                    fh.write(text)
             rep.created.append(dst_rel)
 
     return rep
@@ -1083,9 +1277,30 @@ def main() -> int:
                     help="Verfuegbare Client Packs auflisten und beenden")
     ap.add_argument("--list-skills", action="store_true",
                     help="Skills dieser Installation auflisten: Name, Herkunft, Aufrufbarkeit, Pfad")
+    ap.add_argument("--overlay", nargs="?", const="", default=None, metavar="NAME",
+                    help="Nur bei der Erstinstallation: ein mitgeliefertes Overlay-Muster statt "
+                         "des leeren Overlays (D-126). Ohne NAME: verfuegbare Muster auflisten")
     args = ap.parse_args()
 
     clients = available_clients()
+
+    if args.overlay == "":
+        muster_namen = verfuegbare_muster()
+        if not muster_namen:
+            print(f"Keine Overlay-Muster unter {MUSTER_ABLAGE} gefunden.")
+            return 1
+        print("Verfuegbare Overlay-Muster (nur bei der Erstinstallation, --overlay <name>):")
+        for name in muster_namen:
+            try:
+                m = muster_laden(name)
+            except MusterFehler as exc:
+                print(f"  {name}  (nicht verwendbar: {exc})")
+                continue
+            print(f"  {name}  {m['version']}  - fuellt {', '.join(m['werte'])}")
+        print()
+        print("Ohne --overlay beginnt das Projekt mit dem leeren Overlay. Was ein Muster")
+        print("fuellt und was nicht, steht in .koolie/core/framework/overlay-patterns/<name>.md.")
+        return 0
 
     if args.list_clients:
         if not clients:
@@ -1148,6 +1363,35 @@ def main() -> int:
 
     mode = "check" if args.check else ("update" if args.update else "install")
 
+    muster = None
+    if args.overlay:
+        # Ein Muster ist ein Anfangszustand, kein Kanal (D-76, D-355): Es wirkt nur, wo
+        # die Saat noch nicht liegt. Wer es bei --update erwartet, erwartet einen
+        # Fuellschritt ueber Projektwerte - und genau den gibt es nicht.
+        if mode != "install":
+            print(f"FEHLER: --overlay gilt nur bei der Erstinstallation, nicht mit "
+                  f"--{mode}. Die Saat gehoert nach der Erstinstallation dem Projekt "
+                  f"(D-76).", file=sys.stderr)
+            return 1
+        try:
+            muster = muster_laden(args.overlay)
+        except MusterFehler as exc:
+            print(f"FEHLER: {exc}", file=sys.stderr)
+            return 1
+        vorhanden = [dst_rel for _src, dst_rel in shared_files(man, "shared_seed")
+                     if os.path.exists(os.path.join(root, *dst_rel.split("/")))]
+        if vorhanden:
+            print(f"FEHLER: --overlay {args.overlay} fuellt die Saat bei der "
+                  f"Erstinstallation - hier liegt sie schon ({len(vorhanden)} Datei(en)):",
+                  file=sys.stderr)
+            for rel in vorhanden[:6]:
+                print(f"  {rel}", file=sys.stderr)
+            print("Vorhandene Saat gehoert dem Projekt und wird nie ueberschrieben. Werte "
+                  "aus dem Muster von Hand uebernehmen:", file=sys.stderr)
+            print(f"  .koolie/core/framework/overlay-patterns/{args.overlay}.md",
+                  file=sys.stderr)
+            return 1
+
     if mode == "install":
         # Vor dem ersten Schreibvorgang, nicht waehrenddessen: Ein Abbruch nach der
         # Haelfte der Dateien waere schlimmer als keiner.
@@ -1177,10 +1421,17 @@ def main() -> int:
     print(f"Vorlage: {os.path.relpath(template, root) if root in template else template}")
     print(f"Ziel:    {root}")
     print(f"Modus:   {mode}{'  (dry-run, es wird nichts geschrieben)' if args.dry_run else ''}")
+    if muster:
+        print(f"Overlay: Muster {muster['name']} {muster['version']}")
     print()
 
     try:
-        rep = run(root, template, man, mode, args.dry_run)
+        rep = run(root, template, man, mode, args.dry_run, muster)
+    except MusterFehler as exc:
+        print(f"FEHLER: Das Overlay-Muster laesst sich nicht vollstaendig anwenden; es "
+              f"wurde nichts geschrieben.", file=sys.stderr)
+        print(f"  {exc}", file=sys.stderr)
+        return 1
     except clientmap.AbbildungsFehler as exc:
         # D-26/D-27: Eine Aussage der Quelle, die dieser Client nicht tragen kann, wird
         # abgebildet oder die Installation scheitert. Sie stillschweigend wegzulassen
@@ -1232,6 +1483,11 @@ def main() -> int:
         print()
         print("Naechste Schritte:")
         print("  1. .koolie/project-overlay/OVERLAY.md ausfuellen (Platzhalter und <TBD>-Felder).")
+        if muster:
+            print(f"     Vorbefuellt aus dem Muster {muster['name']}: "
+                  f"{', '.join(muster['werte'])} - in allen drei Traegern.")
+            print("     Die Werte sind Vorschlaege: pruefen, anpassen, und eine Aenderung in")
+            print(f"     OVERLAY.md, der Laufzeitfassung und {man['permissions_file']} nachziehen.")
         print(f"  2. Werte in {man['permissions_file']} eintragen - die Kernregeln unter")
         print("     _core_rules_integrity nicht entfernen.")
         print("  3. .koolie/project-overlay/forbidden-terms.txt mit den realen Projekt- und")

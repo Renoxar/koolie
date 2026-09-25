@@ -2,6 +2,100 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.5.0] - 2026-09-25
+
+**Das Overlay-Muster "General Development" - und die Pruefung, die von fuenf
+Pfadwerten einen sah** (`CR-2026-138` E1 bis E9, **D-355** bis **D-358**, **Pruefung 89**
+neu, `K-69` beantwortet). Ein MINOR-Release ohne Kontingent.
+
+> 🟢 **`install.py --overlay general` FUELLT DREI PFADPLATZHALTER - EINMAL, IN ALLEN DREI
+> TRAEGERN, AUS EINER TABELLE.** `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>` und
+> `<EXCLUDED_PATHS>` stehen danach in `OVERLAY.md`, in der Laufzeitfassung und im
+> `deny`-Korb der Berechtigungsdatei; keiner der drei Schlitze bleibt woertlich stehen,
+> und Pruefung 59 schweigt. Gemessen an Wegwerf-Installationen aller drei Packs.
+>
+> 🔴 **DAS MUSTER SPERRT, ES GIBT NICHTS FREI - UND DIE GRENZE STEHT IM WERKZEUG.** Eine
+> Wertedatei, die einen anderen Platzhalter fuellen will, bricht die Installation ab,
+> bevor die erste Datei geschrieben ist. Der Waechter hat beim ersten eigenen Lauf
+> angeschlagen: an der zweiten Tabelle der Musterdatei, die `<PERMISSIONS_FILE>` als
+> Traegernamen fuehrt. Gelesen wird seither nur der Abschnitt *"Die Werte"*.
+>
+> 🔴 **PRUEFUNG 89 HAT IHREN ERSTEN BEFUND IM UEBUNGSREPOSITORIUM GELIEFERT.** Dessen
+> Laufzeitfassung **ersetzte** die Werte von `<ALLOWED_PATHS>`, `<TEST_PATHS>`,
+> `<DOC_PATHS>` und `<READ_ONLY_PATHS>`, statt die Platzhalter zu binden (D-160) - vier
+> Werte, gegen die nichts gehalten wurde. Der Pilot band alle vier und besteht.
+>
+> 🔴 **NEBENBEFUND: PRUEFUNG 59 UEBERSPRANG IHREN DRITTEN GEGENSTAND BEI `openai-codex`
+> STILL.** `<EXCLUDED_PATHS>` gefuellt, keine Sperre in `.codex/config.toml`, keine
+> Meldung - der Abgleich mit dem `deny`-Korb kehrte an `json.loads` zurueck, und die
+> Pruefung stand nicht unter den formatgebundenen. Pruefung 87 haelt die Liste gegen das
+> Pack, nicht gegen den Code.
+
+**Hinzugefuegt**
+
+- `framework/overlay-patterns/general.md` (`0.1.0`, `pilot`, Owner `<FRAMEWORK_OWNER>`):
+  das Muster als **Wertedatei** mit Steckbrief - keine Kopie der Overlay-Vorlage. Es
+  nennt je Wert, warum er ohne Kenntnis des Projekts sicher ist, und was es bewusst
+  nicht fuellt (D-355).
+- `install.py`: **`--overlay <name>`** (D-126), nur bei der Erstinstallation;
+  `--overlay` ohne Namen zaehlt die Muster auf. Der **Fuellschritt** entfaltet jeden
+  Schlitz der Kernquelle je Wert **vor** dem Rendern - dieselbe Abbildung auf das Pack
+  wie fuer jede andere Regel -, setzt den Wert hinter die Bindung in der
+  Laufzeitfassung und in die Spalte *Wert* von `OVERLAY.md` und vermerkt das Muster im
+  Aenderungsverlauf. Fehlt ein Anker, bricht die Installation im Vorlauf ab. Abbruch
+  auch bei vorhandener Saat, bei `--update` und bei einem unbekannten Namen.
+- `framework/runtime/permissions.json`: Schlitz **`write <READ_ONLY_PATHS>`** im
+  `deny`-Korb, ohne Kernzusage (D-356). Beide uebernehmenden Projekte trugen diese
+  Sperre bisher von Hand.
+- **Pruefung 89** (D-357, `K-69`): unter `--strict-overlay` fuer die vier uebrigen
+  Pfadplatzhalter dieselben drei Gegenstaende wie Pruefung 59 - die Laufzeitfassung
+  nennt den Platzhalter, ihr Wert ist die Menge der Quelle, jeder Nur-Lese-Pfad hat eine
+  Schreibsperre im `deny`-Korb. *Kein Wert* hat zwei gemessene Schreibweisen
+  (`nicht vorhanden`, `keine`) und ist die leere Menge. Ein Overlay, das anders bindet,
+  bekommt eine eigene Meldung.
+- Sondenbuendel `sonden_overlay_pfadabgleich` (**89** und **89k** Gegenproben,
+  **89a** bis **89d** Sonden) und `sonden_overlay_muster` (**M355** bis **M355e**).
+  Gegenbeweis: mit dem Validator aus `1.4.4` fallen `89a` bis `89d` einzeln, die
+  Gegenproben laufen durch.
+- `docs/ROADMAP.md`: ein eigener Planabschnitt fuer `1.6.0` mit der Vorgabe des Owners -
+  ein Installer **je Zielsystem**, im Fokus Windows und macOS - und der offenen Frage,
+  ob der Zielrechner Python voraussetzen darf. Gefunden hat die Luecke Pruefung 85.
+
+**Geaendert**
+
+- `FORMATGEBUNDENE_PRUEFUNGEN` nennt Gegenstand (c) der Pruefungen 59 und 89;
+  `clients/openai-codex/CLIENT_PACK.md` Abschnitt 5 nennt beide (D-358).
+- `templates/project-overlay/OVERLAY.md`: Abschnitt 4 nennt Pruefung 89 und den neuen
+  Schlitz. 🔴 **Berichtigt:** Der Absatz zum Wirkungsort sagte, der Inhalt der
+  Pfadlisten werde *"mit keinem Overlaytext verglichen"* - fuer `<EXCLUDED_PATHS>` war
+  das seit Pruefung 59 (0.65.0) falsch.
+- `docs/ADOPTION_GUIDE.md` (`0.4.7`) und `README.md`: `--overlay general` an der
+  Erstinstallation, mit Grenze und Abbruchfaellen.
+
+**Migrationshinweise fuer Overlays**
+
+- 🔴 **Pruefung 89 ist neu und meldet unter `--strict-overlay` als Fehler**, wenn die
+  Laufzeitfassung einen der vier Pfadplatzhalter `<ALLOWED_PATHS>`, `<TEST_PATHS>`,
+  `<DOC_PATHS>`, `<READ_ONLY_PATHS>` nicht **nennt** oder einen anderen Wert traegt als
+  Abschnitt 4 von `OVERLAY.md`. Abhilfe: die Zeile der Laufzeitfassung in der Form der
+  Vorlage schreiben - `Erlaubte Pfade (`<ALLOWED_PATHS>`): `src/**`` - statt nur den
+  Wert. Dazu verlangt sie fuer jeden Nur-Lese-Pfad eine Schreibsperre im `deny`-Korb.
+- Der neue Schlitz `write <READ_ONLY_PATHS>` erreicht bestehende Projekte **nicht** -
+  die Berechtigungsdatei ist Saat. Wer die Schreibsperre schon von Hand fuehrt, muss
+  nichts tun.
+- Das Overlay-Muster wirkt nur bei einer Erstinstallation; kein bestehendes Projekt ist
+  betroffen.
+
+**Bekannte Einschraenkungen**
+
+- Bei `openai-codex` erreichen Namensmuster mit `*` (`**/*.tfstate`, `.eslintrc*`) die
+  Berechtigungsdatei nicht; Teilbaeume und einzelne Dateinamen schon. Gegenstand (c) der
+  Pruefungen 59 und 89 laeuft dort nicht.
+- Der Fuellschritt haengt an der Form der Wertzeilen in `OVERLAY.md` und der Bindung in
+  der Laufzeitfassung; aendert sich eine Vorlage, bricht er ab statt still zu fuellen.
+- Ob eine weitere Pruefung still an der Ausgabeform scheitert, ohne sich auf
+  `FORMATGEBUNDENE_PRUEFUNGEN` zu berufen, sagt keine Stelle.
+
 ## [1.4.4] - 2026-09-24
 
 **Der Kopierweg des Kerns - und das Archiv, aus dem er als sicher galt**

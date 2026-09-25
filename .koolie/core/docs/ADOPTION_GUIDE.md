@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.6` |
+| Version | `0.4.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -79,7 +79,21 @@ bleibt unberührt (P10, Baum 6).
    cd /pfad/zum/projekt
    python .koolie/core/install.py --list-clients
    python .koolie/core/install.py --client <client>
+   # oder, mit einem vorbefüllten Overlay-Muster (nur bei der Erstinstallation):
+   python .koolie/core/install.py --client <client> --overlay general
    ```
+
+   **Das Overlay-Muster `general` ist wählbar, nicht Standard** (D-126, D-355). Ohne
+   `--overlay` beginnt das Projekt mit dem leeren Overlay wie bisher. Mit ihm füllt
+   `install.py` drei Pfadplatzhalter, deren Wert sich ohne Kenntnis des Projekts sicher
+   angeben läßt – `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>` und
+   `<EXCLUDED_PATHS>` –, und zwar **einmal** und in **allen drei** Trägern: Overlay,
+   Laufzeitfassung und Berechtigungsdatei. **Das Muster sperrt, es gibt nichts frei:**
+   Erlaubte Pfade, Befehle, Rollen und Freigaben bleiben Schlitze, und ein Overlay aus dem
+   Muster ist **nicht** aktivierungsreif. Was es füllt und warum, steht in
+   `.koolie/core/framework/overlay-patterns/general.md`; `--overlay` ohne Namen zählt die
+   Muster auf. ⚠️ **Liegt die Saat schon, bricht `--overlay` ab** – vorhandene Saat gehört
+   dem Projekt, und mit `--update` gibt es das Muster nicht.
 
    Das Skript legt die Wurzel-Anweisungsdatei, ihre `.example`-Vorlage für nutzerlokale
    Ergänzungen, die Laufzeitschicht und – sofern noch nicht vorhanden – `.koolie/project-overlay/`

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 88, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 89, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
-Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien) und fuer den Praeparationswaechter dieses
+Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
+Overlay-Muster) und fuer den Praeparationswaechter dieses
 Skripts selbst.
 
 Die Aufzaehlung der Pruefungen steht hier in der Schreibweise, die Pruefung 40 aus den
@@ -6124,6 +6125,297 @@ def sonden_overlay_wertabgleich() -> None:
 buendel(sonden_overlay_wertabgleich,
         "Pruefung 59 an einer gefuellten claude-code-Installation: Bindung, Wert und "
         "deny-Korb je eigens gemessen, dazu die Gegenprobe des nachgezogenen Baums")
+
+
+# --- Pruefung 89: die uebrigen Pfadplatzhalter (K-69, D-357) ----------------------
+#
+# Dieselbe Bauform wie das Buendel zu 59: eine GEFUELLTE claude-code-Installation, je
+# Gegenstand eine Sonde, und die Gegenprobe des vollstaendig nachgezogenen Baums ist der
+# eigentliche Nachweis. Jede Einheit baut die drei Traeger aus dem UNBERUEHRTEN Stand
+# neu auf (_89_URSTAND) - ein Baum, der mehrere Laeufe traegt, ist nach dem ersten
+# Schreiblauf nicht mehr der Ausgangszustand (dieselbe Falle wie 59c am 2026-09-18).
+#   89   (Gegenprobe) - alle vier Werte in Quelle, Laufzeitfassung und Korb gleich
+#   89k  (Gegenprobe) - "kein Wert" in zwei Schreibweisen: `nicht vorhanden` in der
+#                       Quelle, `keine` in der Laufzeitfassung - gemessen am Piloten
+#   89a  (Sonde)      - die Laufzeitfassung ersetzt <ALLOWED_PATHS>, statt zu binden
+#   89b  (Sonde)      - <TEST_PATHS> traegt in der Laufzeitfassung einen anderen Wert
+#   89c  (Sonde)      - ein Nur-Lese-Pfad fehlt im deny-Korb
+#   89d  (Sonde)      - die Quelle bindet <DOC_PATHS> nicht in der dreispaltigen Zeile
+M89_BINDUNG = "nennt <ALLOWED_PATHS> nicht"
+M89_WERT = "der Wert von <TEST_PATHS> weicht vom Quell-Overlay ab"
+M89_KORB = "hat keine Regel Edit(api-contracts/**)"
+M89_QUELLE = "keine Zeile mit der Platzhalterzelle `<DOC_PATHS>`"
+M89_ALLE = ("nennt <", "weicht vom Quell-Overlay ab", "Nur-Lese-Pfad",
+            "keine Zeile mit der Platzhalterzelle")
+P89_WERTE = {"<ALLOWED_PATHS>": ["src/**", "test/**", "docs/**"],
+             "<TEST_PATHS>": ["test/**"],
+             "<DOC_PATHS>": ["docs/**"],
+             "<READ_ONLY_PATHS>": ["api-contracts/**", "db/migrations/**"]}
+_89_URSTAND: dict = {}
+
+
+def _89_pfade(root: str) -> tuple:
+    return (os.path.join(root, ".koolie/project-overlay", "OVERLAY.md"),
+            os.path.join(root, ".claude", "rules", "20-project-overlay.md"),
+            os.path.join(root, ".claude", "settings.json"))
+
+
+def _89_fuellen(root: str, quelle: dict, laufzeit: dict, korb: list) -> None:
+    """Quelle, Laufzeitfassung und deny-Korb aus dem Urstand auf die Werte stellen.
+
+    quelle und laufzeit bilden den Platzhalter auf den eingesetzten TEXT ab (fertig mit
+    Codespannen); korb nennt die Nur-Lese-Globs, die eine Schreibsperre bekommen. Jeder
+    Ausfuellschlitz muss genau einmal getroffen werden, sonst bricht die Praeparation ab.
+    """
+    for pfad in _89_pfade(root):
+        _89_URSTAND.setdefault(pfad, lies(pfad))
+    q_pfad, l_pfad, k_pfad = _89_pfade(root)
+    text = _89_URSTAND[q_pfad]
+    for platzhalter, ersatz in quelle.items():
+        text, n = re.subn(r"(\| `%s` \| )`<TBD[^`]*>`" % re.escape(platzhalter),
+                          lambda m: m.group(1) + ersatz, text)
+        if n != 1:
+            raise Praeparationsfehler("OVERLAY.md: Wertzeile von %s %dx statt 1x"
+                                      % (platzhalter, n))
+    schreib(q_pfad, text)
+    text = _89_URSTAND[l_pfad]
+    for platzhalter, ersatz in laufzeit.items():
+        text, n = re.subn(r"(\(`%s`\): )`<TBD[^`]*>`" % re.escape(platzhalter),
+                          lambda m: m.group(1) + ersatz, text)
+        if n != 1:
+            raise Praeparationsfehler("20-project-overlay.md: Schlitz von %s %dx statt 1x"
+                                      % (platzhalter, n))
+    schreib(l_pfad, text)
+    cfg = json.loads(_89_URSTAND[k_pfad])
+    deny = [r for r in cfg["permissions"]["deny"] if "<READ_ONLY_PATHS>" not in r]
+    if len(deny) != len(cfg["permissions"]["deny"]) - 1:
+        raise Praeparationsfehler("settings.json: der Schlitz Edit(<READ_ONLY_PATHS>) steht "
+                                  "nicht genau einmal im deny-Korb (D-356)")
+    cfg["permissions"]["deny"] = deny + ["Edit(%s)" % g for g in korb]
+    schreib(k_pfad, json.dumps(cfg, ensure_ascii=False, indent=2))
+
+
+def _89_spannen(werte: list) -> str:
+    return ", ".join("`%s`" % w for w in werte)
+
+
+def _89_voll() -> tuple:
+    werte = {p: _89_spannen(w) for p, w in P89_WERTE.items()}
+    return werte, dict(werte), list(P89_WERTE["<READ_ONLY_PATHS>"])
+
+
+def sonden_overlay_pfadabgleich() -> None:
+    """Wirkungsnachweis fuer Pruefung 89 an einer gefuellten claude-code-Installation."""
+    root = installation("claude-code")
+    try:
+        # --- Gegenprobe 89: alle drei Schichten tragen dieselben vier Werte ---------
+        _89_fuellen(root, *_89_voll())
+        aus = strict_ausgabe(root)
+        treffer = [m for m in M89_ALLE if m in aus]
+        melde("GEGENPROBE", "89", not treffer,
+              "Ein vollstaendig nachgezogener Baum bleibt unbeanstandet - vier Werte in "
+              "Quelle, Laufzeitfassung und deny-Korb gleich")
+        if treffer:
+            notiz("        gemeldet: %s" % ", ".join(treffer))
+
+        # --- Gegenprobe 89k: zwei Schreibweisen fuer "kein Wert" -------------------
+        quelle, laufzeit, korb = _89_voll()
+        quelle["<DOC_PATHS>"] = "`nicht vorhanden`"
+        laufzeit["<DOC_PATHS>"] = "keine"
+        _89_fuellen(root, quelle, laufzeit, korb)
+        melde("GEGENPROBE", "89k", "<DOC_PATHS>" not in strict_ausgabe(root),
+              "Kein Wert in zwei Schreibweisen - nicht vorhanden in der Quelle, keine in "
+              "der Laufzeitfassung - ist dieselbe leere Menge")
+
+        # --- Sonde 89a: die Laufzeitfassung ersetzt statt zu binden -----------------
+        _89_fuellen(root, *_89_voll())
+        _, l_pfad, _ = _89_pfade(root)
+        schreib(l_pfad, ersetzt(lies(l_pfad), (" (`<ALLOWED_PATHS>`)", ""),
+                                quelle="20-project-overlay.md"))
+        melde("SONDE", "89a", M89_BINDUNG in strict_ausgabe(root),
+              "Die Laufzeitfassung setzt die erlaubten Pfade ein, statt den Platzhalter zu "
+              "binden - ihr Wert ist dann gegen nichts mehr gehalten")
+
+        # --- Sonde 89b: ein anderer Wert in der Laufzeitfassung --------------------
+        quelle, laufzeit, korb = _89_voll()
+        laufzeit["<TEST_PATHS>"] = "`test/**`, `src/**`"
+        _89_fuellen(root, quelle, laufzeit, korb)
+        melde("SONDE", "89b", M89_WERT in strict_ausgabe(root),
+              "Die Laufzeitfassung erlaubt Schreiben in M4 auf einem Pfad, den die Quelle "
+              "nicht nennt - genau die Drift aus K-69")
+
+        # --- Sonde 89c: ein Nur-Lese-Pfad ohne Schreibsperre -----------------------
+        quelle, laufzeit, _ = _89_voll()
+        _89_fuellen(root, quelle, laufzeit, ["db/migrations/**"])
+        melde("SONDE", "89c", M89_KORB in strict_ausgabe(root),
+              "Ein Nur-Lese-Pfad der Quelle hat keine Schreibsperre im deny-Korb - der "
+              "Integritaetsschutz steht nur im Overlay")
+
+        # --- Sonde 89d: die Quelle bindet anders ------------------------------------
+        _89_fuellen(root, *_89_voll())
+        q_pfad, _, _ = _89_pfade(root)
+        schreib(q_pfad, ersetzt(lies(q_pfad), ("| `<DOC_PATHS>` |", "| DOC_PATHS |"),
+                                quelle="OVERLAY.md"))
+        melde("SONDE", "89d", M89_QUELLE in strict_ausgabe(root),
+              "Ein Overlay, das einen Pfadplatzhalter nicht in der dreispaltigen Zeile "
+              "bindet, wird gemeldet und nicht still uebergangen")
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_overlay_pfadabgleich,
+        "Pruefung 89 an einer gefuellten claude-code-Installation: Bindung, Wert, deny-Korb "
+        "und Lesbarkeit der Quelle, dazu zwei Gegenproben")
+
+
+# --- D-355: das Overlay-Muster und der Fuellschritt --------------------------------
+#
+# ANLASS (CR-2026-136, 2.3; CR-2026-138). Ein Muster, das nur OVERLAY.md vorbefuellt,
+# sperrt nichts: Read(<EXCLUDED_PATHS>) stand danach woertlich im deny-Korb. Diese
+# Einheiten messen den Fuellschritt an einer echten Erstinstallation - und die vier
+# Stellen, an denen er sich verweigern MUSS.
+#   M355  (Sonde)      - --overlay general fuellt Overlay, Laufzeitfassung und deny-Korb
+#                        aus derselben Tabelle; Pruefung 59 schweigt. Gegen install.py
+#                        aus 1.4.4 faellt sie (die Option gibt es dort nicht)
+#   M355a (Gegenprobe) - ohne --overlay bleibt alles wie vorher: der Schlitz steht
+#                        woertlich im Korb, dazu seit D-356 der Nur-Lese-Schlitz
+#   M355b (Sonde)      - ein Overlay aus dem Muster ist NICHT aktivierungsreif (D-57)
+#   M355c (Sonde)      - vorhandene Saat: Abbruch, nichts ueberschrieben
+#   M355d (Sonde)      - ein Muster, das einen freigebenden Platzhalter fuellt: Abbruch
+#                        vor dem ersten Schreibvorgang
+#   M355e (Sonde)      - --overlay mit --update und ein unbekannter Name: Abbruch
+M355_MUSTER = os.path.join(".koolie", "core", "framework", "overlay-patterns", "general.md")
+M355_59 = ("nennt <EXCLUDED_PATHS> nicht", "weichen vom Quell-Overlay ab",
+           "der ausgeschlossene Pfad")
+
+
+def _355_install(ziel: str, *argumente) -> subprocess.CompletedProcess:
+    return unterprozess([sys.executable, os.path.join(QUELLE, ".koolie/core", "install.py"),
+                         "--client", "claude-code", "--root", ziel] + list(argumente))
+
+
+def _355_werte() -> dict:
+    """Die Werte des Musters, gelesen mit dem Werkzeug selbst - nicht nachgepflegt."""
+    sys.path.insert(0, os.path.join(QUELLE, ".koolie", "core"))
+    try:
+        import install as _install  # noqa: E402
+        return _install.muster_laden("general")["werte"]
+    finally:
+        sys.path.pop(0)
+
+
+def sonden_overlay_muster() -> None:
+    """Wirkungsnachweis fuer --overlay general und seine vier Verweigerungen."""
+    basis = tempfile.mkdtemp(prefix="lw-muster-")
+    try:
+        werte = _355_werte()
+        # --- M355: die Fuellung ---------------------------------------------------
+        root = os.path.join(basis, "mit")
+        os.makedirs(root)
+        p = _355_install(root, "--overlay", "general")
+        deny = json.loads(lies(os.path.join(root, ".claude", "settings.json")))[
+            "permissions"]["deny"]
+        fehlt = []
+        for platzhalter, liste in werte.items():
+            if any(platzhalter in r for r in deny):
+                fehlt.append("%s noch als Schlitz" % platzhalter)
+            for w in liste:
+                if not any(r in deny for r in ("Edit(%s)" % w, "Edit(./%s)" % w)):
+                    fehlt.append("Edit(%s)" % w)
+        for w in werte["<EXCLUDED_PATHS>"]:
+            if "Read(%s)" % w not in deny and "Read(./%s)" % w not in deny:
+                fehlt.append("Read(%s)" % w)
+        laufzeit = lies(os.path.join(root, ".claude", "rules", "20-project-overlay.md"))
+        if "(`<EXCLUDED_PATHS>`): " + ", ".join(
+                "`%s`" % w for w in werte["<EXCLUDED_PATHS>"]) not in laufzeit:
+            fehlt.append("Laufzeitfassung")
+        overlay = lies(os.path.join(root, ".koolie", "project-overlay", "OVERLAY.md"))
+        for platzhalter, liste in werte.items():
+            if "| `%s` | %s |" % (platzhalter, ", ".join("`%s`" % w for w in liste)) \
+                    not in overlay:
+                fehlt.append("OVERLAY.md %s" % platzhalter)
+        if "Overlay angelegt aus dem Muster `general`" not in overlay:
+            fehlt.append("Aenderungsverlauf")
+        shutil.copytree(os.path.join(QUELLE, ".koolie/core"),
+                        os.path.join(root, ".koolie/core"),
+                        ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
+        aus59 = [m for m in M355_59 if m in strict_ausgabe(root)]
+        melde("SONDE", "M355", p.returncode == 0 and not fehlt and not aus59,
+              "Das Muster fuellt Overlay, Laufzeitfassung und deny-Korb aus einer Tabelle, "
+              "und Pruefung 59 findet keine Abweichung")
+        if p.returncode != 0 or fehlt or aus59:
+            notiz("        Exit %d; fehlt: %s; Pruefung 59: %s"
+                  % (p.returncode, ", ".join(fehlt) or "nichts", ", ".join(aus59) or "still"))
+
+        # --- M355b: nicht aktivierungsreif -----------------------------------------
+        q = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                          "--root", root, "--check-overlay-ready"])
+        reif = (q.stdout or "") + (q.stderr or "")
+        melde("SONDE", "M355b", q.returncode != 0 and "offene <TBD>-Werte" in reif,
+              "Ein Overlay aus dem Muster besteht die Pruefung der Aktivierungsreife nicht - "
+              "es laesst die Pflichtwerte offen (D-57)")
+
+        # --- M355c: vorhandene Saat -------------------------------------------------
+        vorher = lies(os.path.join(root, ".claude", "settings.json"))
+        c = _355_install(root, "--overlay", "general")
+        melde("SONDE", "M355c", c.returncode == 1 and "hier liegt sie schon" in
+              (c.stderr or "") and lies(os.path.join(root, ".claude", "settings.json"))
+              == vorher,
+              "Liegt die Saat schon, bricht das Muster ab und ueberschreibt nichts - "
+              "vorhandene Saat gehoert dem Projekt")
+
+        # --- M355e: --update und unbekannter Name ----------------------------------
+        u = _355_install(root, "--overlay", "general", "--update")
+        leer = os.path.join(basis, "unbekannt")
+        os.makedirs(leer)
+        n = _355_install(leer, "--overlay", "gibt-es-nicht")
+        melde("SONDE", "M355e", u.returncode == 1 and "nur bei der Erstinstallation"
+              in (u.stderr or "") and n.returncode == 1 and not os.listdir(leer),
+              "Das Muster verweigert sich bei --update und bei einem unbekannten Namen, "
+              "ohne eine Datei zu schreiben")
+
+        # --- M355a: ohne --overlay unveraendert -------------------------------------
+        ohne = os.path.join(basis, "ohne")
+        os.makedirs(ohne)
+        o = _355_install(ohne)
+        deny = json.loads(lies(os.path.join(ohne, ".claude", "settings.json")))[
+            "permissions"]["deny"]
+        erwartet = ["Read(<EXCLUDED_PATHS>)", "Edit(<CI_CONFIG_PATHS>)",
+                    "Edit(<QUALITY_GATE_CONFIG_PATHS>)", "Edit(<READ_ONLY_PATHS>)"]
+        melde("GEGENPROBE", "M355a", o.returncode == 0 and all(r in deny for r in erwartet),
+              "Ohne Muster bleibt jeder Pfadschlitz woertlich stehen, dazu der Schlitz fuer "
+              "die Nur-Lese-Pfade aus D-356")
+
+        # --- M355d: ein Muster, das freigibt ----------------------------------------
+        # Gemessen am eigenen Werkzeug einer Kopie: Deren install.py liest das Muster
+        # aus IHREM Kern - die Quelle bleibt unberuehrt.
+        kopie_kern = os.path.join(basis, "kern", ".koolie", "core")
+        shutil.copytree(os.path.join(QUELLE, ".koolie/core"), kopie_kern,
+                        ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
+        muster = os.path.join(basis, "kern", M355_MUSTER)
+        text = lies(muster)
+        anker = "| `<EXCLUDED_PATHS>` |"
+        if text.count(anker) != 1:
+            raise Praeparationsfehler("general.md: Zeile %s %dx statt 1x"
+                                      % (anker, text.count(anker)))
+        schreib(muster, text.replace(anker, "| `<ALLOWED_PATHS>` | `**` | Sonde |\r\n"
+                                     + anker, 1))
+        frei = os.path.join(basis, "frei")
+        os.makedirs(frei)
+        d = unterprozess([sys.executable, os.path.join(kopie_kern, "install.py"),
+                          "--client", "claude-code", "--root", frei,
+                          "--overlay", "general"])
+        melde("SONDE", "M355d", d.returncode == 1 and "darf nur sperren" in (d.stderr or "")
+              and not os.listdir(frei),
+              "Ein Muster, das erlaubte Pfade fuellen will, bricht die Installation ab, "
+              "bevor die erste Datei geschrieben ist")
+    finally:
+        aufraeumen(basis)
+
+
+buendel(sonden_overlay_muster,
+        "Der Fuellschritt aus --overlay general an echten Erstinstallationen, dazu seine "
+        "vier Verweigerungen und der unveraenderte Weg ohne Muster")
 
 
 # --- 66: das verirrte Steuerzeichen (D-217) --------------------------------------

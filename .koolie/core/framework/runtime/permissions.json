@@ -33,6 +33,7 @@
     { "tool": "write", "pattern": "**/go.sum" },
     { "tool": "write", "pattern": "<CI_CONFIG_PATHS>" },
     { "tool": "write", "pattern": "<QUALITY_GATE_CONFIG_PATHS>" },
+    { "tool": "write", "pattern": "<READ_ONLY_PATHS>" },
     { "tool": "write", "pattern": "<EXCLUDED_PATHS>" },
 
     { "tool": "exec",  "command": "git push", "core": true },
