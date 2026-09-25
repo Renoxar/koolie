@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 89, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 89, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -6294,6 +6294,35 @@ def _355_install(ziel: str, *argumente) -> subprocess.CompletedProcess:
                          "--client", "claude-code", "--root", ziel] + list(argumente))
 
 
+#   M359  (Sonde)      - die Dokumente des Musters: angelegt, mit Vermerk, im Manifest
+#                        als K1/entwurf/on-demand registriert, die Beispiele der Vorlage
+#                        ersetzt, die K1-Liste der Laufzeitfassung offen (D-359, D-360)
+#   M359a (Sonde)      - Ablage und Beschreibung laufen auseinander: Abbruch vor dem
+#                        ersten Schreibvorgang
+#   M359b (Sonde)      - ein Dokument ohne Vorschlagsvermerk: Abbruch
+#   M359c (Gegenprobe) - ohne --overlay bleibt die Manifestvorlage mit ihren drei
+#                        Beispielen, und kein Musterdokument liegt im Projekt
+M359_VERMERK = "Muster – vom Overlay Owner zu prüfen und anzupassen."
+
+
+def _359_dokumente() -> list:
+    """Die Dokumente des Musters, gelesen mit dem Werkzeug selbst - nicht nachgepflegt."""
+    sys.path.insert(0, os.path.join(QUELLE, ".koolie", "core"))
+    try:
+        import install as _install  # noqa: E402
+        return _install.muster_laden("general")["dokumente"]
+    finally:
+        sys.path.pop(0)
+
+
+def _359_kern(basis: str, name: str) -> str:
+    """Eine Kopie des Kerns, deren install.py das Muster aus IHREM Kern liest."""
+    kern = os.path.join(basis, name, ".koolie", "core")
+    shutil.copytree(os.path.join(QUELLE, ".koolie/core"), kern,
+                    ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
+    return kern
+
+
 def _355_werte() -> dict:
     """Die Werte des Musters, gelesen mit dem Werkzeug selbst - nicht nachgepflegt."""
     sys.path.insert(0, os.path.join(QUELLE, ".koolie", "core"))
@@ -6305,7 +6334,7 @@ def _355_werte() -> dict:
 
 
 def sonden_overlay_muster() -> None:
-    """Wirkungsnachweis fuer --overlay general und seine vier Verweigerungen."""
+    """Wirkungsnachweis fuer --overlay general, seine Dokumente und seine sechs Verweigerungen."""
     basis = tempfile.mkdtemp(prefix="lw-muster-")
     try:
         werte = _355_werte()
@@ -6346,6 +6375,44 @@ def sonden_overlay_muster() -> None:
         if p.returncode != 0 or fehlt or aus59:
             notiz("        Exit %d; fehlt: %s; Pruefung 59: %s"
                   % (p.returncode, ", ".join(fehlt) or "nichts", ", ".join(aus59) or "still"))
+
+        # --- M359: die Dokumente des Musters (D-359, D-360) ---------------------------
+        dokumente = _359_dokumente()
+        fehlt = []
+        manifest = lies(os.path.join(root, ".koolie", "project-overlay",
+                                     "overlay-manifest.yaml"))
+        for dok in dokumente:
+            ziel = os.path.join(root, ".koolie", "project-overlay", "documents",
+                                dok["typ"], dok["datei"])
+            if not os.path.isfile(ziel):
+                fehlt.append("%s/%s fehlt" % (dok["typ"], dok["datei"]))
+            elif M359_VERMERK not in lies(ziel):
+                fehlt.append("%s ohne Vermerk" % dok["typ"])
+            eintrag = 'path: ".koolie/project-overlay/documents/%s/%s"' % (
+                dok["typ"], dok["datei"])
+            if eintrag not in manifest:
+                fehlt.append("%s nicht registriert" % dok["typ"])
+        for erwartet in ('status: "entwurf"', 'load: "on-demand"', 'context_class: "K1"'):
+            if manifest.count(erwartet) != len(dokumente):
+                fehlt.append("%s %dx statt %dx" % (erwartet, manifest.count(erwartet),
+                                                   len(dokumente)))
+        if manifest.count('- id: "DOC-') != len(dokumente):
+            fehlt.append("%d Eintraege statt %d - ein Beispiel der Vorlage steht noch"
+                         % (manifest.count('- id: "DOC-'), len(dokumente)))
+        if "- Dokumente der Klasse K1 (frei nutzbar): `<TBD" not in laufzeit:
+            fehlt.append("K1-Liste der Laufzeitfassung gefuellt")
+        if "Musterdokumente unter `documents/`" not in overlay:
+            fehlt.append("Aenderungsverlauf ohne Dokumente")
+        aus8 = [z for z in validator_ausgabe(root).splitlines()
+                if z.startswith("FEHLER") and "overlay-manifest.yaml" in z]
+        melde("SONDE", "M359", p.returncode == 0 and len(dokumente) == 6 and not fehlt
+              and not aus8,
+              "Das Muster legt seine sechs Dokumente an, registriert sie als Entwurf und "
+              "gibt keines frei; Pruefung 8 bleibt still")
+        if fehlt or aus8 or len(dokumente) != 6:
+            notiz("        %d Dokumente; fehlt: %s; Pruefung 8: %s"
+                  % (len(dokumente), ", ".join(fehlt) or "nichts",
+                     " | ".join(aus8) or "still"))
 
         # --- M355b: nicht aktivierungsreif -----------------------------------------
         q = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
@@ -6409,13 +6476,105 @@ def sonden_overlay_muster() -> None:
               and not os.listdir(frei),
               "Ein Muster, das erlaubte Pfade fuellen will, bricht die Installation ab, "
               "bevor die erste Datei geschrieben ist")
+
+        # --- M359a: Ablage und Beschreibung laufen auseinander -----------------------
+        kern_a = _359_kern(basis, "kern-a")
+        weg = os.path.join(kern_a, "framework", "overlay-patterns", "general", "documents",
+                           "security")
+        if not os.path.isdir(weg):
+            raise Praeparationsfehler("general/documents/security fehlt - M359a haette "
+                                      "nichts zu entfernen")
+        shutil.rmtree(weg)
+        ziel_a = os.path.join(basis, "ziel-a")
+        os.makedirs(ziel_a)
+        a = unterprozess([sys.executable, os.path.join(kern_a, "install.py"),
+                          "--client", "claude-code", "--root", ziel_a, "--overlay", "general"])
+        melde("SONDE", "M359a", a.returncode == 1 and "stimmen nicht ueberein" in
+              (a.stderr or "") and not os.listdir(ziel_a),
+              "Fehlt ein beschriebenes Musterdokument in der Ablage, bricht die Installation "
+              "ab, bevor die erste Datei geschrieben ist")
+
+        # --- M359b: ein Dokument ohne Vorschlagsvermerk ------------------------------
+        kern_b = _359_kern(basis, "kern-b")
+        dok = os.path.join(kern_b, "framework", "overlay-patterns", "general", "documents",
+                           "quality", "muster-general.md")
+        text = lies(dok)
+        if text.count(M359_VERMERK) != 1:
+            raise Praeparationsfehler("quality/muster-general.md fuehrt den Vermerk %dx "
+                                      "statt 1x" % text.count(M359_VERMERK))
+        schreib(dok, text.replace(M359_VERMERK, "Allgemeine Grundsaetze.", 1))
+        ziel_b = os.path.join(basis, "ziel-b")
+        os.makedirs(ziel_b)
+        b = unterprozess([sys.executable, os.path.join(kern_b, "install.py"),
+                          "--client", "claude-code", "--root", ziel_b, "--overlay", "general"])
+        melde("SONDE", "M359b", b.returncode == 1 and "nicht den Vermerk" in (b.stderr or "")
+              and not os.listdir(ziel_b),
+              "Ein Musterdokument ohne Vorschlagsvermerk bricht die Installation ab - ein "
+              "ungeprueft mitgelieferter Text darf nicht wie eine Projektvorgabe aussehen")
+
+        # --- M359c: ohne --overlay ---------------------------------------------------
+        manifest_ohne = lies(os.path.join(ohne, ".koolie", "project-overlay",
+                                          "overlay-manifest.yaml"))
+        musterdoks = glob.glob(os.path.join(ohne, ".koolie", "project-overlay", "documents",
+                                            "*", "muster-general.md"))
+        melde("GEGENPROBE", "M359c", manifest_ohne.count('- id: "DOC-') == 3
+              and not musterdoks,
+              "Ohne Muster bleibt die Manifestvorlage mit ihren drei Beispielen, und kein "
+              "Musterdokument liegt im Projekt")
     finally:
         aufraeumen(basis)
 
 
 buendel(sonden_overlay_muster,
         "Der Fuellschritt aus --overlay general an echten Erstinstallationen, dazu seine "
-        "vier Verweigerungen und der unveraenderte Weg ohne Muster")
+        "Dokumente, sechs Verweigerungen und der unveraenderte Weg ohne Muster")
+
+
+# --- 8: der registrierte Traeger existiert (CR-2026-139, D-360) --------------------
+#
+# Bis 1.5.0 pruefte Pruefung 8 Schluessel und Aufzaehlungswerte des Overlay-Manifests,
+# nicht aber, ob unter `path` etwas liegt. Die Sonden schreiben das Manifest aus der
+# VERSIONIERTEN Vorlage (templates/project-overlay/) und setzen darin einen
+# Beispieleintrag auf einen echten Pfad. Das Overlay des Quellrepositoriums selbst steht
+# in der .gitignore - die erste Fassung dieser Sonden las es und brach an einer
+# frischen Auscheckung ab (gefunden beim Gegenbeweis, CR-2026-139). Die Gegenprobe ist
+# die wichtigere: Ein Eintrag, der auf eine vorhandene Datei zeigt, bleibt still - und
+# die Beispiele der Vorlage mit Ausfuellschlitz im Pfad ebenso, sonst waere jedes
+# frische Overlay rot.
+M8_PFAD = "existiert nicht. Ein registriertes Dokument"
+M8_REGEL = "Mit load rule trägt die Regeldatei"
+P8_MANIFEST = ".koolie/project-overlay/overlay-manifest.yaml".replace("/", os.sep)
+P8_VORLAGE = ".koolie/core/templates/project-overlay/overlay-manifest.yaml".replace("/", os.sep)
+P8_BEISPIEL_ARCH = 'path: ".koolie/project-overlay/documents/architecture/<TBD>.md"'
+P8_BEISPIEL_CG = 'path: ".koolie/project-overlay/documents/coding-guidelines/<TBD: datei>.md"'
+P8_REGEL_CG = 'rule_file: "<RULES_DIR>/21-overlay-coding-guidelines.md"'
+P8_VORHANDEN = 'path: ".koolie/core/templates/project-overlay/documents/README.md"'
+
+
+def _8_setze(root: str, *paare) -> None:
+    """Das Manifest aus der Vorlage, mit den genannten Ersetzungen je genau einmal."""
+    text = lies(P(root, P8_VORLAGE))
+    for alt, neu in paare:
+        if text.count(alt) != 1:
+            raise Praeparationsfehler("Manifestvorlage fuehrt '%s' %dx statt 1x"
+                                      % (alt, text.count(alt)))
+        text = text.replace(alt, neu, 1)
+    os.makedirs(os.path.dirname(P(root, P8_MANIFEST)), exist_ok=True)
+    schreib(P(root, P8_MANIFEST), text)
+
+
+sonde("8a", "Ein registriertes Dokument, dessen Pfad auf nichts zeigt, wird gemeldet - bis 1.5.0 bestand ein solches Register",
+      lambda r: _8_setze(r, (P8_BEISPIEL_ARCH,
+                             'path: ".koolie/project-overlay/documents/architecture/gibt-es-nicht.md"')),
+      M8_PFAD)
+
+sonde("8b", "Ein Dokument mit load rule, dessen Regeldatei fehlt, wird gemeldet - es wirkt sonst nicht",
+      lambda r: _8_setze(r, (P8_BEISPIEL_CG, P8_VORHANDEN),
+                         (P8_REGEL_CG, 'rule_file: ".koolie/project-overlay/gibt-es-nicht.md"')),
+      M8_REGEL)
+
+gegenprobe("8a", "Ein Eintrag, der auf eine vorhandene Datei zeigt, bleibt still - und die Beispiele mit Ausfuellschlitz im Pfad ebenso",
+           lambda r: _8_setze(r, (P8_BEISPIEL_ARCH, P8_VORHANDEN)), M8_PFAD)
 
 
 # --- 66: das verirrte Steuerzeichen (D-217) --------------------------------------

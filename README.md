@@ -145,7 +145,7 @@ Weitere Aufrufe:
 | `python .koolie/core/install.py --update` | Kern auf ein neues Release heben, Projektdateien behalten |
 | `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
 | `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
-| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei; `--overlay` ohne Namen zählt die Muster auf (seit `1.5.0`) |
+| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*: drei Pfadplatzhalter vorbefüllt, in Overlay, Laufzeitfassung und Berechtigungsdatei; `--overlay` ohne Namen zählt die Muster auf (seit `1.5.0`). Seit `1.6.0` dazu sechs Musterdokumente allgemeiner Praktiken (Coding Guidelines, DoR, DoD, Qualität, Sicherheit, Branching), im Manifest als `entwurf` – verbindlich erst nach Freigabe durch den Overlay Owner |
 
 Der ausführliche Weg mit allen Voraussetzungen, Freigaben und der Aktivierungsreihenfolge steht in `.koolie/core/docs/ADOPTION_GUIDE.md`; der verbindliche Nachweis ist `.koolie/core/checklists/10-project-adoption.md`.
 

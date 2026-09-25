@@ -3,12 +3,12 @@
 | Attribut | Wert |
 |---|---|
 | Name | `general` |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gewählt über | `python .koolie/core/install.py --overlay general` – **nur bei der Erstinstallation** (D-126) |
-| Wirkung | füllt drei Pfadplatzhalter einmal in Overlay, Laufzeitfassung und Berechtigungsdatei (D-355) |
-| Nachweis | Sonden `M355` bis `M355e` in `.koolie/core/tests/scripts/probe-pruefungen.py` |
+| Wirkung | füllt drei Pfadplatzhalter einmal in Overlay, Laufzeitfassung und Berechtigungsdatei (D-355); legt sechs Musterdokumente allgemeiner Praktiken an und registriert sie im Manifest (D-359, D-360) |
+| Nachweis | Sonden `M355` bis `M355e` und `M359` bis `M359c` in `.koolie/core/tests/scripts/probe-pruefungen.py` |
 
 ## Zweck
 
@@ -16,6 +16,10 @@ Ein Projekt, das das Framework übernimmt, beginnt ohne diesen Parameter mit ein
 **leeren** Overlay: Jeder Platzhalter ist ein Schlitz, und bis ein Mensch ihn füllt,
 sperrt die Berechtigungsdatei an seiner Stelle nichts. Dieses Muster füllt die Schlitze,
 deren Wert sich **ohne Kenntnis des Projekts** sicher angeben läßt – und nur diese.
+
+Seit Version `0.2.0` liefert es außerdem **Dokumente**: allgemein anerkannte Praktiken
+der Softwareentwicklung für die Bereiche des Overlays, die auf **jedes** Projekt passen
+(Abschnitt *„Die Dokumente“*). Sie sind ein zweiter Gegenstand mit eigener Grenze.
 
 ## Der Grundsatz: Das Muster sperrt, es gibt nichts frei
 
@@ -67,6 +71,68 @@ Dateiname (`Jenkinsfile`) werden zu einem Pfad mit Zugriffsart `read`, ein Namen
 mit `*` (`**/*.tfstate`, `.eslintrc*`) erreicht die Datei nicht. Das Muster ändert daran
 nichts, und das Pack sagt es in Abschnitt 5 selbst.
 
+## Die Dokumente
+
+🔴 **Die Regel „sperrt, gibt nichts frei“ gilt für Schlitzwerte, und Dokumente sind ein
+zweiter Gegenstand mit eigener Grenze** (D-359). Ein Dokument gibt nichts frei, aber es
+**beschreibt** – und darf deshalb nur beschreiben, was für jedes Projekt gilt:
+
+- **nur allgemein anerkannte, werkzeug- und sprachneutrale Praktiken;**
+- **keine Schwellenwerte** (Abdeckung, Methodenlänge, Anzahl Reviewer), **keine
+  Werkzeugnamen**, **keine Vorgaben, die Vorgehensmodell, Teamgröße oder Plattform
+  voraussetzen;**
+- **keine Wiederholung des Kerns.** Was der Kern für KI-unterstützte Arbeit schon regelt
+  – `04-quality.md` Abschnitte 2 und 3, `07-review-rules.md`, die Checklisten 03, 05, 06,
+  07 und 08 –, wird verwiesen, nicht abgeschrieben. Jedes Dokument sagt in einem Abschnitt
+  *„Verhältnis zum Framework“*, wo die Grenze liegt; bei Widerspruch gilt der Kern.
+
+➡️ **Was davon nicht überall paßt, kommt nicht hinein** – auch nicht als Beispiel. Die
+Stelle für Projektfestlegungen ist der Abschnitt *„Projektspezifische Ergänzungen“* am
+Ende jedes Dokuments und die zugehörige Zeile in `OVERLAY.md`.
+
+Diese Tabelle beschreibt die Ablage unter `overlay-patterns/general/documents/<typ>/`;
+`install.py` hält ihre erste Spalte gegen die Verzeichnisse und bricht ab, wenn beide
+auseinanderlaufen.
+
+| Typ | Was das Dokument enthält | Was bewußt fehlt |
+|---|---|---|
+| `coding-guidelines` | Lesbarkeit, eine Verantwortung je Einheit, KISS/DRY/YAGNI, Fehlerbehandlung, Kommentare zum Warum, kleine Schritte | Benennungsschema, Formatierer, Längengrenzen; die Pfadfinderregel über den Scope hinaus (widerspräche Q1 und RV1) |
+| `definition-of-ready` | Zweck, prüfbare Akzeptanzkriterien, Abgrenzung, Größe, Abhängigkeiten, offene Fragen, nicht-funktionale Anforderungen | Schätzgrößen, Vorgehensmodell; die KI-Zusatzkriterien aus `OVERLAY.md` Abschnitt 11 |
+| `definition-of-done` | Akzeptanzkriterien belegt, getestet, Prüfungen grün, begutachtet, Dokumentation, integriert, offene Punkte sichtbar | Abdeckungsgrenzen, Freigabestufen; die KI-DoD aus `04-quality.md` Abschnitt 3 |
+| `quality` | Tests als Teil der Änderung, Fehler zuerst per Test, instabile Tests sind Fehler, Review-Grundsätze, Prüfungen nicht umgehen | Testwerkzeuge, Testpyramide in Zahlen, Anzahl Reviewer; die Prüfpunkte aus Checkliste 05 und `07-review-rules.md` |
+| `security` | Sicherheit als Anforderung, minimale Rechte, gestaffelte Abwehr, sicher scheitern, sichere Voreinstellungen, Geheimnisse, Pflege der Abhängigkeiten | Verfahren, Bibliotheken, Schutzkonfiguration (K3); die Prüfpunkte aus Checkliste 06 und 07 |
+| `branching-strategy` | Standard-Branch baubar, kurzlebige Branches, Integration über Merge Request, schlüssige Commits, gemeinsame Historie nicht umschreiben | ein Branching-Modell, Namensschema, Commit-Konvention (`OVERLAY.md` Abschnitt 10) |
+
+**Nicht mitgeliefert** werden `architecture`, `roadmap`, `deployment`, `roles` und
+`glossary` – sie beschreiben das Projekt – sowie `ai-governance` und `ai-process-model`,
+die der Kern selbst trägt.
+
+### Wie die Dokumente in das Projekt kommen
+
+`install.py --overlay general` schreibt sie bei der Erstinstallation nach
+`.koolie/project-overlay/documents/<typ>/muster-general.md` und **ersetzt** die drei
+Beispieleinträge der Manifestvorlage durch einen Eintrag je Dokument (D-360):
+
+| Feld | Wert | Warum |
+|---|---|---|
+| `context_class` | `K1` | allgemeines Wissen ohne Projektbezug |
+| `status` | `entwurf` | ein Vorschlag, den niemand geprüft hat |
+| `load` | `on-demand` | kein weiterer Träger je Client Pack; `summary` und `rule` wählt der Overlay Owner |
+| `approved_by`, `approved_on` | Ausfüllschlitze | die Freigabe erteilt ein Mensch |
+
+🔴 **Die Dokumente wirken erst, wenn der Overlay Owner sie freigibt.** Die Liste der
+freigegebenen K1-Dokumente in der Laufzeitfassung bleibt ein Ausfüllschlitz, und einen
+offenen Wert behandelt der KI-Client als nicht freigegeben. ⚠️ **Preis, benannt:** Bis
+dahin haben sie keine Wirkung auf den Client – sie sind ein Anfang für Menschen. Das ist
+die Richtung von D-355 an einem Gegenstand, der beschreibt statt sperrt: Ein ungeprüfter
+Text wird nicht verbindlich, nur weil er mitgeliefert wurde.
+
+⚠️ **Kein weiterer Platzhalter wird gefüllt**, auch nicht `<PROJECT_RULES_PATH>` oder die
+Pfade der projektweiten DoR und DoD in `OVERLAY.md` Abschnitt 11 und 12 – sie zu setzen,
+hieße, die Dokumente für das Projekt zu erklären. **Bestandsprojekte** erreicht das Muster
+nicht (D-126); sie übernehmen einzelne Dokumente von Hand
+(`.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt 3).
+
 ## Die Grenze zur Aktivierungsreife
 
 🔴 **Ein Overlay aus diesem Muster ist nicht aktivierungsreif, und das ist gewollt**
@@ -79,4 +145,5 @@ Installation mit diesem Muster die Prüfung nicht besteht.**
 
 | Version | Datum | Änderung |
 |---|---|---|
+| `0.2.0` | 2026-09-25 | Sechs Musterdokumente allgemeiner Praktiken, im Manifest als `entwurf` registriert; Framework-Release `1.6.0` (`CR-2026-139`, D-359, D-360) |
 | `0.1.0` | 2026-09-25 | Erstfassung mit Framework-Release `1.5.0` (`CR-2026-138`, D-355) |

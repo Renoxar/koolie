@@ -20,7 +20,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      interne Hostnamen, URLs außerhalb der Quellen-Allowlist, projektspezifische Sperrbegriffe
      (.koolie/project-overlay/forbidden-terms.txt)
   7. Platzhalter: nur registrierte Platzhalter (.koolie/core/docs/PLACEHOLDER_REGISTRY.md)
-  8. Overlay-Manifest: Kopfschlüssel, Pflichtfelder je Dokumenteintrag, Aufzählungswerte
+  8. Overlay-Manifest: Kopfschlüssel, Pflichtfelder je Dokumenteintrag, Aufzählungswerte;
+     seit 1.6.0 auch, dass `path` und – bei `load: rule` – `rule_file` existieren (D-360)
   9. --strict-overlay: der **aktive** Zustand - keine offenen <TBD> in
      sicherheitsrelevanten Overlay-Feldern; Status aktiv an *jeder* Stelle, an der das
      Overlay ihn erklärt (Steckbrief und Aktivierung)
@@ -692,7 +693,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      wird nicht uebergangen. "Kein Wert" hat gemessen mehrere Schreibweisen
      (`nicht vorhanden`, `keine`) und ist die leere Menge. GRENZE: (c) prueft nur die
      Richtung Quelle -> Korb, und (c) ist wie bei 59 an die Ausgabeform 'json' gebunden
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 14, 18 bis 66 und 68 bis 89 laeuft als eigenes
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 89 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -1996,6 +1997,23 @@ def check_manifest(root: str) -> None:
             err(f"overlay-manifest.yaml {did}: load rule ohne rule_file")
         if doc.get("load") == "summary" and doc.get("context_class") == "K2":
             err(f"overlay-manifest.yaml {did}: summary-Laden nur für K1 zulässig")
+        # Der registrierte Traeger existiert (CR-2026-139, D-360). Bis 1.5.0 pruefte
+        # diese Pruefung Schluessel und Aufzaehlungswerte, aber nicht, ob unter `path`
+        # etwas liegt - ein Register, das auf nichts zeigt, bestand. Ein Eintrag, dessen
+        # Pfad noch einen Ausfuellschlitz traegt, ist ein Beispiel der Vorlage und kein
+        # Traeger; er bleibt aussen vor, und mit ihm seine Regeldatei.
+        pfad = str(doc.get("path") or "")
+        if pfad and "<" not in pfad:
+            if not os.path.exists(os.path.join(root, *pfad.split("/"))):
+                err(f"overlay-manifest.yaml {did}: path '{pfad}' existiert nicht. Ein "
+                    f"registriertes Dokument, das nicht da ist, sieht im Register aus wie "
+                    f"eines, das der KI-Client lesen darf (D-360)")
+            regel = str(doc.get("rule_file") or "")
+            if doc.get("load") == "rule" and regel and "<" not in regel \
+                    and not os.path.exists(os.path.join(root, *regel.split("/"))):
+                err(f"overlay-manifest.yaml {did}: rule_file '{regel}' existiert nicht. "
+                    f"Mit load rule trägt die Regeldatei die Kernaussagen des Dokuments; "
+                    f"fehlt sie, wirkt das Dokument nicht (D-360)")
 
 
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")

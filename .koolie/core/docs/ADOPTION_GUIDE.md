@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.7` |
+| Version | `0.4.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -94,6 +94,15 @@ bleibt unberührt (P10, Baum 6).
    `.koolie/core/framework/overlay-patterns/general.md`; `--overlay` ohne Namen zählt die
    Muster auf. ⚠️ **Liegt die Saat schon, bricht `--overlay` ab** – vorhandene Saat gehört
    dem Projekt, und mit `--update` gibt es das Muster nicht.
+
+   **Seit `1.6.0` bringt das Muster außerdem sechs Dokumente mit** (D-359, D-360):
+   allgemeine Praktiken für Coding Guidelines, Definition of Ready, Definition of Done,
+   Qualität, Sicherheit und Branching – nur, was auf jedes Projekt paßt, ohne Werkzeuge und
+   Schwellenwerte. Sie liegen danach unter `.koolie/project-overlay/documents/<typ>/` und
+   stehen im Manifest mit Status `entwurf`. 🔴 **Verbindlich werden sie erst durch den
+   Overlay Owner:** prüfen, anpassen, im Manifest auf `aktuell` setzen, Freigabe eintragen
+   und in der Laufzeitfassung als K1-Dokumente führen. Bis dahin liest der KI-Client sie
+   nicht als Vorgabe.
 
    Das Skript legt die Wurzel-Anweisungsdatei, ihre `.example`-Vorlage für nutzerlokale
    Ergänzungen, die Laufzeitschicht und – sofern noch nicht vorhanden – `.koolie/project-overlay/`
@@ -267,6 +276,15 @@ bleibt unberührt (P10, Baum 6).
    `Framework-Version: 0.2.0`, also genau in der Datei, aus der die Nachweiskette in jeden
    Merge Request übernommen wird. Empfehlung: An dieser Stelle Platzhalter eintragen
    (`<Inhalt der Datei .koolie/core/VERSION>`), keine Werte.
+
+   **Die Musterdokumente des Overlay-Musters `general` erreichen ein bestehendes Projekt
+   nicht** – das Muster wirkt nur bei der Erstinstallation (D-126, D-359). Wer eines davon
+   übernehmen will, kopiert es aus
+   `.koolie/core/framework/overlay-patterns/general/documents/<typ>/` in die
+   Dokumentablage des Overlays, registriert es im Manifest wie jedes andere Dokument
+   (`.koolie/project-overlay/OVERLAY.md` Abschnitt 19) und prüft es vorher gegen die
+   vorhandenen Dokumente desselben Typs: Zwei Coding Guidelines nebeneinander sind zwei
+   Register.
 
 4. Validator (`--strict-overlay`) und Basistests erneut ausführen; bei MAJOR-Releases
    zusätzlich FW-RE-01/02.
