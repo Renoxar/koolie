@@ -38,6 +38,8 @@ kopiert nur den Kern und installiert danach dort (D-362):
 
     python .koolie/core/install.py --target <projekt> [--client <name>] [--overlay <name>]
     python .koolie/core/install.py --target <projekt> --update      # Projekt heben
+    python .koolie/core/install.py --target <projekt> --lieferumfang nutzung
+                                           # ohne Nachweisschicht (D-367); gilt beim Heben weiter
 
 Die Starter install.cmd (Windows) und install.command (macOS) in der Wurzel des
 Frameworks fragen diese Angaben ab (install_dialog.py) und rufen genau das auf.
@@ -1416,9 +1418,15 @@ def kollisionen(root: str, template: str, man: dict) -> list[str]:
 # Projekt auf - mit dem kopierten install.py, denn die Hook-Kommandos zeigen auf den
 # Kern im Zielprojekt.
 #
-# WAS ES NICHT TUT: Es waehlt keinen Lieferumfang (der ganze Kern, wie bisher - die
-# Hooks und der Validator liegen unter tests/scripts/), es zieht keinen Overlay-Wert
-# nach und es committet nicht. Das bleiben Handgriffe des Projekts.
+# WAS ES NICHT TUT: Es zieht keinen Overlay-Wert nach und es committet nicht. Das
+# bleiben Handgriffe des Projekts.
+#
+# DER LIEFERUMFANG (D-367, seit 1.8.0): --lieferumfang nutzung laesst die
+# Nachweisschicht weg (clientmap.NACHWEIS_ABLAGEN - dort steht, warum sie aufgezaehlt
+# ist und nicht das Noetige). Die Wahl steht danach in LIEFERUMFANG neben VERSION und
+# gilt beim naechsten Heben weiter: Das Heben ersetzt das Verzeichnis, und ohne diese
+# Datei wuechse ein reduziertes Projekt beim ersten --update auf den ganzen Kern. Ein
+# Wechsel geschieht nur, wenn --lieferumfang ihn ausdruecklich nennt.
 
 # Die Mindestversion ist GEMESSEN, nicht gesetzt (D-363): Installation, Validator und
 # Hooks laufen unter 3.8.20 zeilengleich zu 3.14, alle Python-Traeger des Repositoriums
@@ -1428,6 +1436,30 @@ PYTHON_MINDEST = (3, 8)
 
 ZIEL_NEU = "core.koolie-neu"
 ZIEL_ALT = "core.koolie-alt"
+
+# Windows begrenzt ohne Langpfad-Freigabe einen Dateipfad auf 259 und einen
+# Verzeichnispfad beim Anlegen auf 247 Zeichen (MAX_PATH). Gemessen am 2026-09-25
+# (D-368): --target in ein Projekt unter dem Ablagebereich einer Sitzung brach beim
+# Kopieren ab. Der Rueckbau hielt, aber die Meldung fragte, ob eine Datei geoeffnet sei
+# - den Grund nannte sie nicht. Geprueft wird deshalb VOR der ersten Kopie, gegen den
+# laengsten Pfad unter dem Zwischenverzeichnis, das laenger heisst als der Kern.
+# Auch mit Freigabe bleibt die Grenze: git und die Clients halten sich nicht alle daran.
+PFAD_GRENZE_DATEI = 259
+PFAD_GRENZE_VERZEICHNIS = 247
+
+
+def zu_langer_pfad(basis: str, dateien: list[str]) -> tuple[str, int]:
+    """Der erste Pfad unter basis, der unter Windows seine Grenze reisst, und diese
+    Grenze - sonst ('', 0)."""
+    if os.name != "nt":
+        return "", 0
+    for rel in dateien:
+        datei = os.path.join(basis, *rel.split("/"))
+        if len(datei) > PFAD_GRENZE_DATEI:
+            return datei, PFAD_GRENZE_DATEI
+        if len(os.path.dirname(datei)) > PFAD_GRENZE_VERZEICHNIS:
+            return os.path.dirname(datei), PFAD_GRENZE_VERZEICHNIS
+    return "", 0
 
 
 def quellwurzel() -> str:
@@ -1550,12 +1582,36 @@ def in_projekt_installieren(args) -> int:
               f"dieses Frameworks. Es wird nicht ersetzt.", file=sys.stderr)
         return 1
 
+    # Der Lieferumfang (D-367): ausdruecklich genannt, sonst der bisherige des Projekts,
+    # sonst voll. Eine reduzierte Quelle kann keinen vollen Kern liefern.
+    quellumfang = clientmap.lieferumfang(HERE)
+    bisher = clientmap.lieferumfang(zielkern) if vorhanden else ""
+    for wert, wo in ((quellumfang, f"der Quelle ({HERE})"),
+                     (bisher or "voll", f"des Projekts ({zielkern})")):
+        if wert not in clientmap.LIEFERUMFAENGE:
+            print(f"FEHLER: {clientmap.LIEFERUMFANG_DATEI} {wo} traegt '{wert}' - bekannt "
+                  f"sind {', '.join(clientmap.LIEFERUMFAENGE)}. Kopiert wird nichts.",
+                  file=sys.stderr)
+            return 1
+    umfang = args.lieferumfang or bisher or "voll"
+    if umfang == "voll" and quellumfang != "voll":
+        print(f"FEHLER: Die Quelle ist selbst eine Installation mit Lieferumfang "
+              f"'{quellumfang}' - ihr fehlt die Nachweisschicht, und einen vollen Kern kann "
+              f"sie nicht liefern. Quelle ist ein Klon oder das Release-Archiv.",
+              file=sys.stderr)
+        return 1
+
     dateien, herkunft = quelle_kerndateien()
+    # Die Datei der Wahl wird nie mitkopiert, sondern fuer das Ziel geschrieben.
+    dateien = [rel for rel in dateien if rel != clientmap.LIEFERUMFANG_DATEI]
     fehlen = [rel for rel in dateien if not os.path.isfile(os.path.join(HERE, *rel.split("/")))]
     if fehlen:
         print(f"FEHLER: {len(fehlen)} verfolgte Datei(en) des Kerns fehlen im Arbeitsbaum "
               f"der Quelle, etwa {fehlen[0]}. Kopiert wird nichts.", file=sys.stderr)
         return 1
+    weg = [rel for rel in dateien if clientmap.ist_nachweis(rel)] if umfang == "nutzung" else []
+    if weg:
+        dateien = [rel for rel in dateien if not clientmap.ist_nachweis(rel)]
 
     quellstand = kern_version(HERE)
     print(f"Quelle:  {wurzel}  (Stand {quellstand})")
@@ -1566,6 +1622,21 @@ def in_projekt_installieren(args) -> int:
         print("Modus:   Erstinstallation")
     print(f"Kern:    {len(dateien)} Dateien ({herkunft}); nur {clientmap.CORE_REL}/, "
           f"nie ganz .koolie/")
+    wechsel = f" (bisher {bisher})" if bisher and bisher != umfang else ""
+    if umfang == "nutzung":
+        print(f"Umfang:  nutzung{wechsel} - ohne die Nachweisschicht, {len(weg)} Dateien "
+              f"weniger: {', '.join(clientmap.NACHWEIS_ABLAGEN)}")
+    else:
+        print(f"Umfang:  voll{wechsel} - der ganze Kern")
+
+    lang, grenze = zu_langer_pfad(os.path.join(ablage, ZIEL_NEU),
+                                  dateien + [clientmap.LIEFERUMFANG_DATEI])
+    if lang:
+        print(f"FEHLER: Der Pfad zum Projekt ist fuer Windows zu lang. Beim Kopieren "
+              f"entstuende ein Pfad mit {len(lang)} Zeichen, erlaubt sind {grenze}:\n"
+              f"  {lang}\nDas Projekt braucht einen um mindestens {len(lang) - grenze} "
+              f"Zeichen kuerzeren Pfad. Kopiert wird nichts (D-368).", file=sys.stderr)
+        return 1
     if args.dry_run:
         print()
         print("dry-run: Es wird nichts geschrieben. Die Installation im Projekt folgt "
@@ -1584,6 +1655,9 @@ def in_projekt_installieren(args) -> int:
             dst = os.path.join(neu, *rel.split("/"))
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(os.path.join(HERE, *rel.split("/")), dst)
+        with open(os.path.join(neu, clientmap.LIEFERUMFANG_DATEI), "w", encoding="utf-8",
+                  newline="\n") as fh:
+            fh.write(umfang + "\n")
         if vorhanden:
             os.replace(zielkern, alt)
         try:
@@ -1645,6 +1719,10 @@ def main() -> int:
     ap.add_argument("--target", default=None, metavar="PROJEKT",
                     help="Den Kern dieses install.py in PROJEKT kopieren und dort installieren; "
                          "mit --update ein vorhandenes Projekt heben (D-362)")
+    ap.add_argument("--lieferumfang", choices=clientmap.LIEFERUMFAENGE, default=None,
+                    help="Nur mit --target: den ganzen Kern (voll) oder ohne die "
+                         "Nachweisschicht (nutzung) kopieren. Ohne Angabe bleibt es beim "
+                         "Heben beim bisherigen Umfang, sonst voll (D-367)")
     ap.add_argument("--update", action="store_true",
                     help="Core-Dateien auf den Stand dieses Releases bringen; Projektdateien bleiben unberuehrt")
     ap.add_argument("--check", action="store_true",
@@ -1703,6 +1781,11 @@ def main() -> int:
 
     if args.target is not None:
         return in_projekt_installieren(args)
+    if args.lieferumfang is not None:
+        # Nur --target kopiert den Kern; ohne Kopie gibt es nichts wegzulassen.
+        print("FEHLER: --lieferumfang gehoert zu --target - nur dort wird der Kern "
+              "kopiert.", file=sys.stderr)
+        return 1
 
     # Das Ziel steht vor der Clientwahl fest - denn es entscheidet sie.
     root = os.path.abspath(args.root or os.getcwd())

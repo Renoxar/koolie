@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.2` |
+| Version | `0.3.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -53,8 +53,8 @@ aus der **Marke** entsteht und die Marke auf dem Release-Commit sitzt.
 | 2 | 🔴 **Übernehmende Projekte heben**, und zwar aus dem **Arbeitsbaum**, beschränkt auf das Verfolgte (D-333): `rm -rf .koolie/core`, dann `(cd <framework> && git ls-files -z .koolie/core \| tar --null -T - -cf -) \| tar -xf - -C .`; danach `install.py --update` – **seit `1.7.0` alle drei Handgriffe in einem:** `python <framework>/.koolie/core/install.py --target <projekt> --update` (D-362; aus dem Klon nur Verfolgtes, aus dem Arbeitsbaum) –, den Overlay-Wert in **drei** Trägern nachziehen, `validate-framework.py --strict-overlay` dort fahren **und im übernehmenden Projekt committen** (D-343). **Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt** | Werkzeug oder Mensch | **vor** dem Commit, **nach dem letzten Eingriff in den Kern** |
 | 3 | **Erzeugnisse der Lieferung bauen:** Hauptdokument (`build/assemble.py`) und Word-Fassung (`build/build-docx.py`) **je Client Pack**, und im Erzeugnis nachzählen | Werkzeug oder Mensch | **vor** dem Commit |
 | 4 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`. Die Nachricht nennt Release, Antrag, die Entscheidungen **und die Freigabezeile** – *„Freigegeben durch den Framework Owner am `<JJJJ-MM-TT>`"* (D-334, `K-111`). 🔴 **Damit trägt die Marke die Unterschrift, und genau deshalb setzt sie der Mensch** | 🔴 **der Framework Owner, nicht ein Werkzeug** | **nach** dem Commit |
-| 5 | **Archiv** aus der Marke, mit **ausdrücklicher** Zeilenendeform: `git -c core.eol=lf -c core.autocrlf=input archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch | **nach** dem Commit |
-| 6 | 🔴 **Im Erzeugnis nachzählen**, nicht der Meldung glauben: Dateizahl, Zeilenendeform, Lizenz in Wurzel **und** Kern, keine Erzeugnisse aus `build/out/` | Werkzeug oder Mensch | **nach** dem Commit |
+| 5 | **Archiv** aus der Marke, mit **ausdrücklicher** Zeilenendeform **und ausdrücklichem Dateimodus**: `git -c core.eol=lf -c core.autocrlf=input -c tar.umask=022 archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` – ohne `tar.umask=022` trägt git jede Datei mit `0664` und `install.command` mit `0775` (gemessen an `v1.7.0`, D-369) | Werkzeug oder Mensch | **nach** dem Commit |
+| 6 | 🔴 **Im Erzeugnis nachzählen**, nicht der Meldung glauben: Dateizahl, Zeilenendeform, Lizenz in Wurzel **und** Kern, keine Erzeugnisse aus `build/out/`, **Modus der Tar-Einträge** – `install.command` `0755`, jede übrige Datei `0644` | Werkzeug oder Mensch | **nach** dem Commit |
 | 7 | **Ablage außerhalb des Repositoriums**, zusammen mit der Prüfsumme des Archivs; Mitteilung an die übernehmenden Projekte nach Punkt 3 | Werkzeug oder Mensch | **nach** dem Commit |
 
 🔴 **WARUM DAS HEBEN VOR DEN COMMIT GEHÖRT, UND ES IST NICHT DIE ORDENTLICHKEIT EINER
@@ -143,12 +143,20 @@ Archiv dieses Projekts hat es widerlegt: `git archive` schreibt die Dateien im
 **Arbeitsbaum**-Format aus, nicht im Blob-Format. **Dreimal dieselbe Marke, nur
 `core.autocrlf` verstellt – `true` und `false` liefern CRLF, `input` liefert LF**, bei
 unverändertem Blob. ➡️ *Zwei Arbeitsplätze erzeugten aus derselben signierten Marke zwei
-Archive mit zwei Prüfsummen.* **Deshalb stehen die Schalter in Schritt 2, und deshalb
-wird in Schritt 3 nachgezählt.**
+Archive mit zwei Prüfsummen.* **Deshalb stehen die Schalter in Schritt 5, und deshalb
+wird in Schritt 6 nachgezählt.** *(Bis `1.7.0` stand hier „Schritt 2“ und „Schritt 3“ –
+die Nummern einer früheren Fassung der Tabelle.)*
 
 ⚠️ **Verworfen: `eol=lf` in der `.gitattributes`.** Sie zwänge auch den **Arbeitsbaum**
 auf LF, und das hat `CR-2026-128` E1 mit Begründung abgelehnt. *Eine Regel für die
 Lieferung gehört an die Lieferung, nicht an das Repositorium.*
+
+🔴 **UND DEN DATEIMODUS SETZT EBENFALLS DER BEFEHL** (D-369, mit `1.8.0`). Gemessen am
+Archiv von `v1.7.0`: `git archive` trägt die Einträge mit seiner Voreinstellung
+`tar.umask=0002` ein – jede Datei `0664`, der macOS-Starter `install.command` `0775`,
+gruppenschreibbar. Mit `-c tar.umask=022` sind es `0644` und `0755`, bytegleich
+wiederholbar. **Der Modus ist deshalb ein Gegenstand von Schritt 6**, nicht nur die
+Zeilenendeform.
 
 ⚠️ **Grenze, benannt:** Ein Verfahrensschritt ist schwächer als eine Prüfung. Der
 Gegenstand liegt **außerhalb** des Repositoriums; eine Prüfung dagegen wäre im Framework

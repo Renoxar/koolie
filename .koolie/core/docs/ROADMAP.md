@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.4.4 (2026-09-24)
+## Stand nach Release 1.8.0 (2026-09-25)
 
 Wird mit jedem Release fortgeschrieben. 🔴 **Und das hat sie zweiunddreißig Releases lang nicht getan:** Die Überschrift stand bis 0.88.1 auf `0.56.0` – dem Release, das sie eingeführt hat. *Eine Zusage über die eigene Pflege, die niemand nachzählt, ist die Bauform dieses Repositoriums in ihrer Grundform* (berichtigt mit `CR-2026-124`, `AP11`). Er beantwortet die Frage, womit weiterzuarbeiten ist,
 ohne dass man dafür den gesamten Änderungsverlauf lesen muss.
@@ -150,8 +150,9 @@ die Störung.**
 | ~~**1.4.4**~~ ✅ | 🟢 **DER KOPIERWEG DES KERNS – UND DAS ARCHIV, AUS DEM ER ALS SICHER GALT** (`CR-2026-137`, **D-354** bis **D-354**). Zwei Fragen des Owners zum Kennzeichen des Quellrepositoriums. 🔴 **Keine der beiden Quellen ist für eine Kopie von ganz `.koolie/` sicher:** Das Kennzeichen ist versioniert und liegt auch im Release-Archiv; mitkopiert meldet der Validator an einer Wegwerf-Installation **1 Fehler**, nach dem Commit **80** – und keine Meldung nennt die Ursache. 🔴 **Aus dem Arbeitsbaum kommt das Overlay des Frameworks mit** und ersetzt das des Projekts, während `install.py --update` es als unberührt führt. ➡️ **Warnsatz an jedem Kopierbefehl, dazu eine Auskunft in `install.py`** (Bauform von D-349) – **kein Abbruch**, weil das Framework-Repositorium seine Wurzeldateien mit demselben Aufruf erzeugt und kein Merkmal die Fälle trennt. Sonde `D354`, Gegenprobe `D354a` | – | nein |
 | ~~**1.5.0**~~ ✅ | 🟢 **DAS OVERLAY-MUSTER „GENERAL DEVELOPMENT“ – UND DIE PRÜFUNG, DIE VON FÜNF PFADWERTEN EINEN SAH** (`CR-2026-138`, **D-355** bis **D-358**, **Prüfung 89** neu, `K-69` beantwortet). `install.py --overlay general` füllt bei der Erstinstallation drei Pfadplatzhalter – `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>`, `<EXCLUDED_PATHS>` – **einmal und in allen drei Trägern** aus einer Wertetabelle im Kern. 🔴 **Das Muster sperrt, es gibt nichts frei**, und die Grenze steht im Werkzeug: Eine Wertedatei mit einem freigebenden Platzhalter bricht die Installation ab, bevor die erste Datei geschrieben ist. Ein Overlay aus dem Muster ist **nicht** aktivierungsreif (D-57). 🆕 **Prüfung 89** hält `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>` wie 59 gegen Laufzeitfassung und `deny`-Korb – 🔴 **und fand im Übungsrepositorium vier Werte, die die Laufzeitfassung ersetzte statt band.** Die Kernquelle führt seit diesem Release einen Schlitz für `<READ_ONLY_PATHS>` (D-356). 🔴 **Nebenbefund:** Prüfung 59 übersprang ihren dritten Gegenstand bei `openai-codex` still und stand nicht unter den formatgebundenen Prüfungen (D-358) | – | nein |
 | ~~**1.6.0**~~ ✅ | 🟢 **BEST PRACTICES IM OVERLAY-MUSTER „GENERAL“ – UND DAS REGISTER, DAS AUF NICHTS ZEIGEN DURFTE** (`CR-2026-139`, **D-359** bis **D-361**, Prüfung 8 erweitert). Auftrag des Owners vom 2026-09-25: Das Muster `general` liefert **sechs Dokumente** allgemeiner Praktiken – Coding Guidelines, Definition of Ready, Definition of Done, Qualität, Sicherheit, Branching –, **nur was auf jedes Projekt paßt**: keine Werkzeuge, keine Schwellenwerte, keine Wiederholung des Kerns. `install.py --overlay general` legt sie an und **ersetzt** die drei Beispiele der Manifestvorlage durch sechs Einträge mit Status `entwurf`, Laden `on-demand`. 🔴 **Sie geben nichts frei:** Die K1-Liste der Laufzeitfassung bleibt offen, bis der Overlay Owner sie füllt – D-355 an einem Gegenstand, der beschreibt statt sperrt. 🔴 **Nebenbefund:** Prüfung 8 prüfte Schlüssel und Werte des Manifests, **nicht, ob unter `path` etwas liegt**; seit diesem Release tut sie es, mit den ersten Sonden, die sie je hatte | – | nein |
-| ~~**1.7.0**~~ ✅ | *dieses Release:* 🟢 **DER INSTALLER JE ZIELSYSTEM – UND DIE PRÜFUNG, DIE OHNE PYYAML FEHLER ERFAND** (`CR-2026-140`, **D-362** bis **D-366**, Prüfung 33 korrigiert). Vorgabe des Owners vom 2026-09-25: **Windows und macOS**, Linux bleibt beim bisherigen Weg. Zwei dünne Starter in der Wurzel des Archivs – `install.cmd` und `install.command` – suchen ein **Python ab 3.8** (gemessen, D-363) und rufen einen Dialog, der Projekt, Client und Overlay-Muster abfragt und **`install.py --target <projekt>`** aufruft; liegt dort schon ein Kern, hebt er (`--update`). `--target` kopiert **nur** den Kern – aus einem Klon nur das Verfolgte – und installiert mit dem kopierten `install.py`; die Falle aus D-354 kann dieser Weg nicht zuschnappen lassen. 🔴 **Prüfung 33 meldete ohne PyYAML an jeder `claude-code`-Installation neun falsche Fehler** (D-364), und 🔴 **die Starter lagen außerhalb des Prüfapparats**, bis `TEXT_EXT` sie aufnahm – beim ersten Lauf fand die Inhaltsprüfung darin eine URL außerhalb der Allowlist (D-365). ⚠️ **Der wählbare Lieferumfang rückt auf `1.8.0`** (D-366): Hooks und Validator liegen unter `tests/scripts/`. ⚠️ **Die Abnahme auf macOS steht aus** | – | nein |
-| **1.8.0** | **Der wählbare Lieferumfang** (D-366, `K-75`): *alles oder nur das zur Nutzung Nötige*. 🔴 **Die Liste gehört abgeleitet, nicht aufgezählt** – sonst fehlt nach dem ersten neuen Träger einer –, und der naheliegende Schnitt *„ohne `tests/`“* bräche jede Installation, weil Hooks und Validator unter `tests/scripts/` liegen. Planabschnitt unten | – | nein |
+| ~~**1.7.0**~~ ✅ | 🟢 **DER INSTALLER JE ZIELSYSTEM – UND DIE PRÜFUNG, DIE OHNE PYYAML FEHLER ERFAND** (`CR-2026-140`, **D-362** bis **D-366**, Prüfung 33 korrigiert). Vorgabe des Owners vom 2026-09-25: **Windows und macOS**, Linux bleibt beim bisherigen Weg. Zwei dünne Starter in der Wurzel des Archivs – `install.cmd` und `install.command` – suchen ein **Python ab 3.8** (gemessen, D-363) und rufen einen Dialog, der Projekt, Client und Overlay-Muster abfragt und **`install.py --target <projekt>`** aufruft; liegt dort schon ein Kern, hebt er (`--update`). `--target` kopiert **nur** den Kern – aus einem Klon nur das Verfolgte – und installiert mit dem kopierten `install.py`; die Falle aus D-354 kann dieser Weg nicht zuschnappen lassen. 🔴 **Prüfung 33 meldete ohne PyYAML an jeder `claude-code`-Installation neun falsche Fehler** (D-364), und 🔴 **die Starter lagen außerhalb des Prüfapparats**, bis `TEXT_EXT` sie aufnahm – beim ersten Lauf fand die Inhaltsprüfung darin eine URL außerhalb der Allowlist (D-365). ⚠️ **Der wählbare Lieferumfang rückt auf `1.8.0`** (D-366): Hooks und Validator liegen unter `tests/scripts/`. ⚠️ **Die Abnahme auf macOS steht aus** | – | nein |
+| ~~**1.8.0**~~ ✅ | *dieses Release:* 🟢 **DER WÄHLBARE LIEFERUMFANG – UND DIE LISTE, DIE SICH NICHT ABLEITEN LIESS** (`CR-2026-141`, **D-367** bis **D-370**, **Prüfung 90** neu, `K-75` beantwortet, `K-122` neu). `install.py --target --lieferumfang nutzung` liefert den Kern **ohne die Nachweisschicht** – Änderungsanträge, Protokolle, Erhebungen, `build/`, rund 350 von 550 Dateien; die Wahl steht in `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter. 🔴 **Beide Ableitungen des Nötigen sind gemessen gescheitert:** Die Lesespur umfaßt alle 549 Dateien, die Verweishülle mit Verzeichnisverweisen 548 von 548. **Aufgezählt ist deshalb das Gegenteil**, geschlossen nach Ablageort und an einer Stelle; ob die Nutzung auskommt, entscheidet der Validator – reduziert und voll je Pack zeilengleich bis auf `HINWEIS`-Zeilen (Sonde `L367`). Dazu die Windows-Pfadgrenze vor der ersten Kopie (D-368) und der Dateimodus des Archivs (D-369) | – | nein |
+| **1.9.0** | **Qualitätssicherung und Stabilisierung der Dokumentation** (D-370): alle Dokumente auf Aktualität, Schlüssigkeit, Verständlichkeit und Form; Veraltetes entfernen, Fehlendes ergänzen. Kein grundsätzlicher Posten steht mehr davor. Planabschnitt unten | – | nein |
 
 > 🆕 **Mit `0.85.0` sind die vier verbleibenden Posten um zwanzig Nummern gewandert** – von `~0.66.0` bis `~0.69.0` auf `~0.86.0` bis `~0.89.0`. **Das sind nicht zwanzig Einschübe, sondern dieselbe Verschiebung, die der Plan seit `0.62.0` mitschleppt:** Der Posten von `K-62` stand hier auf `~0.65.0` und ist als `0.85.0` gelaufen, und die Posten dahinter standen seither auf Nummern, die längst vergeben waren. *Eine Zahl, die gepflegt werden muß, wird nicht gepflegt – hier war es die ganze untere Hälfte der Tabelle.*
 >
@@ -2384,7 +2385,46 @@ Folgen, noch nicht als Antrag gefasst:
   gerade nicht – er ist Teil dessen, was ausfällt. Eine Meldung müsste aus einer Quelle kommen,
   die auch dann lädt, also aus der Regelablage.
 
-### Geplant: Der wählbare Lieferumfang – Ziel-Release **1.8.0**
+### Geplant: Qualitätssicherung und Stabilisierung der Dokumentation – Ziel-Release **1.9.0**
+
+> 🆕 **Mit `1.8.0` aufgenommen** (D-370, `CR-2026-141` E10), Auftrag des Owners vom 2026-09-25.
+
+**Der Gegenstand:** Alle Dokumente des Kerns und der Wurzel werden auf **Aktualität**,
+**Schlüssigkeit** (in sich und untereinander), **Verständlichkeit** und **korrekte Form**
+durchgesehen; Veraltetes wird entfernt, Fehlendes ergänzt. **Die Nachweisschicht
+(`clientmap.NACHWEIS_ABLAGEN`) ist ausgenommen** – Anträge und Protokolle sind Belege und
+werden nicht umgeschrieben.
+
+**Warum jetzt:** Nach `1.8.0` ist kein grundsätzlicher Posten geplant. `K-67` (MAJOR-Kandidat)
+hat kein Ziel-Release; wird er entschieden, ist das ein `2.0.0` mit eigener Durchsicht seiner
+Träger.
+
+**Der Bedarf, gefunden ohne zu suchen – beim Bau von `1.8.0`:**
+
+- Die Standüberschrift dieses Dokuments stand auf *„Stand nach Release 1.4.4“* – vier
+  Releases alt, direkt über dem Satz *„Wird mit jedem Release fortgeschrieben“*.
+- Kapitel 31 des Hauptdokuments zählt 502 Dateien und 123 Anträge; der Kern hat 550.
+- `RELEASE_PROCESS.md` nannte in einer Begründung die Schritte 2 und 3 einer älteren
+  Tabellenfassung statt 5 und 6.
+
+**Vor der Aufnahme zu klären, nicht danach:**
+
+- **Ein Vorbedingungsdurchgang legt zuerst die Dokumentliste und je Dokument die Kriterien
+  fest.** *„Verständlich“* prüft keine Maschine; ein Posten ohne vorab festgelegte Kriterien
+  hat kein Ende.
+- **Was maschinell faßbar ist, bekommt eine Prüfung** – etwa eine Standüberschrift gegen
+  `VERSION` oder eine Zahl gegen den Bestand. Sonst ist derselbe Befund in drei Releases wieder da.
+- **Die Übergabe ist nicht Gegenstand** – sie ist seit `1.4.1` lokal (D-350).
+
+### Erledigt mit `1.8.0`: Der wählbare Lieferumfang
+
+> 🟢 **Gefahren mit `1.8.0`** (`CR-2026-141`, D-367 bis D-370). `--lieferumfang voll` oder
+> `nutzung`; `nutzung` ist der Kern ohne die Nachweisschicht (`clientmap.NACHWEIS_ABLAGEN`). Die
+> vier Punkte unten sind so beantwortet: **die Grenze** verläuft durch Verzeichnisse – `tests/scripts/`
+> bleibt, `tests/protocols/` geht; **die Liste** ist nicht das Nötige, sondern die Nachweisschicht,
+> weil sich das Nötige gemessen nicht ableiten ließ; **der Validator** besteht reduziert in jedem
+> Pack mit derselben Ausgabe wie voll (Sonde `L367`); **das Heben** liest die Wahl aus
+> `.koolie/core/LIEFERUMFANG`. ⚠️ **Offen:** die großen Einzelträger mit Entwicklungsbezug (`K-122`).
 
 > 🆕 **Mit `1.7.0` aus dem Posten des Installers herausgelöst** (D-366, `CR-2026-140` E11).
 > Der Installer liefert den ganzen Kern wie der Handweg.

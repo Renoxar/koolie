@@ -3,11 +3,15 @@
 install_dialog.py - Der Dialog hinter den Startern install.cmd und install.command.
 
 Hintergrund (D-362, CR-2026-140): Die Starter in der Wurzel des Frameworks suchen nur
-ein passendes Python und rufen dieses Skript auf. Es fragt Projektverzeichnis, Client
-und Overlay-Muster ab und ruft danach genau einen Befehl auf:
+ein passendes Python und rufen dieses Skript auf. Es fragt Projektverzeichnis, Client,
+Overlay-Muster und Lieferumfang ab und ruft danach genau einen Befehl auf:
 
     install.py --target <projekt> [--client <name>] [--overlay <name>]
+                                  [--lieferumfang nutzung]
     install.py --target <projekt> --update
+
+Beim Heben fragt es den Lieferumfang nicht: Es bleibt beim bisherigen (D-367), und ein
+Wechsel ist eine bewusste Handlung auf der Befehlszeile.
 
 Die Fragen stehen HIER und nicht in den Startern, weil zwei Shell-Dialekte zwei
 Dialoge waeren, die auseinanderlaufen. install.py bleibt parametergesteuert; dieses
@@ -118,7 +122,8 @@ def befehl_bauen(ziel: str) -> list[str]:
     if os.path.isdir(zielkern):
         stand = install.kern_version(zielkern)
         print()
-        print(f"In diesem Projekt liegt bereits Koolie {stand}.")
+        print(f"In diesem Projekt liegt bereits Koolie {stand} "
+              f"(Lieferumfang {install.clientmap.lieferumfang(zielkern)}, bleibt).")
         if not ja(f"Auf {install.kern_version(HERE)} heben?", True):
             raise Abbruch("nicht gehoben")
         return argv + ["--update"]
@@ -143,9 +148,16 @@ def befehl_bauen(ziel: str) -> list[str]:
     if len(muster) > 1:
         print()
         overlay = auswahl("Mit einem Overlay-Muster beginnen?", muster, 1)
+    print()
+    umfang = auswahl("Was soll im Projekt liegen?",
+                     [("voll", "der ganze Kern - mit Aenderungsantraegen, Protokollen und "
+                               "Erhebungen"),
+                      ("nutzung", "nur das zur Nutzung Noetige - ohne diese Nachweise")], 1)
     argv += ["--client", client]
     if overlay:
         argv += ["--overlay", overlay]
+    if umfang != "voll":
+        argv += ["--lieferumfang", umfang]
     return argv
 
 

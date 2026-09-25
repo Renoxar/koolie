@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 89, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 90, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -6552,7 +6552,7 @@ buendel(sonden_overlay_muster,
 #   T363  (Sonde) - die Mindestversion steht in install.py und beiden Startern gleich
 #   T365  (Sonde) - install.cmd traegt keine Sprungmarke (LF im Archiv), und
 #                   install.command ist im Repositorium ausfuehrbar (100755)
-T362_ANTWORTEN = "%s\n1\n1\nj\n"
+T362_ANTWORTEN = "%s\n1\n1\n1\nj\n"
 
 
 def _362_lauf(kern: str, *argv: str, eingabe=None, werkzeug: str = "install.py"):
@@ -6581,7 +6581,9 @@ def sonden_kopierweg() -> None:
         schreib(os.path.join(qkern, "__pycache__", "sonde.cpython-38.pyc"), "x")
         os.makedirs(os.path.join(qkern, "build", "out"), exist_ok=True)
         schreib(os.path.join(qkern, "build", "out", "sonde.docx"), "x")
+        # Seit 1.8.0 schreibt --target die Wahl des Lieferumfangs in den Kern (D-367).
         erwartet = {r for r in _362_kerndateien(qkern) if not r.startswith("build/out/")}
+        erwartet.add("LIEFERUMFANG")
 
         # --- T362: Erstinstallation aus der Archivform -------------------------------
         erst = os.path.join(basis, "erst")
@@ -6597,6 +6599,8 @@ def sonden_kopierweg() -> None:
                          % (len(ist - erwartet), len(erwartet - ist)))
         if os.path.exists(os.path.join(erst, ".koolie", "QUELLREPOSITORIUM.md")):
             fehlt.append("Kennzeichen mitkopiert")
+        if _367_umfang(erst) != "voll":
+            fehlt.append("LIEFERUMFANG " + _367_umfang(erst))
         if not os.path.isfile(zoverlay):
             fehlt.append("kein Overlay")
         elif os.path.isfile(qoverlay) and lies(qoverlay) == lies(zoverlay):
@@ -6746,6 +6750,216 @@ def sonden_kopierweg() -> None:
 buendel(sonden_kopierweg,
         "install.py --target aus Archivform und Klon, Heben, Rueckbau und Verweigerungen, "
         "dazu der Dialog und die Bauform der Starter")
+
+
+
+# --- D-367: der Lieferumfang einer Installation (CR-2026-141) ------------------------
+#
+# `install.py --target --lieferumfang nutzung` laesst die Nachweisschicht weg
+# (clientmap.NACHWEIS_ABLAGEN). OB die Nutzung ohne sie auskommt, belegt keine
+# Einzelpruefung, sondern der Vergleich: Eine reduzierte Installation muss je Pack
+# dieselbe Validatorausgabe liefern wie eine volle - bis auf die HINWEIS-Zeilen, die
+# genau das Weggelassene nennen. Ein Traeger, den ein Werkzeug zur Laufzeit aus der
+# Nachweisschicht liest, faellt genau hier auf.
+#   L367  (Sonde) - je Pack: reduziert und voll zeilengleich unter --strict-overlay, bis
+#                   auf die HINWEIS-Zeilen; reduziert ohne Nachweisschicht, mit
+#                   LIEFERUMFANG 'nutzung', voll mit 'voll' und ohne HINWEIS
+#   L367a (Sonde) - --update ohne Angabe hebt und bleibt reduziert
+#   90b   (Sonde) - LIEFERUMFANG mit unbekanntem Wert wird gemeldet
+#   90c   (Sonde) - 'nutzung', obwohl eine Ablage der Nachweisschicht daliegt, wird
+#                   gemeldet
+#   L367c (Sonde) - eine reduzierte Quelle verweigert den vollen Kern, ohne zu schreiben
+#   L367b (Sonde) - --update --lieferumfang voll waechst auf den ganzen Kern
+#   L367d (Sonde) - --lieferumfang ohne --target haelt an
+#   L367e (Sonde) - der Dialog fragt den Umfang und installiert reduziert
+#   T368  (Sonde) - unter Windows: ein Projektpfad, der die Pfadgrenze reisst, haelt vor
+#                   der ersten Kopie an und laesst das Projekt leer (D-368); auf den
+#                   anderen Systemen die Gegenprobe: derselbe Pfad wird installiert
+# Dazu zwei Einzelsonden am Quellrepositorium (90, 90a).
+L367_PACKS = ("claude-code", "devin-desktop", "openai-codex")
+L367_ANTWORTEN = "%s\n1\n1\n2\nj\n"
+
+
+def _367_ausgabe(root: str) -> list:
+    """Validatorausgabe unter --strict-overlay, der Projektpfad durch <ROOT> ersetzt."""
+    p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                      "--root", root, "--strict-overlay"])
+    text = ((p.stdout or "") + (p.stderr or "")).replace(os.path.normpath(root), "<ROOT>")
+    return text.splitlines()
+
+
+def _367_umfang(root: str) -> str:
+    pfad = os.path.join(root, ".koolie", "core", "LIEFERUMFANG")
+    return lies(pfad).strip() if os.path.isfile(pfad) else "-"
+
+
+def _367_nachweis_da(root: str) -> list:
+    kern = os.path.join(root, ".koolie", "core")
+    return [a for a in ("governance/change-requests", "tests/protocols", "tests/erhebungen",
+                        "build") if os.path.exists(os.path.join(kern, *a.split("/")))]
+
+
+def sonden_lieferumfang() -> None:
+    """Wirkungsnachweis fuer den waehlbaren Lieferumfang (D-367) und die Pfadgrenze (D-368)."""
+    basis = tempfile.mkdtemp(prefix="lw-umfang-")
+    quelle = kopie()
+    try:
+        qkern = os.path.join(quelle, ".koolie", "core")
+
+        # --- L367: reduziert gegen voll, je Pack -------------------------------------
+        abweichend = []
+        for pack in L367_PACKS:
+            voll = os.path.join(basis, "voll-" + pack)
+            nutz = os.path.join(basis, "nutzung-" + pack)
+            os.makedirs(voll)
+            os.makedirs(nutz)
+            a = _362_lauf(qkern, "--target", voll, "--client", pack)
+            b = _362_lauf(qkern, "--target", nutz, "--client", pack,
+                          "--lieferumfang", "nutzung")
+            if a.returncode or b.returncode:
+                abweichend.append("%s: Installation Exit %d/%d" % (pack, a.returncode,
+                                                                  b.returncode))
+                continue
+            aus_voll = _367_ausgabe(voll)
+            aus_nutz = _367_ausgabe(nutz)
+            ohne = [z for z in aus_nutz if not z.startswith("HINWEIS")]
+            hinweise = [z for z in aus_nutz if z.startswith("HINWEIS")]
+            if ohne != aus_voll:
+                nur_nutz = [z for z in ohne if z not in aus_voll]
+                nur_voll = [z for z in aus_voll if z not in ohne]
+                abweichend.append("%s: %d Zeilen nur reduziert, %d nur voll; erste: %s"
+                                  % (pack, len(nur_nutz), len(nur_voll),
+                                     ((nur_nutz or nur_voll or ["Reihenfolge"])[0])[:160]))
+            if any(z.startswith("HINWEIS") for z in aus_voll):
+                abweichend.append(pack + ": die volle Installation traegt HINWEIS-Zeilen")
+            if not any("Lieferumfang 'nutzung'" in z for z in hinweise):
+                abweichend.append(pack + ": reduziert ohne HINWEIS zum Lieferumfang")
+            if _367_nachweis_da(nutz):
+                abweichend.append(pack + ": reduziert liegt " + ", ".join(_367_nachweis_da(nutz)))
+            if (_367_umfang(voll), _367_umfang(nutz)) != ("voll", "nutzung"):
+                abweichend.append("%s: LIEFERUMFANG %s/%s" % (pack, _367_umfang(voll),
+                                                              _367_umfang(nutz)))
+        melde("SONDE", "L367", not abweichend,
+              "Eine reduzierte Installation meldet in jedem Pack dasselbe wie eine volle, "
+              "bis auf die HINWEIS-Zeilen zum Weggelassenen")
+        for z in abweichend:
+            notiz("        " + z)
+
+        nutz = os.path.join(basis, "nutzung-claude-code")
+        nkern = os.path.join(nutz, ".koolie", "core")
+
+        # --- L367a: Heben ohne Angabe bleibt reduziert -------------------------------
+        schreib(os.path.join(nkern, "VERSION"), "0.0.0\n")
+        p = _362_lauf(qkern, "--target", nutz, "--update")
+        ok = (p.returncode == 0 and _367_umfang(nutz) == "nutzung"
+              and not _367_nachweis_da(nutz)
+              and lies(os.path.join(nkern, "VERSION")).strip()
+              == lies(os.path.join(qkern, "VERSION")).strip())
+        melde("SONDE", "L367a", ok,
+              "--update ohne Angabe hebt ein reduziertes Projekt und laesst es reduziert")
+        if not ok:
+            notiz("        Exit %d, Umfang %s, Nachweis %s" % (
+                p.returncode, _367_umfang(nutz), _367_nachweis_da(nutz)))
+
+        # --- 90b, 90c: Pruefung 90 an der reduzierten Installation --------------------
+        schreib(os.path.join(nkern, "LIEFERUMFANG"), "teilweise\n")
+        melde("SONDE", "90b", "trägt 'teilweise'" in "\n".join(_367_ausgabe(nutz)),
+              "Ein unbekannter Wert in LIEFERUMFANG wird gemeldet - das naechste Heben "
+              "hielte daran an")
+        schreib(os.path.join(nkern, "LIEFERUMFANG"), "nutzung\n")
+        os.makedirs(os.path.join(nkern, "tests", "protocols"))
+        schreib(os.path.join(nkern, "tests", "protocols", "liegengeblieben.md"), "# x\n")
+        melde("SONDE", "90c", "sagt 'nutzung', aber" in "\n".join(_367_ausgabe(nutz)),
+              "LIEFERUMFANG nutzung neben einer Ablage der Nachweisschicht wird gemeldet - "
+              "das naechste Heben loeschte sie")
+
+        # --- L367c: aus der reduzierten Quelle kein voller Kern ------------------------
+        leer = os.path.join(basis, "aus-reduziert")
+        os.makedirs(leer)
+        p = _362_lauf(nkern, "--target", leer, "--client", "claude-code")
+        ok = p.returncode == 1 and "einen vollen Kern kann" in p.stderr and not os.listdir(leer)
+        melde("SONDE", "L367c", ok,
+              "Eine reduzierte Quelle verweigert den vollen Kern und schreibt nichts")
+
+        # --- L367b: ausdruecklich zurueck auf voll --------------------------------------
+        shutil.rmtree(os.path.join(nkern, "tests", "protocols"))
+        p = _362_lauf(qkern, "--target", nutz, "--update", "--lieferumfang", "voll")
+        ok = (p.returncode == 0 and _367_umfang(nutz) == "voll"
+              and len(_367_nachweis_da(nutz)) == 4 and "(bisher nutzung)" in p.stdout)
+        melde("SONDE", "L367b", ok,
+              "--update --lieferumfang voll bringt die Nachweisschicht zurueck und nennt "
+              "den Wechsel")
+        if not ok:
+            notiz("        Exit %d, Umfang %s, Nachweis %s" % (
+                p.returncode, _367_umfang(nutz), _367_nachweis_da(nutz)))
+
+        # --- L367d: ohne --target ------------------------------------------------------
+        ohne_ziel = os.path.join(basis, "ohne-target")
+        os.makedirs(ohne_ziel)
+        p = _362_lauf(qkern, "--root", ohne_ziel, "--lieferumfang", "nutzung")
+        ok = (p.returncode == 1 and "gehoert zu --target" in p.stderr
+              and not os.listdir(ohne_ziel))
+        melde("SONDE", "L367d", ok, "--lieferumfang ohne --target haelt an, ohne zu schreiben")
+
+        # --- L367e: der Dialog ---------------------------------------------------------
+        dlg = os.path.join(basis, "dialog")
+        os.makedirs(dlg)
+        p = _362_lauf(qkern, eingabe=L367_ANTWORTEN % dlg, werkzeug="install_dialog.py")
+        ok = p.returncode == 0 and _367_umfang(dlg) == "nutzung" and not _367_nachweis_da(dlg)
+        melde("SONDE", "L367e", ok,
+              "Der Dialog fragt den Lieferumfang ab und installiert reduziert")
+        if not ok:
+            notiz("        Exit %d, Umfang %s: %s" % (p.returncode, _367_umfang(dlg), " | ".join(
+                (p.stdout + p.stderr).splitlines()[-4:])))
+
+        # --- T368: die Pfadgrenze ------------------------------------------------------
+        tief = basis
+        while len(tief) < 190:
+            tief = os.path.join(tief, "t" * min(40, 200 - len(tief)))
+        os.makedirs(tief)
+        p = _362_lauf(qkern, "--target", tief, "--client", "claude-code")
+        if os.name == "nt":
+            ok = (p.returncode == 1 and "fuer Windows zu lang" in p.stderr
+                  and not os.listdir(tief))
+            melde("SONDE", "T368", ok,
+                  "Ein Projektpfad, der die Windows-Pfadgrenze reisst, haelt vor der ersten "
+                  "Kopie an und laesst das Projekt leer")
+        else:
+            ok = p.returncode == 0
+            melde("GEGENPROBE", "T368", ok,
+                  "Ausserhalb von Windows gilt keine Pfadgrenze - derselbe tiefe "
+                  "Projektpfad wird installiert")
+        if not ok:
+            notiz("        Exit %d: %s" % (p.returncode, (p.stderr or "")[:200]))
+    finally:
+        aufraeumen(os.path.dirname(quelle))
+        aufraeumen(basis)
+
+
+buendel(sonden_lieferumfang,
+        "Reduzierte gegen volle Installation je Pack, Heben mit und ohne Wechsel, "
+        "Verweigerungen, der Dialog, Pruefung 90 und die Windows-Pfadgrenze")
+
+
+# Pruefung 90 am Quellrepositorium: Es ist keine Installation, und die Lockerung von
+# Pruefung 12 gilt dort nie - was immer eine Datei LIEFERUMFANG behauptet.
+P90_DATEI = os.path.join(".koolie", "core", "LIEFERUMFANG")
+P90_PROTOKOLL = os.path.join(".koolie", "core", "tests", "protocols",
+                             "2026-09-19-testblaetter-buendel-2.md")
+
+
+def _90a(root: str) -> None:
+    schreib(P(root, P90_DATEI), "nutzung\n")
+    if not os.path.isfile(P(root, P90_PROTOKOLL)):
+        raise Praeparationsfehler("Das zitierte Protokoll fehlt schon: " + P90_PROTOKOLL)
+    os.remove(P(root, P90_PROTOKOLL))
+
+
+sonde("90", "Eine Datei LIEFERUMFANG im Quellrepositorium wird gemeldet - sie behauptete dort eine Installation",
+      lambda r: schreib(P(r, P90_DATEI), "nutzung\n"), "liegt im Quellrepositorium")
+
+sonde("90a", "Im Quellrepositorium bleibt ein Verweis in die Nachweisschicht ein Fehler, auch wenn LIEFERUMFANG nutzung behauptet",
+      _90a, "Pfadangabe existiert nicht: .koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-2.md")
 
 
 # --- D-364: Pruefung 33 ohne PyYAML (CR-2026-140) --------------------------------------

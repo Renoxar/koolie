@@ -693,7 +693,15 @@ Prüft (statisch, ohne laufenden KI-Client):
      wird nicht uebergangen. "Kein Wert" hat gemessen mehrere Schreibweisen
      (`nicht vorhanden`, `keine`) und ist die leere Menge. GRENZE: (c) prueft nur die
      Richtung Quelle -> Korb, und (c) ist wie bei 59 an die Ausgabeform 'json' gebunden
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 89 laeuft als eigenes
+ 90. Der Lieferumfang einer Installation (D-367): (a) .koolie/core/LIEFERUMFANG traegt
+     einen bekannten Wert, (b) "nutzung" stimmt mit dem Bestand - keine Ablage der
+     Nachweisschicht (clientmap.NACHWEIS_ABLAGEN) liegt da, (c) das Quellrepositorium
+     fuehrt keine solche Datei. In einer Installation mit "nutzung" meldet Pruefung 12
+     Verweise in die Nachweisschicht nicht, und 76, 77 und 80 pruefen nur, was geliefert
+     ist - jeweils mit einer HINWEIS-Zeile, die weder als Fehler noch als Warnung zaehlt.
+     GRENZE: Ob die Nutzung ohne die Nachweisschicht auskommt, belegt nicht diese
+     Pruefung, sondern der zeilengleiche Vergleich mit einer vollen Installation (L367)
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 6, 8, 14, 18 bis 66 und 68 bis 90 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -774,6 +782,11 @@ def formatgebunden(man: dict, nummer: int) -> bool:
 
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
+# Seit 1.8.0 (D-367): Zeilen, die eine reduzierte Installation erklaeren - was sie nicht
+# mitliefert und welche Pruefung deshalb nichts zu pruefen hat. Sie zaehlen weder als
+# Fehler noch als Warnung; eine reduzierte Installation ist kein Mangel. Stumm bleiben
+# duerfen sie nicht: Eine Luecke, die nur besteht, ist ein blinder Fleck (D-346).
+HINWEISE: list[str] = []
 
 # ".cmd" und ".command" seit 1.7.0: die Starter des Installers (D-365). Ohne sie lasen
 # weder die Neutralitaets- noch die Zeilenendepruefungen diese Traeger.
@@ -958,6 +971,11 @@ def err(msg: str) -> None:
 
 def warn(msg: str) -> None:
     WARNINGS.append(msg)
+
+
+def hinweis(msg: str) -> None:
+    if msg not in HINWEISE:
+        HINWEISE.append(msg)
 
 
 def read(path: str) -> str:
@@ -1871,6 +1889,11 @@ def _target_exists(root: str, src_rel: str, target: str) -> bool:
     # Ein Verweis darauf beschreibt eine Möglichkeit, keine vorhandene Datei.
     if ".local." in base or base.endswith(".local"):
         return True
+    # Die Angabe des Lieferumfangs schreibt install.py erst im Projekt (D-367); im
+    # Quellrepositorium beschreibt ein Verweis darauf die Installation, nicht diesen Baum.
+    cm = _clientmap(root)
+    if cm is not None and target == f"{KERN}/{cm.LIEFERUMFANG_DATEI}":
+        return True
     # Eine mitgelieferte Vorlage zählt als Nachweis: Dateien wie .mcp.json legt die
     # nutzende Person selbst aus der .example-Fassung an.
     for cand in (target, target + ".example", target + ".template"):
@@ -1896,6 +1919,17 @@ def check_links(root: str) -> None:  # noqa: C901
     """
     fremdpfade = _client_runtime_paths(root)
     link_roots = _link_roots(root)
+    herkunft = {}  # Traeger -> Zahl der Verweise in die nicht gelieferte Nachweisschicht
+
+    def geliefert_fehlt(rel: str, target: str) -> bool:
+        """Zeigt der Verweis in die Nachweisschicht, die dieser Umfang nicht liefert?
+        Dann ist er eine Herkunftsangabe und wird gezaehlt statt gemeldet (D-367)."""
+        ziel = os.path.normpath(os.path.join(os.path.dirname(rel), target)).replace(os.sep, "/")
+        if nicht_geliefert(root, target.rstrip("/")) or nicht_geliefert(root, ziel):
+            herkunft[rel] = herkunft.get(rel, 0) + 1
+            return True
+        return False
+
     for path in iter_text_files(root):
         if not path.endswith((".md", ".template")):
             continue
@@ -1906,7 +1940,7 @@ def check_links(root: str) -> None:  # noqa: C901
 
         for m in MD_LINK_RE.finditer(text):
             target = _normalize_target(m.group(1))
-            if target is not None and not _target_exists(root, rel, target):
+            if target is not None and not _target_exists(root, rel, target)                     and not geliefert_fehlt(rel, target):
                 err(f"{rel}: Markdown-Link zeigt ins Leere: {m.group(1)}")
 
         if rel.startswith(LINK_EXCEPTIONS) or os.path.basename(rel) in LINK_EXCEPTION_BASENAMES:
@@ -1934,8 +1968,12 @@ def check_links(root: str) -> None:  # noqa: C901
             # Ein Pfad eines anderen Packs ist kein toter Verweis, sondern eine
             # Client-Bindung. Seit 0.57.0 meldet sie Pruefung 48 - als Fehler, ueber
             # alle Traeger und ohne die drei Grenzen dieser Heuristik (D-128).
-            if not fremd:
+            if not fremd and not geliefert_fehlt(rel, target):
                 err(f"{rel}: Pfadangabe existiert nicht: {tok}")
+    if herkunft:
+        hinweis(f"{sum(herkunft.values())} Verweis(e) aus {len(herkunft)} Träger(n) zeigen "
+                f"in die Nachweisschicht, die dieser Lieferumfang nicht mitliefert - "
+                f"Herkunftsangaben, nicht gemeldet (Prüfung 12, D-367)")
 
 
 RUNTIME_PLACEHOLDER_RE = re.compile(
@@ -8011,6 +8049,96 @@ def ist_quellrepositorium(root: str) -> bool:
     return os.path.isfile(os.path.join(root, *QUELLREPO_KENNZEICHEN.split("/")))
 
 
+# --- Pruefung 90: Der Lieferumfang einer Installation (D-367, CR-2026-141) ----------
+#
+# ANLASS. Seit 1.8.0 kann ein Projekt den Kern ohne die Nachweisschicht bekommen
+# (install.py --target --lieferumfang nutzung). Die Nachweisschicht steht an EINER
+# Stelle - clientmap.NACHWEIS_ABLAGEN -, und dieser Validator liest sie dort, statt sie
+# ein zweites Mal aufzuzaehlen: zwei Listen, die einander decken sollen, sind die
+# Bauform von 0.57.0.
+#
+# WAS SICH IN EINER REDUZIERTEN INSTALLATION AENDERT, und nur das (gemessen am
+# 2026-09-25 an allen drei Packs): 70 Verweise ausgelieferter Traeger zeigen in
+# tests/protocols/ - Herkunftsangaben, deren Aussage ohne die Datei steht -, und drei
+# Pruefungen verlieren ihren Gegenstand: 76 (eine ihrer vier Stellen,
+# tests/erhebungen/ablage.py), 77 (build/doc/00-kopf.md) und 80 (tests/protocols/).
+# Alles das wird dort nicht gemeldet, sondern als HINWEIS genannt. Jede andere Zeile
+# bleibt, wie sie in einer vollen Installation stuende - die Sonde L367 haelt beide
+# Ausgaben zeilengleich gegeneinander.
+#
+# DREI GEGENSTAENDE:
+#   (a) LIEFERUMFANG traegt einen bekannten Wert.
+#   (b) "nutzung" stimmt mit dem Bestand: Keine Ablage der Nachweisschicht liegt da.
+#       Sonst behauptete die Datei weniger, als geliefert ist - und das naechste Heben
+#       loeschte es.
+#   (c) Das Quellrepositorium fuehrt KEINE solche Datei. Es ist keine Installation;
+#       eine Quelle, die "nutzung" behauptet, kann install.py keinen vollen Kern mehr
+#       liefern. Die Lockerung oben gilt dort ohnehin nie - was immer die Datei sagt.
+# GRENZE. Ob die Nutzung ohne die Nachweisschicht auskommt, belegt nicht diese
+# Pruefung, sondern der Vergleich einer reduzierten mit einer vollen Installation
+# (Sonde L367). Ein Traeger, den ein Werkzeug zur Laufzeit aus der Nachweisschicht
+# liest, fiele erst dort auf.
+def _clientmap(root: str):
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return None
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        return None
+    return clientmap if hasattr(clientmap, "NACHWEIS_ABLAGEN") else None
+
+
+def reduziert(root: str) -> bool:
+    """Liegt hier eine Installation mit Lieferumfang 'nutzung' (D-367)?"""
+    if ist_quellrepositorium(root):
+        return False
+    cm = _clientmap(root)
+    return cm is not None and cm.lieferumfang(os.path.join(root, KERN)) == "nutzung"
+
+
+def nicht_geliefert(root: str, rel: str) -> bool:
+    """Ist rel (projektrelativ) ein Teil der Nachweisschicht, den diese reduzierte
+    Installation nicht mitliefert?"""
+    if not rel.startswith(KERN + "/") or not reduziert(root):
+        return False
+    return _clientmap(root).ist_nachweis(rel[len(KERN) + 1:])
+
+
+def check_lieferumfang(root: str) -> None:
+    """Pruefung 90 (D-367): Die Angabe des Lieferumfangs stimmt."""
+    cm = _clientmap(root)
+    if cm is None:
+        return  # ohne clientmap.py meldet Pruefung 1 die fehlende Pflichtdatei
+    kern = os.path.join(root, KERN)
+    datei = f"{KERN}/{cm.LIEFERUMFANG_DATEI}"
+    vorhanden = os.path.isfile(os.path.join(kern, cm.LIEFERUMFANG_DATEI))
+    if ist_quellrepositorium(root):
+        if vorhanden:
+            err(f"{datei}: liegt im Quellrepositorium. Die Datei schreibt install.py in "
+                f"ein Projekt; hier behauptete sie eine Installation, und eine Quelle mit "
+                f"'nutzung' lieferte keinen vollen Kern mehr (D-367)")
+        return
+    wert = cm.lieferumfang(kern)
+    if wert not in cm.LIEFERUMFAENGE:
+        err(f"{datei}: trägt '{wert}' – bekannt sind {', '.join(cm.LIEFERUMFAENGE)}. "
+            f"Das nächste Heben hält daran an (D-367)")
+        return
+    if wert != "nutzung":
+        return
+    da = [a for a in cm.NACHWEIS_ABLAGEN if os.path.exists(os.path.join(kern, *a.split("/")))]
+    if da:
+        err(f"{datei}: sagt 'nutzung', aber {', '.join(f'{KERN}/{a}/' for a in da)} "
+            f"liegt da. Das nächste Heben mit diesem Umfang löscht es; wer den ganzen "
+            f"Kern will, hebt mit --lieferumfang voll (D-367)")
+        return
+    hinweis(f"Lieferumfang 'nutzung' ({datei}): ohne die Nachweisschicht "
+            f"({', '.join(cm.NACHWEIS_ABLAGEN)}). Verweise dorthin sind Herkunftsangaben "
+            f"und werden nicht gemeldet; Belege stehen im Release-Archiv (D-367)")
+
+
 # --- Pruefung 68: Das Praefix, das mehr sperrt als sein Befehl ----------------------
 #
 # ANLASS, UND ER IST GEMESSEN. permissions.json fuehrt je exec-Regel einen `command`
@@ -8912,6 +9040,10 @@ def check_kernlage(root: str) -> None:
     werte = {}
     for rel in P76_STELLEN:
         pfad = os.path.join(root, KERN, *rel.split("/"))
+        if not os.path.isfile(pfad) and nicht_geliefert(root, f"{KERN}/{rel}"):
+            hinweis(f"Prüfung 76 hält die Kernlage an drei statt vier Stellen: "
+                    f"{KERN}/{rel} gehört zur Nachweisschicht und ist nicht geliefert (D-367)")
+            continue
         if not os.path.isfile(pfad):
             err(f"{KERN}/{rel}: fehlt – Prüfung 76 hätte dort einen ihrer vier "
                 f"Gegenstände verloren (D-23)")
@@ -8959,6 +9091,10 @@ DOKUMENT_VERSION_RE = re.compile(
 def check_dokumentstand(root: str) -> None:
     """Pruefung 77 (D-312): Das Hauptdokument steht auf dem Stand des Kerns."""
     pfad = os.path.join(root, *DOKUMENT_KOPF.split("/"))
+    if not os.path.isfile(pfad) and nicht_geliefert(root, DOKUMENT_KOPF):
+        hinweis(f"Prüfung 77 ohne Gegenstand: {DOKUMENT_KOPF} gehört zur Nachweisschicht "
+                f"und ist nicht geliefert (D-367)")
+        return
     if not os.path.isfile(pfad):
         err(f"{DOKUMENT_KOPF}: fehlt. Prüfung 77 hält dort die Dokumentversion gegen "
             f"{KERN}/VERSION; ohne den Träger hat sie ihren Gegenstand verloren (D-312)")
@@ -9206,6 +9342,10 @@ P80_ABSCHNITT = re.compile(r"^#{1,6}\s.*Gegenzeichnung", re.M | re.I)
 def check_gegenzeichnung(root: str) -> None:
     """Pruefung 80 (D-319): Abnahmeprotokolle tragen ihre Gegenzeichnung."""
     ablage = os.path.join(root, *P80_ABLAGE.split("/"))
+    if not os.path.isdir(ablage) and nicht_geliefert(root, P80_ABLAGE):
+        hinweis(f"Prüfung 80 ohne Gegenstand: {P80_ABLAGE}/ gehört zur Nachweisschicht "
+                f"und ist nicht geliefert (D-367)")
+        return
     if not os.path.isdir(ablage):
         err(f"{P80_ABLAGE}/: fehlt. Prüfung 80 hält dort die Gegenzeichnung der "
             f"Abnahmeprotokolle; ohne die Ablage hat sie ihren Gegenstand verloren "
@@ -10052,6 +10192,7 @@ def main() -> int:
     check_dokumentzahlen(root)
     check_lizenz(root)
     check_gegenzeichnung(root)
+    check_lieferumfang(root)
     check_zeilenendeform(root)
     check_bestandsliste_stand(root)
     check_chronikspanne(root)
@@ -10071,6 +10212,8 @@ def main() -> int:
     if args.mermaid:
         check_mermaid(root)
 
+    for h in HINWEISE:
+        print(f"HINWEIS  {h}")
     for w in WARNINGS:
         print(f"WARNUNG  {w}")
     for e in ERRORS:

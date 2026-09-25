@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.9` |
+| Version | `0.4.10` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -57,19 +57,33 @@ bleibt unberührt (P10, Baum 6).
 
    🆕 **Schritt 2 und 3 in einem Zug – der Starter (seit `1.7.0`, D-362):** Im entpackten
    Release-Archiv liegen in der Wurzel `install.cmd` (Windows) und `install.command`
-   (macOS). Sie suchen ein Python ab 3.8 (D-363), fragen Projektverzeichnis, Client und
-   Overlay-Muster ab und rufen dann genau einen Befehl auf, der auch direkt geht:
+   (macOS). Sie suchen ein Python ab 3.8 (D-363), fragen Projektverzeichnis, Client,
+   Overlay-Muster und Lieferumfang ab und rufen dann genau einen Befehl auf, der auch
+   direkt geht:
 
    ```bash
-   python .koolie/core/install.py --target /pfad/zum/projekt --client <client> [--overlay general]
+   python .koolie/core/install.py --target /pfad/zum/projekt --client <client> [--overlay general] [--lieferumfang nutzung]
    ```
+
+   🆕 **Der Lieferumfang (seit `1.8.0`, D-367):** `voll` – die Vorgabe – kopiert den ganzen
+   Kern. `nutzung` läßt die **Nachweisschicht** weg: Änderungsanträge
+   (`governance/change-requests/`), Abnahmeprotokolle (`tests/protocols/`), Erhebungen
+   (`tests/erhebungen/`) und den Bau des Hauptdokuments (`build/`) – rund 350 von 550
+   Dateien. Alles zur Nutzung bleibt, auch Hooks und Validator. Die Wahl steht danach in
+   `.koolie/core/LIEFERUMFANG` und **gilt beim Heben weiter**; gewechselt wird nur mit
+   ausdrücklichem `--lieferumfang`. Der Validator nennt in einem reduzierten Projekt das
+   Weggelassene in `HINWEIS`-Zeilen, die weder als Fehler noch als Warnung zählen. ⚠️
+   **Preis:** Verweise auf Protokolle zeigen dort ins Leere – die Belege stehen im
+   Release-Archiv.
 
    `--target` kopiert **nur** `.koolie/core/` – aus einem Klon nur das Verfolgte, aus dem
    Archiv alles außer Bytecode und `build/out/` – und ruft danach das **kopierte**
    `install.py` im Projekt auf; scheitert es dort, wird der kopierte Kern wieder entfernt.
    Der Warnhinweis unten zu `.koolie/` betrifft diesen Weg nicht. **Was der Starter nicht
-   tut:** Er installiert kein Python und kein PyYAML, er wählt keinen Lieferumfang (der
-   ganze Kern, wie bisher) und er ersetzt die Schritte ab 4 nicht. ⚠️ Beim ersten Start
+   tut:** Er installiert kein Python und kein PyYAML, und er ersetzt die Schritte ab 4
+   nicht. ⚠️ Unter Windows muß der Pfad zum Projekt kurz genug sein, daß kein Pfad im
+   Kern die Grenze von 259 Zeichen reißt – ab 146 Zeichen Projektpfad (Stand `1.8.0`) hält
+   `--target` vor der ersten Kopie mit dieser Begründung an (D-368). ⚠️ Beim ersten Start
    warnt das System vor dem unsignierten Starter (SmartScreen, Gatekeeper); unter macOS
    ist der sichere Weg `sh install.command` im Terminal. **Der macOS-Starter ist unter
    Git Bash und Linux geprüft, auf macOS selbst noch nicht** (`CR-2026-140`).
@@ -273,7 +287,11 @@ bleibt unberührt (P10, Baum 6).
    Starter, der ein vorhandenes Projekt erkennt und das Heben anbietet. Das Verzeichnis
    wird als Ganzes ersetzt, nicht Datei für Datei, und erst nach erfolgreichem
    `--update` im Projekt ist der alte Kern weg; scheitert es, liegt er wieder an seinem
-   Platz.
+   Platz. Der Lieferumfang bleibt dabei, wie er war (`.koolie/core/LIEFERUMFANG`,
+   D-367); wer wechseln will, nennt `--lieferumfang voll` oder `nutzung` ausdrücklich. 🔴
+   **Nur `--target` kennt den Lieferumfang:** Wer ein reduziertes Projekt von Hand hebt
+   (`rm -rf` und Kopie), bekommt den ganzen Kern und verliert die Datei – das Projekt ist
+   danach wieder `voll`.
 
    **Das Client Pack wird erkannt, nicht vermutet.** `install.py` liest, welche Laufzeitschicht im Wurzelverzeichnis liegt, und aktualisiert dieses Pack – `--client` ist dafür nicht nötig und sollte weggelassen werden. Die erste Ausgabezeile nennt das erkannte Pack; stimmt es nicht, bricht der Lauf ab, statt eine zweite Laufzeitschicht anzulegen (D-45). Findet die Erkennung nichts – etwa bei einer unvollständigen Installation –, ist `--client <pack>` anzugeben.
 

@@ -2,6 +2,81 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.8.0] - 2026-09-25
+
+**Der waehlbare Lieferumfang - und die Liste, die sich nicht ableiten liess**
+(`CR-2026-141` E1 bis E10, **D-367** bis **D-370**, **Pruefung 90** neu, `K-75`
+beantwortet, `K-122` neu). Ein MINOR-Release ohne Kontingent.
+
+> 🟢 **EIN PROJEKT WAEHLT DEN GANZEN KERN ODER NUR DAS ZUR NUTZUNG NOETIGE.**
+> `install.py --target <projekt> --lieferumfang nutzung` laesst die Nachweisschicht weg -
+> Aenderungsantraege, Abnahmeprotokolle, Erhebungen und den Bau des Hauptdokuments, rund
+> 350 von 550 Dateien. Hooks und Validator bleiben. Die Wahl steht im Projekt in
+> `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter; gewechselt wird nur
+> ausdruecklich. `voll` bleibt die Vorgabe (D-367).
+>
+> 🔴 **DIE LISTE DES NOETIGEN LIESS SICH NICHT ABLEITEN - GEMESSEN, ZWEIMAL.** Die
+> Lesespur umfasst alle 549 Kerndateien, weil der Validator den ganzen Baum liest; die
+> Verweishuelle mit Verzeichnisverweisen 548 von 548, ohne sie behaelt sie 39 Protokolle
+> und verliert die Skillquellen, die `--update` braucht. **Aufgezaehlt ist deshalb das
+> Gegenteil:** die Nachweisschicht, geschlossen nach Ablageort, an einer Stelle
+> (`clientmap.NACHWEIS_ABLAGEN`). Eine neue Datei zur Nutzung ist von selbst dabei.
+>
+> 🟢 **OB DIE NUTZUNG AUSKOMMT, ENTSCHEIDET DER VALIDATOR.** Die Sonde `L367` haelt je Pack
+> eine reduzierte gegen eine volle Installation: zeilengleich unter `--strict-overlay`,
+> bis auf die `HINWEIS`-Zeilen - eine neue Ausgabeform, die weder Fehler noch Warnung
+> ist. Sie nennen die 70 Verweise in die Nachweisschicht (Herkunftsangaben) und die drei
+> Pruefungen 76, 77 und 80, die dort nur das Gelieferte pruefen.
+>
+> 🔴 **ZWEI NEBENBEFUNDE.** `--target` brach an der Windows-Pfadgrenze ab und fragte, ob
+> eine Datei geoeffnet sei - jetzt haelt es vorher an und nennt Pfad und Laenge (D-368).
+> Und das Archiv von `v1.7.0` trug nach dem Befehl aus Schritt 5 den Modus `0775` fuer
+> den macOS-Starter; Schritt 5 setzt jetzt `tar.umask=022` (D-369).
+
+**Hinzugefuegt**
+
+- `install.py --lieferumfang voll|nutzung` (nur mit `--target`), die Datei
+  `.koolie/core/LIEFERUMFANG` im Projekt, die Zeile *Umfang:* in der Ausgabe; die Frage im
+  Dialog bei der Erstinstallation.
+- **Pruefung 90** (D-367): `LIEFERUMFANG` traegt einen bekannten Wert, `nutzung` stimmt mit
+  dem Bestand, das Quellrepositorium fuehrt keine solche Datei.
+- Die Ausgabeform **`HINWEIS`** des Validators.
+- Die Vorpruefung der Windows-Pfadgrenze in `install.py --target` (D-368).
+- Buendel `sonden_lieferumfang` (`L367` bis `L367e`, `90b`, `90c`, `T368`), Sonden `90`
+  und `90a`.
+
+**Geaendert**
+
+- **Pruefung 12** meldet in einer Installation mit `nutzung` Verweise in die
+  Nachweisschicht nicht, sondern zaehlt sie; **76, 77, 80** pruefen dort nur das
+  Gelieferte - je mit `HINWEIS`. Im Quellrepositorium unveraendert streng.
+- `T362` erwartet `LIEFERUMFANG` mit `voll`, `T362g` die neue Frage des Dialogs.
+- `governance/RELEASE_PROCESS.md` (`0.3.3`): Schritt 5 mit `-c tar.umask=022`, Schritt 6
+  zaehlt den Modus nach (D-369); eine Begruendung nannte die Schritte 2 und 3 einer
+  frueheren Tabellenfassung - berichtigt.
+- `docs/ADOPTION_GUIDE.md` (`0.4.10`), `README.md`, Kapitel 15 und 31: der Lieferumfang.
+- `docs/ROADMAP.md`: die Standueberschrift stand auf `1.4.4` - berichtigt; `1.8.0` ist
+  gefahren; **neuer Posten `1.9.0`: Qualitaetssicherung und Stabilisierung der
+  Dokumentation** (D-370).
+- `K-75` beantwortet; `K-122` neu (die grossen Einzeltraeger mit Entwicklungsbezug).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Bestehende Projekte bleiben `voll`: Ohne `LIEFERUMFANG` gilt `voll`, und das
+  naechste `--target --update` schreibt die Datei. Wer reduzieren will, hebt einmal mit
+  `--lieferumfang nutzung`.
+
+**Bekannte Einschraenkungen**
+
+- Nur `--target` kennt den Lieferumfang. Wer ein reduziertes Projekt von Hand hebt
+  (`rm -rf` und Kopie), bekommt den ganzen Kern und verliert die Datei.
+- In einem reduzierten Projekt zeigen 70 Verweise auf Protokolle ins Leere; die Belege
+  stehen im Release-Archiv.
+- `CHANGELOG.md`, `DECISION_LOG.md`, `ROADMAP.md` und das Sondenskript gehen auch mit
+  `nutzung` mit (`K-122`).
+- Die Pfadgrenze prueft nur unter Windows.
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.7.0] - 2026-09-25
 
 **Der Installer je Zielsystem - und die Pruefung, die ohne PyYAML Fehler erfand**
