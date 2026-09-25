@@ -48,7 +48,7 @@ Die Regelablage enthält die clientspezifische Laufzeitfassung der Framework-Reg
 | Root-Regeln werden beim Sitzungsstart geladen, Regeln in Unterverzeichnissen erst beim Zugriff auf das Verzeichnis | `[DOK]` |
 | `.devin/` hat Vorrang vor `.windsurf/`; persönliche `*.local.md`-Dateien überschreiben geteilte Pendants | `[DOK]` |
 | Eine Datei **ohne** Frontmatter führt der Client mit Aktivierung `manual` – gemessen mit `devin rules show` (K-25) | in einer Sitzung erhoben (2026-09-11) |
-| Zeichenlimits: 12.000 Zeichen je Regeldatei, 6.000 Zeichen für `20-project-overlay.md` – **Vorgabe des Frameworks, keine Produkteigenschaft** | `[EMPF]`. Die Zahlen stammen aus der Cascade-Dokumentation; für Devin Local nennt der Hersteller **keine** Grenze (zweimal geprüft am 2026-09-11 gegen 3.9.19, `CR-2026-027`). Der Validator prüft weiter dagegen |
+| Zeichenlimits: `AGENTS.md` und die Regeln mit `always_on` zusammen höchstens 40.000 Zeichen (verbindlich, D-387); 12.000 Zeichen je Regeldatei, 6.000 Zeichen für `20-project-overlay.md` als SOLL-Grenzen – **Vorgabe des Frameworks, keine Produkteigenschaft** | `[EMPF]`. Die Zahlen stammen aus der Cascade-Dokumentation; für Devin Local nennt der Hersteller **keine** Grenze (zweimal geprüft am 2026-09-11 gegen 3.9.19, `CR-2026-027`). Der Validator prüft weiter dagegen |
 | Bedeutung der Trigger: `always_on` = vollständiger Inhalt in jedem Prompt; `model_decision` = nur Beschreibung im Prompt, Inhalt bei Relevanz; `glob` = bei Lesen/Ändern passender Dateien; `manual` = nur bei ausdrücklicher Erwähnung | `[DOK]` |
 
 ### Nummernschema und Ebenenzuordnung (Framework-Konvention `[KONZ]`)
@@ -67,7 +67,7 @@ Die Nummern bilden die Ladereihenfolge im Dateisystem ab, nicht die Priorität. 
 ### Regeln für die Regelablage
 
 - **Dort liegt nur, was Regel ist.** Ein erklärender Text gehört hierher, nicht dorthin (D-36). Der Validator meldet eine Datei in der Vorlage der Regelablage, die dem Nummernschema nicht folgt.
-- Jede Datei bleibt unter 12.000 Zeichen; `20-project-overlay.md` SOLL unter 6.000 Zeichen bleiben, damit die Summe der always-on-Inhalte klein bleibt (Least Context).
+- `AGENTS.md` und die Regeln mit `always_on` bleiben zusammen unter 40.000 Zeichen (verbindlich, D-387). Jede Datei SOLL unter 12.000 Zeichen bleiben, `20-project-overlay.md` unter 6.000 Zeichen, damit die Summe der always-on-Inhalte klein bleibt (Least Context).
 - Dateien mit Endung `.template` sind Vorlagen und werden nicht als Regeln gelesen (Konvention des Frameworks; der Client liest laut Dokumentation `*.md`).
 - Änderungen an `00-`, `10-`, `15-` nur über Framework-Änderungsantrag; `20-` über den Overlay-Prozess des Projekts; `30-`, `40-` über den jeweiligen Modul-Owner.
 - `.koolie/core/tests/scripts/validate-framework.py` prüft Frontmatter, Zeichenlimits und verbotene Inhalte.

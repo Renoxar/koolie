@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-10` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | bei Übernahme des Frameworks in ein neues Projekt, vor dem Setzen des Overlay-Status auf `aktiv` |
@@ -26,7 +26,7 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 
 ### Technische Integration
 
-- [ ] **MUSS** Framework-Release in das Projekt-Repository integriert (Wurzel-Anweisungsdatei, Laufzeitschicht, `.koolie/core/framework/`, `templates/`, `.koolie/core/checklists/`, `.koolie/core/decision-trees/`, `.koolie/core/prompts/`, `.koolie/core/onboarding/`, `tests/`); Framework-Version **und gewähltes Client Pack** im Overlay notiert.
+- [ ] **MUSS** Framework-Release in das Projekt-Repository integriert: Kernverzeichnis `.koolie/core/` übernommen (D-354) und mit `install.py` Wurzel-Anweisungsdatei und Laufzeitschicht des gewählten Client Packs angelegt; Framework-Version **und gewähltes Client Pack** im Overlay notiert.
 - [ ] **MUSS** Belegte Pfade vor der Erstinstallation geklärt: Bricht `install.py` ab, ist der
       vorhandene Inhalt nach `ADOPTION_GUIDE.md` Schritt 3a übernommen – nicht gelöscht und
       nicht überschrieben. Führt das Projekt ein anderes Agenten-Framework, ist die
@@ -41,9 +41,7 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 - [ ] **MUSS** `python3 .koolie/core/tests/scripts/validate-framework.py
       --check-overlay-ready` läuft ohne Fehler. **Das ist die Kandidatenprüfung**: Sie
       erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist, und prüft alles
-      übrige auf Vollständigkeit. Bis 0.32.0 stand hier `--strict-overlay` – ein Lauf,
-      der `aktiv` verlangte und damit voraussetzte, was diese Checkliste herstellen
-      soll (B08, D-57).
+      übrige auf Vollständigkeit (B08, D-57).
 - [ ] **MUSS** Nach dem Setzen des Status auf `aktiv`:
       `python3 .koolie/core/tests/scripts/validate-framework.py --strict-overlay`
       läuft ohne Fehler. Erst danach beginnt der erste Agentenlauf mit

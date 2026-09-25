@@ -2,6 +2,82 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.9.2] - 2026-09-25
+
+**Die Durchsicht der Klasse B, zweiter Bereich - und das Budget statt der Grenze**
+(`CR-2026-144` E1 bis E15, **D-385** bis **D-392**, `K-128` und `K-130` bis `K-135`
+beantwortet, `K-138` bis `K-145` neu). Ein Patch-Release ohne Kontingent und **ohne neue
+Pruefungsnummer**: die inhaltliche Durchsicht von Governance, Checklisten,
+Entscheidungsbaeumen und Prompts nach `docs/DOCUMENTATION_STANDARD.md` (D-380), dazu die
+Entscheidungen aus der Durchsicht von `1.9.1`.
+
+> 🟢 **DIE DURCHSICHT AENDERT KEINE REGEL** (D-385). Herleitungen sind durch die geltende
+> Regel mit D-Verweis ersetzt - am staerksten in `governance/RELEASE_PROCESS.md` und
+> `governance/FRAMEWORK_DEV_PROFILE.md` -, einzelne Aussagen gegen Code und Core-Modul
+> berichtigt. Wo eine Checkliste, ein Baum oder ein Prompt strenger oder lockerer ist als sein
+> Modul, steht ein Klaerungspunkt (`K-139` bis `K-143`).
+>
+> 🔴 **DIE ZEICHENGRENZE IST JETZT EIN BUDGET** (D-387, `K-130`). Verbindlich ist, was jede
+> Sitzung laedt: Wurzel-Anweisung und unbedingt geladene Regeln hoechstens 40.000 Zeichen,
+> fuer jedes Pack - bei `devin-desktop` zaehlte Pruefung 4 die Summe bisher gar nicht. Die
+> 12.000 Zeichen je Datei sind eine Warnung. Gemessen: Kein Projekt muss sich anpassen; der
+> Pilot steht bei 38.986.
+
+**Hinzugefuegt**
+
+- Sonde 4b und Gegenprobe 4d im Buendel `sonden_zeichengrenze` (D-387): Budget bei
+  `devin-desktop` mit `always_on` gemeldet, mit `model_decision` nicht.
+- Klaerungspunkte `K-138` (Mehrprojektfall: Startort der Sitzung, Einsatzszenarien),
+  `K-139` bis `K-143` (Befunde der Durchsicht) und `K-144` (Token-Last mit und ohne
+  Framework messen; gesenkt wird sie nur ohne Lockerung einer Schranke) und `K-145`
+  (`--mermaid` ruft den Renderer ohne die Konfiguration des Baus auf).
+
+**Geaendert**
+
+- **Pruefung 4** (D-387): Summe des stets Geladenen ueber 40.000 Zeichen ist ein Fehler, fuer
+  jedes Pack; die Grenze von 12.000 Zeichen je Datei eine Warnung. Sonde 4a erwartet die
+  Warnung. Zeile R4 von `devin-desktop` (`0.14.2`) und `openai-codex` (`0.1.2`), die
+  Laufzeit-README von `claude-code` und `devin-desktop` und Kapitel 16 nachgezogen.
+- **D-10 praezisiert** (D-386, `K-128`): ausgeschlossen ist der Betrieb ohne beobachtende
+  Person, nicht eine Oberflaeche; ein Kommandozeilen-Client in einer beobachteten Sitzung
+  gehoert zum Kern. Kapitel 3, 4, 29 und 32 des Hauptdokuments.
+- `framework/core/08-skill-conventions.md` Abschnitt 3: Quelle und installierte Fassung
+  unterschieden (D-388, `K-131`).
+- `framework/core/09-risk-model.md` R12: Spalte hoch nur fuer den per Ausnahme zulaessigen
+  Modus, der Modus ohne Rueckfragen ist keine Stufe (D-389, `K-132`).
+- `framework/core/05-working-model.md` Abschnitt 2: ohne Angabe gilt M1 (D-390, `K-133`);
+  Matrixzeilen heissen *Zeile S3* (D-391).
+- `framework/core/10-error-escalation.md`: S1 bis S10 sind die Abbruchbedingungen; S2 ohne
+  Bereitstellung ist E0; der Satz ueber das Anhalten nennt nur das Onboarding (D-391,
+  `K-134`); Baum 05 in Text und Diagramm nachgezogen.
+- **Laufzeitregel `10-privacy-security.md`** (D-392, `K-135`): Stufe hoch nach R3, R4 und
+  R10 - Eingabevalidierung als indirekte Beruehrung und personenbezogene Daten ohne geaenderte
+  Verarbeitungslogik sind mittel, wie im Core-Modul. Sechs Zeichen kuerzer. **Wirkt im
+  Projekt erst nach `install.py --update`.**
+- Durchsicht: `RELEASE_PROCESS.md`, `FRAMEWORK_DEV_PROFILE.md`, `PRIORITY_HIERARCHY.md`,
+  `INCIDENT_HANDLING.md`; Checklisten `README`, `01`, `03`, `05`, `10`, `11`; Prompts
+  `README`, `03`, `07`, `10`, `11`, `12`. Berichtigt unter anderem: der Aufrufweg eines Skills
+  steht in Zeile S2 der Faehigkeitsmatrix (`prompts/README.md`), die Planablage ohne
+  Clientpfad (`prompts/03`), der Integrationspunkt der Uebernahme (Checkliste 10), der Verweis
+  auf die Produktbeobachtung (Checkliste 11).
+- Versionen aller geaenderten Dokumente mit Steckbrief um PATCH angehoben.
+- `docs/ROADMAP.md` (`0.3.2`): `1.9.2` gefahren; Posten `1.11.0` fuer `K-138` bis `K-144`.
+
+**Migrationshinweise fuer Overlays**
+
+- Keine Pflichtaenderung. Ein Projekt, dessen Wurzel-Anweisung und unbedingt geladene Regeln
+  zusammen 40.000 Zeichen ueberschreiten, bekommt jetzt einen Fehler statt einer Warnung -
+  gemessen trifft es keines der beiden uebernehmenden Projekte. Eine Regeldatei ueber 12.000
+  Zeichen ist nur noch eine Warnung.
+
+**Bekannte Einschraenkungen**
+
+- Ob `devin-desktop` lange Regeldateien kuerzt, ist nicht erhoben (R4 `[TEXTUELL]`); die
+  Warnung verhindert es nicht.
+- `K-138` bis `K-143` sind nicht entschieden - darunter Prompts, die bei Injektionsverdacht
+  nicht anhalten (`K-139`).
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.9.1] - 2026-09-25
 
 **Die Durchsicht der Klasse B, erster Bereich - und die Grenze ohne Sonde**

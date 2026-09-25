@@ -1534,7 +1534,14 @@ def check_rules(root: str, man: dict) -> None:
       Felder, die er auswertet.
     * Der Client laedt Regeldateien nicht von sich aus: Dort wirkt eine Datei erst, wenn die
       Wurzel-Anweisung sie einbindet - eine nicht eingebundene Datei ist stillschweigend
-      wirkungslos, und genau das wird geprueft. Kein ausgeliefertes Pack ist so gebaut.
+      wirkungslos, und genau das wird geprueft.
+
+    DIE ZEICHENGRENZE IST EIN BUDGET FUER DIE SUMME (D-387, K-130). Verbindlich ist, was
+    jede Sitzung laedt: Wurzel-Anweisung plus die unbedingt geladenen Regeltexte, hoechstens
+    40.000 Zeichen - bei jedem Pack, bei den Ladetriggern der Kernquelle die Regeln mit
+    `always_on`. Die 12.000 Zeichen je Datei und die 6.000 fuer die Overlay-Laufzeitregel
+    sind Warnungen. Alle drei Zahlen sind eine Vorgabe des Frameworks, keine Eigenschaft
+    eines Clients (CR-2026-027 E3).
     """
     rules_rel = man["pack_runtime_dir"]
     rules_dir = os.path.join(root, *rules_rel.split("/"))
@@ -1557,7 +1564,7 @@ def check_rules(root: str, man: dict) -> None:
 
         if not ueber_import:
             if len(text) > 12000:
-                err(f"{rel}: {len(text)} Zeichen (> 12.000)")
+                warn(f"{rel}: {len(text)} Zeichen (> 12.000, SOLL-Grenze je Datei)")
             if fn == "20-project-overlay.md" and len(text) > 6000:
                 warn(f"{rel}: {len(text)} Zeichen (> 6.000, SOLL-Grenze)")
         if fn == "README.md":
@@ -1579,6 +1586,8 @@ def check_rules(root: str, man: dict) -> None:
                 err(f"{rel}: trigger '{trig}' nicht in {sorted(RULE_TRIGGERS)}")
             if trig == "glob" and not fm.get("globs"):
                 err(f"{rel}: trigger glob ohne globs")
+            if trig == "always_on":
+                stets_geladen += len(text)
         else:
             # Ohne eigene Ladebedingung entscheidet die Einbindung. Eine Kernregel muss
             # in der Wurzel-Anweisung GENANNT sein, sonst waere sie wirkungslos.
@@ -1605,12 +1614,12 @@ def check_rules(root: str, man: dict) -> None:
                 warn(f"{rel}: YAML-Frontmatter, obwohl dieser Client keine Ladebedingung kennt "
                      f"(Frontmatter nur mit dokumentierten Feldern, K-18)")
 
-    if (eigene_bedingung or ueber_import) and stets_geladen > 40000:
-        warn(f"{wurzel_rel} und die unbedingt geladenen Regeltexte ergeben {stets_geladen} "
-             f"Zeichen, die in jeder Sitzung geladen werden (Least Context)")
+    if stets_geladen > 40000:
+        err(f"{wurzel_rel} und die unbedingt geladenen Regeltexte ergeben {stets_geladen} "
+            f"Zeichen, die in jeder Sitzung geladen werden (> 40.000, Least Context, D-387)")
 
     if os.path.exists(wurzel_pfad) and not ueber_import and len(wurzel_text) > 12000:
-        err(f"{wurzel_rel}: {len(wurzel_text)} Zeichen (> 12.000)")
+        warn(f"{wurzel_rel}: {len(wurzel_text)} Zeichen (> 12.000, SOLL-Grenze je Datei)")
 
 
 def skill_dirs(root: str, man: dict) -> list[tuple[str, str]]:

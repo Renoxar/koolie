@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-011` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -89,7 +89,7 @@ Regeln:
 | Fehlanwendung | Folge | Stattdessen |
 |---|---|---|
 | KI-Befundliste unbesehen als Review-Kommentare posten | Verantwortungsdiffusion; V1-Grauzone | Befunde selbst prüfen und in eigener Bewertung übertragen |
-| „Gib eine Merge-Empfehlung ab" | Freigabesurrogat (V1) | Empfehlungltext streichen; Entscheidung beim Menschen |
+| „Gib eine Merge-Empfehlung ab" | Freigabesurrogat (V1) | Empfehlungstext streichen; Entscheidung beim Menschen |
 | Review nur bei „großen" MRs unterstützen lassen | Gerade kleine Diffs enthalten RV2/RV5-Fehler | Nach Kontrollstufe, nicht nach Bauchgefühl einsetzen |
 | Urheber- oder Leistungsvergleiche erfragen | Personenbewertung (V7) | Ergebnisbezogene Prüfung; Personenfragen unterlassen |
 | MR-Beschreibung als einzige Wahrheitsquelle verwenden | Fundstellen-Treue (RV2) bleibt ungeprüft | Diff und Ergebnisbericht gegeneinander prüfen lassen |

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-DEV` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | das Quellrepositorium dieses Frameworks – **nicht** für ein Projekt, das ein Release anwendet |
@@ -19,11 +19,9 @@ für die erste geschrieben:
 | **Anwendung** | Der Code eines Projekts. Das Framework ist unveränderliches Release | ausgefüllt, Status `aktiv` | Berechtigungsdatei, Schutz-Hook und Regelschicht |
 | **Entwicklung** | Das Framework selbst. Es gibt kein Projekt, dessen Code bearbeitet würde | bleibt Vorlage, Status offen | der Änderungsprozess dieses Verzeichnisses |
 
-Bis 0.31.0 war nur der erste Kontext beschrieben. Der zweite entstand dadurch nicht weniger oft –
-**jede Sitzung an diesem Framework stand in ihm** –, sondern nur ungeregelt: Die Overlay-Vorlage
-bleibt hier absichtlich Vorlage, die Regeln setzen freigegebene Pfade voraus, und die
-Analyseskills ließen ein inaktives Overlay nur in Übungsrepositorys zu. Der Einstieg in einen
-frischen Auscheckstand verlangte damit Rechte, die niemand erteilt hatte.
+Dieses Profil regelt den zweiten Kontext (D-56), weil **jede Sitzung an diesem Framework in ihm
+steht**: Die Overlay-Vorlage bleibt hier absichtlich Vorlage, während die Regeln der
+Laufzeitschicht freigegebene Pfade voraussetzen.
 
 ## 2. Geltungsbereich (normativ)
 
@@ -34,13 +32,11 @@ frischen Auscheckstand verlangte damit Rechte, die niemand erteilt hatte.
    KI-Clients. Sie folgt aus dem Inhalt des Repositoriums, und sie erteilt **keine technische
    Berechtigung** (Abschnitt 5).
 3. **`install.py` schreibt dieses Profil in kein Zielprojekt.** Es liegt unter `governance/`,
-   nicht unter `templates/` und nicht unter `framework/runtime/`; `seed_paths` beider Client
-   Packs ist leer. 🔴 **Im Zielprojekt liegt es trotzdem, und das ist gemessen** (2026-09-22,
-   D-253): `docs/ADOPTION_GUIDE.md` Schritt 2 kopiert `.koolie/core/` als Ganzes, und beide
-   übernehmenden Projekte führen es. Bis `0.83.0` stand hier *„wird in kein Zielprojekt
-   installiert"* – **der Satz beschrieb das Werkzeug und nicht das Ergebnis.** Er erteilt dort
-   keine Geltung: Die folgt nach Abschnitt 2.1 aus dem **Inhalt** des Repositoriums und nicht
-   aus der Anwesenheit dieser Datei.
+   nicht unter `templates/` und nicht unter `framework/runtime/`; `seed_paths` jedes Client
+   Packs ist leer. **Im Zielprojekt liegt es trotzdem** (gemessen am 2026-09-22, D-253): Die
+   Installation kopiert `.koolie/core/` samt `governance/` in jedem Lieferumfang
+   (`docs/ADOPTION_GUIDE.md` Abschnitt 2, D-354, D-367). Es erteilt dort keine Geltung: Die folgt nach Abschnitt 2.1 aus dem **Inhalt** des
+   Repositoriums und nicht aus der Anwesenheit dieser Datei.
 
 ## 3. Lesen (normativ)
 
@@ -49,9 +45,9 @@ frischen Auscheckstand verlangte damit Rechte, die niemand erteilt hatte.
    Einzelfreigabe lesbar.
 2. Das gilt ausdrücklich für die Anweisungsquellen selbst – Wurzel-Anweisungsdatei, Regelablage,
    Kernregeltexte, Overlay-Vorlage, Client Packs. **Ihr Schreibschutz ist kein Leseverbot**
-   (D-55); beide technischen Schichten machen diese Unterscheidung seit D-30.
+   (D-55); beide technischen Schichten machen diese Unterscheidung (D-30).
 3. Die Analyseskills sind hier zulässig, obwohl kein Overlay aktiv ist. Ihre Vorbedingung nennt
-   diesen Fall seit 0.32.0 neben dem Übungsrepositorium.
+   diesen Fall neben dem Übungsrepositorium (D-56).
 4. **Ausgenommen bleibt, was auch hier K3 ist:** Secret-Dateien, Schlüsselmaterial und alles
    Übrige aus Abschnitt 2.1 des Datenschutzmodells. Eine Datei wird nicht dadurch lesbar, dass sie
    neben einer Regeldatei liegt.
@@ -77,13 +73,11 @@ Die Reihenfolge ist der Änderungsprozess des Frameworks, nicht ein Betriebsmodu
    trägt Namen und Laufzeiten und ist ausdrücklich **nicht** Teil des Vergleichs (D-94). Ein
    gescheiterter Aufräumer ist eine Abweichung wie jede andere (D-96).
 6. **Bericht** als Protokoll unter `tests/protocols/`. Das ist der Berichtspfad dieses
-   Repositoriums; eine Analyse oder ein Review legt ihr Ergebnis dort ab. 🔴 **Das ist die
-   SCHREIBENDE Hälfte des zweiten Einsatzkontextes** – M5 nach `framework/core/05-working-model.md`
-   –, und bis `0.83.0` stand sie in **keiner** Fassung der Laufzeitschicht: Die fünf Analyseskills
-   nennen das Quellrepositorium seit `0.32.0`, führen aber alle M1, und `fw-docs-update` (M5) sagt
-   für ein inaktives Overlay ausdrücklich *„arbeitet der Skill nur lesend"*. Seit `0.84.0`
-   verweisen die drei anweisenden Fassungen für **beide** Hälften hierher (D-253, Grenzfall G-11).
-7. **Übergabe** fortschreiben – `UEBERGABE.md` in der Wurzel, **lokal und nicht versioniert** (D-350; von `0.78.1` bis `1.4.0` war sie eingecheckt, D-214). Sie steht in der `.gitignore` wie ihre Beilage `UEBERGABE.local.md`, und keine Prüfung erreicht sie. ⚠️ **Das ist ihr Preis:** Stand und Zahlen der Übergabe hält niemand mehr gegen `<CORE_DIR>/VERSION` – sie gehört deshalb an den Schluss eines Releases, wenn alle Zahlen feststehen, und wer sie liest, zählt nach, statt ihr zu glauben. **Eine Nummer des Merge Requests darf sie wieder nennen**; die Regel dagegen hatte ihren Grund im Release-Commit (D-216), und den gibt es für sie nicht mehr.
+   Repositoriums; eine Analyse oder ein Review legt ihr Ergebnis dort ab. **Das ist die
+   schreibende Hälfte des zweiten Einsatzkontextes** – M5 nach `framework/core/05-working-model.md`;
+   die drei anweisenden Fassungen der Laufzeitschicht verweisen für **beide** Hälften hierher
+   (D-253, Grenzfall G-11).
+7. **Übergabe** fortschreiben – `UEBERGABE.md` in der Wurzel, **lokal und nicht versioniert** (D-350). Sie steht in der `.gitignore` wie ihre Beilage `UEBERGABE.local.md`, und keine Prüfung erreicht sie. ⚠️ **Das ist ihr Preis:** Stand und Zahlen der Übergabe hält niemand gegen `<CORE_DIR>/VERSION` – sie gehört deshalb an den Schluss eines Releases, wenn alle Zahlen feststehen, und wer sie liest, zählt nach, statt ihr zu glauben. **Sie darf eine Nummer des Merge Requests nennen**, weil sie keinem Release-Commit mehr angehört (D-350).
 8. **Freigabe und Merge führt der Mensch aus** (V1, V2). Der KI-Client schlägt Commit-Nachricht und
    Merge-Request-Beschreibung vor.
 
@@ -103,7 +97,7 @@ Einsatzkontext geschrieben ist.
   Shell-Befehl, der in das Kernverzeichnis schreibt, passiert den Hook; die Berechtigungsdatei
   führt für `exec` ausschließlich Befehlsverbote und keine einzige Pfadregel. Das ist **gemessen**
   (`tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, Läufe B04-1 bis B04-3) und in den
-  Fähigkeitsmatrizen beider Packs bei B4, B5 und B8 je Zugriffskanal ausgewiesen (D-47). **Über
+  Fähigkeitsmatrizen der Packs bei B4, B5 und B8 je Zugriffskanal ausgewiesen (D-47). **Über
   diesen Kanal entstehen die Änderungen an diesem Framework heute.** Was sie aufhält, ist der
   Prozess aus Abschnitt 4 und die menschliche Freigabe – nicht der Hook.
 - **Damit ist eine Frage offen, und sie steht als Klärungspunkt K-32:** Schließt Paket 6 den
@@ -130,18 +124,11 @@ Kontext ausgeschlossen (V2).
 
 ## 7. Erläuterung
 
-Das Review hat diesen Befund nicht theoretisch gefunden, sondern an sich selbst: Es musste den
-Auftrag als Berechtigung behandeln, um einen frischen Auscheckstand überhaupt analysieren zu
-dürfen, und hat das ausgewiesen. Dieselbe Lage hatte jede Sitzung dieses Projekts vor sich – auch
-die, die dieses Dokument geschrieben hat.
+Der Kontext wird **benannt**, die Lesefreigabe folgt aus der Kontextklasse statt aus einer
+Ausnahme, und die Schranke bleibt der Prozess (D-56). Das ist weniger, als eine technische
+Durchsetzung wäre.
 
-Die naheliegende Auflösung wäre gewesen, das Quellrepositorium technisch auszunehmen. Sie ist
-verworfen: Ein abschwächender Schalter an einem Schutzmechanismus ist im Bestand dieses Projekts
-der häufigste Befundtyp – eine Zusage, die mehr verspricht, als sie leistet, nur mit umgekehrtem
-Vorzeichen. Die zweite Alternative, die Entwicklung ganz außerhalb des eigenen Regelwerks zu
-führen, hätte den Nutzen der Selbstanwendung aufgegeben; sie hat bisher jeden Befund zuerst am
-eigenen Repositorium gezeigt.
-
-Geblieben ist der dritte Weg: Der Kontext wird **benannt**, die Lesefreigabe folgt aus der
-Kontextklasse statt aus einer Ausnahme, und die Schranke bleibt der Prozess. Das ist weniger, als
-eine technische Durchsetzung wäre, und mehr, als vorher dastand – nämlich nichts.
+- **Verworfen:** das Quellrepositorium technisch auszunehmen – ein abschwächender Schalter an
+  einem Schutzmechanismus wäre in jeder Installation ausgeliefert (D-56).
+- **Verworfen:** die Entwicklung ganz außerhalb des eigenen Regelwerks zu führen – das gäbe den
+  Nutzen der Selbstanwendung auf, die jeden Befund zuerst am eigenen Repositorium zeigt (D-56).

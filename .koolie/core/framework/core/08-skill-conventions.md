@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.1 |
+| Version | 0.3.2 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -31,7 +31,7 @@ Skill-Ablage der Laufzeitschicht
 
 ## 3. Frontmatter (normativ)
 
-Das Frontmatter enthält ausschließlich in der Clientdokumentation belegte Felder `[DOK]`:
+Die Tabelle beschreibt das Frontmatter der **Quelle** unter `framework/skills/`. Es ist das Quellformat des Frameworks: `install.py` bildet es je Client Pack ab, und Felder wie `permissions` und `triggers` erscheinen in der installierten Fassung unter dem Namen, den das Manifest des Packs dafür führt, oder werden durch den dort benannten Ersatz getragen. **Die installierte Fassung enthält ausschließlich Felder, die in der Dokumentation des Clients belegt sind** `[DOK]`; wo das für ein Pack nicht erhoben ist, sagt es dessen Fähigkeitsmatrix (D-388).
 
 | Feld | Pflicht | Regel |
 |---|---|---|
