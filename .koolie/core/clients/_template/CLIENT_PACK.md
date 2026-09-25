@@ -1,7 +1,8 @@
 # Client Pack `<CLIENT_PACK_NAME>` – Vorlage
 
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<client-name>/, ersetze alle Platzhalter
-     und lege ../<client-name>/root-template/ mit den Wurzelartefakten dieses Clients an.
+     und lege ../<client-name>/root-template/ mit der erklärenden README der Laufzeitschicht sowie
+     ../<client-name>/manifest.json an; die Wurzelartefakte kommen aus dem Kern (../README.md Abschnitt 5, D-20).
      Trage das Pack in ../README.md Abschnitt 6 und in .koolie/core/OWNERS.md ein.
      Ein Client Pack führt keine Verhaltensregeln ein (../README.md Abschnitt 2).
      Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
@@ -11,7 +12,7 @@
 |---|---|
 | Modul-ID | `CP-<CLIENT_PACK_CODE>` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.3.0 |
+| Version | 0.3.1 |
 | Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner (Rolle) | `<TBD: Rolle>` |
 | Client | `<TBD: Produktname>` |
@@ -84,7 +85,7 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 
 ### B – Berechtigungen
 
-> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet.** Im Modus ohne Rückfragen, den D-05 untersagt, ist diese Linie bei mindestens einem Client nachweislich aus; dann trägt allein der Schutz-Hook (D-35, `AP2-DD-12`). Diese Vorbemerkung ist **Pflicht** in jedem Pack; sie ist je Client um den eigenen Belegstand zu ergänzen – erhoben oder ausdrücklich nicht erhoben.
+> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet** (D-35). Schaltet sie der Modus ohne Rückfragen ab, den D-05 untersagt, trägt allein der Schutz-Hook. Diese Vorbemerkung ist **Pflicht** in jedem Pack; sie ist je Client um den eigenen Belegstand zu ergänzen – erhoben oder ausdrücklich nicht erhoben.
 
 Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei. Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
 
@@ -112,7 +113,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
-| A1 | Ein rein lesendes Reviewprofil ist definierbar | `.devin/agents/fw-reviewer.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| A1 | Ein rein lesendes Reviewprofil ist definierbar | `.koolie/core/framework/runtime/agents/fw-reviewer.md` | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### M – Modi und Sitzungsfreigaben
 

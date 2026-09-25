@@ -1,13 +1,13 @@
 # Overlay-Manifest – Register der eingebundenen Projektdokumente (Ebene 4)
 # Mechanismus: .koolie/project-overlay/OVERLAY.md Abschnitt 19. Nicht registrierte Dokumente gelten als K3.
 # Keine Secrets, keine Personen, keine internen Adressen. Rollen statt Personen.
-# Validierung: python3 .koolie/core/tests/scripts/validate-framework.py prueft Schema und Pflichtfelder.
+# Validierung: python3 .koolie/core/tests/scripts/validate-framework.py prüft Schema und Pflichtfelder.
 
 manifest_version: 1
 project_code: "<PROJECT_CODE>"
 overlay_version: "<TBD: 0.1.0>"
 
-# Zulaessige Werte
+# Zulässige Werte
 #   type:          ai-governance | ai-process-model | roadmap | architecture | coding-guidelines |
 #                  definition-of-ready | definition-of-done | branching-strategy | deployment |
 #                  security | quality | roles | glossary | other
@@ -52,4 +52,4 @@ documents:
     approved_by: "<APPROVAL_ROLE>"
     approved_on: "<TBD>"
     sanitization: "nicht erforderlich"
-    notes: "Kernaussagen in <RULES_DIR>/20-project-overlay.md uebernehmen"
+    notes: "Kernaussagen in <RULES_DIR>/20-project-overlay.md übernehmen"

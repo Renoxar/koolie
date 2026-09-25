@@ -18,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-011` |
 | Name | `fw-docs-update` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
@@ -87,7 +87,7 @@ triggers:
 - Inhalte in `<DOCUMENTATION_PLATFORM>` ablegen oder veröffentlichen; generierte Dokumentationsausgaben editieren (die Quelle liegt im Code; Bedarf melden).
 - Aufgaben der Delegationsverbotsliste (`.koolie/core/framework/core/09-risk-model.md` Abschnitt 4) bearbeiten.
 
-(Erläuterung) Eine Beschränkung der Schreibrechte auf `<DOC_PATHS>` unter Ausschluss aller übrigen Pfade ist über die Skill-`permissions` nicht ausdrückbar, weil `<DOC_PATHS>` eine Teilmenge von `<ALLOWED_PATHS>` ist und `deny` gegen `allow` gewinnt `[DOK]`. **Die Regel gilt deshalb normativ, und technisch durchgesetzt ist sie nicht.** Der bisherige Verweis auf eine Pfadprüfung im `PreToolUse`-Hook ist widerlegt: Der Hook kennt weder den Betriebsmodus noch eine Liste erlaubter Schreibpfade und entscheidet innerhalb und außerhalb der Dokumentationspfade gleich – gemessen am 2026-09-12 (`.koolie/core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05; `CR-2026-048`, D-48). Was der Hook durchsetzt, sind die Sperren auf Secret- und Kernpfade; sie gelten unabhängig vom Modus `[DOK]`.
+(Erläuterung) Eine Beschränkung der Schreibrechte auf `<DOC_PATHS>` unter Ausschluss aller übrigen Pfade ist über die Skill-`permissions` nicht ausdrückbar, weil `<DOC_PATHS>` eine Teilmenge von `<ALLOWED_PATHS>` ist und `deny` gegen `allow` gewinnt `[DOK]`. **Die Regel gilt deshalb normativ, und technisch durchgesetzt ist sie nicht.** Auch der Schutz-Hook setzt sie nicht durch: Er kennt weder den Betriebsmodus noch eine Liste erlaubter Schreibpfade und entscheidet innerhalb und außerhalb der Dokumentationspfade gleich – gemessen am 2026-09-12 (`.koolie/core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05; `CR-2026-048`, D-48). Er setzt die Sperren auf Secret- und Kernpfade durch, unabhängig vom Modus `[DOK]`.
 
 **Rückfragenregeln (MUSS):**
 

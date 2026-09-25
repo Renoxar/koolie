@@ -2,6 +2,64 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.9.3] - 2026-09-25
+
+**Die Durchsicht der Klasse B, dritter Bereich - und die Anweisung, die stehen bleibt**
+(`CR-2026-145` E1 bis E10, **D-393** und **D-394**, `K-146` bis `K-151` neu). Ein
+Patch-Release ohne Kontingent und **ohne neue Pruefungsnummer**: die inhaltliche Durchsicht
+der Skills, der Vorlagen und der Vorlage des Client Packs nach
+`docs/DOCUMENTATION_STANDARD.md` (D-380). Damit ist die Klasse B in allen drei Bereichen
+durchgesehen.
+
+> 🟢 **IN EINER `SKILL.md` IST KEINE ANWEISUNG GEAENDERT** (D-393, D-303). Erlaubt waren
+> Schreibung, Verweise auf dieselbe Sache, die Abschnitte *(Erlaeuterung)* und die Form; was
+> eine Anweisung aendern wuerde, ist ein Klaerungspunkt. Deshalb bleiben alle 87
+> Ergebniszellen abgenommen, und Kriterium 2 bleibt 0. Zwei Skills sind in ihrer Erlaeuterung
+> berichtigt und kuerzer geworden.
+>
+> 🔴 **VIER ABGENOMMENE ZELLEN TRAGEN EIN ERGEBNIS, DAS IHRE ERWARTUNG NICHT DECKT** (`K-148`).
+> Die Durchsicht hat die Testblaetter gegen ihre Skills gelesen, nicht geaendert; entschieden
+> wird mit `1.11.0`.
+
+**Hinzugefuegt**
+
+- Klaerungspunkte `K-146` (D-303 durch eine Pruefung stuetzen), `K-147` (ein Client Pack fuer
+  Kiro, vorgemerkt ohne Ziel-Release), `K-148` (vier Zellen), `K-149` (Skills gegen Modul,
+  Faehigkeitsmatrix und Role Pack), `K-150` (Register der Skills) und `K-151` (Vorlage des
+  Client Packs, Kommentar in `clientmap.py`).
+- `docs/ROADMAP.md`: Planabschnitt fuer `1.10.0` und der Vormerk fuer Kiro.
+
+**Geaendert**
+
+- `fw-docs-update` `0.1.5`: Die Erlaeuterung in Abschnitt 4 nennt den Schutz-Hook statt
+  eines Hook-Ereignisses eines Clients und die geltende Aussage statt ihrer Herleitung.
+- `fw-tests` `0.1.4`: Die Erlaeuterung in Abschnitt 4 sagte, ein Hook mit Pfadpruefung sichere
+  die Testpfade technisch ab - der mitgelieferte Schutz-Hook tut das nicht.
+- Beide Skills: **keine Anweisung beruehrt**, die Zellen ihrer Testblaetter bleiben
+  abgenommen (D-303). **Wirkt im Projekt erst nach `install.py --update`.**
+- `templates/SKILL_TEMPLATE.md` (`0.1.4`): an `framework/core/08-skill-conventions.md`
+  angeglichen - Frontmatter als Quellformat, das `install.py` je Pack abbildet (D-388),
+  `model`/`subagent`/`agent` nur mit Begruendung, Beispiele synthetisch.
+- `clients/_template/CLIENT_PACK.md` (`0.3.1`): `root-template/` traegt nur die README der
+  Laufzeitschicht (D-20), Zeile A1 nennt die Kernquelle des Reviewprofils, die Vorbemerkung
+  des B-Blocks nennt die Regel statt ihrer Herleitung.
+- `templates/project-overlay/OVERLAY.md`: drei Herleitungen durch den D-Verweis ersetzt;
+  `overlay-manifest.yaml` und die Ablagehinweise der Dokumentordner mit Umlauten. Wirkt nur
+  bei einer Erstinstallation.
+- `docs/ROADMAP.md` (`0.3.3`): `1.9.3` gefahren.
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Die Laufzeitschicht aendert sich nur in den Erlaeuterungen von `fw-docs-update` und
+  `fw-tests`; Wurzel-Anweisung, Regeln, Berechtigungen und Hooks sind byte-gleich.
+
+**Bekannte Einschraenkungen**
+
+- Die Grenze zwischen Anweisung und Erlaeuterung hat ein Mensch gezogen, keine Pruefung
+  (D-303, `K-146`).
+- `K-148` bis `K-151` sind nicht entschieden - darunter vier abgenommene Zellen (`K-148`).
+- Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.9.2] - 2026-09-25
 
 **Die Durchsicht der Klasse B, zweiter Bereich - und das Budget statt der Grenze**
