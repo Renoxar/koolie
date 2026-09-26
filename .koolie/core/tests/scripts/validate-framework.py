@@ -10826,6 +10826,16 @@ def check_skill_aenderungsart(root: str, man: dict) -> None:
 
 
 def main() -> int:
+    # 🔴 DER BERICHTSWEG IN BEIDEN KODIERUNGSUMGEBUNGEN (K-168, Bauform D-223). Mehrere
+    # Meldungen tragen Zeichen ausserhalb von cp1252 (⚠️, ➡️, 🔴). Feuerte eine davon in
+    # der cp1252-Umgebung, die D-49 verlangt, endete der Lauf mit UnicodeEncodeError statt
+    # mit der Liste der Befunde - gemessen am 2026-09-26 an Pruefung 82. Ein Zeichen, das
+    # die Konsole nicht kennt, erscheint jetzt als Escape-Folge; der Befund bleibt lesbar.
+    for strom in (sys.stdout, sys.stderr):
+        try:
+            strom.reconfigure(errors="backslashreplace")
+        except (AttributeError, ValueError):
+            pass
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=os.getcwd())
     ap.add_argument("--strict-overlay", action="store_true")

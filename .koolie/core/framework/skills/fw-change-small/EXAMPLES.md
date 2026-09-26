@@ -32,7 +32,7 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen- und Testnamen sind 
 - Ausgangsstand: <TEST_COMMAND> → 18 bestanden, 0 fehlgeschlagen, 1 übersprungen (bestehend), 2,1 s
 - Abschluss: <LINT_COMMAND> → 0 Befunde · <TEST_COMMAND> → 19 bestanden, 0 fehlgeschlagen, 1 übersprungen (bestehend), 2,2 s
 
-### Commit-Nachrichtenvorschlag (nach <COMMIT_CONVENTION>; Commit durch den Menschen)
+### Commit-Nachrichtenvorschlag
 - <PROJECT_CODE>-123 ordering: zulässigen Mengenbereich in der Validierungsmeldung nennen
 ```
 

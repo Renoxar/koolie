@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.4 |
+| Version | 0.3.5 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -85,7 +85,7 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 2. Rückfragen bei Unklarheiten verlangen (P3) und Annahmen sichtbar machen.
 3. Scope ausdrücklich begrenzen (Pfade, Modus, Kontrollstufe) und Überschreitungen melden.
 4. Relevante Prüfungen definieren (welche Tests, welche Checkliste).
-5. Festes Ausgabeformat verwenden.
+5. Festes Ausgabeformat verwenden. Die Überschriften des Gerüsts werden **wörtlich** übernommen – ohne Umformulierung, ohne Zusatz, in derselben Ebene; was ein Abschnitt für den Fall erläutert, steht im Text darunter. Auch die Ergebnisausgabe eines Folgeturns trägt jede Pflichtüberschrift; ein Abschnitt, dessen Inhalt schon in einem früheren Turn steht, verweist dort darauf (D-432).
 6. Delegationsverbotsliste beachten.
 7. Bei Kontrollstufe hoch ohne dokumentierte Freigabe die Bearbeitung ablehnen.
 

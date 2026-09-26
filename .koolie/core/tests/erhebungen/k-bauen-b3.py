@@ -42,6 +42,10 @@ BEREICHE = [
     ".koolie/core/checklists",
     ".koolie/core/decision-trees",
     ".koolie/core/templates",
+    # Nachgetragen mit 1.14.1 (K-167): Die Prompt-Vorlagen sind Regelquelle. Im Nachlauf
+    # von 1.14.0 liess `k3` in `prompts/02-impact-analysis.md` die Zeile "Keine
+    # K3-Inhalte." stehen, und `ksk002n03` stuetzte das Nichtoeffnen der Fixture darauf.
+    ".koolie/core/prompts",
     ".koolie/core/onboarding",
     ".koolie/core/clients",
     ".koolie/core/examples",

@@ -152,8 +152,9 @@ def unterprozess(argv: list, **kw):
     startet. Zwei Aufrufe trugen die Korrektur, fuenf nicht - das war kein Muster,
     sondern die Reihenfolge ihrer Entstehung.
     """
-    umgebung = dict(kw.pop("env", None) or os.environ, PYTHONIOENCODING="utf-8")
-    return subprocess.run(argv, capture_output=True, text=True, encoding="utf-8",
+    kodierung = kw.pop("kodierung", "utf-8")
+    umgebung = dict(kw.pop("env", None) or os.environ, PYTHONIOENCODING=kodierung)
+    return subprocess.run(argv, capture_output=True, text=True, encoding=kodierung,
                           errors="replace", env=umgebung, **kw)
 
 
@@ -9239,6 +9240,8 @@ buendel(sonden_zeilenendeform,
 #                      Fehler gemeldet, statt leise zu bestehen (D-23).
 #   82c (Sonde)      - eine Tabelle ohne Datenzeile meldet eine Warnung und KEIN
 #                      Messergebnis.
+#   82d (Sonde)      - der Befund von 82a in der cp1252-Umgebung: gemeldet statt
+#                      UnicodeEncodeError (K-168, seit 1.14.1).
 #
 # KEINE EINHEIT HAELT EINE VERSIONSNUMMER WOERTLICH. Sie lesen den Stand aus VERSION
 # und rechnen daran - dieselbe Lehre wie bei Pruefung 78 und 81: Eine Sonde, die einen
@@ -9327,6 +9330,22 @@ def sonden_bestandsliste_stand() -> None:
         if M82_ABWEICHEND not in aus:
             notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
+
+        # --- Sonde 82d: derselbe Befund in der cp1252-Umgebung (K-168) ----------------
+        # Die Meldung von 82a traegt ein ⚠️. Bis 1.14.0 brach der Validator in cp1252
+        # an ihr mit UnicodeEncodeError ab und berichtete keinen einzigen Befund - der
+        # Berichtsweg war nur in utf-8 gefahren (Bauform D-223). Verlangt: Befund und
+        # Ergebniszeile stehen da, und das Zeichen kommt als Escape-Folge an.
+        p = unterprozess([sys.executable, os.path.join(root, *VALIDATOR.split("/")),
+                          "--root", root], kodierung="cp1252")
+        aus = (p.stdout or "") + (p.stderr or "")
+        ok = (M82_ABWEICHEND in aus and "Ergebnis:" in aus
+              and "UnicodeEncodeError" not in aus and "\\u26a0" in aus)
+        melde("SONDE", "82d", ok,
+              "Derselbe Befund in der cp1252-Umgebung: gemeldet, mit Ergebniszeile, das "
+              "Zeichen ausserhalb der Kodierung als Escape-Folge (K-168, D-223)")
+        if not ok:
+            notiz("        Ausgabe:", " | ".join(aus.splitlines()[-4:])[:400])
 
         # --- Sonde 82b: der verlorene Anker ------------------------------------------
         schreib(pfad, urtext.replace("Framework-Version", "Kernstand"))
