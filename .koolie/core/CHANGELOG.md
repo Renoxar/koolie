@@ -2,6 +2,52 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.16.0] - 2026-09-26
+
+**Das Client Pack fuer Cursor - die Datei, mit der der Client nicht startet, und das Muster, das nie traf**
+(`CR-2026-155` E1 bis E9, **D-440** bis **D-444**, **Pruefung 97** neu; `K-164` und `K-108` beantwortet, `K-175` bis
+`K-177` neu). Ein MINOR-Release mit Kontingent: 24 Laeufe an `cursor-agent` 2026.09.26 unter Windows, Free-Tarif,
+0 USD. Das fuenfte Client Pack, gebaut mit Zugang zum Client; Status `pilot`.
+
+> 🔴 **DIE MUSTER DER HERSTELLERDOKUMENTATION TREFFEN UNTER WINDOWS NIE** (D-440). Der Client vergleicht ein
+> Pfadmuster verankert mit dem absoluten Pfad: `Read(.env)` und `Read(**/.env)` liessen den Koeder durch. Das Pack
+> erzeugt jedes Pfadmuster in zwei Schreibweisen mit fuehrendem `*`. Die Schreibweise fuer macOS und Linux ist nicht
+> gemessen (`K-176`).
+
+**Geaendert**
+
+- Neues Client Pack `cursor` (`clients/cursor/`, `CP-CU` `0.1.0`): 35 Matrixzeilen, 20 `[TECHNISCH]`, alle sechs
+  Kernzusagen `[TECHNISCH]`. Regeln als `.cursor/rules/*.mdc` (`rule_file_ext`), Skills unter `.cursor/skills/`,
+  Reviewprofil mit `readonly: true`.
+- Vierte Ausgabeform der Berechtigungsdatei `cursor-json` (D-440): `.cursor/cli.json` traegt NUR `permissions` mit
+  `allow` und `deny` - mit einem weiteren Schluessel startet der Client nicht (gemessen, Exit 1). Kein
+  Rueckfragekorb; die Rueckfrageregeln der Kernquelle erklaert das Manifest (`permission_ask_ohne_korb`).
+  **Pruefung 97** haelt Datei und Ausschlussdatei gegen die Kernquelle.
+- Ausschlussdatei `.cursorignore` aus den Leseverboten der Kernquelle (D-443): Das Suchwerkzeug des Clients wertet
+  kein Leseverbot der Berechtigungsdatei aus; `.cursorignore` sperrt Lesen und Suchen.
+- Schutz-Hook, fuer alle Packs: liest seine Eingabe als UTF-8 und entfernt ein BOM (D-441); das Muster fuer
+  Secret-Verzeichnisse trifft den Ordnernamen auch ohne nachfolgenden Trenner (D-442). Fuer `cursor` die Sperrform
+  `permission-json`: gesperrt mit `permission: deny` und Exit 2, durchgelassen mit `{}`; Pruefung 86 misst beide
+  Haelften.
+- `install.py` meldet belegte fremde Quellen nach ihrem Inhalt (`json_key`, `json_not`): Hooks von Claude Code im
+  Benutzerprofil, die in jeder Cursor-Sitzung mitlaufen, und die nicht abgeschaltete Commit-Attribution (Q5).
+- `K-108` entschieden: Die oeffentliche Historie bleibt und wird nicht umgeschrieben (D-444).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine fuer bestehende Packs. Die Aenderungen am Schutz-Hook sind Verschaerfungen: Eine Datei oder ein Ordner, der
+  `secret` oder `secrets` heisst, ist jetzt auch ohne Pfadtrenner gesperrt.
+- Wer `cursor` einsetzt: Kommandozeile unter Windows nicht aus Git Bash starten; die Commit-Attribution global
+  abschalten (`attribution.attributeCommitsToAgent: false` in `~/.cursor/cli-config.json`); eigene Pfadverbote in
+  beiden Schreibweisen eintragen (`Read(*/<pfad>)` und `Read(*\<pfad>)`), eigene Regeln mit der Endung `.mdc`.
+
+**Bekannte Einschraenkungen**
+
+- Die IDE ist an keiner Sitzung gemessen; ob sie `.cursor/cli.json` liest, ist offen (`K-175`). Dateien im
+  Arbeitsbereich schreibt der Client ohne Rueckfrage (`B7` `[NICHT ABBILDBAR]`). Die Muster sind breiter als die der
+  Kernquelle: `*/*secret*` trifft auch einen Pfad oberhalb des Projekts. Der Import fremder Konfigurationen ist nur in
+  der IDE abschaltbar. Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.15.0] - 2026-09-26
 
 **Oeffentliche Verstaendlichkeit und Auffindbarkeit - der Einstieg, und der Spiegel, der schon veroeffentlicht hatte**

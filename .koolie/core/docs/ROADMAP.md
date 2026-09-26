@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.4.8` |
+| Version | `0.4.9` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.15.0 (2026-09-26)
+## Stand nach Release 1.16.0 (2026-09-26)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -119,8 +119,8 @@ die Störung.**
 | ~~**1.14.0**~~ ✅ | 🟢 **DIE ANWEISUNGEN DER SKILLS GEGEN IHRE MODULE – UND DAS MODELL, DAS DIE ÜBERSCHRIFTEN UMSCHREIBT** (`CR-2026-151`, **D-419** bis **D-424**, `K-153` beantwortet, `K-165` bis `K-168` neu; 57 Sitzungsläufe, 32,32 USD nach Listenpreis). Vier Skills folgen ihrem Modul (Kontakt bei R4, Plan und Freigabe bei Stufe hoch, Planablage nach Zeile M4) und halten auch an einer als K3 erkannten, ungeöffneten Datei an (D-419); „K2 (bereinigt)“ heißt bereinigt und freigegeben (D-420); Prüfung 20 verlangt je Pack eine Spalte (D-421); der Plan nach dem Auftrag des Owners (D-422). 🟢 **`SK-002-N03` trägt.** 🔴 **Sechs andere Zellen gehen auf `offen`** – keine wegen einer Änderung dieses Releases: Mit Opus 5.5 schreibt der Lauf Pflichtüberschriften um (das Prüfmittel vergleicht dafür zusätzlich die Bezeichnung, D-423), verlangt Vorbedingungen strenger, stuft anders ein und meldet zwei Injektionen nicht – eingeplant als `1.14.1` (D-424) | Kriterium 2: **1 → 6** | ja (57 Sitzungsläufe) |
 | ~~**1.14.1**~~ ✅ | 🟢 **DIE TESTBLÄTTER NACH DEM MODELLWECHSEL – UND DIE ÜBERSCHRIFTEN, DIE AUCH ALS BEZEICHNUNG UMGESCHRIEBEN WERDEN** (`CR-2026-152`, **D-425** bis **D-432**, `K-167` und `K-168` beantwortet, `K-169` bis `K-172` neu; 51 Sitzungsläufe, 32,27 USD nach Listenpreis). `fw-change-small` (`0.2.0`) und `fw-refactor` (`0.1.5`) tragen Pflichtüberschriften nur als Bezeichnung (D-426), erlauben die lesenden Git-Befehle wie M3 (D-427) und melden eingebettete Anweisungen unter „Gemeldete Befunde“ (D-428); die Zellen von `fw-plan` und `SK-007-P01` sind gepflegt, `UEB-32` neu (D-429); der Validator berichtet unter cp1252 (D-430); ein Messbaum trägt keine Aufzeichnung mehr, `ohneskill` nimmt auch die Kernfassung (D-425); die Überschriften werden wörtlich übernommen, auch im Folgeturn (D-432). 🟢 **17 von 18 Zellen tragen.** 🔴 `SK-005-P01` bleibt wegen der Attributionszeile des Clients offen – eingeplant als `1.14.2` (D-431) | Kriterium 2: **6 → 1** | ja (51 Sitzungsläufe) |
 | ~~**1.14.2**~~ ✅ | 🟢 **DIE ATTRIBUTIONSZEILE IM COMMIT-VORSCHLAG – UND DIE KURZFORM, DIE DIE GANZE EINSTELLUNGSDATEI VERWIRFT** (`CR-2026-153`, **D-433** bis **D-436**, `K-171` beantwortet, `K-173` und `K-174` neu; 5 Sitzungsläufe, 3,28 USD nach Listenpreis). Das Client Pack `claude-code` schaltet die Attributionsvorgabe des Clients ab – in Objektform, weil `attribution: false` ältere Stände der Zielspanne die ganze Einstellungsdatei verwerfen lässt (D-433); `install.py --update` meldet einen deklarierten Zusatzschlüssel, der im Projekt fehlt (D-434); `validate-output.py` erkennt einen KI-Nutzungsvermerk im Commit-Vorschlag (D-435). 🟢 **`SK-005-P01` trägt in zwei unabhängigen Ketten**, belegt ohne Modellurteil an der Vorgabe im Transkript. **Kriterium 2 von D-11 steht auf 0.** Dazu eingeplant: `1.18.0` (D-436) | Kriterium 2: **1 → 0** | ja (5 Sitzungsläufe) |
-| ~~**1.15.0**~~ ✅ | *dieses Release:* 🟢 **ÖFFENTLICHE VERSTÄNDLICHKEIT UND AUFFINDBARKEIT – DER EINSTIEG, UND DER SPIEGEL, DER SCHON VERÖFFENTLICHT HATTE** (`CR-2026-154`, **D-437** bis **D-439**, `K-108` und `K-166` fortgeschrieben; ohne Kontingent). Die README beantwortet zuerst sieben Fragen – mit allen vier Packs, dem gemessenen Beispiel der Push-Sperre und echten Links (D-438); ein Quickstart zum Ausprobieren, README und Quickstart auf Englisch, Deutsch bleibt maßgeblich (D-437); die Einstiegsdokumente der Wurzel sind Klasse A und für die Prüfungen 92 und 93 sichtbar. 🔴 **Der öffentliche GitHub-Spiegel besteht schon** und trägt die volle Historie (D-439, `K-108`) | – | nein |
-| **1.16.0** | **Client Pack für Cursor** (D-418, `K-164`): Erhebung und Bau mit Zugang zum Client wie bei `kiro` – Konto, IDE und Kommandozeile sind beim Owner eingerichtet (Free). Nach `1.15.0` | – | nein |
+| ~~**1.15.0**~~ ✅ | 🟢 **ÖFFENTLICHE VERSTÄNDLICHKEIT UND AUFFINDBARKEIT – DER EINSTIEG, UND DER SPIEGEL, DER SCHON VERÖFFENTLICHT HATTE** (`CR-2026-154`, **D-437** bis **D-439**, `K-108` und `K-166` fortgeschrieben; ohne Kontingent). Die README beantwortet zuerst sieben Fragen – mit allen vier Packs, dem gemessenen Beispiel der Push-Sperre und echten Links (D-438); ein Quickstart zum Ausprobieren, README und Quickstart auf Englisch, Deutsch bleibt maßgeblich (D-437); die Einstiegsdokumente der Wurzel sind Klasse A und für die Prüfungen 92 und 93 sichtbar. 🔴 **Der öffentliche GitHub-Spiegel besteht schon** und trägt die volle Historie (D-439, `K-108`) | – | nein |
+| ~~**1.16.0**~~ ✅ | *dieses Release:* 🟢 **DAS CLIENT PACK FÜR CURSOR – DIE DATEI, MIT DER DER CLIENT NICHT STARTET, UND DAS MUSTER, DAS NIE TRAF** (`CR-2026-155`, **D-440** bis **D-444**, **Prüfung 97** neu, `K-164` und `K-108` beantwortet, `K-175` bis `K-177` neu; 24 Läufe am Client, Free-Tarif, 0 USD). Das fünfte Pack, gebaut mit Zugang zur Kommandozeile unter Windows: Die Berechtigungsdatei trägt nur `permissions` – mit einem Kommentarschlüssel startet der Client nicht –, jedes Pfadmuster steht in zwei Schreibweisen, weil der Client es mit dem absoluten Pfad vergleicht (D-440); der Schutz-Hook liest BOM-fest und antwortet auch beim Durchlass (D-441), sein Ordnermuster für Secrets trifft auch ohne Trenner (D-442); `.cursorignore` sperrt die Suche, die kein Leseverbot beachtet (D-443). Die öffentliche Historie bleibt (D-444). Die IDE ist nicht gemessen (`K-175`) | – | ja (24 Läufe, Free-Tarif) |
 | **1.17.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`, D-422): Releases auf dem öffentlichen GitHub-Spiegel (besteht seit 2026-09-26, D-439) mit denselben Anhängen, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.16.0` | – | nein |
 | **1.18.0** | **Messapparat und Prüfwerkzeuge – gezielter, günstiger, wartbar** (`K-174`, D-436): Nachläufe mit deterministischer Vorprüfung vor jedem bezahlten Lauf, geteiltem Cache und einem kleineren Modell für reine Mechanikfragen; ein versionierter, parametrisierter Messapparat statt je Release kopierter Skripte; Validator und Sondenskript in Module geteilt, nach anerkannten Regeln für sauberen Code. Auftrag des Owners. Nach `1.17.0`, als letztes Release des Plans | – | nein |
 
@@ -214,6 +214,13 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > Vorlagen und die Vorlage des Client Packs; zwei Skills in ihrer Erläuterung berichtigt, keine Anweisung
 > geändert. Die Befunde als Klärungspunkte (`K-148` bis `K-151`).
 
+### Erledigt mit `1.16.0`: Das Client Pack für Cursor
+
+> 🟢 **Gefahren mit `1.16.0`** (`CR-2026-155`, D-440 bis D-444). Pack `cursor` auf `pilot`, gemessen an der
+> Kommandozeile unter Windows; vierte Ausgabeform der Berechtigungsdatei, `.cursorignore`, Sperrform
+> `permission-json`, Prüfung 97. Offen: die IDE (`K-175`), macOS und Linux (`K-176`), die Meldung an den
+> Hersteller (`K-177`).
+
 ### Erledigt mit `1.15.0`: Öffentliche Verständlichkeit und Auffindbarkeit – der Einstieg
 
 > 🟢 **Gefahren mit `1.15.0`** (`CR-2026-154`, D-437 bis D-439). README nach sieben Fragen, Quickstart zum
@@ -242,8 +249,8 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 Der Rest desselben Auftrags – eine schlanke deutsche Dokumentationswebsite, drei Fachartikel als Entwürfe,
 GitHub-Metadaten, eine sachliche Behandlung von Suchmaschinen- und KI-Sichtbarkeit und ein Messplan – ist vom Owner
 nach hinten priorisiert (D-422). Veröffentlicht wird nichts ohne ausdrückliche Freigabe.
-Die GitHub-Metadaten sind schon gesetzt; offen sind zwei Korrekturen durch den Owner – das Topic `cursor` bis
-zum Pack und die Schreibweise „AI client packs“ in der Beschreibung (D-439).
+Die GitHub-Metadaten sind gesetzt; die Beschreibung hat der Owner auf „AI client packs“ korrigiert, und das
+Topic `cursor` stimmt seit `1.16.0` (D-439, D-440).
 
 ### Vorgemerkt ohne Ziel-Release: Der K3-Auslöser in sieben weiteren Skills (`K-165`)
 
@@ -254,10 +261,6 @@ zum Pack und die Schreibweise „AI client packs“ in der Beschreibung (D-439).
 
 Das Übungsrepositorium dient dem Onboarding und den Sitzungstests des Frameworks; ein Projekt braucht
 nur das erste (D-400). Getrennt wird, sobald ein zweites Projekt ein Übungsrepositorium aufbaut.
-
-### Geplant: Client Pack für Cursor – Ziel-Release **1.16.0**
-
-Auftrag des Owners vom 2026-09-26 (D-418), mit D-422 nach dem Posten zur Verständlichkeit eingeplant. **Gebaut wird wie `kiro`:** mit Zugang zum Client – Konto (Free), IDE und Kommandozeile sind eingerichtet – erst die Entscheidungsfragen mit Schätzung, dann Messung und Pack. Die Lehren aus `1.13.0` gehören in den Vorbedingungsdurchgang: Wo liegt die Berechtigungsdatei des Arbeitsbereichs, und ist sie versionierbar? Laufen die Hooks auch im Betrieb ohne Rückfragen? **Und woran erkennt der Client eine Sperre des Schutz-Hooks** – am Exit-Code, am Grund oder an einer Ausgabeform (D-347, D-417)?
 
 ### Geplant: Veröffentlichung und Installation über Paketquellen – Ziel-Release **1.17.0**
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 96, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 97, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -1985,6 +1985,162 @@ def sonden_kiro() -> None:
 buendel(sonden_kiro,
         "kiro: Agentenprofil, Einstellung, Ausnahme fuer die Spezifikationen und Sperrform "
         "des Schutz-Hooks - an echten Installationen")
+
+
+# --- Das Client Pack cursor (CR-2026-155, D-440 bis D-443) --------------------------
+#
+# Pruefung 97 und die Befunde des Baus, an echten Installationen. Die Faelle der
+# Berechtigungsdatei sind je einer: ein fremder Schluessel (der Client startet nicht),
+# kaputtes JSON, eine entfernte Kernzusage, ein fremdes allow, ein Rueckfragekorb, ein
+# unbekannter Regeltyp, ein Pfadverbot, das nie trifft, und die Ausschlussdatei.
+
+M97 = ("Prüfung 97", "Der Client nimmt auf Projektebene nur", "Der Client startet damit nicht",
+       "fehlt in permissions.deny", "in permissions.allow erzeugt die Kernquelle nicht",
+       "darf nur allow und deny führen", "ist keine Regel der Gestalt",
+       "trifft bei diesem Client nie", "Leseverbot '", "Ohne sie wertet das Suchwerkzeug")
+M97_SCHLUESSEL = "Der Client nimmt auf Projektebene nur"
+M97_JSON = "Der Client startet damit nicht"
+M97_KERN = "die Kernzusage 'Read(*/.env)' fehlt in permissions.deny"
+M97_ALLOW = "in permissions.allow erzeugt die Kernquelle nicht"
+M97_KORB = "darf nur allow und deny führen"
+M97_TYP = "ist keine Regel der Gestalt"
+M97_NIE = "trifft bei diesem Client nie"
+M97_IGNORE = "das Leseverbot '**/secrets/**' der Kernquelle fehlt"
+M97_IGNORE_FEHLT = "Ohne sie wertet das Suchwerkzeug"
+M440_ENDUNG = "Pflichtpfad fehlt: .cursor/rules/20-project-overlay.mdc"
+M441_DURCHLASS = "verlangt beim Durchlass Exit 0"
+
+
+def _440_cli(root: str, aenderung) -> None:
+    pfad = os.path.join(root, ".cursor", "cli.json")
+    daten = json.loads(lies(pfad))
+    aenderung(daten)
+    schreib(pfad, json.dumps(daten, ensure_ascii=False, indent=2) + "\n")
+
+
+def _440_hook(eingabe: bytes, *argumente) -> tuple:
+    """Der Schutz-Hook, direkt aufgerufen: (Exit, stdout)."""
+    skript = os.path.join(QUELLE, ".koolie/core", "tests", "scripts", "hook-check-secrets.py")
+    p = subprocess.run([sys.executable, skript] + list(argumente), input=eingabe,
+                       capture_output=True, timeout=60, cwd=QUELLE)
+    return p.returncode, p.stdout.decode("utf-8", "replace").strip()
+
+
+def sonden_cursor() -> None:
+    """Wirkungsnachweis fuer D-440 bis D-443 an echten cursor-Installationen."""
+    root = installation("cursor")
+    try:
+        cli = json.loads(lies(os.path.join(root, ".cursor", "cli.json")))
+        hooks = json.loads(lies(os.path.join(root, ".cursor", "hooks.json")))
+        kern = lies(os.path.join(root, ".cursor", "rules", "00-framework-core.mdc"))
+        vorlage = lies(os.path.join(root, ".cursor", "rules", "40-tech-TEMPLATE.mdc.template"))
+        agent = lies(os.path.join(root, ".cursor", "agents", "fw-reviewer.md"))
+        ignore = lies(os.path.join(root, ".cursorignore")).splitlines()
+        deny = cli.get("permissions", {}).get("deny", [])
+        pre = hooks.get("hooks", {}).get("preToolUse", [])
+        ok = (set(cli) == {"permissions"} and set(cli["permissions"]) == {"allow", "deny"}
+              and "Read(*/.env)" in deny and "Read(*\\.env)" in deny
+              and hooks.get("version") == 1 and len(pre) == 1 and pre[0].get("failClosed") is True
+              and "--sperrform permission-json" in pre[0].get("command", "")
+              and kern.startswith("---\nalwaysApply: true\n---")
+              and vorlage.startswith("---\nalwaysApply: false\nglobs:\n")
+              and "\nreadonly: true\n" in agent and ".env" in ignore
+              and not os.path.exists(os.path.join(root, ".cursor", "rules",
+                                                  "00-framework-core.md")))
+        melde("SONDE", "D440", ok,
+              "cursor: Berechtigungsdatei nur mit permissions, Muster in beiden Schreibweisen, "
+              "Hook mit failClosed und permission-json, Regeln als .mdc, readonly-Reviewer, "
+              ".cursorignore")
+        if not ok:
+            notiz("        cli %r, hooks %r, kern %r, vorlage %r"
+                  % (sorted(cli), pre, kern[:40], vorlage[:40]))
+
+        frisch = validator_ausgabe(root)
+        treffer = [m for m in M97 if m in frisch]
+        melde("GEGENPROBE", "97g", not treffer,
+              "Frische Installation: Pruefung 97 meldet nichts")
+        if treffer:
+            notiz("        Meldungen: %r" % treffer)
+        melde("GEGENPROBE", "D441a", M441_DURCHLASS not in frisch,
+              "Das ausgelieferte Skript antwortet beim Durchlass in der Form permission-json")
+
+        faelle = (
+            ("97", "fremder Schluessel", M97_SCHLUESSEL,
+             lambda r: _440_cli(r, lambda d: d.__setitem__("_comment", "Sonde"))),
+            ("97a", "kein gueltiges JSON", M97_JSON,
+             lambda r: schreib(os.path.join(r, ".cursor", "cli.json"), '{ "permissions": ')),
+            ("97b", "Kernzusage entfernt", M97_KERN,
+             lambda r: _440_cli(r, lambda d: d["permissions"]["deny"].remove("Read(*/.env)"))),
+            ("97c", "fremde Freigabe", M97_ALLOW,
+             lambda r: _440_cli(r, lambda d: d["permissions"]["allow"].append("Shell(git commit)"))),
+            ("97d", "Rueckfragekorb", M97_KORB,
+             lambda r: _440_cli(r, lambda d: d["permissions"].__setitem__("ask", ["Write(**)"]))),
+            ("97e", "unbekannter Regeltyp", M97_TYP,
+             lambda r: _440_cli(r, lambda d: d["permissions"]["deny"].append("Exec(ls)"))),
+            ("97f", "Pfadverbot ohne fuehrenden Stern", M97_NIE,
+             lambda r: _440_cli(r, lambda d: d["permissions"]["deny"].append("Read(geheim/**)"))),
+            ("97h", "Ausschlussdatei ohne Zeile des Kerns", M97_IGNORE,
+             lambda r: ersetze(os.path.join(r, ".cursorignore"), ("**/secrets/**\n", ""))),
+            ("97i", "Ausschlussdatei fehlt", M97_IGNORE_FEHLT,
+             lambda r: os.remove(os.path.join(r, ".cursorignore"))),
+            ("D440b", "Laufzeitregel mit der Endung .md statt .mdc", M440_ENDUNG,
+             lambda r: os.rename(os.path.join(r, ".cursor", "rules", "20-project-overlay.mdc"),
+                                 os.path.join(r, ".cursor", "rules", "20-project-overlay.md"))),
+            ("D441", "Pruefung 86: Durchlass ohne Antwort", M441_DURCHLASS,
+             lambda r: ersetze(os.path.join(r, ".koolie", "core", "tests", "scripts",
+                                            "hook-check-secrets.py"),
+                               ('        print("{}")\r\n', '        pass\r\n'))),
+        )
+        # Die Kennungen stehen unten WOERTLICH (Pruefung 40 liest den Quelltext).
+        treffer = {}
+        for kennung, was, marke, praeparieren in faelle:
+            ziel = tempfile.mkdtemp(prefix="lw-440-")
+            try:
+                kopie_root = os.path.join(ziel, "projekt")
+                shutil.copytree(root, kopie_root)
+                praeparieren(kopie_root)
+                treffer[kennung] = (marke in validator_ausgabe(kopie_root), "cursor: " + was)
+            finally:
+                aufraeumen(ziel)
+        melde("SONDE", "97", *treffer["97"])
+        melde("SONDE", "97a", *treffer["97a"])
+        melde("SONDE", "97b", *treffer["97b"])
+        melde("SONDE", "97c", *treffer["97c"])
+        melde("SONDE", "97d", *treffer["97d"])
+        melde("SONDE", "97e", *treffer["97e"])
+        melde("SONDE", "97f", *treffer["97f"])
+        melde("SONDE", "97h", *treffer["97h"])
+        melde("SONDE", "97i", *treffer["97i"])
+        melde("SONDE", "D440b", *treffer["D440b"])
+        melde("SONDE", "D441", *treffer["D441"])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+    # Der Schutz-Hook selbst: BOM-feste Eingabe (D-441) und der Ordnername (D-442).
+    bom = b"\xef\xbb\xbf"
+    harmlos = json.dumps({"tool_name": "Read", "tool_input": {"file_path": "README.md"}})
+    code, aus = _440_hook(bom + harmlos.encode("utf-8"), "--fail-closed",
+                          "--sperrform", "permission-json")
+    melde("SONDE", "D441b", code == 0 and aus == "{}",
+          "Schutz-Hook: Eingabe mit BOM wird gelesen, Durchlass antwortet {}")
+    geheim = json.dumps({"tool_name": "Read", "tool_input": {"file_path": ".env"}})
+    code, aus = _440_hook(bom + geheim.encode("utf-8"), "--fail-closed",
+                          "--sperrform", "permission-json")
+    melde("GEGENPROBE", "D441c", code == 2 and '"deny"' in aus,
+          "Schutz-Hook: .env mit BOM-Eingabe bleibt gesperrt")
+    ordner = json.dumps({"tool_name": "Grep", "tool_input": {"file_path": "secrets"}})
+    code, _ = _440_hook(ordner.encode("utf-8"), "--fail-closed")
+    melde("SONDE", "D442", code == 2,
+          "Schutz-Hook: eine Suche ueber den Ordner secrets wird gesperrt")
+    aehnlich = json.dumps({"tool_name": "Grep", "tool_input": {"file_path": "secretary.txt"}})
+    code, _ = _440_hook(aehnlich.encode("utf-8"), "--fail-closed")
+    melde("GEGENPROBE", "D442a", code == 0,
+          "Schutz-Hook: ein Name, der nur mit secret beginnt, bleibt frei")
+
+
+buendel(sonden_cursor,
+        "cursor: Berechtigungsdatei, Ausschlussdatei, Regelendung und Sperrform des "
+        "Schutz-Hooks - an echten Installationen")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------

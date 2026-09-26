@@ -623,6 +623,8 @@ def render_hooks(quelltext: str, man: dict) -> str:
     """
     if man.get("hooks_format") == "kiro-v1":
         return render_hooks_kiro(quelltext, man)
+    if man.get("hooks_format") == "cursor-v1":
+        return render_hooks_cursor(quelltext, man)
     objekt = _hooks_objekt(quelltext, man)
     schluessel = man.get("hooks_file_wrapper")
     if schluessel:
@@ -910,9 +912,10 @@ def render_exec_policy(quelltext: str, man: dict) -> str:
 
 
 def permissions_format(man: dict) -> str:
-    """Ausgabeform der Berechtigungsdatei dieses Packs ('json', 'toml', 'kiro-agent').
+    """Ausgabeform der Berechtigungsdatei dieses Packs ('json', 'toml', 'kiro-agent',
+    'cursor-json').
 
-    Der Standard ist 'json': Zwei der vier Packs fuehren ihn, und ein fehlendes Feld
+    Der Standard ist 'json': Zwei der fuenf Packs fuehren ihn, und ein fehlendes Feld
     darf nicht die neue Form bedeuten - ein Pack soll seine Form SAGEN und sie nicht
     durch Schweigen erben.
     """
@@ -1140,3 +1143,208 @@ def render_hooks_kiro(quelltext: str, man: dict) -> str:
 def exec_policy_file(man: dict) -> str | None:
     """Zielpfad der Befehlsregeldatei - oder None, wenn das Pack keine fuehrt."""
     return man.get("exec_policy_file")
+
+
+# ---------------------------------------------------------------------------
+# Die Endung der Regeldateien je Pack (seit 1.16.0, CR-2026-155)
+# ---------------------------------------------------------------------------
+#
+# Der Client cursor laedt aus .cursor/rules/ NUR Dateien mit der Endung .mdc - eine
+# .md-Datei dort ignoriert er, gemessen am 2026-09-26 (Kennwort in r2.md stand in
+# keiner Sitzung im Kontext; Herstellerdokumentation QU-1 sagt dasselbe). Die Kernquellen
+# heissen weiter *.md; das Pack nennt die Endung, und jede Stelle, die eine Regeldatei
+# der Ablage beim Namen nennt, fragt hier.
+
+def regel_endung(man: dict) -> str:
+    return man.get("rule_file_ext", ".md")
+
+
+def regeldatei(man: dict, name: str) -> str:
+    """Der Dateiname einer Regel in der Ablage dieses Packs ('20-project-overlay.md'
+    wird bei cursor zu '20-project-overlay.mdc')."""
+    endung = regel_endung(man)
+    if endung != ".md" and name.endswith(".md"):
+        return name[:-3] + endung
+    return name
+
+
+def ist_regeldatei(man: dict, dateiname: str) -> bool:
+    return dateiname.endswith(regel_endung(man))
+
+
+# ---------------------------------------------------------------------------
+# Vierte Ausgabeform: die Berechtigungsdatei des Projekts bei cursor (cursor-json)
+# ---------------------------------------------------------------------------
+#
+# WARUM ES SIE GIBT, UND DER GRUND IST GEMESSEN (CR-2026-155, D-440). Der Client fuehrt
+# Regeln der Gestalt Werkzeug(Muster) wie die erste Ausgabeform - aber drei Dinge
+# schliessen die erste Form aus, alle am 2026-09-26 an cursor-agent 2026.09.26 gemessen:
+#   * Die Projektdatei .cursor/cli.json darf NUR den Schluessel permissions tragen. Mit
+#     _comment und _core_rules_integrity brach der Client mit Exit 1 ab ("unrecognized
+#     keys") - fail-closed, aber ein Pack, das den Client nicht starten laesst, ist ein
+#     Ausfall. Die Kernregeln haelt deshalb Pruefung 97 gegen die Kernquelle.
+#   * Es gibt nur allow und deny, KEINEN Rueckfragekorb. Was nicht erlaubt ist, faellt
+#     bei Befehlen und externen Werkzeugen in die Rueckfrage des Clients - bei Dateien
+#     IM Arbeitsbereich nicht: Geschrieben wird dort ohne Rueckfrage (gemessen, auch ohne
+#     --force). Die Rueckfrageregeln der Kernquelle werden deshalb nicht gerendert; jedes
+#     ihrer Verben muss das Manifest unter permission_ask_ohne_korb erklaeren.
+#   * Ein Pfadmuster wird VERANKERT gegen den ABSOLUTEN Pfad verglichen, und '*' steht
+#     fuer eine beliebige Zeichenfolge ueber Trenner hinweg. Unter Windows traf deshalb
+#     weder 'Read(.env)' noch 'Read(**/.env)' - beide Koeder kamen heraus -, wohl aber
+#     'Read(*\.env)'. Jedes Pfadmuster wird darum in ZWEI Schreibweisen erzeugt, mit
+#     '/' und mit '\', beide mit fuehrendem '*'. Das ist breiter als das Kernmuster
+#     (ein 'AGENTS.md' in einem Unterordner faellt mit darunter) - bei deny eine
+#     Verschaerfung, und allow fuehrt nur '**', das ohnehin alles trifft.
+
+def cursor_pfadmuster(rohmuster: str, man: dict) -> list[str]:
+    """Die Schreibweisen eines Pfadmusters, die der Client gegen den absoluten Pfad trifft."""
+    muster = resolve_placeholders(rohmuster, man)
+    if muster.startswith("<") or muster in ("*", "**"):
+        return [muster]
+    rest = muster[2:] if muster.startswith("./") else muster
+    while rest.startswith("**/"):
+        rest = rest[3:]
+    return ["*/" + rest, "*\\" + rest.replace("/", "\\")]
+
+
+def _cursor_argumente(regel: dict, man: dict, korb: str) -> list[str]:
+    verb = regel["tool"]
+    if verb == "exec":
+        return [_befehl(regel, man, korb)]
+    if verb in ("read", "write"):
+        return cursor_pfadmuster(regel["pattern"], man)
+    # fetch nennt eine Domain, kein Pfad; skill und mcp einen Namen.
+    return [resolve_placeholders(regel["pattern"], man)]
+
+
+def cursor_koerbe(quelle: dict, man: dict) -> dict:
+    """allow und deny in der Schreibweise dieses Clients - ask wird erklaert, nicht erzeugt."""
+    ohne_korb = man.get("permission_ask_ohne_korb") or {}
+    for regel in quelle.get("ask", []):
+        if regel["tool"] not in ohne_korb:
+            raise AbbildungsFehler(
+                f"{man.get('client', '?')}/manifest.json: permission_ask_ohne_korb erklaert "
+                f"das Verb '{regel['tool']}' nicht. Dieser Client kennt keinen Rueckfragekorb; "
+                f"eine Rueckfrageregel, deren Verbleib nicht erklaert ist, waere still "
+                f"entfallen (D-440)")
+    koerbe: dict = {"allow": [], "deny": []}
+    for korb in ("allow", "deny"):
+        for regel in quelle.get(korb, []):
+            ziele = _werkzeuge(man, regel["tool"])
+            if not ziele:
+                if korb == "deny":
+                    raise AbbildungsFehler(
+                        f"{man.get('client', '?')}: kein Werkzeug fuer '{regel['tool']}', die "
+                        f"deny-Regel {regel} liesse sich nur durch Weglassen abbilden - das "
+                        f"waere eine Lockerung")
+                continue
+            for argument in _cursor_argumente(regel, man, korb):
+                for typ in ziele:
+                    eintrag = f"{typ}({argument})"
+                    if eintrag not in koerbe[korb]:
+                        koerbe[korb].append(eintrag)
+    return koerbe
+
+
+def cursor_kernregeln(quelle: dict, man: dict) -> list[str]:
+    """Die Kernzusagen in der Schreibweise dieses Clients - fuer Pruefung 97."""
+    raus: list[str] = []
+    for regel in quelle.get("deny", []):
+        if not regel.get("core"):
+            continue
+        for argument in _cursor_argumente(regel, man, "deny"):
+            for typ in _werkzeuge(man, regel["tool"]):
+                eintrag = f"{typ}({argument})"
+                if eintrag not in raus:
+                    raus.append(eintrag)
+    return raus
+
+
+def render_permissions_cursor(quelltext: str, man: dict) -> str:
+    """Die Berechtigungsdatei des Projekts: {"permissions": {"allow": [...], "deny": [...]}}.
+
+    Kein weiterer Schluessel - der Client verweigert sonst den Start (D-440). Die
+    Erklaerung, die bei den uebrigen Formen in _comment steht, steht in der README der
+    Laufzeitschicht und im Pack.
+    """
+    koerbe = cursor_koerbe(json.loads(quelltext), man)
+    return json.dumps({"permissions": koerbe}, indent=2, ensure_ascii=False) + "\n"
+
+
+def cursor_ignore_muster(quelle: dict, man: dict) -> list[str]:
+    """Die Leseverbote der Kernquelle als Zeilen der Ausschlussdatei (ohne Projektschlitze)."""
+    raus: list[str] = []
+    for regel in quelle.get("deny", []):
+        if regel.get("tool") != "read":
+            continue
+        muster = resolve_placeholders(regel["pattern"], man)
+        if muster.startswith("<") or muster in raus:
+            continue
+        raus.append(muster)
+    return raus
+
+
+def render_ignore_cursor(quelltext: str, man: dict) -> str:
+    """Die Ausschlussdatei des Clients (.cursorignore) aus den Leseverboten der Kernquelle.
+
+    WARUM ES SIE NEBEN DER BERECHTIGUNGSDATEI GIBT (CR-2026-155, D-443). Gemessen am
+    2026-09-26: Das Suchwerkzeug des Clients wertet ein Read-Verbot der
+    Berechtigungsdatei NICHT aus - der Koeder aus secrets/ kam heraus. Mit derselben
+    Angabe in .cursorignore wies der Client das Lesen von .env und sub/.env ab, meldete
+    die Suche im Ordner als ausgefiltert und fand bei der Suche ueber das ganze Projekt
+    nichts. Die Datei spricht die Syntax von .gitignore - relativ zum Projekt und ohne
+    die Trennerfrage der Berechtigungsdatei. Die Shell erreicht sie nicht ('cat .env'
+    lief); das haelt der Schutz-Hook.
+    """
+    kern = core_dir_name(man)
+    kopf = [
+        "# Ausschlussdatei des Frameworks, erzeugt fuer das Client Pack "
+        + man.get("client", "?") + ".",
+        "# Quelle: die Leseverbote in " + kern + "/framework/runtime/permissions.json.",
+        "# Der Client verweigert dem Agenten Lesen und Suchen in diesen Pfaden.",
+        "# Die Datei gehoert dem Projekt: <EXCLUDED_PATHS> hier zusaetzlich eintragen.",
+        "# Eine Zeile des Kerns zu entfernen ist eine Lockerung (Pruefung 97).",
+        "",
+    ]
+    return "\n".join(kopf + cursor_ignore_muster(json.loads(quelltext), man)) + "\n"
+
+
+def render_hooks_cursor(quelltext: str, man: dict) -> str:
+    """Hook-Datei in der Gestalt {version: 1, hooks: {ereignis: [...]}}.
+
+    Gemessen am 2026-09-26 (CR-2026-155, D-441):
+      * Die Ereignisse heissen klein (preToolUse, sessionStart); hook_event_names bildet
+        die Namen der Kernquelle ab.
+      * Der Matcher ist ein regulaerer Ausdruck ueber den Werkzeugnamen.
+      * Ein Hook, der scheitert, laesst die Operation standardmaessig DURCH (fail-open).
+        Ein durchsetzender Hook traegt deshalb failClosed - und dann wertet der Client
+        auch einen Hook OHNE AUSGABE als gescheitert; die Sperrform permission-json
+        antwortet beim Durchlass mit '{}'.
+      * Der Hook-Prozess steht in der Projektwurzel (hook_project_dir_expr ".").
+    """
+    quelle = json.loads(quelltext)
+    namen = man.get("hook_event_names") or {}
+    ergebnis: dict = {}
+    for ereignis, gruppen in quelle.items():
+        if ereignis.startswith("_"):
+            continue
+        if ereignis not in namen:
+            raise AbbildungsFehler(
+                f"{man.get('client', '?')}/manifest.json: hook_event_names kennt das "
+                f"Ereignis '{ereignis}' nicht - der Hook liefe unter keinem Namen, den der "
+                f"Client ausloest")
+        eintraege: list[dict] = []
+        for gruppe in gruppen:
+            matcher = _hook_matcher(gruppe["on"], man) if "on" in gruppe else None
+            for h in gruppe["hooks"]:
+                durchsetzend = h.get("enforcing") is True
+                eintrag: dict = {"command": _hook_befehl(h["script"], man, durchsetzend,
+                                                         h.get("needs_project_paths") is True),
+                                 "timeout": h["timeout"]}
+                if matcher:
+                    eintrag["matcher"] = matcher
+                if durchsetzend and man.get("hook_fail_closed") is True:
+                    eintrag["failClosed"] = True
+                eintraege.append(eintrag)
+        ergebnis[namen[ereignis]] = eintraege
+    return json.dumps({"version": 1, "hooks": ergebnis}, indent=2, ensure_ascii=False) + "\n"

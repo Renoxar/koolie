@@ -35,7 +35,7 @@ Der Kern nennt die Bestandteile der Laufzeitschicht mit Begriffen, nicht mit Pfa
 
 Die Quellen belegen die als `[DOK]` gekennzeichneten Aussagen; der Framework Owner hält diese Liste im Rahmen der Produktbeobachtung aktuell (FW-AK-01).
 
-Sie ist **je Client Pack** geführt, weil eine Aussage über einen Client an dessen Dokumentation hängt und an keiner anderen und weil die Listen verschiedene Recherchestände haben. Die Kennungen tragen das Präfix des Packs (`QD-` für `devin-desktop`, `QC-` für `claude-code`, `QK-` für `kiro`), damit sie nicht mit den Qualitätsregeln des Frameworks (`Q1`, `Q8` …) verwechselt werden. Das dritte Pack, `openai-codex`, führt keine `[DOK]`-Zeile – seine Belegspalte nennt Messungen – und hat deshalb keine Liste in diesem Anhang; `FW-AK-01` ist für dieses Pack noch nicht gefahren (Kopf des Packs, Zeile „Stand der Produktbeobachtung").
+Sie ist **je Client Pack** geführt, weil eine Aussage über einen Client an dessen Dokumentation hängt und an keiner anderen und weil die Listen verschiedene Recherchestände haben. Die Kennungen tragen das Präfix des Packs (`QD-` für `devin-desktop`, `QC-` für `claude-code`, `QK-` für `kiro`, `QU-` für `cursor`), damit sie nicht mit den Qualitätsregeln des Frameworks (`Q1`, `Q8` …) verwechselt werden. Das dritte Pack, `openai-codex`, führt keine `[DOK]`-Zeile – seine Belegspalte nennt Messungen – und hat deshalb keine Liste in diesem Anhang; `FW-AK-01` ist für dieses Pack noch nicht gefahren (Kopf des Packs, Zeile „Stand der Produktbeobachtung").
 
 Die **maßgebliche Zuordnung** steht in der Fähigkeitsmatrix des jeweiligen Packs (Kap. 15.1 beziehungsweise Kap. 7a): Dort nennt der Belegkopf jeder mit `[DOK]` belegten Zeile die Quellenkennung dieser Liste, Verweisbelege (*„wie B3"*) aufgelöst; Prüfung 73 setzt das durch (D-263 bis D-266). Die Kennung ist die verbindliche Form, weil allein sie gegen diese Liste gehalten werden kann; ein Seitenpfad darf danebenstehen. Nachgetragene Zuordnungen tragen den Zusatz `(Zuordnung K-62)`: gewonnen aus dem Bestand am 22.09.2026, nicht aus einem zweiten Abruf – der Recherchestand der Seiten bleibt der vom 18.09.2026 (D-263). Diese Liste sagt, welche Seite wofür herangezogen wurde und **wann sie abgerufen worden ist** – die Angabe, die eine Wiederholungsprüfung braucht.
 
@@ -109,6 +109,23 @@ Recherchestand: 26.09.2026, gegen Kiro CLI 2.24.1 (Engine V3) und Kiro IDE 1.1.7
 | QK-7 | kiro.dev/docs/mcp/configuration | `.kiro/settings/mcp.json` und `~/.kiro/settings/mcp.json`, `autoApprove`, `disabledTools` |
 | QK-8 | kiro.dev/docs/privacy-and-security/data-protection | Speicherung und Nutzung der Inhalte je Tarif, Abschaltung der Weitergabe, Verarbeitung in der Region |
 | QK-9 | kiro.dev/docs/kiroignore | `.kiroignore` – in der IDE für alle Werkzeuge, in der Kommandozeile nur für Suchergebnisse |
+
+### 31.4.5 Client Pack `cursor`
+
+Recherchestand: 26.09.2026, gegen die Kommandozeile `cursor-agent` 2026.09.26-dd393fe und die IDE 3.22.7 (`CR-2026-155`, `.koolie/core/tests/protocols/2026-09-26-bau-cursor.md`). Wie bei `kiro` ist die Liste **nicht die Grundlage der meisten Zeilen**: Was die Kommandozeile betrifft, ist unter Windows gemessen oder aus ihrem Programmcode gelesen; die Liste belegt, was nur die IDE betrifft oder nicht gemessen ist. Abgerufen jeweils in der Markdown-Fassung der Seite (`<Seite>.md`).
+
+⚠️ **Die Messung hat vier Aussagen der Dokumentation widerlegt oder ergänzt:** Die Beispielmuster `Read(.env*)` und `Read(src/**/*.ts)` treffen unter Windows nie, weil der Client mit dem absoluten Pfad vergleicht (QU-2); *„Without --force, changes are only proposed“* – geschrieben wurde trotzdem (QU-6); mit `failClosed` gilt ein Hook ohne Ausgabe als gescheitert, und die Eingabe beginnt unter Windows mit einem BOM (QU-3). Gemeldet werden sie vom Owner (`K-177`).
+
+| Nr. | Quelle | Belegt im Framework insbesondere |
+|---|---|---|
+| QU-1 | cursor.com/docs/rules | Ablage `.cursor/rules/*.mdc` mit Frontmatter `description`, `globs`, `alwaysApply`; eine `.md`-Datei dort wird ignoriert; `AGENTS.md` in der Wurzel und in Unterverzeichnissen; Nutzer- und Teamregeln; Empfehlung unter 500 Zeilen |
+| QU-2 | cursor.com/docs/cli/reference/permissions, cursor.com/docs/cli/reference/configuration | Regeltypen `Shell`, `Read`, `Write`, `WebFetch`, `Mcp`; `deny` vor `allow`; Projektdatei `.cursor/cli.json` nur mit `permissions`; globale Datei mit `approvalMode`, `sandbox` und `attribution`; MCP-Konfiguration |
+| QU-3 | cursor.com/docs/hooks, cursor.com/docs/reference/third-party-hooks | `.cursor/hooks.json` mit `version: 1`; Ereignisse und Eingabeschemata; Exit 2 sperrt, andere Fehler lassen durch außer mit `failClosed`; Umgebungsvariablen; Hooks laufen in einem vertrauten Arbeitsbereich; Import der Hooks von Claude Code mit Standard „an“ |
+| QU-4 | cursor.com/docs/skills | `SKILL.md` mit `name`, `description`, `paths`, `disable-model-invocation`, `metadata`; Ablagen `.cursor/skills/`, `.agents/skills/` und die Ablagen von Claude Code und Codex; eingebaute Skills |
+| QU-5 | cursor.com/docs/subagents | Subagenten unter `.cursor/agents/` mit `name`, `description`, `model`, `readonly`, `is_background`; Start über das Werkzeug `Task` |
+| QU-6 | cursor.com/docs/cli/headless, cursor.com/docs/cli/reference/parameters | Betrieb ohne Rückfragen (`-p`), `--force`, `--trust`, `--mode plan` und `ask`, `--sandbox`, `--approve-mcps` |
+| QU-7 | cursor.com/docs/enterprise/privacy-and-data-governance | Privacy Mode und Aufbewahrung je Modell |
+| QU-8 | cursor.com/docs/agent/security | Dateien im Arbeitsbereich ändert der Agent ohne Rückfrage; Befehle fragen zurück; jede MCP-Verbindung und jeder Aufruf braucht eine Freigabe; `.cursorignore`; die Ausführungsmodi sind *„best-effort guardrails“* |
 
 ## 31.5 Konsolidierter Verifikationsbedarf
 

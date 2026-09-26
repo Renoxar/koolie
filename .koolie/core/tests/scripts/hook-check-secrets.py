@@ -103,7 +103,12 @@ SECRET_PATH_PATTERNS = [
     re.compile(_GRENZE + r"\.env(\.|$)", re.I),
     re.compile(r"\.(pem|key|p12|pfx|jks|keystore)$", re.I),
     re.compile(_GRENZE + r"id_(rsa|ed25519|ecdsa)", re.I),
-    re.compile(_GRENZE + r"secrets?[\\/]", re.I),
+    # SEIT 1.16.0 AUCH OHNE NACHFOLGENDEN TRENNER (CR-2026-155, D-442): Ein
+    # Suchwerkzeug nennt das VERZEICHNIS - "secrets", nicht "secrets/pw.txt" -, und ein
+    # Befehl wie "grep -r KOEDER secrets" ebenso. Gemessen am 2026-09-26 an cursor-agent:
+    # Das Muster mit Pflicht-Trenner liess die Suche ueber den Ordner durch. Das gilt fuer
+    # jeden Client mit einem Suchwerkzeug; die Erweiterung ist eine Verschaerfung.
+    re.compile(_GRENZE + r"secrets?([\\/]|$)", re.I),
 ]
 
 STRUCTURE_PATH_PATTERNS = [
@@ -117,7 +122,9 @@ STRUCTURE_PATH_PATTERNS = [
     # Eine Datei, die Ebene 1 lautlos ersetzt, ist mindestens so schutzwuerdig wie die
     # Ebene selbst.
     re.compile(_GRENZE + r"(AGENTS|CLAUDE)(\.[A-Za-z0-9_-]+)?\.md$", re.I),
-    re.compile(_GRENZE + r"\.(devin|claude|codex)[\\/]", re.I),
+    # .cursor SEIT 1.16.0 (CR-2026-155): Laufzeitschicht, Berechtigungsdatei
+    # (.cursor/cli.json) und Hook-Datei des Packs cursor liegen dort.
+    re.compile(_GRENZE + r"\.(devin|claude|codex|cursor)[\\/]", re.I),
     # .kiro SEIT 1.13.0 (CR-2026-150, D-414, D-415) - mit EINER Ausnahme: .kiro/specs/
     # ist bei diesem Client die Ablage seines Planartefakts, und das ist nach D-415 der
     # Traeger des Plans, kein Artefakt des Frameworks. Das Agentenprofil nimmt denselben
@@ -367,7 +374,22 @@ def fail_closed() -> bool:
 # Hook mit Exit 2, und der Koederinhalt kam heraus; derselbe Lauf mit dem Grund auf
 # stderr wurde abgewiesen. Dieselbe Bauform wie D-347: ein Hook, der laeuft und sperrt,
 # und ein Client, der die Sperre nicht liest.
-SPERRFORMEN = ("decision-block", "hook-specific-output", "stderr-grund")
+#
+# DIE VIERTE FORM (CR-2026-155, D-441), gemessen am 2026-09-26 an cursor-agent
+# 2026.09.26: Der Client sperrt bei Exit 2 - aber mit failClosed wertet er einen Hook,
+# der OHNE AUSGABE endet, als fehlgeschlagen und sperrt die Operation. Der saubere
+# Durchlass muss hier also etwas sagen. Er sagt "{}": eine gueltige Antwort ohne
+# Entscheidung. Ein "allow" waere mehr, als der Hook weiss - der Client fuehrt die
+# Antworten aller Hooks zusammen, und eine Freigabe koennte eine Rueckfrage uebergehen,
+# die die Berechtigungsschicht verlangt. Gesperrt wird mit permission deny UND Exit 2.
+SPERRFORMEN = ("decision-block", "hook-specific-output", "stderr-grund", "permission-json")
+
+
+def durchlassen() -> None:
+    """Sauberer Ausgang: kein Fund. Bei permission-json mit einer leeren Antwort."""
+    if sperrform() == "permission-json":
+        print("{}")
+    sys.exit(0)
 
 
 def sperrform() -> str:
@@ -390,6 +412,12 @@ def block(reason: str) -> None:
             "permissionDecision": "deny",
             "permissionDecisionReason": reason}}, ensure_ascii=False))
         sys.exit(0)
+    if form == "permission-json":
+        # Beide Signale: die Entscheidung im Objekt und Exit 2. Der Client wertet Exit 2
+        # als Sperre; der Grund erreicht Nutzer und Modell ueber die beiden Meldungsfelder.
+        print(json.dumps({"permission": "deny", "user_message": reason,
+                          "agent_message": reason}, ensure_ascii=False))
+        sys.exit(2)
     if form == "stderr-grund":
         # Der Grund steht auf stderr und ist NIE leer - ein leerer Grund ist bei diesem
         # Client eine durchgelassene Operation (D-417). stdout bleibt leer.
@@ -424,7 +452,7 @@ def unpruefbar(grund: str) -> None:
               f"({CORE_REL}/governance/CHANGE_REQUEST_TEMPLATE.md).")
     print(f"[fw-hook] Eingabe nicht pruefbar ({grund}); Schema gegen aktuelle "
           f"Clientdokumentation pruefen.", file=sys.stderr)
-    sys.exit(0)
+    durchlassen()
 
 
 # ---------------------------------------------------------------- Stufe 1: Ereignis
@@ -587,11 +615,32 @@ def aufgeloestes_material(werte, basis: str) -> tuple:
     return voll, nur_secret
 
 
+def eingabe_lesen() -> str:
+    """Die Hook-Eingabe als Text - UTF-8, ein vorangestelltes BOM entfernt.
+
+    WARUM NICHT sys.stdin.read() (CR-2026-155, D-441). Gemessen am 2026-09-26 an
+    cursor-agent 2026.09.26 unter Windows: Der Client reicht die Eingabe durch eine
+    PowerShell-Huelle weiter, und die stellt ihr ein UTF-8-BOM voran. sys.stdin.read()
+    dekodiert unter Windows ausserdem mit der Codepage des Systems - aus dem BOM wurden
+    drei Zeichen vor der oeffnenden Klammer, json.loads scheiterte, und der Hook sperrte
+    fail-closed JEDE Operation, auch das Lesen einer harmlosen Datei. JSON ist UTF-8; die
+    Codepage ist nur der Rueckfall fuer eine Eingabe, die kein gueltiges UTF-8 ist.
+    """
+    puffer = getattr(sys.stdin, "buffer", None)
+    if puffer is None:
+        return sys.stdin.read().lstrip("﻿")
+    roh = puffer.read()
+    try:
+        return roh.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return roh.decode(sys.getfilesystemencoding() or "utf-8", errors="replace")
+
+
 # ------------------------------------------------------------------ Stufe 3: Regeln
 
 def main() -> None:
     try:
-        tool_name, tool_input, basis = ereignis_lesen(sys.stdin.read())
+        tool_name, tool_input, basis = ereignis_lesen(eingabe_lesen())
     except Unpruefbar as fehler:
         unpruefbar(fehler.args[0])
         return
@@ -670,7 +719,7 @@ def main() -> None:
                           f"({CORE_REL}/). Es gehoert dem Framework Owner und wird nur "
                           f"ueber ein Release ausgetauscht; Aenderungen laufen als "
                           f"Aenderungsantrag ({CORE_REL}/governance/CHANGE_REQUEST_TEMPLATE.md).")
-    sys.exit(0)
+    durchlassen()
 
 
 if __name__ == "__main__":

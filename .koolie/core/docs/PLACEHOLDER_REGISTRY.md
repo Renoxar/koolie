@@ -27,19 +27,19 @@ Diese Platzhalter unterscheiden sich von allen anderen: Sie werden **nicht vom M
 
 Die Begriffsfassung derselben Abbildung steht in `.koolie/core/docs/RUNTIME_GLOSSARY.md`: Fließtext nennt den Begriff, ein Quelltext, der gerendert wird, den Platzhalter.
 
-| Platzhalter | Bedeutung | `devin-desktop` | `claude-code` | `openai-codex` | `kiro` |
-|---|---|---|---|---|---|
-| `<CLIENT_NAME>` | Produktname des Clients. **Nur zum Nennen, nie zum Zuschreiben** (D-129): Sagt ein Text etwas *über* das Produkt, gehört es in dessen Client Pack. Und er hilft **nur in einer gerenderten Quelle** – einziger angewandter Fall: der Titel von `framework/runtime/root-instruction.md` | `Devin Desktop` | `Claude Code` | `OpenAI Codex CLI` | `Kiro` |
-| `<RUNTIME_DIR>` | Laufzeitschicht | `.devin` | `.claude` | `.codex` | `.kiro` |
-| `<ROOT_INSTRUCTION_FILE>` | Wurzel-Anweisungsdatei | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
-| `<ROOT_INSTRUCTION_LOCAL>` | Nutzerlokale Ergänzung dazu | `AGENTS.local.md` | `CLAUDE.local.md` | `AGENTS.override.md` – **verdrängt** die Wurzel-Anweisung, statt sie zu ergänzen (D-341) | `AGENTS.local.md` – **kein Mechanismus des Clients**; der Name steht nur, weil die Kernquelle ein Schreibverbot auf ihn führt (D-414) |
-| `<PERMISSIONS_FILE>` | Berechtigungsdatei | `.devin/config.json` | `.claude/settings.json` | `.codex/config.toml` | `.kiro/agents/koolie.json` – das Agentenprofil, gewählt durch `.kiro/settings/cli.json` (D-414) |
-| `<SKILLS_DIR>` | Skill-Ablage | `.devin/skills` | `.claude/skills` | `.codex/skills` | `.kiro/skills` |
-| `<RULES_DIR>` | Regelablage | `.devin/rules` | `.claude/rules` | `.codex/rules` | `.kiro/steering` |
-| `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` | `.codex/agents` | `.kiro/agents` |
-| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/config.json` | `.claude/settings.json` | `.codex/hooks.json` | `.kiro/hooks/koolie.json` |
-| `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` | `.codex/config.toml` | `.kiro/settings/mcp.json` |
-| `<CORE_DIR>` | Name des Kernverzeichnisses | `.koolie/core` | `.koolie/core` | `.koolie/core` | `.koolie/core` |
+| Platzhalter | Bedeutung | `devin-desktop` | `claude-code` | `openai-codex` | `kiro` | `cursor` |
+|---|---|---|---|---|---|---|
+| `<CLIENT_NAME>` | Produktname des Clients. **Nur zum Nennen, nie zum Zuschreiben** (D-129): Sagt ein Text etwas *über* das Produkt, gehört es in dessen Client Pack. Und er hilft **nur in einer gerenderten Quelle** – einziger angewandter Fall: der Titel von `framework/runtime/root-instruction.md` | `Devin Desktop` | `Claude Code` | `OpenAI Codex CLI` | `Kiro` | `Cursor` |
+| `<RUNTIME_DIR>` | Laufzeitschicht | `.devin` | `.claude` | `.codex` | `.kiro` | `.cursor` |
+| `<ROOT_INSTRUCTION_FILE>` | Wurzel-Anweisungsdatei | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` | `AGENTS.md` |
+| `<ROOT_INSTRUCTION_LOCAL>` | Nutzerlokale Ergänzung dazu | `AGENTS.local.md` | `CLAUDE.local.md` | `AGENTS.override.md` – **verdrängt** die Wurzel-Anweisung, statt sie zu ergänzen (D-341) | `AGENTS.local.md` – **kein Mechanismus des Clients**; der Name steht nur, weil die Kernquelle ein Schreibverbot auf ihn führt (D-414) | `AGENTS.local.md` – **kein Mechanismus des Clients**; der Name steht nur, weil die Kernquelle ein Schreibverbot auf ihn führt (D-440) |
+| `<PERMISSIONS_FILE>` | Berechtigungsdatei | `.devin/config.json` | `.claude/settings.json` | `.codex/config.toml` | `.kiro/agents/koolie.json` – das Agentenprofil, gewählt durch `.kiro/settings/cli.json` (D-414) | `.cursor/cli.json` – trägt **nur** `permissions`; dazu `.cursorignore` für Lesen und Suchen (D-440, D-443) |
+| `<SKILLS_DIR>` | Skill-Ablage | `.devin/skills` | `.claude/skills` | `.codex/skills` | `.kiro/skills` | `.cursor/skills` |
+| `<RULES_DIR>` | Regelablage | `.devin/rules` | `.claude/rules` | `.codex/rules` | `.kiro/steering` | `.cursor/rules` – Regeldateien mit der Endung `.mdc` (D-440) |
+| `<AGENTS_DIR>` | Agentenprofile | `.devin/agents` | `.claude/agents` | `.codex/agents` | `.kiro/agents` | `.cursor/agents` |
+| `<HOOKS_FILE>` | Hook-Konfiguration | `.devin/config.json` | `.claude/settings.json` | `.codex/hooks.json` | `.kiro/hooks/koolie.json` | `.cursor/hooks.json` |
+| `<MCP_FILE>` | MCP-Konfiguration | `.devin/mcp_config.json` | `.mcp.json` | `.codex/config.toml` | `.kiro/settings/mcp.json` | `.cursor/mcp.json` |
+| `<CORE_DIR>` | Name des Kernverzeichnisses | `.koolie/core` | `.koolie/core` | `.koolie/core` | `.koolie/core` | `.koolie/core` |
 
 Ein Client Pack MUSS jeden dieser Platzhalter in seinem `manifest.json` unter `runtime_placeholders` belegen; ein unaufgelöster Laufzeit-Platzhalter in einer Installation ist ein Fehler.
 

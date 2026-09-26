@@ -85,10 +85,10 @@ Abschnitt 6.
 | Client | Client Pack | Stand | Wichtigste bekannte Grenze |
 |---|---|---|---|
 | Claude Code | [`claude-code`](.koolie/core/clients/claude-code/CLIENT_PACK.md) | Pilot | Befehlssperren wirken als Präfixmuster (siehe Beispiel); die Datei-Sperren – Secret-Dateien lesegeschützt, Framework-, CI- und Lockdateien schreibgeschützt – gelten nur für den direkten Dateizugriff; für Shell und Unterprozess trägt die Anweisung |
+| Cursor | [`cursor`](.koolie/core/clients/cursor/CLIENT_PACK.md) | Pilot | Dateien im Arbeitsbereich schreibt der Client ohne Rückfrage; gemessen ist die Kommandozeile unter Windows – die IDE und macOS/Linux sind nur aus Dokumentation und Programmcode abgebildet |
 | Devin Desktop | [`devin-desktop`](.koolie/core/clients/devin-desktop/CLIENT_PACK.md) | Pilot | Im Betriebsmodus `dangerous` des Clients gelten die technischen Einstufungen nicht; dort sperrt nur noch der Schutz-Hook des Frameworks |
 | Kiro | [`kiro`](.koolie/core/clients/kiro/CLIENT_PACK.md) | Pilot | Die Sperren wirken nur mit dem aktiven Agentenprofil; Hooks laufen nur in der interaktiven Sitzung; die IDE ist nur aus der Dokumentation abgebildet |
 | OpenAI Codex CLI | [`openai-codex`](.koolie/core/clients/openai-codex/CLIENT_PACK.md) | Pilot, **mit Auflage** | Zwei Kernzusagen sind nicht abbildbar – **Inbetriebnahme nur mit Freigabe** der Sicherheitsverantwortlichen; die projektlokale Schicht lädt nur in einem als vertraut eingetragenen Projekt |
-| Cursor | – | **geplant** (`1.16.0`) | noch kein Client Pack |
 
 Welche Clientversion ein Pack abdeckt und an welcher Version es gemessen ist, nennt der Steckbrief am Anfang
 jedes `CLIENT_PACK.md`.

@@ -84,10 +84,10 @@ overview of all packs is in [`clients/README.md`](.koolie/core/clients/README.md
 | Client | Client pack | Status | Most important known limit |
 |---|---|---|---|
 | Claude Code | [`claude-code`](.koolie/core/clients/claude-code/CLIENT_PACK.md) | pilot | Command blocks work as prefix patterns (see the example); the file blocks – secret files protected from reading, framework, CI and lock files protected from writing – only cover direct file access; for shell and subprocesses only the instruction applies |
+| Cursor | [`cursor`](.koolie/core/clients/cursor/CLIENT_PACK.md) | pilot | The client writes files in the workspace without asking; measured is the command line on Windows – the IDE and macOS/Linux are mapped from documentation and program code only |
 | Devin Desktop | [`devin-desktop`](.koolie/core/clients/devin-desktop/CLIENT_PACK.md) | pilot | In the client's `dangerous` operating mode the technical classifications do not apply; there, only the framework's protection hook blocks actions |
 | Kiro | [`kiro`](.koolie/core/clients/kiro/CLIENT_PACK.md) | pilot | The blocks only work with the active agent profile; hooks only run in the interactive session; the IDE is mapped from its documentation only |
 | OpenAI Codex CLI | [`openai-codex`](.koolie/core/clients/openai-codex/CLIENT_PACK.md) | pilot, **with a condition** | Two core promises cannot be mapped – **use only with approval** by the security contact; the project-local layer only loads in a project registered as trusted |
-| Cursor | – | **planned** (`1.16.0`) | no client pack yet |
 
 Which client version a pack covers and which version it was measured against is stated in the profile table
 at the top of each `CLIENT_PACK.md`.
