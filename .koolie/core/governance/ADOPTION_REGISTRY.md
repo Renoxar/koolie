@@ -28,10 +28,10 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.12.0** | `0.3.20` | 2026-09-26 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.12.0** | `1.4.14` | 2026-09-26 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.12.1** | `0.3.21` | 2026-09-26 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.12.1** | `1.4.15` | 2026-09-26 |
 
-🟢 **STAND 2026-09-26: BEIDE PROJEKTE TRAGEN `1.12.0`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.12.0` ist das Messrelease zum Mehrprojektfall und zur Token-Last (D-407 bis D-410): **An der installierten Laufzeitschicht ändert sich nichts**; im Kern der Messapparat, der Übernahmeleitfaden (Startort der Sitzung, Kosten), die Overlay-Vorlage und die Vorbemerkungen der drei Fähigkeitsmatrizen. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
+🟢 **STAND 2026-09-26: BEIDE PROJEKTE TRAGEN `1.12.1`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.12.1` behebt zwei Befunde an Packs (D-411, D-412): **An der installierten Laufzeitschicht ändert sich die Berechtigungsdatei von `devin-desktop` und `openai-codex`** – und die fasst die Hebung nicht an. Im Übungsrepositorium ist `read_config_from` von Hand nachgezogen (`windsurf: true`, `copilot`/`opencode`/`zed`: `false`); der Pilot (`claude-code`) ist nicht betroffen. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`

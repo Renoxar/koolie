@@ -663,6 +663,13 @@ def load_source(core_dir: str, name: str) -> str:
 #     zulaessig - und dann nur fuer die Zugriffsart deny. Ein projektrelativer
 #     Schluessel (":workspace/<pfad>") nimmt KEIN Muster. Musterform und
 #     Versionierbarkeit schliessen einander damit aus, und B3 faellt an beiden Enden.
+#     (Gemessen mit 0.156.1. Die Herstellerdokumentation nennt seit 0.157 Globs
+#     unter ":workspace_roots" als deny-Leseregeln - nicht nachgemessen, K-160.)
+#   * Seit 0.157 heisst das Sonderziel ":workspace_roots" und traegt seine
+#     Unterpfade als eigene Tabelle ("." = der Arbeitsbereich selbst). Die alte
+#     Form ":workspace/<pfad>" meldet 0.157 als unbekannt und IGNORIERT sie - mit
+#     ihr war der ganze Arbeitsbereich schreibgeschuetzt, gemessen mit
+#     `codex sandbox` am 2026-09-26 (K-157, D-412).
 #   * Ein deny-Leserecht verlangt ausserdem den erhoehten Windows-Sandkasten; auf
 #     einem unerhoehten Arbeitsplatz LAEUFT DER CLIENT DANN NICHT (fail-closed).
 # Diese Ausgabeform rendert den Lesekorb deshalb NICHT und fuehrt seine Regeln in
@@ -707,7 +714,7 @@ def _profil_schluessel(rohmuster: str, man: dict) -> str | None:
         muster = muster[:-3]
     if any(z in muster for z in ("*", "?", "[")):
         return None
-    vorsatz = man.get("permission_path_special", ":workspace")
+    vorsatz = man.get("permission_path_special", ":workspace_roots")
     if muster.startswith("./"):
         muster = muster[2:]
     return vorsatz + "/" + muster
@@ -789,9 +796,25 @@ def render_permissions_toml(quelltext: str, man: dict) -> str:
         zeilen.append("description = " + _toml_zeichenkette(beschreibung))
     zeilen.append("")
     zeilen.append("[permissions." + profil + ".filesystem]")
+    # Das Sonderziel des Arbeitsbereichs traegt seine Unterpfade als eigene Tabelle:
+    # der Arbeitsbereich selbst als ".", jeder Teilbaum relativ dazu (K-157, D-412).
+    vorsatz = man.get("permission_path_special", ":workspace_roots")
+    unter: dict[str, str] = {}
     for schluessel in sorted(eintraege):
-        zeilen.append(_toml_zeichenkette(schluessel) + " = "
-                      + _toml_zeichenkette(eintraege[schluessel]))
+        if schluessel == vorsatz:
+            unter["."] = eintraege[schluessel]
+        elif schluessel.startswith(vorsatz + "/"):
+            unter[schluessel[len(vorsatz) + 1:]] = eintraege[schluessel]
+        else:
+            zeilen.append(_toml_zeichenkette(schluessel) + " = "
+                          + _toml_zeichenkette(eintraege[schluessel]))
+    if unter:
+        zeilen.append("")
+        zeilen.append("[permissions." + profil + ".filesystem."
+                      + _toml_zeichenkette(vorsatz) + "]")
+        for schluessel in sorted(unter):
+            zeilen.append(_toml_zeichenkette(schluessel) + " = "
+                          + _toml_zeichenkette(unter[schluessel]))
     netz = man.get("permission_profile_network")
     if netz:
         zeilen.append("")

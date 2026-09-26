@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.5.0` |
+| Version | `0.5.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -441,8 +441,7 @@ Mittelwerte; die Fixlast-Zeilen mit angelegtem Cache; die gemessenen Modelle nen
 | `claude-code` | nur „OK“ antworten (Fixlast) | 32.330 → 47.232 | 0,007 → 0,010 (erster Aufruf einer Sitzung: 0,137 → 0,285) | 1,4 (2,1) |
 | | kleine Änderung als Diff | 65.466 → 99.443 | 0,065 → 0,184 | 2,8 |
 | | Analyse über mehrere Dateien | 104.503 → 173.236 | 0,137 → 0,284 | 2,1 |
-| `devin-desktop` | Fixlast, wie ausgeliefert | 23.556 → 25.805 | 0,012 → 0,013 | 1,1 |
-| | Fixlast, Regelablage geladen (`K-156`) | 23.556 → 31.913 | 0,012 → 0,016 | 1,3 |
+| `devin-desktop` | Fixlast (seit 1.12.1 mit geladener Regelablage, `K-156`) | 23.556 → 31.913 | 0,012 → 0,016 | 1,3 |
 | | kleine Änderung als Diff | 47.983 → 81.585 | 0,051 → 0,123 | 2,4 |
 | | Analyse über mehrere Dateien | 167.503 → 295.203 | 0,272 → 0,494 | 1,8 |
 | `openai-codex` | Fixlast | 15.346 → 19.755 | 0,006 → 0,011 | 1,7 |
@@ -452,8 +451,9 @@ Mittelwerte; die Fixlast-Zeilen mit angelegtem Cache; die gemessenen Modelle nen
 **Was daraus folgt:**
 
 - **Die feste Last je Modellaufruf ist klein und kommt fast immer aus dem Cache:** rund 15.000
-  Token bei `claude-code`, 4.400 bei `openai-codex`, bei `devin-desktop` 2.200 wie ausgeliefert und
-  8.400 mit geladener Regelablage. Der Cache kostet ein Zehntel des Eingabepreises; teuer ist nur
+  Token bei `claude-code`, 4.400 bei `openai-codex`, 8.400 bei `devin-desktop` – dort mit der
+  Regelablage, die bis `1.12.0` nicht lud (`K-156`; mit `1.12.1` nachgemessen: 8.344). Der Cache
+  kostet ein Zehntel des Eingabepreises; teuer ist nur
   der **erste** Aufruf einer Sitzung, der ihn anlegt.
 - **Eine kleine Aufgabe wird rund zwei- bis dreimal so teuer, eine größere rund doppelt so teuer.**
   Den Unterschied macht weniger die feste Last als die Arbeitsweise: Die Sitzung liest den Skill und

@@ -142,11 +142,20 @@
     "value": {
       "agents_standard": true,
       "cursor": false,
-      "windsurf": false,
-      "claude": false
+      "windsurf": true,
+      "claude": false,
+      "copilot": false,
+      "opencode": false,
+      "zed": false
     }
   },
-  "_import_control_note": "D-37: Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate. agents_standard bleibt true - das ist bei diesem Client das Format der eigenen Wurzel-Anweisungsdatei; es abzuschalten hiesse, das Framework abzuschalten. Wirkung gemessen am 2026-09-11 (K-21, K-23): 67 fremde Skills und der Inhalt einer fremden Regel verschwinden aus dem Kontext. Einstufung [TEXTUELL], nicht [TECHNISCH]: Die Benutzerkonfiguration hat in beide Richtungen Vorrang (K-27, ERH-11).",
+  "_import_control_note": "D-37: Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate. agents_standard bleibt true - das ist bei diesem Client das Format der eigenen Wurzel-Anweisungsdatei; es abzuschalten hiesse, das Framework abzuschalten. Wirkung gemessen am 2026-09-11 (K-21, K-23): 67 fremde Skills und der Inhalt einer fremden Regel verschwinden aus dem Kontext. Einstufung [TEXTUELL], nicht [TECHNISCH]: Die Benutzerkonfiguration hat in beide Richtungen Vorrang (K-27, ERH-11). WINDSURF STEHT SEIT 1.12.1 AUF true, UND DAS IST EINE ABWAEGUNG, KEIN VERSEHEN (K-156, D-411): Mit windsurf false laedt Devin CLI 3000.11.1 und 3000.11.3 die EIGENE Regelablage .devin/rules/ nicht - gegen die Herstellerdokumentation, gemessen im Minimalbaum mit Kennworten je Kanal am 2026-09-26. Der Preis: Mit true laden auch .windsurf/rules/ im Projekt und ~/.codeium/windsurf/memories/global_rules.md aus dem Benutzerprofil (D-290), laut Dokumentation dazu Skills und MCP-Server aus Windsurf. Diese Kanaele nennt install.py nach Installation und Hebung, wenn sie auf dem Arbeitsplatz belegt sind (import_channels_report). copilot, opencode und zed sind seit 1.12.1 dokumentierte Schluessel mit Standard true und stehen auf false; die Wirkung von copilot ist NICHT gemessen - .github/skills/ lud im Minimalbaum auch ohne den Schalter nicht.",
+  "import_channels_report": [
+    {"path": "~/.codeium/windsurf/memories/global_rules.md", "scope": "user", "when": "nonempty", "what": "globale Windsurf-Regel - laedt in JEDER Sitzung als immer aktive Regel (gemessen, K-156)"},
+    {"path": "~/.codeium/windsurf/mcp_config.json", "scope": "user", "when": "exists", "what": "MCP-Server aus Windsurf - laut Herstellerdokumentation importiert, Ablageort nach Windsurf-Konvention, nicht erhoben"},
+    {"path": ".windsurf", "scope": "project", "when": "exists", "what": "Windsurf-Ablage im Projekt - Regeln laden als Regeln des Projekts (gemessen, K-156)"}
+  ],
+  "_import_channels_report_note": "Auskunft, keine Schranke (D-411): Die Kanaele, die windsurf true oeffnet, meldet install.py, wenn sie belegt sind - eine nicht leere Datei, eine vorhandene Datei oder ein vorhandenes Verzeichnis. Was darin steht, beurteilt der Mensch.",
   "hook_fail_closed": true,
   "_hook_fail_closed_note": "Das Eingabeschema dieses Clients ist seit 0.25.0 gegen eine Installation belegt: In einer AP2-Sitzung aufgezeichnet wurden die Felder hook_event_name, tool_name, tool_input, session_id, prompt_id und das in der Dokumentation nicht genannte tool_use_id (tests/protocols/2026-09-11-AP2-devin-desktop.md). Damit ist die Bedingung aus D-31 erfuellt und der durchsetzende Hook wird mit --fail-closed aufgerufen. Beobachtet ist auch das Blockieren selbst: Ein Lesezugriff auf eine Secret-Datei wurde abgebrochen - in einer Umgebung ohne Regeltexte und bei ausgeschalteter Berechtigungsschranke."
 }

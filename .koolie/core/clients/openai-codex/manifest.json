@@ -50,10 +50,11 @@
   "_root_instruction_override_note": "Dieser Client kennt eine Datei, die die Wurzel-Anweisung nicht ergaenzt, sondern ERSETZT - gemessen mit Gegenprobe am 2026-09-23. Das Feld sagt es ausdruecklich, und Pruefung 88 meldet die Datei, wenn sie im Projekt liegt.",
   "permission_profile_name": "koolie",
   "permission_profile_description": "Rechteprofil des Koolie-Frameworks: Lesen ueberall, Schreiben nur im Arbeitsbereich, und die Traeger des Frameworks und des Overlays nur lesend.",
-  "permission_path_special": ":workspace",
+  "permission_path_special": ":workspace_roots",
+  "_permission_path_special_note": "Seit Clientversion 0.157 heisst das Sonderziel des Arbeitsbereichs :workspace_roots und fuehrt seine Unterpfade als eigene Tabelle (\".\" = der Arbeitsbereich selbst). Die bis 1.12.0 ausgelieferte Form :workspace/<pfad> meldet 0.157 als unbekannt und ignoriert sie; gemessen am 2026-09-26 mit codex sandbox ohne Modellaufruf: mit der alten Form ist der GANZE Arbeitsbereich schreibgeschuetzt, mit der neuen ist er schreibbar, und .koolie/core, .codex und AGENTS.md bleiben schreibgeschuetzt (K-157, D-412).",
   "permission_path_base": {
     ":root": "read",
-    ":workspace": "write"
+    ":workspace_roots": "write"
   },
   "_permission_path_base_note": "Der Grundstock jedes Profils, und er ist nicht Kosmetik. Gemessen am 2026-09-23: Ein aktives Rechteprofil OHNE ':root = read' erzeugt eine geteilte Leseeinschraenkung, und der unerhoehte Windows-Sandkasten kann sie nicht durchsetzen - der Client BRICHT DANN AB, statt ungesandboxt zu laufen (fail-closed, und damit richtig). Mit dieser Grundlage laeuft er, und ein Schreibverbot auf einem Teilbaum ist ausdrueckbar: Der Teilbaum bekommt 'read'.",
   "permission_tools": {

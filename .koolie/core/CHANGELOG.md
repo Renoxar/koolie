@@ -2,6 +2,59 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.12.1] - 2026-09-26
+
+**Die Regelablage, die nur mit Windsurf laedt, und das Sonderziel, das umbenannt wurde**
+(`CR-2026-149` E1 bis E8, **D-411** bis **D-413**; `K-156` und `K-157` beantwortet, `K-160` und
+`K-161` neu). Ein PATCH-Release mit Kontingent: 24 Sitzungslaeufe ueber zwei Clients, 0,65 USD nach
+Listenpreis, dazu Messungen ohne Modellaufruf.
+
+> 🔴 **`devin-desktop` LAESST WINDSURF-QUELLEN ZU, WEIL DER CLIENT SEINE EIGENE REGELABLAGE SONST NICHT
+> LAEDT** (D-411, `K-156`). Mit `read_config_from.windsurf: false` sieht das Modell von der
+> Regelschicht nur `AGENTS.md` - auch in Devin CLI 3000.11.3, gegen die Herstellerdokumentation. Der
+> Preis: Eine Regel im Benutzerprofil (`~/.codeium/windsurf/memories/global_rules.md`) und
+> `.windsurf/rules/` im Projekt erreichen die Sitzung; `install.py` meldet sie, wenn sie belegt sind.
+
+> 🔴 **`openai-codex` 0.157 IGNORIERTE DIE PFADEINTRAEGE DES RECHTEPROFILS - UND DAMIT WAR DER GANZE
+> ARBEITSBEREICH SCHREIBGESCHUETZT** (D-412, `K-157`). Das Sonderziel heisst `:workspace_roots` und
+> fuehrt seine Unterpfade als eigene Tabelle.
+
+**Geaendert**
+
+- Client Pack `devin-desktop` (`0.14.5`): `read_config_from` mit `windsurf: true`, `copilot`,
+  `opencode` und `zed` auf `false`; neues Manifestfeld `import_channels_report`; Matrix `R2`, `R6`,
+  Abschnitt 7.1 (D-411).
+- `install.py`: nennt nach Installation und Hebung die belegten Importkanaele des Packs - eine
+  Auskunft, keine Schranke (D-411). Sondenbuendel `sonden_importkanaele` (`D411`, `D411a`); die Sonde
+  zu Pruefung 22 verfaelscht `cursor` statt `windsurf`.
+- `clientmap.py` und Client Pack `openai-codex` (`0.1.6`): das Rechteprofil fuehrt die Tabelle
+  `":workspace_roots"`; `B4` mit gemessener Pfadseite, `[TECHNISCH]` auch fuer Shell-Befehle im
+  Sandkasten (D-412). Sondenbuendel `sonden_pfadtoken_codex` (`D412`, `D412a`).
+- `docs/ADOPTION_GUIDE.md` (`0.5.1`) Abschnitt 7: die feste Last von `devin-desktop` ist die mit
+  Regelablage (8.400 Token); Kapitel 1 und 29 des Hauptdokuments.
+- Klaerungspunkte `K-160` und `K-161`; Roadmap (`0.4.3`) (D-413).
+
+**Migrationshinweise fuer Overlays**
+
+- **`devin-desktop`:** `install.py --update` fasst `.devin/config.json` nicht an. `read_config_from`
+  von Hand auf den Wert des Manifests setzen (`windsurf: true`; `copilot`, `opencode`, `zed`:
+  `false`) - Pruefung 22 meldet den alten Wert. Danach die Meldung des Installers lesen: Eine nicht
+  leere `global_rules.md` im Benutzerprofil erreicht jede Sitzung.
+- **`openai-codex`:** `install.py --update` fasst `.codex/config.toml` nicht an. Die Eintraege
+  `":workspace…"` der Dateisystemtabelle durch die Tabelle
+  `[permissions.koolie.filesystem.":workspace_roots"]` ersetzen (`"." = "write"`, die geschuetzten
+  Teilbaeume relativ als `"read"`); die Vorlage erzeugt eine Erstinstallation. Keine Pruefung sieht
+  die alte Form; `codex doctor --all` meldet sie als Startwarnung.
+
+**Bekannte Einschraenkungen**
+
+- Der Kanal aus D-290 ist bei `devin-desktop` offen; die Meldung gilt fuer den Zeitpunkt des
+  Installerlaufs. Eine Regel mit `trigger: glob` laedt bei `devin-desktop` nicht (`K-161`). Die
+  Wirkung von `copilot: false` ist nicht gemessen.
+- `openai-codex`: gemessen mit 0.157.1, die Zielspanne bleibt `0.156.x`; `B3` unveraendert
+  (`K-160`).
+- **Kriterium 2 = 1** (`SK-002-N03`, `1.14.0`). Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.12.0] - 2026-09-26
 
 **Der Mehrprojektfall und die Token-Last - gemessen, und die Regelablage, die nicht lud**

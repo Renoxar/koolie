@@ -752,8 +752,9 @@ gegenprobe("21", "Schutzmuster in hook-check-secrets.py bleiben unbeanstandet",
 
 # --- 22: Importsteuerung ---------------------------------------------------------
 def _steuerung_verfaelschen(root: str) -> None:
+    # Seit 1.12.1 steht windsurf auf true (K-156, D-411); verfaelscht wird cursor.
     pfad = P(root, ".devin", "config.json")
-    schreib(pfad, lies(pfad).replace('"windsurf": false', '"windsurf": true', 1))
+    schreib(pfad, lies(pfad).replace('"cursor": false', '"cursor": true', 1))
 
 
 sonde("22", "Ein verfaelschter Wert der Importsteuerung read_config_from weicht vom Manifest "
@@ -1625,6 +1626,128 @@ def sonden_messapparat() -> None:
 buendel(sonden_messapparat,
         "Der Messapparat findet den Kern unter .koolie/core, und das Fuellskript "
         "entfaltet jeden Platzhalter der claude-code-Berechtigungsdatei")
+
+
+# --- D-411: die Importkanaele, die devin-desktop seit 1.12.1 zulaesst (K-156) -----------
+#
+# 🔴 MIT `windsurf: false` LAEDT DEVIN CLI DIE EIGENE REGELABLAGE NICHT - gemessen mit
+# 3000.11.1 und 3000.11.3. Das Pack laesst Windsurf-Quellen seither zu, und damit eine
+# Regel im Benutzerprofil, die in jeder Sitzung laedt (D-290). `install.py` meldet die
+# Kanaele aus `import_channels_report`, wenn sie belegt sind.
+#   D411  (Sonde)      - devin-desktop mit nicht leerer global_rules.md in einem
+#                        Ersatz-Benutzerprofil und `.windsurf/` im Projekt: Installation
+#                        und Hebung nennen beide Kanaele. Gegen v1.12.0 faellt sie.
+#   D411a (Gegenprobe) - leere global_rules.md, kein `.windsurf/`: kein Hinweis. Ein
+#                        Werkzeug, das immer warnt, besteht die Sonde auch.
+M411_HINWEIS = "Die Importsteuerung dieses Client Packs laesst"
+M411_GLOBAL = "~/.codeium/windsurf/memories/global_rules.md"
+M411_PROJEKT = "  .windsurf\n"
+
+
+def sonden_importkanaele() -> None:
+    """Wirkungsnachweis fuer die Meldung aus D-411 an echten Installationen."""
+    werkzeug = os.path.join(QUELLE, ".koolie", "core", "install.py")
+    faelle = (("SONDE", "D411", True,
+               "Belegte Windsurf-Kanaele werden bei Installation und Hebung genannt"),
+              ("GEGENPROBE", "D411a", False,
+               "Ohne belegten Kanal bleibt der Hinweis aus"))
+    for art, kennung, belegt, was in faelle:
+        ziel = tempfile.mkdtemp(prefix="lw-411-")
+        try:
+            heim = os.path.join(ziel, "heim")
+            erinnerung = os.path.join(heim, ".codeium", "windsurf", "memories")
+            os.makedirs(erinnerung)
+            schreib(os.path.join(erinnerung, "global_rules.md"),
+                    "Sonde D411.\n" if belegt else "")
+            root = os.path.join(ziel, "projekt")
+            os.makedirs(root)
+            if belegt:
+                os.makedirs(os.path.join(root, ".windsurf", "rules"))
+            umg = dict(os.environ, USERPROFILE=heim, HOME=heim)
+            p = unterprozess([sys.executable, werkzeug, "--client", "devin-desktop",
+                              "--root", root], env=umg)
+            q = unterprozess([sys.executable, werkzeug, "--update", "--root", root], env=umg)
+            ein = (p.stdout or "") + (p.stderr or "")
+            heb = (q.stdout or "") + (q.stderr or "")
+            ist = tuple((M411_HINWEIS in t, M411_GLOBAL in t, M411_PROJEKT in t)
+                        for t in (ein, heb))
+            soll = ((belegt, belegt, belegt),) * 2
+            ok = p.returncode == 0 and q.returncode == 0 and ist == soll
+            melde(art, kennung, ok, was)
+            if not ok:
+                notiz("        Exit %d/%d, (Hinweis, global, Projekt) = %s, erwartet %s"
+                      % (p.returncode, q.returncode, ist, soll))
+        finally:
+            aufraeumen(ziel)
+
+
+buendel(sonden_importkanaele,
+        "install.py nennt die Windsurf-Kanaele, die devin-desktop seit 1.12.1 zulaesst, "
+        "wenn sie belegt sind - und nur dann")
+
+
+# --- D-412: das Sonderziel des Arbeitsbereichs bei openai-codex (K-157) ------------------
+#
+# 🔴 SEIT CLIENTVERSION 0.157 IGNORIERT CODEX DIE FORM `:workspace/<pfad>`, UND MIT IHR
+# WAR DER GANZE ARBEITSBEREICH SCHREIBGESCHUETZT - gemessen mit `codex sandbox` ohne
+# Modellaufruf. Das Sonderziel heisst `:workspace_roots` und fuehrt seine Unterpfade als
+# eigene Tabelle.
+#   D412  (Sonde)      - die erzeugte config.toml einer echten Installation fuehrt die
+#                        Tabelle `":workspace_roots"` mit "." = "write" und dem Kern als
+#                        "read", und keinen Schluessel der alten Form. Gegen v1.12.0 faellt sie.
+#   D412a (Gegenprobe) - der Grundstock ":root" = "read" bleibt in der Dateisystemtabelle
+#                        selbst: Ein Werkzeug, das ALLES in die Untertabelle schiebt,
+#                        besteht die Sonde auch und nimmt dem Client das Leserecht.
+M412_TABELLE = '[permissions.koolie.filesystem.":workspace_roots"]'
+
+
+def _412_tabellen(text: str) -> dict:
+    tabellen, aktuell = {}, None
+    for zeile in text.splitlines():
+        zeile = zeile.strip()
+        if zeile.startswith("[") and zeile.endswith("]"):
+            aktuell = zeile
+            tabellen[aktuell] = {}
+        elif aktuell and " = " in zeile and not zeile.startswith("#"):
+            k, v = zeile.split(" = ", 1)
+            tabellen[aktuell][k.strip('"')] = v.strip('"')
+    return tabellen
+
+
+def sonden_pfadtoken_codex() -> None:
+    """Wirkungsnachweis fuer D-412 an einer echten openai-codex-Installation."""
+    werkzeug = os.path.join(QUELLE, ".koolie", "core", "install.py")
+    ziel = tempfile.mkdtemp(prefix="lw-412-")
+    try:
+        root = os.path.join(ziel, "projekt")
+        os.makedirs(root)
+        p = unterprozess([sys.executable, werkzeug, "--client", "openai-codex", "--root", root])
+        text = lies(os.path.join(root, ".codex", "config.toml"))
+        tab = _412_tabellen(text)
+        unter = tab.get(M412_TABELLE, {})
+        alt = [k for t in tab.values() for k in t if k.startswith(":workspace/")
+               or k == ":workspace"]
+        ok = (p.returncode == 0 and unter.get(".") == "write"
+              and unter.get(".koolie/core") == "read" and not alt)
+        melde("SONDE", "D412", ok,
+              "openai-codex: der Arbeitsbereich steht als Tabelle :workspace_roots, "
+              "keine Schluessel der alten Form")
+        if not ok:
+            notiz("        Exit %d, Untertabelle %r, alte Schluessel %r"
+                  % (p.returncode, unter, alt))
+        fs = tab.get("[permissions.koolie.filesystem]", {})
+        ok = p.returncode == 0 and fs.get(":root") == "read" and ":root" not in unter
+        melde("GEGENPROBE", "D412a", ok,
+              "Der Grundstock :root = read bleibt in der Dateisystemtabelle selbst")
+        if not ok:
+            notiz("        Dateisystemtabelle %r" % fs)
+    finally:
+        aufraeumen(ziel)
+
+
+buendel(sonden_pfadtoken_codex,
+        "openai-codex: das Rechteprofil fuehrt den Arbeitsbereich in der Schreibweise "
+        "von Clientversion 0.157")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
