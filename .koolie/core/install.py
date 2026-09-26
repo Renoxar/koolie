@@ -805,6 +805,36 @@ def ignorierte_kerndateien(root: str) -> list[str]:
 QUELLREPO_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
 
 
+def belegte_importkanaele(root: str, man: dict) -> list[tuple[str, str]]:
+    """Die Importkanaele aus dem Manifest, die auf diesem Arbeitsplatz belegt sind.
+
+    ANLASS, UND ER IST GEMESSEN (K-156, D-411). Bei devin-desktop schaltet die
+    Importsteuerung, die fremde Windsurf-Quellen fernhaelt, zugleich die eigene
+    Regelablage ab. Das Pack laesst sie deshalb seit 1.12.1 zu - und damit auch eine
+    Regel aus dem Benutzerprofil, die in jeder Sitzung laedt (D-290). Das Manifest nennt
+    diese Kanaele (import_channels_report); dieses Werkzeug meldet, welche davon belegt
+    sind: eine nicht leere Datei, eine vorhandene Datei, ein vorhandenes Verzeichnis.
+
+    DIES IST EINE AUSKUNFT UND KEINE SCHRANKE: Was im Kanal steht, beurteilt der Mensch,
+    und die Benutzerkonfiguration des Clients hat ohnehin Vorrang (K-27).
+    """
+    belegt: list[tuple[str, str]] = []
+    for kanal in man.get("import_channels_report") or []:
+        rel = kanal.get("path", "")
+        if kanal.get("scope") == "user":
+            pfad = os.path.expanduser(rel)
+        else:
+            pfad = os.path.join(root, *rel.split("/"))
+        wann = kanal.get("when", "exists")
+        if wann == "nonempty":
+            treffer = os.path.isfile(pfad) and os.path.getsize(pfad) > 0
+        else:
+            treffer = os.path.exists(pfad)
+        if treffer:
+            belegt.append((rel, kanal.get("what", "")))
+    return belegt
+
+
 def traegt_quellrepo_kennzeichen(root: str) -> bool:
     """Liegt im Ziel das Kennzeichen des Framework-Repositoriums?
 
@@ -2015,6 +2045,20 @@ def main() -> int:
         print("Klonen dieses Projekts fehlen sie. Abhilfe: eine Negativregel im")
         print(f"'.gitignore' des Projekts, etwa '!{clientmap.CORE_REL}/**'. Das '.gitignore'")
         print("gehoert dem Projekt; dies ist eine Auskunft und keine Schranke.")
+
+    kanaele = belegte_importkanaele(root, man)
+    if kanaele:
+        print()
+        print(f"HINWEIS ({len(kanaele)}): Die Importsteuerung dieses Client Packs laesst "
+              f"Quellen eines fremden Werkzeugs zu,")
+        print("und auf diesem Arbeitsplatz sind davon belegt:")
+        for rel, was in kanaele:
+            print(f"  {rel}")
+            for zeile in textwrap.wrap(was, width=76):
+                print(f"    {zeile}")
+        print("Was dort steht, erreicht die Sitzung neben den Regeln des Frameworks. Pruefen,")
+        print("ob es dorthin gehoert (CLIENT_PACK.md, Zeile R6). Dies ist eine Auskunft und")
+        print("keine Schranke.")
 
     if traegt_quellrepo_kennzeichen(root):
         print()
