@@ -45,6 +45,7 @@ Was dieses Skript **nicht** leistet: Es belegt, dass die Pruefungen wirken, nich
 ihre Gegenstaende richtig sind. Die Grenze jeder einzelnen Pruefung steht in deren
 Kopfkommentar in validate-framework.py.
 """
+import ast
 import glob
 import hashlib
 import io
@@ -1507,6 +1508,123 @@ def sonden_mermaid_umgebung() -> None:
 buendel(sonden_mermaid_umgebung,
         "--mermaid unterscheidet einen Renderer ohne Browser von einem ungueltigen "
         "Diagramm und ruft ihn wie der Bau auf")
+
+
+# --- D-407: der Messapparat findet den Kern unter `.koolie/core` (K-154) ----------------
+#
+# 🔴 SEIT DER UMBENENNUNG (0.88.0) WAR DER MESSAPPARAT AN DREI STELLEN GEBROCHEN, UND ES
+# FIEL ERST IM NACHLAUF VON 1.11.0 AUF. `validate-output.py` und `mcp-waechter.py`
+# suchten das Kernverzeichnis EINE Ebene unter der Wurzel und meldeten in jedem
+# installierten Baum, es gebe keines; `cc-overlay-fuellen.py` entfaltete den Schlitz
+# `Edit(<READ_ONLY_PATHS>)` nicht, den der Kern seit 1.5.0 fuehrt, und brach ab.
+#   D407  (Sonde)      - an einer echten claude-code-Installation mit dem Kern unter
+#                        `.koolie/core` finden beide Werkzeuge Pack und Skill.
+#   D407a (Gegenprobe) - ohne Kern erfinden sie keinen: dieselbe Meldung wie bisher.
+#   D407b (Sonde)      - der Abgleich zwischen den Platzhaltern der erzeugten
+#                        Berechtigungsdatei und der Liste des Fuellskripts meldet die
+#                        Luecke von 1.11.0 (Liste ohne `<READ_ONLY_PATHS>`).
+#   D407c (Gegenprobe) - mit der ausgelieferten Liste bleibt keine Luecke.
+# ⚠️ Grenze, benannt: D407b und D407c messen den ABGLEICH, nicht den Lauf des
+# Fuellskripts; der braucht das Uebungsrepositorium, und eine Sonde, die daran haengt,
+# bestuende auf einem Arbeitsplatz und fiele auf dem naechsten. Gelaufen ist das Skript
+# im Messaufbau von 1.12.0 (Protokoll).
+M407_KEIN_KERN = "weder ein installiertes Client Pack noch ein Kernverzeichnis"
+M407_CODE = r"""
+import importlib.util, json, sys
+def lade(name, pfad):
+    spec = importlib.util.spec_from_file_location(name, pfad)
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    return m
+sys.path.insert(0, sys.argv[2])
+vo = lade("_vo407", sys.argv[1])
+mw = lade("_mw407", sys.argv[3])
+pfad, grund = vo.skill_pfad(sys.argv[4], "fw-code-explain")
+pack, _ = mw._manifest(sys.argv[4])
+print(json.dumps({"pfad": pfad, "grund": grund, "pack": pack}))
+"""
+
+
+def _407_gebraucht(quelltext: str) -> list:
+    """Die Liste GEBRAUCHT des Fuellskripts - gelesen, nicht nachgeschrieben."""
+    for knoten in ast.walk(ast.parse(quelltext)):
+        if isinstance(knoten, ast.Assign) and any(
+                isinstance(z, ast.Name) and z.id == "GEBRAUCHT" for z in knoten.targets):
+            return [e.value for e in knoten.value.elts]
+    return []
+
+
+def _407_luecken(settings_text: str, gebraucht: list) -> list:
+    return sorted(set(re.findall(r"<[A-Z_]+>", settings_text)) - set(gebraucht))
+
+
+def sonden_messapparat() -> None:
+    """Wirkungsnachweis fuer D-407 an einer echten claude-code-Installation."""
+    kern = os.path.join(QUELLE, ".koolie", "core")
+    vo = os.path.join(kern, "tests", "scripts", "validate-output.py")
+    erh = os.path.join(kern, "tests", "erhebungen")
+    mw = os.path.join(erh, "mcp-waechter.py")
+    ziel = tempfile.mkdtemp(prefix="lw-407-")
+    try:
+        root = os.path.join(ziel, "projekt")
+        os.makedirs(root)
+        p = unterprozess([sys.executable, os.path.join(kern, "install.py"),
+                          "--client", "claude-code", "--root", root])
+        settings = lies(os.path.join(root, ".claude", "settings.json"))
+        # Der Kern im Baum, so weit die Werkzeuge ihn brauchen: Packs und Skillquellen.
+        shutil.copytree(os.path.join(kern, "clients"),
+                        os.path.join(root, ".koolie", "core", "clients"))
+        shutil.copytree(os.path.join(kern, "framework"),
+                        os.path.join(root, ".koolie", "core", "framework"))
+        q = unterprozess([sys.executable, "-c", M407_CODE, vo, erh, mw, root])
+        try:
+            ist = json.loads((q.stdout or "").strip().splitlines()[-1])
+        except (ValueError, IndexError):
+            ist = {}
+        erwartet = os.path.join(root, ".claude", "skills", "fw-code-explain", "SKILL.md")
+        ok = (p.returncode == 0 and q.returncode == 0 and ist.get("pack") == "claude-code"
+              and os.path.normcase(ist.get("pfad") or "") == os.path.normcase(erwartet))
+        melde("SONDE", "D407", ok,
+              "Kern unter .koolie/core: validate-output.py findet den Skill des "
+              "installierten Packs, mcp-waechter.py das Pack")
+        if not ok:
+            notiz("        Exit %d/%d, Ergebnis %r" % (p.returncode, q.returncode, ist))
+
+        shutil.rmtree(os.path.join(root, ".koolie", "core"))
+        q = unterprozess([sys.executable, "-c", M407_CODE, vo, erh, mw, root])
+        try:
+            ist = json.loads((q.stdout or "").strip().splitlines()[-1])
+        except (ValueError, IndexError):
+            ist = {}
+        ok = (q.returncode == 0 and ist.get("pack") is None and ist.get("pfad") is None
+              and M407_KEIN_KERN in (ist.get("grund") or ""))
+        melde("GEGENPROBE", "D407a", ok,
+              "Ohne Kern erfinden beide Werkzeuge keinen - dieselbe Meldung wie bisher")
+        if not ok:
+            notiz("        Exit %d, Ergebnis %r" % (q.returncode, ist))
+
+        gebraucht = _407_gebraucht(lies(os.path.join(erh, "cc-overlay-fuellen.py")))
+        luecke = _407_luecken(settings, [g for g in gebraucht if g != "<READ_ONLY_PATHS>"])
+        ok = p.returncode == 0 and luecke == ["<READ_ONLY_PATHS>"]
+        melde("SONDE", "D407b", ok,
+              "Der Abgleich meldet die Luecke von 1.11.0: die Liste des Fuellskripts "
+              "ohne <READ_ONLY_PATHS>")
+        if not ok:
+            notiz("        Luecke %r" % luecke)
+        luecke = _407_luecken(settings, gebraucht)
+        ok = p.returncode == 0 and bool(gebraucht) and luecke == []
+        melde("GEGENPROBE", "D407c", ok,
+              "Die ausgelieferte Liste deckt jeden Platzhalter der erzeugten "
+              "Berechtigungsdatei")
+        if not ok:
+            notiz("        GEBRAUCHT %r, Luecke %r" % (gebraucht, luecke))
+    finally:
+        aufraeumen(ziel)
+
+
+buendel(sonden_messapparat,
+        "Der Messapparat findet den Kern unter .koolie/core, und das Fuellskript "
+        "entfaltet jeden Platzhalter der claude-code-Berechtigungsdatei")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------

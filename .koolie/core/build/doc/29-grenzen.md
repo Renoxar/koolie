@@ -20,6 +20,14 @@
 >   hat auch im Nachlauf weder angehalten noch die Meldung an `<SECURITY_CONTACT>` empfohlen
 >   (D-404, `K-153`). Die übrigen 37 Zellen des zentralen Katalogs und 86 der 87 Zellen der
 >   dreizehn Testblätter tragen `bestanden`, der Nachweis je Zelle mit Protokoll und Client Pack.
+> - **Zwei Befunde an Client Packs sind gemessen und noch nicht behoben** (seit Release 1.12.0, D-410):
+>   Bei `devin-desktop` lädt die Regelablage mit der ausgelieferten Einstellung nicht – das Modell
+>   sieht von der Regelschicht nur die Wurzel-Anweisung (`K-156`); `openai-codex` ignoriert in der
+>   gemessenen Clientversion die Pfadeinträge seines Rechteprofils (`K-157`). Die betroffenen
+>   Matrixzeilen tragen den Vorbehalt; die Abhilfe ist als `1.12.1` eingeplant.
+> - **Die Schutzschicht wirkt nur für eine Sitzung, die im Verzeichnis der Installation startet**
+>   (seit Release 1.12.0 gemessen, D-408). Startet sie in einem Repository darunter, fallen
+>   Berechtigungen und Hooks bei allen drei Packs still aus (Kap. 28, Abschnitt 4).
 > - **Kein Modulträger steht mehr auf `entwurf`** (seit Release 0.53.0), und **kein
 >   Decision Record mehr auf `entschieden (Vorschlag)`** (seit Release 0.49.0).
 > - **Die verbindliche Zielversion beider Packs ist festgelegt** (D-112). Sie ist der

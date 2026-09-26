@@ -78,7 +78,11 @@ overlay_text = io.open(OVERLAY, encoding="utf-8", newline="").read()
 WERTE = werte_aus_overlay(overlay_text)
 
 GEBRAUCHT = ["<EXCLUDED_PATHS>", "<CI_CONFIG_PATHS>", "<QUALITY_GATE_CONFIG_PATHS>",
-             "<BUILD_COMMAND>", "<TEST_COMMAND>", "<LINT_COMMAND>"]
+             "<BUILD_COMMAND>", "<TEST_COMMAND>", "<LINT_COMMAND>",
+             # K-154 (D-407): Seit 1.5.0 fuehrt der Kern den Schlitz `write <READ_ONLY_PATHS>`,
+             # in dieser Berechtigungsdatei `Edit(<READ_ONLY_PATHS>)`. Bis 1.11.0 entfaltete
+             # das Skript ihn nicht und brach mit "Platzhalter uebrig" ab.
+             "<READ_ONLY_PATHS>"]
 fehlt = [n for n in GEBRAUCHT if n not in WERTE]
 if fehlt:
     raise SystemExit("ABBRUCH: im Quell-Overlay nicht gefunden: %r" % fehlt)
@@ -97,7 +101,9 @@ def entfalte(liste, marke, werte, huelle):
 
 
 pfad = os.path.join(CC, ".claude", "settings.json")
-d = json.loads(io.open(pfad, encoding="utf-8", newline="").read())
+_roh_settings = io.open(pfad, encoding="utf-8", newline="").read()
+CRLF_SETTINGS = "\r\n" in _roh_settings
+d = json.loads(_roh_settings)
 p = d["permissions"]
 
 p["deny"] = entfalte(p["deny"], "<EXCLUDED_PATHS>", WERTE["<EXCLUDED_PATHS>"], "Read(%s)")
@@ -105,6 +111,7 @@ p["deny"] = entfalte(p["deny"], "<EXCLUDED_PATHS>", WERTE["<EXCLUDED_PATHS>"], "
 p["deny"] = entfalte(p["deny"], "<CI_CONFIG_PATHS>", WERTE["<CI_CONFIG_PATHS>"], "Edit(%s)")
 p["deny"] = entfalte(p["deny"], "<QUALITY_GATE_CONFIG_PATHS>",
                      WERTE["<QUALITY_GATE_CONFIG_PATHS>"], "Edit(%s)")
+p["deny"] = entfalte(p["deny"], "<READ_ONLY_PATHS>", WERTE["<READ_ONLY_PATHS>"], "Edit(%s)")
 p["ask"] = entfalte(p["ask"], "<BUILD_COMMAND>", WERTE["<BUILD_COMMAND>"], "Bash(%s)")
 p["ask"] = entfalte(p["ask"], "<TEST_COMMAND>", WERTE["<TEST_COMMAND>"], "Bash(%s)")
 p["ask"] = entfalte(p["ask"], "<LINT_COMMAND>", WERTE["<LINT_COMMAND>"], "Bash(%s)")
@@ -170,7 +177,9 @@ neu_settings = json.dumps(d, ensure_ascii=False, indent=2) + "\n"
 quelle = io.open(os.path.join(DD, ".devin", "rules", "20-project-overlay.md"),
                  encoding="utf-8", newline="").read().replace("\r\n", "\n")
 ziel_pfad = os.path.join(CC, ".claude", "rules", "20-project-overlay.md")
-vorlage = io.open(ziel_pfad, encoding="utf-8", newline="").read().replace("\r\n", "\n")
+_roh_vorlage = io.open(ziel_pfad, encoding="utf-8", newline="").read()
+CRLF_OVERLAY = "\r\n" in _roh_vorlage
+vorlage = _roh_vorlage.replace("\r\n", "\n")
 
 # Der Kopf ist clientabhaengig: devin-desktop traegt YAML-Frontmatter, claude-code
 # einen Kommentarblock. Der Koerper ist inhaltlich identisch (sagt die Vorlage selbst).
@@ -194,11 +203,67 @@ for wert in WERTE["<EXCLUDED_PATHS>"]:
 print("Waechter: alle %d Werte von <EXCLUDED_PATHS> stehen in der Laufzeitfassung"
       % len(WERTE["<EXCLUDED_PATHS>"]))
 
-# --- 6. schreiben -----------------------------------------------------------------
+# --- 6. Die Overlay-Regelerweiterungen (Ebene 5) und ihr Verweis im Manifest --------
+# K-154 (D-407): Der Packwechsel laesst die Regelerweiterungen des Projekts zurueck
+# (`K-44`) - im Uebungsrepositorium `21-overlay-coding-guidelines.md` unter `.devin/rules/`.
+# Das Overlay-Manifest des Messbaums verwies danach mit `DOC-001` auf einen Pfad des Packs
+# `devin-desktop`, und der Validator meldete im Nachlauf von 1.11.0 in jedem Baum einen
+# Fehler, der nicht dem Lauf gehoerte. Die Erweiterung wird deshalb mit der Abbildung des
+# Kerns (`render_rule`) in die Form dieses Packs gebracht, und der Verweis zieht mit.
+import importlib.util                                                    # noqa: E402
+
+sys.path.insert(0, os.path.join(CC, ".koolie", "core"))
+_spec = importlib.util.spec_from_file_location(
+    "_install_cc", os.path.join(CC, ".koolie", "core", "install.py"))
+_install = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_install)
+_man_cc = json.loads(io.open(os.path.join(CC, ".koolie", "core", "clients", "claude-code",
+                                          "manifest.json"), encoding="utf-8").read())
+erweiterungen = {}
+_dd_regeln = os.path.join(DD, ".devin", "rules")
+for name in sorted(os.listdir(_dd_regeln)):
+    if not re.fullmatch(r"2[1-9]-overlay-[A-Za-z0-9_-]+\.md", name):
+        continue
+    roh = io.open(os.path.join(_dd_regeln, name), encoding="utf-8", newline="").read()
+    crlf = "\r\n" in roh
+    neu = _install.render_rule(roh.replace("\r\n", "\n"), _man_cc)
+    if crlf:
+        neu = neu.replace("\n", "\r\n")
+    erweiterungen[name] = neu
+
+man_pfad = os.path.join(CC, ".koolie", "project-overlay", "overlay-manifest.yaml")
+neu_man = io.open(man_pfad, encoding="utf-8", newline="").read()
+for name in erweiterungen:
+    alt = ".devin/rules/" + name
+    if neu_man.count(alt) > 1:
+        raise SystemExit("ABBRUCH: %r steht %dx im Overlay-Manifest" % (alt, neu_man.count(alt)))
+    neu_man = neu_man.replace(alt, ".claude/rules/" + name)
+# Gewacht wird ueber die VERWEISFELDER, nicht ueber jede Nennung: Die `notes` des
+# Uebungs-Manifests nennen `.devin/rules/20-project-overlay.md` als Prosa, und ein
+# Waechter ueber den ganzen Text brach beim ersten Probelauf daran ab.
+rest_man = re.findall(r"rule_file:\s*[\"']?(\.devin/[^\s\"']+)", neu_man)
+if rest_man:
+    raise SystemExit("ABBRUCH: Overlay-Manifest verweist weiter auf das Pack devin-desktop: %r"
+                     % rest_man)
+
+# --- 7. schreiben -----------------------------------------------------------------
+# Die Zeilenenden der ueberschriebenen Dateien bleiben erhalten (K-154).
+if CRLF_SETTINGS:
+    neu_settings = neu_settings.replace("\n", "\r\n")
+if CRLF_OVERLAY:
+    neu_overlay = neu_overlay.replace("\n", "\r\n")
 daten_s = neu_settings.encode("utf-8")
 daten_o = neu_overlay.encode("utf-8")
+daten_m = neu_man.encode("utf-8")
+daten_e = {name: text.encode("utf-8") for name, text in erweiterungen.items()}
 io.open(pfad, "wb").write(daten_s)
 io.open(ziel_pfad, "wb").write(daten_o)
+io.open(man_pfad, "wb").write(daten_m)
+for name, daten in daten_e.items():
+    io.open(os.path.join(CC, ".claude", "rules", name), "wb").write(daten)
+    print("Regelerweiterung uebertragen:", name)
+print("Zeilenenden erhalten: settings.json %s, 20-project-overlay.md %s"
+      % ("CRLF" if CRLF_SETTINGS else "LF", "CRLF" if CRLF_OVERLAY else "LF"))
 print("settings.json: deny=%d ask=%d allow=%d" % (len(p["deny"]), len(p["ask"]), len(p["allow"])))
 print("20-project-overlay.md: %d x .devin/ -> .claude/, %d x AGENTS.md -> CLAUDE.md"
       % (anzahl, anzahl_agents))
