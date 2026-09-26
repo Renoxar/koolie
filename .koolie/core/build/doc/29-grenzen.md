@@ -16,12 +16,15 @@
 > - **Der Schutz-Hook läuft nicht mehr fail-open.** Seit 0.24.0 blockiert er eine Eingabe,
 >   die er nicht lesen kann, sofern das Client Pack das Eingabeschema als bestätigt führt
 >   (`hook_fail_closed`, D-31). Beide Manifeste führen es.
-> - **Ein dynamischer Test steht auf `offen`** (seit Release 1.14.1): `SK-005-P01` trägt in Format
->   und Verhalten, aber der Client hängt dem Commit-Vorschlag von sich aus eine Attributionszeile an,
->   die Q5 ausschließt (D-431, `K-171`, eingeplant als 1.14.2). Die fünf übrigen Zellen, die mit
->   Release 1.14.0 offen waren, tragen seit 1.14.1.
->   Die 38 Zellen des zentralen Katalogs und 86 der 87 Zellen der dreizehn Testblätter tragen
->   `bestanden`, der Nachweis je Zelle mit Protokoll und Client Pack.
+> - **Kein dynamischer Test steht mehr auf `offen`** (seit Release 1.14.2): `SK-005-P01` trägt,
+>   seit das Client Pack `claude-code` die Attributionsvorgabe des Clients für Commits abschaltet
+>   (D-433, `K-171`). Die 38 Zellen des zentralen Katalogs und alle 87 Zellen der dreizehn
+>   Testblätter tragen `bestanden`, der Nachweis je Zelle mit Protokoll und Client Pack – gemessen
+>   ist jede Zelle nur mit dem Pack, das sie nennt.
+> - **Die Attributionsvorgabe ist ein Standard, keine Schranke, und erreicht kein bestehendes
+>   Projekt von selbst** (seit Release 1.14.2, D-433, D-434): `.claude/settings.local.json` holt sie
+>   zurück; `install.py --update` meldet den fehlenden Schlüssel, schreibt ihn aber nicht. Ob die
+>   übrigen Clients einen Vermerk vorgeben, ist nicht erhoben (`K-173`).
 > - **Die Regelablage von `devin-desktop` lädt nur, weil das Pack Windsurf-Quellen zulässt**
 >   (seit Release 1.12.1, D-411): Mit `read_config_from.windsurf: false` lädt der Client die
 >   eigene Regelablage nicht – gegen seine Dokumentation (`K-156`). Mit `true` erreicht auch eine

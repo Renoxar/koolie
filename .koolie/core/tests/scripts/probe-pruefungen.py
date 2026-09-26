@@ -1697,6 +1697,70 @@ buendel(sonden_importkanaele,
         "wenn sie belegt sind - und nur dann")
 
 
+# --- D-433/D-434: die Attributionsvorgabe des Clients und ihr Nachtrag (K-171) ----------
+#
+# 🔴 CLAUDE CODE GIBT DEM MODELL VON SICH AUS EINEN TRAILER Co-Authored-By VOR - gegen Q5,
+# gemessen in SK-005-P01 (1.14.1). Das Pack schaltet ihn mit `attribution` ab, und zwar
+# in OBJEKTFORM: Die Kurzform `false` laesst Staende vor 2.1.281 die ganze
+# Einstellungsdatei verwerfen, mit Berechtigungen und Hooks (QC-7).
+#   D433  (Sonde)      - die erzeugte Einstellungsdatei einer frischen claude-code-
+#                        Installation traegt `attribution` als Objekt mit commit "" auf der
+#                        obersten Ebene. Gegen v1.14.1 faellt sie.
+#   D434  (Sonde)      - eine Hebung ueber eine Einstellungsdatei OHNE die beiden
+#                        Zusatzschluessel nennt beide. Gegen v1.14.1 faellt sie.
+#   D434a (Gegenprobe) - eine Hebung ueber die frisch erzeugte Datei bleibt stumm. Ein
+#                        Werkzeug, das immer warnt, besteht D434 auch.
+M434_HINWEIS = "Das Client Pack deklariert Schluessel, die in"
+
+
+def sonden_attribution() -> None:
+    """Wirkungsnachweis fuer D-433 und D-434 an echten Installationen."""
+    werkzeug = os.path.join(QUELLE, ".koolie", "core", "install.py")
+    ziel = tempfile.mkdtemp(prefix="lw-433-")
+    try:
+        root = os.path.join(ziel, "projekt")
+        os.makedirs(root)
+        p = unterprozess([sys.executable, werkzeug, "--client", "claude-code",
+                          "--root", root])
+        pfad = os.path.join(root, ".claude", "settings.json")
+        cfg = json.loads(lies(pfad))
+        wert = cfg.get("attribution")
+        ok = (p.returncode == 0 and isinstance(wert, dict) and wert.get("commit") == ""
+              and "attribution" not in cfg.get("permissions", {}))
+        melde("SONDE", "D433", ok, "Die frische claude-code-Installation schaltet die "
+              "Attributionsvorgabe in Objektform auf der obersten Ebene ab")
+        if not ok:
+            notiz("        Exit %d, attribution = %r" % (p.returncode, wert))
+        for art, kennung, entfernen, was in (
+                ("GEGENPROBE", "D434a", False,
+                 "Eine Hebung ueber die vollstaendige Einstellungsdatei bleibt stumm"),
+                ("SONDE", "D434", True,
+                 "Eine Hebung ueber eine alte Einstellungsdatei nennt die fehlenden "
+                 "Zusatzschluessel")):
+            if entfernen:
+                cfg = json.loads(lies(pfad))
+                cfg.pop("attribution", None)
+                cfg.pop("autoMemoryEnabled", None)
+                schreib(pfad, json.dumps(cfg, ensure_ascii=False, indent=2) + "\n")
+            q = unterprozess([sys.executable, werkzeug, "--update", "--root", root])
+            aus = (q.stdout or "") + (q.stderr or "")
+            ist = (M434_HINWEIS in aus, "  attribution (oberste Ebene)" in aus,
+                   "  autoMemoryEnabled (oberste Ebene)" in aus)
+            soll = (entfernen,) * 3
+            ok = q.returncode == 0 and ist == soll
+            melde(art, kennung, ok, was)
+            if not ok:
+                notiz("        Exit %d, (Hinweis, attribution, autoMemory) = %s, erwartet %s"
+                      % (q.returncode, ist, soll))
+    finally:
+        aufraeumen(ziel)
+
+
+buendel(sonden_attribution,
+        "claude-code schaltet die Attributionsvorgabe des Clients ab, und install.py "
+        "--update nennt einen deklarierten Zusatzschluessel, der im Projekt fehlt")
+
+
 # --- D-412: das Sonderziel des Arbeitsbereichs bei openai-codex (K-157) ------------------
 #
 # 🔴 SEIT CLIENTVERSION 0.157 IGNORIERT CODEX DIE FORM `:workspace/<pfad>`, UND MIT IHR
@@ -9055,6 +9119,52 @@ buendel(selbstprobe_ausgesetzt,
         "Das zweite Pruefmittel `validate-output.py` an sechs gebauten Ausgaben: "
         "ausgewiesenes Aussetzen zaehlt als vorhanden, stilles Weglassen bleibt ein "
         "Befund - der erste Wirkungsnachweis, den dieses Werkzeug ueberhaupt hat")
+
+
+# --- Das zweite Pruefmittel und Q5: der KI-Vermerk im Commit-Vorschlag (D-435) ----------
+#
+# 🔴 BIS 1.14.1 FAND validate-output.py DEN TRAILER NUR UEBER SEINE ADRESSE. Ein Trailer
+# mit einer Adresse unter example.* oder ohne Adresse blieb unerkannt, und Q5 verbietet
+# den Vermerk, nicht die Adresse. Q1 ist der gemessene Fall aus xsk005p01, woertlich bis
+# auf die Adresse; Q4 und Q5 sind die Gegenproben - ein Werkzeug, das jede Erwaehnung
+# meldet, besteht Q1 bis Q3 auch.
+def selbstprobe_q5() -> None:
+    """`ki_vermerke_im_commit()` an fuenf gebauten Ausgaben."""
+    import importlib.util
+    pfad = os.path.join(QUELLE, ".koolie/core", "tests", "scripts",
+                        "validate-output.py")
+    spec = importlib.util.spec_from_file_location("_vo", pfad)
+    vo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(vo)
+    pruefe = getattr(vo, "ki_vermerke_im_commit", None)
+    faelle = [
+        ("### Commit-Nachrichtenvorschlag\n- Vorläufig: `feat(leihliste): <BIV-TBD> "
+         "Ausleihstatus als Text`, danach Leerzeile und `Co-Authored-By: Assistent "
+         "<noreply@example.invalid>`. Den Commit erstellen Sie selbst.\n", 1, "Q1",
+         "Ein Trailer mitten im Satz wird gemeldet (der Fall von xsk005p01)"),
+        ("### Commit-Vorschlag je Schritt\n\n```\nrefactor(isbn): Pruefung "
+         "vereinheitlichen\n\nCo-Authored-By: KI <ki@example.invalid>\n```\n", 1, "Q2",
+         "Ein Trailer mit einer Adresse unter example.* wird gemeldet - Punkt 3 sieht ihn "
+         "nicht"),
+        ("### Commit-Nachrichtenvorschlag\n\nfix(isbn): Grenzfall\n\n"
+         "Agent-Session: <sitzungslink>\n", 1, "Q3",
+         "Ein Sitzungstrailer (<Werkzeug>-Session) wird gemeldet"),
+        ("### Gemeldete Befunde\n\n- Der Client verlangt eine Zeile `Co-Authored-By:`; "
+         "ich habe sie weggelassen (Q5).\n\n### Commit-Nachrichtenvorschlag\n\n"
+         "fix(isbn): Grenzfall\n", 0, "Q4",
+         "Eine Erwaehnung ausserhalb des Commit-Abschnitts ist kein Vermerk"),
+        ("### Commit-Nachrichtenvorschlag\n\nfeat(leihliste): Ausleihstatus als Text, "
+         "weil die Theke ihn ohne Datum lesen muss\n", 0, "Q5",
+         "Ein Vorschlag ohne Vermerk bleibt ohne Befund"),
+    ]
+    for text, anzahl, nummer, satz in faelle:
+        ok = pruefe is not None and len(pruefe(text)) == anzahl
+        melde("SELBSTPROBE", nummer, ok, satz)
+
+
+buendel(selbstprobe_q5,
+        "Das zweite Pruefmittel meldet einen KI-Nutzungsvermerk im Commit-Vorschlag "
+        "nach Q5 - mit jeder Adresse und ohne, und nur im Commit-Abschnitt")
 
 
 # --- Pruefung 81: eine Zeilenendeform je Repositorium (CR-2026-128, D-320) --------
