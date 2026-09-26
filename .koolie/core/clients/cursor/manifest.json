@@ -1,0 +1,323 @@
+{
+  "_comment": "Maschinenlesbare Pfad- und Semantikabbildung dieses Client Packs. Die menschenlesbare Fassung mit Faehigkeitsmatrix steht in CLIENT_PACK.md. Gemessen am 2026-09-26 mit cursor-agent 2026.09.26-dd393fe (Kommandozeile, Betrieb ohne Rueckfragen mit stream-json-Mitschrift) im Rahmen des Baus (CR-2026-155, tests/protocols/2026-09-26-bau-cursor.md); die IDE 3.22.7 ist installiert und an keiner Sitzung gemessen. VIER DINGE SIND HIER ANDERS ALS BEI DEN UEBRIGEN PACKS, und alle vier sind gemessen: (1) Die Berechtigungsdatei des Projekts traegt NUR den Schluessel permissions - jeder weitere laesst den Client nicht starten. (2) Ein Pfadmuster wird verankert gegen den ABSOLUTEN Pfad verglichen; jedes Muster steht deshalb in zwei Schreibweisen (/ und \\). (3) Es gibt keinen Rueckfragekorb, und Dateien im Arbeitsbereich schreibt der Client ohne Rueckfrage. (4) Die Hook-Eingabe beginnt unter Windows mit einem BOM, und ein durchsetzender Hook muss auch beim Durchlass antworten.",
+  "client": "cursor",
+  "runtime_dir": ".cursor",
+  "root_instruction_file": "AGENTS.md",
+  "permissions_file": ".cursor/cli.json",
+  "permissions_format": "cursor-json",
+  "_permissions_format_note": "Die vierte Ausgabeform (D-440): {\"permissions\": {\"allow\": [...], \"deny\": [...]}} mit Regeln der Gestalt Werkzeug(Muster). Warum nicht die erste Form: Mit den Schluesseln _comment und _core_rules_integrity brach der Client mit Exit 1 ab ('Unrecognized key(s) in object'), ebenso bei kaputtem JSON - fail-closed, gemessen am 2026-09-26. Die Kernregeln haelt Pruefung 97 gegen die Kernquelle. Die Projektdatei wird in die globale Konfiguration GEMISCHT, und Listen ERSETZEN dabei die globalen (Programmcode des Clients): Ein deny des Arbeitsplatzes gilt in diesem Projekt nicht mehr. Die Datei wird aus der Projektwurzel und jedem Elternverzeichnis bis zum Startverzeichnis gelesen.",
+  "ignore_file": ".cursorignore",
+  "_ignore_file_note": "Die zweite Lesesperre (D-443), gemessen am 2026-09-26 (tests/protocols/2026-09-26-bau-cursor.md, Lauf I1): Das Suchwerkzeug wertet ein Read-Verbot der Berechtigungsdatei nicht aus; .cursorignore sperrte Lesen und Suchen, auch in Unterordnern, in der Syntax von .gitignore und damit ohne die Trennerfrage. Erzeugt aus den Leseverboten der Kernquelle, als Saat: Das Projekt traegt <EXCLUDED_PATHS> hier ein. Der Client verbietet dem Agenten selbst, diese Datei zu schreiben (Programmcode). Die Shell erreicht sie nicht - dort sperrt der Schutz-Hook.",
+  "rule_file_ext": ".mdc",
+  "_rule_file_ext_note": "Der Client laedt aus .cursor/rules/ nur .mdc-Dateien - gemessen am 2026-09-26: das Kennwort einer .md-Datei dort stand in keiner Sitzung im Kontext, das einer .mdc-Datei mit alwaysApply: true in jeder (QU-1). clientmap.regeldatei() bildet die Namen der Kernquellen ab.",
+  "skills_dir": ".cursor/skills",
+  "agents_dir": ".cursor/agents",
+  "pack_runtime_dir": ".cursor/rules",
+  "has_rule_triggers": true,
+  "core_skill_prefix": "fw-",
+  "core_paths": [
+    ".cursor/README.md"
+  ],
+  "seed_paths": [],
+  "project_owned_hint": [
+    ".cursor/rules/2N-overlay-<name>.mdc    (Overlay-Regelerweiterungen - Endung .mdc)",
+    ".cursor/rules/40-tech-<name>.mdc       (Packs ohne Quelle im Kern - Endung .mdc)",
+    ".cursor/cli.json                       (Projektwerte, zusaetzliche deny-Regeln)",
+    ".cursorignore                          (Projektpfade zum Ausschluss, zusaetzlich)",
+    ".cursor/skills/prj-*/                  (projektspezifische Skills)",
+    ".koolie/project-overlay/tech-packs/**          (projekteigene Packs)",
+    ".koolie/project-overlay/**                     (das gesamte Overlay)"
+  ],
+  "_post_steps_note": "Schritte, die install.py nach einer Installation und nach einer Hebung zusaetzlich nennt, weil ohne sie ein Teil des Packs nicht traegt - und nichts es meldet.",
+  "post_install_steps": [
+    "Unter Windows die Cursor-Kommandozeile aus PowerShell oder cmd starten, nicht aus Git Bash: Mit gesetzter Variable SHELL fuehrt der Client die Hook-Kommandos in bash aus, sie scheitern, und der Schutz-Hook sperrt dann JEDE Operation (CLIENT_PACK.md Abschnitt 1b).",
+    "Die Hooks laufen nur in einem vertrauten Arbeitsbereich: beim ersten Start in diesem Verzeichnis dem Arbeitsbereich vertrauen (Kommandozeile ohne Rueckfragen: --trust).",
+    "Die Commit-Attribution steht nur in der globalen Konfiguration (~/.cursor/cli-config.json, attribution.attributeCommitsToAgent) - fuer Q5 auf false setzen. Das Projekt kann sie nicht abschalten (CLIENT_PACK.md Zeile R6).",
+    "Den Import fremder Konfigurationen (Hooks und Skills aus .claude/ und ~/.claude/) in der IDE unter Settings, Agents, Third-Party Imports pruefen; install.py meldet, was davon auf diesem Arbeitsplatz belegt ist."
+  ],
+  "post_update_steps": [
+    "install.py --update fasst .cursor/cli.json nicht an (Saat). Pruefung 97 meldet, wenn sie nicht mehr zur Kernquelle passt oder einen Schluessel traegt, mit dem der Client nicht startet."
+  ],
+  "runtime_placeholders": {
+    "<RUNTIME_DIR>": ".cursor",
+    "<ROOT_INSTRUCTION_FILE>": "AGENTS.md",
+    "<ROOT_INSTRUCTION_LOCAL>": "AGENTS.local.md",
+    "<PERMISSIONS_FILE>": ".cursor/cli.json",
+    "<SKILLS_DIR>": ".cursor/skills",
+    "<RULES_DIR>": ".cursor/rules",
+    "<AGENTS_DIR>": ".cursor/agents",
+    "<HOOKS_FILE>": ".cursor/hooks.json",
+    "<MCP_FILE>": ".cursor/mcp.json",
+    "<CLIENT_NAME>": "Cursor"
+  },
+  "_runtime_placeholders_note": "<ROOT_INSTRUCTION_LOCAL> ist bei diesem Client KEIN Mechanismus - der Hersteller dokumentiert keine nutzerlokale Wurzel-Anweisung, und das Pack liefert keine Beispieldatei aus. Der Name steht hier, weil die Kernquelle ein Schreibverbot auf ihn fuehrt. Gemessen ist dagegen, dass der Client CLAUDE.md der Projektwurzel mitlaedt (Drittimport, Zeile R6).",
+  "root_instruction_local_absent": true,
+  "_root_instruction_local_absent_note": "Das Hauptdokument erklaert an der Stelle der persoenlichen Ergaenzungsdatei, dass es sie bei diesem Pack nicht gibt (build/assemble.py, lokale_ergaenzung).",
+  "permission_tools": {
+    "read": [
+      "Read"
+    ],
+    "search": [],
+    "write": [
+      "Write"
+    ],
+    "exec": [
+      "Shell"
+    ],
+    "fetch": [
+      "WebFetch"
+    ],
+    "mcp": [
+      "Mcp"
+    ],
+    "skill": []
+  },
+  "_permission_tools_note": "Die Regeltypen des Clients (QU-2): Shell, Read, Write, WebFetch, Mcp. search ist leer: Der Client kennt keinen Suchtyp, und die Kernquelle gibt Suchen nur frei - gemessen am 2026-09-26: Das Suchwerkzeug wertet ein Read-Verbot NICHT aus (der Koeder aus secrets/ kam heraus); diesen Kanal haelt allein der Schutz-Hook (H2). skill ist leer: Ein Aufruf eines Skills ist bei diesem Client kein Werkzeug mit Berechtigung - ein Skill ist eine Datei, die gelesen wird. Beide Verben stehen in der Kernquelle nur unter allow; ihr Weglassen faellt auf den strengeren Standard zurueck. Write deckt das Loeschwerkzeug mit - gemessen: ein Write-Verbot auf keep.txt wies das Loeschen ab.",
+  "permission_tools_bare": [],
+  "permission_path_prefix": "",
+  "permission_exec_match": "prefix",
+  "permission_exec_suffix": "",
+  "_permission_exec_note": "Die Befehlsseite vergleicht das Muster mit dem Befehl ODER seinem Anfang gefolgt von einem Leerzeichen (Programmcode, matchesShell): 'Shell(git push)' sperrt 'git push origin main' - gemessen, auch in 'git status && git push origin main', weil der Client verkettete Befehle zerlegt. Die Praefixform der Kernquelle braucht deshalb kein Suffix. Grenze wie bei allen Packs: 'git -C . push origin main' trifft das Muster nicht - es faellt in die Rueckfrage (gemessen: ohne Rueckfragekanal abgewiesen), weil kein allow es deckt.",
+  "permission_ask_ohne_korb": {
+    "write": "Kein Rueckfragekorb, und Dateien IM Arbeitsbereich schreibt der Client ohne Rueckfrage - gemessen am 2026-09-26, auch ohne --force. Die Rueckfrage vor dem Schreiben ist deshalb NICHT ABBILDBAR (Zeile B7); was bleibt, sind die Schreibverbote (B4, B5), der Schutz-Hook und die Sichtpruefung im Merge Request.",
+    "exec": "Ein Befehl, den kein allow deckt, faellt in die Rueckfrage des Clients (approvalMode allowlist) - gemessen: ohne Rueckfragekanal abgewiesen. Das ist die Wirkung der Rueckfrageregel, ohne dass sie in der Datei steht; die Befehlsschlitze des Overlays gehoeren deshalb NICHT unter allow.",
+    "mcp": "Ein MCP-Werkzeug braucht die Freigabe seines Servers (QU-2, --approve-mcps ueberspringt sie). Das Framework liefert keinen Server aus."
+  },
+  "permissions_extra": {},
+  "settings_extra": {},
+  "_settings_extra_note": "Ausdrueckliche Abwesenheit, keine Luecke (D-155): Die Projektdatei darf keinen Schluessel neben permissions tragen - der Client startet sonst nicht (D-440). Die Einstellung, die das Framework gern setzte (attribution.attributeCommitsToAgent: false, Q5), steht nur in der globalen Konfiguration; install.py meldet sie (import_channels_report).",
+  "hooks_format": "cursor-v1",
+  "_hooks_format_note": "Gemessen am 2026-09-26: .cursor/hooks.json mit {version: 1, hooks: {ereignis: [...]}}; die Ereignisse heissen klein (hook_event_names); der Matcher ist ein regulaerer Ausdruck ueber den Werkzeugnamen; Zeitlimit in Sekunden. Die Hooks laufen AUCH im Betrieb ohne Rueckfragen (anders als bei kiro), in einem vertrauten Arbeitsbereich. Unter Windows reicht der Client die Eingabe durch eine PowerShell-Huelle weiter - mit gesetzter Variable SHELL (Git Bash) laeuft diese Huelle in bash und scheitert.",
+  "hook_event_names": {
+    "PreToolUse": "preToolUse",
+    "SessionStart": "sessionStart"
+  },
+  "hook_block_form": "permission-json",
+  "_hook_block_form_note": "Die vierte Sperrform (D-441), gemessen am 2026-09-26: Exit 2 sperrt (die Standardform sperrte ebenfalls). ABER: Ein Hook, der scheitert, laesst die Operation standardmaessig DURCH; das Pack setzt deshalb failClosed - und dann wertet der Client einen Hook OHNE AUSGABE als gescheitert und sperrte jede Operation, auch das Lesen einer harmlosen Datei. Die Form permission-json antwortet beim Durchlass mit '{}' und sperrt mit permission deny und Exit 2. Gemessen: .env ueber Lese-, Such- und Shell-Werkzeug gesperrt, AGENTS.md und .cursor/ gegen Schreiben gesperrt, probe.txt gelesen, neu.txt angelegt.",
+  "hook_tools": {
+    "read": [
+      "Read"
+    ],
+    "search": [
+      "Grep"
+    ],
+    "exec": [
+      "Shell"
+    ],
+    "write": [
+      "Write",
+      "Delete"
+    ]
+  },
+  "_hook_tools_note": "Die Werkzeugnamen der Hook-Eingabe, aufgezeichnet am 2026-09-26: Read, Grep, Shell, Write, Delete. Das Suchwerkzeug fuer Dateinamen (Glob) loest KEIN preToolUse aus - gemessen, und fuer Claude-Hooks sagt der Hersteller dasselbe ('Glob' not supported, QU-3); es liefert Dateinamen, keine Inhalte. Das Aendern einer Datei erscheint als Write mit dem ganzen neuen Inhalt.",
+  "hook_path_fields": [
+    "file_path"
+  ],
+  "_hook_path_fields_note": "Aufgezeichnet am 2026-09-26: Read, Grep, Write und Delete fuehren file_path (absolut), Shell fuehrt command. cwd fehlt in der Eingabe oder ist leer; der Hook-Prozess steht in der Projektwurzel, und workspace_roots nennt sie.",
+  "hook_project_dir_expr": ".",
+  "_hook_project_dir_expr_note": "Der Hook-Prozess steht in der Projektwurzel - gemessen am 2026-09-26 (Arbeitsverzeichnis des Prozesses). CURSOR_PROJECT_DIR steht in der Umgebung, aber das Kommando laeuft unter Windows durch eine PowerShell-Huelle, in der $CURSOR_PROJECT_DIR eine Variable von PowerShell waere und leer bliebe.",
+  "hook_fail_closed": true,
+  "_hook_fail_closed_note": "Das Eingabeschema von preToolUse ist am 2026-09-26 aufgezeichnet: tool_name, tool_input, tool_use_id und der Umschlag des Clients (conversation_id, generation_id, model, cursor_version, workspace_roots, user_email, transcript_path, hook_event_name). failClosed steht in der Hook-Datei und --fail-closed im Kommando.",
+  "skill_frontmatter": {
+    "tools_format": "list",
+    "tool_names": {},
+    "_tool_names_note": "LEER, UND DAS IST DIE AUSSAGE: Kein Verb ist abgebildet, alle fuenf stehen in tool_names_unmapped. Der Hersteller dokumentiert fuer SKILL.md die Felder name, description, paths, disable-model-invocation, icon, color und metadata - kein Werkzeugfeld (QU-4).",
+    "tool_names_unmapped": [
+      "read",
+      "grep",
+      "glob",
+      "edit",
+      "exec"
+    ],
+    "_tool_names_unmapped_note": "Gemessen am 2026-09-26 (tests/protocols/2026-09-26-bau-cursor.md, Lauf S1): Ein Skill mit den Feldern allowed-tools, triggers und permissions (deny: edit) des Frameworks wurde gefunden und gelesen - und das Schreiben blieb im selben Lauf erlaubt. Die Felder bleiben wirkungslos stehen; was einen Skill begrenzt, ist die globale Schicht (Zeile S3).",
+    "model_invocation_field": "disable-model-invocation",
+    "drop_fields": [],
+    "_drop_fields_note": "LEER, UND DAS IST DIE ENTSCHEIDUNG (Bauform wie kiro): Die zusagentragenden Felder erreichen die installierte Fassung unveraendert; der Client nimmt sie an und wertet sie nicht aus. Die Aussage 'nur benutzergetriggert' wird zusaetzlich in disable-model-invocation uebersetzt (QU-4)."
+  },
+  "shared_core": [
+    {
+      "src": "framework/runtime/root-instruction.md",
+      "dst": "<ROOT_INSTRUCTION_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/00-framework-core.md",
+      "dst": "<RULES_DIR>/00-framework-core.mdc"
+    },
+    {
+      "src": "framework/runtime/rules/10-privacy-security.md",
+      "dst": "<RULES_DIR>/10-privacy-security.mdc"
+    },
+    {
+      "src": "framework/runtime/rules/15-development-rules.md",
+      "dst": "<RULES_DIR>/15-development-rules.mdc"
+    },
+    {
+      "src": "framework/runtime/agents/fw-reviewer.md",
+      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+    },
+    {
+      "src": "templates/rules/21-overlay-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/21-overlay-TEMPLATE.mdc.template"
+    },
+    {
+      "src": "templates/rules/40-tech-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/40-tech-TEMPLATE.mdc.template"
+    },
+    {
+      "src": "framework/runtime/hooks.json",
+      "dst": "<HOOKS_FILE>"
+    }
+  ],
+  "_shared_core_note": "Keine Beispieldatei zur nutzerlokalen Wurzel-Anweisung (kein Mechanismus) und keine zur MCP-Konfiguration. 16-plan-spezifikation.md liefert dieses Pack NICHT aus: Der Planmodus des Clients legt seinen Plan nicht im Repositorium ab (gemessen: createPlan mit leerer planUri) - das Planartefakt ist das des Kerns.",
+  "shared_seed": [
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": ".cursorignore"
+    },
+    {
+      "src": "framework/runtime/rules/20-project-overlay.md",
+      "dst": "<RULES_DIR>/20-project-overlay.mdc"
+    },
+    {
+      "src": "templates/project-overlay",
+      "dst": ".koolie/project-overlay"
+    }
+  ],
+  "rule_frontmatter": "yaml",
+  "rule_triggers": {
+    "condition_field": "globs",
+    "condition_format": "list",
+    "allowed_fields": [
+      "alwaysApply",
+      "globs"
+    ],
+    "map": {
+      "always_on": {
+        "condition": null,
+        "fixed": {
+          "alwaysApply": "true"
+        }
+      },
+      "model_decision": {
+        "condition": null,
+        "fixed": {
+          "alwaysApply": "true"
+        },
+        "hint": "Wird bei jedem Sitzungsstart geladen (`alwaysApply: true`). Dieser Client kennt einen Lademodus nach Beschreibung; das Pack nutzt ihn nicht, weil seine Wirkung nicht gemessen ist – gegenüber `model_decision` ist unbedingtes Laden eine Verschärfung, keine Lockerung."
+      },
+      "glob": {
+        "condition": "globs",
+        "from": "globs",
+        "fixed": {
+          "alwaysApply": "false"
+        }
+      }
+    }
+  },
+  "_rule_triggers_note": "Gemessen am 2026-09-26: Eine .mdc-Datei mit alwaysApply: true steht in jeder Sitzung im Kontext; eine mit alwaysApply: false und globs als YAML-Liste laedt, sobald eine passende Datei gelesen wird, und nicht bei einer unpassenden (Gegenprobe). Die Schreibweise als Zeichenkette wirkte ebenfalls; das Pack nutzt die Liste.",
+  "root_instruction_imports": [],
+  "agent_frontmatter": {
+    "tools_field": "tools",
+    "tools_format": "list",
+    "tool_names": {},
+    "tool_names_unmapped": [
+      "read",
+      "grep",
+      "glob",
+      "edit",
+      "exec"
+    ],
+    "readonly_field": "readonly",
+    "_tool_names_note": "Ein Subagentenprofil dieses Clients kennt kein Werkzeugfeld, sondern readonly (QU-5: 'no file edits, no state-changing shell commands'). Ein Profil, dessen Werkzeugliste weder edit noch exec nennt, bekommt readonly: true, und die Liste entfaellt. Die Wirkung ist Gegenstand von Zeile A1.",
+    "_tool_names_unmapped_note": "Der Hersteller dokumentiert fuer ein Subagentenprofil kein Werkzeugfeld, sondern readonly (QU-5); die Verben werden deshalb nicht in Namen uebersetzt, sondern entscheiden allein, ob readonly: true gesetzt wird (readonly_field). Die Wirkung von readonly ist unerhoben - Zeile A1 sagt BELEG OFFEN."
+  },
+  "agent_start_tools": [
+    "Task"
+  ],
+  "_agent_start_tools_note": "Der Hersteller nennt das Werkzeug, das einen Subagenten startet, Task (QU-5); das Ereignis subagentStart gilt ihm. Gemessen ist der Start nicht.",
+  "_import_control_note": "Kein Feld import_control, und das ist eine Aussage: Der Schalter fuer den Import fremder Konfigurationen ('Include Third-Party Plugins, Skills, and Other Configs', Standard an) ist eine Einstellung der IDE und nicht des Projekts; in der Konfiguration der Kommandozeile gibt es keinen (Programmcode). Gemessen am 2026-09-26: Die Hooks aus ~/.claude/settings.json des Arbeitsplatzes liefen in der Kommandozeile mit - und sperrten, weil sie unter diesem Client scheiterten, jede Shell- und Schreiboperation. CLAUDE.md der Projektwurzel lud in jeder Sitzung.",
+  "import_channels_intro": "Der Client laedt neben dem Projekt eigene Ablagen im Benutzerprofil und die Konfiguration von Claude Code (Drittimport, Standard an),",
+  "import_channels_report": [
+    {
+      "path": "~/.claude/settings.json",
+      "scope": "user",
+      "when": "json_key",
+      "key": "hooks",
+      "what": "Hooks von Claude Code - laufen in JEDER Cursor-Sitzung mit (gemessen); ein Hook, der dort scheitert, kann jede Operation sperren"
+    },
+    {
+      "path": "~/.claude/skills",
+      "scope": "user",
+      "when": "entries",
+      "what": "Skills von Claude Code - stehen in jeder Cursor-Sitzung zur Verfuegung"
+    },
+    {
+      "path": "~/.codex/skills",
+      "scope": "user",
+      "when": "entries",
+      "what": "Skills von Codex - stehen in jeder Cursor-Sitzung zur Verfuegung"
+    },
+    {
+      "path": "~/.agents/skills",
+      "scope": "user",
+      "when": "entries",
+      "what": "globale Skills im offenen Format - stehen in jeder Sitzung zur Verfuegung"
+    },
+    {
+      "path": "~/.cursor/skills",
+      "scope": "user",
+      "when": "entries",
+      "what": "globale Skills des Clients - stehen in jeder Sitzung zur Verfuegung"
+    },
+    {
+      "path": "~/.cursor/hooks.json",
+      "scope": "user",
+      "when": "exists",
+      "what": "Hooks des Arbeitsplatzes - laufen neben denen des Projekts; ein deny gewinnt"
+    },
+    {
+      "path": "~/.cursor/agents",
+      "scope": "user",
+      "when": "entries",
+      "what": "globale Subagenten - stehen in jeder Sitzung zur Verfuegung"
+    },
+    {
+      "path": "~/.cursor/mcp.json",
+      "scope": "user",
+      "when": "exists",
+      "what": "MCP-Server des Arbeitsplatzes"
+    },
+    {
+      "path": "~/.cursor/cli-config.json",
+      "scope": "user",
+      "when": "json_not",
+      "key": "attribution.attributeCommitsToAgent",
+      "value": false,
+      "what": "Die Commit-Attribution ist NICHT abgeschaltet: Die Sitzung haengt jedem Commit 'Co-authored-by: Cursor' an (gemessen) - gegen Q5. Abhilfe: attribution.attributeCommitsToAgent auf false"
+    },
+    {
+      "path": "CLAUDE.md",
+      "scope": "project",
+      "when": "exists",
+      "what": "Wurzel-Anweisung von Claude Code - laedt in jeder Cursor-Sitzung neben AGENTS.md (gemessen)"
+    },
+    {
+      "path": ".claude/settings.json",
+      "scope": "project",
+      "when": "json_key",
+      "key": "hooks",
+      "what": "Hooks von Claude Code im Projekt - laufen in jeder Cursor-Sitzung mit; bei installiertem Pack claude-code also der Schutz-Hook zweimal"
+    },
+    {
+      "path": ".claude/skills",
+      "scope": "project",
+      "when": "entries",
+      "what": "Skills von Claude Code im Projekt - stehen in jeder Cursor-Sitzung zur Verfuegung"
+    }
+  ],
+  "_import_channels_report_note": "Auskunft, keine Schranke (Bauform von D-411): install.py nennt nach Installation und Hebung, welche Quellen belegt sind. json_key meldet eine Datei, die den Schluessel fuehrt; json_not einen Wert, der nicht der genannte ist - auch einen fehlenden, weil dann der Standard des Clients gilt. Welche Wirkung jede Quelle hat, steht in Abschnitt 7 des Packs."
+}

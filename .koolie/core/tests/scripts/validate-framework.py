@@ -455,7 +455,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      die Pruefung - fehlt das FELD, meldet sie es (D-155)
  73. Jede [DOK]-Matrixzeile nennt ihre Quelle (D-263): In der Faehigkeitsmatrix
      jedes Client Packs nennt der BELEGKOPF jeder mit [DOK] belegten Zeile eine
-     Quellenkennung der Liste in Anhang 31.4 (QC-n/QD-n/QK-n); ein Verweisbeleg
+     Quellenkennung der Liste in Anhang 31.4 (QC-n/QD-n/QK-n/QU-n); ein Verweisbeleg
      ("wie B3") wird aufgeloest. ANLASS, und er ist gezaehlt: Anhang 31.4 sagt
      ueber sich selbst, die massgebliche Zuordnung stehe je Zeile in der Matrix -
      das traf am 2026-09-18 fuer 14 von 43 Zeilen zu (K-62, D-156). DER PREIS IST
@@ -742,7 +742,16 @@ Prüft (statisch, ohne laufenden KI-Client):
      Client STILL auf seinen eingebauten Agenten zurueck, und .env war lesbar; eine
      unbekannte Faehigkeit ueberspringt er regelweise. GRENZE: die Dateien, nicht der
      Start - wer mit --agent einen anderen Agenten waehlt, entgeht ihr
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 96 laeuft als eigenes
+ 97. Die Berechtigungsdatei, mit der der Client startet und die trifft (D-440): Bei
+     einem Pack mit permissions_format 'cursor-json' traegt die Datei NUR den
+     Schluessel permissions mit allow und deny, jeder Eintrag hat einen Regeltyp des
+     Clients, jedes deny-Muster der Kernquelle steht darin (die Kernzusagen einzeln
+     benannt), kein fremdes allow. Ein Pfadverbot, das der Client nie trifft, weil
+     es nicht mit '*' oder einem absoluten Pfad beginnt, ist eine Warnung. ANLASS,
+     gemessen am 2026-09-26: Mit einem weiteren Schluessel startet der Client nicht;
+     'Read(.env)' und 'Read(**/.env)' liessen den Koeder unter Windows durch. GRENZE:
+     die Datei, nicht die Wirkung auf einem anderen Betriebssystem
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 97 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -1188,11 +1197,24 @@ def detect_client(root: str) -> dict:
     return treffer[0] if treffer else MANIFEST_FALLBACK
 
 
+def regel_endung(man: dict) -> str:
+    """Die Endung der Regeldateien dieses Packs (cursor: .mdc, CR-2026-155) - dieselbe
+    Auskunft wie clientmap.regel_endung(), hier ohne Import, weil die Pruefungen auch
+    ohne das Abbildungsmodul laufen muessen."""
+    return man.get("rule_file_ext", ".md")
+
+
+def regeldatei(man: dict, name: str) -> str:
+    """'20-project-overlay.md' in der Schreibweise der Regelablage dieses Packs."""
+    endung = regel_endung(man)
+    return name[:-3] + endung if endung != ".md" and name.endswith(".md") else name
+
+
 def check_required(root: str, man: dict) -> None:
     pflicht = list(REQUIRED_PATHS)
     pflicht += [man["root_instruction_file"], man["permissions_file"],
                 man["skills_dir"], man["agents_dir"]]
-    pflicht += [f"{man['pack_runtime_dir']}/{n}.md" for n in
+    pflicht += [f"{man['pack_runtime_dir']}/{n}{regel_endung(man)}" for n in
                 ("00-framework-core", "10-privacy-security", "15-development-rules",
                  "20-project-overlay")]
     for rel in pflicht:
@@ -1599,7 +1621,7 @@ def check_rules(root: str, man: dict) -> None:
     stets_geladen = len(wurzel_text)
 
     for fn in sorted(os.listdir(rules_dir)):
-        if not fn.endswith(".md"):
+        if not fn.endswith(regel_endung(man)):
             continue
         text = read(os.path.join(rules_dir, fn))
         rel = f"{rules_rel}/{fn}"
@@ -1607,7 +1629,7 @@ def check_rules(root: str, man: dict) -> None:
         if not ueber_import:
             if len(text) > 12000:
                 warn(f"{rel}: {len(text)} Zeichen (> 12.000, SOLL-Grenze je Datei)")
-            if fn == "20-project-overlay.md" and len(text) > 6000:
+            if fn == regeldatei(man, "20-project-overlay.md") and len(text) > 6000:
                 warn(f"{rel}: {len(text)} Zeichen (> 6.000, SOLL-Grenze)")
         if fn == "README.md":
             continue
@@ -2145,7 +2167,7 @@ def _overlay_version_angaben(root: str, man: dict) -> list[tuple[str, str]]:
     angaben: list[tuple[str, str]] = []
     quellen = [
         os.path.join(root, ".koolie/project-overlay", "OVERLAY.md"),
-        os.path.join(root, *man["pack_runtime_dir"].split("/"), "20-project-overlay.md"),
+        os.path.join(root, *man["pack_runtime_dir"].split("/"), regeldatei(man, "20-project-overlay.md")),
     ]
     for path in quellen:
         if not os.path.exists(path):
@@ -2303,7 +2325,7 @@ def check_strict_overlay(root: str, man: dict) -> None:
     GRENZE: Geprueft wird die Aktivierungs**reife**, nicht die Aktivierung. Dass ein
     Overlay 'aktiv' sagt, heisst nicht, dass der Client seine Regeln laedt.
     """
-    runtime = os.path.join(root, *man["pack_runtime_dir"].split("/"), "20-project-overlay.md")
+    runtime = os.path.join(root, *man["pack_runtime_dir"].split("/"), regeldatei(man, "20-project-overlay.md"))
     overlay = os.path.join(root, ".koolie/project-overlay", "OVERLAY.md")
     for path in (runtime, overlay):
         if not os.path.exists(path):
@@ -2361,7 +2383,7 @@ def check_overlay_ready(root: str, man: dict) -> None:
     (FW-CL-10). Und dass ein Overlay vollstaendig ist, heisst nicht, dass seine Werte
     richtig sind.
     """
-    runtime = os.path.join(root, *man["pack_runtime_dir"].split("/"), "20-project-overlay.md")
+    runtime = os.path.join(root, *man["pack_runtime_dir"].split("/"), regeldatei(man, "20-project-overlay.md"))
     overlay = os.path.join(root, ".koolie/project-overlay", "OVERLAY.md")
     vorhanden = [p for p in (runtime, overlay) if os.path.exists(p)]
     if not vorhanden:
@@ -3659,7 +3681,7 @@ def _excluded_paths_traeger(root: str, man: dict) -> list[str]:
     runtime_dir = (man or {}).get("runtime_dir")
     if runtime_dir:
         kandidaten.append(os.path.join(runtime_dir.replace("/", os.sep), "rules",
-                                       "20-project-overlay.md"))
+                                       regeldatei(man, "20-project-overlay.md")))
     treffer = []
     for rel in kandidaten:
         pfad = os.path.join(root, rel)
@@ -7989,7 +8011,7 @@ def check_overlay_wertabgleich(root: str, man: dict) -> None:
     quelle = _p59_globs(_p56_ausgeschlossen(read(overlay_pfad)))
     if not quelle or any(TBD_RE.search(g) for g in quelle):
         return  # noch nicht ausgefuellt - das meldet --check-overlay-ready
-    rel_rt = f"{man['pack_runtime_dir']}/20-project-overlay.md"
+    rel_rt = f"{man['pack_runtime_dir']}/{regeldatei(man, '20-project-overlay.md')}"
     runtime_pfad = os.path.join(root, *rel_rt.split("/"))
     if os.path.isfile(runtime_pfad):
         text = read(runtime_pfad)
@@ -8121,7 +8143,7 @@ def check_overlay_pfadabgleich(root: str, man: dict) -> None:
     if not os.path.isfile(overlay_pfad):
         return  # Kandidatenphase - dieselbe Enthaltung wie Pruefung 59
     quelltext = read(overlay_pfad)
-    rel_rt = f"{man['pack_runtime_dir']}/20-project-overlay.md"
+    rel_rt = f"{man['pack_runtime_dir']}/{regeldatei(man, '20-project-overlay.md')}"
     runtime_pfad = os.path.join(root, *rel_rt.split("/"))
     laufzeit = read(runtime_pfad) if os.path.isfile(runtime_pfad) else None
     nur_lesen = None
@@ -8857,7 +8879,7 @@ def check_pack_im_korb(root: str, man: dict) -> None:
 # QUELLE NICHT ZUGEORDNET. Damit das keine Hintertuer ist, fuehrt diese Pruefung die
 # zugelassenen Luecken als MENGE: eine neue faellt auf, und eine geschlossene ebenso -
 # dieselbe Bauform wie das leer DEKLARIERTE Feld von Pruefung 72 (D-155).
-P73_KENNUNG_RE = re.compile(r"Q[CDK]-\d+")  # QK- seit 1.13.0 (kiro, D-414)
+P73_KENNUNG_RE = re.compile(r"Q[CDKU]-\d+")  # QK- seit 1.13.0 (kiro, D-414), QU- seit 1.16.0 (cursor, D-440)
 P73_BRUCH_RE = re.compile(r"\.\s|;\s|:\s|:$")
 P73_ZEILE_RE = re.compile(r"^\|\s*([RSBHAMX]\d+)\s*\|")
 P73_VERWEIS_RE = re.compile(r"^(?:wie|dito)\b[^A-Z]*([RSBHAMX]\d+)")
@@ -10191,6 +10213,33 @@ def check_sperrform(root: str, man: dict) -> None:
                 f"verlangt Exit 2 und einen Grund auf stderr; gemessen wurden Exit "
                 f"{lauf.returncode} und {len((lauf.stderr or '').strip())} Zeichen auf "
                 f"stderr. Ohne Grund lässt der Client die Operation laufen (D-417)")
+    elif form == "permission-json":
+        # D-441: Sperre mit permission deny UND Exit 2 - und, das ist die zweite Haelfte,
+        # ein DURCHLASS mit gueltigem JSON. Mit failClosed wertet dieser Client einen
+        # Hook ohne Ausgabe als gescheitert und sperrt jede Operation, gemessen am
+        # 2026-09-26. Die Durchlassprobe ist eine harmlose Leseoperation.
+        if ausgabe.get("permission") != "deny" or lauf.returncode != 2:
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: Sperrform 'permission-json' "
+                f"verlangt permission 'deny' und Exit 2; gemessen wurden "
+                f"'{ausgabe.get('permission')}' und Exit {lauf.returncode} (D-441)")
+        harmlos = json.dumps({"hook_event_name": "preToolUse", "tool_name": "Read",
+                              "tool_input": {"file_path": "README.md"}})
+        try:
+            durch = subprocess.run(argumente + ["--fail-closed"], input=harmlos,
+                                   capture_output=True, text=True, timeout=30, cwd=root)
+        except (OSError, subprocess.SubprocessError):
+            durch = None
+        try:
+            antwort = json.loads(durch.stdout.strip()) if durch else None
+        except ValueError:
+            antwort = None
+        if durch is None or durch.returncode != 0 or not isinstance(antwort, dict) \
+                or antwort.get("permission") == "deny":
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: Sperrform 'permission-json' "
+                f"verlangt beim Durchlass Exit 0 und ein JSON-Objekt ohne deny; gemessen "
+                f"wurde {('Exit ' + str(durch.returncode)) if durch else 'kein Lauf'} mit "
+                f"{(durch.stdout or '').strip()[:40]!r}. Ohne Antwort wertet der Client den "
+                f"Hook mit failClosed als gescheitert und sperrt JEDE Operation (D-441)")
     elif form == "hook-specific-output":
         entscheidung = (ausgabe.get("hookSpecificOutput") or {}).get("permissionDecision")
         if entscheidung != "deny" or lauf.returncode != 0:
@@ -10486,6 +10535,133 @@ def check_agentenprofil(root: str, man: dict) -> None:
 
 # ---------------------------------------------------------------------------
 # PRUEFUNGEN 91 BIS 94: DIE DOKUMENTATION (CR-2026-142, D-371 bis D-375)
+
+# ---------------------------------------------------------------------------
+# PRUEFUNG 97: DIE BERECHTIGUNGSDATEI, MIT DER DER CLIENT STARTET UND DIE TRIFFT
+# ---------------------------------------------------------------------------
+# ANLASS, UND ER IST GEMESSEN (CR-2026-155, D-440). Am 2026-09-26 an cursor-agent
+# 2026.09.26 unter Windows:
+#   * Mit den Schluesseln _comment und _core_rules_integrity in .cursor/cli.json brach
+#     der Client mit Exit 1 ab ("Unrecognized key(s) in object") - ebenso bei kaputtem
+#     JSON. Die Kernregeln koennen deshalb nicht in der Datei selbst stehen wie bei der
+#     ersten Ausgabeform; diese Pruefung haelt sie gegen die Kernquelle.
+#   * Ein Pfadmuster vergleicht der Client verankert mit dem ABSOLUTEN Pfad. 'Read(.env)'
+#     und 'Read(**/.env)' liessen den Koeder durch, 'Read(*\.env)' nicht. Ein Verbot,
+#     das so nie trifft, sieht aus wie eines.
+#   * Die Pruefungen der Koerbe (37 und Verwandte) erreichen diese Form nicht (D-416).
+# GEPRUEFT: (a) gueltiges JSON, ein Objekt mit genau dem Schluessel permissions, darin nur
+# allow und deny als Listen von Zeichenketten; (b) jeder Eintrag hat die Gestalt
+# Typ(Argument) mit einem Regeltyp des Clients; (c) jedes deny der Kernquelle steht darin,
+# eine Kernzusage mit eigenem Wortlaut; kein allow, das die Kernquelle nicht erzeugt;
+# (d) Warnung fuer ein Pfadverbot ohne fuehrendes '*' und ohne absoluten Pfad.
+# GRENZE, BENANNT: Gemessen ist Windows. Die Schreibweise mit '/' fuer POSIX folgt aus dem
+# Programmcode des Clients, nicht aus einer Messung auf macOS oder Linux.
+P97_TYPEN = ("Shell", "Bash", "Read", "Write", "WebFetch", "Mcp")
+P97_EINTRAG_RE = re.compile(r"^\s*([A-Za-z]+)\s*\((.*)\)\s*$")
+
+
+def check_cursor_berechtigungen(root: str, man: dict) -> None:
+    """Pruefung 97 (D-440): Die Datei laesst den Client starten, und ihre Verbote treffen."""
+    if man.get("permissions_format") != "cursor-json":
+        return
+    rel = man.get("permissions_file") or ""
+    pfad = os.path.join(root, *rel.split("/"))
+    if not os.path.isfile(pfad):
+        return  # keine Installation dieses Packs an dieser Wurzel; Pflichtpfade melden es
+    kern = os.path.join(root, KERN)
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        return  # check_config meldet das fehlende Abbildungsmodul bereits
+    if not hasattr(clientmap, "cursor_koerbe") or not hasattr(clientmap, "cursor_kernregeln"):
+        err(f"{KERN}/clientmap.py: 'cursor_koerbe' oder 'cursor_kernregeln' fehlt – Prüfung "
+            f"97 hat ihren Gegenstand verloren und bestünde sonst leise (D-23)")
+        return
+    # (a) Die Gestalt, mit der der Client startet.
+    try:
+        cfg = json.loads(read(pfad))
+    except json.JSONDecodeError as exc:
+        err(f"{rel}: kein gültiges JSON ({exc.msg}, Zeile {exc.lineno}). Der Client startet "
+            f"damit nicht – gemessen: Exit 1 (D-440)")
+        return
+    if not isinstance(cfg, dict) or set(cfg) != {"permissions"}:
+        fremd = sorted(set(cfg) - {"permissions"}) if isinstance(cfg, dict) else ["?"]
+        err(f"{rel}: die Datei trägt {', '.join(fremd) or 'keinen Schlüssel permissions'}. "
+            f"Der Client nimmt auf Projektebene nur 'permissions' an und startet mit einem "
+            f"weiteren Schlüssel nicht – gemessen mit _comment und _core_rules_integrity: "
+            f"Exit 1, 'Unrecognized key(s)' (D-440)")
+        return
+    rechte = cfg["permissions"]
+    if not isinstance(rechte, dict) or not set(rechte) <= {"allow", "deny"}:
+        err(f"{rel}: 'permissions' darf nur allow und deny führen – dieser Client kennt "
+            f"keinen Rückfragekorb (D-440)")
+        return
+    ist: dict = {}
+    for korb in ("allow", "deny"):
+        liste = rechte.get(korb, [])
+        if not isinstance(liste, list) or not all(isinstance(e, str) for e in liste):
+            err(f"{rel}: permissions.{korb} ist keine Liste von Zeichenketten (D-440)")
+            return
+        ist[korb] = set(liste)
+        # (b) Jeder Eintrag ist eine Regel, die der Client kennt.
+        for eintrag in liste:
+            m = P97_EINTRAG_RE.match(eintrag)
+            if not m or m.group(1) not in P97_TYPEN:
+                err(f"{rel}: '{eintrag}' in permissions.{korb} ist keine Regel der Gestalt "
+                    f"Typ(Argument) mit einem Typ dieses Clients ({', '.join(P97_TYPEN)}). "
+                    f"Eine solche Zeile wertet der Client nicht aus (D-440)")
+                continue
+            # (d) Ein Pfadverbot, das nie trifft.
+            argument = m.group(2).strip()
+            if korb == "deny" and m.group(1) in ("Read", "Write") \
+                    and not argument.startswith(("*", "<", "/", "~")) \
+                    and not re.match(r"^[A-Za-z]:[\\/]", argument):
+                warn(f"{rel}: '{eintrag}' trifft bei diesem Client nie. Er vergleicht das "
+                     f"Muster mit dem ABSOLUTEN Pfad – gemessen: 'Read(.env)' und "
+                     f"'Read(**/.env)' ließen den Köder durch. Die Schreibweise mit "
+                     f"führendem '*' in beiden Trennern: 'Read(*/<pfad>)' und "
+                     f"'Read(*\\<pfad>)' (D-440)")
+    # (c) Gegen die Kernquelle.
+    try:
+        quelle = json.loads(clientmap.load_source(kern, "permissions.json"))
+        soll = clientmap.cursor_koerbe(quelle, man)
+        kernregeln = set(clientmap.cursor_kernregeln(quelle, man))
+    except (OSError, ValueError) as exc:
+        err(f"Kernquelle der Berechtigungen nicht auswertbar: {exc}")
+        return
+    for eintrag in soll["deny"]:
+        if "<" in eintrag or eintrag in ist["deny"]:
+            continue  # Projektschlitz gehört dem Overlay
+        if eintrag in kernregeln:
+            err(f"{rel}: die Kernzusage '{eintrag}' fehlt in permissions.deny. Kernregeln "
+                f"darf das Projekt nicht entfernen; diese Datei kann sie nicht selbst "
+                f"auflisten, deshalb hält diese Prüfung sie gegen die Kernquelle (D-440)")
+        else:
+            err(f"{rel}: '{eintrag}' aus der Kernquelle fehlt in permissions.deny. Eine "
+                f"Regel des Kerns zu streichen ist eine Lockerung (D-77, D-440)")
+    for eintrag in sorted(ist["allow"] - set(soll["allow"])):
+        err(f"{rel}: '{eintrag}' in permissions.allow erzeugt die Kernquelle nicht. Eine "
+            f"zusätzliche Freigabe ist eine Ausweitung; ein freigegebener Befehl gehört in "
+            f"Abschnitt 6 des Overlays und damit in die Regelschicht (D-77, D-440)")
+    # (e) Die Ausschlussdatei (D-443): die zweite Lesesperre, und die einzige, die das
+    # Suchwerkzeug beachtet - gemessen am 2026-09-26.
+    ign_rel = man.get("ignore_file")
+    if not ign_rel or not hasattr(clientmap, "cursor_ignore_muster"):
+        return
+    ign_pfad = os.path.join(root, *ign_rel.split("/"))
+    if not os.path.isfile(ign_pfad):
+        err(f"{ign_rel}: fehlt. Ohne sie wertet das Suchwerkzeug dieses Clients kein "
+            f"Leseverbot aus – gemessen: der Köder aus secrets/ kam heraus (D-443)")
+        return
+    zeilen = {z.strip() for z in read(ign_pfad).splitlines()}
+    for muster in clientmap.cursor_ignore_muster(quelle, man):
+        if muster not in zeilen:
+            err(f"{ign_rel}: das Leseverbot '{muster}' der Kernquelle fehlt. Das "
+                f"Suchwerkzeug fände dort wieder, was die Berechtigungsdatei nur dem "
+                f"Lesewerkzeug verbietet (D-443)")
+
 # ---------------------------------------------------------------------------
 #
 # ANLASS. 1.9.0 ist das Qualitaetssicherungsrelease der Dokumentation (D-370). Seine
@@ -10950,6 +11126,7 @@ def main() -> int:
     check_formatgebundene_pruefungen(root)
     check_verdraengende_wurzelanweisung(root, man)
     check_agentenprofil(root, man)
+    check_cursor_berechtigungen(root, man)
     check_roadmapstand(root)
     check_rechtschreibung(root)
     check_dokumentform(root)

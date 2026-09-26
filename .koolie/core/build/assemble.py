@@ -143,6 +143,11 @@ def quelle(rel: str, man: dict, installation: str):
     """
     aufgeloest = clientmap.resolve_placeholders(rel, man)
     if aufgeloest != rel:
+        # Eine Regeldatei der Ablage traegt die Endung des Packs - bei cursor .mdc
+        # (CR-2026-155, D-440); die Kapitelquelle nennt sie mit .md.
+        if rel.startswith("<RULES_DIR>/"):
+            kopf, _, name = aufgeloest.rpartition("/")
+            aufgeloest = kopf + "/" + clientmap.regeldatei(man, name)
         return aufgeloest, installation, True
     return rel, REPO, False
 
@@ -178,7 +183,8 @@ def process(text: str, man: dict, installation: str) -> str:
             if lang == "permissions_format":
                 lang = clientmap.permissions_format(man)
                 # Das Agentenprofil von kiro ist JSON (D-414).
-                if lang == "kiro-agent":
+                # Die Berechtigungsdatei von cursor ebenso (D-440).
+                if lang in ("kiro-agent", "cursor-json"):
                     lang = "json"
             if "````" in content:
                 print(f"FEHLER: {rel} enthaelt 4 Backticks", file=sys.stderr)

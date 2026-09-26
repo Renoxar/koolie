@@ -49,8 +49,14 @@ regelablage = argumente[1] if len(argumente) > 1 else None
 
 candidates = []
 if regelablage:
-    candidates.append(os.path.join(root, *regelablage.replace("\\", "/").split("/"),
-                                   "20-project-overlay.md"))
+    # Die Laufzeitregel heisst bei cursor 20-project-overlay.mdc (CR-2026-155): Der
+    # Client laedt nur diese Endung. Das Skript kennt kein Manifest und nimmt die
+    # Datei, die in der Regelablage liegt.
+    for endung in (".md", ".mdc"):
+        kandidat = os.path.join(root, *regelablage.replace("\\", "/").split("/"),
+                                "20-project-overlay" + endung)
+        if os.path.exists(kandidat) or endung == ".md":
+            candidates.append(kandidat)
 candidates.append(os.path.join(root, ".koolie/project-overlay", "OVERLAY.md"))
 
 # Alle lesbaren Traeger, nicht der erste mit Treffer: Zwei Dateien, die verschiedene

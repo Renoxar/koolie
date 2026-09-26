@@ -215,12 +215,15 @@ def activated_pack_relpaths(root: str, man: dict) -> list[str]:
                 for fn in sorted(os.listdir(src_runtime)):
                     if not fn.endswith(".md"):
                         continue
+                    # Der Name in der Ablage traegt die Endung des Packs (bei cursor
+                    # .mdc, CR-2026-155) - die Quelle bleibt *.md.
+                    ziel = clientmap.regeldatei(man, fn)
                     # Nur wenn im Ziel aktiviert
-                    if not os.path.exists(os.path.join(root, *man["pack_runtime_dir"].split("/"), fn)):
+                    if not os.path.exists(os.path.join(root, *man["pack_runtime_dir"].split("/"), ziel)):
                         continue
                     src = os.path.join(src_runtime, fn)
                     out.append((os.path.relpath(src, HERE).replace(os.sep, "/"),
-                                f"{man['pack_runtime_dir']}/{fn}"))
+                                f"{man['pack_runtime_dir']}/{ziel}"))
     return out
 
 
@@ -604,6 +607,16 @@ def render_agent(text: str, man: dict) -> str:
             if y not in ziel:
                 ziel.append(y)
     fm = re.sub(r"^allowed-tools:.*\n(?:[ \t]+\S.*\n)*", "", fm, flags=re.M)
+    # Ein Client ohne Werkzeugfeld, aber mit einem Schalter fuer ein nur lesendes Profil
+    # (cursor: readonly, CR-2026-155). Die Liste entfaellt; der Schalter steht genau
+    # dann, wenn sie weder edit noch exec nennt - ein Profil mit einem dieser Verben
+    # bekommt ihn nicht, und darin liegt keine Lockerung, weil ohne Schalter der Client
+    # sein Standardverhalten behaelt.
+    nur_lesend = fmt.get("readonly_field")
+    if nur_lesend:
+        if werkzeuge and not ({"edit", "exec"} & set(werkzeuge)):
+            fm = fm.rstrip("\n") + f"\n{nur_lesend}: true\n"
+        return "---\n" + fm + "---\n" + rumpf
     feld = fmt.get("tools_field", "allowed-tools")
     if ziel:
         if fmt.get("tools_format") == "csv":
@@ -630,6 +643,12 @@ def render_for_client(text: str, man: dict, src_rel: str, dst_rel: str = "") -> 
             return clientmap.render_permissions_toml(text, man)
         if clientmap.permissions_format(man) == "kiro-agent":
             return clientmap.render_permissions_kiro(text, man)
+        if man.get("ignore_file") and dst_rel == man["ignore_file"]:
+            # Dieselbe Kernquelle, ein zweites Ziel (CR-2026-155, D-443): die
+            # Ausschlussdatei aus den Leseverboten.
+            return clientmap.render_ignore_cursor(text, man)
+        if clientmap.permissions_format(man) == "cursor-json":
+            return clientmap.render_permissions_cursor(text, man)
         # Kennt der Client keine eigene Hook-Datei, wandern die Hooks hier mit hinein.
         hooks = (clientmap.load_source(HERE, "hooks.json")
                  if clientmap.hooks_in_permissions(man) else None)
@@ -821,6 +840,23 @@ def ignorierte_kerndateien(root: str) -> list[str]:
 QUELLREPO_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
 
 
+_FEHLT = object()
+
+
+def _json_punktpfad(pfad: str, schluessel: str) -> object:
+    """Der Wert unter einem Punktpfad einer JSON-Datei - oder _FEHLT."""
+    try:
+        with open(pfad, encoding="utf-8-sig") as fh:
+            wert = json.load(fh)
+    except (OSError, ValueError):
+        return _FEHLT
+    for teil in filter(None, schluessel.split(".")):
+        if not isinstance(wert, dict) or teil not in wert:
+            return _FEHLT
+        wert = wert[teil]
+    return wert
+
+
 def belegte_importkanaele(root: str, man: dict) -> list[tuple[str, str]]:
     """Die Importkanaele aus dem Manifest, die auf diesem Arbeitsplatz belegt sind.
 
@@ -848,6 +884,18 @@ def belegte_importkanaele(root: str, man: dict) -> list[tuple[str, str]]:
             # Ein Verzeichnis mit mindestens einem Eintrag - ein leeres legt der
             # Client selbst an und traegt nichts (D-414).
             treffer = os.path.isdir(pfad) and bool(os.listdir(pfad))
+        elif wann in ("json_key", "json_not"):
+            # Seit 1.16.0 (CR-2026-155): Bei cursor zaehlt nicht, DASS eine Datei da ist,
+            # sondern was darin steht - Hooks in ~/.claude/settings.json laufen in jeder
+            # Sitzung dieses Clients mit (gemessen), und die Commit-Attribution steht nur global.
+            # json_key: der Schluessel (Punktpfad) ist belegt. json_not: sein Wert ist
+            # nicht der genannte - auch wenn er fehlt, denn dann gilt der Standard des
+            # Clients.
+            wert = _json_punktpfad(pfad, kanal.get("key", ""))
+            if wann == "json_key":
+                treffer = bool(wert) and wert is not _FEHLT
+            else:
+                treffer = os.path.isfile(pfad) and wert != kanal.get("value")
         else:
             treffer = os.path.exists(pfad)
         if treffer:
