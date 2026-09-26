@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.11 |
+| Version | 0.1.12 |
 | Status | `pilot` |
 
 ## 1. Standardarbeitsablauf (normativ)
@@ -42,7 +42,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Den Modus gibt der Mensc
 |---|---|---|---|---|
 | M1 Read-only Analysis | Verstehen und Befunde liefern | nein | nur lesende Analysebefehle, falls im Overlay freigegeben | hoch |
 | M2 Guided Planning | Änderungsplan erarbeiten | nur Plan-Datei außerhalb des Quellcodes | wie M1 (nur lesende Analysebefehle) | hoch |
-| M3 Controlled Modification | Freigegebene Änderung umsetzen | ja, innerhalb des freigegebenen Scopes | freigegebene Build-, Test- und Lint-Befehle | hoch (nur mit Freigabe und Pairing) |
+| M3 Controlled Modification | Freigegebene Änderung umsetzen | ja, innerhalb des freigegebenen Scopes | freigegebene Build-, Test- und Lint-Befehle; lesende Git-Befehle (status, diff, log, show, blame) | hoch (nur mit Freigabe und Pairing) |
 | M4 Test and Validation | Tests erstellen, ausführen, Ergebnisse bewerten | ja, nur in Testverzeichnissen | freigegebene Testbefehle | hoch (ohne Produktivcode-Änderung) |
 | M5 Documentation Support | Dokumentation erstellen oder aktualisieren | ja, nur in Dokumentationspfaden | nur lesende Git-Befehle (status, diff, log, show, blame) | hoch |
 
@@ -79,7 +79,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Den Modus gibt der Mensc
 | Aspekt | Festlegung |
 |---|---|
 | Zweck | Eine freigegebene, klar abgegrenzte Änderung in kleinen Schritten umsetzen |
-| Zulässige Aktionen | Dateien innerhalb `<ALLOWED_PATHS>` ändern; freigegebene Build-, Test- und Lint-Befehle ausführen; nach jedem Schritt Zwischenstand berichten |
+| Zulässige Aktionen | Dateien innerhalb `<ALLOWED_PATHS>` ändern; freigegebene Build-, Test- und Lint-Befehle ausführen; lesende Git-Befehle (status, diff, log, show, blame) zur Aufnahme des eigenen Änderungsstands ausführen; nach jedem Schritt Zwischenstand berichten |
 | Verbotene Aktionen | Änderungen außerhalb des Scopes; Änderungen an `<EXCLUDED_PATHS>`; neue Abhängigkeiten ohne Freigabe; Git-Operationen mit Fernwirkung (push, merge, tag, rebase auf geteilten Branches); Löschen von Dateien ohne ausdrückliche Einzelfreigabe; Deaktivieren oder Löschen von Tests; Anpassen von Quality-Gate-Konfigurationen |
 | Benötigter Kontext | Bestätigter Plan; betroffene Dateien; Coding Conventions; Test- und Build-Befehle aus dem Overlay |
 | Prüfpflichten | Mensch beobachtet die Sitzung im rückfragenden Standardmodus (D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs) und bestätigt Schreib- und Ausführungsanfragen einzeln; vollständiger Diff-Review vor Commit; Quality Gates |

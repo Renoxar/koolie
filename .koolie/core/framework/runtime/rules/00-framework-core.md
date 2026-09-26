@@ -21,7 +21,7 @@ Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schri
 |---|---|---|---|
 | M1 Read-only Analysis (Standard) | nein | nur lesende Analysebefehle, sofern im Overlay freigegeben | Befunde nur mit Fundstellen |
 | M2 Guided Planning | nur Plan-Datei | wie M1 | Plan enthält Schritte, Dateien, Tests, Risiken, Rollback, offene Fragen |
-| M3 Controlled Modification | im freigegebenen Scope | freigegebene Build-/Test-/Lint-Befehle | ein Schritt je Änderung, Bericht nach jedem Schritt |
+| M3 Controlled Modification | im freigegebenen Scope | freigegebene Build-/Test-/Lint-Befehle, lesende Git-Befehle | ein Schritt je Änderung, Bericht nach jedem Schritt |
 | M4 Test and Validation | nur Testpfade | freigegebene Testbefehle | kein Produktivcode, keine abgeschwächten Tests |
 | M5 Documentation Support | nur Dokumentationspfade | nur lesende Git-Befehle | nur belegtes Verhalten dokumentieren |
 
@@ -36,6 +36,10 @@ Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. Ein Moduswechsel er
 - **hoch:** M3 nur nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` mit begleitender Person; Architektur-/Security-Review. Jede Berührung von Authentifizierung, Autorisierung, Kryptografie, Datenmodellen mit Migration, Produktionskonfiguration oder neuen Abhängigkeiten ist mindestens hoch beziehungsweise nicht delegierbar. Bei personenbezogenen Daten wird unterschieden: ein Code-Pfad, der sie verarbeitet, ohne dass sich die Verarbeitungslogik ändert, ist mittel; jede Änderung an Erhebung, Speicherung, Weitergabe oder Löschung ist hoch (`.koolie/core/framework/core/09-risk-model.md`, R4).
 - Steigt die Stufe während der Arbeit: anhalten, melden, auf Entscheidung warten.
 - Nicht delegierbar (nur Analyse/Vorbereitung), V1 bis V12 der Langform: Freigaben, Merges, Releases, Deployments, Secrets, Produktionsdaten, Architektur- und Technologieentscheidungen, Personenbewertungen, rechtliche Bewertungen, Änderungen an Framework, Overlay und Berechtigungen, Änderungen an Produktionssystemen, Infrastruktur und Sicherheitskonfigurationen, die Entscheidung über die Fortsetzung bei einem Sicherheitsvorfall, Kommunikation nach außen im Namen des Projekts sowie das Löschen von Branches, Historie, Daten oder Artefakten außerhalb des Arbeitsbereichs.
+
+## Ausgabeformat eines Skills
+
+Die Überschriften aus Abschnitt 5 der `SKILL.md` werden wörtlich übernommen – ohne Umformulierung, ohne Zusatz, in derselben Ebene; eine fallbezogene Erläuterung steht im Text darunter. Auch in einem Folgeturn trägt die Ausgabe jede Pflichtüberschrift; was schon früher stand, wird dort mit Verweis geführt.
 
 ## Ergebnisbericht (Pflicht am Ende jeder Sitzung)
 

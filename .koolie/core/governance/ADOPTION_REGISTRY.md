@@ -28,8 +28,8 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.14.0** | `0.3.23` | 2026-09-26 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.14.0** | `1.4.17` | 2026-09-26 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.14.1** | `0.3.24` | 2026-09-26 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 32 Präparationen | `devin-desktop` | **1.14.1** | `1.4.18` | 2026-09-26 |
 
 🟢 **STAND 2026-09-26: BEIDE PROJEKTE TRAGEN `1.14.0`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.12.1` behebt zwei Befunde an Packs (D-411, D-412): **An der installierten Laufzeitschicht ändert sich die Berechtigungsdatei von `devin-desktop` und `openai-codex`** – und die fasst die Hebung nicht an. Im Übungsrepositorium ist `read_config_from` von Hand nachgezogen (`windsurf: true`, `copilot`/`opencode`/`zed`: `false`); der Pilot (`claude-code`) ist nicht betroffen. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
 

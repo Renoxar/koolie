@@ -16,7 +16,9 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen-, Methoden- und Test
 - Modus / Kontrollstufe: M3 / niedrig (Faktor R1, eine Datei) · Plan oder Freigabe: nicht erforderlich (niedrig); Schrittfolge nach [HALT] durch die Bearbeiterin bestätigt
 - Geänderte Dateien: src/ordering/domain/OrderValidator.ext (in <ALLOWED_PATHS>)
 
-### Verwenderliste (Suchmuster: "OrderValidator|\.validate\("; nach dem Refactoring erneut geprüft)
+### Verwenderliste
+- Suchmuster: "OrderValidator|\.validate\(" · nach dem Refactoring erneut geprüft: ja
+
 | validate(Order) | src/ordering/api/OrderController.ext:41 | nein (Signatur unverändert) |
 | validate(Order) | src/reporting/export/OrderExport.ext:88 | nein (Signatur unverändert) |
 
@@ -31,10 +33,10 @@ Alle Beispiele sind **synthetisch**. Pfade, Modul-, Klassen-, Methoden- und Test
 - Gleiche Tests, gleiche Ergebnisse: ja (18 / 0 / 1 vor der ersten und nach jeder Änderung)
 - Schnittstellen unverändert: validate(Order) OrderValidator.ext:18 · Lint: <LINT_COMMAND> → 0 Befunde
 
-### Gemeldete Befunde (nicht geändert)
+### Gemeldete Befunde
 | Mengenprüfung schließt 999 aus (`quantity < 999`); Kommentar in Zeile 39 nennt „bis einschließlich 999" | OrderValidator.ext:40 | fw-error-analyze |
 
-### Commit-Vorschläge (einer je Schritt, nach <COMMIT_CONVENTION>; Commit durch den Menschen)
+### Commit-Vorschlag je Schritt
 1. Pflichtfeldprüfung in Hilfsmethode requireField extrahieren (verhaltensneutral)
 2. Zweite Pflichtfeldprüfung auf requireField umstellen (verhaltensneutral)
 

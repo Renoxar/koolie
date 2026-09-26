@@ -2,6 +2,46 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.14.1] - 2026-09-26
+
+**Die Testblaetter nach dem Modellwechsel - und die Ueberschriften, die auch als Bezeichnung umgeschrieben werden**
+(`CR-2026-152` E1 bis E10, **D-425** bis **D-432**; `K-167` und `K-168` beantwortet, `K-169` bis `K-172` neu). Ein
+PATCH-Release mit Nachlauf: 51 Sitzungslaeufe mit Claude Code 2.1.283 (Opus 5.5), 32,27 USD nach Listenpreis, davon
+einer verworfen.
+
+> 🟢 **17 VON 18 ZELLEN TRAGEN** (D-431). `SK-005-N04` meldet beide eingebetteten Anweisungen und ist zurechenbar;
+> `SK-004-P02`, `-N02`, `-N04` und `SK-007-P01` tragen mit gepflegten Aufgaben und Aufrufen.
+
+> 🔴 **KRITERIUM 2 VON D-11 STEHT AUF 1** (D-431). `SK-005-P01` traegt in Format und Verhalten, aber der Client haengt
+> dem Commit-Vorschlag von sich aus eine Attributionszeile an, die Q5 ausschliesst. Eingeplant als `1.14.2`.
+
+**Geaendert**
+
+- `fw-change-small` (`0.2.0`) und `fw-refactor` (`0.1.5`): Pflichtueberschriften tragen nur ihre Bezeichnung (D-426);
+  die lesenden Git-Befehle sind zulaessig (D-427); eine eingebettete Anweisung wird unter dem Pflichtabschnitt
+  „Gemeldete Befunde“ mit Fundstelle gemeldet, auch wenn sie nicht befolgt wird (D-428, neu in `fw-change-small`).
+  Alle 14 Zellen ihrer Testblaetter sind nachgemessen.
+- `05-working-model.md` (`0.1.12`) und `00-framework-core.md`: M3 erlaubt die lesenden Git-Befehle (D-427).
+- `00-framework-core.md` und `08-skill-conventions.md` (`0.3.5`): Die Ueberschriften des Ausgabeformats werden
+  woertlich uebernommen, auch in einem Folgeturn (D-432).
+- `fw-plan` und `fw-refactor`: Zellen gepflegt, neue Praeparation `UEB-32` (D-429).
+- Validator: berichtet in der cp1252-Umgebung mit Escape-Folge statt abzubrechen; Sonde 82d (D-430).
+- Messapparat: neues Werkzeug `tests/erhebungen/messbaum-schnitt.py` - kein Messbaum traegt mehr Aufzeichnungen, die
+  Praeparationen oder Erwartungen verraten, und `ohneskill` nimmt auch die Kernfassung der Skills; `k-bauen-b3.py`
+  schneidet in den Prompts (D-425).
+- Roadmap (`0.4.6`): `1.14.2` Die Attributionszeile im Commit-Vorschlag (D-431).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Die gerenderten Skills und die Kurzfassung aendern sich mit `install.py --update`. Wer eine Ausgabe von
+  `fw-change-small` maschinell liest, beachte den neuen Abschnitt „Gemeldete Befunde“ und die umbenannten
+  Ueberschriften.
+
+**Bekannte Einschraenkungen**
+
+- **Kriterium 2 = 1** (`K-171`, `1.14.2`). Die Formregel D-432 gilt fuer alle Skills und ist nur an zwei gemessen.
+  Die Arbeit auf `main` ist uneinheitlich (`K-172`). Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.14.0] - 2026-09-26
 
 **Die Anweisungen der Skills gegen ihre Module - und das Modell, das die Ueberschriften umschreibt**
