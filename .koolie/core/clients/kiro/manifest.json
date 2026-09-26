@@ -1,0 +1,298 @@
+{
+  "_comment": "Maschinenlesbare Pfad- und Semantikabbildung dieses Client Packs. Die menschenlesbare Fassung mit Faehigkeitsmatrix steht in CLIENT_PACK.md. Gemessen am 2026-09-26 mit kiro-cli 2.24.1 (Engine V3, KAS 0.66.8) im Rahmen des Baus (CR-2026-150, tests/protocols/2026-09-26-bau-kiro.md). DREI DINGE SIND HIER ANDERS ALS BEI DEN DREI UEBRIGEN PACKS, und alle drei sind gemessen: (1) Die Berechtigungen stehen in einem AGENTENPROFIL, weil die Berechtigungsdatei des Arbeitsbereichs beim Client ausserhalb des Repositoriums liegt; das Profil wirkt nur als aktiver Agent, und die Einstellungsdatei des Arbeitsbereichs waehlt es. (2) Die Hooks laufen nur in der interaktiven Sitzung - im Betrieb ohne Rueckfragen aktiviert der Client sie nicht. (3) Fehlt das Profil oder ist es kein gueltiges JSON, faellt der Client still auf seinen eingebauten Agenten zurueck.",
+  "client": "kiro",
+  "runtime_dir": ".kiro",
+  "root_instruction_file": "AGENTS.md",
+  "permissions_file": ".kiro/agents/koolie.json",
+  "permissions_format": "kiro-agent",
+  "_permissions_format_note": "Die dritte Ausgabeform (D-414): ein Agentenprofil mit dem Feld permissions.rules aus Regeln der Gestalt {capability, match, effect}. Warum kein permissions.yaml: Der Client haelt die Datei des Arbeitsbereichs je Arbeitsplatz unter ~/.kiro/workspace-roots/<hash>/ - ein geklontes Repositorium kann laut Hersteller keine Regeln mitbringen. Das Agentenprofil liegt im Projekt und ist versioniert. Gemessen: Ein deny darin weist ab und nennt sich ('Source: agent-profile'). Acht Pruefungen lesen die Koerbe einer JSON-Datei deny/ask/allow und erreichen diese Form nicht; Abschnitt 5 des Packs nennt sie (Pruefung 87), Pruefung 96 tritt fuer dieses Pack an ihre Stelle.",
+  "permission_profile_name": "koolie",
+  "permission_profile_description": "Agent des Koolie-Frameworks: Lesen im Arbeitsbereich, Schreiben und Ausfuehren mit Rueckfrage, Secrets und die Traeger des Frameworks gesperrt.",
+  "permission_profile_tools": [
+    "*"
+  ],
+  "_permission_profile_tools_note": "Alle Werkzeuge stehen dem Agenten zur Verfuegung; was er damit darf, sagen die Regeln. Ein eigener Agent erbt KEINE Standardfreigaben des eingebauten Agenten - gemessen am 2026-09-26: ohne allow-Regel wurde selbst das Lesen im Arbeitsbereich abgewiesen (K4). Die allow-Regeln des Kerns (Lesen, fuenf lesende git-Befehle, zwoelf Skills) sind deshalb die ganze Freigabe.",
+  "client_settings_file": ".kiro/settings/cli.json",
+  "client_settings": {
+    "chat.agentEngine": "v3",
+    "chat.defaultAgent": "koolie"
+  },
+  "_client_settings_note": "Die Einstellungsdatei des Arbeitsbereichs, gemessen am 2026-09-26: Mit ihr startet 'kiro-cli chat' OHNE Schalter mit der Engine V3 und dem Agenten koolie, und eine globale Einstellung chat.defaultAgent unterliegt ihr (K2, K17). Ohne sie waere die Engine V2 der Standard, die weder das Profilfeld permissions noch die Hook-Datei .kiro/hooks/ kennt. Der Client verbietet dem Agenten fest, in .kiro/settings/ zu schreiben. Pruefung 96 haelt die Datei gegen das Profil: Zeigt chat.defaultAgent auf ein Profil, das es nicht gibt oder das kein gueltiges JSON ist, faellt der Client still auf seinen eingebauten Agenten zurueck (K15, K16).",
+  "skills_dir": ".kiro/skills",
+  "agents_dir": ".kiro/agents",
+  "pack_runtime_dir": ".kiro/steering",
+  "has_rule_triggers": true,
+  "core_skill_prefix": "fw-",
+  "core_paths": [
+    ".kiro/README.md"
+  ],
+  "seed_paths": [],
+  "project_owned_hint": [
+    ".kiro/steering/2N-overlay-<name>.md    (Overlay-Regelerweiterungen)",
+    ".kiro/steering/40-tech-<name>.md       (Packs ohne Quelle im Kern)",
+    ".kiro/agents/koolie.json               (Projektwerte in den match-Listen, zusaetzliche deny-Regeln)",
+    ".kiro/settings/cli.json                (weitere Einstellungen des Arbeitsbereichs)",
+    ".kiro/specs/**                         (Planartefakte des Clients, D-415)",
+    ".kiro/skills/prj-*/                    (projektspezifische Skills)",
+    ".koolie/project-overlay/tech-packs/**          (projekteigene Packs)",
+    ".koolie/project-overlay/**                     (das gesamte Overlay)"
+  ],
+  "_post_steps_note": "Schritte, die install.py nach einer Installation und nach einer Hebung zusaetzlich nennt, weil ohne sie ein Teil des Packs nicht traegt - und nichts es meldet.",
+  "post_install_steps": [
+    "kiro-cli im Projektverzeichnis starten: Nur dort gilt .kiro/settings/cli.json (Engine V3, Agent koolie). Wer mit --agent einen anderen Agenten oder mit --v2/--legacy-ui eine andere Engine waehlt, arbeitet ohne die Berechtigungen des Frameworks (CLIENT_PACK.md Abschnitt 1b).",
+    "Die Hooks laufen nur in der interaktiven Sitzung. Im Betrieb ohne Rueckfragen (--no-interactive) traegt allein das Agentenprofil (CLIENT_PACK.md Abschnitt 1b).",
+    "In der IDE den Agenten koolie im Chat waehlen und pruefen, dass er aktiv ist (CLIENT_PACK.md Abschnitt 1b)."
+  ],
+  "post_update_steps": [
+    "install.py --update fasst .kiro/agents/koolie.json und .kiro/settings/cli.json nicht an (Saat). Pruefung 96 meldet, wenn sie nicht mehr zur Kernquelle passen."
+  ],
+  "runtime_placeholders": {
+    "<RUNTIME_DIR>": ".kiro",
+    "<ROOT_INSTRUCTION_FILE>": "AGENTS.md",
+    "<ROOT_INSTRUCTION_LOCAL>": "AGENTS.local.md",
+    "<PERMISSIONS_FILE>": ".kiro/agents/koolie.json",
+    "<SKILLS_DIR>": ".kiro/skills",
+    "<RULES_DIR>": ".kiro/steering",
+    "<AGENTS_DIR>": ".kiro/agents",
+    "<HOOKS_FILE>": ".kiro/hooks/koolie.json",
+    "<MCP_FILE>": ".kiro/settings/mcp.json",
+    "<CLIENT_NAME>": "Kiro"
+  },
+  "_runtime_placeholders_note": "<ROOT_INSTRUCTION_LOCAL> ist bei diesem Client KEIN Mechanismus - der Hersteller dokumentiert keine nutzerlokale Wurzel-Anweisung, und das Pack liefert keine Beispieldatei aus. Der Name steht hier, weil die Kernquelle ein Schreibverbot auf ihn fuehrt; ein Verbot auf eine Datei, die nichts bewirkt, ist harmlos. <MCP_FILE>: die Serverliste des Arbeitsbereichs; das Framework liefert keinen Server aus.",
+  "root_instruction_local_absent": true,
+  "_root_instruction_local_absent_note": "Das Hauptdokument erklaert an der Stelle der persoenlichen Ergaenzungsdatei, dass es sie bei diesem Pack nicht gibt (build/assemble.py, lokale_ergaenzung). Die Weiche ist dieses Feld und nicht das Fehlen der Datei - sonst bettete der Bau bei jedem Fehlen still eine Erklaerung ein.",
+  "permission_tools": {
+    "read": [
+      "fs_read"
+    ],
+    "search": [
+      "fs_read"
+    ],
+    "write": [
+      "fs_write"
+    ],
+    "exec": [
+      "shell"
+    ],
+    "fetch": [
+      "web_fetch",
+      "web_search"
+    ],
+    "mcp": [
+      "mcp"
+    ],
+    "skill": [
+      "skill"
+    ]
+  },
+  "_permission_tools_note": "Faehigkeiten, keine Werkzeugnamen: Der Client wertet eine Regel je Faehigkeit aus, nicht je Werkzeug. Suchen hat keine eigene Faehigkeit; die Suchwerkzeuge (grep_search, file_search) sind lesend und fallen unter fs_read - der Kern gibt search ohnehin nur frei. Eine Faehigkeit ausserhalb der Liste des Herstellers wird vom Client uebersprungen und nur im Protokoll gemeldet (K23); clientmap.KIRO_FAEHIGKEITEN haelt die Liste, und die Abbildung bricht bei einer unbekannten ab.",
+  "permission_tools_bare": [],
+  "permission_path_prefix": "",
+  "permission_exec_match": "prefix",
+  "permission_exec_suffix": "*",
+  "_permission_exec_note": "Die Befehlsseite wirkt nur mit Stern praefixbasiert - gemessen am 2026-09-26: 'git push*' sperrt 'git push origin main', auch als Teil von 'git status && git push origin main' (der Client zerlegt verkettete Befehle); 'echo' OHNE Stern sperrte 'echo hallo' NICHT (woertlicher Vergleich). Grenze wie bei allen Packs: 'git -C . push origin main' trifft 'git push*' nicht und lief (K13, D-123).",
+  "permission_rule_exclude": {
+    "write <RUNTIME_DIR>/**": [
+      ".kiro/specs/**"
+    ]
+  },
+  "_permission_rule_exclude_note": "D-415: .kiro/specs/ ist die Ablage des Planartefakts dieses Clients und nach D-415 der Traeger des Plans - kein Artefakt des Frameworks. Das Schreibverbot auf die Laufzeitschicht nimmt genau diesen Teilbaum aus (Feld exclude der Regel); ein allow koennte es nicht, weil deny gewinnt. Das Schreiben dort bleibt ueber die ask-Regel des Kerns rueckfragepflichtig. Der Schutz-Hook fuehrt dieselbe Ausnahme.",
+  "permissions_extra": {},
+  "settings_extra": {},
+  "_settings_extra_note": "Ausdrueckliche Abwesenheit, keine Luecke (D-155): Das Agentenprofil fuehrt keine Zusatzschluessel neben permissions, und die Einstellungen des Arbeitsbereichs stehen in einer eigenen Datei (client_settings, Pruefung 96). Beide Felder sind leer, weil es bei dieser Ausgabeform nichts auf zwei Ebenen zu verteilen gibt - Pruefung 54 erreicht sie nicht (D-416).",
+  "hooks_format": "kiro-v1",
+  "_hooks_format_note": "Gemessen am 2026-09-26 in interaktiven Sitzungen: .kiro/hooks/*.json mit {version: v1, hooks: [...]}; Ausloeser je Eintrag (PreToolUse, SessionStart gueltig; 'PromptSubmit' der Dokumentation ist es NICHT, der Client fuehrt 'UserPromptSubmit'); der Matcher ist ein regulaerer Ausdruck ueber den Werkzeugnamen - '*' allein kompiliert nicht; Zeitlimit in Sekunden. Exit 2 sperrt. IM BETRIEB OHNE RUECKFRAGEN LAUFEN KEINE HOOKS - der Client aktiviert sie dort nicht (K5).",
+  "hook_block_form": "stderr-grund",
+  "_hook_block_form_note": "DER SCHWERSTE BEFUND DIESES PACKS (D-417), gemessen am 2026-09-26 in interaktiven Sitzungen an einem Baum ohne Regeltext: Mit der Standardform des Schutz-Hooks - {\"decision\": \"block\"} auf stdout und Exit 2 - endete der Hook mit Exit 2 (von einer Huelle mitgeschrieben), und der Koederinhalt kam heraus. Der Client wertet Exit 2 zwar als Sperre, uebergibt als Grund aber allein stderr, und ein LEERER Grund laesst die Operation laufen. Dieselbe Sperre mit dem Grund auf stderr wurde abgewiesen ('denied'). Dieselbe Bauform wie D-347 bei openai-codex. Pruefung 86 haelt Manifest, Skript und erzeugtes Kommando zusammen.",
+  "hook_tools": {
+    "read": [
+      "read_file",
+      "list_directory"
+    ],
+    "search": [
+      "file_search",
+      "grep_search"
+    ],
+    "exec": [
+      "execute_pwsh",
+      "execute_bash"
+    ],
+    "write": [
+      "fs_write",
+      "str_replace",
+      "fs_append",
+      "delete_file"
+    ]
+  },
+  "_hook_tools_note": "Die Werkzeugnamen der Engine V3, gemessen am 2026-09-26: Die Sitzung hat ihren Werkzeugbestand genannt (read_file, list_directory, file_search, grep_search, fs_write, str_replace, fs_append, delete_file, execute_pwsh, web_fetch, remote_web_search, invoke_sub_agent und weitere), und der Hook hat fuenf davon mit ihrer Eingabe aufgezeichnet. execute_pwsh ist das Ausfuehrungswerkzeug unter Windows; execute_bash steht daneben als das unter Unix - aus dem Programmcode des Clients, NICHT an einer Installation gemessen. Ein zusaetzlicher Name im Matcher ist eine Verschaerfung.",
+  "hook_project_dir_expr": ".",
+  "_hook_project_dir_expr_note": "Der Hook-Prozess steht im Projektverzeichnis - gemessen am 2026-09-26: cwd der Hook-Eingabe und Arbeitsverzeichnis des Prozesses sind die Projektwurzel. Eine Variable mit dem Projektpfad fuehrt die Umgebung nicht; sie fuehrt KIRO_SESSION_ID und Angaben zum Client.",
+  "hook_fail_closed": true,
+  "_hook_fail_closed_note": "Das Eingabeschema von PreToolUse ist am 2026-09-26 an einer realen Installation aufgezeichnet: session_id, hook_event_name, cwd, tool_name, tool_input - fuer alle vier Werkzeugklassen dieses Matchers. Der Schutz-Hook sieht nur dieses Ereignis. Eine unpruefbare Eingabe blockiert deshalb.",
+  "hook_path_fields": [
+    "path",
+    "targetFile"
+  ],
+  "_hook_path_fields_note": "Die Felder von tool_input, die bei diesem Client einen Pfad tragen, gemessen am 2026-09-26 (tests/protocols/2026-09-26-bau-kiro.md): read_file, fs_write, str_replace und fs_append fuehren 'path'; delete_file fuehrt 'targetFile' - aufgefallen erst im Abnahmelauf, als das Modell fuer 'rm README.md' statt der Shell das Loeschwerkzeug waehlte. Ohne das Feld haette der Hook den Pfad nur als Rohtext gegen die Muster gehalten und nicht aufgeloest (D-63). Das Ausfuehrungswerkzeug fuehrt 'command' (tokenisiert, nicht aufgeloest). grep_search fuehrt includePattern als GLOB - es wird bewusst nicht aufgeloest (ein Muster ist kein Pfad, und ein unaufloesbarer Wert blockierte fail-closed jede Suche); sein Rohtext laeuft trotzdem gegen die Secret-Muster.",
+  "skill_frontmatter": {
+    "tools_format": "list",
+    "tool_names": {},
+    "_tool_names_note": "LEER, UND DAS IST DIE AUSSAGE: Kein Verb ist abgebildet, alle fuenf stehen in tool_names_unmapped. Der Hersteller dokumentiert fuer SKILL.md die Felder name, description, license, compatibility und metadata - kein Werkzeugfeld.",
+    "tool_names_unmapped": [
+      "read",
+      "grep",
+      "glob",
+      "edit",
+      "exec"
+    ],
+    "_tool_names_unmapped_note": "Gemessen am 2026-09-26 (tests/protocols/2026-09-26-bau-kiro.md, K18): Ein Skill mit den Feldern allowed-tools und triggers des Frameworks wird geladen und aufgezaehlt; die Felder bleiben wirkungslos stehen. Was einen Skill begrenzt, ist die globale Schicht - das Agentenprofil und der Schutz-Hook. Zeile S3 sagt, was das wert ist.",
+    "drop_fields": [],
+    "_drop_fields_note": "LEER, UND DAS IST DIE ENTSCHEIDUNG (Bauform wie openai-codex). Die zusagentragenden Felder permissions und triggers erreichen die installierte Fassung unveraendert; der Client nimmt sie an und wertet sie nicht aus."
+  },
+  "shared_core": [
+    {
+      "src": "framework/runtime/root-instruction.md",
+      "dst": "<ROOT_INSTRUCTION_FILE>"
+    },
+    {
+      "src": "framework/runtime/rules/00-framework-core.md",
+      "dst": "<RULES_DIR>/00-framework-core.md"
+    },
+    {
+      "src": "framework/runtime/rules/10-privacy-security.md",
+      "dst": "<RULES_DIR>/10-privacy-security.md"
+    },
+    {
+      "src": "framework/runtime/rules/15-development-rules.md",
+      "dst": "<RULES_DIR>/15-development-rules.md"
+    },
+    {
+      "src": "framework/runtime/rules/16-plan-spezifikation.md",
+      "dst": "<RULES_DIR>/16-plan-spezifikation.md"
+    },
+    {
+      "src": "framework/runtime/agents/fw-reviewer.md",
+      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+    },
+    {
+      "src": "templates/rules/21-overlay-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/21-overlay-TEMPLATE.md.template"
+    },
+    {
+      "src": "templates/rules/40-tech-TEMPLATE.md.template",
+      "dst": "<RULES_DIR>/40-tech-TEMPLATE.md.template"
+    },
+    {
+      "src": "framework/runtime/hooks.json",
+      "dst": "<HOOKS_FILE>"
+    }
+  ],
+  "_shared_core_note": "16-plan-spezifikation.md liefert NUR dieses Pack aus: Es ist die Regel zu Weg B (D-415) - die Spezifikationen des Clients sind der Traeger des Plans, und die Regel gibt ihnen die Vorgaben der Planvorlage und von role-re-ticket mit. Keine Beispieldatei zur nutzerlokalen Wurzel-Anweisung (kein Mechanismus) und keine zur MCP-Konfiguration.",
+  "shared_seed": [
+    {
+      "src": "framework/runtime/permissions.json",
+      "dst": "<PERMISSIONS_FILE>"
+    },
+    {
+      "src": "framework/runtime/client-settings.json",
+      "dst": ".kiro/settings/cli.json"
+    },
+    {
+      "src": "framework/runtime/rules/20-project-overlay.md",
+      "dst": "<RULES_DIR>/20-project-overlay.md"
+    },
+    {
+      "src": "templates/project-overlay",
+      "dst": ".koolie/project-overlay"
+    }
+  ],
+  "rule_frontmatter": "yaml",
+  "rule_triggers": {
+    "condition_field": "fileMatchPattern",
+    "condition_format": "list",
+    "allowed_fields": [
+      "inclusion",
+      "fileMatchPattern"
+    ],
+    "map": {
+      "always_on": {
+        "condition": null
+      },
+      "model_decision": {
+        "condition": null,
+        "hint": "Wird bei jedem Sitzungsstart geladen. Dieser Client kennt einen Lademodus nach Beschreibung (auto); das Pack nutzt ihn nicht, weil seine Wirkung nicht gemessen ist - gegenüber `model_decision` ist unbedingtes Laden eine Verschärfung, keine Lockerung."
+      },
+      "glob": {
+        "condition": "fileMatchPattern",
+        "from": "globs",
+        "fixed": {
+          "inclusion": "fileMatch"
+        }
+      }
+    }
+  },
+  "_rule_triggers_note": "Gemessen am 2026-09-26: Eine Datei unter .kiro/steering/ ohne Frontmatter oder mit inclusion: always steht in jeder Sitzung im Kontext (steering_inclusion), auch beim eigenen Agenten; eine Datei mit inclusion: fileMatch nicht. model_decision bildet auf unbedingtes Laden ab wie beim Pack claude-code; der Lademodus auto des Clients waere die genauere Entsprechung, ist aber ungemessen - und eine Regel, die nicht laedt, waere ein Verlust.",
+  "root_instruction_imports": [],
+  "agent_frontmatter": {
+    "tools_field": "tools",
+    "tools_format": "list",
+    "tool_names": {
+      "read": [
+        "read"
+      ],
+      "grep": [
+        "read"
+      ],
+      "glob": [
+        "read"
+      ],
+      "edit": [
+        "write"
+      ],
+      "exec": [
+        "shell"
+      ]
+    },
+    "tool_names_namespace": "eigen",
+    "_tool_names_note": "Das Agentenprofil im Markdown-Format fuehrt im Feld tools KATEGORIEN, keine Werkzeugnamen (Herstellerdokumentation, Konfigurationsreferenz: read = Lesen, Verzeichnisse, Suchen; write = Schreiben, Aendern, Loeschen; shell = Ausfuehren). Das ist ein eigener Namensraum neben den Laufzeitnamen in hook_tools. Die Wirkung auf einen Unteragenten ist Gegenstand von Zeile A1."
+  },
+  "agent_start_tools": [
+    "invoke_sub_agent"
+  ],
+  "_agent_start_tools_note": "Gemessen am 2026-09-26: Die Sitzung nennt invoke_sub_agent in ihrem Werkzeugbestand. Unteragenten erben laut Hersteller die Regeln der Sitzung, und das strengere Ergebnis gewinnt.",
+  "_import_control_note": "Kein Feld import_control, und das ist eine Aussage: Der Hersteller dokumentiert keinen Import fremder Werkzeugformate ausser AGENTS.md, und dieses Format ist hier die Wurzel-Anweisung selbst. Ein Schalter ist nicht erhoben.",
+  "import_channels_intro": "Der Client laedt neben dem Projekt eigene Ablagen im Benutzerprofil,",
+  "import_channels_report": [
+    {
+      "path": "~/.kiro/steering",
+      "scope": "user",
+      "when": "entries",
+      "what": "globale Steering-Dateien - laden in JEDER Sitzung neben denen des Projekts"
+    },
+    {
+      "path": "~/.kiro/skills",
+      "scope": "user",
+      "when": "entries",
+      "what": "globale Skills - stehen in jeder Sitzung zur Verfuegung"
+    },
+    {
+      "path": "~/.kiro/agents",
+      "scope": "user",
+      "when": "entries",
+      "what": "globale Agentenprofile - waehlbar mit --agent"
+    },
+    {
+      "path": "~/.kiro/settings/permissions.yaml",
+      "scope": "user",
+      "when": "exists",
+      "what": "Berechtigungen des Arbeitsplatzes - ein deny dort gilt zusaetzlich, ein allow dort erweitert NICHT ueber ein deny des Profils hinaus"
+    },
+    {
+      "path": "~/.kiro/settings/mcp.json",
+      "scope": "user",
+      "when": "exists",
+      "what": "MCP-Server des Arbeitsplatzes - stehen dem Agenten zur Verfuegung"
+    }
+  ],
+  "_import_channels_report_note": "Auskunft, keine Schranke (Bauform von D-411): install.py nennt nach Installation und Hebung, welche Quellen im Benutzerprofil belegt sind. Welche Wirkung jede hat, steht in Abschnitt 7 des Packs."
+}

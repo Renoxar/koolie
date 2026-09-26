@@ -35,7 +35,7 @@ Der Kern nennt die Bestandteile der Laufzeitschicht mit Begriffen, nicht mit Pfa
 
 Die Quellen belegen die als `[DOK]` gekennzeichneten Aussagen; der Framework Owner hält diese Liste im Rahmen der Produktbeobachtung aktuell (FW-AK-01).
 
-Sie ist **je Client Pack** geführt, weil eine Aussage über einen Client an dessen Dokumentation hängt und an keiner anderen und weil die Listen verschiedene Recherchestände haben. Die Kennungen tragen das Präfix des Packs (`QD-` für `devin-desktop`, `QC-` für `claude-code`), damit sie nicht mit den Qualitätsregeln des Frameworks (`Q1`, `Q8` …) verwechselt werden. Das dritte Pack, `openai-codex`, führt keine `[DOK]`-Zeile – seine Belegspalte nennt Messungen – und hat deshalb keine Liste in diesem Anhang; `FW-AK-01` ist für dieses Pack noch nicht gefahren (Kopf des Packs, Zeile „Stand der Produktbeobachtung").
+Sie ist **je Client Pack** geführt, weil eine Aussage über einen Client an dessen Dokumentation hängt und an keiner anderen und weil die Listen verschiedene Recherchestände haben. Die Kennungen tragen das Präfix des Packs (`QD-` für `devin-desktop`, `QC-` für `claude-code`, `QK-` für `kiro`), damit sie nicht mit den Qualitätsregeln des Frameworks (`Q1`, `Q8` …) verwechselt werden. Das dritte Pack, `openai-codex`, führt keine `[DOK]`-Zeile – seine Belegspalte nennt Messungen – und hat deshalb keine Liste in diesem Anhang; `FW-AK-01` ist für dieses Pack noch nicht gefahren (Kopf des Packs, Zeile „Stand der Produktbeobachtung").
 
 Die **maßgebliche Zuordnung** steht in der Fähigkeitsmatrix des jeweiligen Packs (Kap. 15.1 beziehungsweise Kap. 7a): Dort nennt der Belegkopf jeder mit `[DOK]` belegten Zeile die Quellenkennung dieser Liste, Verweisbelege (*„wie B3"*) aufgelöst; Prüfung 73 setzt das durch (D-263 bis D-266). Die Kennung ist die verbindliche Form, weil allein sie gegen diese Liste gehalten werden kann; ein Seitenpfad darf danebenstehen. Nachgetragene Zuordnungen tragen den Zusatz `(Zuordnung K-62)`: gewonnen aus dem Bestand am 22.09.2026, nicht aus einem zweiten Abruf – der Recherchestand der Seiten bleibt der vom 18.09.2026 (D-263). Diese Liste sagt, welche Seite wofür herangezogen wurde und **wann sie abgerufen worden ist** – die Angabe, die eine Wiederholungsprüfung braucht.
 
@@ -90,6 +90,24 @@ Beide Teile sind am 18.09.2026 gegen eine benannte Produktversion und einen gesi
 
 Zwei Regeln gelten für diese Liste: Eine Quelle ohne Abrufdatum ist kein Beleg, sondern eine Behauptung mit Fußnote – Produktdokumentation ändert sich, und ohne Datum lässt sich nicht sagen, ob eine Aussage noch trägt (dieselbe Überlegung wie D-25 für Versionsangaben). Und ein Abrufdatum nützt nichts, wenn nicht dabeisteht, *welche Zusage* die Seite trägt: Ohne Zuordnung je Zeile ist jede Wiederholungsprüfung so teuer wie die erste, weil jede Seite neu gelesen werden muss (D-156, Prüfung 73).
 
+
+### 31.4.4 Client Pack `kiro`
+
+Recherchestand: 26.09.2026, gegen Kiro CLI 2.24.1 (Engine V3) und Kiro IDE 1.1.70 (`CR-2026-150`, `.koolie/core/tests/protocols/2026-09-26-bau-kiro.md`). Anders als bei den beiden älteren Packs ist die Liste **nicht die Grundlage der meisten Zeilen**: Die Zeilen, die die Kommandozeile betreffen, sind am Client gemessen; die Liste belegt, was nur die IDE betrifft oder nicht gemessen ist. Abgerufen jeweils in der Markdown-Fassung der Seite (`<Seite>.md`).
+
+⚠️ **Die Dokumentation widerspricht sich an vier Stellen, und zwei davon hat die Messung entschieden:** Der Auslöser heißt `UserPromptSubmit`, nicht `PromptSubmit` (QK-3), und der Matcher eines Hooks ist ein regulärer Ausdruck, in dem `*` allein nicht kompiliert (QK-3). **Und eine Aussage ist durch Messung widerlegt:** Laut QK-3 sperrt ein Kommando-Hook mit Exit-Code 2; gemessen sperrt er **nur mit einem Grund auf stderr** (D-417).
+
+| Nr. | Quelle | Belegt im Framework insbesondere |
+|---|---|---|
+| QK-1 | kiro.dev/docs/permissions | Fähigkeitsregeln `{capability, match, exclude, effect}`, `deny` vor `ask` vor `allow` ohne Vorrang zwischen den Ebenen; die Datei des Arbeitsbereichs liegt **außerhalb** des Repositoriums (`~/.kiro/workspace-roots/<hash>/`); feste Regeln des Clients (Schreibverbot auf `.kiro/settings/`, Rückfrage für `.kiro/agents/**` und `.kiro/hooks/**`); im Betrieb ohne Rückfragen wird jede Rückfrage zur Abweisung; Einstellung `kiroAgent.agentAutonomy` der IDE |
+| QK-2 | kiro.dev/docs/steering | Ablage `.kiro/steering/*.md`, Lademodi `always`, `fileMatch` mit `fileMatchPattern`, `manual`, `auto`; globales Steering unter `~/.kiro/steering/`; `AGENTS.md` im Arbeitsbereich und in Unterverzeichnissen |
+| QK-3 | kiro.dev/docs/hooks, kiro.dev/docs/hooks/types, kiro.dev/docs/hooks/actions | Hook-Dateien `.kiro/hooks/*.json` mit `version: v1`; Auslöser je Oberfläche (Datei-Auslöser nur in der IDE); sperrende Auslöser; Exit-Code-Verhalten je Oberfläche |
+| QK-4 | kiro.dev/docs/skills | `SKILL.md` im offenen Format, Ablagen `.kiro/skills/` und `~/.kiro/skills/`, Felder `name`, `description`, `license`, `compatibility`, `metadata` |
+| QK-5 | kiro.dev/docs/specs | Spezifikationen unter `.kiro/specs/<name>/` (`requirements.md`, `design.md`, `tasks.md`), Freigabepunkte je Phase |
+| QK-6 | kiro.dev/docs/custom-agents/configuration-reference | Agentenprofil: Felder `tools`, `allowedTools`, `permissions`, `resources`, `hooks` (nur Kommandozeile), Markdown-Form mit Frontmatter; Unteragenten erben die Regeln der Sitzung |
+| QK-7 | kiro.dev/docs/mcp/configuration | `.kiro/settings/mcp.json` und `~/.kiro/settings/mcp.json`, `autoApprove`, `disabledTools` |
+| QK-8 | kiro.dev/docs/privacy-and-security/data-protection | Speicherung und Nutzung der Inhalte je Tarif, Abschaltung der Weitergabe, Verarbeitung in der Region |
+| QK-9 | kiro.dev/docs/kiroignore | `.kiroignore` – in der IDE für alle Werkzeuge, in der Kommandozeile nur für Suchergebnisse |
 
 ## 31.5 Konsolidierter Verifikationsbedarf
 
