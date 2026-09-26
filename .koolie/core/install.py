@@ -855,6 +855,42 @@ def belegte_importkanaele(root: str, man: dict) -> list[tuple[str, str]]:
     return belegt
 
 
+def fehlende_zusatzschluessel(root: str, man: dict) -> list[tuple[str, str, object]]:
+    """Deklarierte Zusatzschluessel, die in der vorhandenen Berechtigungsdatei fehlen
+    oder einen anderen Wert tragen - als (Feld, Schluessel, deklarierter Wert).
+
+    ANLASS, UND ER IST ZWEIMAL EINGETRETEN (D-154, D-434). --update fasst die
+    Berechtigungsdatei nie an, weil sie Projektwerte traegt. Ein Schluessel, den ein
+    Release in settings_extra oder permissions_extra neu deklariert, erreicht deshalb
+    jede Erstinstallation und kein bestehendes Projekt - so bei autoMemoryEnabled
+    (1.0-Reihe, D-154) und bei attribution (1.14.2, D-433). Beide Male stand der
+    Nachtrag nur im Migrationshinweis.
+
+    DIES IST EINE AUSKUNFT UND KEINE SCHRANKE: Das Werkzeug schreibt nichts. Eine
+    Abweichung kann gewollt sein; ihr Ort ist dann die nutzerlokale Datei des Clients,
+    und das entscheidet der Mensch. Pruefung 54 misst dieselbe Deklaration an der
+    ERZEUGTEN Datei, nicht an der eines Projekts.
+    """
+    if clientmap.permissions_format(man) != "json":
+        return []
+    pfad = os.path.join(root, *man.get("permissions_file", "").split("/"))
+    try:
+        cfg = json.loads(open(pfad, encoding="utf-8").read())
+    except (OSError, ValueError):
+        return []  # fehlt oder kaputt: das melden der Validator und Pruefung 3
+    if not isinstance(cfg, dict):
+        return []
+    abweichend: list[tuple[str, str, object]] = []
+    for feld in ("settings_extra", "permissions_extra"):
+        ebene = cfg if feld == "settings_extra" else cfg.get("permissions", {})
+        if not isinstance(ebene, dict):
+            ebene = {}
+        for schluessel, wert in (man.get(feld) or {}).items():
+            if ebene.get(schluessel, object()) != wert:
+                abweichend.append((feld, schluessel, wert))
+    return abweichend
+
+
 def traegt_quellrepo_kennzeichen(root: str) -> bool:
     """Liegt im Ziel das Kennzeichen des Framework-Repositoriums?
 
@@ -2052,6 +2088,18 @@ def main() -> int:
             print()
             print("Fuer dieses Client Pack ausserdem:")
             nachschritte(man["post_update_steps"], 1)
+        fehlend = fehlende_zusatzschluessel(root, man)
+        if fehlend:
+            print()
+            print(f"HINWEIS ({len(fehlend)}): Das Client Pack deklariert Schluessel, die in "
+                  f"{man['permissions_file']}")
+            print("fehlen oder einen anderen Wert tragen. Ein Update schreibt sie nicht nach:")
+            for feld, schluessel, wert in fehlend:
+                ort = "oberste Ebene" if feld == "settings_extra" else "innerhalb von permissions"
+                print(f"  {schluessel} ({ort}): {json.dumps(wert, ensure_ascii=False)}")
+            print("Von Hand nachtragen, wie im Migrationshinweis des Releases beschrieben -")
+            print("oder die Abweichung in der nutzerlokalen Datei des Clients ausweisen.")
+            print("Dies ist eine Auskunft und keine Schranke (D-434).")
 
     ignoriert = ignorierte_kerndateien(root)
     if ignoriert:

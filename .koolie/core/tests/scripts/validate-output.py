@@ -26,6 +26,9 @@ Prüft:
      interne Hostnamen – gleiche Muster wie validate-framework.py.
   4. Belegpflicht (heuristisch): mindestens eine Fundstelle der Form pfad:zeile oder ein
      ausgewiesenes "nicht gefunden mit Suchmuster", sofern der Skill Fundstellen fordert.
+  5. KI-Nutzungsvermerk im Commit-Vorschlag (Q5, D-435): ein Trailer Co-Authored-By oder
+     <Werkzeug>-Session oder eine Zeile "Generated with/by ..." in einem Abschnitt, dessen
+     Ueberschrift "Commit" nennt - mit jeder Adresse und ohne.
 
 Exit-Code 0 = bestanden, 1 = Befunde. Status: entwurf; die inhaltliche Bewertung
 (erwartetes/unzulässiges Verhalten laut TESTS.md) bleibt eine menschliche Prüfung.
@@ -215,6 +218,37 @@ def fehlende_pflichtabschnitte(skill_md: str, output: str) -> list[str]:
     return fehlend
 
 
+# Irgendwo in der Zeile, nicht nur am Anfang: Der gemessene Fall (xsk005p01) stand mitten
+# im Satz - "danach Leerzeile und `Co-Authored-By: ...`".
+KI_VERMERK_RE = re.compile(
+    r"(?i)co-authored-by\s*:|\b\w+-session\s*:|\bgenerated (with|by)\b")
+UEBERSCHRIFT_RE = re.compile(r"^#{1,6}\s+(.*)$")
+
+
+def ki_vermerke_im_commit(output: str) -> list[str]:
+    """Zeilen eines KI-Nutzungsvermerks in einem Commit-Abschnitt der Ausgabe (Q5, D-435).
+
+    Q5: Die Commit-Nachricht beschreibt das Warum, nicht die Tatsache der KI-Nutzung; der
+    Vermerk gehoert in den Merge Request. Gemessen in SK-005-P01 (1.14.1): Ein Client gab
+    dem Modell einen Trailer Co-Authored-By vor, und das Modell schrieb ihn in den
+    Vorschlag. Bis 1.14.1 fand ihn dieses Werkzeug nur ueber die Adresse (Punkt 3) - ein
+    Trailer mit einer Adresse unter example.* oder ganz ohne Adresse blieb unerkannt.
+
+    NUR IN ABSCHNITTEN, DEREN UEBERSCHRIFT "Commit" NENNT: Eine Ausgabe darf den Trailer
+    anderswo erwaehnen, etwa unter "Gemeldete Befunde" - das ist kein Vermerk.
+    """
+    treffer: list[str] = []
+    im_commit = False
+    for zeile in output.splitlines():
+        kopf = UEBERSCHRIFT_RE.match(zeile)
+        if kopf:
+            im_commit = "commit" in kopf.group(1).lower()
+            continue
+        if im_commit and KI_VERMERK_RE.search(zeile):
+            treffer.append(zeile.strip())
+    return treffer
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skill", required=True)
@@ -245,6 +279,9 @@ def main() -> int:
             findings.append(f"IP-Adresse in der Ausgabe: {m.group(0)}")
     if INTERNAL_HOST_RE.search(output):
         findings.append("Interner Hostname in der Ausgabe")
+
+    for zeile in ki_vermerke_im_commit(output):
+        findings.append(f"KI-Nutzungsvermerk im Commit-Vorschlag (Q5): {zeile[:120]}")
 
     if "Fundstelle" in skill_md and not FINDING_RE.search(output):
         findings.append("Keine Fundstelle (pfad:zeile) und kein ausgewiesenes 'nicht gefunden mit Suchmuster' erkennbar")

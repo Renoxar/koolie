@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.24.4 |
+| Version | 0.24.5 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Claude Code |
@@ -307,6 +307,41 @@ für diesen Schlüssel die versionierte Projektdatei ausdrücklich aus – *„a
 Kanal keinen Ort, an dem seine Entscheidung ankommt**; es bleibt beim Benennen in
 `X1` und `S5` (`K-63`).
 
+### 8b. Die Attributionsvorgabe des Clients für Commits – abgeschaltet
+
+**Gefunden im Nachlauf von `1.14.1`** (`K-171`). Der Client gibt dem
+Modell von sich aus eine Vorgabe für Commits mit: einen Trailer `Co-Authored-By` mit
+einer Adresse des Herstellers, in Cloud- und Remote-Control-Sitzungen zusätzlich einen
+Trailer `Claude-Session` (`QC-7`). Das Modell übernahm sie in den Commit-Vorschlag des
+Skills `fw-change-small`, obwohl der Skill Q5 nennt – nicht in jedem Lauf. Q5 verlangt
+eine Nachricht, die das Warum beschreibt; der Vermerk der KI-Nutzung gehört in den
+Merge Request.
+
+**Das Framework schaltet sie ab.** Die erzeugte Berechtigungsdatei trägt auf ihrer
+obersten Ebene `"attribution": {"commit": "", "sessionUrl": false}` (D-433, deklariert
+im Manifest unter `settings_extra`, geprüft von Prüfung 54). `pr` bleibt unberührt: Die
+Zeile in der Beschreibung eines Merge Requests ist ein Vermerk an der Stelle, die Q5
+dafür vorsieht.
+
+🔴 **Die Objektform ist Absicht, nicht Umständlichkeit.** Die Kurzform
+`"attribution": false` kennt der Client erst ab 2.1.281, und ältere Stände **verwerfen
+die ganze Einstellungsdatei**, die sie enthält (`QC-7`) – mit allen Berechtigungen und
+Hooks. Die Zielspanne dieses Packs ist `2.1.x`.
+
+**Beobachtbar ohne Modellurteil:** Das Sitzungstranskript trägt eine Anlage vom Typ
+`remote_session_change` mit dem Feld `commit` – der Text, den der Client dem Modell als
+Attribution vorgibt. In allen 51 Läufen von `1.14.1` stand dort der Trailer; mit der
+Einstellung steht dort die leere Zeichenkette (D-433, gemessen im Nachlauf von
+`1.14.2`).
+
+**Es ist ein Standard, keine Schranke** – wie in 8a: `.claude/settings.local.json` und
+verwaltete Einstellungen haben Vorrang. Die Einstellung ist eine Anweisung an das
+Modell, keine Nachbearbeitung von `git commit`.
+
+**Reichweite:** wie in 8a – jede Erstinstallation, kein bestehendes Projekt. Seit
+`1.14.2` meldet `install.py --update` einen deklarierten Zusatzschlüssel, der in der
+vorhandenen Einstellungsdatei fehlt (D-434); nachtragen muss ihn weiter der Mensch.
+
 ## 9. Änderungsverlauf
 
 | Version | Datum | Änderung | Autor (Rolle) |
@@ -316,6 +351,7 @@ Kanal keinen Ort, an dem seine Entscheidung ankommt**; es bleibt beim Benennen i
 | 0.24.0 | 2026-09-22 | 🟢 **Die Markerform ist abgeschafft; die Vorbemerkung nennt `BELEG OFFEN`** (`CR-2026-121`, D-291). 🔴 **Und der Belegstand dieses Packs war seit `0.62.0` falsch** (D-297): Er sagte *„Eine Zeile trägt einen VERIFY-Marker – R5"*, während **der Änderungsverlauf desselben Packs** die Auflösung dieses Markers seit Pack-Version `0.21.0` führt (D-158) und **keine Fundstelle die Form trug** – *die Zusage, deren Widerlegung im eigenen Dokument steht.* **Richtig ist: keine.** Zwei weitere Zahlen desselben Absatzes waren überholt: *„9 von 36"* für das Schwesterpack (richtig: 1) und der Satz, dort sei *„keine einzige Einstufung gegen eine Installation geprüft"* – seit `0.53.0` überholt, seit `0.86.0` grob falsch | `<FRAMEWORK_OWNER>` |
 | 0.24.3 | 2026-09-25 | Zeile M4 (Planungsmodus) ergänzt, auf die `fw-plan` und `fw-bugfix-prepare` für die Planablage verweisen: `[TEXTUELL]`, `BELEG OFFEN`; Summen und Belegstand nachgezogen (`CR-2026-147`, D-402, K-149) | `<FRAMEWORK_OWNER>` |
 | 0.24.4 | 2026-09-26 | Vorbemerkung des B-Blocks: **die Startort-Bedingung**, gemessen mit Clientversion 2.1.283 – im Unterverzeichnis mit eigenem Repositorium lädt die Wurzel-Anweisung, Berechtigungen und Hooks nicht; eine eigene Installation dort trägt (`CR-2026-148`, D-408) | `<FRAMEWORK_OWNER>` |
+| 0.24.5 | 2026-09-26 | Abschnitt 8b: **die Attributionsvorgabe des Clients für Commits abgeschaltet** – `attribution` in Objektform auf der obersten Ebene der Einstellungsdatei, weil die Kurzform `false` ältere Stände der Zielspanne die ganze Datei verwerfen lässt; Quelle `QC-7` (`CR-2026-153`, D-433, K-171) | `<FRAMEWORK_OWNER>` |
 | 0.14.0 | 2026-09-13 | **S3 ist zurückgewonnen – von `[NICHT ABBILDBAR]` auf `[TECHNISCH]` mit drei benannten Grenzen** (`CR-2026-057`, D-64 bis D-66). `disallowed-tools` ist **gemessen** eine echte Werkzeugsperre je Skill und schlägt sogar eine ausdrückliche `allow`-Regel; `permissions.deny` der Quelle wird darauf abgebildet, die Werkzeugnamen kommen aus `hook_tools`. Die drei Grenzen – Turnbereich, Aufzählung, keine Argumentmuster – stehen in der Zeile, im Arbeitsmodell und in der Grenzfalltabelle. **Ein Argumentmuster wirkt lautlos gar nicht**; Prüfung 33 weist es ab | `<FRAMEWORK_OWNER>` |
 | 0.15.0 | 2026-09-13 | **Der Unteragent ist erhoben – drei Zeilen bekommen Belege, und zwei davon standen acht Releases auf reiner Dokumentation (`CR-2026-058`, D-67 bis D-70).** **A1** ist gemessen: Ein Profil mit `tools: Read, Grep, Glob` hatte kein Schreibwerkzeug, und `permission_denials` blieb leer – es ist eine **Entfernung aus dem Werkzeugvorrat**, keine Verweigerung. Der Teilsatz zum Startabbruch bleibt ausdrücklich `[DOK]`. **S3** trägt jetzt seine **Reichweite**: Die Sperre gilt auch für einen Unteragenten, den der Skill startet – gemessen mit Kontrolllauf –, und Grenze 2 reicht mit: Mit gesperrtem `Write, Edit` schrieb der Unteragent über `Bash`. **H2** trägt die Reichweite des Hooks: Er erfasst und **blockiert** die Aufrufe eines Unteragenten, auch mit dem benannten Matcher, den `clientmap.py` erzeugt. Neu im Manifest: `agent_start_tools` – das Startwerkzeug stand in keiner Werkzeugliste, obwohl beide Schreibweisen (`Agent`, `Task`) in der Sperre wirken. **Zwei überholte Angaben im Belegstand berichtigt** (`CR-2026-058`, Befund 6) | `<FRAMEWORK_OWNER>` |
 | 0.16.0 | 2026-09-13 | **Die drei Lücken aus 0.36.0 sind geschlossen (`CR-2026-059`, D-72 und D-73).** **S3:** Die Sperre gilt auch für einen Unteragenten mit `run_in_background: true` und reicht **mindestens zwei Ebenen tief**; **bei Widerspruch gewinnt die restriktivere Liste** – ein Profil, das `Write` ausdrücklich nennt, bekam es unter einem sperrenden Skill nicht. Dazu eine **Beobachtung zum Wortlaut des Clients**, der seine eigene Reichweite überzeichnet („for this session", gemessen ist der Turn). **A1:** Ein Profil mit `tools`-Liste hat **kein Startwerkzeug** und kann sich nicht über eine zweite Ebene erweitern – ohne diesen Befund wäre die Zusage „rein lesend" aushebelbar; **Prüfung 35** hält fest, dass das so bleibt | `<FRAMEWORK_OWNER>` |

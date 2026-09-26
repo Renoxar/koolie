@@ -2,6 +2,46 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.14.2] - 2026-09-26
+
+**Die Attributionszeile im Commit-Vorschlag - und die Kurzform, die die ganze Einstellungsdatei verwirft**
+(`CR-2026-153` E1 bis E9, **D-433** bis **D-436**; `K-171` beantwortet, `K-173` und `K-174` neu). Ein PATCH-Release
+mit Nachlauf: 5 Sitzungslaeufe mit Claude Code 2.1.283 (Opus 5.5), 3,28 USD nach Listenpreis.
+
+> 🟢 **KRITERIUM 2 VON D-11 STEHT AUF 0** (D-433). `SK-005-P01` traegt in zwei unabhaengigen Ketten; in allen fuenf
+> Transkripten ist die Attributionsvorgabe des Clients leer, in allen 51 Laeufen von `1.14.1` stand dort der Trailer.
+
+> 🔴 **DIE KURZFORM `attribution: false` VERWIRFT IN AELTEREN CLIENTSTAENDEN DIE GANZE EINSTELLUNGSDATEI** - mit
+> Berechtigungen und Hooks (Herstellerreferenz, `QC-7`; erst ab 2.1.281 bekannt). Das Pack setzt deshalb die
+> Objektform. Wer die Einstellung von Hand setzt, nimmt dieselbe.
+
+**Geaendert**
+
+- Client Pack `claude-code` (`0.24.5`): `settings_extra` traegt `"attribution": {"commit": "", "sessionUrl": false}`
+  auf der obersten Ebene der Einstellungsdatei - ein Standard, keine Schranke; `pr` bleibt unberuehrt, weil Q5 den
+  Vermerk im Merge Request vorsieht. Abschnitt 8b begruendet es; Quelle `QC-7` im Anhang (D-433).
+- `install.py --update` meldet jeden deklarierten Zusatzschluessel (`settings_extra`, `permissions_extra`), der in
+  der vorhandenen Berechtigungsdatei fehlt oder abweicht - ohne zu schreiben; Sonden `D433`, `D434`, Gegenprobe
+  `D434a` (D-434).
+- `validate-output.py` Punkt 5: ein KI-Nutzungsvermerk im Commit-Abschnitt einer Ausgabe ist ein Befund (Q5), mit
+  jeder Adresse und ohne; Selbstproben Q1 bis Q5 (D-435).
+- `fw-change-small/TESTS.md`: `SK-005-P01` bestanden.
+- Roadmap (`0.4.7`): `1.18.0` Messapparat und Pruefwerkzeuge - gezielter, guenstiger, wartbar (D-436, `K-174`), nach
+  `1.17.0`.
+
+**Migrationshinweise fuer Overlays**
+
+- 🔴 **Projekte mit dem Client Pack `claude-code` tragen den Schluessel von Hand nach** - `install.py --update` fasst
+  `.claude/settings.json` nicht an und meldet jetzt, dass er fehlt. Auf die **oberste** Ebene, in Objektform:
+  `"attribution": {"commit": "", "sessionUrl": false}`. Ein Projekt, das die Zeile will, setzt sie in
+  `.claude/settings.local.json` und weist die Abweichung aus. Die uebrigen Packs sind nicht betroffen.
+
+**Bekannte Einschraenkungen**
+
+- Ob `openai-codex`, `devin-desktop` und `kiro` einen KI-Vermerk vorgeben, ist nicht erhoben (`K-173`). Die Formregel
+  D-432 gilt fuer alle Skills und ist nur an zwei gemessen; die Arbeit auf `main` ist uneinheitlich (`K-172`). Die
+  Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.14.1] - 2026-09-26
 
 **Die Testblaetter nach dem Modellwechsel - und die Ueberschriften, die auch als Bezeichnung umgeschrieben werden**
