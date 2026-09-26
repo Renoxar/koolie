@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-003` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -31,7 +31,7 @@ Die Vorlage erarbeitet vor jeder Modifikation einen umsetzbaren, prüfbaren Änd
 
 | Parameter | Pflicht | Kontextklasse | Beschreibung |
 |---|---|---|---|
-| `{aufgabenbeschreibung}` | MUSS | K2 (bereinigt) | Ziel, Akzeptanzkriterien, Nicht-Ziele; Ticketreferenz nur als Kennung aus `<ISSUE_TRACKER>` |
+| `{aufgabenbeschreibung}` | MUSS | K2 (bereinigt und freigegeben, `02-privacy.md` Abschnitt 4) | Ziel, Akzeptanzkriterien, Nicht-Ziele; Ticketreferenz nur als Kennung aus `<ISSUE_TRACKER>` |
 | `{kontrollstufe}` | MUSS | K1 | niedrig, mittel oder hoch – durch den Menschen festgelegt; ohne Angabe kein Plan |
 | `{faktor}` | MUSS | K1 | Auslösender Risikofaktor R1–R13 |
 | `{analyse_referenz}` | SOLL | K1 | Referenz auf die Impact-Analyse in der Sitzung; fehlt sie, MUSS die verkürzte Analyse ausdrücklich angewiesen und im Plan als Annahme vermerkt werden |
@@ -88,7 +88,7 @@ Regeln:
 - [ ] Jeder Schritt liegt in `<ALLOWED_PATHS>`, ist einzeln rücknehmbar und hat eine Prüfung; kein Schritt hängt von einer unbeantworteten Frage ab.
 - [ ] Teststrategie nennt nur freigegebene Befehle und prüft fachliches Verhalten; keine Abschwächung bestehender Tests (Q2).
 - [ ] Bestätigung oder Freigabe gemäß Stufe erteilt und in Plan-Abschnitt 10 dokumentiert (Rolle, Datum, Referenz – keine Personennamen); bei Stufe hoch `<APPROVAL_ROLE>`, bei R3, R4 oder R10 zusätzlich `<SECURITY_CONTACT>` oder `<DATA_PROTECTION_CONTACT>`.
-- [ ] Plan in Ticket, Merge Request oder Projektablage übernommen (`<TBD: Ablage von Plänen im Projekt>`); Plan-Datei aus `~/<RUNTIME_DIR>/plans/` nicht in das Repository committet.
+- [ ] Plan in Ticket, Merge Request oder Projektablage übernommen (`<TBD: Ablage von Plänen im Projekt>`); Plan-Datei aus der Planablage des Clients (Fähigkeitsmatrix des Client Packs, Zeile M4) nicht in das Repository committet.
 - [ ] Vor dem ersten Umsetzungsschritt `.koolie/core/checklists/03-before-code-change.md` abgearbeitet; jede Planänderung nach Bestätigung erneut bestätigt.
 
 ## 8. Typische Fehlanwendungen
@@ -98,5 +98,5 @@ Regeln:
 | Planung ohne festgelegte Kontrollstufe anfordern | Optionspflicht und Freigabeerfordernis unbestimmt; der KI-Client müsste die Stufe setzen (P1) | Stufe im Preflight festlegen (`.koolie/core/checklists/01-preflight.md`), dann planen |
 | „Plane und setze gleich um" in einer Nachricht | Freigabepunkt (Schritt 9) entfällt; Modusvermischung M2/M3 | Plan bestätigen, Umsetzung in neuer Sitzung mit FW-PR-004 |
 | Plan mit KI-Empfehlung als „entschieden" weitergeben | Architektur- oder Technologieentscheidung durch das Werkzeug (V3) | Option selbst wählen, Entscheidung mit `<ARCHITECT_ROLE>` abstimmen und dokumentieren |
-| Plan-Datei aus `~/<RUNTIME_DIR>/plans/` in das Repository committen | Ebene E gelangt in Ebene C; Nachvollziehbarkeit ohne Freigabe | Plan in Ticket oder Merge Request übernehmen (`<TBD: Ablage von Plänen im Projekt>`) |
+| Plan-Datei aus der Planablage des Clients (Fähigkeitsmatrix des Client Packs, Zeile M4) in das Repository committen | Ebene E gelangt in Ebene C; Nachvollziehbarkeit ohne Freigabe | Plan in Ticket oder Merge Request übernehmen (`<TBD: Ablage von Plänen im Projekt>`) |
 | Plan nach Bestätigung stillschweigend anpassen lassen | Umsetzung weicht vom bestätigten Plan ab; Eskalationskriterium Stufe mittel | Jede Planänderung erneut bestätigen (`.koolie/core/framework/core/05-working-model.md`, M2) |

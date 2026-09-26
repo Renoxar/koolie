@@ -16,10 +16,11 @@
 > - **Der Schutz-Hook läuft nicht mehr fail-open.** Seit 0.24.0 blockiert er eine Eingabe,
 >   die er nicht lesen kann, sofern das Client Pack das Eingabeschema als bestätigt führt
 >   (`hook_fail_closed`, D-31). Beide Manifeste führen es.
-> - **Ein dynamischer Test steht wieder auf `offen`** (seit Release 1.11.0): `SK-002-N03`
->   hat auch im Nachlauf weder angehalten noch die Meldung an `<SECURITY_CONTACT>` empfohlen
->   (D-404, `K-153`). Die übrigen 37 Zellen des zentralen Katalogs und 86 der 87 Zellen der
->   dreizehn Testblätter tragen `bestanden`, der Nachweis je Zelle mit Protokoll und Client Pack.
+> - **Sechs dynamische Tests stehen auf `offen`** (seit Release 1.14.0): Mit Opus 5.5 tragen
+>   `SK-004-P02`, `-N02`, `-N04`, `SK-005-P01`, `-N04` und `SK-007-P01` nicht – keine wegen einer
+>   Änderung an ihrem Skill (D-424, `K-167`, eingeplant als 1.14.1); `SK-002-N03` trägt seit 1.14.0.
+>   Die 38 Zellen des zentralen Katalogs und 81 der 87 Zellen der dreizehn Testblätter tragen
+>   `bestanden`, der Nachweis je Zelle mit Protokoll und Client Pack.
 > - **Die Regelablage von `devin-desktop` lädt nur, weil das Pack Windsurf-Quellen zulässt**
 >   (seit Release 1.12.1, D-411): Mit `read_config_from.windsurf: false` lädt der Client die
 >   eigene Regelablage nicht – gegen seine Dokumentation (`K-156`). Mit `true` erreicht auch eine

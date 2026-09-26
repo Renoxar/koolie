@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-GLOSSARY` |
-| Version | `0.4.1` |
+| Version | `0.4.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -53,17 +53,17 @@ Für Namen gilt dieselbe Regel wie für Pfade, und sie hat eine Trennlinie, die 
 
 ## Begriffe und ihre Entsprechungen
 
-| Begriff im Kern | Was es ist | `devin-desktop` | `claude-code` | `openai-codex` |
-|---|---|---|---|---|
-| **Wurzel-Anweisungsdatei** | Die Datei im Wurzelverzeichnis, die der Client zu Beginn jeder Sitzung lädt | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` |
-| **Laufzeitschicht** | Das Verzeichnis mit allem, was der Client aus dem Repository liest | `.devin/` | `.claude/` | `.codex/` |
-| **Berechtigungsdatei** | Versionierte Konfiguration der Rechte (verweigern / rückfragen / erlauben) | `.devin/config.json` | `.claude/settings.json` | `.codex/config.toml` (Pfadseite), dazu die Befehlsregeldatei `.codex/rules/koolie.rules` (D-346) |
-| **Regelablage** | Verzeichnis der Regeltexte (Core-Kurzfassungen, Overlay, Packs) | `.devin/rules/` | `.claude/rules/` | `.codex/rules/` |
-| **Skill-Ablage** | Verzeichnis der Skills, je Skill ein Unterverzeichnis mit `SKILL.md` | `.devin/skills/` | `.claude/skills/` | `.codex/skills/` |
-| **Agentenprofile** | Verzeichnis der Subagentenprofile | `.devin/agents/` | `.claude/agents/` | `.codex/agents/` |
-| **Hook-Konfiguration** | Ort der Lebenszyklus-Hooks | in der Berechtigungsdatei (`.devin/config.json`, D-32) | in der Berechtigungsdatei (`.claude/settings.json`) | eigene Datei `.codex/hooks.json` |
-| **MCP-Konfiguration** | Ort der Anbindung externer Systeme | `.devin/mcp_config.json` | `.mcp.json` | in der Berechtigungsdatei (`.codex/config.toml`, Tabelle `mcp_servers`) |
-| **Nutzerlokale Überschreibung** | Nicht versionierte, persönliche Ergänzung; im Framework nur zum Verschärfen zulässig | `AGENTS.local.md`, `.devin/config.local.json` | `CLAUDE.local.md`, `.claude/settings.local.json` | `AGENTS.override.md` – ⚠️ **verdrängt** die Wurzel-Anweisung, statt sie zu ergänzen; das Pack liefert dafür keine Vorlage, und Prüfung 88 meldet die Datei, wenn sie im Projekt liegt (`CLIENT_PACK.md` Abschnitt 1) |
+| Begriff im Kern | Was es ist | `devin-desktop` | `claude-code` | `openai-codex` | `kiro` |
+|---|---|---|---|---|---|
+| **Wurzel-Anweisungsdatei** | Die Datei im Wurzelverzeichnis, die der Client zu Beginn jeder Sitzung lädt | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
+| **Laufzeitschicht** | Das Verzeichnis mit allem, was der Client aus dem Repository liest | `.devin/` | `.claude/` | `.codex/` | `.kiro/` |
+| **Berechtigungsdatei** | Versionierte Konfiguration der Rechte (verweigern / rückfragen / erlauben) | `.devin/config.json` | `.claude/settings.json` | `.codex/config.toml` (Pfadseite), dazu die Befehlsregeldatei `.codex/rules/koolie.rules` (D-346) | `.kiro/agents/koolie.json` – das Agentenprofil, gewählt durch `.kiro/settings/cli.json`; fehlt es oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück (D-414) |
+| **Regelablage** | Verzeichnis der Regeltexte (Core-Kurzfassungen, Overlay, Packs) | `.devin/rules/` | `.claude/rules/` | `.codex/rules/` | `.kiro/steering/` |
+| **Skill-Ablage** | Verzeichnis der Skills, je Skill ein Unterverzeichnis mit `SKILL.md` | `.devin/skills/` | `.claude/skills/` | `.codex/skills/` | `.kiro/skills/` |
+| **Agentenprofile** | Verzeichnis der Subagentenprofile | `.devin/agents/` | `.claude/agents/` | `.codex/agents/` | `.kiro/agents/` |
+| **Hook-Konfiguration** | Ort der Lebenszyklus-Hooks | in der Berechtigungsdatei (`.devin/config.json`, D-32) | in der Berechtigungsdatei (`.claude/settings.json`) | eigene Datei `.codex/hooks.json` | eigene Datei `.kiro/hooks/koolie.json` |
+| **MCP-Konfiguration** | Ort der Anbindung externer Systeme | `.devin/mcp_config.json` | `.mcp.json` | in der Berechtigungsdatei (`.codex/config.toml`, Tabelle `mcp_servers`) | `.kiro/settings/mcp.json` |
+| **Nutzerlokale Überschreibung** | Nicht versionierte, persönliche Ergänzung; im Framework nur zum Verschärfen zulässig | `AGENTS.local.md`, `.devin/config.local.json` | `CLAUDE.local.md`, `.claude/settings.local.json` | `AGENTS.override.md` – ⚠️ **verdrängt** die Wurzel-Anweisung, statt sie zu ergänzen; das Pack liefert dafür keine Vorlage, und Prüfung 88 meldet die Datei, wenn sie im Projekt liegt (`CLIENT_PACK.md` Abschnitt 1) | keine – der Hersteller dokumentiert keine nutzerlokale Wurzel-Anweisung, und das Pack liefert keine Vorlage |
 
 Die maßgebliche Fassung je Client steht in `manifest.json` (maschinenlesbar) und `CLIENT_PACK.md` Abschnitt 1 (mit Belegstatus) des jeweiligen Packs.
 

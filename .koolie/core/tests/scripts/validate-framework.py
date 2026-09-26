@@ -58,7 +58,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      Richtigkeit - siehe Kopfkommentar der Pruefung
  20. Dokumenttabellen (CR-2026-036): Die Client-Spalten von PLACEHOLDER_REGISTRY.md und
      RUNTIME_GLOSSARY.md stimmen je Pack mit dessen manifest.json ueberein. Belegt
-     Uebereinstimmung, nicht Richtigkeit
+     Uebereinstimmung, nicht Richtigkeit; seit 1.14.0 hat jedes Pack eine Spalte (D-421)
  21. Hook-Skripte (D-30, CR-2026-037): Ein Hook-Skript des Kerns leitet seine Pfade nicht
      aus einer clientgebundenen Umgebungsvariablen oder Laufzeitschicht ab; es bekommt sie
      als Argumente aus der Semantikabbildung
@@ -3105,6 +3105,18 @@ def _wert_passt(zelle: str, erwartet: str) -> bool:
     return any(k and k in zelle for k in kandidaten)
 
 
+def _spalten_vollstaendig(traeger: str, gefunden: dict, namen: list) -> None:
+    """Jedes Pack mit Manifest hat in der Tabelle eine Spalte (1.14.0, D-421).
+
+    ANLASS: Die Pruefung verglich nur die Spalten, die es gab. Ein Pack ohne Spalte
+    fiel still heraus - mit 1.13.0 fuehrten beide Tabellen kiro nicht, und keine
+    Meldung sagte es. Eine Uebereinstimmung ueber die Haelfte der Packs ist keine.
+    """
+    for pack in sorted(set(namen) - set(gefunden)):
+        err(f"{traeger}: die Tabelle fuehrt keine Spalte fuer '{pack}' - ein Pack ohne "
+            f"Spalte faellt aus dem Abgleich mit seinem Manifest still heraus (D-421)")
+
+
 def check_dokumenttabellen(root: str) -> None:
     """Pruefung 20 (CR-2026-036): Dokumenttabellen und Manifest sagen dasselbe.
 
@@ -3128,6 +3140,7 @@ def check_dokumenttabellen(root: str) -> None:
             gefunden = _spalten_je_pack(felder, namen)
             if gefunden:
                 spalten = gefunden
+                _spalten_vollstaendig(registry, gefunden, namen)
                 continue
             platzhalter = felder[0].strip("`* ")
             if not spalten or not platzhalter.startswith("<"):
@@ -3152,6 +3165,7 @@ def check_dokumenttabellen(root: str) -> None:
             gefunden = _spalten_je_pack(felder, namen)
             if gefunden:
                 spalten = gefunden
+                _spalten_vollstaendig(glossar, gefunden, namen)
                 continue
             if not spalten:
                 continue

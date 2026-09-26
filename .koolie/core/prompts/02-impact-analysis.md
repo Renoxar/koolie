@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-002` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -31,7 +31,7 @@ Die Vorlage klärt vor jeder Planung oder Umsetzung, was eine gewünschte Änder
 
 | Parameter | Pflicht | Kontextklasse | Beschreibung |
 |---|---|---|---|
-| `{aufgabenbeschreibung}` | MUSS | K2 (bereinigt) | Ziel, Akzeptanzkriterien und erkennbare Nicht-Ziele der Änderung; ohne Personen, Kunden, Adressen, Kennungen |
+| `{aufgabenbeschreibung}` | MUSS | K2 (bereinigt und freigegeben, `02-privacy.md` Abschnitt 4) | Ziel, Akzeptanzkriterien und erkennbare Nicht-Ziele der Änderung; ohne Personen, Kunden, Adressen, Kennungen |
 | `{referenz}` | KANN | K1 | Kennung aus `<ISSUE_TRACKER>` (nur die Kennung, kein Inhalt) |
 | `{vermuteter_bereich}` | KANN | K1 | Pfade oder Modulnamen; fehlt die Angabe, ermittelt der KI-Client Kandidaten per Suche und kennzeichnet sie als Vorschlag |
 | `{kontrollstufe}` | MUSS | K1 | Vorläufige Schätzung aus dem Preflight; wird bestätigt oder mit Begründung als abweichend gemeldet |

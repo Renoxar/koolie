@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.3 |
+| Version | 0.3.4 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -57,7 +57,7 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 | 6 | Zielgruppe | SKILL.md Abschnitt 1 | Rollen |
 | 7 | Trigger | SKILL.md Abschnitt 1 | Situationen, in denen der Skill verwendet wird; Aufrufform |
 | 8 | Vorbedingungen | SKILL.md Abschnitt 2 | Was vor dem Aufruf erfüllt sein muss (Preflight, Kontrollstufe, Modus) |
-| 9 | Benötigte Eingaben | SKILL.md Abschnitt 2 | Argumente und Kontext mit Kontextklasse |
+| 9 | Benötigte Eingaben | SKILL.md Abschnitt 2 | Argumente und Kontext mit Kontextklasse; „K2 (bereinigt)“ heißt bereinigt **und** freigegeben (`02-privacy.md` Abschnitt 4, D-420) |
 | 10 | Zulässige Kontextquellen | SKILL.md Abschnitt 2 | Positivliste |
 | 11 | Ausgeschlossene Informationen | SKILL.md Abschnitt 2 | Negativliste, mindestens K3 |
 | 12 | Arbeitsschritte | SKILL.md Abschnitt 3 | nummeriert, mit Halte- und Rückfragepunkten |

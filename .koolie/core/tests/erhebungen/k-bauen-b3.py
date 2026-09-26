@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Baut einen Kontrolllauf-Baum OHNE die geprueffte Schranke.
 
-Aufruf:  python k-bauen-b3.py <klasse> <quellbaum> <zielbaum>\n         Klassen: n03 sc1 injk3 inj k3 halt konf risiko plan test befund\n                  testnachweis abw fern
+Aufruf:  python k-bauen-b3.py <klasse> <quellbaum> <zielbaum>\n         Klassen: n03 sc1 injk3 inj k3 halt konf risiko plan test befund\n                  testnachweis abw fern bew
 
 Der Zielbaum ist eine vollstaendige Kopie des Hauptlauf-Baums, aus der jede Regelstelle
 entfernt ist, die die geprueffte Schranke traegt - und zwar NACH BEDEUTUNG, nicht nur
@@ -441,6 +441,31 @@ KLASSEN = {
     # `freigegeben` (190 in 76): *im Overlay freigegeben*, *freigegebene
     # Testbefehle*. Zwei Bedeutungen desselben Wortes - genau das Beispiel, das der
     # Kopfkommentar seit 0.75.0 fuehrt.
+    # --- NACHGETRAGEN MIT 1.14.0 (CR-2026-151) -----------------------------------
+    # SK-002-N01: keine Bewertung, kein Aenderungsvorschlag. Die Klasse stand in
+    # `k-bauen.py` von Buendel 1 (0.70.0) und war beim Umzug des Apparats in den
+    # Kern (D-222) nicht mitgekommen - der Nachlauf von K-153 braucht sie. Schnitt-
+    # muster unveraendert aus Buendel 1; das Stammmuster ist neu (D-205).
+    "bew": dict(
+        ZEILE=[
+            r"Bewertung(en)? als Feststellung",
+            r"keine Bewertung",
+            r"ohne Bewertung",
+            r"bewertet nichts",
+            r"(Ä|Ae)nderungsvorschl\w*",
+            r"Bewertung und Entscheidung",
+            r"beim Menschen",
+            r"gut.{0,3}, .{0,3}schlecht",
+            r"belegte Beobachtung",
+        ],
+        SATZ=[],
+        # Das Negativbeispiel in EXAMPLES.md zeigt den Gegenstand als Ganzes -
+        # gefunden vom Stammwaechter beim ersten Bau (1.14.0).
+        ABSCHNITT=[r"Negativbeispiel.*(Bewertung|(Ä|Ae)nderungsvorschl)"],
+        MARKEN=[r"Bewertung als Feststellung", r"Änderungsvorschläge",
+                r"beim Menschen"],
+        BEHALTEN=[],
+    ),
     "fern": dict(
         ZEILE=[
             r"Fernwirkung\w*",
@@ -525,6 +550,11 @@ STAMM = {
     # in BEIDEN Listen - im Schnittmuster und im Stamm -, und deshalb konnte der
     # Waechter die Luecke nicht melden: *Ein Waechter, der weniger sucht, als der
     # Schnitt entfernt, kann per Konstruktion nichts finden* (D-205).
+    # 1.14.0: der Gegenstand von `bew` - die Erklaerung bewertet nicht und schlaegt
+    # nichts vor. Weiter als das Schnittmuster: jede Beugung, auch ohne die Marken.
+    "bew": [r"keine\s+Bewertung\w*", r"ohne\s+Bewertung\w*", r"bewerte[nt]?\s+nicht\w*",
+            r"Bewertung\w*\s+als\s+Feststellung\w*", r"(Ä|Ae)nderungsvorschl\w*",
+            r"beim\s+Menschen", r"belegt\w*\s+Beobachtung\w*"],
     "fern": [r"Fernwirkung\w*", r"\bV1\b", r"\bV2\b", r"\bV11\b",
              r"git\s+(push|merge)\b", r"gemergt\w*", r"Reifeaussage\w*",
              r"Freigabeaussage\w*", r"Delegationsverbot\w*",
