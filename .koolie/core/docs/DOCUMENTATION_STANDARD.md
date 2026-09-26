@@ -3,10 +3,10 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-STANDARD` |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
-| Entscheidungen | D-371 bis D-380 (`CR-2026-142`) |
+| Entscheidungen | D-371 bis D-380 (`CR-2026-142`), D-437 (`CR-2026-154`) |
 
 ## Zweck
 
@@ -20,7 +20,7 @@ Jedes Markdown-Dokument des Kerns gehört genau einer Klasse an, oder es ist Nac
 
 | Klasse | Was | Beispiele |
 |---|---|---|
-| **A – Einstieg** | was jemand liest, der das Framework zum ersten Mal einsetzt | Wurzel-README (nur im Framework-Repositorium), `onboarding/`, `examples/`, `pilot/`, `docs/ADOPTION_GUIDE.md`, `docs/RUNTIME_GLOSSARY.md`, `clients/README.md`, die `CLIENT_PACK.md` der Packs |
+| **A – Einstieg** | was jemand liest, der das Framework zum ersten Mal einsetzt | die Einstiegsdokumente der Wurzel – `README.md`, `QUICKSTART.md` und ihre englischen Fassungen `README.en.md`, `QUICKSTART.en.md` (nur im Framework-Repositorium, D-437) –, `onboarding/`, `examples/`, `pilot/`, `docs/ADOPTION_GUIDE.md`, `docs/RUNTIME_GLOSSARY.md`, `clients/README.md`, die `CLIENT_PACK.md` der Packs |
 | **B – Regeln** | was gilt | Core-Module, Laufzeitschicht, Governance-Prozesse, Checklisten, Entscheidungsbäume, Prompts, Vorlagen, Skills, dieses Dokument |
 | **C – Register** | Belege und Verzeichnisse | `CHANGELOG.md`, `governance/DECISION_LOG.md`, `docs/ROADMAP.md`, `tests/TEST_CATALOG.md`, `tests/EDGE_CASES.md`, `docs/PLACEHOLDER_REGISTRY.md`, `governance/ADOPTION_REGISTRY.md`, die `TESTS.md`, `EXAMPLES.md` und `CHANGELOG.md` der Skills |
 | **D – Hauptdokument** | die Kapitelquellen unter `build/doc/` | `00-kopf.md` bis `32-abschluss.md` |
@@ -81,3 +81,11 @@ Für Klasse A misst das eine **Kaltleser-Probe** (D-379): Eine frische Sitzung o
 - **Bei jedem Release:** Wer ein Dokument ändert, hält es gegen die Kriterien seiner Klasse. Die Prüfungen 91 bis 94 laufen mit dem Validator.
 - **Bei jedem MINOR-Release:** Entfallen die *„🆕 neu mit …“*-Hinweise des vorletzten MINOR-Releases.
 - **Eine vollständige Durchsicht** einer Klasse ist ein eigener Posten der Roadmap mit Ziel-Release. `1.9.0` hat die Klassen A und D durchgesehen und die Roadmap gekürzt (D-378); die Klasse B folgt je Bereich (D-380).
+
+## 5. Sprachen und Übersetzungsbedarf (D-437)
+
+**Deutsch ist die maßgebliche Sprache der gesamten Dokumentation.** Englisch gibt es nur für den Einstieg: `README.en.md` und `QUICKSTART.en.md` in der Wurzel des Framework-Repositoriums. Eine weitere englische Dokumentationsstruktur wird nicht angelegt.
+
+- **Beide Fassungen verweisen aufeinander**, und die englische nennt die deutsche maßgeblich. Ein Verweis aus einer englischen Fassung auf ein deutsches Dokument trägt den Zusatz *(German)*.
+- **Eine englische Fassung sagt nicht mehr zu als die deutsche.** Sie darf kürzen; sie darf keine Fähigkeit, keinen Reifegrad und kein Ergebnis nennen, das die deutsche Fassung nicht trägt.
+- **Wer `README.md` oder `QUICKSTART.md` ändert, prüft im selben Release, ob die englische Fassung nachgezogen werden muss**, und zieht sie nach oder hält im Änderungsantrag fest, warum nicht. Die Deckung der Fassungen prüft keine Maschine – Prüfung 12 hält nur die Verweise, Prüfung 93 die Form, und Prüfung 92 ist für englischen Text wirkungslos.

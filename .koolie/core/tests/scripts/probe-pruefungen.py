@@ -10424,6 +10424,89 @@ buendel(sonden_steckbrief,
         "und B und laesst Laufzeit, Vorlagen und Verzeichnisse aus")
 
 
+# --- D-437: die Einstiegsdokumente der Wurzel (CR-2026-154) ---------------------------
+#
+# Bis 1.14.2 kannte dokumentklasse() ausserhalb des Kerns nur README.md. Mit 1.15.0 liegen
+# daneben README.en.md, QUICKSTART.md und QUICKSTART.en.md - ohne die Erweiterung waeren
+# sie fuer die Pruefungen 92 und 93 unsichtbar gewesen, und ein offener Codeblock im
+# englischen Quickstart haette den Rest der Seite verschluckt, ohne dass etwas meldet.
+# Die Gegenproben halten die beiden Ausnahmen: kein Steckbrief (94) und keine Pruefung
+# in einem Projekt, dem die Wurzel gehoert (D-299).
+P437_EN = "QUICKSTART.en.md"
+P437_README_EN = "README.en.md"
+P437_DE = "QUICKSTART.md"
+P437_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
+
+
+def sonden_wurzeldokumente() -> None:
+    """Wirkungsnachweis zu D-437: README, Quickstart und ihre englischen Fassungen."""
+    root = kopie()
+    try:
+        pfade = {r: P(root, r) for r in (P437_EN, P437_README_EN, P437_DE)}
+        fehlend = [r for r, p in pfade.items() if not os.path.isfile(p)]
+        if fehlend:
+            raise Praeparationsfehler("Sonden zu D-437: Einstiegsdokumente fehlen: %s" % fehlend)
+        texte = {r: lies(p) for r, p in pfade.items()}
+
+        # --- Gegenprobe D437a: der ausgelieferte Stand, ohne Steckbrief --------------
+        aus = validator_ausgabe(root)
+        stoert = [z for z in aus.splitlines() if z.startswith("FEHLER")
+                  and z.split()[1].rstrip(":") in pfade]
+        melde("GEGENPROBE", "D437a", not stoert and M94_KEINER not in aus,
+              "Die vier Einstiegsdokumente laufen durch - ohne Steckbrief, weil sie von "
+              "Pruefung 94 ausgenommen sind wie die README")
+        if stoert:
+            notiz("        Ausgabe:", " | ".join(stoert)[:400])
+
+        # --- Sonde D437b: ein offener Codeblock im englischen Quickstart ------------
+        _anhaengen(pfade[P437_EN], "```bash", "echo offen")
+        aus = validator_ausgabe(root)
+        ok = any(M93_ZAUN in z and P437_EN in z for z in aus.splitlines())
+        melde("SONDE", "D437b", ok,
+              "Ein offener Codeblock in QUICKSTART.en.md wird von Pruefung 93 gemeldet")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(pfade[P437_EN], texte[P437_EN])
+
+        # --- Sonde D437c: alte Schreibung im deutschen Quickstart -------------------
+        _anhaengen(pfade[P437_DE], "Sondenzeile: Der Schritt zeigt, daß nichts fehlt.")
+        aus = validator_ausgabe(root)
+        ok = any(M92 in z and z.split()[1].startswith(P437_DE) for z in aus.splitlines())
+        melde("SONDE", "D437c", ok,
+              "Alte Schreibung in QUICKSTART.md wird von Pruefung 92 gemeldet")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+        schreib(pfade[P437_DE], texte[P437_DE])
+
+        # --- Sonde D437d: zwei Hauptueberschriften in der englischen README ---------
+        _anhaengen(pfade[P437_README_EN], "# Zweite Hauptueberschrift")
+        aus = validator_ausgabe(root)
+        ok = any(M93_H1 in z and P437_README_EN in z for z in aus.splitlines())
+        melde("SONDE", "D437d", ok,
+              "Eine zweite Hauptueberschrift in README.en.md wird von Pruefung 93 gemeldet")
+        if not ok:
+            notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
+
+        # --- Gegenprobe D437e: in einem Projekt gehoert die Wurzel dem Projekt ------
+        _anhaengen(pfade[P437_EN], "```bash", "echo offen")
+        os.remove(P(root, *P437_KENNZEICHEN.split("/")))
+        aus = validator_ausgabe(root)
+        stoert = [z for z in aus.splitlines() if z.startswith("FEHLER")
+                  and z.split()[1].rstrip(":") in pfade]
+        melde("GEGENPROBE", "D437e", not stoert,
+              "Ohne Kennzeichen des Quellrepositoriums werden die Einstiegsdokumente der "
+              "Wurzel nicht geprueft - sie gehoeren dem Projekt (D-299)")
+        if stoert:
+            notiz("        Ausgabe:", " | ".join(stoert)[:400])
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_wurzeldokumente,
+        "Die Einstiegsdokumente der Wurzel sind Klasse A: 92 und 93 pruefen sie im "
+        "Quellrepositorium, 94 laesst sie aus, im Projekt bleiben sie unberuehrt (D-437)")
+
+
 # --- Pruefung 4: die Zeichengrenze der Wurzel-Anweisung (D-381, CR-2026-143) ---------
 #
 # Die Grenze von 12.000 Zeichen ist eine Vorgabe des Frameworks, keine Eigenschaft eines

@@ -713,7 +713,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      ausserhalb von Code kein Wort der Schreibung vor 1996 aus einer festen Stammliste
      (dass, muss, misst, Messbaum ...). ANLASS: 603 alte gegen 1.192 geltende
      Schreibungen, neunzehn Dokumente mischten beide. Register (C) bleiben, wie sie
-     geschrieben wurden; die Wurzel-README nur im Quellrepositorium. GRENZE: Ein Wort,
+     geschrieben wurden; die Einstiegsdokumente der Wurzel (README, Quickstart und ihre
+     englischen Fassungen, D-437) nur im Quellrepositorium. GRENZE: Ein Wort,
      das nicht auf der Liste steht, kommt durch
  93. Die Form (D-374): In jedem Dokument der Klassen A bis D ist jeder Codeblock
      geschlossen, es gibt genau eine Hauptueberschrift (mit Frontmatter hoechstens eine),
@@ -722,7 +723,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      Gestalt, nicht Gliederung
  94. Der Steckbrief (D-375): Dokumente der Klassen A und B tragen vor dem ersten
      Abschnitt eine Tabelle "| Attribut | Wert |" mit Kennung (ID oder <Art>-ID),
-     Version und Status. Ausgenommen mit Grund: README-Verzeichnisse, die
+     Version und Status. Ausgenommen mit Grund: README-Verzeichnisse und die
+     Einstiegsdokumente der Wurzel (D-437), die
      Laufzeitschicht, Ausfuellvorlagen und Beispielausgaben. GRENZE: Anwesenheit der
      Zeilen; ihren Wert pruefen 13 und 55
  95. Die Art einer Skill-Aenderung (D-403): Die Zeile der aktuellen Version im
@@ -10518,6 +10520,12 @@ DOK_EINSTIEG = ("onboarding/", "examples/", "pilot/", "docs/ADOPTION_GUIDE.md",
 DOK_EINSTIEG_RE = re.compile(r"clients/[^_/][^/]*/CLIENT_PACK\.md$")
 DOK_NACHWEIS = ("governance/change-requests/", "tests/protocols/", "tests/erhebungen/",
                 "build/")
+# Die Einstiegsdokumente des Quellrepositoriums in seiner Wurzel (D-437): die README,
+# der Quickstart und ihre englischen Fassungen. Klasse A wie die README, und aus
+# demselben Grund nur im Quellrepositorium - in einem Projekt gehoert die Wurzel dem
+# Projekt (D-299). Pruefung 92 ist fuer die englischen Fassungen wirkungslos, aber
+# harmlos: Ihre Stammliste ist deutsch und trifft englischen Text nicht.
+DOK_WURZEL = ("README.md", "README.en.md", "QUICKSTART.md", "QUICKSTART.en.md")
 
 
 def dokumentklasse(rel: str) -> str | None:
@@ -10526,7 +10534,7 @@ def dokumentklasse(rel: str) -> str | None:
     if not rel.endswith(".md"):
         return None
     if not rel.startswith(KERN + "/"):
-        return "A" if rel == "README.md" else None
+        return "A" if rel in DOK_WURZEL else None
     k = rel[len(KERN) + 1:]
     if k.startswith("build/doc/"):
         return "D"
@@ -10550,8 +10558,8 @@ def _dokumente(root: str):
             k = dokumentklasse(rel)
             if k:
                 gefunden.append((rel, k))
-    if ist_quellrepositorium(root) and os.path.isfile(os.path.join(root, "README.md")):
-        gefunden.append(("README.md", "A"))
+    if ist_quellrepositorium(root):
+        gefunden += [(rel, "A") for rel in DOK_WURZEL if os.path.isfile(os.path.join(root, rel))]
     return sorted(gefunden)
 
 
@@ -10731,7 +10739,9 @@ def check_dokumentform(root: str) -> None:
 # einem Status. Pruefung 13 prueft die FORM eines Versionsfeldes, das da ist; dass es da
 # ist, prueft sie nicht - und 116 von 215 Dokumenten hatten keines.
 # AUSGENOMMEN, jeweils mit Grund:
-#   - README.md: ein Verzeichnis, kein Dokument mit eigenem Stand;
+#   - README.md: ein Verzeichnis, kein Dokument mit eigenem Stand; ebenso die
+#     Einstiegsdokumente der Wurzel (DOK_WURZEL, D-437) - sie tragen ihren Stand ueber
+#     VERSION und verweisen auf die Dokumente, die einen Steckbrief tragen;
 #   - die Laufzeitschicht (framework/runtime/, role-packs/*/runtime/, root-template/):
 #     sie wird so in die Sitzung geladen, und ihre Laenge ist begrenzt (Pruefung 4);
 #   - Ausfuellvorlagen (templates/, Musterdokumente der Overlay-Muster, der
@@ -10752,7 +10762,7 @@ P94_KOPF = "| Attribut | Wert |"
 def check_steckbrief(root: str) -> None:
     """Pruefung 94 (D-375): Klassen A und B tragen ID, Version und Status."""
     for rel, klasse in _dokumente(root):
-        if klasse not in "AB" or rel == "README.md":
+        if klasse not in "AB" or rel in DOK_WURZEL:
             continue
         k = rel[len(KERN) + 1:]
         if k.startswith(P94_AUSNAHMEN) or P94_AUSNAHMEN_RE.search(k):
