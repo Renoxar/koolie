@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.4.11` |
+| Version | `0.5.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -344,8 +344,36 @@ bleibt unberührt (P10, Baum 6).
 
 ## 4. Mehrere Repositories, ein Projekt
 
-Je Repository, das der KI-Client öffnet, liegt eine vollständige Framework-Integration (Root-Regeln
-wirken je Workspace). Das Overlay KANN geteilt gepflegt und je Repository ausgerollt werden;
+**Entscheidend ist, wo die Sitzung startet – nicht, wo das Framework liegt.** Gemessen am
+2026-09-26 für alle drei Client Packs (D-408, `.koolie/core/tests/protocols/2026-09-26-mehrprojekt-tokenlast.md`):
+Eine Installation wirkt technisch nur für eine Sitzung, die **im Verzeichnis der Installation**
+startet. Startet die Sitzung in einem Repository darunter, laden bei allen drei Packs weder
+Berechtigungen noch Hooks, bei `devin-desktop` und `openai-codex` auch die Wurzel-Anweisung nicht.
+**Nichts meldet es** – die Sitzung verhält sich, als gäbe es das Framework nicht, oder kennt bei
+`claude-code` sogar ihre Regeln und hat keine Durchsetzung.
+
+| Client Pack (Clientversion) | Sitzung im Verzeichnis der Installation | Sitzung im Repository darunter: Wurzel-Anweisung | … Berechtigungen und Hooks | Eigene Installation im Repository |
+|---|---|---|---|---|
+| `claude-code` (2.1.283) | trägt | lädt | laden nicht | trägt; beide Wurzel-Anweisungen laden |
+| `devin-desktop` (3000.11.1) | trägt | lädt nicht | laden nicht | trägt; nur die eigene lädt |
+| `openai-codex` (0.157.0) | Konfiguration lädt | lädt nicht | Konfiguration lädt nicht (Projektwurzel ist die git-Wurzel des Repositorys) | lädt |
+
+**Drei Einsatzszenarien:**
+
+1. **Ein Repository** – Installation in dessen Wurzel. Der Normalfall.
+2. **Lose ausgecheckte Repositories** – **je Repository eine eigene Installation**, die Sitzung
+   startet im Repository. Das Overlay kann gemeinsam gepflegt und je Repository ausgerollt werden
+   (unten). Eine zusätzliche Installation im gemeinsamen Arbeitsbereich schadet nicht, trägt aber
+   nichts für Sitzungen, die in einem Repository starten.
+3. **Ein Multimodul-Projekt in einem Repository** – eine Installation in der Wurzel, die Sitzung
+   startet immer dort. Unterschiede der Module tragen Technology Packs mit Pfad-Ladebedingung (bei
+   `openai-codex` ohne Ladebedingung, D-348).
+
+⚠️ **Eine einzige Installation über mehreren Repositories** trägt nur, solange jede Sitzung im
+Arbeitsbereich startet – eine Bedingung, die kein Werkzeug prüft (`K-159`). Sie ist nicht zu
+empfehlen, wenn Menschen Repositories einzeln öffnen.
+
+Das Overlay KANN geteilt gepflegt und je Repository ausgerollt werden;
 das Heben des Kerns ist ein Kopiervorgang plus Skriptaufruf und damit skriptbar – am
 einfachsten mit `--target` aus dem neuen Release heraus, das nur den Kern kopiert:
 
@@ -399,3 +427,48 @@ Wurzelverzeichnis des Projekts bleibt übersichtlich.
 Die Bündelung ändert nichts an der Ebenenhierarchie und an keiner inhaltlichen Regel. Sie
 trennt physisch, was ohnehin logisch getrennt war: **Der Kern ist ein Ordner, den man
 ersetzt. Das Projekt ist alles daneben.**
+
+## 7. Was das Framework kostet – gemessen
+
+**Für Entscheider:** Das Framework verteuert eine Aufgabe des KI-Clients, weil es Regeln in jeden
+Modellaufruf lädt und mehr verlangt – Fundstellen, einen Ergebnisbericht, den passenden Skill.
+Gemessen am 2026-09-26 im Übungsrepository, je Client Pack derselbe Auftrag mit und ohne
+Installation, jeder dreimal (D-409, `.koolie/core/tests/protocols/2026-09-26-mehrprojekt-tokenlast.md`).
+Mittelwerte; die Fixlast-Zeilen mit angelegtem Cache; die gemessenen Modelle nennt das Protokoll:
+
+| Client Pack | Aufgabe | Eingabe-Token ohne → mit | Kosten je Aufgabe ohne → mit (USD) | Faktor Kosten |
+|---|---|---|---|---|
+| `claude-code` | nur „OK“ antworten (Fixlast) | 32.330 → 47.232 | 0,007 → 0,010 (erster Aufruf einer Sitzung: 0,137 → 0,285) | 1,4 (2,1) |
+| | kleine Änderung als Diff | 65.466 → 99.443 | 0,065 → 0,184 | 2,8 |
+| | Analyse über mehrere Dateien | 104.503 → 173.236 | 0,137 → 0,284 | 2,1 |
+| `devin-desktop` | Fixlast, wie ausgeliefert | 23.556 → 25.805 | 0,012 → 0,013 | 1,1 |
+| | Fixlast, Regelablage geladen (`K-156`) | 23.556 → 31.913 | 0,012 → 0,016 | 1,3 |
+| | kleine Änderung als Diff | 47.983 → 81.585 | 0,051 → 0,123 | 2,4 |
+| | Analyse über mehrere Dateien | 167.503 → 295.203 | 0,272 → 0,494 | 1,8 |
+| `openai-codex` | Fixlast | 15.346 → 19.755 | 0,006 → 0,011 | 1,7 |
+| | kleine Änderung als Diff | 63.503 → 107.119 | 0,021 → 0,049 | 2,4 |
+| | Analyse über mehrere Dateien | 89.826 → 135.566 | 0,035 → 0,062 | 1,8 |
+
+**Was daraus folgt:**
+
+- **Die feste Last je Modellaufruf ist klein und kommt fast immer aus dem Cache:** rund 15.000
+  Token bei `claude-code`, 4.400 bei `openai-codex`, bei `devin-desktop` 2.200 wie ausgeliefert und
+  8.400 mit geladener Regelablage. Der Cache kostet ein Zehntel des Eingabepreises; teuer ist nur
+  der **erste** Aufruf einer Sitzung, der ihn anlegt.
+- **Eine kleine Aufgabe wird rund zwei- bis dreimal so teuer, eine größere rund doppelt so teuer.**
+  Den Unterschied macht weniger die feste Last als die Arbeitsweise: Die Sitzung liest den Skill und
+  Framework-Dokumente, belegt mit Fundstellen und schreibt einen Ergebnisbericht – die Ausgabe ist
+  bei der kleinen Änderung rund dreimal so lang.
+- **In Beträgen:** Je hundert kleine Aufgaben rund 3 bis 12 USD mehr, je hundert Analysen rund 3 bis
+  22 USD mehr, je nach Client (Listenpreise vom 2026-09-26). Die Laufzeit steigt um bis zu das
+  Doppelte.
+- **Gesenkt wird nur, wo keine Schranke nachgibt** (`K-144`). Die feste Last ist nicht der Hebel;
+  eine kürzere Zuordnung von Arbeitsschritt zu Skill ist vorgeschlagen und nicht umgesetzt.
+
+**Was die Zahlen nicht sagen:** Sie stammen aus drei Aufgaben in einem Repository an einem Tag, je
+dreimal gefahren; die Spannen stehen im Protokoll. Die Preise sind Listenpreise der API – für
+`claude-code` die Kostenangabe des Clients, für `devin-desktop` dessen Preisliste, für
+`openai-codex` dieselbe Preisliste als Ersatzquelle, weil der Client keinen Preis nennt. **Ein Abo
+rechnet anders ab**; dort zählt der Verbrauch am Kontingent, und dafür sind die Token die
+richtige Größe. **Der Nutzen ist nicht gemessen** – ob weniger Nacharbeit, weniger Fehler oder ein
+verhindertes Leck die Mehrkosten aufwiegt, sagt keine dieser Zahlen.

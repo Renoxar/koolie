@@ -2,6 +2,58 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.12.0] - 2026-09-26
+
+**Der Mehrprojektfall und die Token-Last - gemessen, und die Regelablage, die nicht lud**
+(`CR-2026-148` E1 bis E9, **D-407** bis **D-410**; `K-138`, `K-144` (1) und (3) und `K-154`
+beantwortet, `K-156` bis `K-159` neu). Ein MINOR-Messrelease: 102 Sitzungslaeufe ueber drei
+Clients, 10,56 USD nach Listenpreis.
+
+> 🔴 **EINE INSTALLATION WIRKT TECHNISCH NUR FUER EINE SITZUNG, DIE IN IHREM VERZEICHNIS STARTET -
+> BEI ALLEN DREI PACKS** (D-408, `K-138`). Startet die Sitzung in einem Repository unterhalb der
+> Installation, laden Berechtigungen und Hooks nicht, bei `devin-desktop` und `openai-codex` auch die
+> Wurzel-Anweisung nicht; nichts meldet es. Eine eigene Installation je Repository traegt.
+
+> 🔴 **UND ZWEI BEFUNDE, NACH DENEN NIEMAND GEFRAGT HATTE** (D-410): Bei `devin-desktop` laedt die
+> Regelablage `.devin/rules/` mit der ausgelieferten Einstellung `read_config_from.windsurf: false`
+> nicht - das Modell sieht nur `AGENTS.md` (`K-156`); `openai-codex` 0.157.0 ignoriert die
+> `:workspace`-Pfadeintraege des Rechteprofils (`K-157`). Eingeplant als `1.12.1`, vor Kiro.
+
+**Hinzugefuegt**
+
+- `docs/ADOPTION_GUIDE.md` (`0.5.0`) Abschnitt 7: **was das Framework kostet** - gemessen je Pack,
+  mit und ohne Installation, drei Aufgaben je dreimal; kurz in Kapitel 1 des Hauptdokuments (D-409).
+  Eine kleine Aufgabe kostet das 2,4- bis 2,8-Fache, eine Analyse das 1,8- bis 2,1-Fache; die feste
+  Last je Aufruf kommt fast immer aus dem Cache.
+- Sondenbuendel `sonden_messapparat` (Sonden `D407`, `D407b`, Gegenproben `D407a`, `D407c`); gegen
+  `v1.11.0` fallen `D407` und `D407c` (D-407).
+- Klaerungspunkte `K-156` bis `K-159`; Roadmap (`0.4.2`): `1.12.1` fuer `K-156` und `K-157` (D-410).
+
+**Geaendert**
+
+- `validate-output.py` und `mcp-waechter.py` finden den Kern unter `.koolie/core` (zwei Ebenen tief);
+  `cc-overlay-fuellen.py` entfaltet `<READ_ONLY_PATHS>`, erhaelt die Zeilenenden und uebertraegt die
+  Regelerweiterungen samt Verweis im Overlay-Manifest (D-407, `K-154`).
+- `docs/ADOPTION_GUIDE.md` Abschnitt 4: der Startort der Sitzung je Pack und drei Einsatzszenarien;
+  `templates/project-overlay/OVERLAY.md`: der Ausfuellhinweis fuer mehrere Repositories (D-408).
+- Client Packs `claude-code` (`0.24.4`), `devin-desktop` (`0.14.4`), `openai-codex` (`0.1.5`): die
+  Startort-Bedingung in der Vorbemerkung des B-Blocks; Vorbehalt `K-156` an `R2`/`R6` (devin),
+  `K-157` an `B4` (codex).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. An der installierten Laufzeitschicht aendert sich nichts. **Projekte mit mehreren
+  Repositories** lesen Abschnitt 4 des Uebernahmeleitfadens: Eine Installation ueber mehreren
+  Repositories schuetzt nur Sitzungen, die im Arbeitsbereich starten.
+
+**Bekannte Einschraenkungen**
+
+- `K-156` und `K-157` sind gefunden, nicht behoben (`1.12.1`). `K-144` (2), die Senkung der Last, ist
+  nicht Teil dieses Releases; `K-158` und `K-159` ohne Ziel-Release.
+- Bei `devin-desktop` fehlt der Kontrolllauf fuer das Schreibverbot in der Wurzel; bei `openai-codex`
+  ist im Mehrprojektfall das Laden gemessen, nicht die Durchsetzung.
+- **Kriterium 2 = 1** (`SK-002-N03`, `1.14.0`). Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.11.0] - 2026-09-25
 
 **Die Regel- und Registerposten der Durchsicht - und die Zellen, die ihre Erwartung nicht

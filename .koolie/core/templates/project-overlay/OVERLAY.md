@@ -60,7 +60,7 @@
 └── <TBD: deploy/ infra/ config/>  # ausgeschlossen (siehe Abschnitt 4)
 ```
 
-Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten Ebene beschreiben. Der KI-Client erschließt Details selbst (Skill `fw-repo-analyze`). Mehrere Repositories: je Repository ein Overlay oder ein Abschnitt je Repository mit eigenen Pfadlisten.
+Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten Ebene beschreiben. Der KI-Client erschließt Details selbst (Skill `fw-repo-analyze`). Mehrere Repositories: **je Repository eine eigene Installation mit eigenem Overlay** – die Schutzschicht wirkt nur für eine Sitzung, die im Verzeichnis der Installation startet; ein Overlay über mehreren Repositories mit einem Abschnitt je Repository ist **nicht gleichwertig**, weil eine Sitzung im Repository darunter Berechtigungen und Hooks verliert, ohne dass es gemeldet wird (D-408, `.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt 4).
 
 ## 4. Erlaubte und ausgeschlossene Verzeichnisse
 

@@ -28,10 +28,10 @@ Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.11.0** | `0.3.19` | 2026-09-25 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.11.0** | `1.4.13` | 2026-09-25 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.12.0** | `0.3.20` | 2026-09-26 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 31 Präparationen | `devin-desktop` | **1.12.0** | `1.4.14` | 2026-09-26 |
 
-🟢 **STAND 2026-09-25: BEIDE PROJEKTE TRAGEN `1.11.0`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.11.0` sind die Regel- und Registerposten der Durchsicht (D-402 bis D-405): An der installierten Laufzeitschicht ändern sich die Regel des Standardablaufs (Schritt 9 ist der Freigabepunkt vor der Änderung am Produktivcode), die Erläuterung von `fw-change-small` und ein Verweis in `fw-mr-description`; im Kern Prompts, Checklisten, Entscheidungsbäume, Testblätter und Prüfung 95. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
+🟢 **STAND 2026-09-26: BEIDE PROJEKTE TRAGEN `1.12.0`, UND DIE HEBUNG IST DORT COMMITTET.** Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.12.0` ist das Messrelease zum Mehrprojektfall und zur Token-Last (D-407 bis D-410): **An der installierten Laufzeitschicht ändert sich nichts**; im Kern der Messapparat, der Übernahmeleitfaden (Startort der Sitzung, Kosten), die Overlay-Vorlage und die Vorbemerkungen der drei Fähigkeitsmatrizen. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
 
 🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
 Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`

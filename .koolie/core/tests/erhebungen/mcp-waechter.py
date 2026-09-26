@@ -66,9 +66,14 @@ def _zellen(zeile):
 
 def _manifest(baum):
     """Das Manifest des im Baum installierten Client Packs - gesucht, nicht geraten."""
+    # Zwei Ebenen tief wie validate-output.py (K-154, D-407): Seit 0.88.0 liegt der
+    # Kern unter `.koolie/core`, und eine Ebene fand ihn in keinem installierten Baum.
     kern = None
-    for name in sorted(os.listdir(baum)):
-        p = os.path.join(baum, name)
+    namen = sorted(n for n in os.listdir(baum) if os.path.isdir(os.path.join(baum, n)))
+    kandidaten = [os.path.join(baum, n) for n in namen]
+    kandidaten += [os.path.join(baum, n, u) for n in namen
+                   for u in sorted(os.listdir(os.path.join(baum, n)))]
+    for p in kandidaten:
         if os.path.isdir(os.path.join(p, "clients")) and os.path.isdir(os.path.join(p, "framework")):
             kern = p
             break

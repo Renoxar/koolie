@@ -49,13 +49,29 @@ INTERNAL_HOST_RE = re.compile(r"\b[a-z0-9-]+\.(?:internal|intra|corp|lan)\b", re
 FINDING_RE = re.compile(r"[\w./-]+\.[A-Za-z0-9]+:\d+|nicht gefunden mit Suchmuster", re.I)
 
 
+def _ist_kern(pfad: str) -> bool:
+    return os.path.isdir(os.path.join(pfad, "clients")) \
+        and os.path.isdir(os.path.join(pfad, "framework"))
+
+
 def _kernverzeichnis(root: str) -> str | None:
-    """Das Kernverzeichnis des Baums - der Name ist nicht geraten, sondern gesucht."""
-    for name in sorted(os.listdir(root)):
-        if os.path.isfile(os.path.join(root, name, "clients", "_template", "manifest.json")) \
-                or os.path.isdir(os.path.join(root, name, "clients")):
-            if os.path.isdir(os.path.join(root, name, "framework")):
-                return os.path.join(root, name)
+    """Das Kernverzeichnis des Baums - der Name ist nicht geraten, sondern gesucht.
+
+    Gesucht wird ZWEI Ebenen tief (K-154, D-407). Bis 1.11.0 war es eine: Das reichte,
+    solange der Kern ein einziges Verzeichnissegment war (vor 0.88.0). Seit der
+    Umbenennung (0.88.0) liegt er unter `.koolie/core`, und dieses Werkzeug meldete in
+    jedem installierten Baum "weder ein installiertes Client Pack noch ein
+    Kernverzeichnis" - gefunden im Nachlauf von 1.11.0, als Pruefmittel zweier Zellen.
+    """
+    namen = sorted(n for n in os.listdir(root) if os.path.isdir(os.path.join(root, n)))
+    for name in namen:
+        if _ist_kern(os.path.join(root, name)):
+            return os.path.join(root, name)
+    for name in namen:
+        for unter in sorted(os.listdir(os.path.join(root, name))):
+            kandidat = os.path.join(root, name, unter)
+            if os.path.isdir(kandidat) and _ist_kern(kandidat):
+                return kandidat
     return None
 
 
