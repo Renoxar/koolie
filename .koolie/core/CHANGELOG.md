@@ -2,6 +2,44 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.15.0] - 2026-09-26
+
+**Oeffentliche Verstaendlichkeit und Auffindbarkeit - der Einstieg, und der Spiegel, der schon veroeffentlicht hatte**
+(`CR-2026-154` E1 bis E9, **D-437** bis **D-439**; `K-108` und `K-166` fortgeschrieben). Ein MINOR-Release ohne
+Kontingent: neue Einstiegsdokumente, eine Erweiterung des Validators, kein Eingriff in Regeln, Skills oder Packs.
+
+> 🔴 **DER OEFFENTLICHE GITHUB-SPIEGEL BESTEHT SCHON** (D-439). Das Gitea-Repositorium spiegelt seit 2026-09-26 bei
+> jedem Push in ein oeffentliches GitHub-Repositorium, mit voller Historie, Branches und Marken, ohne Releases.
+> Ob die Historie so oeffentlich bleibt, entscheidet der Owner (`K-108`).
+
+**Geaendert**
+
+- `README.md` beantwortet zuerst sieben Fragen: was Koolie ist, welches Problem es loest, fuer wen es gedacht ist,
+  wie ein Einsatz aussieht (die gemessene Push-Sperre von `claude-code`, als beobachtet gekennzeichnet), welche
+  Clients in welchem Stand unterstuetzt werden (alle vier Packs `pilot`, `openai-codex` mit Auflage, Cursor
+  geplant), wie man beginnt und wo Details und Grenzen stehen. Danach Name, Uebernahme, Aufbau und Wartung;
+  echte Links; kein Warnhinweis entfaellt (D-438).
+- Neu in der Wurzel des Framework-Repositoriums: `QUICKSTART.md` - Koolie in ein leeres Uebungs-Repository
+  installieren und pruefen, ohne einen Client zu starten -, dazu `README.en.md` und `QUICKSTART.en.md`. Deutsch
+  bleibt massgeblich (D-437).
+- `docs/DOCUMENTATION_STANDARD.md` (`0.2.0`) Abschnitt 5: Sprachen und Uebersetzungsbedarf (D-437).
+- Validator: Die Einstiegsdokumente der Wurzel sind Klasse A (`DOK_WURZEL`); die Pruefungen 92 und 93 pruefen sie
+  im Quellrepositorium, Pruefung 94 nimmt sie aus. Sonden `D437b` bis `D437d`, Gegenproben `D437a` und `D437e`
+  (D-437).
+- Hauptdokument Kapitel 29: die Grenze der Sprachfassungen. Roadmap (`0.4.8`): `1.17.0` und `K-166` nachgezogen.
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Die neuen Dokumente liegen in der Wurzel des Framework-Repositoriums und werden in kein Projekt
+  installiert; an der Laufzeitschicht aendert sich nichts.
+
+**Bekannte Einschraenkungen**
+
+- Die Deckung der englischen mit den deutschen Fassungen prueft keine Maschine - ein Verfahrensschritt (D-437).
+  Das Beispiel der README stuetzt sich auf eine Messung vom 2026-09-17 mit Claude Code 2.1.274; es ist nicht
+  neu gemessen. Website, Fachartikel und Sichtbarkeit bleiben vorgemerkt (`K-166`). Die Abnahme des
+  macOS-Starters auf macOS steht weiter aus.
+
 ## [1.14.2] - 2026-09-26
 
 **Die Attributionszeile im Commit-Vorschlag - und die Kurzform, die die ganze Einstellungsdatei verwirft**

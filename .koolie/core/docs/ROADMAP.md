@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.4.7` |
+| Version | `0.4.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.14.2 (2026-09-26)
+## Stand nach Release 1.15.0 (2026-09-26)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -118,10 +118,10 @@ die Störung.**
 | ~~**1.13.0**~~ ✅ | 🟢 **DAS CLIENT PACK FÜR KIRO – MIT ZUGANG GEBAUT, UND DER SCHUTZ-HOOK, DER OHNE GRUND NICHT SPERRTE** (`CR-2026-150`, **D-414** bis **D-418**, **Prüfung 96** neu, `K-147` beantwortet, `K-162` bis `K-164` neu; rund 40 Läufe am Client, 2,9 Credits im Free-Tarif). Der Owner hat den Client während der Sitzung beschafft; das Pack ist deshalb **gemessen statt aus der Dokumentation gebaut** und steht auf `pilot`. Die Berechtigungen stehen in einem **Agentenprofil**, das eine Einstellungsdatei des Arbeitsbereichs wählt – 🔴 **fehlt es oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück** (D-414, Prüfung 96). Das Planartefakt sind die Spezifikationen des Clients (D-415). 🔴 **Der Schutz-Hook sperrte mit der Standardform nichts** – Exit 2 ohne Grund auf stderr lässt der Client laufen; eine dritte Sperrform (D-417). Die Menge der formatgebundenen Prüfungen führte 76 statt 72 (D-416). Die Hooks laufen nur interaktiv; die IDE ist nicht an Sitzungen gemessen (`K-162`) | – | nein |
 | ~~**1.14.0**~~ ✅ | 🟢 **DIE ANWEISUNGEN DER SKILLS GEGEN IHRE MODULE – UND DAS MODELL, DAS DIE ÜBERSCHRIFTEN UMSCHREIBT** (`CR-2026-151`, **D-419** bis **D-424**, `K-153` beantwortet, `K-165` bis `K-168` neu; 57 Sitzungsläufe, 32,32 USD nach Listenpreis). Vier Skills folgen ihrem Modul (Kontakt bei R4, Plan und Freigabe bei Stufe hoch, Planablage nach Zeile M4) und halten auch an einer als K3 erkannten, ungeöffneten Datei an (D-419); „K2 (bereinigt)“ heißt bereinigt und freigegeben (D-420); Prüfung 20 verlangt je Pack eine Spalte (D-421); der Plan nach dem Auftrag des Owners (D-422). 🟢 **`SK-002-N03` trägt.** 🔴 **Sechs andere Zellen gehen auf `offen`** – keine wegen einer Änderung dieses Releases: Mit Opus 5.5 schreibt der Lauf Pflichtüberschriften um (das Prüfmittel vergleicht dafür zusätzlich die Bezeichnung, D-423), verlangt Vorbedingungen strenger, stuft anders ein und meldet zwei Injektionen nicht – eingeplant als `1.14.1` (D-424) | Kriterium 2: **1 → 6** | ja (57 Sitzungsläufe) |
 | ~~**1.14.1**~~ ✅ | 🟢 **DIE TESTBLÄTTER NACH DEM MODELLWECHSEL – UND DIE ÜBERSCHRIFTEN, DIE AUCH ALS BEZEICHNUNG UMGESCHRIEBEN WERDEN** (`CR-2026-152`, **D-425** bis **D-432**, `K-167` und `K-168` beantwortet, `K-169` bis `K-172` neu; 51 Sitzungsläufe, 32,27 USD nach Listenpreis). `fw-change-small` (`0.2.0`) und `fw-refactor` (`0.1.5`) tragen Pflichtüberschriften nur als Bezeichnung (D-426), erlauben die lesenden Git-Befehle wie M3 (D-427) und melden eingebettete Anweisungen unter „Gemeldete Befunde“ (D-428); die Zellen von `fw-plan` und `SK-007-P01` sind gepflegt, `UEB-32` neu (D-429); der Validator berichtet unter cp1252 (D-430); ein Messbaum trägt keine Aufzeichnung mehr, `ohneskill` nimmt auch die Kernfassung (D-425); die Überschriften werden wörtlich übernommen, auch im Folgeturn (D-432). 🟢 **17 von 18 Zellen tragen.** 🔴 `SK-005-P01` bleibt wegen der Attributionszeile des Clients offen – eingeplant als `1.14.2` (D-431) | Kriterium 2: **6 → 1** | ja (51 Sitzungsläufe) |
-| ~~**1.14.2**~~ ✅ | *dieses Release:* 🟢 **DIE ATTRIBUTIONSZEILE IM COMMIT-VORSCHLAG – UND DIE KURZFORM, DIE DIE GANZE EINSTELLUNGSDATEI VERWIRFT** (`CR-2026-153`, **D-433** bis **D-436**, `K-171` beantwortet, `K-173` und `K-174` neu; 5 Sitzungsläufe, 3,28 USD nach Listenpreis). Das Client Pack `claude-code` schaltet die Attributionsvorgabe des Clients ab – in Objektform, weil `attribution: false` ältere Stände der Zielspanne die ganze Einstellungsdatei verwerfen lässt (D-433); `install.py --update` meldet einen deklarierten Zusatzschlüssel, der im Projekt fehlt (D-434); `validate-output.py` erkennt einen KI-Nutzungsvermerk im Commit-Vorschlag (D-435). 🟢 **`SK-005-P01` trägt in zwei unabhängigen Ketten**, belegt ohne Modellurteil an der Vorgabe im Transkript. **Kriterium 2 von D-11 steht auf 0.** Dazu eingeplant: `1.18.0` (D-436) | Kriterium 2: **1 → 0** | ja (5 Sitzungsläufe) |
-| **1.15.0** | **Öffentliche Verständlichkeit und Auffindbarkeit – der Einstieg** (D-422): die README für interessierte Entwickler, technische Verantwortliche und Entwicklungsteams, eine englische Fassung von README und Quickstart, belegbare Erklärungen aus den Fähigkeitsmatrizen, soweit die README sie braucht. Website, Fachartikel, Metadaten und Sichtbarkeit ohne Ziel-Release (`K-166`). **Umfang vor dem Bau mit dem Owner besprechen.** Nach `1.14.2` | – | nein |
+| ~~**1.14.2**~~ ✅ | 🟢 **DIE ATTRIBUTIONSZEILE IM COMMIT-VORSCHLAG – UND DIE KURZFORM, DIE DIE GANZE EINSTELLUNGSDATEI VERWIRFT** (`CR-2026-153`, **D-433** bis **D-436**, `K-171` beantwortet, `K-173` und `K-174` neu; 5 Sitzungsläufe, 3,28 USD nach Listenpreis). Das Client Pack `claude-code` schaltet die Attributionsvorgabe des Clients ab – in Objektform, weil `attribution: false` ältere Stände der Zielspanne die ganze Einstellungsdatei verwerfen lässt (D-433); `install.py --update` meldet einen deklarierten Zusatzschlüssel, der im Projekt fehlt (D-434); `validate-output.py` erkennt einen KI-Nutzungsvermerk im Commit-Vorschlag (D-435). 🟢 **`SK-005-P01` trägt in zwei unabhängigen Ketten**, belegt ohne Modellurteil an der Vorgabe im Transkript. **Kriterium 2 von D-11 steht auf 0.** Dazu eingeplant: `1.18.0` (D-436) | Kriterium 2: **1 → 0** | ja (5 Sitzungsläufe) |
+| ~~**1.15.0**~~ ✅ | *dieses Release:* 🟢 **ÖFFENTLICHE VERSTÄNDLICHKEIT UND AUFFINDBARKEIT – DER EINSTIEG, UND DER SPIEGEL, DER SCHON VERÖFFENTLICHT HATTE** (`CR-2026-154`, **D-437** bis **D-439**, `K-108` und `K-166` fortgeschrieben; ohne Kontingent). Die README beantwortet zuerst sieben Fragen – mit allen vier Packs, dem gemessenen Beispiel der Push-Sperre und echten Links (D-438); ein Quickstart zum Ausprobieren, README und Quickstart auf Englisch, Deutsch bleibt maßgeblich (D-437); die Einstiegsdokumente der Wurzel sind Klasse A und für die Prüfungen 92 und 93 sichtbar. 🔴 **Der öffentliche GitHub-Spiegel besteht schon** und trägt die volle Historie (D-439, `K-108`) | – | nein |
 | **1.16.0** | **Client Pack für Cursor** (D-418, `K-164`): Erhebung und Bau mit Zugang zum Client wie bei `kiro` – Konto, IDE und Kommandozeile sind beim Owner eingerichtet (Free). Nach `1.15.0` | – | nein |
-| **1.17.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`, D-422): Releases auf dem öffentlichen GitHub-Spiegel mit denselben Anhängen, Durchsicht der Historie, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.16.0` | – | nein |
+| **1.17.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`, D-422): Releases auf dem öffentlichen GitHub-Spiegel (besteht seit 2026-09-26, D-439) mit denselben Anhängen, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.16.0` | – | nein |
 | **1.18.0** | **Messapparat und Prüfwerkzeuge – gezielter, günstiger, wartbar** (`K-174`, D-436): Nachläufe mit deterministischer Vorprüfung vor jedem bezahlten Lauf, geteiltem Cache und einem kleineren Modell für reine Mechanikfragen; ein versionierter, parametrisierter Messapparat statt je Release kopierter Skripte; Validator und Sondenskript in Module geteilt, nach anerkannten Regeln für sauberen Code. Auftrag des Owners. Nach `1.17.0`, als letztes Release des Plans | – | nein |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
@@ -214,6 +214,12 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > Vorlagen und die Vorlage des Client Packs; zwei Skills in ihrer Erläuterung berichtigt, keine Anweisung
 > geändert. Die Befunde als Klärungspunkte (`K-148` bis `K-151`).
 
+### Erledigt mit `1.15.0`: Öffentliche Verständlichkeit und Auffindbarkeit – der Einstieg
+
+> 🟢 **Gefahren mit `1.15.0`** (`CR-2026-154`, D-437 bis D-439). README nach sieben Fragen, Quickstart zum
+> Ausprobieren, englische Fassungen von README und Quickstart, Sprachstrategie im Dokumentationsstandard
+> (Abschnitt 5), Einstiegsdokumente der Wurzel als Klasse A. Der Rest des Auftrags bleibt bei `K-166`.
+
 ### Erledigt mit `1.14.2`: Die Attributionszeile im Commit-Vorschlag
 
 > 🟢 **Gefahren mit `1.14.2`** (`CR-2026-153`, D-433 bis D-436). Die Attributionsvorgabe des Clients ist im Client
@@ -231,25 +237,13 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > 🟢 **Gefahren mit `1.14.0`** (`CR-2026-151`, D-419 bis D-424). Vier Skills an ihr Modul angeglichen, der K3-Auslöser
 > präzisiert, 25 Zellen nachgemessen: `SK-002-N03` trägt, sechs andere gehen auf `offen` (→ `1.14.1`).
 
-### Geplant: Öffentliche Verständlichkeit und Auffindbarkeit – Ziel-Release **1.15.0**
-
-Auftrag des Owners vom 2026-09-26, eingegrenzt bei der Annahme von `1.14.0` (D-422). Ziel ist, dass interessierte
-Entwickler, technische Verantwortliche und Entwicklungsteams schnell erkennen, welches Problem Koolie löst, für wen
-es geeignet ist, mit welchen KI-Clients es in welchem Reifegrad arbeitet, was es gegenüber einer einzelnen
-`AGENTS.md` ergänzt, was technisch durchgesetzt wird und was nicht, und wie ein Team es ausprobiert. Gegenstand:
-die README als Einstieg (Deutsch bleibt maßgeblich), eine englische Fassung von README und Quickstart, die
-wechselseitig verlinkt sind und nicht mehr zusagen als das Original, und belegbare Erklärungen, soweit die README
-sie braucht – aus den Fähigkeitsmatrizen abgeleitet, ohne Ranking- oder Sicherheitsversprechen. Ein
-Dokumentationsrelease ohne Kontingent; neue Dokumente folgen `DOCUMENTATION_STANDARD.md` und den Prüfungen 91 bis 94.
-**Vor dem Bau wird der Umfang mit dem Owner noch einmal besprochen**, dazu offen: wie das öffentliche
-GitHub-Repositorium mit dem führenden Gitea-Repositorium zusammenhängt und wer es pflegt; wie englische Texte zu
-Prüfung 92 stehen.
-
 ### Vorgemerkt ohne Ziel-Release: Website, Fachartikel und Sichtbarkeit (`K-166`)
 
 Der Rest desselben Auftrags – eine schlanke deutsche Dokumentationswebsite, drei Fachartikel als Entwürfe,
 GitHub-Metadaten, eine sachliche Behandlung von Suchmaschinen- und KI-Sichtbarkeit und ein Messplan – ist vom Owner
 nach hinten priorisiert (D-422). Veröffentlicht wird nichts ohne ausdrückliche Freigabe.
+Die GitHub-Metadaten sind schon gesetzt; offen sind zwei Korrekturen durch den Owner – das Topic `cursor` bis
+zum Pack und die Schreibweise „AI client packs“ in der Beschreibung (D-439).
 
 ### Vorgemerkt ohne Ziel-Release: Der K3-Auslöser in sieben weiteren Skills (`K-165`)
 
@@ -267,10 +261,10 @@ Auftrag des Owners vom 2026-09-26 (D-418), mit D-422 nach dem Posten zur Verstä
 
 ### Geplant: Veröffentlichung und Installation über Paketquellen – Ziel-Release **1.17.0**
 
-Idee und Auftrag des Owners vom 2026-09-26 (`K-155`, `CR-2026-147` E9), mit D-422 ans Ende des Plans gestellt; seit D-436 folgt ihm `1.18.0`. Gitea bleibt führend; ein öffentliches
-GitHub-Repositorium spiegelt es, beim Push statt alle 24 Stunden. Die Spiegelung trägt Branches und Marken,
-nicht die Releases – das GitHub-Release entsteht in Schritt 7 mit denselben Anhängen. Zuerst die Historie auf
-Veröffentlichbares durchsehen, dann die Paketquellen, naheliegend zuerst PyPI (`pipx`), weil der Installer
+Idee und Auftrag des Owners vom 2026-09-26 (`K-155`, `CR-2026-147` E9), mit D-422 ans Ende des Plans gestellt; seit D-436 folgt ihm `1.18.0`. Gitea bleibt führend; das öffentliche
+GitHub-Repositorium spiegelt es seit 2026-09-26 bei jedem Push (D-439). Die Spiegelung trägt
+Branches und Marken, nicht die Releases – das GitHub-Release entsteht in Schritt 7 mit denselben Anhängen. Die
+Historie ist damit schon öffentlich; ob sie so bleibt, entscheidet der Owner (`K-108`). Dann die Paketquellen, naheliegend zuerst PyPI (`pipx`), weil der Installer
 Python ist; dazu Absicherung der Lieferkette und der Hinweis in README und Übernahmeleitfaden.
 
 ### Geplant: Messapparat und Prüfwerkzeuge – gezielter, günstiger, wartbar – Ziel-Release **1.18.0**

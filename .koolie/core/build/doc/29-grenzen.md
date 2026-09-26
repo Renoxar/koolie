@@ -25,6 +25,10 @@
 >   Projekt von selbst** (seit Release 1.14.2, D-433, D-434): `.claude/settings.local.json` holt sie
 >   zurück; `install.py --update` meldet den fehlenden Schlüssel, schreibt ihn aber nicht. Ob die
 >   übrigen Clients einen Vermerk vorgeben, ist nicht erhoben (`K-173`).
+> - **Englisch gibt es nur für den Einstieg** (seit Release 1.15.0, D-437): README und Quickstart des
+>   Framework-Repositoriums haben eine englische Fassung; die übrige Dokumentation, die Laufzeitregeln und
+>   die Meldungen der Werkzeuge sind deutsch. Die englischen Fassungen prüft eine Maschine nur in ihrer
+>   Form, nicht in ihrer Deckung mit dem deutschen Original.
 > - **Die Regelablage von `devin-desktop` lädt nur, weil das Pack Windsurf-Quellen zulässt**
 >   (seit Release 1.12.1, D-411): Mit `read_config_from.windsurf: false` lädt der Client die
 >   eigene Regelablage nicht – gegen seine Dokumentation (`K-156`). Mit `true` erreicht auch eine
