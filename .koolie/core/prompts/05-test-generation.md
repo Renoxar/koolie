@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-005` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
@@ -32,7 +32,7 @@ Die Vorlage erstellt oder erweitert automatisierte Tests für eine benannte Komp
 | Parameter | Pflicht | Kontextklasse | Beschreibung |
 |---|---|---|---|
 | `{komponente}` | MUSS | K1 | Klasse, Modul oder Datei in `<ALLOWED_PATHS>`; bei mehreren Treffern stellt der KI-Client eine Rückfrage |
-| `{erwartetes_verhalten}` | SOLL | K1 oder K2 (bereinigt) | Fachliche Erwartungen: Normalfall, Randbedingungen (Grenzwerte, Leerwerte, inklusiv oder exklusiv), Fehlerfälle mit erwarteter Reaktion; fehlt die Angabe, werden nur aus Code und Dokumentation belegbare Erwartungen getestet und als Vorschlag gekennzeichnet |
+| `{erwartetes_verhalten}` | SOLL | K1 oder K2 (bereinigt und freigegeben, `02-privacy.md` Abschnitt 4) | Fachliche Erwartungen: Normalfall, Randbedingungen (Grenzwerte, Leerwerte, inklusiv oder exklusiv), Fehlerfälle mit erwarteter Reaktion; fehlt die Angabe, werden nur aus Code und Dokumentation belegbare Erwartungen getestet und als Vorschlag gekennzeichnet |
 | `{kontrollstufe}` | MUSS | K1 | niedrig, mittel oder hoch – durch den Menschen festgelegt |
 | `{faktor}` | MUSS | K1 | Auslösender Risikofaktor R1–R13 |
 | `{bestehende_tests}` | KANN | K1 | Pfade vorhandener Tests der Komponente; fehlt die Angabe, ermittelt der KI-Client sie per Suche |

@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-004` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
@@ -33,7 +33,7 @@ Die Vorlage setzt eine bestätigte, klar abgegrenzte Änderung in kleinen, nachv
 |---|---|---|---|
 | `{plan_referenz}` | MUSS ab mittel | K1 | Referenz auf den bestätigten Plan mit Bestätigungsvermerk; ab Stufe mittel ohne Referenz keine Änderung; bei niedrig „keiner" |
 | `{schritte}` | MUSS | K1 | Nummern der Planschritte, die in dieser Sitzung umgesetzt werden (ein logischer Schritt je Änderung); bei niedrig ohne Plan „aus der Aufgabe abzuleiten" |
-| `{aufgabe}` | MUSS | K2 (bereinigt) | Kurzfassung des Ziels dieser Sitzung mit Akzeptanzkriterien; genau ein Ziel (Q1) |
+| `{aufgabe}` | MUSS | K2 (bereinigt und freigegeben, `02-privacy.md` Abschnitt 4) | Kurzfassung des Ziels dieser Sitzung mit Akzeptanzkriterien; genau ein Ziel (Q1) |
 | `{kontrollstufe}` | MUSS | K1 | niedrig, mittel oder hoch – durch den Menschen festgelegt |
 | `{faktor}` | MUSS | K1 | Auslösender Risikofaktor R1–R13 |
 | `{scope_pfade}` | MUSS | K1 | Konkrete Dateien oder Verzeichnisse innerhalb `<ALLOWED_PATHS>`, die geändert werden dürfen |

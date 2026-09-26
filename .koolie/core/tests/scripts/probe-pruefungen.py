@@ -731,6 +731,16 @@ sonde("20", "Ein verfaelschter Pfad im Laufzeitglossar weicht vom Manifest des P
 gegenprobe("20", "Begriff ohne Manifestfeld und eingebettete Hook-Datei bleiben unbeanstandet",
            None, "das Manifest fuehrt")
 
+# D-421: Ein Pack ohne Spalte fiel still aus dem Abgleich - mit 1.13.0 fuehrten beide
+# Tabellen kiro nicht. Die Sonde benennt die Spalte um; der Wert darunter bleibt stehen.
+sonde("20", "Eine Tabelle ohne Spalte fuer ein Pack mit Manifest wird gemeldet",
+      lambda r: schreib(P(r, ".koolie/core/docs/RUNTIME_GLOSSARY.md".replace("/", os.sep)),
+                        lies(P(r, ".koolie/core/docs/RUNTIME_GLOSSARY.md".replace("/", os.sep)))
+                        .replace("| `openai-codex` | `kiro` |", "| `openai-codex` | `kiro-alt` |", 1)),
+      "die Tabelle fuehrt keine Spalte fuer 'kiro'")
+
+gegenprobe("20", "Beide Tabellen fuehren je Pack eine Spalte", None, "fuehrt keine Spalte")
+
 # --- 21: Hook-Skripte neutral ----------------------------------------------------
 sonde("21", "Eine clientgebundene Umgebungsvariable im gemeinsamen Hook-Skript bindet es an "
       "ein Pack und wird gemeldet",
@@ -9013,6 +9023,31 @@ def selbstprobe_ausgesetzt() -> None:
     noetig = vo.extract_required_headings(geruest)
     melde("SELBSTPROBE", "A7", noetig == ["titel", "anforderungen ears", "arbeitspakete"],
           "Die Pflichtabschnitte kommen aus dem Geruest der SKILL.md, normalisiert")
+
+    # 1.14.0 (D-423): die BEZEICHNUNG zaehlt zusaetzlich - ohne Klammerzusatz, und die
+    # Anrede gilt als "fuer den Menschen". Gemessen an den Belegen vom 2026-09-26; die
+    # Faelle A10 und A11 sind die Gegenbeweise: ein anderes Wort und ein fehlender
+    # Abschnitt bleiben Befunde.
+    geruest = ("## 5. Ausgabeformat\n\n```markdown\n### Annahmen (gekennzeichnet) und offene "
+               "Fragen\n\n### Abweichungen vom Plan oder Scope\n\n### Nächster Schritt für "
+               "den Menschen\n```\n")
+    faelle_b = [
+        ("### Annahmen und offene Fragen\n\n### Abweichungen vom Plan oder Scope\n\n"
+         "### Nächster Schritt für dich\n", [], "A8",
+         "Ohne Klammerzusatz und mit Anrede ist der Abschnitt da (der Fall von sk004p01)"),
+        ("### Annahmen (gekennzeichnet) und offene Fragen\n\n### Abweichungen vom Plan "
+         "oder Scope\n\n### Nächster Schritt für Sie\n", [], "A9",
+         "'fuer Sie' gilt wie 'fuer dich' als 'fuer den Menschen'"),
+        ("### Annahmen und offene Fragen\n\n### Abweichungen vom Scope\n\n"
+         "### Nächster Schritt für dich\n", ["abweichungen vom plan oder scope"], "A10",
+         "Ein anderes Wort bleibt ein Befund (der Fall von sk005p01)"),
+        ("### Annahmen und offene Fragen\n\n### Nächster Schritt für dich\n",
+         ["abweichungen vom plan oder scope"], "A11",
+         "Ein fehlender Abschnitt bleibt ein Befund"),
+    ]
+    for text, erwartet, nummer, satz in faelle_b:
+        melde("SELBSTPROBE", nummer,
+              vo.fehlende_pflichtabschnitte(geruest, text) == erwartet, satz)
 
 
 buendel(selbstprobe_ausgesetzt,

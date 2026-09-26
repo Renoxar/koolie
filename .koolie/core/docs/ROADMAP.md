@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.4.4` |
+| Version | `0.4.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.13.0 (2026-09-26)
+## Stand nach Release 1.14.0 (2026-09-26)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -22,7 +22,7 @@ validiert und übertragbar".* Fünf Kriterien, alle im Einflussbereich des Frame
 Pilot, Onboarding und organisatorische Freigabe sind **ausdrücklich keine** Vorbedingung,
 sondern Aufgabe der aufnehmenden Organisation.
 
-**Gezählt von Prüfung 46: Kriterium 1 = 0, Kriterium 2 = 1, Kriterium 3 = 0, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 0, Kriterium 2 = 6, Kriterium 3 = 0, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
@@ -112,13 +112,15 @@ die Störung.**
 | ~~**1.9.2**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, ZWEITER BEREICH – UND DAS BUDGET STATT DER GRENZE** (`CR-2026-144`, **D-385** bis **D-392**, `K-128` und `K-130` bis `K-135` beantwortet, `K-138` bis `K-145` neu). `governance/` ohne die Register, `checklists/`, `decision-trees/` und `prompts/` durchgesehen, die Herleitungen in `RELEASE_PROCESS.md` und `FRAMEWORK_DEV_PROFILE.md` auf die Regel mit Verweis gekürzt, kein Regelinhalt geändert (D-385). Prüfung 4 macht die Summe des stets Geladenen verbindlich (40.000 Zeichen, jedes Pack) und die Grenze je Datei zur Warnung (D-387); D-10 schließt den Betrieb ohne beobachtende Person aus, nicht eine Oberfläche (D-386); sechs Befunde aus `1.9.1` in Core-Modulen und Laufzeit entschieden (D-388 bis D-392) | – | nein |
 | ~~**1.9.3**~~ ✅ | 🟢 **DIE DURCHSICHT DER KLASSE B, DRITTER BEREICH – UND DIE ANWEISUNG, DIE STEHEN BLEIBT** (`CR-2026-145`, **D-393** bis **D-394**, `K-146` bis `K-151` neu). Die Skills, die Vorlagen und die Vorlage des Client Packs durchgesehen; in einer `SKILL.md` keine Anweisung geändert, damit bleiben alle Ergebniszellen abgenommen (D-393, D-303). Zwei Skills in ihrer Erläuterung berichtigt, `SKILL_TEMPLATE.md` an `08-skill-conventions.md` angeglichen, Herleitung in `CLIENT_PACK.md` und `OVERLAY.md` auf den Verweis gekürzt. Vier abgenommene Zellen, deren Ergebnis ihre Erwartung nicht deckt, als `K-148`; ein Client Pack für Kiro als `K-147` vorgemerkt | – | nein |
 | ~~**1.10.0**~~ ✅ | 🟢 **DIE CODE- UND PACK-POSTEN DER DURCHSICHT – UND DER HOOK, DEM NACH JEDER HEBUNG NEU VERTRAUT WERDEN MUSS** (`CR-2026-146`, **D-395** bis **D-401**, `K-123`, `K-125`, `K-127`, `K-129`, `K-136`, `K-137`, `K-145` und `K-151` beantwortet, `K-152` neu). `install.py` nennt die Schritte, die das Manifest eines Packs führt – bei `openai-codex` das Vertrauen in Projekt und Schutz-Hook, nach jeder Hebung erneut (D-395); das Hauptdokument bettet alle drei Matrizen ein und die Berechtigungsdatei in ihrer Form (D-396); `--mermaid` ruft den Renderer wie der Bau auf (D-398); die Einzelbefunde der Packs und die Vorlage des Client Packs sind nachgezogen (D-397, D-399); das Onboarding braucht drei Präparationen (D-400); Kiro für `1.12.0` eingeplant, aus der Dokumentation (D-401) | – | nein |
-| ~~**1.11.0**~~ ✅ | 🟢 **DIE REGEL- UND REGISTERPOSTEN DER DURCHSICHT – UND DIE ZELLEN, DIE IHRE ERWARTUNG NICHT DECKTEN** (`CR-2026-147`, **D-402** bis **D-406**, **Prüfung 95** neu, `K-139` bis `K-143`, `K-146`, `K-148` bis `K-150` beantwortet, `K-153` bis `K-155` neu). Prompts, Checklisten, Entscheidungsbäume und Governance-Dokumente folgen ihrem Core-Modul, in beiden Richtungen (D-402); Prüfung 95 verlangt im Änderungsverlauf eines Skills die Art der Änderung (D-403); von vier abgenommenen Zellen trägt eine im Nachlauf, eine bleibt `offen` – **Kriterium 2 steht auf 1** –, eine ist berichtigt, bei einer war es die Präparation (D-404); die Register der Skills sind berichtigt (D-405); der Mehrprojektfall und die Token-Last sind abgespalten, `K-153` für `1.14.0` eingeplant (D-406) | – | nein |
+| ~~**1.11.0**~~ ✅ | 🟢 **DIE REGEL- UND REGISTERPOSTEN DER DURCHSICHT – UND DIE ZELLEN, DIE IHRE ERWARTUNG NICHT DECKTEN** (`CR-2026-147`, **D-402** bis **D-406**, **Prüfung 95** neu, `K-139` bis `K-143`, `K-146`, `K-148` bis `K-150` beantwortet, `K-153` bis `K-155` neu). Prompts, Checklisten, Entscheidungsbäume und Governance-Dokumente folgen ihrem Core-Modul, in beiden Richtungen (D-402); Prüfung 95 verlangt im Änderungsverlauf eines Skills die Art der Änderung (D-403); von vier abgenommenen Zellen trägt eine im Nachlauf, eine bleibt `offen` – **Kriterium 2 steht auf 1** –, eine ist berichtigt, bei einer war es die Präparation (D-404); die Register der Skills sind berichtigt (D-405); der Mehrprojektfall und die Token-Last sind abgespalten, `K-153` für `1.14.0` eingeplant (D-406) | Kriterium 2: **0 → 1** (nachgetragen mit `1.14.0`) | ja (7 Sitzungsläufe) |
 | ~~**1.12.0**~~ ✅ | 🟢 **DER MEHRPROJEKTFALL UND DIE TOKEN-LAST – GEMESSEN, UND DIE REGELABLAGE, DIE NICHT LUD** (`CR-2026-148`, **D-407** bis **D-410**, `K-138`, `K-144` (1) und (3) und `K-154` beantwortet, `K-156` bis `K-159` neu; 102 Sitzungsläufe, 10,56 USD nach Listenpreis). Der Messapparat findet den Kern wieder (D-407); eine Installation wirkt technisch nur für eine Sitzung, die in ihrem Verzeichnis startet – bei allen drei Packs; je Repository eine Installation (D-408); die Token-Last ist je Pack gemessen, der Kostenabschnitt steht im Übernahmeleitfaden und im Hauptdokument (D-409). 🔴 **Dabei gefunden:** Bei `devin-desktop` lädt die Regelablage mit der ausgelieferten Einstellung nicht (`K-156`), `openai-codex` 0.157.0 ignoriert die Pfadeinträge des Rechteprofils (`K-157`) – eingeplant als `1.12.1` (D-410) | – | ja (102 Sitzungsläufe) |
 | ~~**1.12.1**~~ ✅ | 🟢 **DIE REGELABLAGE, DIE NUR MIT WINDSURF LÄDT, UND DAS SONDERZIEL, DAS UMBENANNT WURDE** (`CR-2026-149`, **D-411** bis **D-413**, `K-156` und `K-157` beantwortet, `K-160` und `K-161` neu; 24 Sitzungsläufe, 0,65 USD nach Listenpreis). `devin-desktop` lässt Windsurf-Quellen zu, weil der Client die eigene Regelablage sonst nicht lädt – auch nicht in 3000.11.3 –, und `install.py` meldet die Kanäle, die das öffnet (D-411); `openai-codex` führt den Arbeitsbereich als Tabelle `:workspace_roots` – mit der alten Form war er unter 0.157 ganz schreibgeschützt (D-412) | – | ja (24 Sitzungsläufe) |
-| ~~**1.13.0**~~ ✅ | *dieses Release:* 🟢 **DAS CLIENT PACK FÜR KIRO – MIT ZUGANG GEBAUT, UND DER SCHUTZ-HOOK, DER OHNE GRUND NICHT SPERRTE** (`CR-2026-150`, **D-414** bis **D-418**, **Prüfung 96** neu, `K-147` beantwortet, `K-162` bis `K-164` neu; rund 40 Läufe am Client, 2,9 Credits im Free-Tarif). Der Owner hat den Client während der Sitzung beschafft; das Pack ist deshalb **gemessen statt aus der Dokumentation gebaut** und steht auf `pilot`. Die Berechtigungen stehen in einem **Agentenprofil**, das eine Einstellungsdatei des Arbeitsbereichs wählt – 🔴 **fehlt es oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück** (D-414, Prüfung 96). Das Planartefakt sind die Spezifikationen des Clients (D-415). 🔴 **Der Schutz-Hook sperrte mit der Standardform nichts** – Exit 2 ohne Grund auf stderr lässt der Client laufen; eine dritte Sperrform (D-417). Die Menge der formatgebundenen Prüfungen führte 76 statt 72 (D-416). Die Hooks laufen nur interaktiv; die IDE ist nicht an Sitzungen gemessen (`K-162`) | – | nein |
-| **1.14.0** | **Die Anweisungen der Skills gegen ihre Module** (D-406, `K-153`): `fw-change-small` (Kontakt bei R4), `fw-refactor` (Plan oder Freigabe bei Stufe hoch), `fw-error-analyze` (K2 nur mit Freigabe), `fw-plan` (Planablage gegen Zeile M4), `fw-code-explain` (Anhalten bei einer gekennzeichneten K3-Fixture, Zelle `SK-002-N03` offen); dazu die Prompts `02` bis `05`. Jede Anweisungsänderung öffnet ein Testblatt (D-303) – mit Nachlauf und Kontingent. Nach `1.13.0` | – | nein |
-| **1.15.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`): Releases auf dem öffentlichen GitHub-Spiegel mit denselben Anhängen, Durchsicht der Historie, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.14.0` | – | nein |
-| **1.16.0** | **Client Pack für Cursor** (D-418, `K-164`): Erhebung und Bau mit Zugang zum Client wie bei `kiro` – Konto, IDE und Kommandozeile sind beim Owner eingerichtet (Free). Nach `1.15.0`, als letztes Release des Plans | – | nein |
+| ~~**1.13.0**~~ ✅ | 🟢 **DAS CLIENT PACK FÜR KIRO – MIT ZUGANG GEBAUT, UND DER SCHUTZ-HOOK, DER OHNE GRUND NICHT SPERRTE** (`CR-2026-150`, **D-414** bis **D-418**, **Prüfung 96** neu, `K-147` beantwortet, `K-162` bis `K-164` neu; rund 40 Läufe am Client, 2,9 Credits im Free-Tarif). Der Owner hat den Client während der Sitzung beschafft; das Pack ist deshalb **gemessen statt aus der Dokumentation gebaut** und steht auf `pilot`. Die Berechtigungen stehen in einem **Agentenprofil**, das eine Einstellungsdatei des Arbeitsbereichs wählt – 🔴 **fehlt es oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück** (D-414, Prüfung 96). Das Planartefakt sind die Spezifikationen des Clients (D-415). 🔴 **Der Schutz-Hook sperrte mit der Standardform nichts** – Exit 2 ohne Grund auf stderr lässt der Client laufen; eine dritte Sperrform (D-417). Die Menge der formatgebundenen Prüfungen führte 76 statt 72 (D-416). Die Hooks laufen nur interaktiv; die IDE ist nicht an Sitzungen gemessen (`K-162`) | – | nein |
+| ~~**1.14.0**~~ ✅ | *dieses Release:* 🟢 **DIE ANWEISUNGEN DER SKILLS GEGEN IHRE MODULE – UND DAS MODELL, DAS DIE ÜBERSCHRIFTEN UMSCHREIBT** (`CR-2026-151`, **D-419** bis **D-424**, `K-153` beantwortet, `K-165` bis `K-168` neu; 57 Sitzungsläufe, 32,32 USD nach Listenpreis). Vier Skills folgen ihrem Modul (Kontakt bei R4, Plan und Freigabe bei Stufe hoch, Planablage nach Zeile M4) und halten auch an einer als K3 erkannten, ungeöffneten Datei an (D-419); „K2 (bereinigt)“ heißt bereinigt und freigegeben (D-420); Prüfung 20 verlangt je Pack eine Spalte (D-421); der Plan nach dem Auftrag des Owners (D-422). 🟢 **`SK-002-N03` trägt.** 🔴 **Sechs andere Zellen gehen auf `offen`** – keine wegen einer Änderung dieses Releases: Mit Opus 5.5 schreibt der Lauf Pflichtüberschriften um (das Prüfmittel vergleicht dafür zusätzlich die Bezeichnung, D-423), verlangt Vorbedingungen strenger, stuft anders ein und meldet zwei Injektionen nicht – eingeplant als `1.14.1` (D-424) | Kriterium 2: **1 → 6** | ja (57 Sitzungsläufe) |
+| **1.14.1** | **Die Testblätter nach dem Modellwechsel** (D-424, `K-167`, `K-168`): die sechs offenen Zellen – `SK-004-P02`, `-N02`, `-N04` (Aufrufe und Übungsaufgabe an Vorbedingung 2 und die Stufe anpassen), `SK-005-P01`, `SK-007-P01` (Überschrift, Einstufung nach R3, Befehlsgrenze gegen den `allow`-Korb), `SK-005-N04` (Injektion nicht gemeldet) –; der Zuschnitt `ohneskill` ohne die Kernfassung des Skills; die Aufzeichnungen im Messbaum, die Präparationen verraten; der Berichtsweg des Validators unter cp1252. Mit Nachlauf und Kontingent. Nach `1.14.0` | Kriterium 2: **6 → 0** | ja |
+| **1.15.0** | **Öffentliche Verständlichkeit und Auffindbarkeit – der Einstieg** (D-422): die README für interessierte Entwickler, technische Verantwortliche und Entwicklungsteams, eine englische Fassung von README und Quickstart, belegbare Erklärungen aus den Fähigkeitsmatrizen, soweit die README sie braucht. Website, Fachartikel, Metadaten und Sichtbarkeit ohne Ziel-Release (`K-166`). **Umfang vor dem Bau mit dem Owner besprechen.** Nach `1.14.1` | – | nein |
+| **1.16.0** | **Client Pack für Cursor** (D-418, `K-164`): Erhebung und Bau mit Zugang zum Client wie bei `kiro` – Konto, IDE und Kommandozeile sind beim Owner eingerichtet (Free). Nach `1.15.0` | – | nein |
+| **1.17.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`, D-422): Releases auf dem öffentlichen GitHub-Spiegel mit denselben Anhängen, Durchsicht der Historie, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.16.0`, als letztes Release des Plans | – | nein |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -210,21 +212,46 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > Vorlagen und die Vorlage des Client Packs; zwei Skills in ihrer Erläuterung berichtigt, keine Anweisung
 > geändert. Die Befunde als Klärungspunkte (`K-148` bis `K-151`).
 
-### Geplant: Die Anweisungen der Skills gegen ihre Module – Ziel-Release **1.14.0**
+### Geplant: Die Testblätter nach dem Modellwechsel – Ziel-Release **1.14.1**
 
-Auftrag des Owners vom 2026-09-25 während `1.11.0`: `K-153` nach dem Client Pack für Kiro (D-406). Gegenstand sind
-vier Anweisungen, die `1.11.0` nicht ändern durfte, weil jede ein Testblatt öffnet (D-303): der Kontakt bei R4 in
-`fw-change-small`, Plan oder Freigabe bei Stufe hoch in `fw-refactor`, K2 ohne Freigabe in `fw-error-analyze`
-und die feste Planablage in `fw-plan`; dazu die Prompts `02` bis `05`. Vor dem Bau zu klären: welche Zellen
-die Änderung öffnet und was der Nachlauf kostet.
+Eingeplant mit D-424 nach dem Nachlauf von `1.14.0`. Sechs Zellen tragen nicht, und keine wegen einer Änderung an
+ihrem Skill: Der Lauf mit Opus 5.5 verlangt Vorbedingung 2 streng (`SK-004-N02`, `-N04`), meldet eine zu hohe Stufe
+für eine Übungsaufgabe, die sie nicht trägt (`SK-004-P02`), schreibt eine Pflichtüberschrift in ein anderes Wort um
+(`SK-005-P01`, `SK-007-P01`), stuft `isbn.ts` ohne R3 ein und ruft lesende `git`-Befehle aus dem `allow`-Korb auf
+(`SK-007-P01`) und meldet zwei eingebettete Anweisungen nicht (`SK-005-N04`). Dazu am Messapparat: Der Zuschnitt
+`ohneskill` lässt die Kernfassung des Skills lesbar, und die Aufzeichnungen im Messbaum verraten Präparationen
+(`K-167`); der Validator bricht unter cp1252 an einer Meldung mit Emoji ab (`K-168`). Vor dem Bau: welche Zelle wird
+gepflegt, welche Anweisung präzisiert – jede Anweisungsänderung öffnet ihr Testblatt (D-303).
 
-### Geplant: Veröffentlichung und Installation über Paketquellen – Ziel-Release **1.15.0**
+### Erledigt mit `1.14.0`: Die Anweisungen der Skills gegen ihre Module
 
-Idee und Auftrag des Owners vom 2026-09-26 (`K-155`, `CR-2026-147` E9). Gitea bleibt führend; ein öffentliches
-GitHub-Repositorium spiegelt es, beim Push statt alle 24 Stunden. Die Spiegelung trägt Branches und Marken,
-nicht die Releases – das GitHub-Release entsteht in Schritt 7 mit denselben Anhängen. Zuerst die Historie auf
-Veröffentlichbares durchsehen, dann die Paketquellen, naheliegend zuerst PyPI (`pipx`), weil der Installer
-Python ist; dazu Absicherung der Lieferkette und der Hinweis in README und Übernahmeleitfaden.
+> 🟢 **Gefahren mit `1.14.0`** (`CR-2026-151`, D-419 bis D-424). Vier Skills an ihr Modul angeglichen, der K3-Auslöser
+> präzisiert, 25 Zellen nachgemessen: `SK-002-N03` trägt, sechs andere gehen auf `offen` (→ `1.14.1`).
+
+### Geplant: Öffentliche Verständlichkeit und Auffindbarkeit – Ziel-Release **1.15.0**
+
+Auftrag des Owners vom 2026-09-26, eingegrenzt bei der Annahme von `1.14.0` (D-422). Ziel ist, dass interessierte
+Entwickler, technische Verantwortliche und Entwicklungsteams schnell erkennen, welches Problem Koolie löst, für wen
+es geeignet ist, mit welchen KI-Clients es in welchem Reifegrad arbeitet, was es gegenüber einer einzelnen
+`AGENTS.md` ergänzt, was technisch durchgesetzt wird und was nicht, und wie ein Team es ausprobiert. Gegenstand:
+die README als Einstieg (Deutsch bleibt maßgeblich), eine englische Fassung von README und Quickstart, die
+wechselseitig verlinkt sind und nicht mehr zusagen als das Original, und belegbare Erklärungen, soweit die README
+sie braucht – aus den Fähigkeitsmatrizen abgeleitet, ohne Ranking- oder Sicherheitsversprechen. Ein
+Dokumentationsrelease ohne Kontingent; neue Dokumente folgen `DOCUMENTATION_STANDARD.md` und den Prüfungen 91 bis 94.
+**Vor dem Bau wird der Umfang mit dem Owner noch einmal besprochen**, dazu offen: wie das öffentliche
+GitHub-Repositorium mit dem führenden Gitea-Repositorium zusammenhängt und wer es pflegt; wie englische Texte zu
+Prüfung 92 stehen.
+
+### Vorgemerkt ohne Ziel-Release: Website, Fachartikel und Sichtbarkeit (`K-166`)
+
+Der Rest desselben Auftrags – eine schlanke deutsche Dokumentationswebsite, drei Fachartikel als Entwürfe,
+GitHub-Metadaten, eine sachliche Behandlung von Suchmaschinen- und KI-Sichtbarkeit und ein Messplan – ist vom Owner
+nach hinten priorisiert (D-422). Veröffentlicht wird nichts ohne ausdrückliche Freigabe.
+
+### Vorgemerkt ohne Ziel-Release: Der K3-Auslöser in sieben weiteren Skills (`K-165`)
+
+`1.14.0` hat den Auslöser nur in den vier Skills präzisiert, deren Testblätter ohnehin nachgemessen wurden
+(D-419). Die übrigen sieben ziehen mit ihrer nächsten Anweisungsänderung nach.
 
 ### Vorgemerkt ohne Ziel-Release: Übungs- und Meßrepositorium trennen (`K-152`)
 
@@ -233,7 +260,15 @@ nur das erste (D-400). Getrennt wird, sobald ein zweites Projekt ein Übungsrepo
 
 ### Geplant: Client Pack für Cursor – Ziel-Release **1.16.0**
 
-Auftrag des Owners vom 2026-09-26 (D-418), eingeplant am Ende des Releaseplans. **Gebaut wird wie `kiro`:** mit Zugang zum Client – Konto (Free), IDE und Kommandozeile sind eingerichtet – erst die Entscheidungsfragen mit Schätzung, dann Messung und Pack. Die Lehren aus `1.13.0` gehören in den Vorbedingungsdurchgang: Wo liegt die Berechtigungsdatei des Arbeitsbereichs, und ist sie versionierbar? Laufen die Hooks auch im Betrieb ohne Rückfragen? **Und woran erkennt der Client eine Sperre des Schutz-Hooks** – am Exit-Code, am Grund oder an einer Ausgabeform (D-347, D-417)?
+Auftrag des Owners vom 2026-09-26 (D-418), mit D-422 nach dem Posten zur Verständlichkeit eingeplant. **Gebaut wird wie `kiro`:** mit Zugang zum Client – Konto (Free), IDE und Kommandozeile sind eingerichtet – erst die Entscheidungsfragen mit Schätzung, dann Messung und Pack. Die Lehren aus `1.13.0` gehören in den Vorbedingungsdurchgang: Wo liegt die Berechtigungsdatei des Arbeitsbereichs, und ist sie versionierbar? Laufen die Hooks auch im Betrieb ohne Rückfragen? **Und woran erkennt der Client eine Sperre des Schutz-Hooks** – am Exit-Code, am Grund oder an einer Ausgabeform (D-347, D-417)?
+
+### Geplant: Veröffentlichung und Installation über Paketquellen – Ziel-Release **1.17.0**
+
+Idee und Auftrag des Owners vom 2026-09-26 (`K-155`, `CR-2026-147` E9), mit D-422 als letztes Release ans Ende des Plans gestellt. Gitea bleibt führend; ein öffentliches
+GitHub-Repositorium spiegelt es, beim Push statt alle 24 Stunden. Die Spiegelung trägt Branches und Marken,
+nicht die Releases – das GitHub-Release entsteht in Schritt 7 mit denselben Anhängen. Zuerst die Historie auf
+Veröffentlichbares durchsehen, dann die Paketquellen, naheliegend zuerst PyPI (`pipx`), weil der Installer
+Python ist; dazu Absicherung der Lieferkette und der Hinweis in README und Übernahmeleitfaden.
 
 ### Erledigt mit `1.9.2`: Durchsicht der Klasse B, zweiter Bereich
 

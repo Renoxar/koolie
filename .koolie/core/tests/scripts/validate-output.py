@@ -13,6 +13,8 @@ Prüft:
      AUSGESETZT ZAEHLT ALS VORHANDEN (K-90, D-258): Steht die Ueberschrift und traegt ihr
      Abschnitt ein ausgewiesenes "<TBD: ausgesetzt, ...>", ist das KEIN Befund. Ein
      Abschnitt, der schlicht fehlt, bleibt einer.
+     BEZEICHNUNG STATT WORTLAUT, ZUSAETZLICH (D-423): ohne Klammerzusatz, und "fuer
+     dich/Sie" gilt als "fuer den Menschen" - ein anderes Wort bleibt ein Befund.
        Gemessen am 2026-09-22: RE-001-P02 zog fuenf Abschnitte zu EINER Ueberschrift
        zusammen und wies den Inhalt aus - das Pruefmittel meldete drei Befunde fuer
        genau das richtige Verhalten, bei RE-001-N04 vier. Die Trennlinie ist ein
@@ -169,6 +171,50 @@ def extract_required_headings(skill_md: str) -> list[str]:
     return [normalize_heading(h) for h in headings if normalize_heading(h)]
 
 
+def extract_required_raw(skill_md: str) -> list[str]:
+    m = re.search(r"^## 5\. Ausgabeformat.*?```(?:markdown)?\n(.*?)```", skill_md, re.S | re.M)
+    if not m:
+        return []
+    return [h for h in re.findall(r"^#{2,3}\s+(.+)$", m.group(1), re.M) if normalize_heading(h)]
+
+
+# DIE BEZEICHNUNG EINER UEBERSCHRIFT (1.14.0, D-423). Eine Pflichtueberschrift traegt
+# oft einen Hinweis in Klammern ("Annahmen (gekennzeichnet) und offene Fragen",
+# "Commit-Nachrichtenvorschlag (...; Commit durch den Menschen)") und benennt den
+# Menschen in der dritten Person. Gemessen am 2026-09-26 mit Opus 5.5: Der Lauf behandelt
+# beides als Anweisung und schreibt es in die Anrede um ("Naechster Schritt fuer dich",
+# "(Commit erstellen Sie)") - der Abschnitt ist da, der Wortlaut nicht; dieselbe Bauform
+# wie D-194. Verglichen wird deshalb ZUSAETZLICH die Bezeichnung: ohne Klammerzusatz,
+# und "fuer dich/Sie/euch" gilt als "fuer den Menschen". Mehr nicht - ein anderes Wort
+# (etwa "Abweichungen vom Scope" statt "vom Plan oder Scope") bleibt ein Befund, und ein
+# Abschnitt, der fehlt, bleibt einer.
+ANREDE_RE = re.compile(r"\bfür (dich|sie|euch)\b")
+
+
+def bezeichnung(h: str) -> str:
+    return ANREDE_RE.sub("für den menschen", normalize_heading(re.sub(r"\([^)]*\)", " ", h)))
+
+
+def fehlende_pflichtabschnitte(skill_md: str, output: str) -> list[str]:
+    roh = re.findall(r"^#{2,3}\s+(.+)$", output, re.M)
+    norm_output_headings = {normalize_heading(h) for h in roh}
+    bez_output = {bezeichnung(h) for h in roh if bezeichnung(h)}
+    ausgesetzt = ausgesetzte_ueberschriften(output)
+    fehlend = []
+    for roh_req in extract_required_raw(skill_md):
+        req = normalize_heading(roh_req)
+        if any(req in got or got in req for got in norm_output_headings if got):
+            continue
+        bz = bezeichnung(roh_req)
+        if bz and any(bz == got or bz in got for got in bez_output):
+            continue
+        # AUSGESETZT ZAEHLT ALS VORHANDEN - aber nur ausgewiesen (K-90, D-258).
+        if any(req in a or a in req for a in ausgesetzt if a):
+            continue
+        fehlend.append(req)
+    return fehlend
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skill", required=True)
@@ -182,17 +228,8 @@ def main() -> int:
         return 1
     skill_md = open(skill_path, encoding="utf-8").read()
     output = open(args.file, encoding="utf-8").read() if args.file else sys.stdin.read()
-    norm_output_headings = {normalize_heading(h) for h in re.findall(r"^#{2,3}\s+(.+)$", output, re.M)}
-    findings: list[str] = []
-
-    ausgesetzt = ausgesetzte_ueberschriften(output)
-    for req in extract_required_headings(skill_md):
-        if any(req in got or got in req for got in norm_output_headings if got):
-            continue
-        # AUSGESETZT ZAEHLT ALS VORHANDEN - aber nur ausgewiesen (K-90, D-258).
-        if any(req in a or a in req for a in ausgesetzt if a):
-            continue
-        findings.append(f"Pflichtabschnitt fehlt: '{req}'")
+    findings: list[str] = [f"Pflichtabschnitt fehlt: '{req}'"
+                           for req in fehlende_pflichtabschnitte(skill_md, output)]
 
     if "Ergebnisbericht" in skill_md and "Ergebnisbericht" not in output:
         findings.append("Abschnitt 'Ergebnisbericht' fehlt")

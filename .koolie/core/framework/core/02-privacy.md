@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.10 |
+| Version | 0.1.11 |
 | Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
@@ -103,6 +103,8 @@ Persönliche Ergänzungen (nutzerlokale Überschreibungen, globale Regeln) DÜRF
 | 3 | Freigabe: Einzelfreigabe durch `<APPROVAL_ROLE>` oder Kategoriefreigabe im Overlay-Manifest (zum Beispiel „Architekturdokumente nach Entfernung des Kapitels Infrastruktur") | `<APPROVAL_ROLE>`, bei personenbezogenen Daten zusätzlich `<DATA_PROTECTION_CONTACT>` |
 | 4 | Dokumentation: Freigabe mit Datum, Umfang und Bereinigung im Ergebnisbericht und – bei Kategoriefreigaben – im Manifest | Bearbeiterin oder Bearbeiter |
 | 5 | Nachprüfung: Stichprobe im Review, ob nur freigegebener Kontext verwendet wurde | Reviewerin oder Reviewer |
+
+**„K2 (bereinigt)“ heißt bereinigt und freigegeben.** Nennt eine Eingabetabelle eines Skills oder einer Prompt-Vorlage die Klasse K2 mit dem Zusatz *bereinigt*, gilt für die Eingabe dieses Verfahren **und** die Bereinigung nach Abschnitt 3.3: Der Zusatz nennt, was zur Freigabe hinzukommt, er ersetzt sie nicht – die Klasse K2 ist nach Abschnitt 2 nur mit dokumentierter Einzel- oder Kategoriefreigabe bereitstellbar. Für wiederkehrende Eingaben wie Aufgabenbeschreibungen aus `<ISSUE_TRACKER>` oder bereinigte Fehlerberichte ist die Kategoriefreigabe im Overlay-Manifest der vorgesehene Weg (D-420).
 
 ## 5. Verhalten bei unbeabsichtigter Bereitstellung (normativ)
 

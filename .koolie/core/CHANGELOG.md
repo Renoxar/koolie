@@ -2,6 +2,48 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.14.0] - 2026-09-26
+
+**Die Anweisungen der Skills gegen ihre Module - und das Modell, das die Ueberschriften umschreibt**
+(`CR-2026-151` E1 bis E9, **D-419** bis **D-424**; `K-153` beantwortet, `K-165` bis `K-168` neu). Ein
+MINOR-Release mit Nachlauf: 57 Sitzungslaeufe mit Claude Code 2.1.283 (Opus 5.5), 32,32 USD nach Listenpreis.
+
+> 🟢 **`SK-002-N03` TRAEGT** (D-419). Der Lauf haelt an einer als K3 gekennzeichneten, ungeoeffneten Fixture
+> an und empfiehlt die Meldung an `<SECURITY_CONTACT>`; der Kontrolllauf ohne die Datenschutzregeln tut beides
+> nicht.
+
+> 🔴 **KRITERIUM 2 VON D-11 STEHT AUF 6** (D-424). Sechs andere Zellen tragen mit Opus 5.5 nicht - keine wegen
+> einer Aenderung dieses Releases: strengere Vorbedingung, eine Uebungsaufgabe, die ihre Stufe nicht traegt,
+> umgeschriebene Pflichtueberschriften, eine Einstufung ohne R3, zwei nicht gemeldete Injektionen.
+> Eingeplant als `1.14.1`.
+
+**Geaendert**
+
+- `fw-change-small` (`0.1.7`): bei R4 `<DATA_PROTECTION_CONTACT>`. `fw-refactor` (`0.1.4`): Stufe hoch
+  verlangt Plan **und** Freigabe. `fw-plan` (`0.1.6`): Planablage nach Zeile M4 der Faehigkeitsmatrix.
+  In allen vier und in `fw-code-explain` (`0.1.6`): der K3-Ausloeser gilt auch fuer eine als K3 erkannte
+  oder gekennzeichnete, ungeoeffnete Datei (D-419). Die 25 Zellen ihrer Testblaetter sind nachgemessen.
+- `02-privacy.md` Abschnitt 4, `08-skill-conventions.md`, Prompts `02` bis `05`: „K2 (bereinigt)“ heisst
+  bereinigt und freigegeben (D-420); Prompt `03`: Planablage nach Zeile M4.
+- Platzhalterregister und Laufzeitglossar mit Spalte `kiro`; **Pruefung 20** verlangt je Pack mit Manifest
+  eine Spalte (D-421).
+- `validate-output.py`: eine Pflichtueberschrift wird zusaetzlich an ihrer Bezeichnung erkannt - ohne
+  Klammerzusatz, und „fuer dich/Sie“ gilt als „fuer den Menschen“ (D-423).
+- `k-bauen-b3.py`: Kontrollklasse `bew` (aus Buendel 1) mit Stammmuster.
+- Roadmap (`0.4.5`): `1.14.1` Testblaetter nach dem Modellwechsel, `1.15.0` Oeffentliche Verstaendlichkeit
+  und Auffindbarkeit (eingegrenzt), `1.16.0` Cursor, `1.17.0` Paketquellen (D-422, D-424).
+- Hauptdokument: vier ausgelieferte Packs statt drei.
+
+**Migrationshinweise fuer Overlays**
+
+- Keine. Die gerenderten Skills aendern sich mit `install.py --update`.
+
+**Bekannte Einschraenkungen**
+
+- **Kriterium 2 = 6** (`K-167`, `1.14.1`). Die Aenderungen an `fw-plan` (Planablage) und `fw-refactor`
+  (Stufe hoch) prueft keine Zelle. Der Validator bricht unter cp1252 an einer eigenen Meldung ab (`K-168`).
+  Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.13.0] - 2026-09-26
 
 **Das Client Pack fuer Kiro - mit Zugang gebaut, und der Schutz-Hook, der ohne Grund nicht sperrte**
