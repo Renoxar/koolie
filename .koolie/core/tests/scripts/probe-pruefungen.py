@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 95, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 96, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -1748,6 +1748,168 @@ def sonden_pfadtoken_codex() -> None:
 buendel(sonden_pfadtoken_codex,
         "openai-codex: das Rechteprofil fuehrt den Arbeitsbereich in der Schreibweise "
         "von Clientversion 0.157")
+
+
+# --- D-414 bis D-417: das Client Pack kiro (CR-2026-150) --------------------------------
+#
+# Gemessen am 2026-09-26 mit kiro-cli 2.24.1: Die Berechtigungen stehen in einem
+# Agentenprofil, das nur als AKTIVER Agent wirkt; fehlt es oder ist es kaputt, faellt der
+# Client still auf seinen eingebauten Agenten zurueck (D-414). Das Schreibverbot auf die
+# Laufzeitschicht nimmt die Spezifikationen aus (D-415). Die Menge der formatgebundenen
+# Pruefungen fuehrte 76 statt 72 (D-416). Der Schutz-Hook sperrt nur mit Grund auf stderr
+# (D-417). Alle Einheiten laufen an ECHTEN Installationen.
+#   D414   (Sonde)      - die Abbildung: Profil mit exclude, Einstellungsdatei, Hook mit
+#                         --sperrform stderr-grund, Regelvorlage mit inclusion: fileMatch.
+#                         Gegen v1.12.1 faellt sie (kein Pack kiro).
+#   D414a  (Gegenprobe) - eine Kernregel traegt KEINE Ladebedingung; eine Regel, die
+#                         immer gilt, darf nicht an Dateimuster gebunden werden.
+#   96..96f (Sonden)    - Pruefung 96: Profil fehlt, kein JSON, Einstellung waehlt einen
+#                         anderen Agenten, unbekannte Faehigkeit, deny-Regel entfernt,
+#                         fremde allow-Regel, verbreiterte Ausnahme.
+#   96g    (Gegenprobe) - frische Installation: keine Meldung der Pruefung 96. Eine
+#                         Pruefung, die immer meldet, bestuende die Sonden auch.
+#   D416   (Sonde)      - Pruefung 72 erreicht das Agentenprofil: ein Skill ohne
+#                         Freigaberegel wird gemeldet.
+#   D417   (Sonde)      - Pruefung 86: ein Skript, dessen Form stderr-grund keinen Grund
+#                         auf stderr schreibt, wird gemeldet.
+#   D417a  (Gegenprobe) - das ausgelieferte Skript sperrt in dieser Form mit Exit 2 und
+#                         Grund: keine Meldung.
+M96 = ("Prüfung 96", "stille Rückfall", "Die Einstellung wählt ein Profil",
+       "kein gültiges JSON", "das Pack verlangt", "die der Client nicht kennt",
+       "die Kernquelle erzeugt 'deny", "erzeugt die Kernquelle nicht",
+       "mit einer anderen Ausnahme")
+M96_FEHLT = "Die Einstellung wählt ein Profil, das es nicht gibt"
+M96_JSON = "kein gültiges JSON"
+M96_WERT = "das Pack verlangt"
+M96_FAEHIGKEIT = "die der Client nicht kennt"
+M96_DENY = "die Kernquelle erzeugt 'deny fs_read .env'"
+M96_ALLOW = "erzeugt die Kernquelle nicht"
+M96_AUSNAHME = "mit einer anderen Ausnahme"
+M416_SKILL = "wird aber von keinem Eintrag der Berechtigungsdatei genannt"
+M417_FORM = "Sperrform 'stderr-grund' verlangt Exit 2"
+
+
+def _414_profil(root: str, aenderung) -> None:
+    pfad = os.path.join(root, ".kiro", "agents", "koolie.json")
+    daten = json.loads(lies(pfad))
+    aenderung(daten)
+    schreib(pfad, json.dumps(daten, indent=2, ensure_ascii=False) + "\n")
+
+
+def _414_regeln_ohne(daten: dict, faehigkeit: str, effekt: str, muster: str) -> None:
+    for regel in daten["permissions"]["rules"]:
+        if regel["capability"] == faehigkeit and regel["effect"] == effekt:
+            if muster not in regel["match"]:
+                raise Praeparationsfehler("Muster %r fehlt in %s/%s" % (muster, faehigkeit, effekt))
+            regel["match"].remove(muster)
+            return
+    raise Praeparationsfehler("keine Regel %s/%s" % (faehigkeit, effekt))
+
+
+def sonden_kiro() -> None:
+    """Wirkungsnachweis fuer D-414 bis D-417 an echten kiro-Installationen."""
+    root = installation("kiro")
+    try:
+        profil = json.loads(lies(os.path.join(root, ".kiro", "agents", "koolie.json")))
+        einst = json.loads(lies(os.path.join(root, ".kiro", "settings", "cli.json")))
+        hooks = json.loads(lies(os.path.join(root, ".kiro", "hooks", "koolie.json")))
+        vorlage = lies(os.path.join(root, ".kiro", "steering", "40-tech-TEMPLATE.md.template"))
+        regeln = profil.get("permissions", {}).get("rules", [])
+        ausnahme = [r for r in regeln if r.get("exclude") == [".kiro/specs/**"]
+                    and r.get("match") == [".kiro/**"] and r.get("effect") == "deny"]
+        befehle = [h["action"]["command"] for h in hooks.get("hooks", [])
+                   if h.get("trigger") == "PreToolUse"]
+        ok = (bool(ausnahme) and einst == {"chat.agentEngine": "v3", "chat.defaultAgent": "koolie"}
+              and profil.get("name") == "koolie" and len(befehle) == 1
+              and "--sperrform stderr-grund" in befehle[0]
+              and vorlage.startswith("---\ninclusion: fileMatch\nfileMatchPattern:\n"))
+        melde("SONDE", "D414", ok,
+              "kiro: Profil mit Ausnahme fuer .kiro/specs, Einstellung waehlt es, Hook mit "
+              "Sperrform stderr-grund, Regelvorlage mit inclusion: fileMatch")
+        if not ok:
+            notiz("        Ausnahme %r, Einstellung %r, Hook %r, Vorlage %r"
+                  % (ausnahme, einst, befehle, vorlage[:60]))
+        kern = lies(os.path.join(root, ".kiro", "steering", "00-framework-core.md"))
+        ok = not kern.startswith("---")
+        melde("GEGENPROBE", "D414a", ok,
+              "Eine Kernregel traegt keine Ladebedingung und laedt immer")
+
+        frisch = validator_ausgabe(root)
+        treffer = [m for m in M96 if m in frisch]
+        melde("GEGENPROBE", "96g", not treffer,
+              "Frische Installation: Pruefung 96 meldet nichts")
+        if treffer:
+            notiz("        Meldungen: %r" % treffer)
+
+        faelle = (
+            ("96", "Profil fehlt", M96_FEHLT,
+             lambda r: os.remove(os.path.join(r, ".kiro", "agents", "koolie.json"))),
+            ("96a", "Profil ist kein gueltiges JSON", M96_JSON,
+             lambda r: schreib(os.path.join(r, ".kiro", "agents", "koolie.json"), '{ "name": ')),
+            ("96b", "Einstellung waehlt einen anderen Agenten", M96_WERT,
+             lambda r: schreib(os.path.join(r, ".kiro", "settings", "cli.json"),
+                               '{"chat.agentEngine": "v3", "chat.defaultAgent": "kiro_default"}\n')),
+            ("96c", "Regel mit unbekannter Faehigkeit", M96_FAEHIGKEIT,
+             lambda r: _414_profil(r, lambda d: d["permissions"]["rules"].append(
+                 {"capability": "fs_raed", "match": ["x"], "effect": "deny"}))),
+            ("96d", "deny-Muster der Kernquelle entfernt", M96_DENY,
+             lambda r: _414_profil(r, lambda d: _414_regeln_ohne(d, "fs_read", "deny", ".env"))),
+            ("96e", "fremde allow-Regel", M96_ALLOW,
+             lambda r: _414_profil(r, lambda d: d["permissions"]["rules"].append(
+                 {"capability": "shell", "match": ["git commit*"], "effect": "allow"}))),
+            ("96f", "Ausnahme verbreitert", M96_AUSNAHME,
+             lambda r: _414_profil(r, lambda d: [x.__setitem__("exclude", [".kiro/**"])
+                                                 for x in d["permissions"]["rules"]
+                                                 if x.get("exclude")])),
+            ("D416", "Pruefung 72: Skill ohne Freigaberegel", M416_SKILL,
+             lambda r: _414_profil(r, lambda d: _414_regeln_ohne(d, "skill", "allow", "fw-plan"))),
+        )
+        # Die Kennungen stehen unten WOERTLICH: Pruefung 40 liest die Sondenmenge aus dem
+        # Quelltext (melde("SONDE", "<nr>")), und eine Kennung in einer Variablen ist fuer
+        # sie unsichtbar - dieselbe Lehre wie bei Pruefung 12 und os.path.join (0.88.0).
+        treffer = {}
+        for kennung, was, marke, praeparieren in faelle:
+            ziel = tempfile.mkdtemp(prefix="lw-414-")
+            try:
+                kopie_root = os.path.join(ziel, "projekt")
+                shutil.copytree(root, kopie_root)
+                praeparieren(kopie_root)
+                treffer[kennung] = (marke in validator_ausgabe(kopie_root), "kiro: " + was)
+            finally:
+                aufraeumen(ziel)
+        melde("SONDE", "96", *treffer["96"])
+        melde("SONDE", "96a", *treffer["96a"])
+        melde("SONDE", "96b", *treffer["96b"])
+        melde("SONDE", "96c", *treffer["96c"])
+        melde("SONDE", "96d", *treffer["96d"])
+        melde("SONDE", "96e", *treffer["96e"])
+        melde("SONDE", "96f", *treffer["96f"])
+        melde("SONDE", "D416", *treffer["D416"])
+
+        # Pruefung 86 an der Form des Packs: ein Skript, das in der Form stderr-grund
+        # nichts auf stderr schreibt, sperrt bei diesem Client nichts (D-417).
+        ziel = tempfile.mkdtemp(prefix="lw-417-")
+        try:
+            kopie_root = os.path.join(ziel, "projekt")
+            shutil.copytree(root, kopie_root)
+            skript = os.path.join(kopie_root, ".koolie", "core", "tests", "scripts",
+                                  "hook-check-secrets.py")
+            ersetze(skript, ('sys.stderr.write(reason.strip() or "Framework-Regel: gesperrt.")',
+                             'print(reason)'))
+            ausgabe = validator_ausgabe(kopie_root)
+            melde("SONDE", "D417", M417_FORM in ausgabe,
+                  "Pruefung 86: Sperrform stderr-grund ohne Grund auf stderr wird gemeldet")
+        finally:
+            aufraeumen(ziel)
+        melde("GEGENPROBE", "D417a", M417_FORM not in frisch,
+              "Das ausgelieferte Skript sperrt in der Form stderr-grund mit Grund")
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_kiro,
+        "kiro: Agentenprofil, Einstellung, Ausnahme fuer die Spezifikationen und Sperrform "
+        "des Schutz-Hooks - an echten Installationen")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------

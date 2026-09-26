@@ -455,7 +455,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      die Pruefung - fehlt das FELD, meldet sie es (D-155)
  73. Jede [DOK]-Matrixzeile nennt ihre Quelle (D-263): In der Faehigkeitsmatrix
      jedes Client Packs nennt der BELEGKOPF jeder mit [DOK] belegten Zeile eine
-     Quellenkennung der Liste in Anhang 31.4 (QC-n/QD-n); ein Verweisbeleg
+     Quellenkennung der Liste in Anhang 31.4 (QC-n/QD-n/QK-n); ein Verweisbeleg
      ("wie B3") wird aufgeloest. ANLASS, und er ist gezaehlt: Anhang 31.4 sagt
      ueber sich selbst, die massgebliche Zuordnung stehe je Zeile in der Matrix -
      das traf am 2026-09-18 fuer 14 von 43 Zeilen zu (K-62, D-156). DER PREIS IST
@@ -662,7 +662,8 @@ Prüft (statisch, ohne laufenden KI-Client):
  87. Die formatgebundenen Pruefungen stehen im Pack (D-346): Ein Client Pack, dessen
      Berechtigungsdatei eine andere Ausgabeform hat als JSON (permissions_format),
      nennt in Abschnitt 5 seines CLIENT_PACK.md jede Nummer aus
-     FORMATGEBUNDENE_PRUEFUNGEN - und keine, die dort nicht steht. ANLASS: Mit dem
+     FORMATGEBUNDENE_PRUEFUNGEN, die seine Form nicht erreicht - und keine andere
+     (seit 1.13.0 je Form, D-416). ANLASS: Mit dem
      dritten Pack gibt es zum ersten Mal zwei Ausgabeformen; sechs Pruefungen lesen die
      eine und haben fuer die andere keinen Gegenstand. Sie still zu ueberspringen waere
      die Bauform von 0.57.0 - zwei Stellen, die einander decken: Der Validator liefe
@@ -730,7 +731,16 @@ Prüft (statisch, ohne laufenden KI-Client):
      die Zellen des Testblatts offen sind, und keine Pruefung sah, ob sie dasteht.
      Nur die Skills des Kerns; projekteigene Skills bleiben aussen vor.
      GRENZE: die Nennung, nicht ihre Richtigkeit
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 95 laeuft als eigenes
+ 96. Das Agentenprofil, das die Berechtigungen traegt, ist auch das aktive (D-414):
+     Bei einem Pack mit permissions_format 'kiro-agent' traegt die Einstellungsdatei
+     des Arbeitsbereichs die Werte des Manifests (Agent, Engine), das Profil ist
+     gueltiges JSON mit dem gewaehlten Namen, jede Regel hat eine bekannte Faehigkeit,
+     und jedes deny- und ask-Muster der Kernquelle steht darin, kein fremdes allow.
+     ANLASS, gemessen am 2026-09-26: Fehlt das Profil oder ist es kaputt, faellt der
+     Client STILL auf seinen eingebauten Agenten zurueck, und .env war lesbar; eine
+     unbekannte Faehigkeit ueberspringt er regelweise. GRENZE: die Dateien, nicht der
+     Start - wer mit --agent einen anderen Agenten waehlt, entgeht ihr
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 96 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -789,28 +799,47 @@ KERN = ".koolie/core"
 #
 # Ein Pack sagt seine Form im Manifest (permissions_format); der Standard ist "json" -
 # eine Form wird gesagt, nicht durch Schweigen geerbt.
+#
+# SEIT 1.13.0 NENNT JEDER EINTRAG DIE FORMEN, DIE ER ERREICHT (CR-2026-150, D-416).
+# Bis dahin war die Menge an genau eine Frage gebunden - "json oder nicht" -, und zwei
+# Dinge stimmten nicht: (1) Sie fuehrte als Nummer 76 "Das Pack steht im eigenen
+# Korb"; Pruefung 76 ist die Kernlage und laeuft bei jeder Form. Gemeint war 72, und
+# die enthielt sich bei openai-codex nicht, weil sie hier stand, sondern weil
+# json.loads an der TOML-Datei scheiterte - still. (2) Vier dieser Pruefungen (37, 42,
+# 43, 54, 72) hatten gar keinen Schutz; sie lasen eine Datei, die bei TOML nicht
+# einlesbar war. Das dritte JSON-Format (das Agentenprofil von kiro) IST einlesbar, und
+# dieselben Pruefungen meldeten 64 Fehler, die es nicht gab. Jede Pruefung der Menge
+# fragt deshalb jetzt ausdruecklich formatgebunden() - und 72 erreicht das
+# Agentenprofil, weil sie dort liest, was sie braucht.
 FORMATGEBUNDENE_PRUEFUNGEN = {
-    2: "Berechtigungsdatei als JSON, Kernregeln unter _core_rules_integrity",
-    37: "Die drei Koerbe der installierten Datei gegen die Kernquelle",
-    42: "Der Befehlsschlitz traegt den Befehl, den das Overlay erklaert",
-    43: "Die Berechtigungsdatei traegt den Hook, den das Pack dort fuehrt",
-    54: "Deklarierte Zusatzschluessel stehen auf ihrer Ebene",
-    59: "Gegenstand (c): die ausgeschlossenen Pfade im deny-Korb",
-    76: "Das Pack steht im eigenen deny-Korb",
-    89: "Gegenstand (c): die Nur-Lese-Pfade im deny-Korb",
+    2: ("Berechtigungsdatei als JSON, Kernregeln unter _core_rules_integrity", {"json"}),
+    37: ("Die drei Koerbe der installierten Datei gegen die Kernquelle", {"json"}),
+    42: ("Der Befehlsschlitz traegt den Befehl, den das Overlay erklaert", {"json"}),
+    43: ("Die Berechtigungsdatei traegt den Hook, den das Pack dort fuehrt", {"json"}),
+    54: ("Deklarierte Zusatzschluessel stehen auf ihrer Ebene", {"json"}),
+    59: ("Gegenstand (c): die ausgeschlossenen Pfade im deny-Korb", {"json"}),
+    72: ("Jeder installierte Skill steht in der Berechtigungsdatei",
+         {"json", "kiro-agent"}),
+    89: ("Gegenstand (c): die Nur-Lese-Pfade im deny-Korb", {"json"}),
 }
 
 
 def formatgebunden(man: dict, nummer: int) -> bool:
-    """Wahr, wenn diese Pruefung an die Form 'json' gebunden ist und das Pack eine
-    andere fuehrt. Der Aufrufer kehrt dann zurueck, ohne zu melden - die Auslassung
-    steht in FORMATGEBUNDENE_PRUEFUNGEN und wird von Pruefung 87 eingefordert."""
+    """Wahr, wenn diese Pruefung die Ausgabeform dieses Packs nicht erreicht. Der
+    Aufrufer kehrt dann zurueck, ohne zu melden - die Auslassung steht in
+    FORMATGEBUNDENE_PRUEFUNGEN und wird von Pruefung 87 eingefordert."""
     if nummer not in FORMATGEBUNDENE_PRUEFUNGEN:
         raise KeyError(
             f"Pruefung {nummer} beruft sich auf die Ausgabeform, steht aber nicht in "
             f"FORMATGEBUNDENE_PRUEFUNGEN. Eine Auslassung, die nirgends steht, ist die "
             f"stille Luecke, die D-346 abgestellt hat")
-    return man.get("permissions_format", "json") != "json"
+    return man.get("permissions_format", "json") not in FORMATGEBUNDENE_PRUEFUNGEN[nummer][1]
+
+
+def nicht_erreicht(man: dict) -> set:
+    """Die Nummern, die die Ausgabeform dieses Packs nicht erreichen (Pruefung 87)."""
+    form = man.get("permissions_format", "json")
+    return {n for n, (_, formen) in FORMATGEBUNDENE_PRUEFUNGEN.items() if form not in formen}
 
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
@@ -1423,6 +1452,8 @@ def check_berechtigungskoerbe(root: str, man: dict) -> None:
     nachgetragen macht es aus der Freigabe eines Befehls die Freigabe einer
     Befehlsfamilie - am Piloten am 2026-09-13 so vorgefunden.
     """
+    if formatgebunden(man, 37):
+        return  # D-346, D-416: diese Ausgabeform erreicht die Pruefung nicht
     rel = man["permissions_file"]
     path = os.path.join(root, *rel.split("/"))
     if not os.path.exists(path):
@@ -2609,6 +2640,17 @@ def _hook_kommandos(root: str, man: dict) -> list[tuple[str, str]]:
             daten = json.loads(read(pfad))
         except json.JSONDecodeError:
             continue
+        # Dritte Ablageform (seit 1.13.0, D-414): eine LISTE von Hooks mit Ausloeser je
+        # Eintrag und dem Kommando unter action. Bis dahin las diese Funktion nur
+        # Objekte je Ereignis - und brach an einer Liste mit einer Ausnahme ab.
+        if isinstance(daten, dict) and isinstance(daten.get("hooks"), list):
+            for h in daten["hooks"]:
+                if not isinstance(h, dict):
+                    continue
+                befehl = (h.get("action") or {}).get("command")
+                if befehl:
+                    treffer.append((f"{rel}:{h.get('trigger', '?')}", befehl))
+            continue
         # Eigene Hook-Datei: das Objekt steht oben. Hooks in der Berechtigungsdatei:
         # unter dem Schluessel "hooks".
         hooks = daten.get("hooks") if "hooks" in daten else daten
@@ -2618,6 +2660,8 @@ def _hook_kommandos(root: str, man: dict) -> list[tuple[str, str]]:
             if ereignis.startswith("_") or not isinstance(eintraege, list):
                 continue
             for eintrag in eintraege:
+                if not isinstance(eintrag, dict):
+                    continue  # eine Liste ohne Hook-Eintraege, etwa "tools" eines Profils
                 for h in (eintrag or {}).get("hooks", []):
                     befehl = h.get("command")
                     if befehl:
@@ -3813,6 +3857,9 @@ HOOK_UMSCHLAEGE = {
                     "hook_event_name": "PreToolUse", "tool_use_id": "t"},
     "devin-desktop": {"session_id": "s", "prompt_id": "p", "hook_event_name": "PreToolUse",
                       "tool_use_id": "t"},
+    # Aufgezeichnet am 2026-09-26 in einer interaktiven Sitzung (CR-2026-150): fuenf
+    # Felder, cwd ist die Projektwurzel.
+    "kiro": {"session_id": "s", "hook_event_name": "PreToolUse", "cwd": "/projekt"},
 }
 
 # Der DRITTE aufgezeichnete Umschlag (CR-2026-058 E3, Erhebung vom 2026-09-13): Ein
@@ -5294,6 +5341,8 @@ def check_schlitzinhalte(root: str, man: dict) -> None:
     eine Pruefung ueber die Reihenfolge der Uebernahme. Fehlt dagegen ein PLATZHALTER in
     einem vorhandenen Overlay, ist das der verlorene Anker und ein Fehler (D-23).
     """
+    if formatgebunden(man, 42):
+        return  # D-346, D-416: diese Ausgabeform erreicht die Pruefung nicht
     overlay_pfad = os.path.join(root, ".koolie/project-overlay", "OVERLAY.md")
     rel = man["permissions_file"]
     pfad = os.path.join(root, *rel.split("/"))
@@ -5413,6 +5462,8 @@ def check_schlitzinhalte(root: str, man: dict) -> None:
 
 def check_hookblock(root: str, man: dict) -> None:
     """Pruefung 43 (D-92): Die Berechtigungsdatei traegt den Hook, den das Pack dort fuehrt."""
+    if formatgebunden(man, 43):
+        return  # D-346, D-416: diese Ausgabeform erreicht die Pruefung nicht
     rel = man.get("permissions_file")
     hooks_ort = (man.get("runtime_placeholders") or {}).get("<HOOKS_FILE>")
     if not rel or hooks_ort != rel:
@@ -6891,6 +6942,8 @@ P54_FELDER = ("settings_extra", "permissions_extra")
 
 def check_zusatzschluessel(root: str, man: dict) -> None:
     """Pruefung 54 (D-155): Deklarierte Zusatzschluessel stehen auf ihrer Ebene."""
+    if formatgebunden(man, 54):
+        return  # D-346, D-416: diese Ausgabeform erreicht die Pruefung nicht
     rel = man.get("permissions_file")
     if not rel:
         return
@@ -8680,6 +8733,8 @@ def _p72_eintraege(cfg) -> list:
 
 def check_pack_im_korb(root: str, man: dict) -> None:
     """Pruefung 72 (D-238): Jeder Skill der Installation steht im Berechtigungskorb."""
+    if formatgebunden(man, 72):
+        return  # D-346, D-416: diese Ausgabeform erreicht die Pruefung nicht
     if not P72_MUSTER.match(P72_SELBSTPROBE):
         err(f"Pruefung 72: das eigene Muster trifft {P72_SELBSTPROBE!r} nicht mehr - "
             f"sie haette ihren Gegenstand verloren und bestuende leise (D-23, D-238)")
@@ -8710,7 +8765,16 @@ def check_pack_im_korb(root: str, man: dict) -> None:
     im_baum = sorted(n for n in os.listdir(ablage)
                      if os.path.isfile(os.path.join(ablage, n, "SKILL.md")))
     genannt = []
-    for eintrag in _p72_eintraege(cfg):
+    if man.get("permissions_format") == "kiro-agent":
+        # Das Agentenprofil nennt einen Skill nicht als Werkzeug(Name), sondern als
+        # Muster einer Regel mit der Faehigkeit des Skillaufrufs (D-414, D-416).
+        regeln = ((cfg.get("permissions") or {}).get("rules") or []
+                  if isinstance(cfg, dict) else [])
+        for regel in regeln:
+            if isinstance(regel, dict) and regel.get("capability") in namen:
+                genannt.extend(m for m in (regel.get("match") or [])
+                               if isinstance(m, str) and m.strip())
+    for eintrag in ([] if genannt else _p72_eintraege(cfg)):
         m = P72_MUSTER.match(eintrag.strip())
         if m and m.group(1) in namen and m.group(2):
             genannt.append(m.group(2))
@@ -8777,7 +8841,7 @@ def check_pack_im_korb(root: str, man: dict) -> None:
 # QUELLE NICHT ZUGEORDNET. Damit das keine Hintertuer ist, fuehrt diese Pruefung die
 # zugelassenen Luecken als MENGE: eine neue faellt auf, und eine geschlossene ebenso -
 # dieselbe Bauform wie das leer DEKLARIERTE Feld von Pruefung 72 (D-155).
-P73_KENNUNG_RE = re.compile(r"Q[CD]-\d+")
+P73_KENNUNG_RE = re.compile(r"Q[CDK]-\d+")  # QK- seit 1.13.0 (kiro, D-414)
 P73_BRUCH_RE = re.compile(r"\.\s|;\s|:\s|:$")
 P73_ZEILE_RE = re.compile(r"^\|\s*([RSBHAMX]\d+)\s*\|")
 P73_VERWEIS_RE = re.compile(r"^(?:wie|dito)\b[^A-Z]*([RSBHAMX]\d+)")
@@ -10103,7 +10167,15 @@ def check_sperrform(root: str, man: dict) -> None:
         ausgabe = json.loads(lauf.stdout.strip() or "{}")
     except json.JSONDecodeError:
         ausgabe = {}
-    if form == "hook-specific-output":
+    if form == "stderr-grund":
+        # D-417: Exit 2 UND ein nicht leerer Grund auf stderr - mit leerem Grund laesst
+        # dieser Client die Operation laufen, gemessen am 2026-09-26.
+        if lauf.returncode != 2 or not (lauf.stderr or "").strip():
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: Sperrform 'stderr-grund' "
+                f"verlangt Exit 2 und einen Grund auf stderr; gemessen wurden Exit "
+                f"{lauf.returncode} und {len((lauf.stderr or '').strip())} Zeichen auf "
+                f"stderr. Ohne Grund lässt der Client die Operation laufen (D-417)")
+    elif form == "hook-specific-output":
         entscheidung = (ausgabe.get("hookSpecificOutput") or {}).get("permissionDecision")
         if entscheidung != "deny" or lauf.returncode != 0:
             err(f"{KERN}/tests/scripts/hook-check-secrets.py: Sperrform "
@@ -10179,19 +10251,23 @@ def check_formatgebundene_pruefungen(root: str) -> None:
             continue
         rumpf = re.split(r"^## 6\.", abschnitt[1], maxsplit=1, flags=re.M)[0]
         genannt = {int(n) for n in re.findall(r"Prüfung\s+(\d+)", rumpf)}
-        fehlend = sorted(set(FORMATGEBUNDENE_PRUEFUNGEN) - genannt)
+        erwartet = nicht_erreicht(man)
+        fehlend = sorted(erwartet - genannt)
         if fehlend:
             err(f"{KERN}/clients/{name}/CLIENT_PACK.md Abschnitt 5: die Prüfung(en) "
                 f"{', '.join(str(n) for n in fehlend)} sind an die Ausgabeform 'json' "
                 f"gebunden und erreichen dieses Pack nicht – der Abschnitt nennt sie "
                 f"nicht. Eine Lücke, die nirgends steht, ist ein blinder Fleck (D-346)")
-        zuviel = sorted(genannt - set(FORMATGEBUNDENE_PRUEFUNGEN))
+        # Gegenrichtung, seit 1.13.0 je Form (D-416): Genannt werden darf nur, was
+        # DIESE Form nicht erreicht - auch eine Nummer der Menge, die das Pack doch
+        # erreicht, ist eine behauptete Luecke.
+        zuviel = sorted(genannt - erwartet)
         if zuviel:
             err(f"{KERN}/clients/{name}/CLIENT_PACK.md Abschnitt 5: die Prüfung(en) "
                 f"{', '.join(str(n) for n in zuviel)} werden als formatgebunden "
-                f"genannt, stehen aber nicht in FORMATGEBUNDENE_PRUEFUNGEN. Eine "
-                f"behauptete Lücke, die es nicht gibt, ist so falsch wie eine "
-                f"verschwiegene (D-346)")
+                f"genannt, erreichen die Ausgabeform '{man['permissions_format']}' "
+                f"aber (FORMATGEBUNDENE_PRUEFUNGEN). Eine behauptete Lücke, die es nicht "
+                f"gibt, ist so falsch wie eine verschwiegene (D-346, D-416)")
 
 
 # ---------------------------------------------------------------------------
@@ -10227,6 +10303,169 @@ def check_verdraengende_wurzelanweisung(root: str, man: dict) -> None:
             f"deren Text steht dann in keiner Nachricht der Sitzung. Ebene 1 der "
             f"Prioritätshierarchie wäre damit durch eine ungeprüfte Datei ersetzt, und "
             f"bis 1.4.0 meldete es nichts (D-341)")
+
+
+# ---------------------------------------------------------------------------
+# PRUEFUNG 96: DAS AGENTENPROFIL, DAS DIE BERECHTIGUNGEN TRAEGT, IST AUCH DAS AKTIVE
+# ---------------------------------------------------------------------------
+# ANLASS, GEMESSEN AM 2026-09-26 (CR-2026-150, D-414). Beim Client kiro stehen die
+# Berechtigungen des Frameworks in einem Agentenprofil, und sie wirken NUR, wenn es der
+# aktive Agent ist. Die Einstellungsdatei des Arbeitsbereichs waehlt es. Drei Befunde
+# machen daraus eine Pruefung:
+#   * Zeigt die Einstellung auf ein Profil, das es nicht gibt, oder ist das Profil kein
+#     gueltiges JSON, faellt der Client STILL auf seinen eingebauten Agenten zurueck -
+#     eine Warnung auf stderr, und .env war lesbar (K15, K16).
+#   * Eine Regel mit unbekannter Faehigkeit ueberspringt er und meldet es nur in seinem
+#     Protokoll (K23). Sein eigenes Pruefkommando `agent validate` endet auch bei
+#     kaputtem JSON mit Exit 0 und prueft keine Faehigkeit (K22).
+#   * Die Pruefungen der Koerbe (37 und Verwandte) lesen deny/ask/allow und erreichen
+#     diese Form nicht (D-416). Diese Pruefung tritt fuer das Agentenprofil an ihre
+#     Stelle.
+# GEPRUEFT: (a) die Einstellungsdatei traegt die Werte des Manifests; (b) das Profil ist
+# ein JSON-Objekt mit dem Namen, den die Einstellung waehlt; (c) jede Regel hat eine
+# bekannte Faehigkeit, einen bekannten Effekt und eine Liste von Mustern; (d) jedes
+# deny- und ask-Muster der Kernquelle steht mit seinem Effekt (und seiner Ausnahme) im
+# Profil, und kein allow-Muster steht darin, das die Kernquelle nicht erzeugt - ausser
+# dem Namen eines installierten Skills (Bauform von Pruefung 72, D-238).
+# ⚠️ GRENZEN, BENANNT: Ein Muster mit offenem Platzhalter (<EXCLUDED_PATHS> ...) gehoert
+# dem Projekt und wird nicht verglichen. Und die Pruefung misst die Dateien, nicht den
+# Start: Wer den Client mit --agent auf einen anderen Agenten stellt, arbeitet ohne diese
+# Regeln, und keine Pruefung sieht es.
+P96_EFFEKTE = ("deny", "ask", "allow")
+
+
+def _p96_regeln(cfg: dict) -> list:
+    return ((cfg.get("permissions") or {}).get("rules") or []) if isinstance(cfg, dict) else []
+
+
+def check_agentenprofil(root: str, man: dict) -> None:
+    """Pruefung 96 (D-414): Die Einstellung waehlt das Profil, und das Profil traegt."""
+    if man.get("permissions_format") != "kiro-agent":
+        return
+    pack = man.get("client", "?")
+    kern = os.path.join(root, KERN)
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        return  # check_config meldet das fehlende Abbildungsmodul bereits
+    if not hasattr(clientmap, "kiro_regeln") or not hasattr(clientmap, "KIRO_FAEHIGKEITEN"):
+        err(f"{KERN}/clientmap.py: 'kiro_regeln' oder 'KIRO_FAEHIGKEITEN' fehlt – Prüfung "
+            f"96 hat ihren Gegenstand verloren und bestünde sonst leise (D-23)")
+        return
+    # (a) Die Einstellungsdatei.
+    einst_rel = man.get("client_settings_file")
+    soll = man.get("client_settings") or {}
+    profil_rel = man.get("permissions_file")
+    if not einst_rel or not soll or not profil_rel:
+        err(f"clients/{pack}/manifest.json: client_settings_file, client_settings und "
+            f"permissions_file gehören zusammen – ohne sie weiß Prüfung 96 nicht, welche "
+            f"Datei das Profil wählt (D-414)")
+        return
+    einst_pfad = os.path.join(root, *einst_rel.split("/"))
+    profil_pfad = os.path.join(root, *profil_rel.split("/"))
+    if not os.path.exists(einst_pfad) and not os.path.exists(profil_pfad):
+        return  # keine Installation dieses Packs an dieser Wurzel
+    if not os.path.isfile(einst_pfad):
+        err(f"{einst_rel}: fehlt. Ohne diese Datei startet der Client mit seinem "
+            f"eingebauten Agenten und seiner Standard-Engine – die Berechtigungen in "
+            f"{profil_rel} wirken dann nicht, und nichts meldet es (D-414)")
+    else:
+        try:
+            einst = json.loads(read(einst_pfad))
+        except json.JSONDecodeError:
+            einst = None
+        if not isinstance(einst, dict):
+            err(f"{einst_rel}: kein JSON-Objekt. Der Client läse daraus weder Agent noch "
+                f"Engine (D-414)")
+        else:
+            for schluessel, wert in soll.items():
+                if einst.get(schluessel) != wert:
+                    err(f"{einst_rel}: '{schluessel}' ist {einst.get(schluessel)!r}, das "
+                        f"Pack verlangt {wert!r}. Mit einem anderen Wert wählt der Client "
+                        f"einen anderen Agenten oder eine Engine, die das Profilfeld "
+                        f"permissions nicht kennt – und fällt dabei still zurück (D-414)")
+    # (b) Das Profil.
+    if not os.path.isfile(profil_pfad):
+        err(f"{profil_rel}: fehlt. Die Einstellung wählt ein Profil, das es nicht gibt – "
+            f"der Client fällt STILL auf seinen eingebauten Agenten zurück, gemessen: "
+            f".env war danach lesbar (D-414)")
+        return
+    try:
+        cfg = json.loads(read(profil_pfad))
+    except json.JSONDecodeError as exc:
+        err(f"{profil_rel}: kein gültiges JSON ({exc.msg}, Zeile {exc.lineno}). Der Client "
+            f"fällt dann STILL auf seinen eingebauten Agenten zurück – sein eigenes "
+            f"Prüfkommando 'agent validate' endet dabei mit Exit 0 (D-414)")
+        return
+    name = man.get("permission_profile_name")
+    if not isinstance(cfg, dict) or cfg.get("name") != name:
+        err(f"{profil_rel}: das Profil heißt {cfg.get('name') if isinstance(cfg, dict) else '?'!r}, "
+            f"die Einstellung wählt {name!r}. Ein Name, den kein Profil trägt, ist der "
+            f"stille Rückfall aus D-414")
+        return
+    # (c) Jede Regel ist eine, die der Client ausführt.
+    regeln = _p96_regeln(cfg)
+    if not regeln:
+        err(f"{profil_rel}: keine einzige Regel unter permissions.rules – das Profil wäre "
+            f"aktiv und sperrte nichts (D-414)")
+        return
+    ist: dict = {e: {} for e in P96_EFFEKTE}
+    for nr, regel in enumerate(regeln, 1):
+        if not isinstance(regel, dict):
+            err(f"{profil_rel}: Regel {nr} ist kein Objekt (D-414)")
+            continue
+        faehigkeit, effekt = regel.get("capability"), regel.get("effect")
+        muster = regel.get("match")
+        if faehigkeit not in clientmap.KIRO_FAEHIGKEITEN:
+            err(f"{profil_rel}: Regel {nr} nennt die Fähigkeit {faehigkeit!r}, die der "
+                f"Client nicht kennt. Er überspringt die Regel und meldet es nur in seinem "
+                f"Protokoll – gemessen (D-414)")
+            continue
+        if effekt not in P96_EFFEKTE:
+            err(f"{profil_rel}: Regel {nr} hat den Effekt {effekt!r}; bekannt sind "
+                f"{', '.join(P96_EFFEKTE)} (D-414)")
+            continue
+        if not isinstance(muster, list) or not all(isinstance(m, str) for m in muster):
+            err(f"{profil_rel}: Regel {nr} führt 'match' nicht als Liste von Mustern (D-414)")
+            continue
+        ausnahme = tuple(regel.get("exclude") or ())
+        for m in muster:
+            ist[effekt].setdefault((faehigkeit, m), set()).add(ausnahme)
+    # (d) Gegen die Kernquelle.
+    try:
+        quelle = json.loads(clientmap.load_source(kern, "permissions.json"))
+        erzeugt = clientmap.kiro_regeln(quelle, man)
+    except (OSError, ValueError) as exc:
+        err(f"Kernquelle der Berechtigungen nicht auswertbar: {exc}")
+        return
+    soll_regeln: dict = {e: {} for e in P96_EFFEKTE}
+    for regel in erzeugt:
+        for m in regel["match"]:
+            soll_regeln[regel["effect"]].setdefault((regel["capability"], m), set()).add(
+                tuple(regel.get("exclude") or ()))
+    for effekt in ("deny", "ask"):
+        for (faehigkeit, m), ausnahmen in soll_regeln[effekt].items():
+            if m.startswith("<"):
+                continue  # Projektschlitz - gehört dem Overlay
+            vorhanden = ist[effekt].get((faehigkeit, m))
+            if not vorhanden:
+                err(f"{profil_rel}: die Kernquelle erzeugt '{effekt} {faehigkeit} {m}'; im "
+                    f"Profil steht es nicht. Eine fehlende Regel ist eine Lockerung (D-77, "
+                    f"D-414)")
+            elif not ausnahmen <= vorhanden:
+                err(f"{profil_rel}: '{effekt} {faehigkeit} {m}' steht im Profil mit einer "
+                    f"anderen Ausnahme als in der Abbildung {sorted(ausnahmen)} – eine "
+                    f"breitere Ausnahme ist eine Lockerung (D-415)")
+    skills = {f"skill {n}" for n in installierte_skills(root, man)}
+    for (faehigkeit, m) in ist["allow"]:
+        if (faehigkeit, m) in soll_regeln["allow"] or m.startswith("<"):
+            continue
+        if faehigkeit == "skill" and f"skill {m}" in skills:
+            continue  # aktivierter Pack-Skill, Bauform von Prüfung 72 (D-238)
+        err(f"{profil_rel}: 'allow {faehigkeit} {m}' erzeugt die Kernquelle nicht. Eine "
+            f"zusätzliche Freigabe ist eine Ausweitung und nicht Sache des Profils (D-77)")
 
 
 # ---------------------------------------------------------------------------
@@ -10676,6 +10915,7 @@ def main() -> int:
     check_sperrform(root, man)
     check_formatgebundene_pruefungen(root)
     check_verdraengende_wurzelanweisung(root, man)
+    check_agentenprofil(root, man)
     check_roadmapstand(root)
     check_rechtschreibung(root)
     check_dokumentform(root)

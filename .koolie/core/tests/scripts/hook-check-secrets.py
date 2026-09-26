@@ -118,6 +118,12 @@ STRUCTURE_PATH_PATTERNS = [
     # Ebene selbst.
     re.compile(_GRENZE + r"(AGENTS|CLAUDE)(\.[A-Za-z0-9_-]+)?\.md$", re.I),
     re.compile(_GRENZE + r"\.(devin|claude|codex)[\\/]", re.I),
+    # .kiro SEIT 1.13.0 (CR-2026-150, D-414, D-415) - mit EINER Ausnahme: .kiro/specs/
+    # ist bei diesem Client die Ablage seines Planartefakts, und das ist nach D-415 der
+    # Traeger des Plans, kein Artefakt des Frameworks. Das Agentenprofil nimmt denselben
+    # Teilbaum ueber das Feld exclude aus seinem Schreibverbot aus; ohne die Ausnahme
+    # hier sperrte der Hook in der interaktiven Sitzung, was die Berechtigungen zulassen.
+    re.compile(_GRENZE + r"\.kiro[\\/](?!specs[\\/])", re.I),
     re.compile(_GRENZE + r"\.koolie[\\/]project-overlay[\\/]", re.I),
     re.compile(_GRENZE + r"framework[\\/]core[\\/]", re.I),
 ]
@@ -353,7 +359,15 @@ def fail_closed() -> bool:
 # haengt sie als --sperrform an das Kommando, aus demselben Grund wie --fail-closed
 # (D-31). Ohne Angabe bleibt es bei der bisherigen Form - ein Pack erbt die neue Form
 # nicht durch Schweigen.
-SPERRFORMEN = ("decision-block", "hook-specific-output")
+#
+# DIE DRITTE FORM (CR-2026-150, D-417), gemessen am 2026-09-26 an kiro-cli 2.24.1 in
+# einer interaktiven Sitzung: Der Client wertet bei PreToolUse den Exit-Code 2 als
+# Sperre - aber er uebergibt dem Aufrufer als Grund allein stderr, und ein LEERER Grund
+# laesst die Operation laufen. Mit der Standardform (Grund nur auf stdout) endete der
+# Hook mit Exit 2, und der Koederinhalt kam heraus; derselbe Lauf mit dem Grund auf
+# stderr wurde abgewiesen. Dieselbe Bauform wie D-347: ein Hook, der laeuft und sperrt,
+# und ein Client, der die Sperre nicht liest.
+SPERRFORMEN = ("decision-block", "hook-specific-output", "stderr-grund")
 
 
 def sperrform() -> str:
@@ -376,6 +390,12 @@ def block(reason: str) -> None:
             "permissionDecision": "deny",
             "permissionDecisionReason": reason}}, ensure_ascii=False))
         sys.exit(0)
+    if form == "stderr-grund":
+        # Der Grund steht auf stderr und ist NIE leer - ein leerer Grund ist bei diesem
+        # Client eine durchgelassene Operation (D-417). stdout bleibt leer.
+        sys.stderr.write(reason.strip() or "Framework-Regel: gesperrt.")
+        sys.stderr.write("\n")
+        sys.exit(2)
     print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
     sys.exit(2)
 

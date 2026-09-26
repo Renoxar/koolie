@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.4.3` |
+| Version | `0.4.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.12.1 (2026-09-26)
+## Stand nach Release 1.13.0 (2026-09-26)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -114,10 +114,11 @@ die Störung.**
 | ~~**1.10.0**~~ ✅ | 🟢 **DIE CODE- UND PACK-POSTEN DER DURCHSICHT – UND DER HOOK, DEM NACH JEDER HEBUNG NEU VERTRAUT WERDEN MUSS** (`CR-2026-146`, **D-395** bis **D-401**, `K-123`, `K-125`, `K-127`, `K-129`, `K-136`, `K-137`, `K-145` und `K-151` beantwortet, `K-152` neu). `install.py` nennt die Schritte, die das Manifest eines Packs führt – bei `openai-codex` das Vertrauen in Projekt und Schutz-Hook, nach jeder Hebung erneut (D-395); das Hauptdokument bettet alle drei Matrizen ein und die Berechtigungsdatei in ihrer Form (D-396); `--mermaid` ruft den Renderer wie der Bau auf (D-398); die Einzelbefunde der Packs und die Vorlage des Client Packs sind nachgezogen (D-397, D-399); das Onboarding braucht drei Präparationen (D-400); Kiro für `1.12.0` eingeplant, aus der Dokumentation (D-401) | – | nein |
 | ~~**1.11.0**~~ ✅ | 🟢 **DIE REGEL- UND REGISTERPOSTEN DER DURCHSICHT – UND DIE ZELLEN, DIE IHRE ERWARTUNG NICHT DECKTEN** (`CR-2026-147`, **D-402** bis **D-406**, **Prüfung 95** neu, `K-139` bis `K-143`, `K-146`, `K-148` bis `K-150` beantwortet, `K-153` bis `K-155` neu). Prompts, Checklisten, Entscheidungsbäume und Governance-Dokumente folgen ihrem Core-Modul, in beiden Richtungen (D-402); Prüfung 95 verlangt im Änderungsverlauf eines Skills die Art der Änderung (D-403); von vier abgenommenen Zellen trägt eine im Nachlauf, eine bleibt `offen` – **Kriterium 2 steht auf 1** –, eine ist berichtigt, bei einer war es die Präparation (D-404); die Register der Skills sind berichtigt (D-405); der Mehrprojektfall und die Token-Last sind abgespalten, `K-153` für `1.14.0` eingeplant (D-406) | – | nein |
 | ~~**1.12.0**~~ ✅ | 🟢 **DER MEHRPROJEKTFALL UND DIE TOKEN-LAST – GEMESSEN, UND DIE REGELABLAGE, DIE NICHT LUD** (`CR-2026-148`, **D-407** bis **D-410**, `K-138`, `K-144` (1) und (3) und `K-154` beantwortet, `K-156` bis `K-159` neu; 102 Sitzungsläufe, 10,56 USD nach Listenpreis). Der Messapparat findet den Kern wieder (D-407); eine Installation wirkt technisch nur für eine Sitzung, die in ihrem Verzeichnis startet – bei allen drei Packs; je Repository eine Installation (D-408); die Token-Last ist je Pack gemessen, der Kostenabschnitt steht im Übernahmeleitfaden und im Hauptdokument (D-409). 🔴 **Dabei gefunden:** Bei `devin-desktop` lädt die Regelablage mit der ausgelieferten Einstellung nicht (`K-156`), `openai-codex` 0.157.0 ignoriert die Pfadeinträge des Rechteprofils (`K-157`) – eingeplant als `1.12.1` (D-410) | – | ja (102 Sitzungsläufe) |
-| ~~**1.12.1**~~ ✅ | *dieses Release:* 🟢 **DIE REGELABLAGE, DIE NUR MIT WINDSURF LÄDT, UND DAS SONDERZIEL, DAS UMBENANNT WURDE** (`CR-2026-149`, **D-411** bis **D-413**, `K-156` und `K-157` beantwortet, `K-160` und `K-161` neu; 24 Sitzungsläufe, 0,65 USD nach Listenpreis). `devin-desktop` lässt Windsurf-Quellen zu, weil der Client die eigene Regelablage sonst nicht lädt – auch nicht in 3000.11.3 –, und `install.py` meldet die Kanäle, die das öffnet (D-411); `openai-codex` führt den Arbeitsbereich als Tabelle `:workspace_roots` – mit der alten Form war er unter 0.157 ganz schreibgeschützt (D-412) | – | ja (24 Sitzungsläufe) |
-| **1.13.0** | **Client Pack für Kiro aus der Dokumentation** (D-401, D-406, `K-147`): Erhebung aus der Produktdokumentation, jede Matrixzeile mit `[DOK]` und Quellenkennung, Pack auf `entwurf`, **nicht für den produktiven Einsatz freigegeben bis zur Abnahme**; die Abnahme mit einem Zugang folgt als eigenes Release. Nach `1.12.0` | – | nein |
+| ~~**1.12.1**~~ ✅ | 🟢 **DIE REGELABLAGE, DIE NUR MIT WINDSURF LÄDT, UND DAS SONDERZIEL, DAS UMBENANNT WURDE** (`CR-2026-149`, **D-411** bis **D-413**, `K-156` und `K-157` beantwortet, `K-160` und `K-161` neu; 24 Sitzungsläufe, 0,65 USD nach Listenpreis). `devin-desktop` lässt Windsurf-Quellen zu, weil der Client die eigene Regelablage sonst nicht lädt – auch nicht in 3000.11.3 –, und `install.py` meldet die Kanäle, die das öffnet (D-411); `openai-codex` führt den Arbeitsbereich als Tabelle `:workspace_roots` – mit der alten Form war er unter 0.157 ganz schreibgeschützt (D-412) | – | ja (24 Sitzungsläufe) |
+| ~~**1.13.0**~~ ✅ | *dieses Release:* 🟢 **DAS CLIENT PACK FÜR KIRO – MIT ZUGANG GEBAUT, UND DER SCHUTZ-HOOK, DER OHNE GRUND NICHT SPERRTE** (`CR-2026-150`, **D-414** bis **D-418**, **Prüfung 96** neu, `K-147` beantwortet, `K-162` bis `K-164` neu; rund 40 Läufe am Client, 2,9 Credits im Free-Tarif). Der Owner hat den Client während der Sitzung beschafft; das Pack ist deshalb **gemessen statt aus der Dokumentation gebaut** und steht auf `pilot`. Die Berechtigungen stehen in einem **Agentenprofil**, das eine Einstellungsdatei des Arbeitsbereichs wählt – 🔴 **fehlt es oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück** (D-414, Prüfung 96). Das Planartefakt sind die Spezifikationen des Clients (D-415). 🔴 **Der Schutz-Hook sperrte mit der Standardform nichts** – Exit 2 ohne Grund auf stderr lässt der Client laufen; eine dritte Sperrform (D-417). Die Menge der formatgebundenen Prüfungen führte 76 statt 72 (D-416). Die Hooks laufen nur interaktiv; die IDE ist nicht an Sitzungen gemessen (`K-162`) | – | nein |
 | **1.14.0** | **Die Anweisungen der Skills gegen ihre Module** (D-406, `K-153`): `fw-change-small` (Kontakt bei R4), `fw-refactor` (Plan oder Freigabe bei Stufe hoch), `fw-error-analyze` (K2 nur mit Freigabe), `fw-plan` (Planablage gegen Zeile M4), `fw-code-explain` (Anhalten bei einer gekennzeichneten K3-Fixture, Zelle `SK-002-N03` offen); dazu die Prompts `02` bis `05`. Jede Anweisungsänderung öffnet ein Testblatt (D-303) – mit Nachlauf und Kontingent. Nach `1.13.0` | – | nein |
 | **1.15.0** | **Veröffentlichung und Installation über Paketquellen** (`K-155`): Releases auf dem öffentlichen GitHub-Spiegel mit denselben Anhängen, Durchsicht der Historie, zuerst PyPI (`pipx`), Absicherung der Lieferkette. Nach `1.14.0` | – | nein |
+| **1.16.0** | **Client Pack für Cursor** (D-418, `K-164`): Erhebung und Bau mit Zugang zum Client wie bei `kiro` – Konto, IDE und Kommandozeile sind beim Owner eingerichtet (Free). Nach `1.15.0`, als letztes Release des Plans | – | nein |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -230,23 +231,9 @@ Python ist; dazu Absicherung der Lieferkette und der Hinweis in README und Über
 Das Übungsrepositorium dient dem Onboarding und den Sitzungstests des Frameworks; ein Projekt braucht
 nur das erste (D-400). Getrennt wird, sobald ein zweites Projekt ein Übungsrepositorium aufbaut.
 
-### Geplant: Client Pack für Kiro aus der Dokumentation – Ziel-Release **1.13.0**
+### Geplant: Client Pack für Cursor – Ziel-Release **1.16.0**
 
-Auftrag des Owners vom 2026-09-25 (D-394), eingeplant nach den MINOR-Releases `1.10.0` und `1.11.0`
-(D-401) und mit der Abspaltung des Messrelease `1.12.0` eine Nummer weiter gerückt (D-406). **Gebaut wird aus der Dokumentation, weil ein Zugang zum Client fehlt:** Jede Zeile der
-Fähigkeitsmatrix trägt den Beleg `[DOK]` mit Quellenkennung, das Pack steht auf `entwurf` und ist **bis
-zur Abnahme nicht für den produktiven Einsatz freigegeben** – ein Schutz-Hook kann nach seiner
-Dokumentation laufen und gemessen nichts verhindern (D-347). Die Abnahme mit einem Zugang ist ein
-eigenes Release. **Erste Entscheidungsfrage vor dem Bau:** das Planartefakt; empfohlen ist, die
-Spezifikationen des Clients als Träger zu nehmen und ihnen die Vorgaben von `role-re-ticket` und
-`PLAN_TEMPLATE.md` über eine stets geladene Regeldatei mitzugeben (`K-147`).
-
-Kiro arbeitet als IDE und als
-Kommandozeilen-Client lokal im Projekt und bringt Regelablage, Skills und blockierende Hooks mit
-(`[DOK]`, nicht gemessen); der autonome Agent in der Sandbox des Anbieters fällt unter D-10. **Vor dem
-Bau zu klären:** das Berechtigungsmodell und welches Planartefakt maßgeblich ist – die Spezifikationen
-des Clients oder die Planvorlage des Frameworks. Der Weg ist der von `openai-codex`: erst die
-Erhebung, dann das Pack (`clients/README.md` Abschnitt 5).
+Auftrag des Owners vom 2026-09-26 (D-418), eingeplant am Ende des Releaseplans. **Gebaut wird wie `kiro`:** mit Zugang zum Client – Konto (Free), IDE und Kommandozeile sind eingerichtet – erst die Entscheidungsfragen mit Schätzung, dann Messung und Pack. Die Lehren aus `1.13.0` gehören in den Vorbedingungsdurchgang: Wo liegt die Berechtigungsdatei des Arbeitsbereichs, und ist sie versionierbar? Laufen die Hooks auch im Betrieb ohne Rückfragen? **Und woran erkennt der Client eine Sperre des Schutz-Hooks** – am Exit-Code, am Grund oder an einer Ausgabeform (D-347, D-417)?
 
 ### Erledigt mit `1.9.2`: Durchsicht der Klasse B, zweiter Bereich
 

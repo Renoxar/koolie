@@ -43,6 +43,7 @@ __pycache__/
 /.mcp.json.example
 /.claude/
 /.codex/
+/.kiro/
 
 # Sicherungsdateien aus Sondenlaeufen
 *.bak

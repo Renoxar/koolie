@@ -177,6 +177,9 @@ def process(text: str, man: dict, installation: str) -> str:
             # der Bau bis 1.9.3 eine TOML-Datei als JSON ein (K-127, D-396).
             if lang == "permissions_format":
                 lang = clientmap.permissions_format(man)
+                # Das Agentenprofil von kiro ist JSON (D-414).
+                if lang == "kiro-agent":
+                    lang = "json"
             if "````" in content:
                 print(f"FEHLER: {rel} enthaelt 4 Backticks", file=sys.stderr)
                 sys.exit(1)
@@ -273,6 +276,14 @@ def lokale_ergaenzung(man: dict) -> str:
     Einbettung, die bei jedem Fehlen still eine Erklaerung einsetzte, waere die Ausnahme,
     die alles ausnimmt.
     """
+    if man.get("root_instruction_local_absent"):
+        # Seit 1.13.0 (D-414): Ein Client ohne nutzerlokale Wurzel-Anweisung (kiro). Die
+        # Weiche ist wieder ein Manifestfeld und nicht das Fehlen der Datei.
+        return (f"🔴 **Eine persönliche Ergänzungsdatei gibt es bei diesem Client Pack nicht** "
+                f"(`{man['client']}`): Der Hersteller dokumentiert keine nutzerlokale "
+                f"Wurzel-Anweisung, und das Pack liefert keine Vorlage aus. Der Name "
+                f"`{man['runtime_placeholders']['<ROOT_INSTRUCTION_LOCAL>']}` steht nur im "
+                f"`deny`-Korb, weil die Kernquelle ein Schreibverbot auf ihn führt.")
     if not man.get("root_instruction_override"):
         return ("Ergänzend gehört zur Vorlage die persönliche, nicht versionierte "
                 "Ergänzungsdatei – zulässig nur zum Einschränken und für "

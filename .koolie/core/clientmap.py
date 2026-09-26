@@ -617,7 +617,12 @@ def render_hooks(quelltext: str, man: dict) -> str:
     eine Datei ohne diesen Schluessel mit *unknown field `PreToolUse`* und LAEDT SIE
     NICHT; er startet trotzdem, und ohne die Meldung im Blick haette man einen
     ausgelieferten Schutz-Hook gehabt, der nie laeuft (D-347).
+
+    Seit 1.13.0 gibt es eine zweite Gestalt (hooks_format "kiro-v1", D-414): eine
+    LISTE von Hooks mit Ausloeser je Eintrag statt eines Objekts je Ereignis.
     """
+    if man.get("hooks_format") == "kiro-v1":
+        return render_hooks_kiro(quelltext, man)
     objekt = _hooks_objekt(quelltext, man)
     schluessel = man.get("hooks_file_wrapper")
     if schluessel:
@@ -905,13 +910,231 @@ def render_exec_policy(quelltext: str, man: dict) -> str:
 
 
 def permissions_format(man: dict) -> str:
-    """Ausgabeform der Berechtigungsdatei dieses Packs ('json' oder 'toml').
+    """Ausgabeform der Berechtigungsdatei dieses Packs ('json', 'toml', 'kiro-agent').
 
-    Der Standard ist 'json': Zwei der drei Packs fuehren ihn, und ein fehlendes Feld
+    Der Standard ist 'json': Zwei der vier Packs fuehren ihn, und ein fehlendes Feld
     darf nicht die neue Form bedeuten - ein Pack soll seine Form SAGEN und sie nicht
     durch Schweigen erben.
     """
     return man.get("permissions_format", "json")
+
+
+# ---------------------------------------------------------------------------
+# Dritte Ausgabeform: das Agentenprofil mit Faehigkeitsregeln (kiro)
+# ---------------------------------------------------------------------------
+#
+# WARUM ES SIE GIBT, UND DER GRUND IST GEMESSEN (CR-2026-150, D-414). Der Client kiro
+# fuehrt seine Berechtigungen als Regeln der Gestalt {capability, match, effect} - und
+# die Datei, die ein Projekt dafuer im Arbeitsbereich halten koennte, liegt NICHT im
+# Repositorium, sondern je Arbeitsplatz unter ~/.kiro/workspace-roots/<hash>/. Der
+# einzige versionierbare Traeger ist das Feld `permissions` eines Agentenprofils unter
+# .kiro/agents/. Gemessen am 2026-09-26 mit kiro-cli 2.24.1, Engine V3:
+#   * Ein deny im Agentenprofil weist ab und nennt sich ("Source: agent-profile").
+#   * Das Profil wirkt nur, wenn es der AKTIVE Agent ist. Die Arbeitsbereichsdatei
+#     .kiro/settings/cli.json waehlt ihn (chat.defaultAgent) und schlaegt eine globale
+#     Einstellung; render_client_settings() erzeugt sie.
+#   * Fehlt das Profil oder ist es kein gueltiges JSON, faellt der Client STILL auf
+#     seinen eingebauten Agenten zurueck - nur eine Warnung auf stderr, und .env war
+#     lesbar. Pruefung 96 haelt deshalb Einstellung und Profil gegeneinander.
+#   * Eine Regel mit unbekannter Faehigkeit wird uebersprungen, gemeldet nur im
+#     Protokoll des Clients. Diese Abbildung erzeugt deshalb nur Faehigkeiten aus
+#     KIRO_FAEHIGKEITEN, und Pruefung 96 liest dieselbe Menge.
+#   * Befehlsmuster: ohne '*' vergleicht der Client WOERTLICH ("echo" sperrte
+#     "echo hallo" nicht). Die Praefixform braucht deshalb das Suffix '*'.
+#   * Ein Pfadmuster ohne Wildcard trifft auch Unterverzeichnisse (".env" sperrte
+#     "sub/.env") - breiter als woertlich, also keine Lockerung.
+
+#: Die Faehigkeiten, die der Client kennt (Herstellerdokumentation, Seite
+#: "Permissions", abgerufen 2026-09-26). Eine Regel ausserhalb dieser Menge wuerde
+#: der Client ueberspringen - gemessen (K23 im Protokoll des Baus).
+KIRO_FAEHIGKEITEN = ("fs_read", "fs_write", "shell", "web_fetch", "web_search", "mcp",
+                     "subagent", "skill", "power", "context", "diagnostics",
+                     "sandbox_network", "all", "builtin", "filesystem")
+
+
+def _kiro_argument(regel: dict, man: dict, korb: str) -> str:
+    verb = regel["tool"]
+    if verb == "exec":
+        return _befehl(regel, man, korb)
+    if verb == "skill":
+        # Ein Aufrufname, kein Pfad, und woertlich: gemessen am 2026-09-26 - die
+        # Freigabe auf einen Namen laesst genau diesen Skill laden, einen anderen nicht.
+        return regel["pattern"]
+    return _muster(regel["pattern"], man)
+
+
+def kiro_regeln(quelle: dict, man: dict) -> list[dict]:
+    """Die Regelmenge des Kerns als Faehigkeitsregeln dieses Clients.
+
+    Je Korb und Faehigkeit EINE Regel mit der Liste ihrer Muster, in der Reihenfolge
+    der Quelle. Dieselben drei Zusicherungen wie bei den anderen Ausgabeformen: deny
+    und ask ohne Zielfaehigkeit brechen ab, die Praefixform ist nachweislich breiter,
+    allow wird nie verbreitert (_befehl).
+    """
+    # AUSNAHMEN INNERHALB EINER REGEL (D-415). Die Kernregel "write <RUNTIME_DIR>/**"
+    # sperrt bei diesem Client auch .kiro/specs/ - und dort legt der Client sein
+    # Planartefakt ab, das nach D-415 der Traeger des Plans ist. Kein Framework-Artefakt,
+    # aber im Schutzbereich einer Kernregel. Ein allow koennte es nicht freigeben
+    # (deny gewinnt); das Feld exclude der Regel nimmt den Teilbaum aus, und nur ihn.
+    # Das Manifest nennt die Ausnahme je Quellregel ("verb muster"), und nur fuer deny.
+    ausnahmen = man.get("permission_rule_exclude") or {}
+    regeln: list[dict] = []
+    for korb in ("deny", "ask", "allow"):
+        gruppen: dict[str, list[str]] = {}
+        einzeln: list[dict] = []
+        for regel in quelle.get(korb, []):
+            schluessel = f"{regel['tool']} {regel.get('pattern', regel.get('command', ''))}"
+            if schluessel in ausnahmen and korb != "deny":
+                raise AbbildungsFehler(
+                    f"{man.get('client', '?')}/manifest.json: permission_rule_exclude nennt "
+                    f"die {korb}-Regel '{schluessel}' - eine Ausnahme ist nur an einem "
+                    f"Verbot zulaessig; an ask oder allow veraenderte sie die Breite einer "
+                    f"Freigabe")
+            ziele = _werkzeuge(man, regel["tool"])
+            if not ziele:
+                if korb in ("deny", "ask"):
+                    raise AbbildungsFehler(
+                        f"{man.get('client', '?')}: keine Faehigkeit fuer "
+                        f"'{regel['tool']}', die {korb}-Regel {regel} liesse sich nur "
+                        f"durch Weglassen abbilden - das waere eine Lockerung")
+                continue
+            argument = _kiro_argument(regel, man, korb)
+            for faehigkeit in ziele:
+                if faehigkeit not in KIRO_FAEHIGKEITEN:
+                    raise AbbildungsFehler(
+                        f"{man.get('client', '?')}/manifest.json: permission_tools nennt "
+                        f"die Faehigkeit '{faehigkeit}', die der Client nicht kennt - er "
+                        f"uebersprange die Regel und meldete es nur im Protokoll (D-414)")
+                if schluessel in ausnahmen:
+                    einzeln.append({"capability": faehigkeit, "match": [argument],
+                                    "exclude": list(ausnahmen[schluessel]),
+                                    "effect": korb})
+                    continue
+                liste = gruppen.setdefault(faehigkeit, [])
+                if argument not in liste:
+                    liste.append(argument)
+        for faehigkeit, muster in gruppen.items():
+            regeln.append({"capability": faehigkeit, "match": muster, "effect": korb})
+        regeln.extend(einzeln)
+    return regeln
+
+
+def kiro_kernregeln(quelle: dict, man: dict) -> list[str]:
+    """Die Kernzusagen als 'faehigkeit muster' - fuer _core_rules_integrity."""
+    raus: list[str] = []
+    for regel in quelle.get("deny", []):
+        if not regel.get("core"):
+            continue
+        argument = _kiro_argument(regel, man, "deny")
+        for faehigkeit in _werkzeuge(man, regel["tool"]):
+            eintrag = faehigkeit + " " + argument
+            if eintrag not in raus:
+                raus.append(eintrag)
+    return raus
+
+
+def render_permissions_kiro(quelltext: str, man: dict) -> str:
+    """Agentenprofil dieses Client Packs aus der neutralen Regelmenge.
+
+    Unbekannte Schluessel (_comment, _core_rules_integrity) nimmt der Client an -
+    gemessen am 2026-09-26: Mit beiden im Profil blieb es der aktive Agent, und sein
+    deny wies ab (K21 im Protokoll des Baus).
+    """
+    quelle = json.loads(quelltext)
+    name = man.get("permission_profile_name")
+    if not name:
+        raise AbbildungsFehler(
+            man.get("client", "?") + "/manifest.json: Feld permission_profile_name "
+            "fehlt - ohne Namen gibt es kein Agentenprofil, das die Einstellungsdatei "
+            "waehlen koennte")
+    kern = core_dir_name(man)
+    pack = man.get("client", "?")
+    kommentar = " ".join([
+        f"Agentenprofil des Frameworks (Ebene 3), erzeugt fuer das Client Pack {pack}.",
+        f"Regelmenge: {kern}/framework/runtime/permissions.json. Abbildung: "
+        f"{kern}/clients/{pack}/manifest.json. Inhaltliche Aenderungen gehoeren dorthin "
+        f"und laufen als Aenderungsantrag.",
+        "Mechanismus: deny vor ask vor allow, ueber alle Ebenen des Clients - ein deny "
+        "an irgendeiner Stelle gewinnt.",
+        "Dieses Profil wirkt NUR als aktiver Agent. Die Datei "
+        + (man.get("client_settings_file") or "?") + " waehlt es als Standard; wer mit "
+        "--agent einen anderen Agenten waehlt, arbeitet ohne diese Regeln. Fehlt diese "
+        "Datei oder ist sie kein gueltiges JSON, faellt der Client still auf seinen "
+        "eingebauten Agenten zurueck (Pruefung 96).",
+        "Platzhalter in spitzen Klammern traegt der Overlay Owner in die match-Listen "
+        "ein. Zusaetzliche Regeln sind nur als deny zulaessig.",
+        "Exakte Mustersemantik: Zeilen B3 und B6 der Faehigkeitsmatrix dieses Client "
+        "Packs.",
+    ])
+    profil: dict = {
+        "_comment": kommentar,
+        "name": name,
+        "description": man.get("permission_profile_description", ""),
+        "tools": list(man.get("permission_profile_tools") or ["*"]),
+        "permissions": {"rules": kiro_regeln(quelle, man)},
+        "_core_rules_integrity": {"deny_must_contain": kiro_kernregeln(quelle, man)},
+    }
+    return json.dumps(profil, indent=2, ensure_ascii=False) + "\n"
+
+
+def render_client_settings(man: dict) -> str:
+    """Die Einstellungsdatei des Arbeitsbereichs, die das Agentenprofil waehlt.
+
+    Ohne Kommentarschluessel: Die Datei ist die Einstellungsablage des Clients und
+    wird von seinem Werkzeug `settings --workspace` geschrieben; ein fremder
+    Schluessel darin ist nicht gemessen. Die Erklaerung steht in der Kernquelle
+    framework/runtime/client-settings.json und in der README der Laufzeitschicht.
+    """
+    werte = man.get("client_settings")
+    if not werte or not isinstance(werte, dict):
+        raise AbbildungsFehler(
+            man.get("client", "?") + "/manifest.json: client_settings fehlt oder ist "
+            "kein Objekt")
+    return json.dumps(werte, indent=2, ensure_ascii=False) + "\n"
+
+
+def render_hooks_kiro(quelltext: str, man: dict) -> str:
+    """Hook-Datei in der Gestalt {version: v1, hooks: [...]}.
+
+    Gemessen am 2026-09-26 in einer interaktiven Sitzung (die Hooks laufen NICHT im
+    Betrieb ohne Rueckfragen - der Client aktiviert sie dort gar nicht):
+      * Der Ausloeser steht je Eintrag; die Namen der Kernquelle (PreToolUse,
+        SessionStart) sind gueltig. "PromptSubmit" aus der Dokumentation ist es nicht.
+      * Der Matcher ist ein REGULAERER AUSDRUCK ueber den Werkzeugnamen - "*" allein
+        kompiliert nicht, und der Eintrag laedt dann ohne Filter nicht.
+      * Das Zeitlimit steht in SEKUNDEN (Schema des Clients).
+      * Exit 2 sperrt die Werkzeugausfuehrung; der Folgeaufruf lief.
+    Kein Kommentarschluessel auf oberster Ebene: Die Erklaerung steht in
+    `description` jedes Eintrags, einem Feld, das das Schema fuehrt.
+    """
+    quelle = json.loads(quelltext)
+    eintraege: list[dict] = []
+    for ereignis, gruppen in quelle.items():
+        if ereignis.startswith("_"):
+            continue
+        for gi, gruppe in enumerate(gruppen):
+            matcher = _hook_matcher(gruppe["on"], man) if "on" in gruppe else None
+            for hi, h in enumerate(gruppe["hooks"]):
+                skript = os.path.basename(h["script"]).rsplit(".", 1)[0]
+                eintrag: dict = {
+                    "name": f"koolie-{skript}",
+                    "description": (f"Hook des Frameworks ({ereignis}), erzeugt aus "
+                                    f"{core_dir_name(man)}/framework/runtime/hooks.json "
+                                    f"fuer das Client Pack {man.get('client', '?')}."),
+                    "trigger": ereignis,
+                }
+                if matcher:
+                    eintrag["matcher"] = matcher
+                eintrag["action"] = {
+                    "type": h["type"],
+                    "command": _hook_befehl(h["script"], man,
+                                            h.get("enforcing") is True,
+                                            h.get("needs_project_paths") is True),
+                }
+                eintrag["timeout"] = h["timeout"]
+                eintraege.append(eintrag)
+    return json.dumps({"version": "v1", "hooks": eintraege},
+                      indent=2, ensure_ascii=False) + "\n"
 
 
 def exec_policy_file(man: dict) -> str | None:

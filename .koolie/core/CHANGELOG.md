@@ -2,6 +2,58 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.13.0] - 2026-09-26
+
+**Das Client Pack fuer Kiro - mit Zugang gebaut, und der Schutz-Hook, der ohne Grund nicht sperrte**
+(`CR-2026-150` E1 bis E8, **D-414** bis **D-418**, **Pruefung 96** neu; `K-147` beantwortet, `K-162`
+bis `K-164` neu). Ein MINOR-Release mit Kontingent: rund 40 Laeufe an Kiro CLI 2.24.1 (Engine V3),
+davon neun interaktive Sitzungen, 2,9 Credits im Free-Tarif des Owners.
+
+> 🔴 **DER SCHUTZ-HOOK SPERRTE BEI KIRO MIT SEINER STANDARDFORM NICHTS** (D-417). Exit 2 mit dem
+> Grund auf stdout: Der Hook endete nachweislich mit Exit 2, und der Koederinhalt kam heraus - der
+> Client uebergibt als Sperrgrund allein stderr, und ein leerer Grund laesst die Operation laufen.
+> Dritte Sperrform `stderr-grund`; dieselbe Bauform wie D-347.
+
+> 🔴 **DIE BERECHTIGUNGEN WIRKEN NUR UEBER DEN AKTIVEN AGENTEN** (D-414). Fehlt das Agentenprofil oder
+> ist es kein gueltiges JSON, faellt der Client still auf seinen eingebauten Agenten zurueck, und
+> `.env` war lesbar. Pruefung 96 haelt Einstellung und Profil gegeneinander.
+
+**Neu**
+
+- Client Pack `kiro` (`0.1.0`, `pilot`): `CLIENT_PACK.md` (35 Matrixzeilen, 21 `[TECHNISCH]`, alle
+  sechs Kernzusagen), `manifest.json`, `root-template/.kiro/README.md` (D-414).
+- `clientmap.py`: dritte Ausgabeform - Agentenprofil mit Faehigkeitsregeln (`kiro-agent`),
+  Einstellungsdatei des Arbeitsbereichs, Hook-Datei `version: v1`; Ausnahme je Verbot
+  (`permission_rule_exclude`) fuer `.kiro/specs/**` (D-415).
+- `framework/runtime/rules/16-plan-spezifikation.md`: die Spezifikationen des Clients sind das
+  Planartefakt, mit den Pflichtfeldern der Planvorlage und den Regeln von `role-re-ticket` (D-415).
+- `framework/runtime/client-settings.json` (Quelle der Einstellungsdatei).
+- `hook-check-secrets.py`: Sperrform `stderr-grund`; `.kiro` in den Strukturmustern, ohne
+  `.kiro/specs/` (D-415, D-417).
+- **Pruefung 96** (Agentenprofil und Einstellung); Sondenbuendel `sonden_kiro` (14 Einheiten).
+- Quellenliste `QK-1` bis `QK-9` in Anhang 31.4.4; Pruefung 73 kennt `QK-`.
+
+**Geaendert**
+
+- `FORMATGEBUNDENE_PRUEFUNGEN` nennt je Eintrag die Formen, die er erreicht; **72 statt 76**; die
+  Pruefungen 37, 42, 43, 54 und 72 fragen ausdruecklich (D-416). Client Pack `openai-codex`
+  (`0.1.7`): Abschnitt 5 berichtigt.
+- `install.py`: feste Frontmatter-Felder je Ladetrigger (`fixed`, `hint`); Einleitung des Hinweises
+  auf Importkanaele je Pack (`import_channels_intro`); Kanalart `entries`.
+- `clients/README.md` (`0.8.0`), `OWNERS.md`, Roadmap (`0.4.4`): **Cursor als `1.16.0`** am Ende
+  des Plans (D-418).
+
+**Migrationshinweise fuer Overlays**
+
+- Keine fuer die bestehenden Packs. `openai-codex`: nur der Text von Abschnitt 5 des Packs.
+
+**Bekannte Einschraenkungen**
+
+- `kiro`: Die Hooks laufen nur in der interaktiven Sitzung; die Zeilen der IDE sind nicht an einer
+  Sitzung gemessen (`K-162`); drei Abweichungen des Clients von seiner Dokumentation sind dem
+  Hersteller zu melden (`K-163`, Owner).
+- **Kriterium 2 = 1** (`SK-002-N03`, `1.14.0`). Die Abnahme des macOS-Starters auf macOS steht weiter aus.
+
 ## [1.12.1] - 2026-09-26
 
 **Die Regelablage, die nur mit Windsurf laedt, und das Sonderziel, das umbenannt wurde**

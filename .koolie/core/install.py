@@ -523,6 +523,10 @@ def render_rule(text: str, man: dict) -> str:
     feld = eintrag.get("condition")
     herkunft = f"trigger: {trig}"
     kopfzeilen = ""
+    # Feste Frontmatter-Felder je Ladetrigger (seit 1.13.0, D-414): Der Client kiro
+    # verlangt neben dem Musterfeld den Lademodus als eigenes Feld - ohne
+    # "inclusion: fileMatch" laedt eine Datei mit fileMatchPattern IMMER.
+    fest = "".join(f"{k}: {v}\n" for k, v in (eintrag.get("fixed") or {}).items())
     if feld:
         quellfeld = eintrag.get("from", "globs")
         if quellfeld != "globs":
@@ -539,7 +543,8 @@ def render_rule(text: str, man: dict) -> str:
                 raise clientmap.AbbildungsFehler(
                     f"{man.get('client', '?')}: Dateimuster '{wert}' enthaelt ein "
                     f"Anfuehrungszeichen und laesst sich nicht als {feld}-Eintrag notieren")
-        kopfzeilen = "---\n" + f"{feld}:\n" + "".join(f'  - "{w}"\n' for w in muster) + "---\n\n"
+        kopfzeilen = ("---\n" + fest + f"{feld}:\n" + "".join(f'  - "{w}"\n' for w in muster)
+                      + "---\n\n")
         hinweis = (f"Lädt, sobald der Client eine Datei liest, die auf eines der Muster in "
                    f"`{feld}` passt.")
         herkunft += f", globs: {', '.join(muster)}"
@@ -551,6 +556,12 @@ def render_rule(text: str, man: dict) -> str:
         hinweis = (f"Wird bei jedem Sitzungsstart geladen. Dieser Client kennt für Regeldateien "
                    f"nur die Bedingung über Dateimuster; gegenüber `{trig}` ist unbedingtes Laden "
                    f"eine Verschärfung, keine Lockerung.")
+    if fest and not feld:
+        kopfzeilen = "---\n" + fest + "---\n\n"
+    # Ein Pack, dessen Client mehr Lademodi kennt, als es nutzt, sagt den Grund selbst
+    # (rule_triggers.map[...].hint) - der Standardsatz oben behauptete sonst, der Client
+    # kenne nur Dateimuster (D-414).
+    hinweis = eintrag.get("hint") or hinweis
     return kopfzeilen + _regel_kommentar(desc, hinweis, herkunft) + rumpf.lstrip("\n")
 
 
@@ -617,12 +628,17 @@ def render_for_client(text: str, man: dict, src_rel: str, dst_rel: str = "") -> 
             return clientmap.render_exec_policy(text, man)
         if clientmap.permissions_format(man) == "toml":
             return clientmap.render_permissions_toml(text, man)
+        if clientmap.permissions_format(man) == "kiro-agent":
+            return clientmap.render_permissions_kiro(text, man)
         # Kennt der Client keine eigene Hook-Datei, wandern die Hooks hier mit hinein.
         hooks = (clientmap.load_source(HERE, "hooks.json")
                  if clientmap.hooks_in_permissions(man) else None)
         return clientmap.render_permissions(text, man, hooks)
     if src_rel == "framework/runtime/hooks.json":
         return clientmap.render_hooks(text, man)
+    if src_rel == "framework/runtime/client-settings.json":
+        # Die Quelle erklaert nur; den Inhalt traegt das Manifest (D-414).
+        return clientmap.render_client_settings(man)
     if os.path.basename(src_rel) == "SKILL.md":
         text = render_skill_frontmatter(text, man)
     elif ist_regelquelle(src_rel):
@@ -828,6 +844,10 @@ def belegte_importkanaele(root: str, man: dict) -> list[tuple[str, str]]:
         wann = kanal.get("when", "exists")
         if wann == "nonempty":
             treffer = os.path.isfile(pfad) and os.path.getsize(pfad) > 0
+        elif wann == "entries":
+            # Ein Verzeichnis mit mindestens einem Eintrag - ein leeres legt der
+            # Client selbst an und traegt nichts (D-414).
+            treffer = os.path.isdir(pfad) and bool(os.listdir(pfad))
         else:
             treffer = os.path.exists(pfad)
         if treffer:
@@ -2010,9 +2030,10 @@ def main() -> int:
                 print("     Status entwurf registriert. Sie wirken erst, wenn der Overlay Owner "
                       "sie prueft,")
                 print("     freigibt und in der Laufzeitfassung als K1-Dokumente fuehrt.")
-        # Den Integritaetsblock fuehrt nur eine Berechtigungsdatei im JSON-Format; die
-        # TOML-Datei eines Packs kennt ihn nicht (K-123, D-395).
-        if clientmap.permissions_format(man) == "json":
+        # Den Integritaetsblock fuehrt nur eine Berechtigungsdatei im JSON-Format - auch
+        # das Agentenprofil von kiro (D-414); die TOML-Datei eines Packs kennt ihn nicht
+        # (K-123, D-395).
+        if clientmap.permissions_format(man) in ("json", "kiro-agent"):
             print(f"  2. Werte in {man['permissions_file']} eintragen - die Kernregeln unter")
             print("     _core_rules_integrity nicht entfernen.")
         else:
@@ -2049,8 +2070,13 @@ def main() -> int:
     kanaele = belegte_importkanaele(root, man)
     if kanaele:
         print()
-        print(f"HINWEIS ({len(kanaele)}): Die Importsteuerung dieses Client Packs laesst "
-              f"Quellen eines fremden Werkzeugs zu,")
+        # Die Einleitung sagt seit 1.13.0 das Pack selbst (import_channels_intro): Bei
+        # kiro sind es keine Quellen eines fremden Werkzeugs, sondern die eigenen
+        # Ablagen des Clients im Benutzerprofil (D-414).
+        einleitung = man.get("import_channels_intro") or (
+            "Die Importsteuerung dieses Client Packs laesst Quellen eines fremden "
+            "Werkzeugs zu,")
+        print(f"HINWEIS ({len(kanaele)}): {einleitung}")
         print("und auf diesem Arbeitsplatz sind davon belegt:")
         for rel, was in kanaele:
             print(f"  {rel}")
