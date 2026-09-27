@@ -5,6 +5,11 @@
      Einreichen beim zuständigen Owner laut .koolie/core/governance/RACI.md. Auch KI-Vorschläge zu solchen
      Änderungen laufen ausschließlich über diese Vorlage (V10). -->
 
+<!-- Kennung: Im Framework-Repositorium laufend (CR-<JAHR>-<NNN>). In einem PROJEKT vergibt sie das
+     führende System aus Overlay Abschnitt 13.1 - ein Ticketsystem, wenn es freigegeben ist. Im
+     Rückfall ins Repositorium: CR-<PROJECT_CODE>-<JJJJ-MM-TT>-<kurzname>. Eine laufende Nummer
+     vergeben zwei Arbeitsplätze doppelt; Datum und Kurzname nicht (D-454). -->
+
 ## Änderungsantrag `CR-<JAHR>-<NNN>`
 
 | Feld | Inhalt |

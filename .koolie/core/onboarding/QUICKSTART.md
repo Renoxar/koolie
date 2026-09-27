@@ -5,12 +5,12 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-QUICK` |
-| Version | `0.1.1` |
+| Version | `0.1.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 Kürzel wie **P1** (Prinzip, `.koolie/core/framework/core/00-principles.md`), **R1–R13**
-(Risikofaktoren, `.koolie/core/framework/core/09-risk-model.md`) oder **M1–M5**
+(Risikofaktoren, `.koolie/core/framework/core/09-risk-model.md`) oder **M1–M6**
 (Betriebsmodi, `.koolie/core/framework/core/05-working-model.md`) schlägst du dort nach;
 die Kurzfassung auf einer Seite ist `REFERENCE.md`.
 

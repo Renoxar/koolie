@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.2 |
+| Version | 0.1.3 |
 | Status | `pilot` |
 
 ## 1. Aufbau einer Aufgabenanweisung (normativ)
@@ -16,7 +16,7 @@ Jede Anweisung an den KI-Client, die über eine einfache Rückfrage hinausgeht, 
 | Element | Inhalt | Pflicht |
 |---|---|---|
 | Ziel | Was soll am Ende vorliegen (Analysebericht, Plan, Änderung, Tests, Dokumentation) | MUSS |
-| Betriebsmodus | M1–M5 (`05-working-model.md`) | MUSS |
+| Betriebsmodus | M1–M6 (`05-working-model.md`) | MUSS |
 | Kontrollstufe | niedrig / mittel / hoch mit auslösendem Faktor | MUSS |
 | Scope | Erlaubte Dateien oder Verzeichnisse; ausdrücklich ausgeschlossene Bereiche | MUSS |
 | Kontext | Die konkret bereitgestellten Quellen mit Kontextklasse | MUSS |

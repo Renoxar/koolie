@@ -12,7 +12,7 @@
 |---|---|
 | Modul-ID | `RP-<ROLE_PACK_CODE>` |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 | Status | `<TBD: Status; ein neues Pack beginnt auf entwurf>` |
 | Owner | `<TBD: Rolle>` |
 | Zielrolle | `<TBD: z. B. Requirements Engineer>` |
@@ -25,7 +25,7 @@
 
 | Aufgabe | Modus | Typische Kontrollstufe | Skill |
 |---|---|---|---|
-| `<TBD>` | `<M1–M5>` | `<niedrig/mittel/hoch>` | `<fw-... / role-<pack>-...>` |
+| `<TBD>` | `<M1–M6>` | `<niedrig/mittel/hoch>` | `<fw-... / role-<pack>-...>` |
 
 ## 3. Arbeitsweise (Konkretisierung des Standardarbeitsablaufs)
 

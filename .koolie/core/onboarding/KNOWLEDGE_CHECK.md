@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-CHECK` |
-| Version | `0.1.2` |
+| Version | `0.1.3` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zweck | Selbstkontrolle vor dem Abschlussgespräch – **keine Personalbeurteilung**; Ergebnisse verbleiben bei der oder dem Lernenden |
@@ -13,7 +13,7 @@ Beantworte die Fragen schriftlich ohne Nachschlagen; gleiche danach mit dem Lös
 
 ## Fragen
 
-1. Nenne die fünf Betriebsmodi und je einen Satz, was sie dürfen und was nicht.
+1. Nenne die sechs Betriebsmodi und je einen Satz, was sie dürfen und was nicht – und wer das Mandat für M6 erteilt.
 2. Wie bestimmst du die Kontrollstufe einer Aufgabe und was besagt das Maximumprinzip?
 3. Nenne sechs Inhalte, die immer K3 sind, und beschreibe, was du tust, wenn ein K3-Inhalt bereits an den KI-Client gelangt ist.
 4. Was unterscheidet Kontrollstufe mittel von hoch – bei Umsetzung, Review und Freigaben?

@@ -751,7 +751,27 @@ Prüft (statisch, ohne laufenden KI-Client):
      gemessen am 2026-09-26: Mit einem weiteren Schluessel startet der Client nicht;
      'Read(.env)' und 'Read(**/.env)' liessen den Koeder unter Windows durch. GRENZE:
      die Datei, nicht die Wirkung auf einem anderen Betriebssystem
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 97 laeuft als eigenes
+ 98. Das Ziel, nicht der Inhalt (D-449): Der Schutz-Hook laesst ein Schreibwerkzeug
+     durch, dessen ZIEL frei ist, auch wenn sein Inhalt Kern-, Overlay- oder
+     Laufzeitpfade nennt; er sperrt dasselbe Werkzeug mit einem Ziel im Kern. Bei einem
+     Patchtext (apply_patch) zaehlen nur die Dateikoepfe. ANLASS, gemessen am
+     2026-09-27 in einem Projekt mit devin-desktop: Ein Aenderungsantrag unter docs/,
+     der Overlay- und Kernpfade nannte, wurde gesperrt. GRENZE: die Werkzeugnamen der
+     Manifeste, nicht jede Eingabeform eines Clients
+ 99. Das Mandat gibt sich der Client nicht selbst (D-447, D-448): Der Hook sperrt
+     mandat.py und die Mandatsdatei fuer Schreiben und Ausfuehren, laesst nur die
+     Auskunft 'mandat.py status' durch und sperrt das Overlay ohne Mandat; Hook und
+     mandat.py fuehren dieselben Werte (Dateiname, Umfaenge, Hoechstdauer); die
+     Kernquelle der Berechtigungen sperrt das Overlay nicht statisch, sonst hebt kein
+     Mandat die Sperre auf. GRENZE: Ein Befehl, der den Namen verschleiert, entgeht
+     dem Muster - wie bei K-32
+100. Der Modellaufruf nur fuer rein lesende Skills (D-451): Ein Skill des Kerns oder
+     eines Packs mit dem Trigger 'model' sperrt in permissions.deny 'edit' und 'exec'
+     (08-skill-conventions.md, Zeile triggers). ANLASS: Drei rein lesende Skills trugen
+     nur 'user', und die Wurzelanweisung trug dem Client zugleich auf, sie aufzurufen
+     (Befund A1 aus dem ersten Projekteinsatz). GRENZE: die Richtung model -> lesend;
+     ob ein rein lesender Skill 'model' tragen soll, entscheidet der Skill
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 100 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -11011,6 +11031,174 @@ def check_skill_aenderungsart(root: str, man: dict) -> None:
                         f"Testblatts offen sind (D-303, D-403)")
 
 
+# ---------------------------------------------------------------------------
+# PRUEFUNGEN 98 BIS 100 (CR-2026-156): DER ERSTE PROJEKTEINSATZ
+# ---------------------------------------------------------------------------
+# ANLASS: Befunde aus dem Einsatz von 1.16.0 in einem Projekt mit devin-desktop
+# (2026-09-27): Der Schutz-Hook sperrte einen Aenderungsantrag nach seinem INHALT (A2),
+# drei rein lesende Skills waren dem Client verwehrt (A1), und besprochene Entscheidungen
+# liessen sich nur als Vorlage zum Abschreiben liefern (Modus M6, D-446).
+P98_ANKER = "def ziele_der_schreiboperation("
+P98_INHALT = ("siehe .koolie/core/VERSION, .koolie/project-overlay/OVERLAY.md, AGENTS.md "
+              "und .devin/rules/00-framework-core.md")
+P99_ANKER = ("MANDAT_DATEI = ", "MANDATS_MUSTER = ", "def mandat_lesen(")
+P99_WERTE_RE = (re.compile(r'^MANDAT_DATEI = "([^"]+)"', re.M),
+                re.compile(r"^MANDAT_HOECHSTDAUER_MIN = (\d+)", re.M),
+                re.compile(r"^MANDAT_UMFAENGE = \{(.*?)\n\}", re.M | re.S))
+
+
+def _p98_werkzeuge(root: str) -> list:
+    """(Pack, erstes Schreibwerkzeug) je Manifest."""
+    out = []
+    packs = os.path.join(root, KERN, "clients")
+    for name in sorted(os.listdir(packs)) if os.path.isdir(packs) else []:
+        mf = os.path.join(packs, name, "manifest.json")
+        if not os.path.isfile(mf):
+            continue
+        try:
+            daten = json.loads(read(mf)) or {}
+        except json.JSONDecodeError:
+            continue
+        schreiben = [w for w in ((daten.get("hook_tools") or {}).get("write") or [])
+                     if isinstance(w, str) and w.strip()]
+        if schreiben:
+            out.append((daten.get("client", name), schreiben))
+    return out
+
+
+def check_hook_ziel_statt_inhalt(root: str, man: dict) -> None:
+    """Pruefung 98 (D-449): Der Hook misst das Ziel einer Schreiboperation, nicht ihren Inhalt."""
+    skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
+    if not os.path.isfile(skript):
+        return
+    if P98_ANKER not in read(skript):
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: '{P98_ANKER}' fehlt. Pruefung 98 "
+            f"misst, dass eine Schreiboperation an ihren Zielen gemessen wird; ohne diese "
+            f"Stufe bestuende sie leise (D-23, D-449)")
+        return
+    interpreter = _hook_interpreter()
+    if interpreter is None:
+        return
+    for pack, werkzeuge in _p98_werkzeuge(root):
+        for werkzeug in werkzeuge:
+            if werkzeug.lower() == "apply_patch":
+                frei = {"command": "*** Begin Patch\n*** Add File: docs/p98.md\n+"
+                                   + P98_INHALT + "\n*** End Patch"}
+                kern = {"command": "*** Begin Patch\n*** Add File: " + KERN
+                                   + "/p98.txt\n+x\n*** End Patch"}
+            else:
+                frei = {"file_path": "docs/p98.md", "content": P98_INHALT}
+                kern = {"file_path": KERN + "/p98.txt", "content": "x"}
+            ergebnis = _hook_lauf(interpreter, skript, json.dumps(
+                {"tool_name": werkzeug, "tool_input": frei}))
+            if ergebnis != 0:
+                err(f"{pack}/manifest.json: Der Schutz-Hook sperrt das Werkzeug '{werkzeug}' mit "
+                    f"einem freien Ziel (docs/), weil sein Inhalt geschuetzte Pfade NENNT "
+                    f"(Exit {ergebnis}). Gemessen wird das Ziel, nicht der Inhalt - sonst kann "
+                    f"kein Aenderungsantrag die Pfade nennen, um die es geht (D-449)")
+            ergebnis = _hook_lauf(interpreter, skript, json.dumps(
+                {"tool_name": werkzeug, "tool_input": kern}))
+            if ergebnis != 2:
+                err(f"{pack}/manifest.json: Der Schutz-Hook laesst das Werkzeug '{werkzeug}' in "
+                    f"das Kernverzeichnis schreiben (Exit {ergebnis} statt 2) - die Messung am "
+                    f"Ziel darf das Ziel nicht verlieren (D-449)")
+
+
+def _p99_werte(text: str) -> tuple:
+    return tuple((r.search(text).group(1).strip() if r.search(text) else None)
+                 for r in P99_WERTE_RE)
+
+
+def check_mandatsschutz(root: str, man: dict) -> None:
+    """Pruefung 99 (D-447, D-448): Das Mandat erteilt nur der Mensch, und es wirkt."""
+    skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
+    mandat = os.path.join(root, KERN, "mandat.py")
+    if not os.path.isfile(skript):
+        return
+    hook = read(skript)
+    fehlend = [a for a in P99_ANKER if a not in hook]
+    if fehlend:
+        err(f"{KERN}/tests/scripts/hook-check-secrets.py: {', '.join(fehlend)} fehlt. Pruefung "
+            f"99 misst den Schutz des Mandats; ohne ihn bestuende sie leise (D-23, D-447)")
+        return
+    if not os.path.isfile(mandat):
+        err(f"{KERN}/mandat.py fehlt. Der Hook kennt ein Mandat, das niemand erteilen kann - "
+            f"Modus M6 waere eine Zusage ohne Werkzeug (D-447)")
+        return
+    if _p99_werte(hook) != _p99_werte(read(mandat)):
+        err(f"{KERN}/mandat.py und hook-check-secrets.py fuehren verschiedene Werte fuer "
+            f"Dateiname, Hoechstdauer oder Umfaenge des Mandats: Hook {_p99_werte(hook)}, "
+            f"mandat.py {_p99_werte(read(mandat))}. Ein Mandat, das das Werkzeug schreibt und "
+            f"der Hook nicht liest, gibt nichts frei (D-447)")
+    quelle = os.path.join(root, KERN, "framework", "runtime", "permissions.json")
+    if os.path.isfile(quelle):
+        try:
+            regeln = json.loads(read(quelle)).get("deny", [])
+        except (json.JSONDecodeError, AttributeError):
+            regeln = []
+        if any(isinstance(r, dict) and r.get("tool") == "write"
+               and "project-overlay" in str(r.get("pattern", "")) for r in regeln):
+            err(f"{KERN}/framework/runtime/permissions.json: sperrt das Overlay im deny-Korb. "
+                f"Eine statische Sperre hebt kein Mandat auf; das Overlay sperrt der "
+                f"Schutz-Hook (D-448)")
+    interpreter = _hook_interpreter()
+    if interpreter is None:
+        return
+    faelle = [
+        ("Aufruf von mandat.py erteilen",
+         {"tool_name": "exec", "tool_input": {"command":
+          f"python {KERN}/mandat.py erteilen --rolle P99 --umfang overlay --minuten 5"}}, 2),
+        ("Schreiben der Mandatsdatei",
+         {"tool_name": "write", "tool_input": {"file_path": ".git/koolie-mandat.json",
+                                               "content": "{}"}}, 2),
+        ("die Auskunft mandat.py status",
+         {"tool_name": "exec", "tool_input": {"command": f"python {KERN}/mandat.py status"}}, 0),
+        # claude-code schickt eine Beschreibung mit - sie darf die Auskunft nicht sperren
+        # (gemessen am 2026-09-27, Lauf sk013n01)
+        ("die Auskunft mit einer Beschreibung daneben",
+         {"tool_name": "exec", "tool_input": {"command": f"python {KERN}/mandat.py status",
+                                              "description": "Mandatsstatus abfragen"}}, 0),
+        ("die Auskunft mit einem zweiten Befehl dahinter",
+         {"tool_name": "exec", "tool_input": {"command":
+          f"python {KERN}/mandat.py status; python {KERN}/mandat.py erteilen --rolle P99"}}, 2),
+    ]
+    # Das Overlay ohne Mandat - nur, wenn im gepruefen Baum gerade keines erteilt ist: Ein
+    # erteiltes Mandat ist ein gueltiger Zustand, kein Befund.
+    if not os.path.exists(os.path.join(root, ".git", "koolie-mandat.json")):
+        faelle.append(("Schreiben in das Overlay ohne Mandat",
+                       {"tool_name": "write", "tool_input": {
+                           "file_path": ".koolie/project-overlay/OVERLAY.md", "content": "x"}}, 2))
+    for was, ereignis, erwartet in faelle:
+        ergebnis = _hook_lauf(interpreter, skript, json.dumps(ereignis))
+        if ergebnis != erwartet:
+            err(f"{KERN}/tests/scripts/hook-check-secrets.py: {was} endet mit Exit {ergebnis}, "
+                f"erwartet {erwartet}. Das Mandat erteilt nur der Mensch im eigenen Terminal; "
+                f"der Client darf es weder anlegen noch aufrufen, nur nachsehen (D-447)")
+
+
+def check_modellaufruf_nur_lesend(root: str, man: dict) -> None:
+    """Pruefung 100 (D-451): Ein Skill mit Trigger 'model' ist rein lesend."""
+    if yaml is None:
+        return  # ohne PyYAML kein Frontmatter - die Warnung dazu gibt main()
+    for skills_dir, prefix in skill_dirs(root, man):
+        if not prefix.startswith(KERN + "/"):
+            continue  # die installierte Fassung traegt das Feld nicht in jedem Pack
+        for name in sorted(os.listdir(skills_dir)):
+            pfad = os.path.join(skills_dir, name, "SKILL.md")
+            if not os.path.isfile(pfad):
+                continue
+            fm, _ = parse_frontmatter(read(pfad))
+            if not isinstance(fm, dict) or "model" not in (fm.get("triggers") or []):
+                continue
+            deny = [str(d).strip().lower()
+                    for d in ((fm.get("permissions") or {}).get("deny") or [])]
+            fehlt = [v for v in ("edit", "exec") if v not in deny]
+            if fehlt:
+                err(f"{prefix}/{name}/SKILL.md: traegt den Trigger 'model', sperrt aber "
+                    f"{', '.join(fehlt)} nicht in permissions.deny. Den Modellaufruf erlaubt "
+                    f"08-skill-conventions.md nur einem rein lesenden Skill (D-451)")
+
+
 def main() -> int:
     # 🔴 DER BERICHTSWEG IN BEIDEN KODIERUNGSUMGEBUNGEN (K-168, Bauform D-223). Mehrere
     # Meldungen tragen Zeichen ausserhalb von cp1252 (⚠️, ➡️, 🔴). Feuerte eine davon in
@@ -11132,6 +11320,9 @@ def main() -> int:
     check_dokumentform(root)
     check_steckbrief(root)
     check_skill_aenderungsart(root, man)
+    check_hook_ziel_statt_inhalt(root, man)
+    check_mandatsschutz(root, man)
+    check_modellaufruf_nur_lesend(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

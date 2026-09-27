@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–3), Erläuterung (Abschnitt 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.12 |
+| Version | 0.1.13 |
 | Status | `pilot` |
 
 ## 1. Standardarbeitsablauf (normativ)
@@ -45,6 +45,7 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Den Modus gibt der Mensc
 | M3 Controlled Modification | Freigegebene Änderung umsetzen | ja, innerhalb des freigegebenen Scopes | freigegebene Build-, Test- und Lint-Befehle; lesende Git-Befehle (status, diff, log, show, blame) | hoch (nur mit Freigabe und Pairing) |
 | M4 Test and Validation | Tests erstellen, ausführen, Ergebnisse bewerten | ja, nur in Testverzeichnissen | freigegebene Testbefehle | hoch (ohne Produktivcode-Änderung) |
 | M5 Documentation Support | Dokumentation erstellen oder aktualisieren | ja, nur in Dokumentationspfaden | nur lesende Git-Befehle (status, diff, log, show, blame) | hoch |
+| M6 Mandated Maintenance | Entscheidungen des Menschen in Overlay und Projektdokumentation eintragen | ja, im Umfang des Mandats (`.koolie/project-overlay/` oder nur `documents/`) und in `<DOC_PATHS>` | lesende Git-Befehle; Prüfbefehle des Frameworks (Validator, `install.py --check`) | hoch (nur Entschiedenes) |
 
 ### 2.2 Modusbeschreibungen
 
@@ -113,6 +114,20 @@ Jede Aufgabe wird genau einem Betriebsmodus zugeordnet. Den Modus gibt der Mensc
 | Erwartete Ausgabe | Geänderte Dokumentationsdateien, Änderungsübersicht, Liste belegter Quellen, Liste offener fachlicher Klärungen |
 | Umsetzung im Werkzeug | **Die Beschränkung auf `<DOC_PATHS>` gilt normativ; technisch durchgesetzt ist sie nicht** `[KONZ]`. Eine Beschränkung auf `<DOC_PATHS>` unter Ausschluss aller übrigen Pfade ist über Skill-`permissions` nicht ausdrückbar (`<DOC_PATHS>` ist Teilmenge von `<ALLOWED_PATHS>`, und `deny` gewinnt gegen `allow`) `[DOK]`, und das Feld `permissions` kennt nicht jeder Client für Skills (`skill_frontmatter.drop_fields` im Manifest des Packs, B01) – was an seine Stelle tritt, benennt die Zeile S3 seiner Fähigkeitsmatrix. Der Schutz-Hook trägt sie nicht – er kennt den Modus nicht (`.koolie/core/tests/protocols/2026-09-12-B04-B05-gegenpruefung.md`, B05) `[DOK]` für den Befund. Getragen wird sie von der Regelschicht und der fachlichen Prüfpflicht dieses Modus |
 
+#### M6 Mandated Maintenance
+
+| Aspekt | Festlegung |
+|---|---|
+| Zweck | Eine Entscheidung, die der Mensch in der Sitzung getroffen hat, direkt in das Project Overlay und die Projektdokumentation eintragen – bei der Einrichtung, nach einem Framework-Update und im laufenden Projekt –, statt sie als Vorlage zum Abschreiben zu liefern (D-446) |
+| Voraussetzung | Ein **Mandat**, das der Mensch im eigenen Terminal erteilt: `python .koolie/core/mandat.py erteilen --rolle <Rolle> --umfang overlay\|dokumente --minuten <1–480>`. Es ist befristet, auf einen Umfang begrenzt und liegt im Git-Verzeichnis, nicht im Arbeitsbaum. Ein Satz im Chat ist kein Mandat |
+| Zulässige Aktionen | Im Umfang des Mandats Dateien erstellen und ändern; in `<DOC_PATHS>` wie M5; lesende Git-Befehle; `validate-framework.py`, `install.py --check` und `mandat.py status` ausführen; offene Punkte als `<TBD: …>` eintragen |
+| Verbotene Aktionen | Eine Entscheidung treffen, die der Mensch nicht getroffen hat (V3, V10); ein Mandat erteilen, verlängern oder ändern; Kern, Laufzeitschicht, Wurzel-Anweisungsdatei oder Berechtigungsdatei ändern; `install.py --update` ausführen (es erzeugt die Berechtigungsdatei neu – V6); eine Regel des Kerns im Overlay lockern (Verschärfungsprinzip) |
+| Benötigter Kontext | Die Entscheidung des Menschen in der Sitzung, mit Rolle; die betroffenen Overlay-Abschnitte; bei einem Framework-Update die Meldungen von `install.py --update` |
+| Prüfpflichten | Am Ende `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay`; Überprüfung jeder Änderung im Merge Request durch den Menschen (V1) |
+| Abbruchkriterien | Kein gültiges Mandat (Blockade-Hinweis, Abschnitt 3.7); die Anweisung verlangt eine Entscheidung statt ihrer Eintragung; eine Änderung würde eine Kernregel lockern; der Validator meldet einen Fehler, den die Eintragung verursacht hat |
+| Erwartete Ausgabe | Geänderte Dateien; im Änderungsverlauf des Overlays eine Zeile mit Rolle, Anlass und Datum; im Ergebnisbericht Mandat (Rolle, Umfang), Validatorergebnis und **jede geänderte Befehlsfreigabe oder Pfadliste als berechtigungswirksam** – sie wirkt erst, wenn der Mensch `install.py --update` ausführt |
+| Umsetzung im Werkzeug | **Technisch durchgesetzt über den Schutz-Hook** `[KONZ]`: Er sperrt `.koolie/project-overlay/` für jedes Schreibwerkzeug, solange kein gültiges Mandat das Ziel deckt, und sperrt Mandatsdatei und `mandat.py` für jede nicht lesende Operation (D-447). Die Berechtigungsdatei sperrt das Overlay seit `1.17.0` nicht mehr – eine statische Sperre könnte das Mandat nicht aufheben (D-448). Wo der Hook eines Packs nicht läuft, gilt die Grenze nur normativ; die Fähigkeitsmatrix des Packs sagt, wo das der Fall ist |
+
 ## 3. Querschnittsregeln für alle Modi (normativ)
 
 ### 3.1 Sitzungsdisziplin
@@ -138,7 +153,7 @@ Fehlt Kontext, fragt der KI-Client gezielt nach (was fehlt, wozu es benötigt wi
 
 ### 3.5 Nachvollziehbarkeit
 
-Jede Sitzung endet mit einem Ergebnisbericht (Abschnitt 3.6). Bei Kontrollstufe mittel und hoch wird der Bericht im Merge Request oder an der im Overlay festgelegten Stelle abgelegt (`<TBD: Ablageort für Ergebnisberichte>`).
+Jede Aufgabe endet mit einem Ergebnisbericht (Abschnitt 3.6). **Zwischen den Turns derselben Aufgabe genügt ein Kurzstatus** in ein bis drei Zeilen – was getan ist, was als Nächstes kommt, was fehlt; der volle Bericht steht am Aufgabenende und bei jedem Moduswechsel (D-454). Bei Kontrollstufe mittel und hoch wird der Bericht im Merge Request oder im führenden System abgelegt, das Overlay Abschnitt 13 nennt (Ticketsystem oder Rückfallablage im Repositorium); dort liegen auch Plan und dokumentierte Freigabe.
 
 ### 3.6 Standardformat Ergebnisbericht
 
@@ -146,7 +161,7 @@ Jede Sitzung endet mit einem Ergebnisbericht (Abschnitt 3.6). Bei Kontrollstufe 
 ## Ergebnisbericht
 
 - Aufgabe: <Ticket-Referenz oder Kurzbeschreibung>
-- Betriebsmodus: <M1–M5>  |  Kontrollstufe: <niedrig|mittel|hoch> (auslösender Faktor: <R#>)
+- Betriebsmodus: <M1–M6>  |  Kontrollstufe: <niedrig|mittel|hoch> (auslösender Faktor: <R#>)
 - Verwendete Skills: <Skill-IDs und Versionen | keiner: welcher Skill in Frage kam und warum ohne ihn gearbeitet wurde | abgewiesen und von Hand nachgearbeitet: welcher>
 - Verwendeter Kontext: <Dateien/Verzeichnisse/Dokumente, jeweils mit Kontextklasse>
 
@@ -165,6 +180,19 @@ Jede Sitzung endet mit einem Ergebnisbericht (Abschnitt 3.6). Bei Kontrollstufe 
 ### Restrisiken und empfohlene Prüfungen
 <Liste>
 ```
+
+### 3.7 Blockade-Hinweis
+
+Sperrt eine Regel, ein Hook, eine Berechtigung, ein fehlendes Mandat, ein fehlender Overlay-Wert oder ein abgewiesener Skill-Aufruf den nächsten Schritt, gibt der KI-Client **sofort und ohne Nachfrage** vier kurze Zeilen aus (D-450):
+
+```text
+Gesperrt: <was – ein Satz>
+Warum:    <die Regel, ein Satz, mit Fundstelle>
+Lösung:   <was der Mensch konkret tut – mit wörtlichem Befehl oder Aufruf>
+Folge:    <was danach gilt, was sich nicht ändert>
+```
+
+Gibt es mehrere Wege, steht der nächstliegende zuerst. Der Hinweis ersetzt nicht das Anhalten: Der Client wartet danach auf die Entscheidung. Die Sperrmeldungen des Schutz-Hooks folgen derselben Form.
 
 ## 4. Hinweise zur Anwendung (Erläuterung)
 

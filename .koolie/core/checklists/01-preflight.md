@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-01` |
-| Version | `0.1.7` |
+| Version | `0.1.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | vor jeder KI-Sitzung, nach Zuschnitt der Aufgabe |
@@ -27,7 +27,7 @@ Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig einge
 ### Einstufung
 
 - [ ] **MUSS** Kontrollstufe nach `.koolie/core/framework/core/09-risk-model.md` bestimmt (alle Faktoren R1–R13 durchgegangen, Maximumprinzip) und der auslösende Faktor notiert (zum Beispiel „mittel wegen R8").
-- [ ] **MUSS** Betriebsmodus M1–M5 festgelegt (`.koolie/core/decision-trees/03-analyze-or-modify.md`).
+- [ ] **MUSS** Betriebsmodus M1–M6 festgelegt (`.koolie/core/decision-trees/03-analyze-or-modify.md`).
 - [ ] **MUSS** Bei Stufe mittel: Planbestätigung vor Umsetzung eingeplant. Bei Stufe hoch: dokumentierte Freigabe `<APPROVAL_ROLE>` liegt vor und eine begleitende Person ist benannt.
 - [ ] **MUSS** Im Zweifel zwischen zwei Stufen wurde die höhere gewählt.
 

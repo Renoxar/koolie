@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-09` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | während des Onboardings einer neuen Entwicklerin oder eines neuen Entwicklers; Abschluss vor der Freigabe zur selbstständigen Nutzung |
@@ -27,7 +27,7 @@ Führt durch das Onboarding-Programm (`.koolie/core/onboarding/GUIDE.md`) bis zu
 
 - [ ] **MUSS** Modul 1 – Möglichkeiten und Grenzen: Leitprinzipien P1–P10, Delegationsverbote V1–V12 erklärt bekommen und an Beispielen eingeordnet.
 - [ ] **MUSS** Modul 2 – Datenschutz und Kontextauswahl: Kontextklassen K0–K3 angewendet (Übung mit gemischten Quellen); Verhalten bei K3-Fund erklärt.
-- [ ] **MUSS** Modul 3 – Sichere Arbeitsweise: Standardarbeitsablauf, Betriebsmodi M1–M5, Kontrollstufen mit Maximumprinzip; Preflight-Check zweimal unter Anleitung durchgeführt.
+- [ ] **MUSS** Modul 3 – Sichere Arbeitsweise: Standardarbeitsablauf, Betriebsmodi M1–M6, Kontrollstufen mit Maximumprinzip; Preflight-Check zweimal unter Anleitung durchgeführt.
 - [ ] **MUSS** Modul 4 – Repository- und Framework-Struktur: Wurzel-Anweisungsdatei, Laufzeitschicht, Overlay, Packs, Prioritätshierarchie am Repository gezeigt.
 - [ ] **MUSS** Modul 5 – Skills und Prompting: mindestens `fw-repo-analyze` (Ü1) und `fw-code-explain` ausgeführt; Prompting-Regeln und unzulässige Muster besprochen.
 - [ ] **MUSS** Modul 6 – Analyse bestehender Komponenten: eine Projektkomponente nur lesend (K1) mit Fundstellen erklärt.

@@ -32,6 +32,14 @@ import re
 # die Steckbriefzeile nie, weil dort kein Doppelpunkt steht.
 _TABELLE_RE = re.compile(r"^\|\s*Overlay-Status\s*\|\s*`?([^`|]+)", re.M)
 _LISTE_RE = re.compile(r"^-?\s*Overlay-Status:\s*`?([^`\n]+)", re.M)
+# Die Version, in denselben zwei Formen wie der Validator sie liest (Pruefung 13). Seit
+# 1.17.0 meldet der SessionStart-Hook einen Widerspruch sofort (CR-2026-156, D-452):
+# Im ersten Projekteinsatz stand an der Stelle der Version eine Zeile des
+# Aenderungsverlaufs, und die Statusmeldung der Sitzung sagte "aktiv" - der Schaden blieb
+# unsichtbar, bis jemand den Validator startete (Befund A3).
+_VERSION_TABELLE_RE = re.compile(r"^\|\s*Overlay-Version\s*\|\s*`?([^`|]+)", re.M)
+_VERSION_LISTE_RE = re.compile(r"^-?\s*Overlay-Version:\s*`?([^`\n·]+)", re.M)
+_SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
 # Zulaessige Statuswerte. Alles andere ist 'unbekannt' - auch ein nicht ausgefuellter
 # Platzhalter, und das ist der haeufigste Fall in einer frischen Installation.
@@ -50,6 +58,32 @@ def status_angaben(text: str) -> list[str]:
         for m in regex.finditer(text):
             werte.append(m.group(1).strip())
     return werte
+
+
+def version_angaben(text: str) -> list[str]:
+    """Alle Stellen, an denen ein Text die Overlay-Version erklaert."""
+    werte = []
+    for regex in (_VERSION_TABELLE_RE, _VERSION_LISTE_RE):
+        for m in regex.finditer(text):
+            werte.append(m.group(1).strip())
+    return werte
+
+
+def versionen_auswerten(angaben: list[str]) -> str:
+    """Leerer Text, wenn die Versionsangaben uebereinstimmen - sonst der Befund.
+
+    Ein offener Platzhalter (<TBD: ...>) ist kein Befund: Er ist der Stand vor dem
+    Ausfuellen und Sache der Aktivierungspruefung.
+    """
+    werte = [a for a in angaben if not a.startswith("<")]
+    if not werte:
+        return ""
+    ungueltig = [w for w in werte if not _SEMVER_RE.match(w)]
+    if ungueltig:
+        return "keine Version der Form x.y.z: '%s'" % ungueltig[0][:60]
+    if len(set(werte)) > 1:
+        return "die Versionsangaben widersprechen sich: " + ", ".join(sorted(set(werte)))
+    return ""
 
 
 def normalisieren(wert: str) -> str:

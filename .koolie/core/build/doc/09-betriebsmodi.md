@@ -1,6 +1,6 @@
 # 9 Betriebsmodi
 
-Jede KI-Aufgabe läuft in genau einem von fünf Betriebsmodi; der Modus wird im Preflight festgelegt (Entscheidungsbaum 3) und begrenzt Schreibrechte, Befehlsausführung und erwartete Ausgabe. Ohne ausdrückliche Angabe gilt der nur lesende Modus M1; ein Moduswechsel innerhalb einer Sitzung erfordert eine ausdrückliche menschliche Anweisung und wird im Ergebnisbericht vermerkt.
+Jede KI-Aufgabe läuft in genau einem von sechs Betriebsmodi; der Modus wird im Preflight festgelegt (Entscheidungsbaum 3) und begrenzt Schreibrechte, Befehlsausführung und erwartete Ausgabe. Ohne ausdrückliche Angabe gilt der nur lesende Modus M1; ein Moduswechsel innerhalb einer Sitzung erfordert eine ausdrückliche menschliche Anweisung und wird im Ergebnisbericht vermerkt.
 
 | Modus | Zweck in einem Satz | Schreiben | Befehle | Typische Skills |
 |---|---|---|---|---|
@@ -9,6 +9,9 @@ Jede KI-Aufgabe läuft in genau einem von fünf Betriebsmodi; der Modus wird im 
 | **M3 Controlled Modification** | freigegebene Änderung in kleinen, berichteten Schritten umsetzen | nur im freigegebenen Scope | nur freigegebene Build-/Test-/Lint-Befehle | `fw-change-small`, `fw-refactor` |
 | **M4 Test and Validation** | Tests erstellen und ausführen, Aussagekraft bewerten | nur `<TEST_PATHS>` | nur freigegebene Testbefehle | `fw-tests` |
 | **M5 Documentation Support** | Dokumentation aus dem belegten Code-Stand pflegen | nur `<DOC_PATHS>` | nur lesende Git-Befehle | `fw-docs-update`, `fw-mr-description` |
+| **M6 Mandated Maintenance** | Entscheidungen des Menschen direkt in Overlay und Projektdokumentation eintragen – bei der Einrichtung, nach einem Framework-Update, im laufenden Projekt | Overlay im Umfang des Mandats, `<DOC_PATHS>` | lesende Git-Befehle, Prüfbefehle des Frameworks | `fw-overlay-pflege` |
+
+**Das Mandat (seit 1.17.0).** Entscheiden bleibt beim Menschen; das Eintragen darf der Assistent übernehmen, statt eine Vorlage zum Abschreiben zu liefern. Der Mensch erteilt dafür im eigenen Terminal ein befristetes Mandat (`python .koolie/core/mandat.py erteilen --rolle Architekt --umfang overlay --minuten 60`). Der Schutz-Hook sperrt das Overlay, solange kein Mandat es deckt, und sperrt das Mandat selbst für jede Operation des Assistenten – er kann es sich nicht selbst geben. Geprüft wird im Merge Request. `mandat.py beenden` gleicht danach Status, Version und Pfadlisten in die immer geladene Laufzeitfassung ab. Jede Sperre erklärt sich in vier Zeilen – gesperrt, warum, Lösung mit Befehl, Folge –, damit niemand nachfragen muss.
 
 Jeder Modus ist im Modul FW-CORE-05 (vollständig in Kapitel 10 wiedergegeben) mit denselben sieben Merkmalen normiert: Zweck, zulässige Aktionen, verbotene Aktionen, benötigter Kontext, Prüfpflichten, Abbruchkriterien, erwartete Ausgabe – ergänzt um die konkrete Umsetzung beim Client Pack `devin-desktop` mit Belegstatus (Plan-Modus `[DOK]`, Skill-`allowed-tools` und -`permissions` `[DOK]`, Permission-Modus Normal `[DOK]`, Hook-Absicherung `[EMPF]`). Die Zulässigkeit je Kontrollstufe regelt Kapitel 13: Ab Stufe mittel setzt M3 einen bestätigten Plan voraus, ab Stufe hoch eine dokumentierte Freigabe mit begleitender Person; M4 bleibt auf Stufe hoch auf testseitige Artefakte beschränkt.
 

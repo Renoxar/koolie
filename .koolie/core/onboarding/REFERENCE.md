@@ -48,6 +48,7 @@ M1 Analyse (Standard, nur lesen) · M2 Plan (nur Plan-Datei) · M3 kontrollierte
 | Review unterstützen | `fw-review-support` |
 | Doku aktualisieren | `fw-docs-update` |
 | MR-Beschreibung | `fw-mr-description` |
+| Entscheidung ins Overlay eintragen, Overlay einrichten oder nach einem Update nachziehen (M6, mit Mandat) | `fw-overlay-pflege` |
 
 Prompt-Vorlagen für Fälle ohne Skill: `.koolie/core/prompts/README.md`.
 

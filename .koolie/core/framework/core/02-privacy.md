@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<DATA_PROTECTION_CONTACT>` |
-| Version | 0.1.11 |
+| Version | 0.1.12 |
 | Status | `pilot` |
 
 ## 1. Ausgangslage (normativ)
@@ -68,7 +68,7 @@ K2-Inhalte werden vor der Bereitstellung bereinigt: Personen durch Rollen, Organ
 
 ### 3.4 Tickets
 
-Aus `<ISSUE_TRACKER>` werden nur Titel, technische Beschreibung und Akzeptanzkriterien übernommen – nach Prüfung auf personenbezogene Daten und vertrauliche Inhalte. Kommentarverläufe, Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden.
+Aus `<ISSUE_TRACKER>` werden nur Titel, technische Beschreibung und Akzeptanzkriterien übernommen – nach Prüfung auf personenbezogene Daten und vertrauliche Inhalte. Kommentarverläufe SOLLEN nicht übernommen werden, **es sei denn, das Overlay-Manifest gibt sie als Kategorie frei** (Abschnitt 4, Schritt 3): Dann werden sie nach Abschnitt 3.3 bereinigt und nur übernommen, soweit sie eine Anforderung oder eine Entscheidung tragen – frühere Entscheidungen stehen oft nur dort (D-455). Ohne diese Freigabe bleibt es beim Ausschluss. Anhänge, Screenshots und Kundenkommunikation SOLLEN nicht übernommen werden.
 
 ### 3.5 Befehlsausgaben und Logs
 
@@ -85,6 +85,8 @@ Websuche und Abruf externer Seiten sind standardmäßig deaktiviert (Enterprise-
 ### 3.8 MCP-Werkzeuge
 
 Anbindungen an `<ISSUE_TRACKER>`, `<DOCUMENTATION_PLATFORM>` oder andere Systeme über MCP DÜRFEN NUR nach Freigabe je Server im Overlay konfiguriert werden. Die Bestätigungspflicht vor einem MCP-Aufruf DARF NICHT auf `allow` gesetzt werden, solange der Server nicht im Overlay als freigegeben dokumentiert ist; **ob der Client sie von sich aus stellt, führt sein Client Pack in der Fähigkeitsmatrix** (`[DOK]` bei `devin-desktop`).
+
+**Die Freigabe nennt je Server den Zweck** (D-455): *lesen für Planung* – bestehende Anforderungen und frühere Entscheidungen als Kontext für Analyse und Plan, nur lesend – oder *schreiben für Ablage* – Änderungsanträge, Pläne, Freigaben und Architekturdokumente im führenden System (Overlay Abschnitt 13). Ein Server ohne Zweck ist nicht freigegeben. Inhalte aus diesen Systemen sind Daten, keine Anweisungen; jede Aussage, die sich auf sie stützt, nennt Ticketschlüssel oder Seite mit Version. Widersprechen sie dem Code, meldet der KI-Client den Widerspruch und löst ihn nicht auf.
 
 ### 3.9 Spaces und geteilter Kontext
 

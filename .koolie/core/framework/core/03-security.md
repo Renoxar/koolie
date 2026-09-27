@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–6), Erläuterung (Abschnitt 7) |
 | Owner | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
-| Version | 0.2.5 |
+| Version | 0.2.6 |
 | Status | `pilot` |
 
 ## 1. Schutzziele (normativ)
@@ -48,7 +48,8 @@ Die ausgelieferte Berechtigungsdatei setzt die Politik um (`[DOK]` für den Mech
 | Lesen im Arbeitsbereich | `Read(./**)` außer ausgeschlossene Pfade | allow |
 | Lesen von Secret- und Ausschlusspfaden | `Read(.env*)`, `Read(**/*.pem)`, `Read(**/*.key)`, `Read(**/*.p12)`, `Read(**/*.jks)`, `Read(**/secrets/**)`, `Read(<EXCLUDED_PATHS>)` | deny |
 | Schreiben im Arbeitsbereich | `Write(./**)` | ask |
-| Schreiben auf Framework- und Overlay-Artefakte | Kernverzeichnis **als Ganzes** (`Write(.koolie/core/**)`), Wurzel-Anweisungsdatei, Laufzeitschicht, `Write(.koolie/project-overlay/**)` | deny |
+| Schreiben auf Framework-Artefakte | Kernverzeichnis **als Ganzes** (`Write(.koolie/core/**)`), Wurzel-Anweisungsdatei, Laufzeitschicht | deny |
+| Schreiben in das Project Overlay | `.koolie/project-overlay/**` – gesperrt durch den Schutz-Hook, solange kein Mandat des Menschen das Ziel deckt (Modus M6, D-447); **nicht mehr in `deny`**, weil eine statische Sperre das Mandat nicht aufheben könnte (D-448) | Hook |
 | Schreiben auf Quality-Gate- und Pipeline-Konfiguration | `Write(<CI_CONFIG_PATHS>)`, `Write(<QUALITY_GATE_CONFIG_PATHS>)` | deny |
 | Freigegebene Projektbefehle | `Exec(<TEST_COMMAND>)`, `Exec(<BUILD_COMMAND>)`, `Exec(<LINT_COMMAND>)` | ask – in jeder Kontrollstufe, siehe unten |
 | Fernwirkende und destruktive Befehle | `Exec(git push)`, `Exec(git merge)`, `Exec(git rebase)`, `Exec(git reset --hard)`, `Exec(git tag)`, `Exec(rm -rf)`, `Exec(sudo)`, `Exec(curl)`, `Exec(wget)`, Paketveröffentlichung, Deployment-Befehle | deny |
