@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–4), Erläuterung (Abschnitt 5) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.4 |
+| Version | 0.1.5 |
 | Status | `pilot` |
 
 > **Abgrenzung:** Diese Klassifizierung dient der operativen Steuerung des KI-Einsatzes. Sie ist keine rechtliche Klassifizierung und ersetzt keine Bewertung nach Datenschutz-, IT-Sicherheits- oder KI-regulatorischen Vorgaben der Organisation.
@@ -53,6 +53,8 @@
 | Dokumentationsumfang | KI-Nutzungsvermerk im Merge Request (Kurzform, `.koolie/core/templates/MR_AI_DISCLOSURE.md`) | zusätzlich: Plan, Fundstellenliste, Ergebnisbericht mit Abweichungen und Restrisiken | zusätzlich: vollständiges Sitzungsprotokoll (Prompts, Freigaben, ausgeführte Befehle), Entscheidungsvermerk der Freigabe |
 | Eskalationskriterien | Scope-Überschreitung, unerwartete Berührung anderer Komponenten, fehlgeschlagene Quality Gates ohne klare Ursache | zusätzlich: Abweichung vom bestätigten Plan, neue Abhängigkeit, Testlücke | jede Unklarheit führt zum Stopp; Fortsetzung nur nach erneuter Freigabe |
 
+**M6 Mandated Maintenance steht außerhalb dieser Tabelle** (D-446). Er ändert keinen Code und trägt nur ein, was der Mensch entschieden hat; seine Voraussetzung ist das Mandat (`05-working-model.md`, M6), nicht die Kontrollstufe einer Aufgabe. Die Freigabe, die eine eingetragene Entscheidung braucht, richtet sich nach der Entscheidung selbst – etwa eine Architekturentscheidung der Stufe hoch nach dieser Tabelle.
+
 ## 4. Delegationsverbotsliste (normativ)
 
 Folgende Aufgaben und Entscheidungen DÜRFEN NICHT an den KI-Client delegiert werden. Der KI-Client KANN – soweit im Overlay nicht ausgeschlossen – vorbereitende Analysen liefern, trifft aber keine der Entscheidungen und führt keine der Handlungen aus:
@@ -61,18 +63,20 @@ Folgende Aufgaben und Entscheidungen DÜRFEN NICHT an den KI-Client delegiert we
 |---|---|---|
 | V1 | Freigabe, Genehmigung oder Abnahme von Änderungen, Merge Requests, Releases | Review-Unterstützung mit Befunden (Skill `fw-review-support`) |
 | V2 | Merge in geschützte Branches, Tagging von Releases, Deployment in Produktion | Erstellung von Merge-Request-Beschreibungen |
-| V3 | Architekturentscheidungen, Technologieauswahl, Einführung neuer Abhängigkeiten | Optionsanalyse mit Vor- und Nachteilen, Vorschlag mit Kennzeichnung |
+| V3 | Architekturentscheidungen, Technologieauswahl, Einführung neuer Abhängigkeiten | Optionsanalyse mit Vor- und Nachteilen, Vorschlag mit Kennzeichnung; im Modus M6 das Eintragen einer Architekturentscheidung, die der Mensch getroffen hat |
 | V4 | Umgang mit Secrets, Zugangsdaten, Zertifikaten, Schlüsselmaterial (Erzeugen, Rotieren, Eintragen, Lesen) | keine; Fundstellen vermuteter Secrets sind zu melden, nicht auszugeben |
 | V5 | Verarbeitung personenbezogener Echtdaten oder Produktionsdaten | Arbeit mit synthetischen oder anonymisierten Testdaten |
 | V6 | Änderungen an Produktionssystemen, Infrastruktur, Berechtigungen, Sicherheitskonfigurationen | Analyse und Planvorschlag |
 | V7 | Bewertung von Personen, Leistungsbeurteilungen, arbeitsrechtliche oder disziplinarische Fragen | keine |
 | V8 | Rechtliche Bewertungen (Lizenzkonformität, Datenschutzrechtliche Zulässigkeit, Vertragsauslegung) | Sammlung von Fakten (zum Beispiel Lizenzangaben aus Manifestdateien) mit Fundstellen |
 | V9 | Entscheidung über Fortsetzung bei Sicherheitsvorfall oder Verdacht auf Datenabfluss | keine; sofortiger Stopp und Eskalation |
-| V10 | Änderung der Framework-Regeln, des Project Overlays oder der Berechtigungsdatei | Vorschläge als Änderungsantrag (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`) |
+| V10 | Änderung der Framework-Regeln, des Project Overlays oder der Berechtigungsdatei | Vorschläge als Änderungsantrag (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`); im Modus M6 das Eintragen einer vom Menschen getroffenen Entscheidung in das Project Overlay – Framework-Regeln und Berechtigungsdatei bleiben ausgeschlossen |
 | V11 | Kommunikation nach außen (Kunden, Behörden, Öffentlichkeit) im Namen des Projekts | Entwürfe für interne Verwendung |
 | V12 | Löschen von Branches, Historie, Daten oder Artefakten außerhalb des Arbeitsbereichs | keine |
 
 **Abgrenzung zu V6 (normativ).** V6 erfasst den **Betrieb**: tatsächliche Berechtigungen sowie Betriebs-, Infrastruktur- und Sicherheitskonfigurationen – auch dann, wenn sie als Code im Repositorium liegen (Infrastrukturbeschreibungen, Berechtigungs- und Richtliniendateien, die Berechtigungsdatei dieses Frameworks), denn ihr Inhalt **ist** die Berechtigung. V6 erfasst **nicht** die lokale Anwendungslogik mit Sicherheitsbezug: Authentifizierungs- und Autorisierungsprüfungen im Quellcode, Verwendung kryptografischer Bibliotheken, Sitzungsverwaltung. Diese ist über R3 und R10 Kontrollstufe **hoch** und nach deren Freigaben umsetzbar – dokumentierte Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>`, Umsetzung mit begleitender Person. **Die Frage im Zweifel:** Wirkt die Änderung über Build, Review und Quality Gates des Projekts, oder ist die geänderte Datei selbst die Berechtigung eines laufenden Systems? Im zweiten Fall gilt V6. Greift daneben ein anderes Delegationsverbot – V4 für Schlüsselmaterial, V10 für die Framework-Regeln und die Berechtigungsdatei –, bleibt es unberührt (D-53).
+
+**Entscheiden und Eintragen (normativ, D-446).** Nicht delegierbar ist bei V3 und V10 die **Entscheidung**. Das Eintragen einer Entscheidung, die der Mensch in der Sitzung getroffen und benannt hat, ist Ausführung: Es ist im Modus M6 mit Mandat zulässig (`05-working-model.md`, M6), und die Prüfung ist der Merge Request (V1). Was nicht entschieden ist, trägt der KI-Client nicht ein, sondern als `<TBD: …>`.
 
 Das Project Overlay KANN die Liste erweitern (`.koolie/project-overlay/OVERLAY.md`, Abschnitt „Ausgeschlossene Aufgaben"). Es DARF sie NICHT verkürzen.
 

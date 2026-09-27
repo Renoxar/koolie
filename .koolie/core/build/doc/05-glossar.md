@@ -25,7 +25,8 @@
 | Kontextklasse K0–K3 | Zulässigkeitsstufen für Inhalte an den Assistenten: frei / projektintern freigegeben / nur nach Freigabe und Bereinigung / nie (Kap. 11) |
 | Kontrollstufe | Risikoklasse einer Aufgabe (niedrig/mittel/hoch) nach Faktoren R1–R13, Maximumprinzip (Kap. 13) |
 | Delegationsverbotsliste V1–V12 | Aufgaben und Entscheidungen, die nie an den Assistenten delegiert werden (Kap. 13) |
-| Betriebsmodus M1–M5 | Read-only Analysis, Guided Planning, Controlled Modification, Test and Validation, Documentation Support (Kap. 9) |
+| Betriebsmodus M1–M6 | Read-only Analysis, Guided Planning, Controlled Modification, Test and Validation, Documentation Support, Mandated Maintenance (Kap. 9) |
+| Mandat | Befristete Erlaubnis, die ein Mensch im eigenen Terminal erteilt (`mandat.py`): Der KI-Client trägt im Modus M6 Entscheidungen des Menschen in das Overlay ein; der Schutz-Hook sperrt das Overlay ohne Mandat (Kap. 9) |
 | Standardarbeitsablauf | die vierzehn Schritte jeder Assistenz-Aufgabe (Kap. 10) |
 | Stop-Bedingungen S1–S10 / Eskalationsstufen E0–E4 | definierte Anhalte- und Eskalationspunkte (Kap. 10, 25; Baum 5) |
 | Preflight | Pflichtprüfung vor jeder Assistenz-Aufgabe (Checkliste FW-CL-01) |

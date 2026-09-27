@@ -12,7 +12,12 @@
      - Das Overlay darf Framework-Regeln konkretisieren oder verschärfen, nie lockern
        (.koolie/core/governance/PRIORITY_HIERARCHY.md).
      - Nach jeder Änderung: python3 .koolie/core/tests/scripts/validate-framework.py ausführen und die Laufzeitfassung
-       <RULES_DIR>/20-project-overlay.md synchron halten. -->
+       <RULES_DIR>/20-project-overlay.md synchron halten. Status, Version und die Pfadlisten übernimmt
+       python .koolie/core/mandat.py abgleichen (der Mensch, eigenes Terminal); fehlende Regeln der
+       Berechtigungsdatei nennt es (D-452).
+     - Ausfüllen lassen: Im Modus M6 trägt der KI-Client Entscheidungen des Menschen direkt hier ein – mit
+       Mandat (python .koolie/core/mandat.py erteilen …) und über den Skill fw-overlay-pflege (Einrichtung und
+       Framework-Update). Entscheiden bleibt Sache des Menschen; geprüft wird im Merge Request. -->
 
 ## 1. Projektsteckbrief
 
@@ -96,6 +101,7 @@ Diese Werte MÜSSEN in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overl
 | Linting / Formatprüfung | `<LINT_COMMAND>` | `<TBD>` | M3, M4, M5 | `<PERMISSIONS_FILE>`, Korb ask – und Regelschicht |
 | Statische Codeanalyse (lokal) | – | `<TBD oder „nur in CI">` | M3 | **nur Regelschicht** |
 | Weitere freigegebene Befehle | – | `<TBD: Liste oder „keine">` | `<TBD>` | **nur Regelschicht** |
+| Prüfbefehle des Frameworks (lesend) | – | `python .koolie/core/tests/scripts/validate-framework.py` (auch mit `--strict-overlay`), `python .koolie/core/install.py --check`, `python .koolie/core/mandat.py status` | alle | `<PERMISSIONS_FILE>`, Korb allow – aus der Kernquelle, nicht aus diesem Overlay (D-453) |
 
 Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (Push, Merge, Deployment, Veröffentlichung) werden hier nie gelistet.
 
@@ -173,9 +179,23 @@ Zusätzlich zur projektweiten Definition of Done (`<TBD: Pfad>`) gilt `.koolie/c
 | Inhalte aus `<DOCUMENTATION_PLATFORM>` | `<TBD: K1 nach Freigabe je Seite / K2>` | `<TBD>` | – |
 | Logauszüge, Stacktraces | K2 | je Aufgabe | bereinigt (keine personenbezogenen Daten, Hostnamen, Kennungen) |
 | Testdaten | K1 nur synthetisch | pauschal für synthetische Daten | Echtdaten nie |
-| Freigegebene MCP-Server | – | `<TBD: Liste mit Zweck und Berechtigungsumfang oder „keine">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask |
+| Freigegebene MCP-Server | – | `<TBD: Liste je Server mit Zweck – „lesen für Planung“ und/oder „schreiben für Ablage“ – und Berechtigungsumfang, oder „keine">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask; ein Server ohne Zweck ist nicht freigegeben (`02-privacy.md` 3.8, D-455) |
+| Kommentarverläufe aus `<ISSUE_TRACKER>` | K2 | **„nicht freigegeben“** – oder Kategoriefreigabe im Overlay-Manifest | nur bereinigt und nur, soweit sie eine Anforderung oder Entscheidung tragen (`02-privacy.md` 3.4, D-455) |
 | Freigegebene externe Domains (Fetch) | K0 | **„keine"** | **Eine Freigabe je Domain ist nicht vorgesehen** (D-59): `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar. Das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar |
 | Cloud-Sessions / CLI / ACP-Fremdagenten | – | `<TBD: nicht freigegeben / freigegeben mit Auflagen>` | Standard: nicht freigegeben (D-10) |
+
+### 13.1 Ablage und führendes System
+
+Wo Änderungsanträge, Pläne, Freigaben und Architekturentscheidungen des Projekts leben (D-454). **Führend ist ein zentrales System**, sobald es über einen für *schreiben für Ablage* freigegebenen MCP-Server erreichbar ist: Es vergibt die Kennungen, und mehrere Arbeitsplätze können sich nicht in die Quere kommen. **Das Repositorium ist der Rückfall** – mit Kennungen, die ohne zentrale Nummernvergabe eindeutig sind, und einer Datei je Entscheidung, damit parallele Änderungen beim Merge nicht kollidieren.
+
+| Gegenstand | Führendes System | Rückfallablage im Repositorium | Kennung im Rückfall |
+|---|---|---|---|
+| Änderungsanträge des Projekts | `Repositorium` (Standard) – oder `<ISSUE_TRACKER>` | `docs/changes/` | `CR-<PROJECT_CODE>-<JJJJ-MM-TT>-<kurzname>` – Datum und Kurzname statt laufender Nummer |
+| Pläne und dokumentierte Freigaben (Kontrollstufe mittel und hoch) | wie Änderungsanträge | `docs/changes/<Kennung>/` | Kennung des Antrags |
+| Architekturentscheidungen | `Repositorium` (Standard) – oder `<DOCUMENTATION_PLATFORM>` | `.koolie/project-overlay/documents/architecture/decisions/` | `ADR-<JJJJ-MM-TT>-<kurzname>.md` – eine Datei je Entscheidung |
+| Ergebnisberichte | Merge Request | – | – |
+
+Ausfüllhinweis: Wer ein zentrales System einträgt, gibt dessen MCP-Server in Abschnitt 13 mit dem Zweck *schreiben für Ablage* frei. Die Architekturübersicht in `documents/architecture/` fasst den gültigen Stand zusammen; sie wird bei einem Release nachgezogen, nicht bei jeder Entscheidung.
 
 ## 14. Ausgeschlossene Daten (projektspezifische Ergänzung zu K3)
 
@@ -196,6 +216,7 @@ Zusätzlich zu den festen K3-Kategorien (`.koolie/core/framework/core/02-privacy
 | Datenschutzkontakt | `<DATA_PROTECTION_CONTACT>` | Kontextfreigaben K2 mit Personenbezug, Vorfälle |
 | Product Owner | `<PRODUCT_OWNER_ROLE>` | fachliche Klärungen, Akzeptanzkriterien |
 | Softwarearchitektur | `<ARCHITECT_ROLE>` | Architekturentscheidungen, Review Stufe hoch |
+| Mandat für Modus M6 | `<APPROVAL_ROLE>`, für `documents/` auch `<ARCHITECT_ROLE>` | erteilt im eigenen Terminal das Mandat, mit dem der KI-Client getroffene Entscheidungen in das Overlay einträgt (`mandat.py`, D-446) |
 | Reviewerinnen und Reviewer | – | Review nach `.koolie/core/framework/core/07-review-rules.md` |
 | Mentorinnen und Mentoren | – | Onboarding, Freigabe zur selbstständigen Nutzung |
 | Modul-Owner projektspezifischer Skills | – | Pflege der `prj-*`-Skills |
@@ -266,6 +287,8 @@ Projektspezifisches Wissen wird ausschließlich über diesen Mechanismus eingebu
 | Version | Datum | Änderung | Autor (Rolle) | Validierung bestanden |
 |---|---|---|---|---|
 | `<TBD: 0.1.0>` | `<TBD>` | Overlay angelegt | `<APPROVAL_ROLE>` | `<TBD>` |
+
+Ausfüllhinweis: Die neueste Zeile steht oben. Eine Eintragung im Modus M6 nennt in der Spalte Autor die Rolle, die das Mandat erteilt hat, und den Zusatz „eingetragen in M6“. Die Version im Steckbrief (Abschnitt 1) wird dabei **geändert, nicht ersetzt** – in ihrer Zeile steht nur die Versionsnummer.
 
 ## 21. Aktivierung
 

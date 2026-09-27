@@ -12,13 +12,14 @@ permissions:
     - exec
 triggers:
   - user
+  - model
 ---
 
 | Attribut | Wert |
 |---|---|
 | ID | `FW-SK-004` |
 | Name | `fw-plan` |
-| Version | `0.1.6` |
+| Version | `0.1.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -31,7 +32,7 @@ triggers:
 
 - **Zweck:** Erarbeitet vor jeder Modifikation einen umsetzbaren, prüfbaren Änderungsplan exakt nach `.koolie/core/templates/PLAN_TEMPLATE.md`: Ziel und Akzeptanzkriterien, Ist-Zustand mit Fundstellen, gekennzeichnete Annahmen und offene Fragen, bewertete Optionen (mindestens zwei bei Stufe mittel und hoch), kleine einzeln prüfbare Schritte mit Prüfung je Schritt, Teststrategie, Risiken und Gegenmaßnahmen, Rollback, Abbruchkriterien und Freigabeerfordernis. Der Plan ist Grundlage der Planbestätigung (Schritt 9 des Standardarbeitsablaufs) und der späteren Umsetzung mit `fw-change-small`, `fw-tests` oder `fw-docs-update`.
 - **Zielgruppe:** Entwicklerinnen und Entwickler, Modul-Owner sowie Reviewerinnen und Reviewer (Plan-Review), `<APPROVAL_ROLE>` (Freigabe Stufe hoch), `<ARCHITECT_ROLE>` (Optionsbewertung).
-- **Trigger:** Änderung der Kontrollstufe mittel oder hoch (Plan verpflichtend); Stufe niedrig mit mehreren Schritten oder Dateien (KANN); nach `fw-change-analyze`. Aufruf: `/fw-plan "<bereinigte Aufgabenbeschreibung oder Referenz auf die Analyse>" [kontrollstufe]`. Nur auf Anweisung des Menschen.
+- **Trigger:** Änderung der Kontrollstufe mittel oder hoch (Plan verpflichtend); Stufe niedrig mit mehreren Schritten oder Dateien (KANN); nach `fw-change-analyze`. Aufruf: `/fw-plan "<bereinigte Aufgabenbeschreibung oder Referenz auf die Analyse>" [kontrollstufe]`. Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit, exec); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
 - **Nicht verwenden, wenn:** der betroffene Bereich noch unklar ist (`fw-change-analyze`); ein Bugfix nach Fehleranalyse vorbereitet wird (`fw-bugfix-prepare`); eine Stufe-niedrig-Änderung an einer Datei ohne Optionen ansteht (`fw-change-small` mit klarer Aufgabe).
 
 ## 2. Vorbedingungen, Eingaben und Kontext

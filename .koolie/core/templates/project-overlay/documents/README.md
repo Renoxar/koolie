@@ -27,6 +27,7 @@ documents/
 2. Bleibt das Original außerhalb des Repositorys, wird ein Verweisblatt `REFERENCE.md` abgelegt (Titel, Zweck, Ablageort als Platzhalter `<DOCUMENTATION_PLATFORM>`, Kontextklasse, Freigabe). Der KI-Client kann Verweisblätter lesen, das Original nicht.
 3. Dokumente enthalten keine Personen, Kunden, Behörden, internen Adressen, Umgebungskennungen oder Secrets.
 4. Änderungen erhöhen die Overlay-Version (Abschnitt 20 des Overlays).
+5. Architekturentscheidungen liegen im Rückfall (Overlay Abschnitt 13.1) als **eine Datei je Entscheidung** unter `architecture/decisions/ADR-<JJJJ-MM-TT>-<kurzname>.md`: Kontext, Entscheidung, Alternativen, Folgen, Status. Zwei Arbeitsplätze, die zugleich entscheiden, erzeugen zwei Dateien statt eines Merge-Konflikts. Ist `<DOCUMENTATION_PLATFORM>` führend, liegt hier höchstens ein Verweisblatt.
 
 ## Vorlage Verweisblatt
 

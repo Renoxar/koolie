@@ -939,6 +939,26 @@ def fehlende_zusatzschluessel(root: str, man: dict) -> list[tuple[str, str, obje
     return abweichend
 
 
+def veraltete_overlaysperre(root: str, man: dict) -> list[str]:
+    """Zeilen der Berechtigungsdatei, die das Overlay noch sperren (CR-2026-156, D-448).
+
+    Bis 1.16.0 erzeugte die Kernquelle eine Schreibsperre auf .koolie/project-overlay/**.
+    Seit 1.17.0 sperrt das Overlay allein der Schutz-Hook, und ein Mandat des Menschen
+    hebt die Sperre fuer ein gedecktes Ziel auf (Modus M6). Eine statische Sperre in der
+    Berechtigungsdatei hebt kein Mandat auf - steht die alte Regel noch da, bleibt M6
+    wirkungslos. --update schreibt die Datei nicht (sie traegt Projektwerte); es nennt die
+    Zeilen. Eine Auskunft, keine Schranke - das Entfernen ist eine Lockerung und damit
+    Sache des Menschen.
+    """
+    pfad = os.path.join(root, *man.get("permissions_file", "").split("/"))
+    try:
+        zeilen = open(pfad, encoding="utf-8").read().splitlines()
+    except OSError:
+        return []
+    return [z.strip() for z in zeilen
+            if "project-overlay/**" in z and "deny_must_contain" not in z]
+
+
 def traegt_quellrepo_kennzeichen(root: str) -> bool:
     """Liegt im Ziel das Kennzeichen des Framework-Repositoriums?
 
@@ -2148,6 +2168,16 @@ def main() -> int:
             print("Von Hand nachtragen, wie im Migrationshinweis des Releases beschrieben -")
             print("oder die Abweichung in der nutzerlokalen Datei des Clients ausweisen.")
             print("Dies ist eine Auskunft und keine Schranke (D-434).")
+        alt = veraltete_overlaysperre(root, man)
+        if alt:
+            print()
+            print(f"HINWEIS ({len(alt)}): {man['permissions_file']} sperrt das Overlay noch "
+                  f"statisch:")
+            for zeile in alt:
+                print(f"  {zeile}")
+            print("Seit 1.17.0 sperrt es der Schutz-Hook, bis ein Mandat es freigibt (Modus M6).")
+            print("Solange die Zeile steht, bleibt ein Mandat wirkungslos. Entfernen, wenn M6")
+            print("genutzt werden soll - auch aus _core_rules_integrity (D-448).")
 
     ignoriert = ignorierte_kerndateien(root)
     if ignoriert:

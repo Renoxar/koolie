@@ -41,7 +41,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from overlay_status import AKTIV, auswerten, status_angaben  # noqa: E402
+from overlay_status import (AKTIV, auswerten, status_angaben,  # noqa: E402
+                            version_angaben, versionen_auswerten)
 
 argumente = [a for a in sys.argv[1:] if not a.startswith("-")]
 root = argumente[0] if argumente else os.getcwd()
@@ -62,6 +63,7 @@ candidates.append(os.path.join(root, ".koolie/project-overlay", "OVERLAY.md"))
 # Alle lesbaren Traeger, nicht der erste mit Treffer: Zwei Dateien, die verschiedene
 # Staende erklaeren, sind der Befund - nicht eine Fundstelle, die man auswaehlt.
 angaben = []
+versionen = []
 gelesen = []
 for path in candidates:
     try:
@@ -71,6 +73,7 @@ for path in candidates:
         continue
     gelesen.append(os.path.relpath(path, root).replace(os.sep, "/"))
     angaben.extend(status_angaben(text))
+    versionen.extend(version_angaben(text))
 
 status, begruendung = auswerten(angaben)
 
@@ -88,8 +91,29 @@ context = (
     + ("" if status == AKTIV else
        "Da das Overlay nicht als aktiv erklaert ist, arbeite ausschliesslich im Modus M1 "
        "Read-only Analysis und weise die Nutzerin oder den Nutzer darauf hin "
-       "(Wurzel-Anweisungsdatei, Abschnitt 3).")
+       "(Wurzel-Anweisungsdatei, Abschnitt 3) - ausgenommen M6 mit Mandat, um das "
+       "Overlay einzurichten (Skill fw-overlay-pflege).")
 )
+
+# Seit 1.17.0 (CR-2026-156, D-452): der Versionswiderspruch und das Mandat. Beide nennen,
+# was zu tun ist - der Blockade-Hinweis gilt auch fuer eine Meldung, die nichts sperrt.
+befund_version = versionen_auswerten(versionen)
+if befund_version:
+    context += (" Overlay-Version: " + befund_version + ". Weise darauf hin und nenne den "
+                "Weg: den Wert im Steckbrief von OVERLAY.md berichtigen (M6) und danach "
+                "'python .koolie/core/mandat.py abgleichen' im eigenen Terminal.")
+try:
+    sys.path.insert(0, os.path.join(root, ".koolie", "core"))
+    import mandat  # noqa: E402
+    if os.path.normcase(mandat.PROJEKTWURZEL) == os.path.normcase(os.path.realpath(root)):
+        aktiv = mandat.gueltiges_mandat()
+        if aktiv:
+            context += (" Mandat fuer M6 aktiv: Rolle %s, Umfang %s, noch %d Minuten - du "
+                        "darfst Entscheidungen des Menschen in diesen Teil des Overlays "
+                        "eintragen." % (aktiv["rolle"], ", ".join(aktiv["umfang"]),
+                                        aktiv["_rest_min"]))
+except Exception:  # noqa: BLE001 - der Hook informiert nur und darf nie scheitern
+    pass
 
 print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart",
                                          "additionalContext": context}}, ensure_ascii=False))

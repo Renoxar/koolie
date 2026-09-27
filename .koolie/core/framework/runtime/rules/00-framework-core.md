@@ -24,10 +24,11 @@ Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schri
 | M3 Controlled Modification | im freigegebenen Scope | freigegebene Build-/Test-/Lint-Befehle, lesende Git-Befehle | ein Schritt je Änderung, Bericht nach jedem Schritt |
 | M4 Test and Validation | nur Testpfade | freigegebene Testbefehle | kein Produktivcode, keine abgeschwächten Tests |
 | M5 Documentation Support | nur Dokumentationspfade | nur lesende Git-Befehle | nur belegtes Verhalten dokumentieren |
+| M6 Mandated Maintenance | Overlay mit Mandat | lesende Git- und Prüfbefehle | nur Entschiedenes eintragen |
 
-Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. Ein Moduswechsel erfordert eine ausdrückliche Anweisung und wird im Ergebnisbericht vermerkt.
+Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. In M6 trägst du ein, was der Mensch entschieden hat, nur mit Mandat (`python .koolie/core/mandat.py status`); fehlt es, nennst du ihm `python .koolie/core/mandat.py erteilen …`. Ein Moduswechsel erfordert eine ausdrückliche Anweisung und wird im Ergebnisbericht vermerkt.
 
-**Die Schreibrechte der Spalte gelten normativ, nicht technisch durchgesetzt.** Kein Mechanismus des Frameworks kennt den Betriebsmodus: Der Schutz-Hook entscheidet innerhalb und außerhalb des Modus-Scopes gleich (gemessen am 2026-09-12, `CR-2026-048`). Technisch durchgesetzt sind allein die Sperren auf Secret- und Kernpfade – sie gelten in jedem Modus. Wer eine Modusgrenze braucht, verlässt sich auf diese Regel und auf die Prüfpflicht des Modus.
+**Die Schreibrechte der Spalte gelten normativ, nicht technisch durchgesetzt** – außer beim Overlay, das der Schutz-Hook bis zu einem Mandat sperrt. Kein Mechanismus des Frameworks kennt den Betriebsmodus: Der Schutz-Hook entscheidet innerhalb und außerhalb des Modus-Scopes gleich (gemessen am 2026-09-12, `CR-2026-048`). Technisch durchgesetzt sind allein die Sperren auf Secret- und Kernpfade – sie gelten in jedem Modus. Wer eine Modusgrenze braucht, verlässt sich auf diese Regel und auf die Prüfpflicht des Modus.
 
 ## Kontrollstufen (Maximumprinzip)
 
@@ -35,12 +36,14 @@ Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. Ein Moduswechsel er
 - **mittel:** M3 nur nach bestätigtem Plan; unabhängiger Diff-Review; Tests für geänderte Logik verpflichtend.
 - **hoch:** M3 nur nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` mit begleitender Person; Architektur-/Security-Review. Jede Berührung von Authentifizierung, Autorisierung, Kryptografie, Datenmodellen mit Migration, Produktionskonfiguration oder neuen Abhängigkeiten ist mindestens hoch beziehungsweise nicht delegierbar. Bei personenbezogenen Daten wird unterschieden: ein Code-Pfad, der sie verarbeitet, ohne dass sich die Verarbeitungslogik ändert, ist mittel; jede Änderung an Erhebung, Speicherung, Weitergabe oder Löschung ist hoch (`.koolie/core/framework/core/09-risk-model.md`, R4).
 - Steigt die Stufe während der Arbeit: anhalten, melden, auf Entscheidung warten.
-- Nicht delegierbar (nur Analyse/Vorbereitung), V1 bis V12 der Langform: Freigaben, Merges, Releases, Deployments, Secrets, Produktionsdaten, Architektur- und Technologieentscheidungen, Personenbewertungen, rechtliche Bewertungen, Änderungen an Framework, Overlay und Berechtigungen, Änderungen an Produktionssystemen, Infrastruktur und Sicherheitskonfigurationen, die Entscheidung über die Fortsetzung bei einem Sicherheitsvorfall, Kommunikation nach außen im Namen des Projekts sowie das Löschen von Branches, Historie, Daten oder Artefakten außerhalb des Arbeitsbereichs.
+- Nicht delegierbar (nur Analyse/Vorbereitung), V1 bis V12 der Langform: Freigaben, Merges, Releases, Deployments, Secrets, Produktionsdaten, Architektur- und Technologieentscheidungen, Personenbewertungen, rechtliche Bewertungen, Änderungen an Framework, Overlay (Eintragen in M6 zulässig) und Berechtigungen, Änderungen an Produktionssystemen, Infrastruktur und Sicherheitskonfigurationen, die Entscheidung über die Fortsetzung bei einem Sicherheitsvorfall, Kommunikation nach außen im Namen des Projekts sowie das Löschen von Branches, Historie, Daten oder Artefakten außerhalb des Arbeitsbereichs.
 
 ## Ausgabeformat eines Skills
 
 Die Überschriften aus Abschnitt 5 der `SKILL.md` werden wörtlich übernommen – ohne Umformulierung, ohne Zusatz, in derselben Ebene; eine fallbezogene Erläuterung steht im Text darunter. Auch in einem Folgeturn trägt die Ausgabe jede Pflichtüberschrift; was schon früher stand, wird dort mit Verweis geführt.
 
-## Ergebnisbericht (Pflicht am Ende jeder Sitzung)
+**Blockade-Hinweis:** Bei jeder Sperre sofort Gesperrt – Warum – Lösung mit Befehl – Folge, dann warten.
+
+## Ergebnisbericht (Pflicht am Ende jeder Aufgabe; dazwischen ein Kurzstatus)
 
 Aufgabe · Modus · Kontrollstufe (auslösender Faktor) · verwendete Skills – und wo keiner verwendet wurde, welcher in Frage kam und warum nicht · verwendeter Kontext mit Klasse · Befunde/Änderungen mit Fundstellen · ausgeführte Befehle mit Ergebnis · Abweichungen vom Plan · gekennzeichnete Annahmen und offene Fragen · Restrisiken und empfohlene Prüfungen.

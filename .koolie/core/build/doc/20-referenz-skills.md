@@ -1,27 +1,28 @@
 # 20 Referenz-Skills
 
-Die zwölf Referenz-Skills decken die geforderten Aufgaben ab und bilden zusammen den Standardweg jeder Änderung (verstehen → bewerten → planen → umsetzen → testen → prüfen → beschreiben). Jeder Skill ist projektneutral, verlangt Rückfragen bei Unklarheiten, macht Annahmen sichtbar, begrenzt den Scope, definiert Prüfungen, besitzt ein festes Ausgabeformat und bringt Positiv- wie Negativtestfälle mit (mindestens zwei beziehungsweise drei je Skill; gezählt am 2026-09-22: je zwei Positiv- und drei bis fünf Negativtestfälle, zusammen 72 Zellen).
+Die dreizehn Referenz-Skills decken die geforderten Aufgaben ab und bilden zusammen den Standardweg jeder Änderung (verstehen → bewerten → planen → umsetzen → testen → prüfen → beschreiben). Jeder Skill ist projektneutral, verlangt Rückfragen bei Unklarheiten, macht Annahmen sichtbar, begrenzt den Scope, definiert Prüfungen, besitzt ein festes Ausgabeformat und bringt Positiv- wie Negativtestfälle mit (mindestens zwei beziehungsweise drei je Skill; gezählt am 2026-09-22: je zwei Positiv- und drei bis fünf Negativtestfälle, zusammen 72 Zellen).
 
-Alle zwölf stehen im Status `pilot`, Owner `<FRAMEWORK_OWNER>`; sie durchlaufen den Lebenszyklus aus Kapitel 18, und ihre Versionen stehen in der Metadatentabelle jeder SKILL.md. Ihre Testzellen sind an einer laufenden Sitzung abgenommen, nicht abgezeichnet – der Ergebnisstatus jeder Zelle nennt sein Protokoll und das gemessene Client Pack mit Produktstand.
+Alle dreizehn stehen im Status `pilot`, Owner `<FRAMEWORK_OWNER>`; sie durchlaufen den Lebenszyklus aus Kapitel 18, und ihre Versionen stehen in der Metadatentabelle jeder SKILL.md. Ihre Testzellen sind an einer laufenden Sitzung abgenommen, nicht abgezeichnet – der Ergebnisstatus jeder Zelle nennt sein Protokoll und das gemessene Client Pack mit Produktstand.
 
-**Ein dreizehnter Skill liegt außerhalb dieses Kapitels:** `role-re-ticket` gehört zum Role Pack Requirements Engineering (Ebene 6, Kap. 7.3) und wird nicht mit dem Kern installiert, sondern mit dem Pack aktiviert. Er bringt fünf Positiv- und zehn Negativtestfälle mit.
+**Ein vierzehnter Skill liegt außerhalb dieses Kapitels:** `role-re-ticket` gehört zum Role Pack Requirements Engineering (Ebene 6, Kap. 7.3) und wird nicht mit dem Kern installiert, sondern mit dem Pack aktiviert. Er bringt fünf Positiv- und zehn Negativtestfälle mit.
 
 | ID | Skill (`/aufruf`) | Auftragspunkt | Modus | Werkzeuge | Trigger |
 |---|---|---|---|---|---|
 | FW-SK-001 | `fw-repo-analyze` | Repository analysieren | M1 | read, grep, glob | user, model |
 | FW-SK-002 | `fw-code-explain` | Bestehenden Code erklären | M1 | read, grep, glob | user, model |
-| FW-SK-003 | `fw-change-analyze` | Änderung fachlich und technisch analysieren | M1 | read, grep, glob | user |
-| FW-SK-004 | `fw-plan` | Implementierungsplan erzeugen | M2 | read, grep, glob | user |
+| FW-SK-003 | `fw-change-analyze` | Änderung fachlich und technisch analysieren | M1 | read, grep, glob | user, model |
+| FW-SK-004 | `fw-plan` | Implementierungsplan erzeugen | M2 | read, grep, glob | user, model |
 | FW-SK-005 | `fw-change-small` | Kleine Codeänderung umsetzen | M3 | read, grep, glob, edit, exec | user |
 | FW-SK-006 | `fw-tests` | Unit Tests erstellen oder erweitern | M4 | read, grep, glob, edit, exec | user |
 | FW-SK-007 | `fw-refactor` | Code refaktorieren | M3 | read, grep, glob, edit, exec | user |
 | FW-SK-008 | `fw-error-analyze` | Fehler analysieren | M1 | read, grep, glob | user, model |
-| FW-SK-009 | `fw-bugfix-prepare` | Bugfix vorbereiten | M2 | read, grep, glob | user |
+| FW-SK-009 | `fw-bugfix-prepare` | Bugfix vorbereiten | M2 | read, grep, glob | user, model |
 | FW-SK-010 | `fw-review-support` | Code Review unterstützen | M1 | read, grep, glob, exec (nur lesende Git-Befehle) | user |
 | FW-SK-011 | `fw-docs-update` | Dokumentation aktualisieren | M5 | read, grep, glob, edit | user |
 | FW-SK-012 | `fw-mr-description` | Merge-Request-Beschreibung erstellen | M5 | read, grep, glob, exec (nur lesende Git-Befehle) | user |
+| FW-SK-013 | `fw-overlay-pflege` | Entscheidungen in das Overlay eintragen (Einrichtung, Framework-Update, Eintrag) | M6 | read, grep, glob, edit, exec (Prüfbefehle, lesende Git-Befehle) | user |
 
-Nachfolgend die normativen Skill-Dateien (SKILL.md) aller zwölf Skills. Die Begleitdateien (EXAMPLES.md mit synthetischen Positiv- und Negativbeispielen, TESTS.md mit den Testfällen, CHANGELOG.md) liegen je Skill im Repository; stellvertretend ist für FW-SK-001 der vollständige Satz wiedergegeben (Abschnitt 20.13).
+Nachfolgend die normativen Skill-Dateien (SKILL.md) aller dreizehn Skills. Die Begleitdateien (EXAMPLES.md mit synthetischen Positiv- und Negativbeispielen, TESTS.md mit den Testfällen, CHANGELOG.md) liegen je Skill im Repository; stellvertretend ist für FW-SK-001 der vollständige Satz wiedergegeben (Abschnitt 20.13).
 
 ## 20.1 FW-SK-001 `fw-repo-analyze`
 
@@ -59,7 +60,10 @@ Nachfolgend die normativen Skill-Dateien (SKILL.md) aller zwölf Skills. Die Beg
 ## 20.12 FW-SK-012 `fw-mr-description`
 
 {{EMBED:<SKILLS_DIR>/fw-mr-description/SKILL.md}}
-## 20.13 Begleitdateien am Beispiel FW-SK-001 (vollständiger Satz)
+## 20.13 FW-SK-013 `fw-overlay-pflege`
+
+{{EMBED:<SKILLS_DIR>/fw-overlay-pflege/SKILL.md}}
+## 20.14 Begleitdateien am Beispiel FW-SK-001 (vollständiger Satz)
 
 {{EMBED:<SKILLS_DIR>/fw-repo-analyze/EXAMPLES.md}}
 {{EMBED:<SKILLS_DIR>/fw-repo-analyze/TESTS.md}}

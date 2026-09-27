@@ -51,10 +51,27 @@ Verhalten:
   fail-closed ohne Neuinstallation erproben will.
 - Kein Fund -> Exit-Code 0.
 
+SEIT 1.17.0 (CR-2026-156) ZWEI AENDERUNGEN AM SCHREIBWEG:
+- DAS ZIEL, NICHT DER INHALT (D-449). Bei einem Schreibwerkzeug werden die Pfadmuster
+  nur noch gegen die ZIELE der Operation gehalten - die Pfadfelder und die Dateikoepfe
+  eines Patchtextes -, nicht mehr gegen den Dateiinhalt. Gemessen am 2026-09-27 in einem
+  Projekt mit devin-desktop: Ein Aenderungsantrag unter docs/, der Overlay- und
+  Kernpfade NENNT, wurde gesperrt, als schriebe er in sie. Ein unbekanntes Werkzeug
+  bleibt bei der strengsten Lesart (alle Zeichenketten); ein Schreibwerkzeug ohne
+  Pfadfeld ist unpruefbar. Die Muster fuer Secrets IM Inhalt gelten unveraendert.
+- DAS MANDAT (D-447, D-448). Das Overlay ist nicht mehr durch die Berechtigungsdatei
+  gesperrt, sondern allein durch diesen Hook - und der laesst ein Schreiben dorthin
+  zu, solange ein gueltiges Mandat es deckt. Das Mandat legt nur der Mensch an
+  (mandat.py im Kern, im eigenen Terminal); Datei und Befehl sind fuer jede nicht
+  lesende Operation gesperrt.
+- Jede Sperre nennt in vier Zeilen, was gesperrt ist, warum, was der Mensch tun kann
+  und was daraus folgt (Blockade-Hinweis, D-450).
+
 Das Skript gibt gefundene Secrets niemals aus; es nennt nur die Musterkategorie. Dasselbe
 gilt fuer einen unpruefbaren Pfadwert: Genannt wird die Position, nicht der Wert (D-39).
 Alle Muster sind generisch; sie enthalten keine realen Werte.
 """
+import datetime
 import io
 import json
 import os
@@ -131,9 +148,13 @@ STRUCTURE_PATH_PATTERNS = [
     # Teilbaum ueber das Feld exclude aus seinem Schreibverbot aus; ohne die Ausnahme
     # hier sperrte der Hook in der interaktiven Sitzung, was die Berechtigungen zulassen.
     re.compile(_GRENZE + r"\.kiro[\\/](?!specs[\\/])", re.I),
+    # Das Overlay steht als EIGENES Objekt in der Liste (OVERLAY_MUSTER unten): Seit
+    # 1.17.0 kann ein Mandat genau dieses eine Muster fuer ein gedecktes Ziel aufheben
+    # (D-447) - und nur dieses.
     re.compile(_GRENZE + r"\.koolie[\\/]project-overlay[\\/]", re.I),
     re.compile(_GRENZE + r"framework[\\/]core[\\/]", re.I),
 ]
+OVERLAY_MUSTER = STRUCTURE_PATH_PATTERNS[-2]
 
 # Fuer schreibende Werkzeuge gelten beide Ziele. Die Zusatzmuster aus der Umgebung
 # haengen an dieser Summe: Ein Projekt meint sie als Verbot, nicht als Leseerlaubnis.
@@ -300,6 +321,147 @@ PROTECTED_WRITE_PATH_PATTERNS = [
     re.compile(_GRENZE + _CORE_MUSTER + r"[\\/]", re.I),
 ]
 
+# DAS MANDAT (CR-2026-156, D-447). Ein Mandat ist die Erlaubnis eines Menschen, dass der
+# Agent fuer eine begrenzte Zeit Entscheidungen in das Overlay eintraegt (Modus M6). Es
+# liegt im Git-Verzeichnis des Projekts und NICHT im Arbeitsbaum: Es kann so nie
+# versehentlich eingecheckt werden und damit auf einem anderen Arbeitsplatz gelten.
+# Ohne Git-Verzeichnis gibt es kein Mandat - der Merge Request ist die Pruefung, die das
+# Mandat voraussetzt. Die Werte stehen hier und in mandat.py; Pruefung 99 haelt sie
+# gleich (der Hook importiert bewusst nichts aus dem Kern, siehe CORE_REL).
+MANDAT_DATEI = "koolie-mandat.json"
+MANDAT_HOECHSTDAUER_MIN = 480
+MANDAT_UMFAENGE = {
+    "overlay": ".koolie/project-overlay/",
+    "dokumente": ".koolie/project-overlay/documents/",
+}
+# Datei und Befehl des Mandats sind fuer jede NICHT lesende Operation gesperrt - auch
+# fuer einen Shell-Befehl, der sie nur nennt. Ein Agent, der sich sein Mandat selbst
+# gibt, haette keines. Die Grenze ist dieselbe wie bei K-32: Ein Befehl, der den Namen
+# verschleiert, entgeht dem Muster; getragen wird der Rest von der Regelschicht.
+MANDATS_MUSTER = [
+    re.compile(r"koolie-mandat", re.I),
+    re.compile(r"(^|[\s\\/])mandat\.py", re.I),
+]
+MANDAT_BEFEHL = ("python " + CORE_REL + "/mandat.py erteilen --rolle <Rolle> "
+                 "--umfang overlay --minuten 60")
+
+
+# Die eine Ausnahme: die Auskunft. 'mandat.py status' schreibt nichts, und der Client soll
+# vor einer Arbeit in M6 selbst nachsehen koennen, statt es auf eine Sperre ankommen zu
+# lassen. Genau diese Form und nichts dahinter - kein Semikolon, keine Verkettung.
+MANDATSAUSKUNFT = re.compile(r"^\s*(python3?|py(\s+-3)?)\s+(\.[\\/])?\.koolie[\\/]core[\\/]mandat\.py\s+status\s*$", re.I)
+
+
+def nur_mandatsauskunft(tool_input) -> bool:
+    """Ist der Befehl allein 'mandat.py status'?
+
+    Gemessen wird das Befehlsfeld, nicht jede Zeichenkette der Eingabe: claude-code
+    schickt neben dem Befehl eine Beschreibung ("Mandatsstatus abfragen"), und die erste
+    Fassung verlangte, dass JEDE Zeichenkette mit "mandat" genau der Befehl sei - sie
+    sperrte damit die Auskunft, die sie freigeben sollte (gemessen am 2026-09-27 im Lauf
+    sk013n01 der Messung zu 1.17.0). Die uebrigen Felder bleiben Pruefmaterial: Nennt die
+    Beschreibung mandat.py, sperrt das Muster darunter wie bisher.
+    """
+    befehl = tool_input.get("command") if isinstance(tool_input, dict) else None
+    return isinstance(befehl, str) and bool(MANDATSAUSKUNFT.match(befehl))
+
+
+def git_verzeichnis():
+    """Das Git-Verzeichnis des Projekts - oder None.
+
+    '.git' ist ein Verzeichnis oder, bei einem zusaetzlichen Arbeitsbaum, eine Datei
+    mit 'gitdir: <pfad>'. Der Hook ruft git bewusst nicht auf: Ein Prozessstart je
+    Werkzeugaufruf kostet Zeit, und ein Hook im Zeitablauf entscheidet nichts.
+    """
+    punkt_git = os.path.join(PROJEKTWURZEL, ".git")
+    if os.path.isdir(punkt_git):
+        return punkt_git
+    if os.path.isfile(punkt_git):
+        try:
+            with io.open(punkt_git, encoding="utf-8") as fh:
+                inhalt = fh.read().strip()
+        except OSError:
+            return None
+        if inhalt.lower().startswith("gitdir:"):
+            ziel = inhalt[len("gitdir:"):].strip()
+            if not os.path.isabs(ziel):
+                ziel = os.path.join(PROJEKTWURZEL, ziel)
+            return os.path.realpath(ziel)
+    return None
+
+
+def mandat_lesen():
+    """Das gueltige Mandat als dict - oder None.
+
+    Gueltig heisst: lesbar, eine Rolle, nur bekannte Umfaenge, ein Ende in der Zukunft
+    und nicht weiter entfernt als die Hoechstdauer, und dieses Projekt. Jede Abweichung
+    gilt als KEIN Mandat - ein kaputtes Mandat oeffnet nichts.
+    """
+    gd = git_verzeichnis()
+    if not gd:
+        return None
+    try:
+        with io.open(os.path.join(gd, MANDAT_DATEI), encoding="utf-8") as fh:
+            daten = json.load(fh)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(daten, dict):
+        return None
+    rolle, umfang, bis = daten.get("rolle"), daten.get("umfang"), daten.get("bis")
+    if not isinstance(rolle, str) or not rolle.strip():
+        return None
+    if (not isinstance(umfang, list) or not umfang
+            or not all(isinstance(u, str) and u in MANDAT_UMFAENGE for u in umfang)):
+        return None
+    try:
+        ende = datetime.datetime.strptime(str(bis), "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return None
+    jetzt = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+    if ende <= jetzt or ende - jetzt > datetime.timedelta(minutes=MANDAT_HOECHSTDAUER_MIN + 1):
+        return None
+    projekt = daten.get("projekt")
+    if (not isinstance(projekt, str)
+            or os.path.normcase(os.path.realpath(projekt)) != os.path.normcase(PROJEKTWURZEL)):
+        return None
+    return daten
+
+
+def mandat_deckt(rel: str, mandat) -> bool:
+    """Deckt das Mandat den projektrelativen Pfad rel?"""
+    if not mandat:
+        return False
+    rel = rel.replace("\\", "/")
+    return any(rel.lower().startswith(MANDAT_UMFAENGE[u].lower()) for u in mandat["umfang"])
+
+
+# Die Dateikoepfe eines Patchtextes (openai-codex, apply_patch). Nur sie sind Ziele;
+# was darunter steht, ist Inhalt.
+PATCH_KOPF = re.compile(r"^\*\*\* (?:(?:Add|Update|Delete) File|Move to): (.+?)\s*$", re.M)
+
+
+def ziele_der_schreiboperation(tool_input) -> list:
+    """Die Ziele eines Schreibwerkzeugs: Pfadfelder, ein Patchtext durch seine Koepfe.
+
+    Ein Pfadfeld mit Zeilenumbruch ist kein Pfad, sondern ein Patchtext. Traegt er
+    keinen Kopf, bleibt er als Ganzes stehen - die strengere Lesart (D-449).
+    """
+    ziele = []
+    for wert in pfadwerte(tool_input):
+        if "\n" in wert:
+            koepfe = PATCH_KOPF.findall(wert)
+            ziele.extend(koepfe if koepfe else [wert])
+        else:
+            ziele.append(wert)
+    return ziele
+
+
+def hinweis(gesperrt: str, warum: str, loesung: str, folge: str) -> str:
+    """Der Blockade-Hinweis (D-450): vier Zeilen, damit niemand nachfragen muss."""
+    return (f"Gesperrt: {gesperrt}\nWarum: {warum}\nLoesung: {loesung}\n"
+            f"Folge: {folge}")
+
+
 # Zusätzliche projektspezifische Muster können über die Umgebungsvariable
 # FW_HOOK_EXTRA_PATH_PATTERNS (durch ';' getrennte reguläre Ausdrücke) ergänzt werden.
 # Auch sie laufen mit re.I: Ein Projekt meint sie als Verbot, und ein Verbot, das an der
@@ -444,12 +606,14 @@ class Unpruefbar(Exception):
 def unpruefbar(grund: str) -> None:
     """fail-closed: blockieren. Sonst: warnen und durchlassen."""
     if fail_closed():
-        block(f"Framework-Regel: Der Schutz-Hook kann diese Werkzeugeingabe nicht "
-              f"pruefen ({grund}). Er blockiert die Operation, statt sie ungeprueft "
-              f"durchzulassen (fail-closed). Moegliche Ursache: Das Eingabeschema des "
-              f"Clients hat sich geaendert. Fundstelle melden, Schema gegen die aktuelle "
-              f"Clientdokumentation pruefen und als Aenderungsantrag aufnehmen "
-              f"({CORE_REL}/governance/CHANGE_REQUEST_TEMPLATE.md).")
+        block(hinweis(
+            f"eine Werkzeugeingabe, die der Schutz-Hook nicht pruefen kann ({grund}).",
+            "Ungeprueft laesst der Hook nichts durch (fail-closed); moeglicherweise hat "
+            "sich das Eingabeschema des Clients geaendert.",
+            "Denselben Schritt mit einem anderen Werkzeug versuchen (etwa dem "
+            "Dateiwerkzeug statt der Shell); bleibt es gesperrt, die Fundstelle dem "
+            f"Framework Owner melden ({CORE_REL}/governance/FEEDBACK_PROCESS.md).",
+            "Die Operation laeuft nicht; am Projekt aendert sich nichts."))
     print(f"[fw-hook] Eingabe nicht pruefbar ({grund}); Schema gegen aktuelle "
           f"Clientdokumentation pruefen.", file=sys.stderr)
     durchlassen()
@@ -659,11 +823,45 @@ def main() -> None:
 
     for label, pattern in SECRET_PATTERNS:
         if any(pattern.search(s) for s in strings):
-            block(f"Framework-Regel: Werkzeugeingabe enthaelt ein Muster der Kategorie '{label}'. "
-                  f"Secrets duerfen nicht verarbeitet werden. Fundstelle melden, Sitzung anhalten "
-                  f"({CORE_REL}/framework/core/02-privacy.md, Abschnitt 5).")
+            block(hinweis(
+                f"eine Werkzeugeingabe mit einem Muster der Kategorie '{label}'.",
+                "Secrets duerfen nicht verarbeitet werden "
+                f"({CORE_REL}/framework/core/02-privacy.md, Abschnitt 5).",
+                "Den Wert entfernen oder durch einen Platzhalter ersetzen. Ist es ein "
+                "echtes Secret: Sitzung anhalten und die Fundstelle der Sicherheitsrolle "
+                "des Projekts melden.",
+                "Die Operation laeuft nicht; ohne das Muster geht sie durch."))
 
-    zu_pruefen = list(strings)
+    # Das Mandat gibt sich der Agent nicht selbst (D-447): Datei und Befehl sind fuer
+    # jede nicht lesende Operation gesperrt, gemessen am Rohtext UND an den Tokens.
+    auskunft = verb == "exec" and nur_mandatsauskunft(tool_input)
+    if verb not in ("read", "search"):
+        for s in strings + (list(shell_tokens(strings)) if tokenisieren else []):
+            if auskunft and s in (tool_input["command"],) + tuple(
+                    shell_tokens([tool_input["command"]])):
+                continue
+            if any(p.search(s) for p in MANDATS_MUSTER):
+                block(hinweis(
+                    "das Anlegen, Aendern oder Aufrufen eines Mandats "
+                    f"({CORE_REL}/mandat.py, {MANDAT_DATEI}).",
+                    "Ein Mandat erteilt nur der Mensch - ein Agent, der es sich selbst "
+                    "gibt, haette keines (Modus M6).",
+                    f"Die Person fuehrt im eigenen Terminal aus: {MANDAT_BEFEHL}",
+                    "Danach darf der Agent im Umfang des Mandats in das Overlay "
+                    "schreiben; 'mandat.py status' zeigt es, 'mandat.py beenden' hebt "
+                    "es auf."))
+
+    # Das Material der Pfadpruefung. Ein Schreibwerkzeug wird an seinen ZIELEN gemessen,
+    # nicht an seinem Inhalt (D-449); ein unbekanntes Werkzeug an allem.
+    if verb == "write":
+        ziele = ziele_der_schreiboperation(tool_input)
+        if not ziele:
+            unpruefbar("Schreibwerkzeug ohne erkanntes Pfadfeld")
+            return
+        zu_pruefen = list(ziele)
+    else:
+        ziele = []
+        zu_pruefen = list(strings)
     if tokenisieren:
         # Bei einem ausfuehrenden Werkzeug steht der Pfad mitten im Befehl; die
         # Pfadmuster verlangen davor einen Zeilenanfang oder ein Trennzeichen. Die
@@ -674,7 +872,7 @@ def main() -> None:
     else:
         kandidaten = []
 
-    kandidaten += pfadwerte(tool_input)
+    kandidaten += ziele if verb == "write" else pfadwerte(tool_input)
 
     try:
         aufgeloest_voll, aufgeloest_secret = aufgeloestes_material(kandidaten, basis)
@@ -689,19 +887,69 @@ def main() -> None:
     # einen Kernpfad oder das Lesen einer Regeldatei, also Operationen, die das
     # Framework voraussetzt.
     muster = PROTECTED_PATH_PATTERNS if schreibend else SECRET_PATH_PATTERNS
+
+    # Die Ziele, die ein gueltiges Mandat deckt - nur fuer ein ERKANNTES
+    # Schreibwerkzeug. Gedeckt ist ein Ziel, dessen aufgeloester Pfad im Umfang liegt;
+    # aufgehoben wird fuer dieses Ziel allein das Overlay-Muster (D-447).
+    mandat = mandat_lesen() if verb == "write" else None
+    gedeckt = set()
+    if mandat:
+        for roh in ziele:
+            try:
+                echt = aufloesen(roh, basis)
+            except Unpruefbar:
+                continue
+            if innerhalb(echt, PROJEKTWURZEL):
+                rel = os.path.relpath(echt, PROJEKTWURZEL)
+                if mandat_deckt(rel, mandat):
+                    gedeckt.update((roh, rel))
+
     for s in zu_pruefen + aufgeloest_voll:
         for pattern in muster:
-            if pattern.search(s):
-                block("Framework-Regel: Operation betrifft einen geschuetzten Pfad "
-                      "(Secrets, Wurzel-Anweisungsdatei, Laufzeitschicht, .koolie/project-overlay/, framework/core/). "
-                      "Aenderungen daran erfolgen nur ueber den Aenderungsprozess "
-                      f"({CORE_REL}/governance/CHANGE_REQUEST_TEMPLATE.md).")
+            if pattern is OVERLAY_MUSTER and s in gedeckt:
+                continue
+            if not pattern.search(s):
+                continue
+            if pattern is OVERLAY_MUSTER:
+                deckung = (" Das bestehende Mandat deckt dieses Ziel nicht (Umfang: %s)."
+                           % ", ".join(mandat["umfang"])) if mandat else ""
+                block(hinweis(
+                    "Schreiben in .koolie/project-overlay/.",
+                    "Overlay-Aenderungen entscheidet der Mensch; der Agent traegt sie "
+                    "nur mit Mandat ein (Modus M6, V10)." + deckung,
+                    f"Die Person fuehrt im eigenen Terminal aus: {MANDAT_BEFEHL} "
+                    "(nur die Projektdokumente: --umfang dokumente).",
+                    "Fuer die Dauer des Mandats schreibt der Agent dort direkt; jede "
+                    "Aenderung steht im Diff und wird im Merge Request geprueft. Das "
+                    "Mandat endet von selbst oder mit 'mandat.py beenden'."))
+            if pattern in SECRET_PATH_PATTERNS:
+                block(hinweis(
+                    "ein Zugriff auf einen Secret-Pfad.",
+                    "Secrets duerfen nicht verarbeitet werden "
+                    f"({CORE_REL}/framework/core/02-privacy.md, Abschnitt 5).",
+                    "Mit einer Beispieldatei ohne echte Werte arbeiten (etwa .env.example "
+                    "mit Platzhaltern) oder die Aufgabe ohne diese Datei loesen.",
+                    "Die Operation laeuft nicht; die Datei bleibt unberuehrt."))
+            block(hinweis(
+                "Schreiben auf einen geschuetzten Pfad (Wurzel-Anweisungsdatei, "
+                "Laufzeitschicht oder framework/core/).",
+                "Diese Dateien erzeugt der Installer aus Kern und Overlay; eine Aenderung "
+                "von Hand ginge beim naechsten Update verloren.",
+                "Projektwerte im Overlay eintragen (Modus M6) und danach im eigenen "
+                f"Terminal 'python {CORE_REL}/install.py --update --target .' ausfuehren; "
+                "eine Regelaenderung als Rueckmeldung an den Framework Owner "
+                f"({CORE_REL}/governance/FEEDBACK_PROCESS.md).",
+                "Die Operation laeuft nicht; die Laufzeitschicht bleibt die erzeugte."))
     for s in aufgeloest_secret:
         for pattern in SECRET_PATH_PATTERNS:
             if pattern.search(s):
-                block("Framework-Regel: Operation betrifft einen Secret-Pfad ausserhalb "
-                      "der Projektwurzel. Secrets duerfen nicht verarbeitet werden "
-                      f"({CORE_REL}/framework/core/02-privacy.md, Abschnitt 5).")
+                block(hinweis(
+                    "ein Zugriff auf einen Secret-Pfad ausserhalb der Projektwurzel.",
+                    "Secrets duerfen nicht verarbeitet werden "
+                    f"({CORE_REL}/framework/core/02-privacy.md, Abschnitt 5).",
+                    "Die Aufgabe ohne diese Datei loesen; einen benoetigten Wert gibt "
+                    "die Person selbst ein.",
+                    "Die Operation laeuft nicht; die Datei bleibt unberuehrt."))
 
     # Schreiboperationen zusaetzlich auf das gesamte Kernverzeichnis blockieren. Das
     # Kernverzeichnis gehoert dem Framework Owner und wird ausschliesslich ueber ein
@@ -712,13 +960,18 @@ def main() -> None:
     # Zeilen darueber die unbekannte Operation zur strengeren erklaerte. Sie war die
     # einzige, bei der der Kern ungeschuetzt blieb.
     if schreibend:
-        for s in strings + aufgeloest_voll:
+        for s in zu_pruefen + aufgeloest_voll:
             for pattern in PROTECTED_WRITE_PATH_PATTERNS:
                 if pattern.search(s):
-                    block(f"Framework-Regel: Schreiboperation betrifft das Kernverzeichnis "
-                          f"({CORE_REL}/). Es gehoert dem Framework Owner und wird nur "
-                          f"ueber ein Release ausgetauscht; Aenderungen laufen als "
-                          f"Aenderungsantrag ({CORE_REL}/governance/CHANGE_REQUEST_TEMPLATE.md).")
+                    block(hinweis(
+                        f"Schreiben in das Kernverzeichnis {CORE_REL}/.",
+                        "Der Kern gehoert dem Framework Owner und wird nur ueber ein "
+                        "Release ausgetauscht; eine lokale Aenderung macht die "
+                        "Installation ungleich ihrem Release.",
+                        "Den Befund als Rueckmeldung an den Framework Owner geben "
+                        f"({CORE_REL}/governance/FEEDBACK_PROCESS.md); projekteigene "
+                        "Regeln gehoeren ins Overlay (Modus M6).",
+                        f"Die Operation laeuft nicht; 'install.py --check' bleibt gruen."))
     durchlassen()
 
 

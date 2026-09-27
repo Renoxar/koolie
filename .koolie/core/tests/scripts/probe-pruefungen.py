@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 97, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 100, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -47,6 +47,7 @@ Kopfkommentar in validate-framework.py.
 """
 import ast
 import glob
+import datetime
 import hashlib
 import io
 import json
@@ -2143,6 +2144,150 @@ buendel(sonden_cursor,
         "Schutz-Hooks - an echten Installationen")
 
 
+# --- Pruefungen 98 bis 100 und das Mandat (CR-2026-156, D-446 bis D-452) --------------
+#
+# Der erste Projekteinsatz (2026-09-27, devin-desktop): Der Hook sperrte nach dem INHALT
+# (98), das Mandat muss dem Menschen gehoeren (99), und ein Skill mit Modellaufruf muss
+# rein lesend sein (100). Das Buendel darunter misst das Mandat selbst an einer echten
+# Installation - mit einem Git-Verzeichnis, denn ohne eines gibt es kein Mandat.
+P98_HOOK = ".koolie/core/tests/scripts/hook-check-secrets.py".replace("/", os.sep)
+P99_MANDAT = ".koolie/core/mandat.py".replace("/", os.sep)
+P99_RECHTE = ".koolie/core/framework/runtime/permissions.json".replace("/", os.sep)
+P100_SKILL = ".koolie/core/framework/skills/fw-docs-update/SKILL.md".replace("/", os.sep)
+M98_INHALT = "weil sein Inhalt geschuetzte Pfade NENNT"
+M98_ANKER = "Pruefung 98 misst"
+M99_WERTE = "fuehren verschiedene Werte fuer"
+M99_DENY = "sperrt das Overlay im deny-Korb"
+M99_AUSKUNFT = "die Auskunft mandat.py status endet mit Exit 2"
+M99_BESCHREIBUNG = "die Auskunft mit einer Beschreibung daneben endet mit Exit 2"
+M99_FEHLT = "mandat.py fehlt"
+M100_MODELL = "traegt den Trigger 'model', sperrt aber"
+
+sonde("98", "Pruefung 98: der Hook misst wieder alle Zeichenketten eines Schreibwerkzeugs",
+      lambda r: ersetze(P(r, P98_HOOK), ("        zu_pruefen = list(ziele)\r\n",
+                                         "        zu_pruefen = list(strings)\r\n")),
+      M98_INHALT)
+sonde("98a", "Pruefung 98: die Stufe der Ziele ist aus dem Hook verschwunden",
+      lambda r: ersetze(P(r, P98_HOOK), ("def ziele_der_schreiboperation(",
+                                         "def ziele_der_operation(", 1),
+                        ("ziele = ziele_der_schreiboperation(tool_input)",
+                         "ziele = ziele_der_operation(tool_input)")),
+      M98_ANKER)
+gegenprobe("98", "Pruefung 98: der ausgelieferte Hook misst das Ziel", None, M98_INHALT)
+sonde("99", "Pruefung 99: mandat.py fuehrt eine andere Hoechstdauer als der Hook",
+      lambda r: ersetze(P(r, P99_MANDAT), ("MANDAT_HOECHSTDAUER_MIN = 480",
+                                           "MANDAT_HOECHSTDAUER_MIN = 999")),
+      M99_WERTE)
+sonde("99a", "Pruefung 99: die Kernquelle sperrt das Overlay wieder statisch",
+      lambda r: ersetze(P(r, P99_RECHTE), (
+          '    { "tool": "write", "pattern": "**/*.lock" },',
+          '    { "tool": "write", "pattern": ".koolie/project-overlay/**" },\r\n'
+          '    { "tool": "write", "pattern": "**/*.lock" },')),
+      M99_DENY)
+sonde("99b", "Pruefung 99: der Hook sperrt auch die Auskunft 'mandat.py status'",
+      lambda r: ersetze(P(r, P98_HOOK), (
+          '    auskunft = verb == "exec" and nur_mandatsauskunft(tool_input)',
+          '    auskunft = False')),
+      M99_AUSKUNFT)
+sonde("99d", "Pruefung 99: die Auskunft zaehlt wieder jede Zeichenkette mit 'mandat'",
+      lambda r: ersetze(P(r, P98_HOOK), (
+          '    return isinstance(befehl, str) and bool(MANDATSAUSKUNFT.match(befehl))',
+          '    strings = list(iter_strings(tool_input))\r\n'
+          '    befehle = [s for s in strings if "mandat" in s.lower()]\r\n'
+          '    return bool(befehle) and all(MANDATSAUSKUNFT.match(s) for s in befehle)')),
+      M99_BESCHREIBUNG)
+sonde("99c", "Pruefung 99: mandat.py fehlt - der Hook kennt ein Mandat, das niemand erteilen kann",
+      lambda r: os.remove(P(r, P99_MANDAT)), M99_FEHLT)
+gegenprobe("99", "Pruefung 99: Hook, mandat.py und Kernquelle passen zusammen", None, M99_WERTE)
+sonde("100", "Pruefung 100: ein schreibender Skill traegt den Trigger 'model'",
+      lambda r: ersetze(P(r, P100_SKILL), ("triggers:\r\n  - user\r\n---",
+                                           "triggers:\r\n  - user\r\n  - model\r\n---")),
+      M100_MODELL)
+gegenprobe("100", "Pruefung 100: die modellaufrufbaren Skills sind rein lesend", None,
+           M100_MODELL)
+
+
+def _mandat_hook(root: str, ereignis: dict) -> tuple:
+    """Der Schutz-Hook der Installation: (Exit, Ausgabe)."""
+    skript = os.path.join(root, ".koolie", "core", "tests", "scripts", "hook-check-secrets.py")
+    p = subprocess.run([sys.executable, skript, "--fail-closed"],
+                       input=json.dumps(ereignis).encode("utf-8"), capture_output=True,
+                       timeout=60, cwd=root)
+    return p.returncode, (p.stdout + p.stderr).decode("utf-8", "replace")
+
+
+def _mandat_setzen(root: str, umfang, minuten: int = 30, projekt: str = "") -> None:
+    ende = (datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+            + datetime.timedelta(minutes=minuten))
+    schreib(os.path.join(root, ".git", "koolie-mandat.json"), json.dumps({
+        "rolle": "Architekt", "umfang": umfang, "bis": ende.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "projekt": projekt or os.path.realpath(root)}))
+
+
+def sonden_mandat() -> None:
+    """Das Mandat an einer echten Installation: es oeffnet, was es deckt, und nichts sonst."""
+    root = installation("devin-desktop")
+    try:
+        os.makedirs(os.path.join(root, ".git"))
+        overlay = {"tool_name": "write", "tool_input": {
+            "file_path": ".koolie/project-overlay/OVERLAY.md", "content": "x"}}
+        dokument = {"tool_name": "write", "tool_input": {
+            "file_path": ".koolie/project-overlay/documents/architecture/decisions/ADR-x.md",
+            "content": "x"}}
+        kern = {"tool_name": "write", "tool_input": {
+            "file_path": ".koolie/core/VERSION", "content": "x"}}
+
+        exit_ohne, text_ohne = _mandat_hook(root, overlay)
+        melde("SONDE", "D447", exit_ohne == 2 and "Gesperrt:" in text_ohne
+              and "Loesung:" in text_ohne and "mandat.py erteilen" in text_ohne,
+              "Ohne Mandat sperrt der Hook das Overlay - mit Blockade-Hinweis und Befehl")
+
+        _mandat_setzen(root, ["overlay"])
+        melde("GEGENPROBE", "D447a", _mandat_hook(root, overlay)[0] == 0,
+              "Mit gueltigem Mandat (Umfang overlay) schreibt der Client in das Overlay")
+        melde("SONDE", "D447b", _mandat_hook(root, kern)[0] == 2,
+              "Das Mandat oeffnet den Kern nicht")
+
+        _mandat_setzen(root, ["dokumente"])
+        melde("SONDE", "D447c", _mandat_hook(root, overlay)[0] == 2
+              and _mandat_hook(root, dokument)[0] == 0,
+              "Umfang dokumente: OVERLAY.md bleibt gesperrt, documents/ ist offen")
+
+        _mandat_setzen(root, ["overlay"], minuten=-5)
+        melde("SONDE", "D447d", _mandat_hook(root, overlay)[0] == 2,
+              "Ein abgelaufenes Mandat oeffnet nichts")
+        _mandat_setzen(root, ["overlay"], minuten=2000)
+        melde("SONDE", "D447e", _mandat_hook(root, overlay)[0] == 2,
+              "Ein Mandat ueber der Hoechstdauer oeffnet nichts")
+        _mandat_setzen(root, ["overlay"], projekt=os.path.dirname(root))
+        melde("SONDE", "D447f", _mandat_hook(root, overlay)[0] == 2,
+              "Ein Mandat eines anderen Projekts oeffnet nichts")
+        os.remove(os.path.join(root, ".git", "koolie-mandat.json"))
+
+        # Der Abgleich (D-452): Werte aus OVERLAY.md in die Laufzeitfassung.
+        ov = os.path.join(root, ".koolie", "project-overlay", "OVERLAY.md")
+        rt = os.path.join(root, ".devin", "rules", "20-project-overlay.md")
+        ersetze(ov, ("| Overlay-Version | `<TBD: 0.1.0>` |", "| Overlay-Version | `0.4.2` |"))
+        p = unterprozess([sys.executable, os.path.join(root, ".koolie", "core", "mandat.py"),
+                          "abgleichen"])
+        text = lies(rt)
+        melde("SONDE", "D452", "Overlay-Version: `0.4.2`" in text
+              and "Overlay-Version -> 0.4.2" in (p.stdout or ""),
+              "mandat.py abgleichen uebernimmt die Overlay-Version in die Laufzeitfassung")
+        vorher = text
+        unterprozess([sys.executable, os.path.join(root, ".koolie", "core", "mandat.py"),
+                      "abgleichen"])
+        melde("GEGENPROBE", "D452a", lies(rt) == vorher,
+              "Ein zweiter Abgleich aendert nichts mehr")
+    finally:
+        aufraeumen(os.path.dirname(root))
+
+
+buendel(sonden_mandat,
+        "Das Mandat fuer M6 an einer echten Installation: Sperre mit Hinweis, Umfang, "
+        "Ablauf, Hoechstdauer, fremdes Projekt und der Abgleich der Laufzeitfassung")
+
+
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
 #
 # Zwei Gegenstaende in einem Block, weil sie dieselbe Entscheidung tragen: Der Suchkanal
@@ -2757,6 +2902,10 @@ def _umschlag_im_pruefmaterial(root: str) -> None:
     """Der Umschlag wandert zurueck ins Pruefmaterial - der Stand bis 0.33.0."""
     _tausche(root, "    return tool_name.strip().lower(), tool_input, basis",
              "    return tool_name.strip().lower(), dict(payload, **tool_input), basis")
+    # Seit 1.17.0 misst ein Schreibwerkzeug nur seine Ziele (D-449). Der alte Stand
+    # hielt ALLE Zeichenketten gegen die Muster - erst beides zusammen stellt ihn her.
+    _tausche(root, "        zu_pruefen = list(ziele)",
+             "        zu_pruefen = list(ziele) + list(strings)")
 
 
 def _unbekanntes_werkzeug_lax(root: str) -> None:
@@ -3712,8 +3861,9 @@ def _39_anker_weg(root: str) -> None:
         raise Praeparationsfehler(
             "permissions.json: keine skill-Regel gefunden, die zu entfernen waere")
     # Das Komma der letzten verbleibenden Regel muss weg, sonst ist die Datei kein JSON.
-    schreib(_p39(root),
-            "\r\n".join(zeilen).replace('"git blame" },', '"git blame" }'))
+    # Das Komma der letzten verbleibenden Regel vor der schliessenden Klammer muss weg -
+    # abgeleitet, nicht an einem Regelnamen: Seit 1.17.0 steht dort nicht mehr git blame.
+    schreib(_p39(root), re.sub(r"\},(\s*\r\n\s*\])", r"}\1", "\r\n".join(zeilen)))
 
 
 def _39_traeger_weg(root: str) -> None:
@@ -3817,7 +3967,7 @@ def _40_registerblock(text: str):
     a = text.index(REGISTER_KOPF)
     b = text.index(NACHWEIS_ANFANG, a)
     zeilen = text[a:b].split("\r\n")
-    starts = [i for i, z in enumerate(zeilen) if re.match(r"^ \d+\. ", z)]
+    starts = [i for i, z in enumerate(zeilen) if re.match(r"^ ?\d+\. ", z)]
     if not starts:
         raise Praeparationsfehler(
             "validate-framework.py: kein nummerierter Registereintrag gefunden")
@@ -5239,7 +5389,10 @@ def _49_skill_ohne_modell(root: str) -> str:
         if i < 0:
             continue
         block = text[i:text.find("---", 3)] if text.startswith("---") else text[i:i + 200]
-        if "- model" not in block:
+        # Seit 1.17.0 tragen fw-bugfix-prepare und fw-plan `model` (D-451); der naechste
+        # Skill ohne model fuehrt Test- und Lintbefehle aus, und Pruefung 49 verlangt dann
+        # zu Recht den Schlitz in der Vorbedingung - gemessen wuerde die falsche Regel.
+        if "- model" not in block and "<TEST_COMMAND>" not in text and "<LINT_COMMAND>" not in text:
             return name
     raise Praeparationsfehler(
         "Kein Kernskill mit `triggers` ohne `- model` - die Sonden zu 49 brauchen einen")

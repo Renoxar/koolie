@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-GUIDE` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
@@ -55,7 +55,7 @@ Lies `.koolie/core/framework/core/02-privacy.md` und arbeite `.koolie/core/decis
 
 ## Modul 3 – Sichere Arbeitsweise
 
-Lies `.koolie/core/framework/core/05-working-model.md` (14 Schritte, M1–M5) und im `CLIENT_PACK.md` deines Client Packs (unter `.koolie/core/clients/`) den Abschnitt „M – Modi und Sitzungsfreigaben“ (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`.koolie/core/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
+Lies `.koolie/core/framework/core/05-working-model.md` (14 Schritte, M1–M6) und im `CLIENT_PACK.md` deines Client Packs (unter `.koolie/core/clients/`) den Abschnitt „M – Modi und Sitzungsfreigaben“ (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`.koolie/core/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
 
 ## Modul 4 – Repository- und Framework-Struktur
 

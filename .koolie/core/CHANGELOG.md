@@ -2,6 +2,63 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.17.0] - 2026-09-27
+
+**Das Mandat und die Reibung des ersten Projekteinsatzes - der Hook, der den Inhalt las, und die Entscheidung, die
+man abschreiben musste** (`CR-2026-156` E1 bis E11, **D-445** bis **D-455**, **Pruefungen 98 bis 100** neu;
+`K-178` bis `K-182` neu, `K-165` fortgeschrieben). Ein MINOR-Release mit Kontingent: 40 Sitzungslaeufe mit Claude Code 2.1.283 (Opus 5.5), 27,33 USD, davon 10 verworfen. 🟢 Alle 24 Zellen der vier Skills tragen; Kriterium 2 von D-11 bleibt 0. Anlass ist der
+erste Einsatz von `1.16.0` in einem Projekt (`devin-desktop`): Besprochene Entscheidungen liessen sich nur als
+Vorlage liefern und von Hand in gesperrte Dateien kopieren.
+
+> 🔴 **ENTSCHEIDEN BLEIBT BEIM MENSCHEN, EINTRAGEN DARF DER CLIENT** (D-446). Der neue Modus M6 Mandated Maintenance
+> traegt eine Entscheidung, die der Mensch in der Sitzung getroffen hat, direkt in das Overlay ein - mit einem
+> Mandat, das nur der Mensch im eigenen Terminal erteilt: `python .koolie/core/mandat.py erteilen --rolle <Rolle>
+> --umfang overlay --minuten 60`. Geprueft wird im Merge Request.
+
+**Geaendert**
+
+- Schutz-Hook, fuer alle Packs: Schreibwerkzeuge werden an ihren ZIELEN gemessen (Pfadfelder, Dateikoepfe eines
+  Patchtextes), nicht mehr an ihrem Inhalt (D-449) - ein Aenderungsantrag darf die Pfade nennen, um die es geht.
+  Ein Schreibwerkzeug ohne erkanntes Pfadfeld ist unpruefbar; ein unbekanntes Werkzeug bleibt streng. **Pruefung 98.**
+- Das Mandat (D-447): `mandat.py` im Kern (`erteilen`, `status`, `beenden`, `abgleichen`), abgelegt in
+  `.git/koolie-mandat.json`, hoechstens 480 Minuten, Umfang `overlay` oder `dokumente`. Der Hook oeffnet fuer ein
+  gedecktes Ziel allein das Overlay-Muster und sperrt Mandatsdatei und `mandat.py` fuer jede Operation des Clients
+  ausser der Auskunft `mandat.py status`. **Pruefung 99.**
+- Die Kernquelle der Berechtigungen sperrt `.koolie/project-overlay/**` nicht mehr (D-448); `install.py --update`
+  nennt eine verbliebene statische Sperre.
+- Blockade-Hinweis (D-450): Jede Sperre - Regel, Hook, Berechtigung, fehlendes Mandat - erklaert sich sofort in vier
+  Zeilen: Gesperrt, Warum, Loesung mit Befehl, Folge. Auch die Meldungen des Hooks.
+- `fw-plan`, `fw-change-analyze`, `fw-bugfix-prepare` tragen die Trigger `user` und `model` (D-451); fuer einen Skill
+  mit `user` bittet der Client um den Aufruf. **Pruefung 100.** Neue Zelle `SK-003-P03`.
+- Neuer Skill `fw-overlay-pflege` (FW-SK-013): Einrichtung als Interview, Hebung nach einem Framework-Update, Eintrag
+  einer Entscheidung (D-452). `mandat.py beenden` gleicht Status, Version und Pfadlisten in die Laufzeitfassung und
+  die Version ins Manifest ab; der SessionStart-Hook meldet ein aktives Mandat und einen Versionswiderspruch.
+- Pruefbefehle `validate-framework.py`, `install.py --check`, `mandat.py status` im `allow`-Korb (D-453).
+- Ablage (D-454): Overlay-Vorlage Abschnitt 13.1 - fuehrendes System, Rueckfall im Repositorium mit Kennung aus
+  Datum und Kurzname, eine Datei je Architekturentscheidung (`documents/architecture/decisions/`). Zwischen den
+  Turns einer Aufgabe genuegt ein Kurzstatus.
+- Datenschutz (D-455): Kommentarverlaeufe aus dem Ticketsystem per Kategoriefreigabe; jede Freigabe eines
+  MCP-Servers nennt ihren Zweck (*lesen fuer Planung*, *schreiben fuer Ablage*).
+- Releaseplan (D-445): `1.18.0` Ticketsystem und Doku-Plattform ueber MCP, `1.19.0` Paketquellen, `1.20.0`
+  Messapparat.
+
+**Migrationshinweise fuer Overlays**
+
+- **Berechtigungsdatei von Hand nachziehen** - `install.py --update` schreibt sie nicht: die Schreibsperre auf
+  `.koolie/project-overlay/**` entfernen (im `deny`-Korb und unter `_core_rules_integrity`), sonst bleibt ein
+  Mandat wirkungslos; die drei Pruefbefehle in `allow` nachtragen (`Exec(...)` bzw. `Bash(...:*)` wie die
+  lesenden Git-Befehle). Der Validator nennt jede fehlende Regel.
+- Steckbrief: kompatible Framework-Version `1.17.x`. Version und Status muessen nur noch in `OVERLAY.md` stehen -
+  `python .koolie/core/mandat.py abgleichen` traegt sie in Laufzeitfassung und Manifest nach.
+- Optional: Abschnitt 13.1 (Ablage) aus der Vorlage uebernehmen; ohne ihn gilt das Repositorium als fuehrend.
+
+**Bekannte Einschraenkungen**
+
+- Wo der Hook eines Packs nicht laeuft (`kiro` ausserhalb der interaktiven Sitzung), schuetzt die Regelschicht das
+  Overlay allein (`K-181`). Ein Befehl, der den Namen `mandat.py` verschleiert, entgeht dem Muster. Der Abgleich
+  schreibt die Berechtigungsdatei nicht (`K-180`). Die Anbindung an Ticketsystem und Doku-Plattform folgt mit
+  `1.18.0` (`K-178`).
+
 ## [1.16.0] - 2026-09-26
 
 **Das Client Pack fuer Cursor - die Datei, mit der der Client nicht startet, und das Muster, das nie traf**
