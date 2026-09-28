@@ -780,7 +780,7 @@ def aufgeloestes_material(werte, basis: str) -> tuple:
 
 
 def eingabe_lesen() -> str:
-    """Die Hook-Eingabe als Text - UTF-8, ein vorangestelltes BOM entfernt.
+    """Die Hook-Eingabe als Text - UTF-8, JEDES vorangestellte BOM entfernt.
 
     WARUM NICHT sys.stdin.read() (CR-2026-155, D-441). Gemessen am 2026-09-26 an
     cursor-agent 2026.09.26 unter Windows: Der Client reicht die Eingabe durch eine
@@ -789,15 +789,21 @@ def eingabe_lesen() -> str:
     drei Zeichen vor der oeffnenden Klammer, json.loads scheiterte, und der Hook sperrte
     fail-closed JEDE Operation, auch das Lesen einer harmlosen Datei. JSON ist UTF-8; die
     Codepage ist nur der Rueckfall fuer eine Eingabe, die kein gueltiges UTF-8 ist.
+
+    ZWEI BOM (CR-2026-157, D-463). Gemessen am 2026-09-28 an derselben Clientversion: Die
+    Eingabe kam mit ZWEI vorangestellten BOM an ('EF BB BF EF BB BF'). 'utf-8-sig' nimmt
+    genau eines weg; das zweite blieb als Zeichen vor der Klammer, und der Hook sperrte
+    wieder fail-closed jede Operation. Ein BOM ist an dieser Stelle nie Inhalt - weg mit
+    allen.
     """
     puffer = getattr(sys.stdin, "buffer", None)
     if puffer is None:
         return sys.stdin.read().lstrip("﻿")
     roh = puffer.read()
     try:
-        return roh.decode("utf-8-sig")
+        return roh.decode("utf-8-sig").lstrip("﻿")
     except UnicodeDecodeError:
-        return roh.decode(sys.getfilesystemencoding() or "utf-8", errors="replace")
+        return roh.decode(sys.getfilesystemencoding() or "utf-8", errors="replace").lstrip("﻿")
 
 
 # ------------------------------------------------------------------ Stufe 3: Regeln

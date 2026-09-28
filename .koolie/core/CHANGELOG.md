@@ -2,6 +2,57 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.18.0] - 2026-09-28
+
+**Das Ticketsystem und die Doku-Plattform ueber MCP - die Rueckfrage, die die Freigabe schlug, und das Token ohne
+Bereiche** (`CR-2026-157` E1 bis E16, **D-456** bis **D-464**, **Pruefung 101** neu; `K-178` und `K-182`
+beantwortet, `K-183` bis `K-186` neu). Ein MINOR-Release mit Kontingent: 36 Sitzungslaeufe mit Claude Code 2.1.283 (Opus 5.5), 26,96 USD, dazu eine
+Stichprobe mit `cursor`. 🟢 Alle 29 Zellen tragen; Kriterium 2 von D-11 bleibt 0. Gemessen an Atlassian Cloud (Jira
+und Confluence) mit dem offiziellen Remote-MCP-Server des Herstellers.
+
+> 🔴 **DIE RUECKFRAGE SCHLAEGT DIE FREIGABE** (D-459, gemessen). Die Berechtigungsdatei von `claude-code` fuehrt
+> `mcp__*` im ask-Korb. Gibt ein Projekt einen Server zum Lesen frei, ersetzt der Mensch diese Pauschale durch
+> Einzelregeln - Lesewerkzeuge in `allow`, Schreibwerkzeuge in `ask` -, sonst wird auch das freigegebene
+> Lesewerkzeug abgewiesen. `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay` nennt die
+> fehlenden Regeln (Pruefung 101).
+
+**Geaendert**
+
+- `02-privacy.md` 3.8 (D-457 bis D-459): Die Freigabe eines MCP-Servers nennt Zweck, Lese- und Schreibwerkzeuge
+  (Overlay Abschnitt 13.2, neu). Lesen fuer Planung: hoechstens fuenf Treffer je Suche, jede Aussage mit
+  Ticketschluessel und Stand oder Seite mit Version, Widersprueche gemeldet, Server nicht erreichbar -> Rueckfall
+  im Repositorium, nichts erfinden. Schreiben fuer Ablage nur auf Anweisung, ein Plan erst nach Bestaetigung.
+- `fw-change-analyze` 0.1.6, `fw-plan` 0.1.8, `fw-bugfix-prepare` 0.1.7: externe Quellen im ersten Arbeitsschritt,
+  Ausgabeabschnitt „Externe Quellen“, kein Schreiben in externe Systeme; Ablage der Plaene nach Overlay 13.1 statt
+  `<TBD>`. Nach `K-182`: Ein Anstieg der Kontrollstufe, der schon aus der Aufgabe folgt, und ein ungeoeffneter
+  Beifund ausserhalb des Gegenstands halten nicht mehr an (D-460).
+- Validator: **Pruefung 101** - die Kernquelle gibt kein MCP-Werkzeug frei; in einer Installation stehen in `allow`
+  nur die Lesewerkzeuge der Freigabe, einzeln; mit `--strict-overlay` fehlt keines, und die Pauschale ist fort.
+  Pruefung 13 meldet eine noch nicht abgeglichene Overlay-Version waehrend eines Mandats als Warnung mit dem Befehl
+  `mandat.py beenden` (D-461).
+- Schutz-Hook, fuer alle Packs: Eine Eingabe mit ZWEI vorangestellten BOM wird gelesen (D-463). Gemessen an `cursor`:
+  Der Hook entfernte eines und sperrte fail-closed jede Operation, auch das Lesen.
+- `02-privacy.md` 3.8 (D-464): Liefert das Werkzeug keine Versionsnummer, traegt die Aussage den Stand und den
+  Hinweis darauf; Personenangaben aus den Metadaten einer Werkzeugantwort werden nicht wiedergegeben.
+- `cursor` (Pack 0.2.0): `.cursor/mcp.json` mit `${env:VARIABLE}`, im Druckmodus nur mit `--approve-mcps`;
+  Regelform `Mcp(<server>:<werkzeug>)` im Manifest.
+- `claude-code`: Manifest fuehrt die Regelform `mcp_permission_rule`; das Pack-Dokument nennt die gemessene Form der
+  `.mcp.json` (Server `http`, Kopfzeile aus `${VARIABLE}`).
+- Testkatalog: Klasse EX (drei Zellen zur Ablage); acht neue Zellen in den drei Skills; Praeparationen `UEB-33`
+  (Freigabe im Messbaum) und `UEB-34` (Testdaten im System).
+
+**Migrationshinweis fuer Overlays**
+
+- Nichts zu tun, solange kein MCP-Server freigegeben ist. Wer einen freigibt: Overlay Abschnitt 13.2 ausfuellen,
+  `<MCP_FILE>` ohne Zugang anlegen, die Berechtigungsdatei nach Pruefung 101 nachziehen.
+
+**Bekannte Einschraenkungen**
+
+- MCP-Aufrufe erreichen den Schutz-Hook nicht (`K-184`); bis dahin fragt jeder Schreibaufruf den Menschen.
+- `fw-overlay-pflege` fragt die Server nicht ab (`K-183`).
+- `openai-codex` und `kiro`: die Anbindung ist nur aus der Dokumentation beschrieben.
+- Der Pilot steht zwei Zeichen unter dem Budget der stets geladenen Texte (`K-185`).
+
 ## [1.17.0] - 2026-09-27
 
 **Das Mandat und die Reibung des ersten Projekteinsatzes - der Hook, der den Inhalt las, und die Entscheidung, die

@@ -29,8 +29,8 @@ Nur synthetische Daten, erkennbar als solche (zum Beispiel `Testperson-01`, `exa
 ## Externe Quellen und Werkzeuge
 
 - Kein Web-Zugriff, keine Websuche, kein Abruf externer Seiten. Eine Freigabe je Domain gibt es nicht; das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar. Brauchst du eine externe Quelle, nennst du sie und hältst an.
-- MCP-Werkzeuge nur, wenn der Server im Overlay als freigegeben gelistet ist; jede Nutzung wird im Ergebnisbericht genannt.
-- Aus `<ISSUE_TRACKER>` nur Titel, technische Beschreibung und Akzeptanzkriterien verwenden, sofern vom Menschen bereitgestellt; keine Kommentarverläufe, Anhänge oder Kundenkommunikation anfordern.
+- MCP nur mit Server und Werkzeug aus Overlay 13.2, Nutzung im Bericht nennen; lesend höchstens fünf Treffer mit Fundstelle; schreibend nur auf Anweisung, einen Plan erst nach Bestätigung.
+- Aus `<ISSUE_TRACKER>` nur Titel, technische Beschreibung und Akzeptanzkriterien; Kommentarverläufe nur mit Kategoriefreigabe; keine Anhänge oder Kundenkommunikation.
 
 ## Prompt Injection
 

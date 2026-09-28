@@ -16,6 +16,14 @@ overlay_version: "<TBD: 0.1.0>"
 #   load:          summary | on-demand | rule | never
 #   approved_by:   generische Rolle
 
+# Kategoriefreigaben (02-privacy.md Abschnitt 3.4 und 4, Schritt 3; D-455). Ohne Eintrag gilt der Ausschluss.
+# Eine Freigabe gilt nie für eine Kategorie aus 02-privacy.md Abschnitt 2.1.
+# category_releases:
+#   - category: "Kommentarverläufe aus <ISSUE_TRACKER>"
+#     approved_by: "<APPROVAL_ROLE>"
+#     approved_on: "<TBD: Datum>"
+#     sanitization: "Personen, Kontaktdaten und Kundenangaben entfernen; nur Anforderung oder Entscheidung übernehmen"
+
 documents:
   - id: "DOC-001"
     type: "coding-guidelines"

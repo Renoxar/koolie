@@ -73,6 +73,8 @@
     "skill": []
   },
   "_permission_tools_note": "Die Regeltypen des Clients (QU-2): Shell, Read, Write, WebFetch, Mcp. search ist leer: Der Client kennt keinen Suchtyp, und die Kernquelle gibt Suchen nur frei - gemessen am 2026-09-26: Das Suchwerkzeug wertet ein Read-Verbot NICHT aus (der Koeder aus secrets/ kam heraus); diesen Kanal haelt allein der Schutz-Hook (H2). skill ist leer: Ein Aufruf eines Skills ist bei diesem Client kein Werkzeug mit Berechtigung - ein Skill ist eine Datei, die gelesen wird. Beide Verben stehen in der Kernquelle nur unter allow; ihr Weglassen faellt auf den strengeren Standard zurueck. Write deckt das Loeschwerkzeug mit - gemessen: ein Write-Verbot auf keep.txt wies das Loeschen ab.",
+  "mcp_permission_rule": {"werkzeug": "Mcp({server}:{werkzeug})", "pauschal": null, "rueckfrage_schlaegt_freigabe": false},
+  "_mcp_permission_rule_note": "Die Regelform eines MCP-Werkzeugs in .cursor/cli.json (Pruefung 101, D-459). Gemessen am 2026-09-28 mit cursor-agent 2026.09.26 (Stichprobe zu 1.18.0): Mcp(<server>:<werkzeug>) in allow laesst ein Lesewerkzeug durch; ein Schreibwerkzeug ohne allow wird im Druckmodus abgewiesen (\"User rejected\"). Es gibt keine pauschale Rueckfrage in der Datei - der Client fragt von sich aus. Im Druckmodus laedt ein Server der Projektdatei nur mit --approve-mcps; agent mcp enable allein genuegte nicht.",
   "permission_tools_bare": [],
   "permission_path_prefix": "",
   "permission_exec_match": "prefix",

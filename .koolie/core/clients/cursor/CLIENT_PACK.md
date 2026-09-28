@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CU` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Cursor – Kommandozeile (`cursor-agent`, auch `agent`) und IDE; die Agenten in der Cloud des Anbieters fallen unter D-10 und nicht unter dieses Pack |
@@ -33,7 +33,7 @@
 | Ausschlussdatei | `.cursorignore` – Syntax von `.gitignore`, erzeugt aus den Leseverboten der Kernquelle | **gemessen:** sperrt Lesen **und Suchen**; die Berechtigungsdatei sperrt nur das Lesen (D-443) |
 | Hook-Konfiguration | `.cursor/hooks.json`, Form `{version: 1, hooks: {ereignis: [...]}}` | **gemessen:** lädt auch im Betrieb ohne Rückfragen, in einem vertrauten Arbeitsbereich |
 | Planartefakt | **keines im Repositorium** – der Planmodus des Clients legt seinen Plan außerhalb ab | **gemessen:** `createPlan` mit leerer Ablageadresse; Träger des Plans ist die Planvorlage des Kerns (M4) |
-| MCP-Konfiguration | `.cursor/mcp.json` | `[DOK]` **`QU-2`**; das Framework liefert keinen Server aus |
+| MCP-Konfiguration | `.cursor/mcp.json` | `[DOK]` **`QU-2`**; das Framework liefert keinen Server aus. **Gemessen am 2026-09-28** (Stichprobe zu `1.18.0`, D-462): Ein Server mit `"url"` und `"headers"` lädt, die Kopfzeile `"Basic ${env:VARIABLE}"` wird aus der Umgebung gefüllt – die Datei trägt keinen Zugang. Ein Server der Projektdatei braucht eine Freigabe (`agent mcp list`: *needs approval*); `agent mcp enable` meldet sie, im Druckmodus stand der Server trotzdem nicht bereit – erst mit `--approve-mcps`, das **alle** Server freigibt |
 | Projektverzeichnis im Hook-Befehl | **keine Variable – das Arbeitsverzeichnis** | **gemessen:** der Hook-Prozess steht in der Projektwurzel. `CURSOR_PROJECT_DIR` steht in der Umgebung, aber unter Windows läuft das Kommando durch eine PowerShell-Hülle |
 | Nutzerlokale Überschreibung | **kein Mechanismus** | Der Hersteller dokumentiert keine nutzerlokale Wurzel-Anweisung; das Pack liefert keine Beispieldatei aus |
 
@@ -146,7 +146,7 @@ Die mit **Kern** markierten Zeilen entsprechen den Kernzusagen der Kernquelle; P
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| X1 | Keine externe Anbindung ohne Einzelfreigabe | Jeder MCP-Server und jeder Werkzeugaufruf braucht eine Freigabe; das Framework liefert keinen Server aus | `[TECHNISCH]` | `[DOK]` **`QU-8`**; `BELEG OFFEN` (2026-09-26) für die Wirkung – im Messbaum stand kein Server. ⚠️ `--approve-mcps` überspringt die Freigabe |
+| X1 | Keine externe Anbindung ohne Einzelfreigabe | Jeder MCP-Server und jeder Werkzeugaufruf braucht eine Freigabe; das Framework liefert keinen Server aus | `[TECHNISCH]` | `[DOK]` **`QU-8`**; **gemessen am 2026-09-28** (D-459, D-462): `Mcp(<server>:<werkzeug>)` in `allow` lässt ein Lesewerkzeug durch; ein Schreibwerkzeug ohne `allow` wird im Druckmodus abgewiesen (*User rejected*) – die Regelschicht hatte es im ersten Versuch schon verweigert, der zweite mit Freigabe im Overlay erreichte die technische Schranke. ⚠️ `--approve-mcps` überspringt die Freigabe des **Servers**, nicht die des Werkzeugs |
 | X2 | Art und Ort der Codebasis-Indexierung bekannt | Kein Mechanismus zur Steuerung bekannt | `[NICHT ABBILDBAR]` | `BELEG OFFEN (dauerhaft)` – von außen nicht zu beobachten (`K-20`, D-292). **Kein Ersatz durch das Framework.** Dokumentiert ist der Privacy Mode (`QU-7`); auf dem Messkonto war er eingeschaltet |
 
 ## 3. Zusammenfassung der Durchsetzungstiefe
@@ -222,3 +222,4 @@ Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs gegen di
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-26 | **Angelegt (`CR-2026-155`, D-440 bis D-443).** Das fünfte Client Pack, gebaut mit Zugang zum Client. **Die Berechtigungsdatei trägt nur `permissions`**, und **jedes Pfadmuster steht in zwei Schreibweisen**, weil der Client es mit dem absoluten Pfad vergleicht (D-440); **der Schutz-Hook antwortet auch beim Durchlass und liest BOM-fest** (D-441); **das Suchwerkzeug beachtet kein Leseverbot** – `.cursorignore` trägt es (D-443). **Prüfung 97** neu | `<FRAMEWORK_OWNER>` |
+| 0.2.0 | 2026-09-28 | **Die MCP-Anbindung ist als Stichprobe gemessen** (`CR-2026-157`, D-459, D-462, D-463). Zeile MCP-Konfiguration: `${env:VARIABLE}` in der Kopfzeile, im Druckmodus nur mit `--approve-mcps`. Zeile X1: Freigabe je Werkzeug trägt, ein Schreibwerkzeug ohne `allow` wird abgewiesen. 🔴 Dabei gefunden: Die Hook-Eingabe kam mit **zwei** BOM; der Schutz-Hook entfernte eines und sperrte fail-closed jede Operation – berichtigt für alle Packs (D-463). Das Manifest führt `mcp_permission_rule` (Prüfung 101) | `<FRAMEWORK_OWNER>` |

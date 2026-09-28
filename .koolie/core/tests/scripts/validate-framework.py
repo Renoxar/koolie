@@ -771,7 +771,18 @@ Prüft (statisch, ohne laufenden KI-Client):
      nur 'user', und die Wurzelanweisung trug dem Client zugleich auf, sie aufzurufen
      (Befund A1 aus dem ersten Projekteinsatz). GRENZE: die Richtung model -> lesend;
      ob ein rein lesender Skill 'model' tragen soll, entscheidet der Skill
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 100 laeuft als eigenes
+101. Die MCP-Freigaben (D-459): Die Kernquelle der Berechtigungen gibt kein MCP-Werkzeug
+     frei. In einer Installation, deren Pack die Regelform seiner MCP-Werkzeuge kennt
+     (mcp_permission_rule), steht in allow nur ein Lesewerkzeug, das Overlay Abschnitt
+     13.2 einem Server mit dem Zweck 'lesen fuer Planung' zuweist - kein
+     Schreibwerkzeug, kein Muster fuer einen ganzen Server. Mit --strict-overlay
+     zusaetzlich: jedes freigegebene Lesewerkzeug steht in allow, und bei einem Client,
+     bei dem eine Rueckfrage die Freigabe schlaegt, steht die pauschale MCP-Rueckfrage
+     nicht mehr im ask-Korb. ANLASS, GEMESSEN: Mit 'mcp__*' im ask-Korb wies claude-code
+     das einzeln freigegebene Lesewerkzeug ab (Vorpruefung zu 1.18.0, V5). GRENZE: Ein
+     Pack ohne erhobene Regelform wird nicht abgeglichen; ob die Werkzeugliste des
+     Overlays zum Server passt, sieht die Pruefung nicht
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 101 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -2227,8 +2238,17 @@ def check_versions(root: str, man: dict) -> None:
     werte = {wert for _, wert in angaben}
     if len(werte) > 1:
         stellen = "; ".join(f"{rel}: {wert}" for rel, wert in angaben)
-        err(f"Overlay-Version widersprüchlich angegeben ({stellen}). Steckbrief, Manifest "
-            f"und Laufzeitfassung müssen denselben Wert nennen (RELEASE_PROCESS 8)")
+        if gueltiges_mandat(root):
+            # D-461 (K-182 (3)): Waehrend eines Mandats traegt der Client die Version in den
+            # Steckbrief ein; Manifest und Laufzeitfassung zieht erst der Abgleich nach,
+            # den 'mandat.py beenden' ausloest. Der Zwischenstand ist gewollt.
+            warn(f"Overlay-Version während eines Mandats noch nicht abgeglichen ({stellen}). "
+                 f"Das ist der gewollte Zwischenstand einer Eintragung in M6; die Person "
+                 f"schließt ihn im eigenen Terminal ab: python {KERN}/mandat.py beenden "
+                 f"(D-461)")
+        else:
+            err(f"Overlay-Version widersprüchlich angegeben ({stellen}). Steckbrief, Manifest "
+                f"und Laufzeitfassung müssen denselben Wert nennen (RELEASE_PROCESS 8)")
     for rel, wert in angaben:
         if not SEMVER_RE.match(wert):
             err(f"{rel}: Overlay-Version '{wert}' ist kein Semantic Versioning "
@@ -11199,6 +11219,139 @@ def check_modellaufruf_nur_lesend(root: str, man: dict) -> None:
                     f"08-skill-conventions.md nur einem rein lesenden Skill (D-451)")
 
 
+# --- Das Mandat, aus Sicht des Validators (D-461) ------------------------------------
+# Dieselben Bedingungen wie im Schutz-Hook und in mandat.py, soweit der Validator sie
+# braucht: die Datei im Git-Verzeichnis, ein Ende in der Zukunft, dasselbe Projekt.
+# Pruefung 99 haelt Dateiname und Hoechstdauer in Hook und mandat.py gleich; hier steht
+# nur der Dateiname, weil der Validator ein Mandat nie ausweitet, sondern nur eine
+# Meldung abschwaecht.
+MANDAT_DATEINAME = "koolie-mandat.json"
+
+
+def gueltiges_mandat(root: str) -> bool:
+    git = os.path.join(root, ".git")
+    if os.path.isfile(git):
+        try:
+            zeile = read(git).strip()
+        except OSError:
+            return False
+        if not zeile.startswith("gitdir:"):
+            return False
+        git = os.path.normpath(os.path.join(root, zeile[len("gitdir:"):].strip()))
+    pfad = os.path.join(git, MANDAT_DATEINAME)
+    if not os.path.isfile(pfad):
+        return False
+    try:
+        daten = json.loads(read(pfad))
+        import datetime as _dt
+        bis = _dt.datetime.strptime(str(daten["bis"]), "%Y-%m-%dT%H:%M:%SZ")
+    except (ValueError, KeyError, TypeError, OSError):
+        return False
+    jetzt = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None)
+    projekt = os.path.normcase(os.path.realpath(str(daten.get("projekt", ""))))
+    return bis > jetzt and projekt == os.path.normcase(os.path.realpath(root))
+
+
+# --- Pruefung 101: die MCP-Freigaben (CR-2026-157, D-459) ------------------------------
+P101_ABSCHNITT = "### 13.2 MCP-Server"
+P101_NAME_RE = re.compile(r"`([A-Za-z0-9_.-]+)`")
+P101_KERNQUELLE = "framework/runtime/permissions.json"
+
+
+def _p101_freigaben(text: str) -> list:
+    """Die Zeilen der Tabelle in Overlay Abschnitt 13.2 - Server, Zweck, Werkzeuge."""
+    if P101_ABSCHNITT not in text:
+        return []
+    teil = text.replace("\r\n", "\n").split(P101_ABSCHNITT, 1)[1]
+    teil = re.split(r"\n#{1,3} ", teil, maxsplit=1)[0]
+    zeilen = []
+    for z in teil.split("\n"):
+        if not z.strip().startswith("|"):
+            continue
+        zellen = tabellenzellen(z)
+        if len(zellen) < 5 or zellen[0].startswith("Server") or not zellen[0].strip("-: "):
+            continue
+        server = zellen[0].strip().strip("`").strip()
+        if not server or TBD_RE.search(zellen[0]) or server in ("–", "-", "keine"):
+            continue
+        zeilen.append({"server": server, "zweck": zellen[2].lower(),
+                       "lesen": P101_NAME_RE.findall(zellen[3]),
+                       "schreiben": P101_NAME_RE.findall(zellen[4])})
+    return zeilen
+
+
+def check_mcp_freigaben(root: str, man: dict, strikt: bool) -> None:
+    """Pruefung 101 (D-459): MCP-Werkzeuge stehen einzeln und nur lesend in allow."""
+    kq = os.path.join(root, KERN, *P101_KERNQUELLE.split("/"))
+    if os.path.isfile(kq):
+        try:
+            quelle = json.loads(read(kq))
+        except json.JSONDecodeError:
+            quelle = {}
+        for regel in quelle.get("allow") or []:
+            if isinstance(regel, dict) and regel.get("tool") == "mcp":
+                err(f"{KERN}/{P101_KERNQUELLE}: gibt ein MCP-Werkzeug im allow-Korb frei "
+                    f"({json.dumps(regel, ensure_ascii=False)}). Eine MCP-Freigabe gehört dem "
+                    f"Projekt: Sie nennt Server, Zweck und Werkzeuge im Overlay Abschnitt 13.2, "
+                    f"und der Kern gibt nichts vorab frei (02-privacy.md 3.8, D-459)")
+
+    regelform = (man or {}).get("mcp_permission_rule")
+    overlay = os.path.join(root, ".koolie", "project-overlay", "OVERLAY.md")
+    rel = (man or {}).get("permissions_file")
+    if not isinstance(regelform, dict) or not rel or not os.path.isfile(overlay):
+        return
+    pfad = os.path.join(root, *rel.split("/"))
+    if not os.path.isfile(pfad):
+        return
+    try:
+        cfg = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return  # Pruefung 3 meldet das bereits
+    rechte = cfg.get("permissions") if isinstance(cfg, dict) else None
+    if not isinstance(rechte, dict):
+        return
+    allow = [r for r in rechte.get("allow") or [] if isinstance(r, str)]
+    ask = [r for r in rechte.get("ask") or [] if isinstance(r, str)]
+    form = str(regelform.get("werkzeug", ""))
+    praefix = form.split("{server}", 1)[0]
+    if not praefix:
+        return
+    freigaben = _p101_freigaben(read(overlay))
+    lesen = {form.format(server=f["server"], werkzeug=w)
+             for f in freigaben if "lesen" in f["zweck"] for w in f["lesen"]}
+    schreiben = {form.format(server=f["server"], werkzeug=w)
+                 for f in freigaben for w in f["schreiben"]}
+    # Der Serveranteil der Regelform ('mcp__atlassian', 'Mcp(atlassian') - eine Regel, die nur
+    # ihn nennt, gilt fuer jedes Werkzeug des Servers.
+    serverteil = form.split("{werkzeug}", 1)[0]
+    ganze_server = {serverteil.format(server=f["server"]).rstrip("_:(") for f in freigaben}
+    for regel in allow:
+        if not regel.startswith(praefix) or regel in lesen:
+            continue
+        if regel in schreiben:
+            grund = "ein Schreibwerkzeug – es verlangt bei jedem Aufruf die Bestätigung des Menschen"
+        elif "*" in regel or regel.rstrip("_:()") in ganze_server:
+            grund = "ein Muster für mehrere Werkzeuge – es gäbe auch die Schreibwerkzeuge frei"
+        else:
+            grund = "ein Werkzeug, das Overlay Abschnitt 13.2 keinem Server zum Lesen zuweist"
+        err(f"{rel}: „{regel}“ steht in allow – {grund}. In allow stehen nur die "
+            f"Lesewerkzeuge der Freigabe, einzeln; Schreibwerkzeuge gehören einzeln in ask "
+            f"(02-privacy.md 3.8, D-459)")
+    if not strikt:
+        return
+    for regel in sorted(lesen - set(allow)):
+        err(f"{rel}: das freigegebene Lesewerkzeug „{regel}“ fehlt in allow. Overlay "
+            f"Abschnitt 13.2 gibt es zum Lesen frei; ohne die Regel fragt der Client bei "
+            f"jedem Aufruf nach, und ein nicht-interaktiver Lauf wird abgewiesen (D-459)")
+    pauschal = regelform.get("pauschal")
+    if lesen and pauschal in ask and regelform.get("rueckfrage_schlaegt_freigabe"):
+        err(f"{rel}: „{pauschal}“ steht im ask-Korb, während Overlay Abschnitt 13.2 Werkzeuge "
+            f"zum Lesen freigibt. Bei diesem Client schlägt die Rückfrage die Freigabe – "
+            f"auch das einzeln freigegebene Lesewerkzeug wird abgewiesen (gemessen, D-459). "
+            f"Die Pauschale durch die Einzelregeln ersetzen: Lesewerkzeuge in allow, "
+            f"Schreibwerkzeuge in ask")
+
+
 def main() -> int:
     # 🔴 DER BERICHTSWEG IN BEIDEN KODIERUNGSUMGEBUNGEN (K-168, Bauform D-223). Mehrere
     # Meldungen tragen Zeichen ausserhalb von cp1252 (⚠️, ➡️, 🔴). Feuerte eine davon in
@@ -11323,6 +11476,7 @@ def main() -> int:
     check_hook_ziel_statt_inhalt(root, man)
     check_mandatsschutz(root, man)
     check_modellaufruf_nur_lesend(root, man)
+    check_mcp_freigaben(root, man, args.strict_overlay)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

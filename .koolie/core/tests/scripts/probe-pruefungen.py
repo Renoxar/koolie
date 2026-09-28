@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 100, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 101, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -2129,6 +2129,15 @@ def sonden_cursor() -> None:
                           "--sperrform", "permission-json")
     melde("GEGENPROBE", "D441c", code == 2 and '"deny"' in aus,
           "Schutz-Hook: .env mit BOM-Eingabe bleibt gesperrt")
+    # D-463: gemessen am 2026-09-28 - die Eingabe kam mit ZWEI BOM an.
+    code, aus = _440_hook(bom + bom + harmlos.encode("utf-8"), "--fail-closed",
+                          "--sperrform", "permission-json")
+    melde("SONDE", "D463", code == 0 and aus == "{}",
+          "Schutz-Hook: Eingabe mit zwei BOM wird gelesen, Durchlass antwortet {}")
+    code, aus = _440_hook(bom + bom + geheim.encode("utf-8"), "--fail-closed",
+                          "--sperrform", "permission-json")
+    melde("GEGENPROBE", "D463a", code == 2 and '"deny"' in aus,
+          "Schutz-Hook: .env mit zwei BOM bleibt gesperrt")
     ordner = json.dumps({"tool_name": "Grep", "tool_input": {"file_path": "secrets"}})
     code, _ = _440_hook(ordner.encode("utf-8"), "--fail-closed")
     melde("SONDE", "D442", code == 2,
@@ -2205,6 +2214,93 @@ sonde("100", "Pruefung 100: ein schreibender Skill traegt den Trigger 'model'",
       M100_MODELL)
 gegenprobe("100", "Pruefung 100: die modellaufrufbaren Skills sind rein lesend", None,
            M100_MODELL)
+
+
+# --- Pruefung 101 und das Mandat im Validator (CR-2026-157, D-459, D-461) -------------
+#
+# Die Vorpruefung zu 1.18.0 hat gemessen, dass claude-code eine Rueckfrage vor eine
+# Freigabe stellt: Mit mcp__* im ask-Korb lief auch das einzeln freigegebene Lesewerkzeug
+# nicht. Pruefung 101 haelt die Kernquelle frei von MCP-Freigaben und gleicht in einer
+# Installation Overlay Abschnitt 13.2 mit der Berechtigungsdatei ab. Das Buendel misst an
+# einer echten claude-code-Installation, weil nur dieses Pack die Regelform fuehrt.
+M101_KERN = "gibt ein MCP-Werkzeug im allow-Korb frei"
+M101_SCHREIB = "ein Schreibwerkzeug – es verlangt"
+M101_MUSTER = "ein Muster für mehrere Werkzeuge"
+M101_FEHLT = "fehlt in allow"
+M101_PAUSCHAL = "steht im ask-Korb, während Overlay Abschnitt 13.2"
+M461_WARN = "während eines Mandats noch nicht abgeglichen"
+M461_FEHLER = "Overlay-Version widersprüchlich angegeben"
+
+sonde("101", "Pruefung 101: die Kernquelle gibt ein MCP-Werkzeug vorab frei",
+      lambda r: ersetze(P(r, P99_RECHTE), (
+          '    { "tool": "read",   "pattern": "**" },',
+          '    { "tool": "read",   "pattern": "**" }, { "tool": "mcp", "pattern": "*" },')),
+      M101_KERN)
+gegenprobe("101", "Pruefung 101: die ausgelieferte Kernquelle gibt kein MCP-Werkzeug frei", None,
+           M101_KERN)
+
+P101_ZEILE_ALT = "| `<TBD: keine>` | – | – | – | – | – |"
+P101_ZEILE = ("| `atlassian` | `<ISSUE_TRACKER>` | lesen für Planung, schreiben für Ablage | "
+              "`getJiraIssue`, `searchJiraIssuesUsingJql` | `createJiraIssue` | Projekt KOOL |")
+
+
+def _p101_rechte(root: str, allow_dazu=(), ask_ohne=(), ask_dazu=()) -> None:
+    pfad = os.path.join(root, ".claude", "settings.json")
+    daten = json.loads(lies(pfad))
+    rechte = daten["permissions"]
+    rechte["allow"] = list(rechte["allow"]) + list(allow_dazu)
+    rechte["ask"] = [r for r in rechte["ask"] if r not in ask_ohne] + list(ask_dazu)
+    schreib(pfad, json.dumps(daten, ensure_ascii=False, indent=2) + "\n")
+
+
+def sonden_mcp() -> None:
+    """Pruefung 101 und D-461 an einer echten claude-code-Installation."""
+    ziel = installation("claude-code")
+    try:
+        ov = os.path.join(ziel, ".koolie", "project-overlay", "OVERLAY.md")
+        ersetze(ov, (P101_ZEILE_ALT, P101_ZEILE))
+        rechte = os.path.join(ziel, ".claude", "settings.json")
+        grund = lies(rechte)
+        lesen = ["mcp__atlassian__getJiraIssue", "mcp__atlassian__searchJiraIssuesUsingJql"]
+
+        _p101_rechte(ziel, allow_dazu=["mcp__atlassian__createJiraIssue"])
+        melde("SONDE", "D459", M101_SCHREIB in validator_ausgabe(ziel),
+              "Ein Schreibwerkzeug der Freigabe steht in allow")
+        schreib(rechte, grund)
+        _p101_rechte(ziel, allow_dazu=["mcp__atlassian__*"])
+        melde("SONDE", "D459a", M101_MUSTER in validator_ausgabe(ziel),
+              "Ein Muster fuer den ganzen Server steht in allow")
+        schreib(rechte, grund)
+        melde("SONDE", "D459b", M101_FEHLT in strict_ausgabe(ziel),
+              "Mit strict-overlay: ein freigegebenes Lesewerkzeug fehlt in allow")
+        _p101_rechte(ziel, allow_dazu=lesen)
+        melde("SONDE", "D459c", M101_PAUSCHAL in strict_ausgabe(ziel),
+              "Mit strict-overlay: die pauschale MCP-Rueckfrage steht noch im ask-Korb")
+        schreib(rechte, grund)
+        _p101_rechte(ziel, allow_dazu=lesen, ask_ohne=["mcp__*"],
+                     ask_dazu=["mcp__atlassian__createJiraIssue"])
+        text = strict_ausgabe(ziel)
+        melde("GEGENPROBE", "D459d", not any(m in text for m in (
+            M101_SCHREIB, M101_MUSTER, M101_FEHLT, M101_PAUSCHAL)),
+              "Lesewerkzeuge einzeln in allow, Schreibwerkzeug in ask, keine Pauschale")
+
+        # D-461: die Overlay-Version waehrend eines Mandats
+        ersetze(ov, ("| Overlay-Version | `<TBD: 0.1.0>` |", "| Overlay-Version | `0.4.2` |"))
+        mf = os.path.join(ziel, ".koolie", "project-overlay", "overlay-manifest.yaml")
+        ersetze(mf, ('overlay_version: "<TBD: 0.1.0>"', 'overlay_version: "0.4.1"'))
+        os.makedirs(os.path.join(ziel, ".git"))
+        text = validator_ausgabe(ziel)
+        melde("SONDE", "D461", M461_FEHLER in text and M461_WARN not in text,
+              "Ohne Mandat bleibt eine widerspruechliche Overlay-Version ein Fehler")
+        _mandat_setzen(ziel, ["overlay"])
+        text = validator_ausgabe(ziel)
+        melde("GEGENPROBE", "D461a", M461_WARN in text and M461_FEHLER not in text,
+              "Waehrend eines Mandats ist sie eine Warnung mit dem Befehl zum Abschluss")
+        _mandat_setzen(ziel, ["overlay"], minuten=-5)
+        melde("SONDE", "D461b", M461_FEHLER in validator_ausgabe(ziel),
+              "Ein abgelaufenes Mandat schwaecht die Meldung nicht ab")
+    finally:
+        aufraeumen(os.path.dirname(ziel))
 
 
 def _mandat_hook(root: str, ereignis: dict) -> tuple:
@@ -2286,6 +2382,9 @@ def sonden_mandat() -> None:
 buendel(sonden_mandat,
         "Das Mandat fuer M6 an einer echten Installation: Sperre mit Hinweis, Umfang, "
         "Ablauf, Hoechstdauer, fremdes Projekt und der Abgleich der Laufzeitfassung")
+buendel(sonden_mcp,
+        "Pruefung 101 und das Mandat im Validator an einer echten claude-code-Installation: "
+        "Schreibwerkzeug, Servermuster, fehlende Lesewerkzeuge, Pauschale und Overlay-Version")
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
