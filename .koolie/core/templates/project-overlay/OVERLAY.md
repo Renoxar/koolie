@@ -179,7 +179,7 @@ Zusätzlich zur projektweiten Definition of Done (`<TBD: Pfad>`) gilt `.koolie/c
 | Inhalte aus `<DOCUMENTATION_PLATFORM>` | `<TBD: K1 nach Freigabe je Seite / K2>` | `<TBD>` | – |
 | Logauszüge, Stacktraces | K2 | je Aufgabe | bereinigt (keine personenbezogenen Daten, Hostnamen, Kennungen) |
 | Testdaten | K1 nur synthetisch | pauschal für synthetische Daten | Echtdaten nie |
-| Freigegebene MCP-Server | – | `<TBD: Liste je Server mit Zweck – „lesen für Planung“ und/oder „schreiben für Ablage“ – und Berechtigungsumfang, oder „keine">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask; ein Server ohne Zweck ist nicht freigegeben (`02-privacy.md` 3.8, D-455) |
+| Freigegebene MCP-Server | – | `<TBD: „keine" oder „siehe Abschnitt 13.2">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask; ein Server ohne Zweck und Werkzeugliste ist nicht freigegeben (`02-privacy.md` 3.8, D-455, D-459) |
 | Kommentarverläufe aus `<ISSUE_TRACKER>` | K2 | **„nicht freigegeben“** – oder Kategoriefreigabe im Overlay-Manifest | nur bereinigt und nur, soweit sie eine Anforderung oder Entscheidung tragen (`02-privacy.md` 3.4, D-455) |
 | Freigegebene externe Domains (Fetch) | K0 | **„keine"** | **Eine Freigabe je Domain ist nicht vorgesehen** (D-59): `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar. Das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar |
 | Cloud-Sessions / CLI / ACP-Fremdagenten | – | `<TBD: nicht freigegeben / freigegeben mit Auflagen>` | Standard: nicht freigegeben (D-10) |
@@ -195,7 +195,20 @@ Wo Änderungsanträge, Pläne, Freigaben und Architekturentscheidungen des Proje
 | Architekturentscheidungen | `Repositorium` (Standard) – oder `<DOCUMENTATION_PLATFORM>` | `.koolie/project-overlay/documents/architecture/decisions/` | `ADR-<JJJJ-MM-TT>-<kurzname>.md` – eine Datei je Entscheidung |
 | Ergebnisberichte | Merge Request | – | – |
 
-Ausfüllhinweis: Wer ein zentrales System einträgt, gibt dessen MCP-Server in Abschnitt 13 mit dem Zweck *schreiben für Ablage* frei. Die Architekturübersicht in `documents/architecture/` fasst den gültigen Stand zusammen; sie wird bei einem Release nachgezogen, nicht bei jeder Entscheidung.
+Ausfüllhinweis: Wer ein zentrales System einträgt, gibt dessen MCP-Server in Abschnitt 13.2 mit dem Zweck *schreiben für Ablage* frei. Die Architekturübersicht in `documents/architecture/` fasst den gültigen Stand zusammen; sie wird bei einem Release nachgezogen, nicht bei jeder Entscheidung.
+
+### 13.2 MCP-Server: Zweck und Werkzeuge
+
+Eine Zeile je freigegebenem Server (D-457, D-459). **Lesewerkzeuge** laufen ohne Rückfrage und stehen in `<PERMISSIONS_FILE>` einzeln auf `allow`; **Schreibwerkzeuge** verlangen bei jedem Aufruf die Bestätigung des Menschen und stehen einzeln auf `ask` – nie auf `allow`, auch nicht über ein Muster für den ganzen Server. Ein Werkzeug, das hier nicht steht, ruft der KI-Client nicht auf. Die Namen sind die des Servers (seine Werkzeugliste), ohne den Vorsatz des Clients. Prüfung 101 gleicht diese Tabelle mit `<PERMISSIONS_FILE>` ab; `python .koolie/core/mandat.py abgleichen` nennt fehlende Regeln, schreibt sie aber nicht (V6).
+
+| Server (Name in `<MCP_FILE>`) | System | Zweck | Lesewerkzeuge | Schreibwerkzeuge | Ablageziel |
+|---|---|---|---|---|---|
+| `<TBD: keine>` | – | – | – | – | – |
+
+- Höchstzahl der Treffer je Suche: `5` (Standard, `02-privacy.md` 3.8)
+- Anmeldung: `<TBD: interaktiv (OAuth) je Arbeitsplatz / Token aus einer Umgebungsvariablen>` – Zugangsdaten stehen nie in einer versionierten Datei
+
+Ausfüllhinweis: *System* ist `<ISSUE_TRACKER>` oder `<DOCUMENTATION_PLATFORM>`. *Zweck* ist *lesen für Planung*, *schreiben für Ablage* oder beides. *Ablageziel* nennt für *schreiben für Ablage* den Ort im System (etwa Projektschlüssel und Vorgangstyp, Bereich und Elternseite). Beispiel für einen Server zum Lesen: `getJiraIssue, searchJiraIssuesUsingJql` als Lesewerkzeuge, keine Schreibwerkzeuge. **Bei Clients, bei denen eine Rückfrageregel eine Freigabe schlägt, ersetzt eine Freigabe zum Lesen die pauschale MCP-Rückfrage** der Berechtigungsdatei durch diese Einzelregeln; welche Clients das sind, sagt Abschnitt 1 ihres Client Packs.
 
 ## 14. Ausgeschlossene Daten (projektspezifische Ergänzung zu K3)
 

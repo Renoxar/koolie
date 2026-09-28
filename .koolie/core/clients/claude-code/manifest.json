@@ -189,6 +189,8 @@
     "Skill"
   ],
   "_permission_name_tools_note": "Werkzeuge, deren Regelargument kein Pfad ist, sondern ein Name. Fuer sie haengt die Abbildung weder das Wurzelpraefix (permission_path_prefix) noch das Praefixzeichen (permission_exec_suffix) an, und der Validator laesst sie neben permission_path_tools zu. Gemessen am 2026-09-14 (tests/protocols/2026-09-14-erhebung-skillaufruf.md, D-82): Der Skill-Aufruf ist bei diesem Client ein eigener Werkzeugaufruf mit dem Namen Skill und laeuft ohne allow-Regel in die Rueckfrage; das Argument wird WOERTLICH verglichen - Skill(fw-code-explain) laesst den Aufruf durch (Lauf C1), Skill(fw-*) nicht (Lauf D1), und Skill(fw-plan) weist fw-code-explain ab (Lauf E1, Kontrolllauf). Deshalb zwoelf woertliche Regeln statt eines Musters.",
+  "mcp_permission_rule": {"werkzeug": "mcp__{server}__{werkzeug}", "pauschal": "mcp__*", "rueckfrage_schlaegt_freigabe": true},
+  "_mcp_permission_rule_note": "Die Regelform eines MCP-Werkzeugs in der Berechtigungsdatei (Pruefung 101, D-459). Gemessen am 2026-09-28 mit Clientversion 2.1.283 (Vorpruefung zu 1.18.0): allow auf mcp__<server>__<werkzeug> laesst ein Lesewerkzeug im Druckmodus durch, ein Schreibwerkzeug auf ask wird abgewiesen (V4); steht mcp__* im ask-Korb - so erzeugt die Kernquelle die Datei -, wird auch das einzeln freigegebene Lesewerkzeug abgewiesen (V5). Die Freigabe zum Lesen ersetzt deshalb die Pauschale durch Einzelregeln.",
   "permission_tools_bare": [
     "WebFetch",
     "WebSearch",
