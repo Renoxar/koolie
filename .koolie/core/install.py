@@ -31,6 +31,7 @@ Aufruf (aus dem Wurzelverzeichnis des Projekts):
     python .koolie/core/install.py --overlay              # verfuegbare Overlay-Muster
     python .koolie/core/install.py --update               # Core aktualisieren
     python .koolie/core/install.py --check                # nur pruefen, nichts schreiben
+    python .koolie/core/install.py --probe                # wirkt die Schutzschicht? (K-195)
     python .koolie/core/install.py --dry-run              # zeigen, was passieren wuerde
 
 Aufruf aus dem Framework (Klon oder entpacktes Release-Archiv) in ein anderes Projekt -
@@ -44,7 +45,8 @@ kopiert nur den Kern und installiert danach dort (D-362):
 Die Starter install.cmd (Windows) und install.command (macOS) in der Wurzel des
 Frameworks fragen diese Angaben ab (install_dialog.py) und rufen genau das auf.
 
-Exit-Code 0 = in Ordnung, 1 = Abweichungen gefunden (bei --check) oder Fehler.
+Exit-Code 0 = in Ordnung, 1 = Abweichungen gefunden (bei --check), eine fehlende
+Muss-Kontrolle (bei --probe) oder Fehler.
 """
 from __future__ import annotations
 
@@ -62,6 +64,7 @@ import textwrap
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import clientmap  # noqa: E402  (liegt neben dieser Datei)
+import wirksamkeit  # noqa: E402  (liegt neben dieser Datei; K-195, D-488)
 
 CLIENT_PACKS = os.path.join(HERE, "clients")
 # Der Standard bleibt der Client, fuer den das Framework urspruenglich gebaut wurde.
@@ -1957,6 +1960,12 @@ def main() -> int:
                     help="Nur pruefen: meldet fehlende und abweichende Core-Dateien, schreibt nichts")
     ap.add_argument("--dry-run", action="store_true",
                     help="Zeigen, was geschehen wuerde, ohne zu schreiben")
+    ap.add_argument("--probe", action="store_true",
+                    help="Wirksamkeitsprobe: ruft den Schutz-Hook des Projekts mit synthetischen "
+                         "Ereignissen auf und prueft Konfiguration und Vertrauen, ohne Modell "
+                         "(K-195, D-488). Exit 1, wenn eine Muss-Kontrolle fehlt")
+    ap.add_argument("--ohne-client", action="store_true",
+                    help="Nur mit --probe: die Startmeldung des Clients nicht abrufen")
     ap.add_argument("--client", default=None,
                     help=f"Client Pack, aus dem installiert wird. Ohne Angabe wird das installierte Pack erkannt; bei einer Erstinstallation gilt {DEFAULT_CLIENT}")
     ap.add_argument("--list-clients", action="store_true",
@@ -2007,6 +2016,13 @@ def main() -> int:
         print(".koolie/core/clients/<name>/CLIENT_PACK.md.")
         return 0
 
+    if args.probe and args.target is not None:
+        # Die Probe schreibt nichts und kopiert keinen Kern - --target nennt hier nur das
+        # Projekt. Sie prueft mit den Manifesten DIESES Kerns; gemeint ist der des Projekts.
+        args.root, args.target = args.target, None
+    if args.ohne_client and not args.probe:
+        print("FEHLER: --ohne-client gehoert zu --probe.", file=sys.stderr)
+        return 1
     if args.target is not None:
         return in_projekt_installieren(args)
     if args.lieferumfang is not None:
@@ -2059,6 +2075,17 @@ def main() -> int:
 
     if args.list_skills:
         return list_skills(root, man, args.client)
+
+    if args.probe:
+        if not erkannt:
+            print(f"FEHLER: In {root} ist kein Client Pack installiert - es gibt nichts zu "
+                  f"proben.", file=sys.stderr)
+            return 1
+        quelle = json.loads(clientmap.load_source(HERE, "hooks.json"))
+        verben = [v for e in quelle.get("PreToolUse", []) for v in e.get("on", [])
+                  if any(h.get("enforcing") for h in e.get("hooks", []))]
+        erg = wirksamkeit.probe(root, man, args.client, verben, not args.ohne_client)
+        return wirksamkeit.ausgeben(erg, root, args.client)
 
     mode = "check" if args.check else ("update" if args.update else "install")
 
@@ -2207,11 +2234,17 @@ def main() -> int:
         print("  4. .koolie/core/checklists/10-project-adoption.md abarbeiten.")
         print("  5. python .koolie/core/tests/scripts/validate-framework.py --strict-overlay")
         nachschritte(man.get("post_install_steps", []), 6)
+        print()
+        print("Ob die Schutzschicht im Projekt greift, prueft ohne Modell:")
+        print("  python .koolie/core/install.py --probe      (K-195, D-488)")
     if mode == "update":
         print()
         print(f"Hinweis: {man['permissions_file']} wurde nicht angefasst, weil sie Projektwerte enthaelt.")
         print("Pruefe nach einem Release-Wechsel, ob die Kernregeln noch vollstaendig sind:")
         print("  python .koolie/core/tests/scripts/validate-framework.py --strict-overlay")
+        print("und ob die Schutzschicht greift - auch ein neuer Hook-Matcher erreicht die Datei")
+        print("nicht von selbst (D-488):")
+        print("  python .koolie/core/install.py --probe")
         if man.get("post_update_steps"):
             print()
             print("Fuer dieses Client Pack ausserdem:")

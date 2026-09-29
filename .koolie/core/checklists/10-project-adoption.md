@@ -46,6 +46,11 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
       `python3 .koolie/core/tests/scripts/validate-framework.py --strict-overlay`
       läuft ohne Fehler. Erst danach beginnt der erste Agentenlauf mit
       Schreibrechten.
+- [ ] **MUSS** `python3 .koolie/core/install.py --probe` endet ohne fehlende
+      Muss-Kontrolle: Der Schutz-Hook sperrt im Projekt, die Konfiguration lädt, und
+      der Client vertraut dem Projekt, wo das Pack es verlangt. Die Probe braucht kein
+      Modell (D-488). Warnungen und „unerhoben“ werden gelesen und, wo nötig, im Overlay
+      begründet.
 
 ### Organisation im Projekt
 

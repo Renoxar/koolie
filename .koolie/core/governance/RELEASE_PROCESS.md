@@ -71,6 +71,11 @@ sonst kopiert das Heben den alten Stand in die Projekte (D-331).
 geschrieben werden – sie ist ein lokales Arbeitsdokument, wird nicht versioniert und in
 kein Projekt installiert (D-350).
 
+**Vor diesem Commit steht die Wirksamkeitsprobe** (D-488): `install.py --probe` im
+übernehmenden Projekt. `--update` schreibt die Berechtigungs- und Hook-Datei nie; führt ein
+Release eine neue Werkzeugklasse im Matcher, meldet erst die Probe, dass sie im Projekt
+fehlt (Kontrolle H2).
+
 **Schritt 2 endet mit dem Commit im übernehmenden Projekt** (D-343), weil ein
 Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist, einen Zustand liefert und
 keinen Stand. ⚠️ **Grenze, benannt:** Prüfung 82 misst nur die Behauptung der

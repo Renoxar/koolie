@@ -805,7 +805,18 @@ Prüft (statisch, ohne laufenden KI-Client):
      Spanne der Zeile 'Verbindliche Zielversion', und jede Spanne ist durch eine
      Punktversion belegt. WARNUNG, kein Fehler. GRENZE: ein Praefixvergleich der
      Schreibweise, kein Beleg fuer gleiches Verhalten in der Spanne
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 105 laeuft als eigenes
+106. Das Entscheidungsprotokoll des Schutz-Hooks (D-487, K-192): In einem Wegwerfbaum
+     haelt der Hook eine Sperre und einen Durchlass auf Client-Ereignisse als je eine
+     JSON-Zeile mit genau fuenf Feldern fest, nie Inhalt oder Pfadwert; ein Aufruf ohne
+     hook_event_name steht nicht darin, 'hook_protokoll: aus' schaltet es ab. ANLASS:
+     Sperren hinterliessen keine Spur ausserhalb der Mitschrift. GRENZE: nicht
+     manipulationsgeschuetzt; ob ein Client so aufruft, belegt die Messung
+107. Die Gegenfaelle der Wirksamkeitsprobe (D-488, D-490, K-195): An einem Wegwerfbaum mit
+     der erzeugten Hook-Konfiguration von claude-code meldet wirksamkeit.pruefe_hook
+     nichts, ohne Hook-Skript H3 und H4, mit einem Matcher ohne mcp H2. ANLASS: Die
+     Hook-Vorpruefung des Messapparats bestand seit 1.19.0 auch einen Baum ohne Hook,
+     weil Exit 2 als Sperre galt. GRENZE: der Hook-Teil der Probe an einem Pack
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 107 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -843,8 +854,8 @@ from pruefungen.bestand import (  # noqa: E402
 from pruefungen.hooks import (  # noqa: E402
     check_durchsetzungstiefe, check_hook_ablageort, check_hook_eingabeschema,
     check_hook_fail_closed, check_hook_interpreter, check_hook_skripte_neutral,
-    check_hook_tool_coverage, check_hook_ziel_statt_inhalt, check_hookblock,
-    check_sperrform)
+    check_hook_protokoll, check_hook_tool_coverage, check_hook_ziel_statt_inhalt,
+    check_hookblock, check_sperrform)
 from pruefungen.berechtigungen import (  # noqa: E402
     check_agent_profil_ohne_start, check_agent_startwerkzeug, check_agentenprofil,
     check_berechtigungskoerbe, check_cursor_berechtigungen, check_importsteuerung,
@@ -881,7 +892,8 @@ from pruefungen.dokumente import (  # noqa: E402
 from pruefungen.werkzeuge import (  # noqa: E402
     check_arbeitsplatzpfad, check_bytecode_versioniert, check_erhebungen_sauber,
     check_gitignore_erzeugnisse, check_kernlage, check_lieferumfang,
-    check_praefix_uebererfassung, check_verdrahtung, check_werkzeugnamen)
+    check_praefix_uebererfassung, check_verdrahtung, check_werkzeugnamen,
+    check_wirksamkeitsprobe)
 
 # Die Schnittstelle fuer die Werkzeuge, die dieses Skript als Modul laden:
 #   mandat.py
@@ -1022,6 +1034,8 @@ def main() -> int:
     check_mcp_freigaben(root, man, args.strict_overlay)
     check_verdrahtung(root)
     check_clientversion_in_spanne(root)
+    check_hook_protokoll(root)
+    check_wirksamkeitsprobe(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

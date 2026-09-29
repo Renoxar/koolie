@@ -90,6 +90,8 @@
       "apply_patch"
     ]
   },
+  "hook_tools_unerhoben": ["mcp"],
+  "_hook_tools_unerhoben_note": "Das Verb mcp der Kernquelle (seit 1.20.0, K-184, D-486) ist fuer diesen Client NICHT gemessen: Weder der Werkzeugname eines MCP-Aufrufs in der Hook-Eingabe noch das Ereignis, das ihn traegt, sind an einer Installation aufgezeichnet. Ein Matcher auf eine ungemessene Form waere eine Zusage ohne Mechanismus (D-78); das Verb steht deshalb hier und nicht unter hook_tools_absent. Bis zu einer Messung fragt jeder MCP-Aufruf den Menschen, wo die Berechtigungsschicht es verlangt (D-459); der Inhalt wird vom Schutz-Hook nicht geprueft.",
   "hook_tools_absent": [
     "read",
     "search"

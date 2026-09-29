@@ -124,6 +124,8 @@
       "delete_file"
     ]
   },
+  "hook_tools_unerhoben": ["mcp"],
+  "_hook_tools_unerhoben_note": "Das Verb mcp der Kernquelle (seit 1.20.0, K-184, D-486) ist fuer diesen Client NICHT gemessen: Weder der Werkzeugname eines MCP-Aufrufs in der Hook-Eingabe noch das Ereignis, das ihn traegt, sind an einer Installation aufgezeichnet. Ein Matcher auf eine ungemessene Form waere eine Zusage ohne Mechanismus (D-78); das Verb steht deshalb hier und nicht unter hook_tools_absent. Bis zu einer Messung fragt jeder MCP-Aufruf den Menschen, wo die Berechtigungsschicht es verlangt (D-459); der Inhalt wird vom Schutz-Hook nicht geprueft.",
   "_hook_tools_note": "Die Werkzeugnamen der Engine V3, gemessen am 2026-09-26: Die Sitzung hat ihren Werkzeugbestand genannt (read_file, list_directory, file_search, grep_search, fs_write, str_replace, fs_append, delete_file, execute_pwsh, web_fetch, remote_web_search, invoke_sub_agent und weitere), und der Hook hat fuenf davon mit ihrer Eingabe aufgezeichnet. execute_pwsh ist das Ausfuehrungswerkzeug unter Windows; execute_bash steht daneben als das unter Unix - aus dem Programmcode des Clients, NICHT an einer Installation gemessen. Ein zusaetzlicher Name im Matcher ist eine Verschaerfung.",
   "hook_project_dir_expr": ".",
   "_hook_project_dir_expr_note": "Der Hook-Prozess steht im Projektverzeichnis - gemessen am 2026-09-26: cwd der Hook-Eingabe und Arbeitsverzeichnis des Prozesses sind die Projektwurzel. Eine Variable mit dem Projektpfad fuehrt die Umgebung nicht; sie fuehrt KIRO_SESSION_ID und Angaben zum Client.",

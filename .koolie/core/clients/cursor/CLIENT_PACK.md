@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CU` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.2.1 |
+| Version | 0.3.0 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Cursor – Kommandozeile (`cursor-agent`, auch `agent`) und IDE; die Agenten in der Cloud des Anbieters fallen unter D-10 und nicht unter dieses Pack |
@@ -119,7 +119,7 @@ Die mit **Kern** markierten Zeilen entsprechen den Kernzusagen der Kernquelle; P
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| H1 | Prüfung vor Werkzeugausführung | `preToolUse` in `.cursor/hooks.json`, Matcher als regulärer Ausdruck über die Werkzeugnamen | `[TECHNISCH]` | **gemessen:** Der Hook läuft bei jedem Lese-, Such-, Schreib-, Lösch- und Shell-Aufruf, **auch ohne Rückfragen**. Bedingungen: ein vertrauter Arbeitsbereich und unter Windows ein Start ohne `SHELL` (Abschnitt 1b) |
+| H1 | Prüfung vor Werkzeugausführung | `preToolUse` in `.cursor/hooks.json`, Matcher als regulärer Ausdruck über die Werkzeugnamen, seit `1.20.0` mit `MCP:.*`. Bei einem MCP-Werkzeug prüft der Hook den Inhalt gegen die Secret-Muster und die Pfadfelder gegen die Secret-Pfade (D-486); jede Entscheidung steht in `.git/koolie-hook.jsonl`, ohne Inhalt und Pfad (D-487) | `[TECHNISCH]` | **gemessen:** Der Hook läuft bei jedem Lese-, Such-, Schreib-, Lösch- und Shell-Aufruf, **auch ohne Rückfragen**. Bedingungen: ein vertrauter Arbeitsbereich und unter Windows ein Start ohne `SHELL` (Abschnitt 1b). **MCP gemessen am 2026-09-29** (2026.09.28, `tests/protocols/2026-09-29-schutzschicht.md`): Ein MCP-Aufruf löst `preToolUse` aus, `tool_name` ist `MCP:<werkzeug>`; ohne den Matcher erreichte ein Köderwert den Server, mit ihm sperrte der Hook, und eine harmlose Notiz kam an. Daneben feuert `beforeMCPExecution`, das der Hook nicht braucht |
 | H2 | Prüfung kann **blockieren** | `{"permission": "deny"}` und Exit 2; beim Durchlass `{}`; `failClosed: true` | `[TECHNISCH]` | 🔴 **Gemessen, und der schwerste Befund des Hooks** (D-441): Exit 2 sperrt – aber ohne `failClosed` lässt ein Hook, der scheitert, die Operation **durch**, und mit `failClosed` wertet der Client einen Hook **ohne Ausgabe** als gescheitert: Er sperrte jede Operation, auch das Lesen von `probe.txt`. Mit der Form `permission-json` gesperrt: `.env` über Lese-, Such- und Shell-Werkzeug, `AGENTS.md`, `.koolie/core/`, `.cursor/rules/`, `OVERLAY.md`; durchgelassen: `probe.txt`. **Prüfung 86** misst beide Hälften |
 | H3 | Statusmeldung beim Sitzungsstart | `sessionStart` mit `hook-overlay-status.py` | `[TECHNISCH]` | **gemessen:** Framework-Version und Overlay-Status standen wörtlich im Kontext, und die Sitzung arbeitete danach im Modus M1. Die Ausgabe in der Form von Claude Code (`hookSpecificOutput`) übersetzt der Client |
 | H4 | Eingabeschema und Pfadidentität des Schutz-Hooks | Ereignisprüfung, Pfadfeld `file_path`, BOM-feste Eingabe, alle Muster ohne Rücksicht auf Groß-/Kleinschreibung; `hook_fail_closed` steht auf `true`. **Grenze:** Ein Hook prüft **vor** dem Zugriff (D-397) | `[TECHNISCH]` für die Musterprüfung, **mit der Zeitlücke** | **gemessen:** das Schema von `preToolUse` für fünf Werkzeuge. 🔴 **Die Eingabe beginnt unter Windows mit einem UTF-8-BOM** – der Hook scheiterte daran, bis er sie als UTF-8 mit BOM las (D-441). ⚠️ Das Dateinamenwerkzeug `Glob` löst keinen Hook aus; es liefert Namen, keine Inhalte |
@@ -217,6 +217,8 @@ Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs gegen di
 
 **Eine Auskunft ist keine Schranke**, und ein **Abwesenheitsbeleg altert**. Prüfung 19 prüft die Anwesenheit dieser Auskunft, nicht ihre Richtigkeit.
 
+**Das Entscheidungsprotokoll des Schutz-Hooks ist kein Nachweis gegen den Agenten** (`K-200`, D-487): Es liegt unter `.git/`, der Agent kann es über die Shell ändern, und eine Eingabe, die der Hook nicht lesen kann, hinterlässt keine Zeile.
+
 ## 8. Änderungsverlauf
 
 | Version | Datum | Änderung | Autor (Rolle) |
@@ -224,3 +226,4 @@ Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs gegen di
 | 0.1.0 | 2026-09-26 | **Angelegt (`CR-2026-155`, D-440 bis D-443).** Das fünfte Client Pack, gebaut mit Zugang zum Client. **Die Berechtigungsdatei trägt nur `permissions`**, und **jedes Pfadmuster steht in zwei Schreibweisen**, weil der Client es mit dem absoluten Pfad vergleicht (D-440); **der Schutz-Hook antwortet auch beim Durchlass und liest BOM-fest** (D-441); **das Suchwerkzeug beachtet kein Leseverbot** – `.cursorignore` trägt es (D-443). **Prüfung 97** neu | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-09-28 | **Die MCP-Anbindung ist als Stichprobe gemessen** (`CR-2026-157`, D-459, D-462, D-463). Zeile MCP-Konfiguration: `${env:VARIABLE}` in der Kopfzeile, im Druckmodus nur mit `--approve-mcps`. Zeile X1: Freigabe je Werkzeug trägt, ein Schreibwerkzeug ohne `allow` wird abgewiesen. 🔴 Dabei gefunden: Die Hook-Eingabe kam mit **zwei** BOM; der Schutz-Hook entfernte eines und sperrte fail-closed jede Operation – berichtigt für alle Packs (D-463). Das Manifest führt `mcp_permission_rule` (Prüfung 101) | `<FRAMEWORK_OWNER>` |
 | 0.2.1 | 2026-09-29 | Zeile B4 folgt dem Erzeugnis: Die Berechtigungsdatei sperrt das Overlay seit `1.17.0` nicht mehr, das tut allein der Schutz-Hook (D-448); die Zeile nannte die alte Sperre weiter (`CR-2026-158`, D-468) | `<FRAMEWORK_OWNER>` |
+| 0.3.0 | 2026-09-29 | **MCP-Aufrufe erreichen den Schutz-Hook** (`CR-2026-162`, D-486, D-487, `K-184`, `K-192`). Manifest: `hook_tools.mcp` mit `MCP:.*` und `hook_mcp_prefixes`. Zeile H1: MCP über `preToolUse`, gemessen mit einem Köderserver, und das Entscheidungsprotokoll; Abschnitt 7.3: seine Grenze (`K-200`) | `<FRAMEWORK_OWNER>` |
