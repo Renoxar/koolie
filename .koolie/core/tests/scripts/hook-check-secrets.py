@@ -67,6 +67,23 @@ SEIT 1.17.0 (CR-2026-156) ZWEI AENDERUNGEN AM SCHREIBWEG:
 - Jede Sperre nennt in vier Zeilen, was gesperrt ist, warum, was der Mensch tun kann
   und was daraus folgt (Blockade-Hinweis, D-450).
 
+SEIT 1.20.0 (CR-2026-162) ZWEI ERWEITERUNGEN:
+- MCP-WERKZEUGE (K-184, D-486). Ein MCP-Aufruf lief an allen fuenf Matchern vorbei, sein
+  Inhalt verliess das Haus ungeprueft. Er traegt jetzt das Verb 'mcp', erkannt am
+  Namenspraefix aus hook_mcp_prefixes der Manifeste (die Namen selbst waehlt der Server).
+  Geprueft werden der Inhalt gegen die Secret-Muster und die Pfadfelder gegen die
+  Secret-Pfadmuster - ein Dateisystem-Server liest sonst .env. Die Struktur- und
+  Kernpfade gelten NICHT: Eine Doku-Seite, die .claude/ oder den Kern nennt, schreibt
+  nicht dorthin. Grenze: Ein MCP-Server, der selbst lokal schreibt, ist ueber die
+  Strukturmuster nicht gesperrt; Schreibwerkzeuge stehen nie auf allow (D-459).
+- DAS ENTSCHEIDUNGSPROTOKOLL (K-192, D-487). Jede Entscheidung auf ein Ereignis eines
+  Clients (erkennbar an hook_event_name) wird als eine JSON-Zeile in
+  <git-verzeichnis>/koolie-hook.jsonl festgehalten: Zeit, Werkzeug, Verb, Ergebnis und
+  die erste Zeile des Grundes. NIE der Inhalt und nie ein Pfadwert - der Grund nennt
+  eine Kategorie (D-39). Abschalten: 'hook_protokoll: aus' im overlay-manifest.yaml.
+  Ohne Git-Verzeichnis kein Protokoll (wie beim Mandat). Ein Fehler beim Schreiben
+  aendert keine Entscheidung. Grenze: Das Protokoll ist nicht manipulationsgeschuetzt.
+
 Das Skript gibt gefundene Secrets niemals aus; es nennt nur die Musterkategorie. Dasselbe
 gilt fuer einen unpruefbaren Pfadwert: Genannt wird die Position, nicht der Wert (D-39).
 Alle Muster sind generisch; sie enthalten keine realen Werte.
@@ -239,6 +256,11 @@ BASIS_READ_TOOLS = ("read",)
 # konsultiert. Der Hook ist fuer diesen Kanal die einzige technische Schranke
 # (CR-2026-047 E3, D-47).
 BASIS_SEARCH_TOOLS = ("search",)
+# MCP-Werkzeuge haben keine festen Namen: Der Server waehlt sie, der Client stellt ein
+# Praefix voran (claude-code: mcp__<server>__<werkzeug>). Erkannt wird deshalb am
+# Praefix, das jedes Pack in hook_mcp_prefixes fuehrt (K-184, D-486). Die Basisliste ist
+# leer: Ein Praefix, das kein Pack gemessen hat, waere eine Zusage ohne Mechanismus.
+BASIS_MCP_PREFIXES = ()
 
 # Die Felder von tool_input, die einen Pfad tragen. Sie entscheiden, welcher Wert
 # zusaetzlich AUFGELOEST und dann noch einmal gegen die Muster gehalten wird - das ist
@@ -264,10 +286,12 @@ def _aus_manifesten() -> tuple:
     lesen = set(BASIS_READ_TOOLS)
     suchen = set(BASIS_SEARCH_TOOLS)
     pfadfelder = set(BASIS_PATH_FIELDS)
+    praefixe = set(BASIS_MCP_PREFIXES)
 
     def fertig():
         return (tuple(sorted(schreiben)), tuple(sorted(ausfuehren)),
-                tuple(sorted(lesen)), tuple(sorted(suchen)), frozenset(pfadfelder))
+                tuple(sorted(lesen)), tuple(sorted(suchen)), frozenset(pfadfelder),
+                tuple(sorted(praefixe)))
 
     kern = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     packs = os.path.join(kern, "clients")
@@ -293,10 +317,14 @@ def _aus_manifesten() -> tuple:
         for feld in daten.get("hook_path_fields") or []:
             if isinstance(feld, str) and feld.strip():
                 pfadfelder.add(feld.strip().lower())
+        for praefix in daten.get("hook_mcp_prefixes") or []:
+            if isinstance(praefix, str) and praefix.strip():
+                praefixe.add(praefix.strip().lower())
     return fertig()
 
 
-WRITE_TOOLS, EXEC_TOOLS, READ_TOOLS, SEARCH_TOOLS, PATH_FIELDS = _aus_manifesten()
+(WRITE_TOOLS, EXEC_TOOLS, READ_TOOLS, SEARCH_TOOLS, PATH_FIELDS,
+ MCP_PREFIXES) = _aus_manifesten()
 
 # Ein Shell-Befehl ist keine Pfadangabe: In "cat .env" steht der Pfad mitten im String,
 # und die Pfadmuster verlangen einen Zeilenanfang oder ein Trennzeichen davor. Fuer
@@ -547,8 +575,67 @@ def fail_closed() -> bool:
 SPERRFORMEN = ("decision-block", "hook-specific-output", "stderr-grund", "permission-json")
 
 
-def durchlassen() -> None:
-    """Sauberer Ausgang: kein Fund. Bei permission-json mit einer leeren Antwort."""
+# DAS ENTSCHEIDUNGSPROTOKOLL (K-192, D-487). Der Zustand der laufenden Entscheidung -
+# gesetzt in main(), sobald das Ereignis gelesen ist; bis dahin ist nichts zu protokollieren
+# ausser dem unpruefbaren Fall, und der steht ohne Werkzeugnamen.
+PROTOKOLL_DATEI = "koolie-hook.jsonl"
+PROTOKOLL_HOECHSTGROESSE = 5 * 1024 * 1024
+OVERLAY_MANIFEST = ".koolie/project-overlay/overlay-manifest.yaml"
+PROTOKOLL_SCHALTER = re.compile(r"^hook_protokoll:\s*[\"']?([A-Za-z]+)[\"']?\s*(#.*)?$",
+                                re.M)
+_ENTSCHEIDUNG = {"ereignis": False, "werkzeug": "", "verb": "", "probe": False}
+
+
+def protokoll_an() -> bool:
+    """Nur fuer ein Ereignis eines Clients, und nur, wenn das Overlay es nicht abschaltet.
+
+    Ein Aufruf ohne hook_event_name ist eine Sonde des Validators oder ein Handaufruf -
+    er gehoert nicht in das Protokoll des Projekts (und der Validator schriebe sonst bei
+    jedem Lauf in das Git-Verzeichnis, das er prueft).
+    """
+    if not _ENTSCHEIDUNG["ereignis"]:
+        return False
+    try:
+        with io.open(os.path.join(PROJEKTWURZEL, OVERLAY_MANIFEST), encoding="utf-8-sig") as fh:
+            m = PROTOKOLL_SCHALTER.search(fh.read())
+    except OSError:
+        m = None
+    return not (m and m.group(1).lower() == "aus")
+
+
+def protokollieren(ergebnis: str, grund: str = "") -> None:
+    """Eine Zeile - nie der Inhalt, nie ein Pfadwert. Ein Fehler aendert nichts."""
+    try:
+        if not protokoll_an():
+            return
+        gitdir = git_verzeichnis()
+        if not gitdir:
+            return
+        ziel = os.path.join(gitdir, PROTOKOLL_DATEI)
+        if os.path.isfile(ziel) and os.path.getsize(ziel) > PROTOKOLL_HOECHSTGROESSE:
+            os.replace(ziel, ziel + ".1")
+        erste = grund.strip().splitlines()[0] if grund.strip() else ""
+        if erste.startswith("Gesperrt: "):
+            erste = erste[len("Gesperrt: "):]
+        zeile = {"zeit": datetime.datetime.now(datetime.timezone.utc).strftime(
+                     "%Y-%m-%dT%H:%M:%SZ"),
+                 "werkzeug": _ENTSCHEIDUNG["werkzeug"], "verb": _ENTSCHEIDUNG["verb"],
+                 "ergebnis": ergebnis, "grund": erste[:200]}
+        if _ENTSCHEIDUNG["probe"]:
+            zeile["probe"] = True
+        with io.open(ziel, "a", encoding="utf-8", newline="\n") as fh:
+            fh.write(json.dumps(zeile, ensure_ascii=False) + "\n")
+    except Exception:  # noqa: BLE001 - das Protokoll entscheidet nichts
+        return
+
+
+def durchlassen(ergebnis: str = "durchgelassen", grund: str = "") -> None:
+    """Sauberer Ausgang: kein Fund. Bei permission-json mit einer leeren Antwort.
+
+    Auch der unpruefbare Fall ohne --fail-closed endet hier - mit seinem eigenen Ergebnis
+    im Protokoll (D-487), aber durch dieselbe Antwort an den Client.
+    """
+    protokollieren(ergebnis, grund)
     if sperrform() == "permission-json":
         print("{}")
     sys.exit(0)
@@ -564,6 +651,7 @@ def sperrform() -> str:
 
 
 def block(reason: str) -> None:
+    protokollieren("gesperrt", reason)
     form = sperrform()
     if form == "hook-specific-output":
         # Diese Form traegt ihren Grund IM Objekt und endet mit Exit 0: Der Client
@@ -616,7 +704,7 @@ def unpruefbar(grund: str) -> None:
             "Die Operation laeuft nicht; am Projekt aendert sich nichts."))
     print(f"[fw-hook] Eingabe nicht pruefbar ({grund}); Schema gegen aktuelle "
           f"Clientdokumentation pruefen.", file=sys.stderr)
-    durchlassen()
+    durchlassen("unpruefbar-durchgelassen", "Gesperrt: " + grund)
 
 
 # ---------------------------------------------------------------- Stufe 1: Ereignis
@@ -653,6 +741,9 @@ def ereignis_lesen(raw: str) -> tuple:
     basis = payload.get("cwd")
     if not isinstance(basis, str) or not basis.strip():
         basis = PROJEKTWURZEL
+    _ENTSCHEIDUNG["ereignis"] = isinstance(payload.get("hook_event_name"), str)
+    _ENTSCHEIDUNG["probe"] = payload.get("koolie_probe") is True
+    _ENTSCHEIDUNG["werkzeug"] = tool_name.strip().lower()[:120]
     return tool_name.strip().lower(), tool_input, basis
 
 
@@ -679,6 +770,8 @@ def verb_von(tool_name: str) -> str:
         return "read"
     if tool_name in SEARCH_TOOLS:
         return "search"
+    if any(tool_name.startswith(p) for p in MCP_PREFIXES):
+        return "mcp"
     return "unbekannt"
 
 
@@ -816,6 +909,7 @@ def main() -> None:
         return
 
     verb = verb_von(tool_name)
+    _ENTSCHEIDUNG["verb"] = verb
     # 'unbekannt' zaehlt bei jeder Frage zur strengeren Seite: schreibend wie ein
     # Schreibwerkzeug, tokenisiert wie ein Befehl. Eine unbekannte Operation als lesend
     # zu behandeln, waere die Annahme zugunsten des Zugriffs.
@@ -842,7 +936,12 @@ def main() -> None:
     # jede nicht lesende Operation gesperrt, gemessen am Rohtext UND an den Tokens.
     auskunft = verb == "exec" and nur_mandatsauskunft(tool_input)
     if verb not in ("read", "search"):
-        for s in strings + (list(shell_tokens(strings)) if tokenisieren else []):
+        # Bei einem MCP-Werkzeug zaehlen nur die Pfadfelder: Eine Doku-Seite, die den
+        # Mandatsbefehl beschreibt, erteilt keines; ein Dateisystem-Server, der die
+        # Mandatsdatei schreibt, nennt sie in einem Pfadfeld (D-486).
+        mandatsmaterial = (pfadwerte(tool_input) if verb == "mcp" else
+                           strings + (list(shell_tokens(strings)) if tokenisieren else []))
+        for s in mandatsmaterial:
             if auskunft and s in (tool_input["command"],) + tuple(
                     shell_tokens([tool_input["command"]])):
                 continue
@@ -865,6 +964,11 @@ def main() -> None:
             unpruefbar("Schreibwerkzeug ohne erkanntes Pfadfeld")
             return
         zu_pruefen = list(ziele)
+    elif verb == "mcp":
+        # Nur die Pfadfelder, nicht der Inhalt: Eine Notiz, die '.env' als Wort nennt,
+        # liest keine Datei (D-486). Die Secret-Muster fuer den INHALT liefen oben.
+        ziele = []
+        zu_pruefen = pfadwerte(tool_input)
     else:
         ziele = []
         zu_pruefen = list(strings)

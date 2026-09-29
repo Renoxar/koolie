@@ -10,6 +10,12 @@ Fehlen nicht).
 
 Gebaut sind die Packs claude-code (vollstaendig) und cursor (Lauf mit Token-Zahlen, gemessen 2026-09-29; Kosten, Hook und Startmeldung
 unerhoben); devin-desktop, openai-codex und kiro stehen als unerhoben (D-473).
+
+SEIT 1.20.0 (D-490) ruft die Hook-Probe die Wirksamkeitsprobe des Kerns (wirksamkeit.py) -
+eine Logik, keine zweite Fassung. Die Fassung bis 1.19.1 rief den Befehl mit shell=True auf;
+unter Windows loeste 'cmd' $CLAUDE_PROJECT_DIR nicht auf, Python endete mit Exit 2 ("can't
+open file"), und das zaehlte als Sperre - auch in einem Baum ohne Hook-Skript. Sie hat den
+Hook nie gestartet. Seither auch fuer cursor.
 """
 from __future__ import annotations
 
@@ -18,7 +24,13 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import time
+
+# Der Kern liegt drei Ebenen ueber diesem Paket: <kern>/tests/erhebungen/apparat.
+_KERN = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+if _KERN not in sys.path:
+    sys.path.insert(0, _KERN)
 
 
 class Unerhoben(Exception):
@@ -40,6 +52,27 @@ def _json_aus(roh: str) -> dict:
         except ValueError:
             continue
     return {"is_error": True, "result": "keine JSON-Ausgabe"}
+
+
+def _hook_probe_kern(baum: str, pack: str) -> str:
+    """Die Kontrollen H1 bis H4 der Wirksamkeitsprobe - '' heisst: alle tragen.
+
+    Manifest und Kernquelle kommen aus dem Kern DES BAUMS: gemessen wird, was dort liegt.
+    """
+    import wirksamkeit  # noqa: E402 - liegt im Kern, nicht in diesem Paket
+    kern = os.path.join(baum, ".koolie", "core")
+    try:
+        man = json.loads(io.open(os.path.join(kern, "clients", pack, "manifest.json"),
+                                 encoding="utf-8").read())
+        quelle = json.loads(io.open(os.path.join(kern, "framework", "runtime", "hooks.json"),
+                                    encoding="utf-8").read())
+    except (OSError, ValueError) as e:
+        return f"Manifest oder Kernquelle im Baum nicht lesbar ({type(e).__name__})"
+    verben = [v for e in quelle.get("PreToolUse", []) for v in e.get("on", [])
+              if any(h.get("enforcing") for h in e.get("hooks", []))]
+    erg = wirksamkeit.Ergebnis()
+    wirksamkeit.pruefe_hook(baum, man, verben, erg)
+    return "; ".join(f"{k}: {t}" for _, k, t in erg.verletzt)
 
 
 class Adapter:
@@ -168,25 +201,7 @@ class AdapterCC(Adapter):
         return werkzeuge
 
     def hook_probe(self, baum) -> str:
-        pfad = os.path.join(baum, ".claude", "settings.json")
-        if not os.path.isfile(pfad):
-            return "keine .claude/settings.json im Baum"
-        d = json.loads(io.open(pfad, encoding="utf-8-sig").read())
-        befehle = [h.get("command") for eintrag in (d.get("hooks") or {}).get("PreToolUse", [])
-                   for h in eintrag.get("hooks", []) if h.get("command")
-                   and "Read" in (eintrag.get("matcher") or "").split("|")]
-        if not befehle:
-            return "kein PreToolUse-Hook mit Matcher auf Read"
-        ereignis = {"hook_event_name": "PreToolUse", "tool_name": "Read", "cwd": baum,
-                    "tool_input": {"file_path": os.path.join(baum, ".env")}}
-        for befehl in befehle:
-            p = subprocess.run(befehl, shell=True, cwd=baum, input=json.dumps(ereignis),
-                               capture_output=True, text=True, encoding="utf-8",
-                               errors="replace", env=_umgebung(CLAUDE_PROJECT_DIR=baum))
-            aus = (p.stdout or "") + (p.stderr or "")
-            if p.returncode == 2 or '"deny"' in aus or '"block"' in aus:
-                return ""
-        return f"der Hook liess ein Leseereignis auf .env durch (Exit {p.returncode})"
+        return _hook_probe_kern(baum, "claude-code")
 
 
 class AdapterCU(Adapter):
@@ -230,6 +245,9 @@ class AdapterCU(Adapter):
 
     def vertrauen_gesetzt(self, baum) -> bool:
         return True  # --trust je Lauf
+
+    def hook_probe(self, baum) -> str:
+        return _hook_probe_kern(baum, "cursor")
 
 
 class AdapterAttrappe(Adapter):

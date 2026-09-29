@@ -109,8 +109,13 @@
     "write": [
       "Write",
       "Delete"
+    ],
+    "mcp": [
+      "MCP:.*"
     ]
   },
+  "hook_mcp_prefixes": ["MCP:"],
+  "_hook_mcp_note": "Gemessen am 2026-09-29 an cursor-agent 2026.09.28 (Messreihe 1.20.0, K-184, D-486): Ein MCP-Aufruf loest preToolUse aus, tool_name ist MCP:<werkzeug> (ohne Servername), tool_input das Argumentobjekt - dasselbe Ereignis und dieselbe Form wie fuer die uebrigen Werkzeuge. Daneben feuert beforeMCPExecution mit mcp_server_name und dem Inhalt als Zeichenkette; der Schutz-Hook braucht es nicht. Die Berechtigungsschicht weist einen MCP-Aufruf ohne Freigabe ab, auch mit --force ('User rejected MCP').",
   "_hook_tools_note": "Die Werkzeugnamen der Hook-Eingabe, aufgezeichnet am 2026-09-26: Read, Grep, Shell, Write, Delete. Das Suchwerkzeug fuer Dateinamen (Glob) loest KEIN preToolUse aus - gemessen, und fuer Claude-Hooks sagt der Hersteller dasselbe ('Glob' not supported, QU-3); es liefert Dateinamen, keine Inhalte. Das Aendern einer Datei erscheint als Write mit dem ganzen neuen Inhalt.",
   "hook_path_fields": [
     "file_path"

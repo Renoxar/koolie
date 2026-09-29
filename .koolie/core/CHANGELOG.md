@@ -2,6 +2,80 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.20.0] - 2026-09-29
+
+**Die Wirksamkeitsprobe und der MCP-Aufruf am Schutz-Hook - und die Vorpruefung, die den Hook nie startete**
+(`CR-2026-162` E1 bis E6, **D-485** bis **D-490**, **Pruefungen 106 und 107** neu; `K-118`, `K-184`, `K-191`,
+`K-192` und `K-195` beantwortet, `K-198` bis `K-200` neu). 11 Sitzungslaeufe mit `claude-code`, 2,01 USD nach
+Listenpreis, dazu 6 Laeufe mit `cursor` im Free-Tarif. Kriterium 2 von D-11 bleibt 0.
+
+> 🔴 **MIGRATIONSHINWEIS** (D-486, D-488). `install.py --update` schreibt die Berechtigungs- und Hook-Datei nie.
+> `claude-code`: In `.claude/settings.json` gehoert an den Matcher des Schutz-Hooks `|mcp__.*`. `cursor`: In
+> `.cursor/hooks.json` gehoert an den Matcher `|MCP:.*`. Danach `python .koolie/core/install.py --probe` - die
+> Kontrolle H2 meldet einen Matcher, dem die Klasse fehlt.
+
+**Neu**
+
+- **Die Wirksamkeitsprobe** `install.py --probe` (D-488, `K-195`): ruft den Schutz-Hook mit dem Befehl aus der
+  Konfiguration des Projekts und synthetischen Ereignissen auf - H1 eingetragen, H2 der Matcher trifft jede
+  abgebildete Werkzeugklasse, H3 Lesen, Schreiben, Ausfuehren auf `.env` und ein MCP-Koeder werden gesperrt, H4 ein
+  harmloser Zugriff geht durch. Bei `claude-code` liest sie die Startmeldung mit einer Modelladresse, die nicht
+  erreichbar ist - ohne Modellaufruf, ohne Kosten: K1 die Hooks der Projektdatei sind geladen, V1 Vertrauen, M1
+  Connectoren des Kontos. Bei `openai-codex` den Vertrauenseintrag (`K-118`), bei `kiro` das Agentenprofil. Exit 1,
+  wenn eine Muss-Kontrolle fehlt; was nicht erreichbar ist, heisst "unerhoben". `--ohne-client` laesst die
+  Startmeldung weg. Die Logik liegt in `wirksamkeit.py` im Kern - der Lieferumfang `nutzung` liefert
+  `tests/erhebungen/` nicht.
+- **MCP am Schutz-Hook** (D-486, `K-184`): Die Kernquelle fuehrt das Verb `mcp`; ein Pack bildet es in
+  `hook_tools.mcp` ab und nennt in `hook_mcp_prefixes` das Praefix, an dem der Hook es erkennt. Geprueft werden der
+  Inhalt gegen die Secret-Muster und die Pfadfelder gegen die Secret-Pfade, nicht die Strukturpfade. Gemessen an
+  `claude-code` (`mcp__.*`) und `cursor` (`MCP:.*`, ueber `preToolUse`); `devin-desktop`, `kiro` und `openai-codex`
+  fuehren das Verb im neuen Feld `hook_tools_unerhoben` (`K-198`).
+- **Das Entscheidungsprotokoll des Schutz-Hooks** (D-487, `K-192`): je Entscheidung auf ein Ereignis eines Clients
+  eine JSON-Zeile in `.git/koolie-hook.jsonl` - Zeit, Werkzeug, Verb, Ergebnis, Grund als Kategorie; nie Inhalt, nie
+  Pfad. Abschalten mit `hook_protokoll: aus` im `overlay-manifest.yaml`.
+- **Pruefung 106**: das Protokoll haelt Entscheidungen fest, nie Inhalte, und laesst sich abschalten. Sonden `106a`
+  bis `106c`, Gegenprobe `106a`.
+- **Pruefung 107**: die Probe besteht einen intakten Baum und faellt ohne Hook-Skript (H3, H4) und mit einem Matcher
+  ohne `mcp` (H2). Sonden `107a` bis `107c`, Gegenprobe `107a`.
+
+**Geaendert**
+
+- Pruefung 16 sondiert jedes MCP-Praefix mit zwei Sperren und einer Gegenprobe; Pruefung 26 haelt
+  `hook_tools_unerhoben` und das Paar aus Matcher und Praefix (vier Sonden, eine Gegenprobe).
+- `claude-code` (Pack 0.26.0): Zeile H1 mit MCP und Protokoll; Abschnitt 8.2 fuehrt die Connectoren des
+  claude.ai-Kontos mit gemessenem Abschaltweg aus dem Projekt - `mcp__claude_ai_*` in `permissions.deny`, empfohlen,
+  nicht ausgeliefert (D-489, `K-191`); 8.3 die Grenze des Protokolls (`K-200`). `cursor` (Pack 0.3.0): Zeile H1,
+  Abschnitt 7.3.
+- `install.py` nennt die Probe nach Installation und Hebung; die Uebernahmecheckliste verlangt sie, `RELEASE_PROCESS.md`
+  stellt sie vor den Commit im uebernehmenden Projekt.
+- Die Schutzschicht geht in drei Releases und einen Posten (D-485): `1.20.1` Pfad- und Mustersemantik (mit `K-32`),
+  `1.20.2` Modi, Ausnahmen und eingebaute Skills (Tor `K-185`), `1.20.3` Anweisungen mit Nachlauf und Aufzeichnungen.
+  `1.20.0` fuegt der Laufzeitschicht keine Zeile hinzu.
+
+**Befunde**
+
+- 🔴 **Die Hook-Vorpruefung des Messapparats hat den Hook seit `1.19.0` nie gestartet** (D-490). `shell=True` startet
+  unter Windows `cmd`, das `$CLAUDE_PROJECT_DIR` nicht aufloest; Python endete mit "can't open file" und Exit 2, und
+  Exit 2 galt als Sperre. Ein Baum ohne Hook-Skript bestand. Der Apparat ruft jetzt die Probe.
+- 🔴 Ohne MCP im Matcher erreichte ein Koederwert den Server (`claude-code` und `cursor`), und ein
+  Dateisystem-Werkzeug las `.env`.
+- Die Rueckfrage `mcp__*` greift bei `claude-code` auch mit `bypassPermissions` (Druckmodus) - die Praemisse von
+  `K-191` war zu weit. `env` in der Projektdatei schaltet die Connectoren des Kontos nicht ab.
+
+**Migrationshinweis fuer Overlays**
+
+- Optional: `hook_protokoll: aus` im `overlay-manifest.yaml`, wenn ein Projekt kein Entscheidungsprotokoll will.
+- Optional: `mcp__claude_ai_*` in `permissions.deny` von `claude-code`, wenn ein Projekt die Connectoren des Kontos
+  nicht nutzt.
+
+**Bekannte Einschraenkungen**
+
+- MCP am Hook fuer `devin-desktop`, `kiro` und `openai-codex` unerhoben (`K-198`); die Startmeldung ohne Modell nur
+  fuer `claude-code` (`K-199`).
+- Das Protokoll ist nicht manipulationsgeschuetzt; eine unlesbare Eingabe hinterlaesst keine Zeile (`K-200`).
+- Ein MCP-Server, der selbst lokal schreibt, ist ueber die Strukturmuster nicht gesperrt; Schreibwerkzeuge stehen nie
+  auf `allow` (D-459).
+
 ## [1.19.1] - 2026-09-29
 
 **Die Pruefwerkzeuge in Modulen - und die Konstante, die einer anderen Pruefung gehoerte** (`CR-2026-161` E1 bis

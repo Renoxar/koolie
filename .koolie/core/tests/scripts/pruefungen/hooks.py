@@ -1,7 +1,7 @@
 """Der Schutz-Hook: Interpreter, Werkzeugabdeckung, fail-closed, Ablageort, neutrale
 Skripte, Eingabeschema, Durchsetzungstiefe, Hookblock, Sperrform und Ziel statt Inhalt.
 
-Pruefungen 15, 16, 17, 18, 21, 31, 32, 43, 86 und 98. Teil des Validators validate-
+Pruefungen 15, 16, 17, 18, 21, 31, 32, 43, 86, 98 und 106. Teil des Validators validate-
 framework.py, seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das Register aller
 Pruefungen steht im Kopfkommentar des Einstiegs, die Grenze jeder einzelnen in ihrem
 Kopfkommentar hier."""
@@ -141,7 +141,8 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
             daten = json.loads(read(mf)) or {}
         except json.JSONDecodeError:
             continue
-        abbildungen.append((daten.get("client", name), daten.get("hook_tools") or {}))
+        abbildungen.append((daten.get("client", name), daten.get("hook_tools") or {},
+                            daten.get("hook_mcp_prefixes") or []))
     # Je Verb eine Sonde auf einen Secret-Pfad, die blockiert werden MUSS. Das Leseverb
     # steht seit D-33 dabei: D-30 hatte Secret-Pfade auch gegen lesende Werkzeuge
     # durchgesetzt, der Code loeste es nicht ein, und diese Pruefung konnte es nicht
@@ -159,7 +160,7 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
     # erste Fassung dieser Gegenprobe vorbeigelaufen - sie bestand, ohne etwas zu messen.
     gegenproben = {"exec": {"command": f"git diff {KERN}/framework/core/00-purpose.md"},
                    "read": {"file_path": f"{KERN}/framework/core/00-purpose.md"}}
-    for pack, abbildung in abbildungen:
+    for pack, abbildung, praefixe in abbildungen:
       for verb, eingabe in sonden.items():
         for werkzeug in abbildung.get(verb) or []:
             payload = json.dumps({"tool_name": werkzeug, "tool_input": eingabe})
@@ -191,6 +192,32 @@ def check_hook_tool_coverage(root: str, man: dict) -> None:
                     f"Strukturpfade sind integritaetsgeschuetzt und gelten nur fuer "
                     f"schreibende Werkzeuge; P4 setzt voraus, dass der Kern lesbar "
                     f"bleibt (D-30)")
+      # SEIT 1.20.0 DAS VERB mcp (K-184, D-486). Ein MCP-Werkzeug hat keinen festen
+      # Namen; der Hook erkennt es am Praefix aus hook_mcp_prefixes. Zwei Sonden, die
+      # sperren MUESSEN - der Inhalt mit einem Secret-Muster und ein Pfadfeld auf .env
+      # (ein Dateisystem-Server) -, und eine Gegenprobe, die durchgehen MUSS: Eine Notiz,
+      # die .env und die Laufzeitschicht nur NENNT, liest und schreibt nichts. Ohne sie
+      # verwandelte sich die Pruefung still in die strengste Lesart des unbekannten
+      # Werkzeugs, und jede Doku-Seite ueber das Framework waere gesperrt.
+      for praefix in praefixe:
+        name = praefix + "koolie_sonde__werkzeug"
+        for titel, eingabe, soll in (
+                ("Inhalt mit Secret-Muster", {"text": "password=KOOLIE-SONDE-16-wert"}, 2),
+                ("Pfadfeld auf .env", {"path": ".env"}, 2),
+                ("Notiz, die Pfade nur nennt",
+                 {"text": "Siehe .env.example und .claude/settings.json."}, 0)):
+            payload = json.dumps({"tool_name": name, "tool_input": eingabe})
+            try:
+                lauf = subprocess.run([interpreter, skript], input=payload,
+                                      capture_output=True, text=True, timeout=20)
+            except (OSError, subprocess.SubprocessError):
+                continue
+            if lauf.returncode != soll:
+                err(f"{pack}/manifest.json: Der Schutz-Hook entscheidet ein MCP-Werkzeug "
+                    f"mit dem Praefix '{praefix}' falsch ({titel}: Exit "
+                    f"{lauf.returncode} statt {soll}). Geprueft werden Inhalt gegen die "
+                    f"Secret-Muster und Pfadfelder gegen die Secret-Pfade, nicht die "
+                    f"Strukturpfade (K-184, D-486)")
 
 
 # Pruefung 17: Der Schutz-Hook laesst eine unlesbare Eingabe nur dort durch, wo das
@@ -1043,3 +1070,93 @@ def check_hook_ziel_statt_inhalt(root: str, man: dict) -> None:
                 err(f"{pack}/manifest.json: Der Schutz-Hook laesst das Werkzeug '{werkzeug}' in "
                     f"das Kernverzeichnis schreiben (Exit {ergebnis} statt 2) - die Messung am "
                     f"Ziel darf das Ziel nicht verlieren (D-449)")
+
+
+# Pruefung 106: Das Entscheidungsprotokoll des Schutz-Hooks (K-192, D-487).
+#
+# ANLASS. Sperren und Durchlaesse hinterliessen bis 1.19.1 keine Spur ausserhalb der
+# Mitschrift des Clients. Seit 1.20.0 schreibt der Hook je Entscheidung auf ein Ereignis
+# eines Clients eine Zeile in <git-verzeichnis>/koolie-hook.jsonl. Die Pruefung haelt die
+# drei Zusagen, die dabei zaehlen, in einem Wegwerfbaum mit einer Kopie des Hooks:
+#   1. Eine Entscheidung auf ein Client-Ereignis steht im Protokoll - gesperrt und
+#      durchgelassen, mit genau den Feldern zeit, werkzeug, verb, ergebnis, grund.
+#   2. Das Protokoll traegt NIE den Inhalt und nie einen Pfadwert (D-39): weder den
+#      Koederwert noch den Pfad der Sonde.
+#   3. Ein Aufruf ohne hook_event_name (eine Sonde wie diese Pruefung selbst) steht nicht
+#      darin, und 'hook_protokoll: aus' im Overlay-Manifest schaltet es ab.
+# GRENZE: Ob ein Client den Hook so aufruft, belegt die Messung (Mitschriften der Reihe
+# 1200), nicht diese Pruefung; das Protokoll ist nicht manipulationsgeschuetzt.
+P106_FELDER = {"zeit", "werkzeug", "verb", "ergebnis", "grund"}
+P106_KOEDER = "KOOLIE-SONDE-106-geheimwert"
+P106_PFAD = "sonde106-verzeichnis/.env"
+
+
+def check_hook_protokoll(root: str) -> None:
+    """Pruefung 106 (K-192, D-487): Das Protokoll haelt Entscheidungen fest, nie Inhalte."""
+    import shutil
+    import tempfile
+    skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
+    if not os.path.isfile(skript):
+        return
+    interpreter = _hook_interpreter()
+    if interpreter is None:
+        return
+    with tempfile.TemporaryDirectory(prefix="koolie-p106-") as w:
+        ziel = os.path.join(w, *KERN.split("/"), "tests", "scripts")
+        os.makedirs(ziel)
+        shutil.copy2(skript, ziel)
+        os.makedirs(os.path.join(w, ".git"))
+        kopie = os.path.join(ziel, "hook-check-secrets.py")
+        protokoll = os.path.join(w, ".git", "koolie-hook.jsonl")
+
+        def rufen(ereignis: dict) -> int:
+            try:
+                return subprocess.run([interpreter, kopie], input=json.dumps(ereignis),
+                                      capture_output=True, text=True, timeout=20).returncode
+            except (OSError, subprocess.SubprocessError):
+                return -1
+
+        def zeilen() -> list:
+            try:
+                with open(protokoll, encoding="utf-8") as fh:
+                    return [z for z in fh.read().splitlines() if z.strip()]
+            except OSError:
+                return []
+
+        e = {"hook_event_name": "PreToolUse", "tool_name": "Read"}
+        rufen(dict(e, tool_input={"file_path": P106_PFAD, "text": P106_KOEDER}))
+        rufen(dict(e, tool_input={"file_path": "README.md"}))
+        rufen({"tool_name": "Read", "tool_input": {"file_path": "ohne-ereignis.md"}})
+        z = zeilen()
+        if len(z) != 2:
+            err(f"Pruefung 106: Das Entscheidungsprotokoll des Schutz-Hooks fuehrt nach zwei "
+                f"Client-Ereignissen und einer Sonde ohne hook_event_name {len(z)} Zeile(n) "
+                f"statt 2 (K-192, D-487)")
+            return
+        roh = "\n".join(z)
+        if P106_KOEDER in roh or "sonde106" in roh:
+            err("Pruefung 106: Das Entscheidungsprotokoll des Schutz-Hooks traegt den Inhalt "
+                "oder einen Pfadwert der Werkzeugeingabe - es darf nur Kategorien nennen "
+                "(D-39, D-487)")
+        try:
+            daten = [json.loads(x) for x in z]
+        except ValueError:
+            err("Pruefung 106: Das Entscheidungsprotokoll des Schutz-Hooks ist kein JSONL")
+            return
+        for d in daten:
+            if set(d) != P106_FELDER:
+                err(f"Pruefung 106: Eine Zeile des Entscheidungsprotokolls fuehrt die Felder "
+                    f"{sorted(d)} statt {sorted(P106_FELDER)} (D-487)")
+                return
+        if [d.get("ergebnis") for d in daten] != ["gesperrt", "durchgelassen"]:
+            err(f"Pruefung 106: Das Entscheidungsprotokoll haelt "
+                f"{[d.get('ergebnis') for d in daten]} fest statt ['gesperrt', "
+                f"'durchgelassen'] (D-487)")
+        os.makedirs(os.path.join(w, ".koolie", "project-overlay"))
+        with open(os.path.join(w, ".koolie", "project-overlay", "overlay-manifest.yaml"),
+                  "w", encoding="utf-8") as fh:
+            fh.write("manifest_version: 1\nhook_protokoll: aus\n")
+        rufen(dict(e, tool_input={"file_path": "README.md"}))
+        if len(zeilen()) != 2:
+            err("Pruefung 106: 'hook_protokoll: aus' im overlay-manifest.yaml schaltet das "
+                "Entscheidungsprotokoll des Schutz-Hooks nicht ab (D-487)")

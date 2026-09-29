@@ -455,8 +455,16 @@ def _hook_matcher(verben: list[str], man: dict) -> str:
     # nicht aus einer leeren Liste erraten (CR-2026-047 E3, D-47). Pruefung 26 prueft,
     # dass eine so erklaerte Abwesenheit auch in permission_tools steht.
     erklaert_abwesend = set(man.get("hook_tools_absent") or [])
+    # SEIT 1.20.0 EIN DRITTER ZUSTAND (K-184, D-486): "unerhoben". Ein Verb, das die
+    # Kernquelle neu fuehrt, ist nicht fuer jeden Client gemessen - und ein Matcher auf
+    # eine ungemessene Werkzeugform waere eine Zusage ohne Mechanismus (D-78). Das Pack
+    # erklaert es ausdruecklich; Pruefung 26 verlangt die Begruendung und haelt die drei
+    # Zustaende auseinander.
+    erklaert_unerhoben = set(man.get("hook_tools_unerhoben") or [])
     namen: list[str] = []
     for verb in verben:
+        if verb in erklaert_unerhoben and not abbildung.get(verb):
+            continue
         if verb not in abbildung:
             raise AbbildungsFehler(
                 f"{man.get('client', '?')}/manifest.json: hook_tools kennt das "

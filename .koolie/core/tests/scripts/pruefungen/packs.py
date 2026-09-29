@@ -425,6 +425,7 @@ def check_werkzeugabwesenheit(root: str) -> None:
             man = json.loads(read(pfad))
         except ValueError:
             continue
+        _p26_unerhoben_und_mcp(rel, man)
         abwesend = man.get("hook_tools_absent") or []
         if not abwesend:
             continue
@@ -445,6 +446,48 @@ def check_werkzeugabwesenheit(root: str) -> None:
                     f"zugleich geht nicht: Kennt die Berechtigungsschicht ein Werkzeug "
                     f"dieser Klasse, hat der Client eines, und der Hook muss es "
                     f"erreichen (D-47)")
+
+
+def _p26_unerhoben_und_mcp(rel: str, man: dict) -> None:
+    """Pruefung 26, seit 1.20.0 (K-184, D-486): der dritte Zustand und das Verb mcp.
+
+    'unerhoben' nimmt ein Verb aus dem Matcher wie 'abwesend' - deshalb dieselben zwei
+    Auflagen: begruendet und nicht zugleich abgebildet. Dazu das Verb mcp: Sein Matcher
+    und das Praefix, an dem der Hook es erkennt, stehen nur zusammen, und der Matcher
+    trifft das Praefix. Sonst liefe der Hook an, erkennte das Werkzeug aber nicht (dann
+    gaelte die strengste Lesart), oder er erkennte es und liefe nie an.
+    """
+    unerhoben = man.get("hook_tools_unerhoben") or []
+    abbildung = man.get("hook_tools") or {}
+    if unerhoben:
+        if not isinstance(unerhoben, list):
+            err(f"{rel}: hook_tools_unerhoben ist keine Liste")
+            return
+        if not str(man.get("_hook_tools_unerhoben_note") or "").strip():
+            err(f"{rel}: hook_tools_unerhoben nennt {sorted(unerhoben)}, aber "
+                f"_hook_tools_unerhoben_note fehlt oder ist leer - ein ungemessenes Verb "
+                f"gehoert begruendet, nicht bloss eingetragen (D-486)")
+        for verb in sorted(unerhoben):
+            if abbildung.get(verb):
+                err(f"{rel}: hook_tools_unerhoben fuehrt das Verb '{verb}', hook_tools bildet "
+                    f"es zugleich ab ({abbildung[verb]}) - gemessen oder nicht, beides geht "
+                    f"nicht (D-486)")
+    matcher = abbildung.get("mcp") or []
+    praefixe = man.get("hook_mcp_prefixes") or []
+    if bool(matcher) != bool(praefixe):
+        err(f"{rel}: hook_tools.mcp und hook_mcp_prefixes stehen nur zusammen - ohne "
+            f"Praefix erkennt der Hook das Werkzeug nicht, ohne Matcher laeuft er nie an "
+            f"(K-184, D-486)")
+        return
+    for praefix in praefixe:
+        probe = praefix + "server__werkzeug"
+        try:
+            getroffen = any(re.fullmatch(m, probe) for m in matcher)
+        except re.error:
+            getroffen = False
+        if not getroffen:
+            err(f"{rel}: Kein Matcher in hook_tools.mcp trifft ein Werkzeug mit dem Praefix "
+                f"'{praefix}' (D-486)")
 
 
 # Pruefung 27: Ein verworfenes Zusagenfeld eines Skills nennt seinen Ersatz.

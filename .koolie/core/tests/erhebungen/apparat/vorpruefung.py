@@ -12,7 +12,8 @@ Die Pruefungen, jede mit ihrem Anlass:
   prompt      Prompt und Folgeturns nicht leer  - Abbruch statt Rueckfall (1.14.2)
   kontingent  Deckel mit Reserve frei            - Falle 8 aus 1.17.0
   vertrauen   Vertrauenseintrag des Baums        - ohne ihn laedt die Projektschicht nicht (K-118)
-  hook        Schutz-Hook sperrt ein Leseereignis auf .env - der Hook laeuft, BEVOR bezahlt wird
+  hook        die Kontrollen H1 bis H4 der Wirksamkeitsprobe (wirksamkeit.py, D-490) - der Hook
+              laeuft und sperrt, BEVOR bezahlt wird; bis 1.19.1 startete diese Pruefung ihn nie
   werkzeuge   die Startmeldung nennt die gesagten Werkzeuge (optional, 1.18.2)
 """
 from __future__ import annotations

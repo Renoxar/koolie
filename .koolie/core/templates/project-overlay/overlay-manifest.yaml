@@ -7,6 +7,10 @@ manifest_version: 1
 project_code: "<PROJECT_CODE>"
 overlay_version: "<TBD: 0.1.0>"
 
+# Entscheidungsprotokoll des Schutz-Hooks (D-487): Standard an, eine Zeile je Entscheidung in
+# .git/koolie-hook.jsonl, ohne Inhalt und ohne Pfad. Abschalten mit:
+# hook_protokoll: aus
+
 # Zulässige Werte
 #   type:          ai-governance | ai-process-model | roadmap | architecture | coding-guidelines |
 #                  definition-of-ready | definition-of-done | branching-strategy | deployment |

@@ -2,7 +2,7 @@
 Praefixerfassung, Erhebungsablage, Werkzeugnamen, Arbeitsplatzpfade, Kernlage und
 Lieferumfang.
 
-Pruefungen 45, 68, 69, 70, 71, 76 und 90. Teil des Validators validate-framework.py,
+Pruefungen 45, 68, 69, 70, 71, 76, 90 und 107. Teil des Validators validate-framework.py,
 seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das Register aller Pruefungen
 steht im Kopfkommentar des Einstiegs, die Grenze jeder einzelnen in ihrem Kopfkommentar
 hier."""
@@ -754,3 +754,80 @@ def check_verdrahtung(root: str) -> None:
         err(f"{KERN}/{P104_SONDEN}: laedt die Sondenteile nicht in der Reihenfolge ihrer "
             f"Nummer. Die Reihenfolge des Ladens ist die Reihenfolge der Ausgabe, und die "
             f"ist die zeilengleiche Abnahmeform (D-49, D-481)")
+
+
+# Pruefung 107: Die Wirksamkeitsprobe haelt ihre Gegenfaelle (K-195, D-488, D-490).
+#
+# ANLASS. Die Hook-Vorpruefung des Messapparats hat seit 1.19.0 jeden Baum bestanden -
+# auch einen ohne Hook-Skript: Unter Windows loeste 'cmd' $CLAUDE_PROJECT_DIR nicht auf,
+# Python endete mit Exit 2, und Exit 2 galt als Sperre (D-490). Eine Probe, die auch das
+# Fehlen ihres Gegenstands bestaetigt, ist die Null durch Konstruktion. Die Pruefung baut
+# deshalb einen Wegwerfbaum mit der erzeugten Hook-Konfiguration von claude-code und
+# verlangt von wirksamkeit.pruefe_hook drei Urteile:
+#   (a) intakter Baum: keine fehlende Muss-Kontrolle;
+#   (b) ohne Hook-Skript: H3 und H4 fehlen - Exit 2 ohne Sperrhinweis ist keine Sperre;
+#   (c) Matcher ohne die Klasse mcp: H2 fehlt.
+# GRENZE: der Hook-Teil der Probe am Pack claude-code. Startmeldung und Vertrauen braucht
+# einen Client und sind an der Messung belegt (Protokoll 2026-09-29-schutzschicht).
+def check_wirksamkeitsprobe(root: str) -> None:
+    """Pruefung 107 (K-195, D-488, D-490): Die Probe unterscheidet Wirkung von Fehlen."""
+    import importlib.util
+    import shutil
+    import tempfile
+    kern = os.path.join(root, *KERN.split("/"))
+    modul = os.path.join(kern, "wirksamkeit.py")
+    skript = os.path.join(kern, "tests", "scripts", "hook-check-secrets.py")
+    manifest = os.path.join(kern, "clients", "claude-code", "manifest.json")
+    if not all(os.path.isfile(p) for p in (modul, skript, manifest)):
+        return
+    try:
+        cm = _clientmap(root)
+        spec = importlib.util.spec_from_file_location("koolie_wirksamkeit_p107", modul)
+        wk = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(wk)
+        man = json.loads(read(manifest))
+        quelle = cm.load_source(kern, "hooks.json")
+        hooks = cm._hooks_objekt(quelle, man)
+        verben = [v for e in json.loads(quelle).get("PreToolUse", []) for v in e.get("on", [])
+                  if any(h.get("enforcing") for h in e.get("hooks", []))]
+    except Exception as fehler:  # noqa: BLE001 - jeder Ladefehler ist der Befund
+        err(f"Pruefung 107: Die Wirksamkeitsprobe laesst sich nicht laden "
+            f"({type(fehler).__name__}) - install.py --probe liefe nicht (K-195)")
+        return
+
+    def urteil(ohne_skript: bool = False, matcher_ohne_mcp: bool = False) -> set:
+        with tempfile.TemporaryDirectory(prefix="koolie-p107-") as w:
+            ziel = os.path.join(w, *KERN.split("/"), "tests", "scripts")
+            os.makedirs(ziel)
+            if not ohne_skript:
+                shutil.copy2(skript, ziel)
+            pack = os.path.join(w, *KERN.split("/"), "clients", "claude-code")
+            os.makedirs(pack)
+            shutil.copy2(manifest, pack)
+            h = json.loads(json.dumps(hooks))
+            if matcher_ohne_mcp:
+                for e in h.get("PreToolUse", []):
+                    e["matcher"] = "|".join(x for x in e["matcher"].split("|")
+                                            if not x.startswith("mcp"))
+            os.makedirs(os.path.join(w, ".claude"))
+            with open(os.path.join(w, ".claude", "settings.json"), "w", encoding="utf-8") as fh:
+                json.dump({"hooks": h}, fh)
+            with open(os.path.join(w, "README.md"), "w", encoding="utf-8") as fh:
+                fh.write("# Wegwerfbaum\n")
+            erg = wk.Ergebnis()
+            wk.pruefe_hook(w, man, verben, erg)
+            return {k.split()[0] for _, k, _ in erg.verletzt}
+
+    intakt = urteil()
+    if intakt:
+        err(f"Pruefung 107: Die Wirksamkeitsprobe meldet an einem intakten Baum fehlende "
+            f"Kontrollen ({', '.join(sorted(intakt))}) - sie truege keinen Befund (K-195)")
+    ohne = urteil(ohne_skript=True)
+    if not {"H3", "H4"} <= ohne:
+        err(f"Pruefung 107: Die Wirksamkeitsprobe besteht einen Baum ohne Hook-Skript "
+            f"(gemeldet: {', '.join(sorted(ohne)) or 'nichts'}) - ein Exit 2 ohne "
+            f"Sperrhinweis ist keine Sperre (D-490)")
+    alt = urteil(matcher_ohne_mcp=True)
+    if "H2" not in alt:
+        err("Pruefung 107: Die Wirksamkeitsprobe erkennt einen Matcher ohne die "
+            "Werkzeugklasse mcp nicht - ein veralteter Matcher fiele nicht auf (K-184, D-488)")
