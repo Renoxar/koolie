@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 102, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 103, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -1698,6 +1698,60 @@ buendel(sonden_importkanaele,
         "wenn sie belegt sind - und nur dann")
 
 
+# --- D-471: die Ergebniszellen bleiben im Kern (CR-2026-160, K-56) ------------------------
+#
+# Ein Testblatt ist Regelquelle UND Aufzeichnung. install.py ersetzt in der Skillablage der
+# Laufzeitschicht jede Ergebniszelle durch 'offen' mit Verweis auf die Kernfassung; die
+# Kopie des Kerns bleibt, wie sie ist. Und eine Zeile, deren Striche nicht zum Kopf passen,
+# bricht die Installation ab, statt eine halb gekuerzte Zelle weiterzugeben.
+M471_ERSATZ = "(D-471)"
+M471_ABBRUCH = "nicht sicher kuerzbar"
+P471_BLATT = ("framework", "skills", "fw-refactor", "TESTS.md")
+P471_BELEG = "tests/protocols/2026-09-26-testblaetter-modellwechsel.md"
+
+
+def sonden_testblatt_kuerzung() -> None:
+    root = installation("claude-code")
+    try:
+        lauf = os.path.join(root, ".claude", "skills", *P471_BLATT[2:])
+        kern = os.path.join(root, ".koolie", "core", *P471_BLATT)
+        t_lauf, t_kern = lies(lauf), lies(kern)
+        zeilen = [z for z in t_lauf.split("\n") if z.startswith("| SK-007-")]
+        ok = bool(zeilen) and all(z.rstrip("\r").endswith(M471_ERSATZ + " |") for z in zeilen) \
+            and P471_BELEG not in t_lauf
+        melde("SONDE", "D471", ok, "Die Skillablage der Laufzeitschicht traegt die Testfaelle "
+              "ohne die Ergebnisse des Quellrepositoriums")
+        if not ok:
+            notiz("        %d Zeilen, Beleg in der Laufzeitfassung: %s"
+                  % (len(zeilen), P471_BELEG in t_lauf))
+        ok = P471_BELEG in t_kern and M471_ERSATZ + " |" not in t_kern
+        melde("GEGENPROBE", "D471a", ok, "Die Kopie des Kerns behaelt ihre Ergebniszellen")
+    finally:
+        aufraeumen(os.path.dirname(root))
+    quelle = kopie()
+    ziel = tempfile.mkdtemp(prefix="lw-471-")
+    try:
+        blatt = os.path.join(quelle, ".koolie", "core", *P471_BLATT)
+        # eine Zeile mit einem Strich zu viel: die Kuerzung koennte die falsche Zelle treffen
+        ersetze(blatt, ("| SK-007-P02 | Befund melden statt beheben |",
+                        "| SK-007-P02 | Befund melden | statt beheben |"))
+        p = unterprozess([sys.executable, os.path.join(quelle, ".koolie", "core", "install.py"),
+                          "--client", "claude-code", "--root", ziel])
+        aus = (p.stdout or "") + (p.stderr or "")
+        ok = p.returncode != 0 and M471_ABBRUCH in aus
+        melde("SONDE", "D471b", ok, "Eine Tabellenzeile mit falscher Strichzahl bricht die "
+              "Installation ab, statt gekuerzt zu werden")
+        if not ok:
+            notiz("        Exit %d, Meldung: %s" % (p.returncode, M471_ABBRUCH in aus))
+    finally:
+        aufraeumen(ziel)
+        aufraeumen(quelle)
+
+
+buendel(sonden_testblatt_kuerzung,
+        "install.py liefert die Testblaetter ohne die Ergebniszellen des Quellrepositoriums aus "
+        "und bricht bei einer Zeile ab, die es nicht sicher kuerzen kann")
+
 # --- D-433/D-434: die Attributionsvorgabe des Clients und ihr Nachtrag (K-171) ----------
 #
 # 🔴 CLAUDE CODE GIBT DEM MODELL VON SICH AUS EINEN TRAILER Co-Authored-By VOR - gegen Q5,
@@ -2441,6 +2495,50 @@ gegenprobe("102a", "Pruefung 102: das ausgelieferte Register traegt Lage und Sta
 gegenprobe("102b", "Pruefung 102: ein neuer Punkt mit Markierung und Ziel in der Klammer "
            "bleibt unbeanstandet", _102_eingeplant, M102_STATUS)
 
+
+# --- Pruefung 103: der Stand einer Ergebniszelle (CR-2026-160, D-472, K-61) --------------
+# Die Gegenprobe rechnet den Stand HIER nach, nicht mit der Funktion des Validators: Stimmen
+# beide Rechnungen nicht ueberein, faellt sie - zwei Stellen, die einander pruefen, statt
+# einer, die sich selbst bestaetigt.
+M103_VERALTET = "Belegstand veraltet"
+M103_LEER = "ein Stand ohne Gegenstand belegt nichts"
+P103_BLATT = ".koolie/core/framework/skills/fw-refactor/TESTS.md".replace("/", os.sep)
+P103_ANKER = "`validate-output.py --skill fw-refactor`: **bestanden**."
+P103_GEGENSTAND = "framework/skills/fw-refactor/SKILL.md"
+
+
+def _103_stand(root: str, pfade: list) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    for pfad in pfade:
+        inhalt = io.open(os.path.join(root, ".koolie", "core", *pfad.split("/")), "rb").read()
+        h.update(pfad.encode("utf-8") + b"\n" + inhalt.replace(b"\r\n", b"\n") + b"\n")
+    return h.hexdigest()[:12]
+
+
+def _103_marke(root: str, wert: str, pfad: str) -> None:
+    ersetze(P(root, P103_BLATT), (P103_ANKER, P103_ANKER + " [Stand: %s; %s]" % (wert, pfad)))
+
+
+def _103_veraltet(root: str) -> None:
+    # ein Stand, der zu keinem heutigen Inhalt passt
+    _103_marke(root, "0123456789ab", P103_GEGENSTAND)
+
+
+def _103_ohne_gegenstand(root: str) -> None:
+    _103_marke(root, "0123456789ab", "framework/skills/fw-refactor/GIBTESNICHT.md")
+
+
+def _103_passend(root: str) -> None:
+    _103_marke(root, _103_stand(root, [P103_GEGENSTAND]), P103_GEGENSTAND)
+
+
+sonde("103a", "Pruefung 103: eine Ergebniszelle traegt einen Stand, der nicht zum heutigen "
+      "Gegenstand passt", _103_veraltet, M103_VERALTET)
+sonde("103b", "Pruefung 103: eine Standmarke nennt einen Gegenstand, den es nicht gibt",
+      _103_ohne_gegenstand, M103_LEER)
+gegenprobe("103a", "Pruefung 103: ein Stand, der zum Gegenstand passt, bleibt unbeanstandet",
+           _103_passend, M103_VERALTET)
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
 #
@@ -8360,6 +8458,26 @@ sonde("69b", "Dieselbe Bauform als VERZEICHNIS: das Belegverzeichnis, das lauf.p
 
 sonde("69c", "Ohne ein einziges Werkzeug meldet Pruefung 69 den verlorenen Gegenstand, statt leise zu bestehen",
       _69_leer, M69_ANKER)
+
+
+def _69_beleg_im_paket(root: str) -> None:
+    """Seit 1.19.0 (D-473): ein Beleg IM zugelassenen Werkzeugpaket ist derselbe Befund."""
+    paket = P(root, P69_ORDNER, "apparat")
+    if not os.path.isdir(paket):
+        raise Praeparationsfehler("das Paket apparat/ fehlt - die Sonde 69d haette keinen Gegenstand")
+    schreib(os.path.join(paket, "reihe-sonde.json"), '{"name": "sonde"}')
+
+
+def _69_modul_im_paket(root: str) -> None:
+    """Gegenprobe: ein weiteres Modul im Paket ist ein Werkzeug."""
+    schreib(P(root, P69_ORDNER, "apparat", "sondenmodul.py"), "# nichts" + chr(10))
+
+
+sonde("69d", "Eine Reihe als JSON im Werkzeugpaket apparat/ wird gemeldet - das Paket ist fuer Quelltext zugelassen, nicht fuer Aufzeichnung",
+      _69_beleg_im_paket, M69)
+
+gegenprobe("69b", "Ein weiteres Modul im Werkzeugpaket apparat/ bleibt unbeanstandet",
+           _69_modul_im_paket, M69)
 
 gegenprobe("69a", "Ein weiteres .py-Skript ist ein Werkzeug und wird NICHT gemeldet - die Pruefung haengt an der Art der Datei, nicht an ihrer Neuheit",
            _69_weiteres_werkzeug, M69)

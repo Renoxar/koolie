@@ -2,6 +2,54 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.19.0] - 2026-09-29
+
+**Der Messapparat als Paket - und der Cache, den kein fester Pfad teilte** (`CR-2026-160` E1 bis E8, **D-471** bis
+**D-478**, **Pruefung 103** neu; `K-56`, `K-61`, `K-76`, `K-86` und `K-172` beantwortet, `K-189` bis `K-195` neu). Ein
+MINOR-Release mit Kontingent: 22 Sitzungslaeufe mit Claude Code 2.1.284 unter Windows, 8,79 USD, keiner verworfen;
+dazu ein Lauf mit der Agent-CLI von Cursor im Free-Tarif. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- Messapparat als Paket (`tests/erhebungen/messen.py`, `apparat/`, D-473): eine Reihe ist eine JSON-Datei in der
+  Erhebungsablage; vor jedem bezahlten Lauf eine Vorpruefung ohne Modell (Baum-Hash, `HEAD` und Branch, Prompt,
+  Kontingent, Vertrauen, Schutz-Hook an einem Leseereignis auf `.env`, optional die Werkzeuge der Startmeldung) - bei
+  einem Befund Abbruch statt Lauf; Kontingentbuch je Lauf; Adapter `claude-code` und `cursor`, die uebrigen Packs
+  sagen *unerhoben*; Felder `modell` und `gruppe`; Selbsttest gegen eine Attrappe (zehn Faelle, drei Gegenfaelle).
+  Gemessen gleichwertig: die Reihe von `1.18.2` erneut, alle acht Faelle an derselben Schicht abgewiesen.
+- Validator: **Pruefung 103** - eine Ergebniszelle kann ihren Stand tragen (`[Stand: ...; Pfade]`); weicht der
+  Gegenstand ab, warnt die Pruefung, ein fehlender Gegenstand ist ein Fehler (D-472, `K-61`).
+- `install.py`: Die Testblaetter der Skills gehen in die Laufzeitschicht **ohne** die Ergebnisse des
+  Quellrepositoriums - jede Ergebniszelle heisst dort `offen` mit Verweis auf den Kern (D-471, `K-56`).
+- Testblatt `fw-refactor`: `SK-007-N06` als `review`-Zelle fuer die Ruecknahme eines abweichenden Schritts,
+  bestanden (D-474, `K-76`).
+
+**Geaendert**
+
+- `SK-010-P01`, `SK-011-P01`, `SK-012-P01` mit Haupt- und Kontrolllauf neu gemessen: bestanden, **teilweise
+  zurechenbar** - die Befunde tragen Regelschicht und Promptvorlagen mit, der Skill Form und Strenge (D-476, `K-86`).
+- Schreibende Zellen laufen auf einem Arbeitsbranch `arbeit/...` (D-477, `K-172`).
+- Pruefung 69 laesst genau ein Werkzeugpaket (`apparat/`) mit Python-Quelltext zu; Sonde `69d`, Gegenprobe `69b`.
+- `cc-overlay-fuellen.py` und `umgebungen-bauen-b4.py` leiten die Huellen eines Befehlsschlitzes aus dem Korb ab -
+  seit `1.18.2` brachen sie am `PowerShell(...)`-Eintrag ab; `messbaum-schnitt.py aufzeichnungen --tools-bleiben`.
+- Roadmap: `1.19.1` Pruefwerkzeuge, `1.20.0` mit der Wirksamkeitsprobe (`K-195`), `1.21.0` Einsatzarchitektur,
+  Koexistenz und Vergleichsmessung (D-478).
+
+**Befunde**
+
+- 🔴 Ein fester Baumpfad spart keinen Cache (D-475): fest, je Lauf und `1.18.2` gleich - rund 19.300 Token neu,
+  51.800 gelesen je Lauf.
+- 🔴 Die Connectoren des claude.ai-Kontos stehen in jeder Sitzung von `claude-code`, auch im Messbaum (`K-191`).
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner. Nach `install.py --update` tragen die Testblaetter der Skillablage `offen` statt der Ergebnisse.
+
+**Bekannte Einschraenkungen**
+
+- Baeume aus dem Uebungsrepositorium baut das Paket noch nicht (`K-190`).
+- Eine Ergebniszelle ohne Standmarke bleibt von Pruefung 103 ungeprueft.
+
 ## [1.18.2] - 2026-09-29
 
 **Das zweite Befehlswerkzeug - und die Sperre, die es erst sichtbar machte** (`CR-2026-159` E1 bis E4, **D-469**

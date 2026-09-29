@@ -789,7 +789,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      ANLASS: 114 von 184 Punkten standen in der Entscheidungstabelle, elf erledigte
      trugen 'offen' (Triage 2026-09-29). GRENZE: der Anfang der Zelle, nicht ihre
      Richtigkeit
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 102 laeuft als eigenes
+103. Der Stand einer Ergebniszelle (D-472, K-61): Traegt eine Ergebniszelle eines
+     Testblatts oder des Testkatalogs eine Standmarke, rechnet die Pruefung den Stand
+     ihres Gegenstands nach; weicht er ab, warnt sie, nennt die Marke einen Pfad, den
+     es nicht gibt, ist es ein Fehler. ANLASS: FW-KO-02 stand auf 'bestanden', waehrend
+     drei spaetere Befunde in seinem Gegenstand lagen. GRENZE: Zellen ohne Marke
+     bleiben ungeprueft
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 103 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6825,6 +6831,69 @@ def check_klaerungsregister_form(root: str) -> None:
                 f"zusammengelegt ist – eine Kette statt eines Ortes (D-465)")
 
 
+# --- Pruefung 103: der Stand einer Ergebniszelle (CR-2026-160, D-472, K-61) --------------
+# ANLASS, GEMESSEN am 2026-09-18: FW-KO-02 stand seit dem 10.09. auf 'bestanden', und drei
+# der vier Befunde, die FW-KO-05 danach fand, lagen genau in seinem Gegenstand - entstanden
+# NACH der Abnahme. Der Testfall war nicht falsch; sein Belegstand war veraltet, und nichts
+# meldete es.
+#
+# DIE FORM: Eine Ergebniszelle kann ihren Stand tragen - '[Stand: ' + zwoelf Hexziffern +
+# '; ' + die Pfade ihres Gegenstands relativ zum Kern, durch Komma getrennt + ']'. Der Wert
+# ist sha256 ueber Pfad und Inhalt jeder Datei in der genannten Reihenfolge, Zeilenenden auf
+# LF gebracht; der Messapparat schreibt ihn beim Eintragen (tests/erhebungen/apparat).
+#
+# WAS SIE LEISTET: Weicht der Gegenstand vom Stand ab, WARNT sie - eine Aenderung ist kein
+# Fehler, sie verlangt eine Entscheidung (neu erheben oder den Stand bestaetigen). Nennt die
+# Marke einen Pfad, den es nicht gibt, ist das ein FEHLER: ein Stand ohne Gegenstand belegt
+# nichts. WAS SIE NICHT LEISTET: Eine Zelle ohne Marke bleibt ungeprueft; der Altbestand
+# traegt keine, und ihn mit geratenen Gegenstaenden nachzutragen saehe wie ein Beleg aus.
+P103_MARKE_RE = re.compile(r"\[Stand: ([0-9a-f]{12}); ([^\]]+)\]")
+
+
+def stand_wert(kern: str, pfade: list) -> str | None:
+    """Der Stand ueber die Dateien eines Gegenstands - None, wenn eine fehlt."""
+    import hashlib
+    h = hashlib.sha256()
+    for pfad in pfade:
+        voll = os.path.join(kern, *pfad.split("/"))
+        if not os.path.isfile(voll):
+            return None
+        with open(voll, "rb") as fh:
+            inhalt = fh.read().replace(b"\r\n", b"\n")
+        h.update(pfad.encode("utf-8") + b"\n" + inhalt + b"\n")
+    return h.hexdigest()[:12]
+
+
+def _p103_traeger(root: str) -> list:
+    kern = os.path.join(root, KERN)
+    dateien = [os.path.join(kern, "tests", "TEST_CATALOG.md")]
+    for basis in (os.path.join(kern, "framework", "skills"),
+                  os.path.join(kern, "framework", "role-packs")):
+        for wurzel, _, files in os.walk(basis):
+            if "TESTS.md" in files:
+                dateien.append(os.path.join(wurzel, "TESTS.md"))
+    return [d for d in sorted(dateien) if os.path.exists(d)]
+
+
+def check_ergebnisstand(root: str) -> None:
+    """Pruefung 103 (D-472): der Stand einer Ergebniszelle gegen ihren heutigen Gegenstand."""
+    kern = os.path.join(root, KERN)
+    for pfad in _p103_traeger(root):
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        for nr, zeile in enumerate(read(pfad).splitlines(), 1):
+            for m in P103_MARKE_RE.finditer(zeile):
+                gegenstand = [p.strip().strip("`") for p in m.group(2).split(",") if p.strip()]
+                wert = stand_wert(kern, gegenstand)
+                if wert is None:
+                    err(f"{rel}:{nr}: die Standmarke nennt einen Gegenstand, den es nicht gibt "
+                        f"({', '.join(gegenstand)}) – ein Stand ohne Gegenstand belegt nichts (D-472)")
+                elif wert != m.group(1):
+                    warn(f"{rel}:{nr}: Belegstand veraltet – der Gegenstand "
+                         f"({', '.join(gegenstand)}) hat sich seit der Messung geändert "
+                         f"(Stand {m.group(1)}, heute {wert}); neu erheben oder den Stand "
+                         f"bestätigen (D-472, K-61)")
+
+
 # --- Pruefung 51 -------------------------------------------------------------------
 # Eine Regel kann als SATZ oder als AUSFUELLSCHLITZ ausgedrueckt sein, und ein Sweep nach
 # einer Marke findet nur den Satz. 0.33.0 hat die Domain-Ausnahme in sechzehn Traegern
@@ -8595,7 +8664,24 @@ def check_praefix_uebererfassung(root: str) -> None:
 # Den Wächter davor traegt `ablage.py`: Er verlangt die Erhebungsablage als Angabe
 # und weist einen Pfad im Repositorium ab. Zwei Haelften desselben Gegenstands -
 # dieselbe Aufteilung wie bei D-205 zwischen Schnitt und Waechter.
+#
+# SEIT 1.19.0 EIN VERZEICHNIS, BENANNT (D-473): Der Messapparat ist ein Paket
+# (`apparat/`). Zugelassen ist genau dieser Name, und darin nur Python-Quelltext - ein
+# Beleg, eine Reihe oder ein Unterverzeichnis dort ist derselbe Befund wie daneben.
 P69_ERLAUBT_DATEI = (".py", ".md")
+P69_PAKETE = ("apparat",)
+
+
+def _p69_paket_rest(pfad: str) -> list:
+    """Was in einem zugelassenen Paket liegt und kein Python-Quelltext ist."""
+    rest = []
+    for name in sorted(os.listdir(pfad)):
+        voll = os.path.join(pfad, name)
+        if name == "__pycache__" and os.path.isdir(voll):
+            continue
+        if os.path.isdir(voll) or not name.endswith(".py"):
+            rest.append(name)
+    return rest
 
 
 def check_erhebungen_sauber(root: str) -> None:
@@ -8609,6 +8695,12 @@ def check_erhebungen_sauber(root: str) -> None:
         pfad = os.path.join(ordner, name)
         if os.path.isdir(pfad):
             if name == "__pycache__":
+                continue
+            if name in P69_PAKETE:
+                for fremd in _p69_paket_rest(pfad):
+                    err(f"{rel}/{name}/{fremd}: im Werkzeugpaket der Erhebungsablage des "
+                        f"Kerns liegt nur Python-Quelltext - Belege, Reihen und Prompts sind "
+                        f"Aufzeichnung und gehoeren neben das Repositorium (D-222, D-473)")
                 continue
             err(f"{rel}/{name}/: ein VERZEICHNIS in der Erhebungsablage des Kerns. "
                 f"Hier liegen Werkzeuge; Belege, Prompts und Zustandsaufnahmen sind "
@@ -11524,6 +11616,7 @@ def main() -> int:
     check_skillaufruf_im_katalog(root)
     check_klaerungsregister(root)
     check_klaerungsregister_form(root)
+    check_ergebnisstand(root)
     check_overlay_schlitze(root)
     check_v6_freigabefolge(root)
     check_releaseplan_kette(root)

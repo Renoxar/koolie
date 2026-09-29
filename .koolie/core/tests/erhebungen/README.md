@@ -69,6 +69,48 @@ Repositorium ab (vorher), **Prüfung 69** meldet jede Datei, die dort trotzdem
 liegt (nachher). Ein Sollwert im Quelltext wäre eine gepflegte Zahl gewesen –
 dieselbe Lehre wie `--ziel` beim Baumbau (D-218).
 
+## 🟢 Seit `1.19.0`: der Apparat als Paket – `messen.py` und `apparat/` (D-473, `K-174`)
+
+**Jede neue Reihe fährt mit diesem Paket.** Bis `1.18.2` entstanden je Release zwei bis
+siebzehn kopierte Skripte in der Erhebungsablage – 67 in elf Ablagen, ohne einen Test.
+Jetzt ist die Reihe **Daten** (eine JSON-Datei in der Ablage) und der Apparat **Code**
+(hier, versioniert, mit Selbsttest).
+
+```
+python messen.py REIHE.json pruefen | aufbau | vorpruefung | lauf | auswertung [FELD] | aufraeumen
+python messen.py basis ZIEL CLIENT PRAEPARATION.json    # frische Installation als Basis
+python messen.py stand-marke PFAD [PFAD ...]            # Standmarke einer Ergebniszelle (Prüfung 103)
+python messen.py selbsttest                             # gegen den Attrappen-Client, 0 USD
+```
+
+| Modul | Was es tut | Gemessener Anlass |
+|---|---|---|
+| `reihe.py` | liest die Reihe und meldet **alle** Schemafehler vor dem ersten Lauf | ein leerer Folgeturn lief bis `1.14.2` auf einen Rückfall |
+| `vorpruefung.py` | vor **jedem** bezahlten Lauf: Baum-Hash, `HEAD` und Branch, Prompt, Kontingent, Vertrauen, Schutz-Hook an einem Leseereignis auf `.env`, optional die Werkzeuge der Startmeldung – **Abbruch statt Lauf** | 10 von 40 Läufen von `1.17.0` verworfen; 38 Bäume auf `main` (D-218) |
+| `baum.py` | Basis bauen, Baum herrichten, zurücksetzen – und den Zustand als **eine** Zahl (Baum-Hash) | Rauschen im Änderungssatz (D-213) |
+| `kontingent.py` | **eine Datei je Lauf**, die Summe wird gerechnet; Deckel mit Reserve vor dem Lauf | zwei Reihen schrieben dieselbe `kontingent.json` (`1.17.0`, Falle 8) |
+| `clients.py` | Adapter `claude-code` (vollständig), `cursor` (Lauf; Kosten, Hook-Probe unerhoben – Pfad in `LW_CURSOR`), Attrappe; `devin-desktop`, `openai-codex`, `kiro` sagen **unerhoben** | D-276: ein Apparat, der einen Client nie sah, meldet nichts |
+| `belege.py` | sichert je Turn Ergebnis, Ausgabe, Antwort, Mitschrift und Laufdaten (Client, Version, **Modell**, Gruppe, Variante, Branch, Baum-Hash) – nur außerhalb des Repositoriums | D-222, D-280 |
+| `stand.py` | die Standmarke einer Ergebniszelle, gerechnet vom Validator (`stand_wert()`) | `K-61`: ein `bestanden` veraltet mit seinem Gegenstand |
+| `selbsttest.py` | zehn Fälle gegen die Attrappe, darunter drei Gegenfälle (falscher Branch, Rest im Baum, Deckel) | bis `1.18.2` kein einziger Test |
+
+**Baummodi:** `fest` (ein Verzeichnis je Reihe, zurückgesetzt zwischen den Läufen), `je_lauf`
+(ein Verzeichnis je Lauf), `vorhanden` (Bäume eines anderen Werkzeugs, etwa `baeume-b4.py`;
+der Apparat hält ihren Sollstand fest und prüft ihn vor jedem Lauf). Ein Lauf auf eigenem
+Branch heißt im Modus `fest` `arbeit/…` (`K-172`).
+
+🔴 **Der feste Pfad spart keinen Cache** (D-475, gemessen mit `1.19.0`): Dieselben acht
+Läufe kosteten im festen Baum, je Lauf in eigenem Baum und in `1.18.2` gleich viel – je
+Lauf rund 19.300 Token neu angelegt und 51.800 gelesen. Der gemeinsame Anfang wird über
+Verzeichnisse hinweg schon geteilt; neu angelegt wird, was die Sitzung selbst erzeugt.
+`fest` bleibt als Modus, weil er Platz und Bauzeit spart – nicht wegen der Kosten.
+
+⚠️ **Was das Paket noch nicht kann** (`K-190`): Bäume aus dem **Übungsrepositorium** bauen.
+Dafür bleiben `umgebungen-bauen-b4.py`, `baeume-b4.py` und `messbaum-schnitt.py`; der Apparat
+fährt ihre Bäume im Modus `vorhanden`. Zwei von ihnen hatte `1.18.2` still gebrochen – sie
+kannten nur `Bash(…)` als Hülle eines Befehlsschlitzes und brachen beim ersten Baumbau
+danach ab (berichtigt mit `1.19.0`).
+
 ## Die Werkzeuge
 
 | Skript | Was es tut |
