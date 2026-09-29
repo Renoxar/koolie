@@ -2,6 +2,37 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.18.2] - 2026-09-29
+
+**Das zweite Befehlswerkzeug - und die Sperre, die es erst sichtbar machte** (`CR-2026-159` E1 bis E4, **D-469**
+und **D-470**; `K-70` beantwortet, `K-188` neu). Ein PATCH-Release mit Kontingent: 10 Sitzungslaeufe mit Claude Code
+2.1.284 unter Windows, 1,76 USD. Kriterium 2 von D-11 bleibt 0.
+
+> 🔴 **MIGRATIONSHINWEIS FUER `claude-code`** (D-469). `install.py --update` schreibt die Berechtigungsdatei nie.
+> Jede Befehlsregel in `.claude/settings.json` gehoert zusaetzlich als `PowerShell(...)` hinein, und der Matcher des
+> Schutz-Hooks nennt `PowerShell`. `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay` nennt
+> die fehlenden Regeln. Ein Befehlsschlitz des Overlays (`<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>`)
+> steht damit zweimal im ask-Korb und wird in beiden Formen gefuellt (D-90).
+
+**Geaendert**
+
+- `claude-code` (Pack 0.25.1): `PowerShell` in `permission_tools.exec` und `hook_tools.exec` - jede Befehlsregel
+  der Kernquelle entsteht als `Bash(...)` und `PowerShell(...)`, der Hook-Matcher nennt das Werkzeug. Gemessen:
+  `git push` ueber PowerShell abgewiesen, auch verkettet und in Grossschreibung; `Remove-Item -Recurse -Force` und
+  `curl` abgewiesen; `Get-Content .env` vom Schutz-Hook abgewiesen; `git status` laeuft.
+- Beifund (D-470): Ohne `PowerShell(...)`-Regel bietet der Client das Werkzeug bei bestehenden Bash-Sperren nicht
+  an; jede solche Regel schaltet es ein. Undokumentiert - die Sperre traegt die Regel, nicht die Ausblendung.
+- Testkatalog: `FW-ZA-07` und `FW-ZA-08`, bestanden.
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner am Overlay; die Berechtigungsdatei von `claude-code` siehe oben.
+
+**Bekannte Einschraenkungen**
+
+- Windows ohne Git Bash ist nicht gemessen (`K-188`).
+- Cmdlets ohne Entsprechung in der Kernquelle, etwa `Invoke-WebRequest`, sind nicht gemessen.
+
 ## [1.18.1] - 2026-09-29
 
 **Das Register, das seine offenen Punkte nicht zaehlte - und die Sperre, die nur noch auf dem Papier stand**

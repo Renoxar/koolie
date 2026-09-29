@@ -3163,7 +3163,7 @@ def sonden_skill_deny() -> None:
         # --- 33a: die Sperre fehlt ganz - der Stand bis 0.34.0 ----------------------
         schreib(plan, ersetzt(
             ausgang,
-            ("disallowed-tools: Edit, Write, NotebookEdit, Bash\n", ""),
+            ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell\n", ""),
             quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33a", "aus permissions.deny der Quelle ergibt sich" in aus,
@@ -3172,7 +3172,7 @@ def sonden_skill_deny() -> None:
         # --- 33b: die Sperre ist unvollstaendig - eine Luecke ist ausnutzbar --------
         schreib(plan, ersetzt(
             ausgang,
-            ("disallowed-tools: Edit, Write, NotebookEdit, Bash",
+            ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell",
              "disallowed-tools: Edit, Write"),
             quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
@@ -3182,8 +3182,8 @@ def sonden_skill_deny() -> None:
         # --- 33c: ein Argumentmuster - gemessen wirkungslos, und zwar lautlos -------
         schreib(plan, ersetzt(
             ausgang,
-            ("disallowed-tools: Edit, Write, NotebookEdit, Bash",
-             "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*)"),
+            ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell",
+             "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*), PowerShell"),
             quelle="fw-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33c", "Argumentmuster" in aus,
@@ -4467,8 +4467,12 @@ def _42_trifft(root: str, erwartet) -> bool:
 
 def sonden_schlitzinhalte() -> None:
     """Wirkungsnachweis zu Pruefung 42 (CR-2026-066, D-90 und D-91)."""
-    for pack, rechte, werkzeug in (("claude-code", ".claude/settings.json", "Bash"),
-                                   ("devin-desktop", ".devin/config.json", "Exec")):
+    # Seit 1.18.2 fuehrt claude-code ZWEI Befehlswerkzeuge (D-469): Jeder Befehlsschlitz steht
+    # als Bash(...) und PowerShell(...) in der Datei, und ein ordentlich gefuelltes Projekt fuellt
+    # beide. Die Sonden fuellen nur den ersten - ihr Befund liegt dort.
+    for pack, rechte, werkzeuge in (("claude-code", ".claude/settings.json", ("Bash", "PowerShell")),
+                                    ("devin-desktop", ".devin/config.json", ("Exec",))):
+        werkzeug = werkzeuge[0]
         root = installation(pack)
         try:
             pfad_r = os.path.join(root, *rechte.split("/"))
@@ -4496,8 +4500,9 @@ def sonden_schlitzinhalte() -> None:
                                  ("TEST_COMMAND", "mvn -B test"),
                                  ("LINT_COMMAND", "mvn -B verify")):
                 _42_erklaert(root, "<%s>" % name, befehl)
-                _42_rechte(root, rechte, lambda d, n=name, b=befehl: _37_statt(
-                    d, "ask", sch(n), rg(b)))
+                for w in werkzeuge:
+                    _42_rechte(root, rechte, lambda d, n=name, b=befehl, w=w: _37_statt(
+                        d, "ask", "%s(<%s>)" % (w, n), "%s(%s)" % (w, b)))
             melde("GEGENPROBE", "42b", _42_trifft(root, M42_ALLE),
                   "Drei erklaerte Befehle, drei passende Regeln - der Normalfall "
                   "(%s)" % pack)
@@ -4509,12 +4514,13 @@ def sonden_schlitzinhalte() -> None:
             _42_erklaert(root, "<BUILD_COMMAND>", "mvn -B clean package")
             _42_erklaert(root, "<TEST_COMMAND>", "mvn -B test")
             _42_erklaert(root, "<LINT_COMMAND>", "nicht vorhanden")
-            _42_rechte(root, rechte,
-                       lambda d: _37_statt(d, "ask", sch("BUILD_COMMAND"),
-                                           rg("mvn -B clean package")),
-                       lambda d: _37_statt(d, "ask", sch("TEST_COMMAND"),
-                                           rg("mvn -B test")),
-                       lambda d: _37_weg(d, "ask", sch("LINT_COMMAND")))
+            for w in werkzeuge:
+                _42_rechte(root, rechte,
+                           lambda d, w=w: _37_statt(d, "ask", "%s(<BUILD_COMMAND>)" % w,
+                                                    "%s(mvn -B clean package)" % w),
+                           lambda d, w=w: _37_statt(d, "ask", "%s(<TEST_COMMAND>)" % w,
+                                                    "%s(mvn -B test)" % w),
+                           lambda d, w=w: _37_weg(d, "ask", "%s(<LINT_COMMAND>)" % w))
             melde("GEGENPROBE", "42c", _42_trifft(root, M42_ALLE),
                   "Kein Lintbefehl, Schlitz gestrichen - der zulaessige Weg "
                   "(%s)" % pack)
