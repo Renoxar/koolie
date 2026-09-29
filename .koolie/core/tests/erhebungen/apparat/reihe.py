@@ -1,0 +1,158 @@
+# -*- coding: utf-8 -*-
+"""Eine Reihe als Daten - und ihre Pruefung, bevor irgendetwas gebaut oder gefahren wird.
+
+Die Reihe liegt als JSON in der Erhebungsablage, nicht im Repositorium: Prompts und
+Erwartungen sind Aufzeichnung (D-222). Eine Reihe mit einem Fehler im Schema bricht beim
+Laden ab - sie haette sonst die ersten Laeufe bezahlt und am fuenften gemerkt, dass eine
+Kennung doppelt ist.
+
+Form (Pflicht ist, was ohne Standard steht):
+
+  {
+    "name": "1190-gleich",
+    "client": "claude-code",
+    "wurzel": "Verzeichnis der Messbaeume",
+    "kontingent": {"laeufe": 12, "usd": 8.0, "reserve_usd": 0.8},
+    "baum": {"modus": "fest" | "je_lauf" | "vorhanden",
+             "basis": "Pfad eines hergerichteten git-Baums (fest, je_lauf)",
+             "branch": "main", "remote": false, "ohne": ["node_modules"]},
+    "berechtigung": "bypassPermissions",
+    "vorpruefung": {"hook": true, "vertrauen": true, "startmeldung": []},
+    "laeufe": [{"kennung": "...", "prompt": "..." | "prompt_datei": "...",
+                "folgeturns": ["..."], "erwartung": "...",
+                "gruppe": "koolie" | "referenz", "modell": null,
+                "branch": null, "variante": null, "baum": "nur bei modus vorhanden"}]
+  }
+"""
+from __future__ import annotations
+
+import io
+import json
+import os
+import re
+
+MODI = ("fest", "je_lauf", "vorhanden")
+GRUPPEN = ("koolie", "referenz")
+KENNUNG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,40}$")
+
+
+class Reihenfehler(Exception):
+    """Die Reihe ist nicht fahrbar - gemeldet vor dem ersten Lauf."""
+
+
+class Lauf:
+    def __init__(self, d: dict, reihe: "Reihe") -> None:
+        self.kennung = d.get("kennung", "")
+        self.erwartung = d.get("erwartung", "")
+        self.gruppe = d.get("gruppe", "koolie")
+        self.modell = d.get("modell") or reihe.modell
+        self.branch = d.get("branch")
+        self.variante = d.get("variante")
+        self.baum_vorhanden = d.get("baum")
+        self.folgeturns = list(d.get("folgeturns") or [])
+        if "prompt_datei" in d:
+            pfad = d["prompt_datei"]
+            if not os.path.isabs(pfad):
+                pfad = os.path.join(reihe.ablage, pfad)
+            self.prompt = io.open(pfad, encoding="utf-8").read() if os.path.isfile(pfad) else ""
+            self.prompt_quelle = pfad
+        else:
+            self.prompt = d.get("prompt", "")
+            self.prompt_quelle = "reihe"
+
+    def ziel_branch(self, reihe: "Reihe") -> str:
+        return self.branch or reihe.baum.get("branch", "main")
+
+
+class Reihe:
+    def __init__(self, d: dict, ablage: str) -> None:
+        self.roh = d
+        self.ablage = ablage
+        self.name = d.get("name", "")
+        self.client = d.get("client", "")
+        self.wurzel = d.get("wurzel", "")
+        self.modell = d.get("modell")
+        k = d.get("kontingent") or {}
+        self.max_laeufe = int(k.get("laeufe", 0))
+        self.max_usd = float(k.get("usd", 0))
+        self.reserve_usd = float(k.get("reserve_usd", 0.8))
+        self.baum = dict(d.get("baum") or {})
+        self.baum.setdefault("branch", "main")
+        self.baum.setdefault("remote", False)
+        self.baum.setdefault("ohne", ["node_modules"])
+        self.berechtigung = d.get("berechtigung", "default")
+        v = dict(d.get("vorpruefung") or {})
+        v.setdefault("hook", True)
+        v.setdefault("vertrauen", True)
+        v.setdefault("startmeldung", [])
+        self.vorpruefung = v
+        self.laeufe = [Lauf(x, self) for x in d.get("laeufe") or []]
+
+    @property
+    def belege(self) -> str:
+        return os.path.join(self.ablage, "belege", self.name)
+
+    def lauf(self, kennung: str) -> Lauf:
+        for x in self.laeufe:
+            if x.kennung == kennung:
+                return x
+        raise Reihenfehler(f"keine Kennung '{kennung}' in der Reihe '{self.name}'")
+
+    def baumpfad(self, lauf: Lauf) -> str:
+        """Fester Pfad je Reihe (ein Prompt-Anfang, ein Cache) oder ein Baum je Lauf."""
+        modus = self.baum.get("modus")
+        if modus == "vorhanden":
+            return lauf.baum_vorhanden
+        if modus == "fest":
+            return os.path.join(self.wurzel, self.name)
+        return os.path.join(self.wurzel, self.name + "-" + lauf.kennung)
+
+
+def pruefen(r: Reihe, clients_bekannt) -> list:
+    """Alle Schemafehler auf einmal - nicht den ersten."""
+    f = []
+    if not KENNUNG_RE.match(r.name or ""):
+        f.append(f"name '{r.name}': Kleinbuchstaben, Ziffern, Bindestrich")
+    if r.client not in clients_bekannt:
+        f.append(f"client '{r.client}' hat keinen Adapter (bekannt: {', '.join(sorted(clients_bekannt))})")
+    if r.max_laeufe <= 0 or r.max_usd <= 0:
+        f.append("kontingent: laeufe und usd muessen gesagt sein - ein Apparat ohne Deckel zaehlt nur")
+    modus = r.baum.get("modus")
+    if modus not in MODI:
+        f.append(f"baum.modus '{modus}' - erlaubt: {', '.join(MODI)}")
+    if modus in ("fest", "je_lauf"):
+        if not r.wurzel:
+            f.append("wurzel fehlt")
+        if not r.baum.get("basis"):
+            f.append("baum.basis fehlt")
+    gesehen = set()
+    for x in r.laeufe:
+        if not KENNUNG_RE.match(x.kennung or ""):
+            f.append(f"Kennung '{x.kennung}': Kleinbuchstaben, Ziffern, Bindestrich")
+        if x.kennung in gesehen:
+            f.append(f"Kennung '{x.kennung}' doppelt")
+        gesehen.add(x.kennung)
+        if not x.prompt.strip():
+            f.append(f"{x.kennung}: Prompt leer ({x.prompt_quelle})")
+        if any(not t.strip() for t in x.folgeturns):
+            f.append(f"{x.kennung}: ein Folgeturn ist leer - Abbruch statt Rueckfall (1.14.2)")
+        if not x.erwartung.strip():
+            f.append(f"{x.kennung}: keine Erwartung - ein Lauf ohne Erwartung misst nichts")
+        if x.gruppe not in GRUPPEN:
+            f.append(f"{x.kennung}: gruppe '{x.gruppe}' - erlaubt: {', '.join(GRUPPEN)}")
+        if modus == "vorhanden" and not x.baum_vorhanden:
+            f.append(f"{x.kennung}: bei modus 'vorhanden' braucht jeder Lauf 'baum'")
+        if modus == "fest" and x.branch and not x.branch.startswith("arbeit/"):
+            f.append(f"{x.kennung}: ein eigener Branch heisst 'arbeit/...' (K-172)")
+    if not r.laeufe:
+        f.append("keine Laeufe")
+    return f
+
+
+def laden(pfad: str, clients_bekannt) -> Reihe:
+    d = json.loads(io.open(pfad, encoding="utf-8").read())
+    r = Reihe(d, os.path.dirname(os.path.abspath(pfad)))
+    fehler = pruefen(r, clients_bekannt)
+    if fehler:
+        raise Reihenfehler("Reihe nicht fahrbar:\n  - " + "\n  - ".join(fehler))
+    return r

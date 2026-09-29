@@ -626,6 +626,64 @@ def render_agent(text: str, man: dict) -> str:
     return "---\n" + fm + "---\n" + rumpf
 
 
+TESTBLATT_KOPF = "| Test-ID |"
+TESTBLATT_ERGEBNIS = "Ergebnisstatus"
+_TABELLENSTRICH = re.compile(r"(?<!\\)\|")
+
+
+def ist_testblatt(src_rel: str) -> bool:
+    """Ein dezentrales Testblatt eines Skills - Kernskill oder Skill eines Packs."""
+    return os.path.basename(src_rel) == "TESTS.md" and "/skills/" in src_rel
+
+
+def render_testblatt(text: str, src_rel: str) -> str:
+    """Die Ergebniszellen bleiben im Kern; die Laufzeitschicht bekommt nur die Testfaelle.
+
+    EIN TESTBLATT IST REGELQUELLE UND AUFZEICHNUNG ZUGLEICH (CR-2026-160, D-471, K-56).
+    Die Spalte Ergebnisstatus haelt fest, was im Quellrepositorium gemessen wurde - mit
+    Laufkennungen, Befunden und Protokollverweisen. In der Skillablage eines Projekts
+    liest der Client sie als Teil des Skills. Jede Zelle wird deshalb durch `offen` mit
+    Verweis auf die Kernfassung ersetzt: fuer das Projekt ist der Testfall ungemessen.
+    Die Kopie des Kerns im Projekt bleibt unberuehrt.
+
+    Eine Tabellenzeile darf ueber mehrere Textzeilen laufen; sie endet, wenn sie so viele
+    unmaskierte Striche traegt wie ihr Kopf. Stimmt die Zaehlung nicht, bricht die
+    Abbildung ab - eine halb ersetzte Zeile gaebe fremde Ergebnisse weiter.
+    """
+    kern = src_rel.replace("\\", "/")
+    ersatz = f" `offen` im Projekt – gemessen wird im Quellrepositorium; Ergebnis dort: `<CORE_DIR>/{kern}` (D-471) |"
+    aus: list[str] = []
+    striche = 0
+    offen: list[str] = []
+    for zeile in text.splitlines(keepends=True):
+        if offen:
+            offen.append(zeile)
+        elif striche and zeile.startswith("|") and not zeile.startswith("|---"):
+            offen = [zeile]
+        else:
+            if zeile.startswith(TESTBLATT_KOPF):
+                kopf = [z.strip() for z in _TABELLENSTRICH.split(zeile.strip())[1:-1]]
+                striche = len(_TABELLENSTRICH.findall(zeile)) if kopf and kopf[-1] == TESTBLATT_ERGEBNIS else 0
+            elif striche and not zeile.startswith("|"):
+                striche = 0
+            aus.append(zeile)
+            continue
+        zeilen = "".join(offen)
+        n = len(_TABELLENSTRICH.findall(zeilen))
+        if n < striche:
+            continue
+        if n > striche:
+            raise ValueError(f"{src_rel}: Tabellenzeile mit {n} statt {striche} Strichen - "
+                             "Ergebnisspalte nicht sicher kuerzbar (D-471)")
+        positionen = [m.start() for m in _TABELLENSTRICH.finditer(zeilen)]
+        ende = "\n" if zeilen.endswith("\n") else ""
+        aus.append(zeilen[:positionen[-2] + 1] + ersatz + ende)
+        offen = []
+    if offen:
+        raise ValueError(f"{src_rel}: Tabellenzeile ohne Abschluss (D-471)")
+    return "".join(aus)
+
+
 def render_for_client(text: str, man: dict, src_rel: str, dst_rel: str = "") -> str:
     """Waehlt die Transformation anhand der Quelle und loest danach die Platzhalter auf.
 
@@ -660,6 +718,8 @@ def render_for_client(text: str, man: dict, src_rel: str, dst_rel: str = "") -> 
         return clientmap.render_client_settings(man)
     if os.path.basename(src_rel) == "SKILL.md":
         text = render_skill_frontmatter(text, man)
+    elif ist_testblatt(src_rel):
+        text = render_testblatt(text, src_rel)
     elif ist_regelquelle(src_rel):
         text = render_rule(text, man)
     elif src_rel == "framework/runtime/root-instruction.md":

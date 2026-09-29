@@ -112,9 +112,16 @@ p["deny"] = entfalte(p["deny"], "<CI_CONFIG_PATHS>", WERTE["<CI_CONFIG_PATHS>"],
 p["deny"] = entfalte(p["deny"], "<QUALITY_GATE_CONFIG_PATHS>",
                      WERTE["<QUALITY_GATE_CONFIG_PATHS>"], "Edit(%s)")
 p["deny"] = entfalte(p["deny"], "<READ_ONLY_PATHS>", WERTE["<READ_ONLY_PATHS>"], "Edit(%s)")
-p["ask"] = entfalte(p["ask"], "<BUILD_COMMAND>", WERTE["<BUILD_COMMAND>"], "Bash(%s)")
-p["ask"] = entfalte(p["ask"], "<TEST_COMMAND>", WERTE["<TEST_COMMAND>"], "Bash(%s)")
-p["ask"] = entfalte(p["ask"], "<LINT_COMMAND>", WERTE["<LINT_COMMAND>"], "Bash(%s)")
+# Seit 1.18.2 fuehrt das Pack ZWEI Befehlswerkzeuge (D-469). Hier stand nur die Huelle
+# 'Bash(%s)', und das Skript brach beim ersten Baumbau danach mit "Platzhalter uebrig:
+# PowerShell(<BUILD_COMMAND>)" ab (1.19.0, gemessen). Die Huellen werden deshalb aus dem
+# Korb abgeleitet: jedes Werkzeug, das den Schlitz traegt.
+for _schlitz in ("<BUILD_COMMAND>", "<TEST_COMMAND>", "<LINT_COMMAND>"):
+    _huellen = sorted({e.split("(", 1)[0] for e in p["ask"] if e.endswith("(%s)" % _schlitz)})
+    if not _huellen:
+        raise SystemExit("ABBRUCH: %s steht in keiner Huelle des ask-Korbs" % _schlitz)
+    for _werkzeug in _huellen:
+        p["ask"] = entfalte(p["ask"], _schlitz, WERTE[_schlitz], _werkzeug + "(%s)")
 
 # --- 3. Die projekteigenen Schreibverbote aus der BINDENDEN Schicht ----------------
 # Gebraucht werden die Schreibverbote, die das PROJEKT eingetragen hat - die

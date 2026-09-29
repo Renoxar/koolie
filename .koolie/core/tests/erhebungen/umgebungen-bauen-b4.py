@@ -254,15 +254,22 @@ def main():
                          "erwartet 2 - der Zuschnitt haengt an der STELLUNG der "
                          "Platzhalterzelle" % len(werte))
     befehle = []
+    # 🔴 Seit 1.18.2 steht jeder Befehl einmal JE BEFEHLSWERKZEUG im Korb (Bash und
+    # PowerShell, D-469). Hier stand "genau einmal", und der erste Baumbau danach brach ab
+    # (1.19.0, gemessen). Verlangt ist jetzt: je Werkzeug genau einmal - verschoben werden
+    # alle, sonst fragte der Lauf ueber das zweite Werkzeug nach und maesse den Korb.
     for name, wert in werte:
         treffer = [x for x in p["ask"] if wert in x]
-        if len(treffer) != 1:
-            raise SystemExit("ABBRUCH: %s (%r) steht %dx im ask-Korb, erwartet "
-                             "genau einmal" % (name, wert, len(treffer)))
-        p["ask"].remove(treffer[0])
-        p["allow"].append(treffer[0])
-        befehle.append(treffer[0])
-        print("aus ask nach allow:", name, "->", treffer[0])
+        werkzeuge = [x.split("(", 1)[0] for x in treffer]
+        if not treffer or len(set(werkzeuge)) != len(werkzeuge):
+            raise SystemExit("ABBRUCH: %s (%r) steht %dx im ask-Korb (%s), erwartet "
+                             "genau einmal je Befehlswerkzeug"
+                             % (name, wert, len(treffer), ", ".join(werkzeuge)))
+        for eintrag in treffer:
+            p["ask"].remove(eintrag)
+            p["allow"].append(eintrag)
+            befehle.append(eintrag)
+            print("aus ask nach allow:", name, "->", eintrag)
 
     schreib(pfad, json.dumps(d, ensure_ascii=False, indent=2) + "\n")
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Zwei Schnitte an einem Messbaum, je mit Waechter (seit 1.14.1, K-167, D-425).
 
-Aufruf:  python messbaum-schnitt.py aufzeichnungen <baum>
+Aufruf:  python messbaum-schnitt.py aufzeichnungen <baum> [--tools-bleiben]
          python messbaum-schnitt.py ohneskill <baum> <skill> [<skill> ...]
 
 `aufzeichnungen` - fuer JEDEN Messbaum, Haupt- wie Kontrolllauf, und vor jedem
@@ -15,6 +15,13 @@ Aufruf:  python messbaum-schnitt.py aufzeichnungen <baum>
     Die Trennlinie ist die von D-141: geschnitten wird AUFZEICHNUNG, nicht Regel. Ein
     Messbaum braucht die Regelschicht; er braucht nicht die Geschichte, wie sie
     gemessen wurde.
+
+`--tools-bleiben` (seit 1.19.0, D-473) - fuer den Baumbau von Buendel 4: Dort setzt
+    `historie-bauen-b4.py` die Praeparationen NACH dem Schnitt ueber
+    `tools/praeparationen.py` und `tools/messbaum-b4/` im Baum; ohne sie bricht er ab
+    (gemessen am 2026-09-29 beim Nachlauf K-86). `tools/` bleibt dann stehen und ist vom
+    Waechter ausgenommen - fuer den Lauf sperrt es die Regel `Read(tools/**)` des
+    Messbaums, wie in den Baeumen, gegen die die Hauptlaeufe gefahren sind.
 
 `ohneskill` - der Kontrollzuschnitt ohne den Skill. 🔴 Bis 1.14.0 leerte er nur die
     Laufzeitablage `.claude/skills/`; die Kernfassung unter
@@ -117,9 +124,11 @@ def lies(pfad):
         return None
 
 
-def aufzeichnungen(baum):
+def aufzeichnungen(baum, tools_bleiben=False):
     entfernt = 0
     for r in WEG:
+        if tools_bleiben and r.startswith("tools/"):
+            continue
         p = os.path.join(baum, *r.split("/"))
         if os.path.lexists(p):
             weg(p)
@@ -148,7 +157,7 @@ def aufzeichnungen(baum):
     rest = []
     for p in dateien(baum):
         r = rel(baum, p)
-        if r in AUSGENOMMEN:
+        if r in AUSGENOMMEN or (tools_bleiben and r.startswith("tools/")):
             continue
         text = lies(p)
         if text is None:
@@ -232,8 +241,10 @@ def ohneskill(baum, skills):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 and sys.argv[1] == "aufzeichnungen":
-        aufzeichnungen(os.path.abspath(sys.argv[2]))
+    if len(sys.argv) in (3, 4) and sys.argv[1] == "aufzeichnungen":
+        if len(sys.argv) == 4 and sys.argv[3] != "--tools-bleiben":
+            raise SystemExit("unbekannter Schalter: " + sys.argv[3])
+        aufzeichnungen(os.path.abspath(sys.argv[2]), len(sys.argv) == 4)
     elif len(sys.argv) >= 4 and sys.argv[1] == "ohneskill":
         ohneskill(os.path.abspath(sys.argv[2]), sys.argv[3:])
     else:
