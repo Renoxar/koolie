@@ -782,7 +782,14 @@ Prüft (statisch, ohne laufenden KI-Client):
      das einzeln freigegebene Lesewerkzeug ab (Vorpruefung zu 1.18.0, V5). GRENZE: Ein
      Pack ohne erhobene Regelform wird nicht abgeglichen; ob die Werkzeugliste des
      Overlays zum Server passt, sieht die Pruefung nicht
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 101 laeuft als eigenes
+102. Die Form des Klaerungsregisters (D-465): Jeder Klaerungspunkt steht in der
+     Klaerungstabelle (Abschnitt 1 des Decision Logs), seine Statuszelle beginnt mit
+     einem Wert der Legende, und ein zusammengelegter Punkt zeigt auf einen bestehenden,
+     der nicht selbst zusammengelegt ist. Das Vokabular leitet sie aus der Legende ab.
+     ANLASS: 114 von 184 Punkten standen in der Entscheidungstabelle, elf erledigte
+     trugen 'offen' (Triage 2026-09-29). GRENZE: der Anfang der Zelle, nicht ihre
+     Richtigkeit
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 102 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -6732,6 +6739,92 @@ def check_klaerungsregister(root: str) -> None:
             f"Ein Register, das seinen Gegenstand nicht führt, ist keine Liste offener "
             f"Punkte, sondern eine Auswahl (D-147)")
 
+# --- Pruefung 102: die Form des Klaerungsregisters (CR-2026-158, D-465) -------------------
+# ANLASS, NACHGEZAEHLT am 2026-09-29: 114 von 184 Klaerungspunkten standen in der
+# Entscheidungstabelle (K-100 nannte 27), eine Leerzeile teilte die Klaerungstabelle, und elf
+# erledigte Punkte trugen weiter "offen". Pruefung 50 fragt nur, OB eine Kennung eine Zeile
+# hat - nicht, wo sie steht und womit ihr Status beginnt.
+#
+# ABGELEITET, NICHT GEPFLEGT: Das Vokabular steht in der Legende des Decision Logs, hinter
+# '*Klärungspunkte:*' bis zum Satz 'Diese Aufzählung ist vollständig', je Wert in Backticks.
+# Ein Wert mit Auslassungszeichen ('eingeplant (…)', 'zusammengelegt mit K-…') gilt als
+# Praefix bis dorthin.
+#
+# WAS SIE NICHT LEISTET: Sie sieht den ANFANG der Statuszelle, nicht, ob er stimmt. Ein
+# erledigter Punkt, der "offen" traegt, bleibt eine Frage der Durchsicht (D-465).
+# AUSGENOMMEN wie in Pruefung 50: die belegten synthetischen Kennungen des Pruefapparats. Die
+# Gegenprobe 46b braucht einen Klaerungspunkt mit dem Wert eines Decision Records - ein
+# Sondenfall, kein Registerfall; der erste Abnahmelauf von 1.18.1 hat ihn gemeldet.
+P102_LEGENDE = "*Klärungspunkte:*"
+P102_LEGENDE_ENDE = "Diese Aufzählung ist vollständig"
+P102_ABSCHNITT = "## 1. "
+P102_ZUSAMMEN_RE = re.compile(r"^zusammengelegt mit (K-\d+)")
+
+
+def _p102_vokabular(logtext: str) -> list:
+    for zeile in logtext.splitlines():
+        if P102_LEGENDE in zeile:
+            teil = zeile.split(P102_LEGENDE, 1)[1].split(P102_LEGENDE_ENDE, 1)[0]
+            return [w.split("…", 1)[0] for w in re.findall(r"`([^`]+)`", teil)]
+    return []
+
+
+def _p102_kopf(zelle: str) -> str:
+    """Der Anfang einer Statuszelle ohne Auszeichnung und ohne vorangestellte Zeichen."""
+    return re.sub(r"^[^\w(]+", "", re.sub(r"[*`]", "", zelle))
+
+
+def check_klaerungsregister_form(root: str) -> None:
+    """Pruefung 102 (D-465): Lage und Statusanfang jedes Klaerungspunkts."""
+    logpfad = os.path.join(root, KERN, "governance", "DECISION_LOG.md")
+    if not os.path.exists(logpfad):
+        return  # Pruefung 50 meldet das bereits
+    rel = f"{KERN}/governance/DECISION_LOG.md"
+    logtext = read(logpfad).replace("\r\n", "\n")
+    vokabular = _p102_vokabular(logtext)
+    synth = _synthetische_kennungen(logtext)
+    if not vokabular:
+        err(f"{rel}: die Legende nennt hinter '{P102_LEGENDE}' keinen Statuswert in Backticks – "
+            f"Prüfung 102 leitet ihr Vokabular daraus ab und hat ihren Anker verloren (D-23)")
+        return
+    abschnitt = ""
+    status = {}
+    for nr, zeile in enumerate(logtext.split("\n"), 1):
+        if zeile.startswith("## "):
+            abschnitt = zeile
+            continue
+        m = KLAERUNG_ZEILE_RE.match(zeile)
+        if not m:
+            continue
+        kennung = m.group(1)
+        if kennung in synth:
+            continue
+        if not abschnitt.startswith(P102_ABSCHNITT):
+            err(f"{rel}:{nr}: '{kennung}' steht unter '{abschnitt[3:].strip() or 'keiner Überschrift'}' "
+                f"statt in der Klärungstabelle (Abschnitt 1). Dort rendert die Zeile unter fremden "
+                f"Spaltenköpfen, und wer die offenen Punkte zählt, zählt eine Tabelle zu wenig (D-465)")
+        zellen = tabellenzellen(zeile.strip())
+        kopf = _p102_kopf(zellen[-1]) if zellen else ""
+        status[kennung] = (nr, kopf)
+        if not any(kopf.startswith(w) for w in vokabular):
+            err(f"{rel}:{nr}: die Statuszelle von '{kennung}' beginnt mit „{kopf[:40]}“ – kein Wert "
+                f"der Legende ({', '.join(vokabular)}). Ein Status außerhalb des Vokabulars "
+                f"zählt niemand richtig: bis 1.18.1 trugen elf erledigte Punkte „offen“ (D-465)")
+        elif re.match(r"^eingeplant \(\s*\)", kopf):
+            err(f"{rel}:{nr}: '{kennung}' ist eingeplant, nennt aber kein Ziel in der Klammer (D-465)")
+    for kennung, (nr, kopf) in status.items():
+        m = P102_ZUSAMMEN_RE.match(kopf)
+        if not m:
+            continue
+        ziel = m.group(1)
+        if ziel not in status:
+            err(f"{rel}:{nr}: '{kennung}' ist mit '{ziel}' zusammengelegt, das keine Registerzeile "
+                f"hat – der Gegenstand wird nirgends geführt (D-465)")
+        elif P102_ZUSAMMEN_RE.match(status[ziel][1]):
+            err(f"{rel}:{nr}: '{kennung}' ist mit '{ziel}' zusammengelegt, das selbst "
+                f"zusammengelegt ist – eine Kette statt eines Ortes (D-465)")
+
+
 # --- Pruefung 51 -------------------------------------------------------------------
 # Eine Regel kann als SATZ oder als AUSFUELLSCHLITZ ausgedrueckt sein, und ein Sweep nach
 # einer Marke findet nur den Satz. 0.33.0 hat die Domain-Ausnahme in sechzehn Traegern
@@ -11430,6 +11523,7 @@ def main() -> int:
     check_tool_neutrality(root)
     check_skillaufruf_im_katalog(root)
     check_klaerungsregister(root)
+    check_klaerungsregister_form(root)
     check_overlay_schlitze(root)
     check_v6_freigabefolge(root)
     check_releaseplan_kette(root)
