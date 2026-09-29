@@ -2,6 +2,48 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.18.1] - 2026-09-29
+
+**Das Register, das seine offenen Punkte nicht zaehlte - und die Sperre, die nur noch auf dem Papier stand**
+(`CR-2026-158` E1 bis E5, **D-465** bis **D-468**, **Pruefung 102** neu; `K-100` beantwortet, `K-187` neu). Ein
+PATCH-Release ohne Kontingent: keine Anweisung eines Skills und keine Laufzeitdatei geaendert, Kriterium 2 von
+D-11 bleibt 0.
+
+> 🔴 **VON 98 OFFEN GEFUEHRTEN KLAERUNGSPUNKTEN WAREN ELF ERLEDIGT** (D-466). Die Durchsicht aller 98 am
+> Repositorium hat 22 geschlossen, fuenf zusammengelegt, sieben an das Projekt uebergeben, sieben als benannte
+> Grenze gefuehrt und 36 einem Ziel zugeordnet; 21 bleiben offen. Und sie hat `K-70` am Piloten bestaetigt: Die
+> Schutzschicht von `claude-code` kennt unter Windows das PowerShell-Werkzeug nicht - vorgezogen als `1.18.2`.
+
+**Geaendert**
+
+- Decision Log (D-465): Alle Klaerungspunkte stehen in der Klaerungstabelle (Abschnitt 1) - 114 standen in der
+  Entscheidungstabelle. Die Legende kennt `eingeplant (…)`, `zusammengelegt mit K-…`, `an das Projekt uebergeben`
+  und `benannte Grenze`; jede Statuszelle beginnt mit einem Wert der Legende, der bisherige Text bleibt als Verlauf.
+- Validator: **Pruefung 102** - Lage jedes Klaerungspunkts, Anfang seiner Statuszelle (Vokabular aus der Legende
+  abgeleitet), Ziel einer Zusammenlegung besteht und ist nicht selbst zusammengelegt.
+- Triage (D-466): je Punkt Zuordnung mit Fundstelle; Protokoll `tests/protocols/2026-09-29-registerpflege.md`.
+- Releaseplan (D-467): `1.18.2` PowerShell-Luecke (`K-70`), Brainstorming zum Marktvergleich, `1.19.0`
+  Messapparat (`K-174`), `1.20.0` Schutzschicht und MCP-Nacharbeiten; Paketquellen (`K-155`) ohne Ziel-Release.
+- `RELEASE_PROCESS.md` Abschnitt 2: Pruefzyklus quartalsweise und vor jedem Release, das die Zielspanne eines
+  Packs beruehrt (`K-14`).
+- Client Packs (D-468): Zeile B4 von `cursor` (0.2.1), `devin-desktop` (0.14.6), `openai-codex` (0.1.8) und `kiro`
+  (0.1.1) nennt die Sperre des Overlays in der Berechtigungsdatei nicht mehr - seit `1.17.0` sperrt es allein der
+  Schutz-Hook (D-448), nachgezaehlt an je einer Installation. `devin-desktop`: die Stichprobe des Owners zu
+  `1.18.0` (MCP ueber `stdio` mit `mcp-remote` traegt, die Seitenversion kommt an) und Zeile S3 auch fuer `exec`
+  (`K-187`).
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner.
+
+**Bekannte Einschraenkungen**
+
+- `claude-code` unter Windows: Befehle ueber das PowerShell-Werkzeug erreichen weder die Befehlssperren der
+  Berechtigungsdatei noch den Schutz-Hook (`K-70`, `1.18.2`); der Client fragt im Normalbetrieb nach.
+- Bei `openai-codex` schuetzt der Sandkasten das Overlay seit `1.17.0` nicht mehr; Shell-Befehle haelt dort nur die
+  Regelschicht (D-448, D-468).
+- Pruefung 102 sieht den Anfang einer Statuszelle, nicht, ob der Wert stimmt.
+
 ## [1.18.0] - 2026-09-28
 
 **Das Ticketsystem und die Doku-Plattform ueber MCP - die Rueckfrage, die die Freigabe schlug, und das Token ohne

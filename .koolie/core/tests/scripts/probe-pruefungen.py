@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 101, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 102, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -2385,6 +2385,61 @@ buendel(sonden_mandat,
 buendel(sonden_mcp,
         "Pruefung 101 und das Mandat im Validator an einer echten claude-code-Installation: "
         "Schreibwerkzeug, Servermuster, fehlende Lesewerkzeuge, Pauschale und Overlay-Version")
+
+
+# --- Pruefung 102: die Form des Klaerungsregisters (CR-2026-158, D-465) -------------------
+M102_LAGE = "statt in der Klärungstabelle (Abschnitt 1)"
+M102_STATUS = "kein Wert der Legende"
+M102_KETTE = "das selbst zusammengelegt ist"
+M102_ANKER = "Prüfung 102 leitet ihr Vokabular daraus ab und hat ihren Anker verloren"
+P102_LOG = ".koolie/core/governance/DECISION_LOG.md".replace("/", os.sep)
+P102_ANKER_K = "| K-56 | "
+P102_ANKER_D = "| D-464 | "
+# Zusammengesetzt wie K50_SYNTH: Pruefung 50 meldet jede im Kern genannte Kennung ohne Zeile.
+K102_SYNTH = "K-" + "95"
+
+
+def _102_zeile(status: str) -> str:
+    return "| %s | Sondenfrage? | niedrig | Sondenbegruendung | Sondenweg | %s |" % (K102_SYNTH, status)
+
+
+def _102_in_entscheidungstabelle(root: str) -> None:
+    """Ein Klaerungspunkt unter den Decision Records - der Zustand vor 1.18.1 (114 Zeilen)."""
+    zeile_nach(P(root, P102_LOG), P102_ANKER_D, _102_zeile("offen"))
+
+
+def _102_status_ausserhalb(root: str) -> None:
+    """Eine Statuszelle, die mit einem Wort ausserhalb der Legende beginnt."""
+    zeile_nach(P(root, P102_LOG), P102_ANKER_K, _102_zeile("**beantwortet mit `1.0.0`**"))
+
+
+def _102_kette(root: str) -> None:
+    """Zusammengelegt mit einem Punkt, der selbst zusammengelegt ist (K-43 -> K-185)."""
+    zeile_nach(P(root, P102_LOG), P102_ANKER_K, _102_zeile("zusammengelegt mit K-43: Sonde"))
+
+
+def _102_anker_verlieren(root: str) -> None:
+    ersetze(P(root, P102_LOG), ("*Klärungspunkte:*", "*Offene Punkte:*"))
+
+
+def _102_eingeplant(root: str) -> None:
+    """Erlaubt: ein neuer Punkt in Abschnitt 1, eingeplant mit Ziel in der Klammer."""
+    zeile_nach(P(root, P102_LOG), P102_ANKER_K,
+               _102_zeile("🔴 **eingeplant (1.20.0 Schutzschicht)**: Sonde"))
+
+
+sonde("102a", "Pruefung 102: ein Klaerungspunkt steht unter den Decision Records statt "
+      "in der Klaerungstabelle", _102_in_entscheidungstabelle, M102_LAGE)
+sonde("102b", "Pruefung 102: eine Statuszelle beginnt mit einem Wort ausserhalb der Legende",
+      _102_status_ausserhalb, M102_STATUS)
+sonde("102c", "Pruefung 102: ein Punkt ist mit einem Punkt zusammengelegt, der selbst "
+      "zusammengelegt ist", _102_kette, M102_KETTE)
+sonde("102d", "Pruefung 102: ohne den Legendenanker meldet sie den Verlust statt still "
+      "nichts zu pruefen", _102_anker_verlieren, M102_ANKER)
+gegenprobe("102a", "Pruefung 102: das ausgelieferte Register traegt Lage und Statusanfang "
+           "jedes Klaerungspunkts richtig", None, M102_STATUS)
+gegenprobe("102b", "Pruefung 102: ein neuer Punkt mit Markierung und Ziel in der Klammer "
+           "bleibt unbeanstandet", _102_eingeplant, M102_STATUS)
 
 
 # --- Pruefung 26 und der Suchkanal (CR-2026-047, D-47) ----------------------------
