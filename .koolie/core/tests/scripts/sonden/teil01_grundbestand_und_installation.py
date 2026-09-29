@@ -504,6 +504,31 @@ gegenprobe("25", "Klassenzeile der Zusammenfassungstabelle bleibt unbeanstandet"
            None, "steht auf [NICHT ABBILDBAR]")
 
 
+# --- 25b (D-480): die Kennung mit zwei Buchstaben ------------------------------------
+#
+# Bis 1.19.1 las Pruefung 25 die Zeilenkennung mit dem Muster von Pruefung 31, das nur
+# EINEN Buchstaben kennt: Dieselbe Konstante stand zweimal im Validator, und die spaetere
+# Bindung galt fuer beide. Gefunden hat es die Aufteilung, nicht ein Lauf - heute fuehrt
+# kein Pack eine solche Zeile. Die Sonde legt eine an, die keinen Ersatz nennt.
+P25B_PACK = ".koolie/core/clients/claude-code/CLIENT_PACK.md"
+
+
+def _25b_zwei_buchstaben(root: str) -> None:
+    pfad = P(root, P25B_PACK.replace("/", os.sep))
+    text = lies(pfad)
+    zeilen = [z for z in text.split("\n") if z.startswith("| S5 |")]
+    if len(zeilen) != 1:
+        raise Praeparationsfehler("Sonde 25b: die Zeile S5 steht %dmal im Pack"
+                                  % len(zeilen))
+    neu = zeilen[0].replace("| S5 |", "| SX5 |", 1).replace("Ersatz", "Behelf")
+    schreib(pfad, text.replace(zeilen[0], zeilen[0] + "\n" + neu, 1))
+
+
+sonde("25b", "Eine Zeile mit zwei Buchstaben in der Kennung auf [NICHT ABBILDBAR] ohne "
+      "Ersatz wird gemeldet - bis 1.19.1 sah Pruefung 25 sie nicht",
+      _25b_zwei_buchstaben, "Zeile SX5 steht auf [NICHT ABBILDBAR]")
+
+
 # --- E3 (D-42): install.py --list-skills -----------------------------------------
 #
 # Kein Validatorlauf: Der Gegenstand ist ein Kommando, kein Artefakt. Gemessen wird an

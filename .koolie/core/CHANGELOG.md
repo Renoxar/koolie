@@ -2,6 +2,57 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.19.1] - 2026-09-29
+
+**Die Pruefwerkzeuge in Modulen - und die Konstante, die einer anderen Pruefung gehoerte** (`CR-2026-161` E1 bis
+E6, **D-479** bis **D-484**, **Pruefungen 104 und 105** neu; `K-38`, `K-40`, `K-51`, `K-98` und `K-174` beantwortet,
+`K-196` und `K-197` neu). Ein PATCH-Release ohne Kontingent. Kriterium 2 von D-11 bleibt 0.
+
+**Geaendert**
+
+- Validator und Sondenskript sind Einstieg und Paket (D-479, `K-174` Teil 2). `validate-framework.py` traegt das
+  Register und `main()`, die Pruefungen liegen nach Gegenstand in `tests/scripts/pruefungen/` (zehn Module);
+  `probe-pruefungen.py` traegt den Schluss des Laufs, Apparat und Einheiten liegen in `tests/scripts/sonden/`
+  (Apparat und elf Teile, geschnitten in der Reihenfolge der Anmeldung). Kein Modul ueber 1.500 Zeilen, keine Zyklen;
+  jedes Modul importiert ausdruecklich, was es liest. Aufruf, Schalter und die Lader (`mandat.py`,
+  `apparat/stand.py`, `mcp-waechter.py`, `zaehlen46.py`) bleiben unveraendert.
+- Belegt dreifach, im Protokoll `2026-09-29-pruefwerkzeuge.md`: gleicher Syntaxbaum je Knoten (472 von 474 im
+  Validator - zwei tote Bindungen entfallen -, alle 1.278 im Sondenskript und eine Pfadzeile), gleiche Ausgabe des
+  Validators, Sondenlauf in beiden Kodierungen zeilengleich zum Lauf vor der Aufteilung.
+- Pruefung 46 nennt bei einer gestiegenen Zahl beide Lesarten - Rueckfall oder vollstaendigerer Zaehlbereich
+  (D-483, `K-38`) - und meldet die Markerform in den Einstiegsdokumenten der Wurzel und unter `build/doc/` einzeln,
+  ohne die Zaehlung von Kriterium 1 zu aendern (`K-98`). Sonden `46g`, `46h`, Gegenprobe `46d`.
+- Pruefung 25 liest die Matrixzeilen mit ihrem eigenen Muster (D-480); Sonde `25b`.
+- `K-51` geschlossen, D-49 bleibt (D-484).
+
+**Neu**
+
+- **Pruefung 104**: Jede Funktion `check_*` des Pakets wird gerufen - von `main()` genau einmal oder im Paket -, und
+  der Sondenlauf laedt jeden Teil in der Reihenfolge seiner Nummer (D-481). Sonden `104a` bis `104e`, Gegenprobe
+  `104a`.
+- **Pruefung 105** (Warnung): Die gepruefte Clientversion eines Packs liegt in einer Zielspanne, und jede
+  Zielspanne ist durch eine gepruefte Version belegt (D-482, `K-40`). Sonden `105a` bis `105c`, Gegenproben `105a`,
+  `105b`.
+
+**Befunde**
+
+- 🔴 `MATRIXZEILE_RE` stand zweimal im Validator, mit verschiedenen Mustern; die spaetere Bindung galt fuer beide
+  Pruefungen, und Pruefung 25 sah Zeilenkennungen mit zwei Buchstaben nicht (D-480). Latent - kein Pack fuehrt eine.
+  Gefunden hat es die Analyse der Bindungen vor dem Schnitt, nicht ein Lauf.
+- Der alte Validator meldet am geteilten Baum genau die drei Selbstbezuege (Pruefungen 40, 75, 76), die mit der
+  Aufteilung angepasst wurden - die Pruefungen haben den Umbau selbst bemerkt.
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner. `install.py --update` bringt die beiden Pakete mit; wer den Validator von Hand kopiert, kopiert
+  `tests/scripts/` ganz.
+
+**Bekannte Einschraenkungen**
+
+- Pruefung 104 sieht nur die Praefixe `check_` und `teil`; Pruefung 105 vergleicht die Schreibweise, nicht das
+  Verhalten in der Spanne.
+- Doppelungen innerhalb der Pruefungen sind nicht aufgeloest (`K-196`).
+
 ## [1.19.0] - 2026-09-29
 
 **Der Messapparat als Paket - und der Cache, den kein fester Pfad teilte** (`CR-2026-160` E1 bis E8, **D-471** bis

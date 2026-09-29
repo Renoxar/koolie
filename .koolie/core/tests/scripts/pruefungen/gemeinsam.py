@@ -22,6 +22,24 @@ except ImportError:  # pragma: no cover
 # Name des Kernverzeichnisses. Er steht hier einmal statt an drei Stellen im Skript.
 KERN = ".koolie/core"
 
+# Seit 1.19.1 liegt der Code der beiden Pruefskripte in einem Paket neben seinem
+# Einstieg (K-174). Wer ihren Quelltext liest - Pruefung 40 das Register und
+# die Sondenmenge, Pruefung 104 die Verdrahtung -, liest den Einstieg UND sein Paket, den Einstieg zuerst: Sein
+# Kopfkommentar ist das Register.
+PAKET_JE_SKRIPT = {"tests/scripts/validate-framework.py": "tests/scripts/pruefungen",
+                   "tests/scripts/probe-pruefungen.py": "tests/scripts/sonden"}
+
+
+def paketquelltext(root: str, rel: str) -> str:
+    """Der Quelltext des Pakets zu einem Einstieg, Modul fuer Modul nach Namen."""
+    paket = PAKET_JE_SKRIPT.get(rel)
+    ordner = os.path.join(root, KERN, *paket.split("/")) if paket else ""
+    if not ordner or not os.path.isdir(ordner):
+        return ""
+    return "".join("\n" + read(os.path.join(ordner, name))
+                   for name in sorted(os.listdir(ordner)) if name.endswith(".py"))
+
+
 # ---------------------------------------------------------------------------
 # AUSGABEFORM DER BERECHTIGUNGSDATEI - UND DIE PRUEFUNGEN, DIE AN IHR HAENGEN
 # ---------------------------------------------------------------------------
@@ -504,27 +522,6 @@ def _hook_lauf(interpreter: str, skript: str, eingabe: str) -> int:
     return lauf.returncode
 
 
-# Pruefung 31: Die Zusammenfassung der Durchsetzungstiefe stimmt mit der Matrix.
-#
-# Die Summen sind dreimal gedriftet, und jedes Mal von Hand berichtigt worden: mit 0.26.0
-# fuehrte ein Pack "von 26", waehrend die Matrix 29 Zeilen trug (A2, M4, M5 kamen mit
-# CR-2026-025 hinzu); mit 0.31.0 wanderte S3 auf [NICHT ABBILDBAR], ohne dass die
-# Zusammenfassung es nachzog; und die vier Zeilen mit einer Kanalgrenze zaehlten weiter als
-# technisch, obwohl D-47 sie je Kanal ausweist - die Tabelle ueberzeichnete die
-# Durchsetzungstiefe damit um vier Zeilen und ihre Ueberschrift um drei Kernzusagen (B11,
-# D-60). Eine Zahl, die dreimal von Hand stimmen musste, gehoert ausgerechnet.
-#
-# ZAEHLREGEL, identisch zu der im Pack: Eine Zeile zaehlt bei ihrer SCHWAECHSTEN
-# Einstufung. [NICHT ABBILDBAR] vor [TEXTUELL] vor [TECHNISCH]. Eine Zeile ohne jede
-# Einstufung ist ein Fehler - sie sagt nichts zu.
-#
-# WAS DIESE PRUEFUNG NICHT LEISTET: Sie prueft die Arithmetik, nicht die Einstufung. Ob
-# eine Zeile richtig eingestuft ist, kann kein Skript beurteilen; das leistet die Erhebung
-# an einer Installation (AP2). Eine Matrix, in der jede Zeile falsch eingestuft ist,
-# besteht diese Pruefung.
-MATRIXZEILE_RE = re.compile(r"^\|\s*([A-Z]\d+)\s*\|")
-
-
 # Pruefung 38: Eine Quelle, ein Vokabular - und die Sperrliste ist nie enger als die
 # Vorabfreigabe (CR-2026-062, D-78 bis D-80).
 #
@@ -694,6 +691,14 @@ def _tabellenspalte(kopf: str, ueberschrift: str) -> int:
 # ➡️ Ein Anker, der nur an einem Arbeitsplatz liegt, ist keiner.
 # Das Kennzeichen ist deshalb eine eigene, versionierte Datei NEBEN dem Kern: Das
 # Heben kopiert nur den Kern, und install.py legt sie nicht an.
+# Die Einstiegsdokumente des Quellrepositoriums in seiner Wurzel (D-437): die README,
+# der Quickstart und ihre englischen Fassungen. Klasse A wie die README, und aus
+# demselben Grund nur im Quellrepositorium - in einem Projekt gehoert die Wurzel dem
+# Projekt (D-299). Pruefung 92 ist fuer die englischen Fassungen wirkungslos, aber
+# harmlos: Ihre Stammliste ist deutsch und trifft englischen Text nicht.
+DOK_WURZEL = ("README.md", "README.en.md", "QUICKSTART.md", "QUICKSTART.en.md")
+
+
 QUELLREPO_KENNZEICHEN = ".koolie/QUELLREPOSITORIUM.md"
 
 

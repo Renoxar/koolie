@@ -795,7 +795,17 @@ Prüft (statisch, ohne laufenden KI-Client):
      es nicht gibt, ist es ein Fehler. ANLASS: FW-KO-02 stand auf 'bestanden', waehrend
      drei spaetere Befunde in seinem Gegenstand lagen. GRENZE: Zellen ohne Marke
      bleiben ungeprueft
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 103 laeuft als eigenes
+104. Die Verdrahtung der Pruefwerkzeuge (D-481): Jede Funktion check_* des Pakets
+     pruefungen/ wird gerufen - von main() genau einmal oder im Paket -, und der
+     Sondenlauf laedt jeden Teil unter sonden/ in der Reihenfolge seiner Nummer.
+     ANLASS: die Aufteilung in 1.19.1 (D-479); eine verschobene, nicht gerufene
+     Pruefung liefe nie. GRENZE: die Verdrahtung, nicht, was eine Pruefung tut
+105. Die gepruefte Clientversion in der Zielspanne (D-482, K-40): Je Client Pack
+     liegt die erste Punktversion der Zeile 'Gepruefte Clientversion' in einer
+     Spanne der Zeile 'Verbindliche Zielversion', und jede Spanne ist durch eine
+     Punktversion belegt. WARNUNG, kein Fehler. GRENZE: ein Praefixvergleich der
+     Schreibweise, kein Beleg fuer gleiches Verhalten in der Spanne
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 105 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -842,11 +852,11 @@ from pruefungen.berechtigungen import (  # noqa: E402
     check_pack_im_korb, check_skill_deny_abbildung, check_skillfreigabe,
     check_verdraengende_wurzelanweisung, check_werkzeugabbildung)
 from pruefungen.packs import (  # noqa: E402
-    check_abwesenheitsbeleg, check_ausfall_mit_ersatz, check_dokumenttabellen,
-    check_formatgebundene_pruefungen, check_matrixzeile_in_tabelle,
-    check_normative_kommentare, check_quellenauskunft, check_regelablage_sauber,
-    check_schlitzinhalte, check_vorlage_kein_pack, check_werkzeugabwesenheit,
-    check_zusagenfelder, check_zusatzschluessel)
+    check_abwesenheitsbeleg, check_ausfall_mit_ersatz, check_clientversion_in_spanne,
+    check_dokumenttabellen, check_formatgebundene_pruefungen,
+    check_matrixzeile_in_tabelle, check_normative_kommentare, check_quellenauskunft,
+    check_regelablage_sauber, check_schlitzinhalte, check_vorlage_kein_pack,
+    check_werkzeugabwesenheit, check_zusagenfelder, check_zusatzschluessel)
 from pruefungen.overlay import (  # noqa: E402
     check_ausgeschlossene_vorbedingung, check_befehlsschlitz_in_vorbedingung,
     check_excluded_paths, check_overlay_pfadabgleich, check_overlay_ready,
@@ -871,7 +881,7 @@ from pruefungen.dokumente import (  # noqa: E402
 from pruefungen.werkzeuge import (  # noqa: E402
     check_arbeitsplatzpfad, check_bytecode_versioniert, check_erhebungen_sauber,
     check_gitignore_erzeugnisse, check_kernlage, check_lieferumfang,
-    check_praefix_uebererfassung, check_werkzeugnamen)
+    check_praefix_uebererfassung, check_verdrahtung, check_werkzeugnamen)
 
 # Die Schnittstelle fuer die Werkzeuge, die dieses Skript als Modul laden:
 #   mandat.py
@@ -1010,6 +1020,8 @@ def main() -> int:
     check_mandatsschutz(root, man)
     check_modellaufruf_nur_lesend(root, man)
     check_mcp_freigaben(root, man, args.strict_overlay)
+    check_verdrahtung(root)
+    check_clientversion_in_spanne(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

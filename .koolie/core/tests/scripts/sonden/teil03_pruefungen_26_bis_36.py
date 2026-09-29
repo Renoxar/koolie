@@ -359,7 +359,7 @@ def _bedingung_einfuegen(root: str) -> None:
         "sofern nicht im Overlay ausdr\u00fccklich als K1 eingestuft", 1))
 
 
-def _anker_verlieren(root: str) -> None:
+def _29_anker_verlieren(root: str) -> None:
     pfad = _p(root, KURZFORM_29)
     text = lies(pfad)
     schreib(pfad, text.replace("- Immer K3, ausnahmslos", "- Stets K3, ausnahmslos", 1))
@@ -382,7 +382,7 @@ sonde("29b", "Bedingung an einer unbedingten K3-Kategorie",
 
 sonde("29c", "Der verlorene Anker der K3-Liste - die Pruefung meldet ihr Fehlen selbst, statt "
       "leise zu bestehen",
-      _anker_verlieren, "ist nicht mehr auffindbar")
+      _29_anker_verlieren, "ist nicht mehr auffindbar")
 
 gegenprobe("29", "Kuerzere Formulierung derselben acht Kategorien",
            _kurzform_umformulieren, "nennt die Kategorie")
@@ -749,7 +749,7 @@ def _ohne_schreibweise(root: str) -> None:
     _tausche(root, r'\.env(\.|$)", re.I', r'\.env(\.|$)"')
 
 
-def _anker_verlieren(root: str) -> None:
+def _32_anker_verlieren(root: str) -> None:
     """Der Suchtext, ueber den Pruefung 32 ihren Gegenstand findet, geht verloren."""
     pfad = _hook32(root)
     schreib(pfad, lies(pfad).replace("ereignis_lesen(", "ereignis_pruefen("))
@@ -779,7 +779,7 @@ sonde("32e", "Secret-Muster wieder schreibungssensitiv - nur re.I faengt die nic
       "vorhandene Datei", _ohne_schreibweise, "wenn die Datei nicht existiert")
 
 sonde("32f", "Verlorener Anker - die Pruefung darf nicht leise bestehen",
-      _anker_verlieren, "'def ereignis_lesen(' fehlt")
+      _32_anker_verlieren, "'def ereignis_lesen(' fehlt")
 
 def _unteragent_ausnehmen(root: str) -> None:
     """Ein Rueckfall, den nur der Unteragenten-Umschlag faengt (CR-2026-058 E3).

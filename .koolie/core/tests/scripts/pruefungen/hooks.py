@@ -16,7 +16,7 @@ import sys
 
 from .gemeinsam import (
     _client_packs, _hook_interpreter, _hook_lauf, _walk_text_files, err,
-    formatgebunden, HOOK_SONDE, KERN, MATRIXZEILE_RE, read, tabellenzellen, warn)
+    formatgebunden, HOOK_SONDE, KERN, read, tabellenzellen, warn)
 
 
 def _hook_kommandos(root: str, man: dict) -> list[tuple[str, str]]:
@@ -632,6 +632,27 @@ def check_hook_eingabeschema(root: str, man: dict) -> None:
             err(f"{pack}/manifest.json: Der Schutz-Hook blockiert ein Verzeichnis, das "
                 f"nur so anfaengt wie das Kernverzeichnis. Ein Verzeichnis mit aehnlichem "
                 f"Namensanfang ist kein Kind des geschuetzten (CR-2026-056 E5)")
+
+
+# Pruefung 31: Die Zusammenfassung der Durchsetzungstiefe stimmt mit der Matrix.
+#
+# Die Summen sind dreimal gedriftet, und jedes Mal von Hand berichtigt worden: mit 0.26.0
+# fuehrte ein Pack "von 26", waehrend die Matrix 29 Zeilen trug (A2, M4, M5 kamen mit
+# CR-2026-025 hinzu); mit 0.31.0 wanderte S3 auf [NICHT ABBILDBAR], ohne dass die
+# Zusammenfassung es nachzog; und die vier Zeilen mit einer Kanalgrenze zaehlten weiter als
+# technisch, obwohl D-47 sie je Kanal ausweist - die Tabelle ueberzeichnete die
+# Durchsetzungstiefe damit um vier Zeilen und ihre Ueberschrift um drei Kernzusagen (B11,
+# D-60). Eine Zahl, die dreimal von Hand stimmen musste, gehoert ausgerechnet.
+#
+# ZAEHLREGEL, identisch zu der im Pack: Eine Zeile zaehlt bei ihrer SCHWAECHSTEN
+# Einstufung. [NICHT ABBILDBAR] vor [TEXTUELL] vor [TECHNISCH]. Eine Zeile ohne jede
+# Einstufung ist ein Fehler - sie sagt nichts zu.
+#
+# WAS DIESE PRUEFUNG NICHT LEISTET: Sie prueft die Arithmetik, nicht die Einstufung. Ob
+# eine Zeile richtig eingestuft ist, kann kein Skript beurteilen; das leistet die Erhebung
+# an einer Installation (AP2). Eine Matrix, in der jede Zeile falsch eingestuft ist,
+# besteht diese Pruefung.
+MATRIXZEILE_RE = re.compile(r"^\|\s*([A-Z]\d+)\s*\|")
 EINSTUFUNGEN = ("[NICHT ABBILDBAR]", "[TEXTUELL]", "[TECHNISCH]")
 SUMMENZEILE_RE = re.compile(
     r"^\|\s*\*{0,2}`\[([A-Z ]+)\]`\*{0,2}\s*\|\s*\*{0,2}(\d+)\s+von\s+(\d+)", re.M)

@@ -12,26 +12,8 @@ import os
 import re
 
 from .gemeinsam import (
-    err, iter_text_files, KERN, read, REGISTER_ANKER, REGISTER_ENDE, SKILL_STATUS,
-    tabellenzellen)
-
-
-# Seit 1.19.1 liegt der Code der beiden Pruefskripte in einem Paket neben seinem
-# Einstieg (K-174). Wer ihren Quelltext liest - Pruefung 40 das Register und
-# die Sondenmenge -, liest den Einstieg UND sein Paket, den Einstieg zuerst: Sein
-# Kopfkommentar ist das Register.
-PAKET_JE_SKRIPT = {"tests/scripts/validate-framework.py": "tests/scripts/pruefungen",
-                   "tests/scripts/probe-pruefungen.py": "tests/scripts/sonden"}
-
-
-def paketquelltext(root: str, rel: str) -> str:
-    """Der Quelltext des Pakets zu einem Einstieg, Modul fuer Modul nach Namen."""
-    paket = PAKET_JE_SKRIPT.get(rel)
-    ordner = os.path.join(root, KERN, *paket.split("/")) if paket else ""
-    if not ordner or not os.path.isdir(ordner):
-        return ""
-    return "".join("\n" + read(os.path.join(ordner, name))
-                   for name in sorted(os.listdir(ordner)) if name.endswith(".py"))
+    DOK_WURZEL, err, ist_quellrepositorium, iter_text_files, KERN, paketquelltext, read,
+    REGISTER_ANKER, REGISTER_ENDE, SKILL_STATUS, tabellenzellen)
 
 
 # Pruefung 36: Jede Tabellenzeile des Decision Logs fuehrt so viele Zellen wie der
@@ -423,8 +405,37 @@ def _d11_zaehlen(root: str) -> list:
     return [k1, k2, k3, k4]
 
 
+# --- Gegenstand 6 (seit 1.19.1, K-98, D-483): die Markerform AUSSERHALB des
+# Zaehlbereichs. Kriterium 1 zaehlt die Marker im Kern (D-11). Die Einstiegsdokumente
+# der Wurzel und die Quellen des Hauptdokuments unter build/doc/ liegen ausserhalb -
+# Traeger, die der Zaehler nie gesehen hat; 0.87.0 hat dort sechs Fundstellen von Hand
+# entfernt, und keine Pruefung hielt es fest (CR-2026-121, D-295). Eine Fundstelle dort
+# ist ein FEHLER und zaehlt NICHT in Kriterium 1: Die Zahl bliebe sonst nicht die, die
+# D-11 meint, und die Standzeile stiege, ohne dass der Kern sich bewegt hat.
+# Die Wurzeldokumente nur im Quellrepositorium - in einem Projekt gehoeren sie dem
+# Projekt (D-299).
+def _d11_ausserhalb(root: str) -> None:
+    """Markerform in den Wurzeldokumenten und unter build/doc/ - je Fundstelle."""
+    traeger = list(DOK_WURZEL) if ist_quellrepositorium(root) else []
+    doc = os.path.join(root, KERN, "build", "doc")
+    if os.path.isdir(doc):
+        traeger += [f"{KERN}/build/doc/{n}" for n in sorted(os.listdir(doc))
+                    if n.endswith(".md")]
+    for rel in traeger:
+        pfad = os.path.join(root, *rel.split("/"))
+        if not os.path.isfile(pfad):
+            continue
+        treffer = len(D11_MARKER_RE.findall(read(pfad)))
+        if treffer:
+            err(f"{rel}: traegt die Markerform einer unverifizierten Aussage "
+                f"{treffer}x. Die Stelle liegt ausserhalb des Zaehlbereichs von "
+                f"Kriterium 1 und wird dort nie gezaehlt - deshalb meldet Pruefung 46 "
+                f"sie einzeln: verifizieren oder die Aussage streichen (K-98, D-295)")
+
+
 def check_d11_stand(root: str) -> None:
     """Pruefung 46 (D-98, D-99): Der 1.0.0-Stand ist ausgerechnet, nicht gepflegt."""
+    _d11_ausserhalb(root)
     pfad = os.path.join(root, D11_DATEI.replace("/", os.sep))
     if not os.path.isfile(pfad):
         err(f"{D11_DATEI}: fehlt. Prüfung 46 hält dort den ausgerechneten 1.0.0-Stand "
@@ -464,7 +475,10 @@ def check_d11_stand(root: str) -> None:
             continue
         richtung = ("die Standzeile nennt keine Zahl dafür" if war is None else
                     f"die Standzeile nennt {war}" +
-                    (" – ein Kriterium ist zurückgefallen" if ist > war else
+                    (" – entweder ist der Bestand zurückgefallen, oder der "
+                     "Zählbereich sieht erstmals, was er vorher nicht sah; "
+                     "ohne einen Vorstandsvergleich trennt der Zähler die beiden "
+                     "Lesarten nicht (K-38)" if ist > war else
                      " – der Fortschritt ist nicht nachgezogen"))
         err(f"{D11_DATEI}: Kriterium {i + 1} von D-11 ({name}) ist gezählt **{ist}**, "
             f"{richtung}. Der 1.0.0-Stand gehört ausgerechnet und nicht gepflegt; am "

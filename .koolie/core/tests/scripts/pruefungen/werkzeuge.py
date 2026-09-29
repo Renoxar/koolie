@@ -8,6 +8,7 @@ steht im Kopfkommentar des Einstiegs, die Grenze jeder einzelnen in ihrem Kopfko
 hier."""
 from __future__ import annotations
 
+import ast
 import builtins
 import json
 import os
@@ -17,7 +18,7 @@ import sys
 
 from .gemeinsam import (
     _clientmap, _verfolgte_dateien, err, hinweis, ist_quellrepositorium,
-    iter_text_files, KERN, nicht_geliefert, read, warn)
+    iter_text_files, KERN, nicht_geliefert, PAKET_JE_SKRIPT, read, warn)
 
 
 # --- 45: Der Bytecode des Kerns gehoert nicht in die Versionierung (D-97) -----------
@@ -630,3 +631,126 @@ def check_kernlage(root: str) -> None:
         err(f"Die Lage des Kerns steht in {len(werte)} Werkzeugen und nicht überall "
             f"gleich: {zeilen}. Eine Installation läge dann je nach aufrufendem "
             f"Werkzeug an einem anderen Ort (D-299)")
+
+
+# ---------------------------------------------------------------------------
+# Pruefung 104: Die Verdrahtung der Pruefwerkzeuge (CR-2026-161, D-481)
+# ---------------------------------------------------------------------------
+#
+# ANLASS. Seit 1.19.1 liegen die Pruefungen in einem Paket, und der Einstieg ruft sie;
+# die Sonden liegen in Teilen, die der Einstieg des Sondenlaufs laedt (D-479). Eine
+# Pruefung, die in ein Modul wandert und von niemandem gerufen wird, laeuft nie - und
+# der Lauf endet mit "0 Fehler". Ein Sondenteil, den niemand laedt, meldet seine
+# Einheiten nie an - und der Sondenlauf endet mit "alle bestanden". Beides ist die
+# Null durch Konstruktion (0.59.1).
+#
+# WAS SIE PRUEFT, AM SYNTAXBAUM, OHNE ETWAS AUSZUFUEHREN:
+#   (1) Jede Funktion check_* der obersten Ebene eines Moduls unter pruefungen/ wird
+#       gerufen - von main() im Einstieg oder von einer anderen Funktion des Pakets
+#       (check_skills ruft check_skills_in) -, und main() ruft keine zweimal und keine,
+#       die es nicht gibt.
+#   (2) Jeder Teil unter sonden/ wird vom Einstieg des Sondenlaufs geladen, und zwar in
+#       der Reihenfolge seiner Nummer: Die Reihenfolge des Ladens ist die der Ausgabe
+#       (D-49).
+#
+# GRENZE: Sie prueft die Verdrahtung, nicht, was eine Pruefung tut - das tun ihre
+# Sonden. Sie sieht nur Funktionen mit dem Praefix check_ und Teile mit dem Praefix
+# teil; eine Pruefung unter anderem Namen faellt durch.
+P104_VALIDATOR = "tests/scripts/validate-framework.py"
+P104_SONDEN = "tests/scripts/probe-pruefungen.py"
+P104_TEIL_RE = re.compile(r"^teil(\d+)_\w+\.py$")
+
+
+def _p104_baum(root: str, rel: str):
+    """Der Syntaxbaum einer Datei unter dem Kern - oder None, dann ist gemeldet."""
+    pfad = os.path.join(root, KERN, *rel.split("/"))
+    if not os.path.isfile(pfad):
+        err(f"{KERN}/{rel}: fehlt - Pruefung 104 haelt dort die Verdrahtung der "
+            f"Pruefwerkzeuge (D-481)")
+        return None
+    try:
+        return ast.parse(read(pfad))
+    except SyntaxError as e:
+        err(f"{KERN}/{rel}: laedt nicht - {e.msg} (Zeile {e.lineno}); Pruefung 104 kann "
+            f"die Verdrahtung dort nicht lesen (D-481)")
+        return None
+
+
+def _p104_aufrufe(knoten) -> dict:
+    """{Name: Anzahl} der Aufrufe von check_* unterhalb eines Knotens."""
+    anzahl: dict = {}
+    for n in ast.walk(knoten):
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and \
+                n.func.id.startswith("check_"):
+            anzahl[n.func.id] = anzahl.get(n.func.id, 0) + 1
+    return anzahl
+
+
+def check_verdrahtung(root: str) -> None:
+    """Pruefung 104 (D-481): Jede Pruefung wird gerufen, jeder Sondenteil geladen."""
+    # --- Gegenstand 1: die Pruefungen -------------------------------------------------
+    einstieg = _p104_baum(root, P104_VALIDATOR)
+    paket = PAKET_JE_SKRIPT[P104_VALIDATOR]
+    ordner = os.path.join(root, KERN, *paket.split("/"))
+    definiert, im_paket = {}, {}
+    for name in sorted(os.listdir(ordner)) if os.path.isdir(ordner) else []:
+        if not name.endswith(".py"):
+            continue
+        modul = _p104_baum(root, f"{paket}/{name}")
+        if modul is None:
+            continue
+        for n in modul.body:
+            if isinstance(n, ast.FunctionDef) and n.name.startswith("check_"):
+                definiert[n.name] = f"{paket}/{name}"
+        for name_, zahl in _p104_aufrufe(modul).items():
+            im_paket[name_] = im_paket.get(name_, 0) + zahl
+    haupt = None if einstieg is None else next(
+        (n for n in einstieg.body if isinstance(n, ast.FunctionDef) and n.name == "main"),
+        None)
+    if not definiert or haupt is None:
+        err(f"Pruefung 104: {'keine Funktion check_* unter ' + KERN + '/' + paket + '/' if not definiert else 'keine Funktion main() in ' + KERN + '/' + P104_VALIDATOR} - "
+            f"sie hat ihren Gegenstand verloren und bestuende sonst leise (D-23, D-481)")
+    else:
+        in_main = _p104_aufrufe(haupt)
+        for name, wo in sorted(definiert.items()):
+            if not in_main.get(name) and not im_paket.get(name):
+                err(f"{KERN}/{wo}: {name}() wird von niemandem gerufen - weder von main() "
+                    f"in {P104_VALIDATOR} noch im Paket. Eine Pruefung, die niemand ruft, "
+                    f"laeuft nie, und der Lauf endet trotzdem mit 0 Fehlern (D-481)")
+            elif in_main.get(name, 0) > 1:
+                err(f"{KERN}/{P104_VALIDATOR}: main() ruft {name}() {in_main[name]}mal - "
+                    f"jede Pruefung laeuft genau einmal, sonst meldet sie jeden Befund "
+                    f"doppelt (D-481)")
+        for name in sorted(set(in_main) - set(definiert)):
+            err(f"{KERN}/{P104_VALIDATOR}: main() ruft {name}(), und kein Modul unter "
+                f"{paket}/ definiert sie (D-481)")
+
+    # --- Gegenstand 2: die Sondenteile ------------------------------------------------
+    einstieg = _p104_baum(root, P104_SONDEN)
+    paket = PAKET_JE_SKRIPT[P104_SONDEN]
+    ordner = os.path.join(root, KERN, *paket.split("/"))
+    teile = sorted((n[:-3] for n in (os.listdir(ordner) if os.path.isdir(ordner) else [])
+                    if P104_TEIL_RE.match(n)),
+                   key=lambda t: int(P104_TEIL_RE.match(t + ".py").group(1)))
+    if not teile:
+        err(f"Pruefung 104: kein Sondenteil teil<Nummer>_*.py unter {KERN}/{paket}/ - sie "
+            f"hat ihren Gegenstand verloren und bestuende sonst leise (D-23, D-481)")
+        return
+    if einstieg is None:
+        return
+    geladen = [a.name for n in einstieg.body if isinstance(n, ast.ImportFrom)
+               and n.module == os.path.basename(paket) for a in n.names]
+    for teil in teile:
+        if teil not in geladen:
+            err(f"{KERN}/{paket}/{teil}.py: wird von {P104_SONDEN} nicht geladen - seine "
+                f"Einheiten melden sich nie an, und der Sondenlauf endet trotzdem mit "
+                f"'alle bestanden' (D-481)")
+    for teil in geladen:
+        if teil not in teile:
+            err(f"{KERN}/{P104_SONDEN}: laedt {teil}, und unter {paket}/ gibt es keinen "
+                f"Teil dieses Namens (D-481)")
+    reihe = [t for t in geladen if t in teile]
+    if reihe != [t for t in teile if t in reihe]:
+        err(f"{KERN}/{P104_SONDEN}: laedt die Sondenteile nicht in der Reihenfolge ihrer "
+            f"Nummer. Die Reihenfolge des Ladens ist die Reihenfolge der Ausgabe, und die "
+            f"ist die zeilengleiche Abnahmeform (D-49, D-481)")

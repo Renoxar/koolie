@@ -13,7 +13,7 @@ import re
 import subprocess
 
 from .gemeinsam import (
-    _git_pfade, _verfolgte_dateien, err, hinweis, ist_quellrepositorium,
+    _git_pfade, _verfolgte_dateien, DOK_WURZEL, err, hinweis, ist_quellrepositorium,
     iter_text_files, KERN, nicht_geliefert, QUELLREPO_KENNZEICHEN, read,
     REGISTER_ANKER, REGISTER_ENDE, tabellenzellen, TBD_RE, TEXT_EXT, warn)
 
@@ -1035,14 +1035,6 @@ DOK_EINSTIEG = ("onboarding/", "examples/", "pilot/", "docs/ADOPTION_GUIDE.md",
 DOK_EINSTIEG_RE = re.compile(r"clients/[^_/][^/]*/CLIENT_PACK\.md$")
 DOK_NACHWEIS = ("governance/change-requests/", "tests/protocols/", "tests/erhebungen/",
                 "build/")
-# Die Einstiegsdokumente des Quellrepositoriums in seiner Wurzel (D-437): die README,
-# der Quickstart und ihre englischen Fassungen. Klasse A wie die README, und aus
-# demselben Grund nur im Quellrepositorium - in einem Projekt gehoert die Wurzel dem
-# Projekt (D-299). Pruefung 92 ist fuer die englischen Fassungen wirkungslos, aber
-# harmlos: Ihre Stammliste ist deutsch und trifft englischen Text nicht.
-DOK_WURZEL = ("README.md", "README.en.md", "QUICKSTART.md", "QUICKSTART.en.md")
-
-
 def dokumentklasse(rel: str) -> str | None:
     """Die Klasse eines Dokuments nach D-371 - projektrelativ, mit '/'. None heisst:
     kein Dokument dieser Pruefungen (keine Markdown-Datei, Nachweisschicht, Projekt)."""

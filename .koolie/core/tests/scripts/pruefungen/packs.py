@@ -14,8 +14,8 @@ import re
 
 from .gemeinsam import (
     _client_packs, _walk_text_files, err, formatgebunden, FORMATGEBUNDENE_PRUEFUNGEN,
-    FRONTMATTER_BLOECKE, KERN, korb_zerlegung, MATRIXZEILE_RE, P73_ZEILE_RE,
-    PROJEKTPLATZHALTER, read, soll_korbregeln, tabellenzellen)
+    FRONTMATTER_BLOECKE, KERN, korb_zerlegung, P73_ZEILE_RE, PROJEKTPLATZHALTER, read,
+    soll_korbregeln, tabellenzellen, warn)
 
 
 def nicht_erreicht(man: dict) -> set:
@@ -343,6 +343,11 @@ def check_regelablage_sauber(root: str) -> None:
 # den Ersatz benennen. Diese Pruefung setzt den zweiten Teil durch - den ersten kann kein
 # Skript durchsetzen, er ist eine Freigabe durch einen Menschen.
 NICHT_ABBILDBAR_RE = re.compile(r"`\[NICHT ABBILDBAR\]`")
+# Die Zeilenkennung der Matrix: ein oder zwei Grossbuchstaben und eine Zahl. Bis
+# 1.19.1 stand dieses Muster unter demselben Namen wie das von Pruefung 31, und die
+# spaetere Bindung galt fuer beide - Pruefung 25 sah zweibuchstabige Kennungen nicht,
+# ohne dass ein Lauf es zeigte (D-480). Jede der beiden hat jetzt ihr eigenes.
+P25_MATRIXZEILE_RE = re.compile(r"^\|\s*([A-Z]{1,2}\d+)\s*\|")
 
 
 def check_ausfall_mit_ersatz(root: str) -> None:
@@ -373,7 +378,7 @@ def check_ausfall_mit_ersatz(root: str) -> None:
         for i, zeile in enumerate(read(pfad).splitlines(), 1):
             if not NICHT_ABBILDBAR_RE.search(zeile):
                 continue
-            m = MATRIXZEILE_RE.match(zeile)
+            m = P25_MATRIXZEILE_RE.match(zeile)
             if not m:
                 continue
             if "ersatz" in zeile.lower():
@@ -1054,3 +1059,81 @@ def check_formatgebundene_pruefungen(root: str) -> None:
                 f"genannt, erreichen die Ausgabeform '{man['permissions_format']}' "
                 f"aber (FORMATGEBUNDENE_PRUEFUNGEN). Eine behauptete Lücke, die es nicht "
                 f"gibt, ist so falsch wie eine verschwiegene (D-346, D-416)")
+
+
+# ---------------------------------------------------------------------------
+# Pruefung 105: Die gepruefte Clientversion liegt in der Zielspanne (CR-2026-161, D-482)
+# ---------------------------------------------------------------------------
+#
+# ANLASS (K-40). Die Zielspanne ist eine Festlegung des Framework Owners (D-112, D-113),
+# und keine Pruefung hielt sie. Beim Pack claude-code stand der Punktwert 2.1.267 ueber
+# vierzig Releases unveraendert, bis er sechs Patchstaende alt war - der unbezahlte Preis
+# von D-113.
+#
+# WAS SIE PRUEFT, je Client Pack an den Steckbriefzeilen "Verbindliche Zielversion" und
+# "Gepruefte Clientversion":
+#   (1) Die ERSTE Punktversion der geprueften Zeile liegt in einer Spanne der Zielzeile.
+#       Weitere Punktversionen duerfen Nebenbestandteile sein (kiro nennt den
+#       Agentenserver, cursor die installierte IDE).
+#   (2) Jede Spanne der Zielzeile ist durch eine Punktversion der geprueften Zeile
+#       belegt - eine gehobene Spanne ohne Messung faellt so auf.
+# Eine Spanne ist ein Wert wie `2.1.x` IN BACKTICKS; "liegt in" heisst: beginnt mit
+# "2.1.". Die Backticks sind der Unterschied zwischen einer Festlegung und einer
+# Erwaehnung: devin-desktop schreibt in dieselbe Zelle, die Spanne werde "ohne Messung
+# gegen 3.10.x nicht gehoben" - der erste Entwurf dieser Pruefung hielt das fuer eine
+# Zielspanne ohne Messung.
+#
+# GRENZE, UND SIE STEHT AUCH IN DER MELDUNG: Das ist eine Aussage ueber die
+# SCHREIBWEISE. Dass 3.9.19 in 3.9.x liegt, belegt nicht, dass der Mechanismus in der
+# ganzen Spanne gleich ist. Deshalb eine WARNUNG und kein Fehler (D-482).
+P105_ZIEL = "Verbindliche Zielversion"
+P105_GEPRUEFT = "Geprüfte Clientversion"
+P105_SPANNE_RE = re.compile(r"`(\d+(?:\.\d+)*)\.x`")
+P105_VERSION_RE = re.compile(r"(?<![\w.])(\d+(?:\.\d+)+)(?:-[0-9a-z]+)?(?![\w.])")
+P105_GRENZE = ("Ein Praefixvergleich der Schreibweise, kein Beleg, dass der Mechanismus "
+               "in der ganzen Spanne gleich ist (K-40, D-482)")
+
+
+def _p105_zelle(text: str, feld: str) -> str | None:
+    """Die Wertzelle der Steckbriefzeile `feld` - oder None."""
+    for zeile in text.splitlines():
+        if not zeile.lstrip().startswith("|"):
+            continue
+        zellen = tabellenzellen(zeile)
+        if len(zellen) >= 2 and zellen[0] == feld:
+            return zellen[1]
+    return None
+
+
+def check_clientversion_in_spanne(root: str) -> None:
+    """Pruefung 105 (D-482): Die gepruefte Clientversion liegt in der Zielspanne."""
+    basis = os.path.join(root, KERN, "clients")
+    if not os.path.isdir(basis):
+        return
+    for pack in sorted(os.listdir(basis)):
+        pfad = os.path.join(basis, pack, "CLIENT_PACK.md")
+        if pack.startswith("_") or not os.path.isfile(pfad):
+            continue
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        text = read(pfad)
+        ziel, geprueft = _p105_zelle(text, P105_ZIEL), _p105_zelle(text, P105_GEPRUEFT)
+        if ziel is None or geprueft is None:
+            warn(f"{rel}: Pruefung 105 findet die Steckbriefzeile "
+                 f"'{P105_ZIEL if ziel is None else P105_GEPRUEFT}' nicht und haelt die "
+                 f"Zielspanne dieses Packs nicht (K-40, D-482)")
+            continue
+        spannen = P105_SPANNE_RE.findall(ziel)
+        versionen = [m.group(1) for m in P105_VERSION_RE.finditer(geprueft)]
+        if not spannen or not versionen:
+            warn(f"{rel}: Pruefung 105 findet in der Zeile "
+                 f"'{P105_ZIEL if not spannen else P105_GEPRUEFT}' keine "
+                 f"{'Spanne der Form N.N.x' if not spannen else 'Punktversion'} und haelt "
+                 f"die Zielspanne dieses Packs nicht (K-40, D-482)")
+            continue
+        if not any(versionen[0].startswith(s + ".") for s in spannen):
+            warn(f"{rel}: die gepruefte Clientversion {versionen[0]} liegt in keiner "
+                 f"Zielspanne ({', '.join(s + '.x' for s in spannen)}). {P105_GRENZE}")
+        for s in spannen:
+            if not any(v.startswith(s + ".") for v in versionen):
+                warn(f"{rel}: die Zielspanne {s}.x ist durch keine gepruefte Version "
+                     f"belegt - gehoben, ohne gemessen zu sein? {P105_GRENZE}")

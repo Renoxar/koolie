@@ -36,7 +36,9 @@ M46_K2 = "Kriterium 2 von D-11"
 M46_K3 = "Kriterium 3 von D-11"
 M46_K4 = "Kriterium 4 von D-11"
 M46_NICHT_NACHGEZOGEN = "der Fortschritt ist nicht nachgezogen"
-M46_RUECKFALL = "ein Kriterium ist zur\u00fcckgefallen"
+M46_RUECKFALL = ("entweder ist der Bestand zur\u00fcckgefallen, oder der "
+                 "Z\u00e4hlbereich sieht erstmals")
+M46_AUSSERHALB = "ausserhalb des Zaehlbereichs von Kriterium 1"
 P46_ROADMAP = ".koolie/core/docs/ROADMAP.md".replace("/", os.sep)
 P46_STAND = "Gezählt von Prüfung 46: Kriterium 1 = "
 # Der Marker in seiner clientneutralen Form - zusammengesetzt, weil eine woertliche
@@ -203,6 +205,38 @@ gegenprobe("46b", "Ein Klaerungspunkt mit demselben Statuswort bleibt ungezaehlt
 gegenprobe("46c", "Ein Marker in einem datierten Protokoll bleibt ungezaehlt - ein "
                   "Bericht von gestern ist nicht bearbeitbar", _46_protokollmarker,
            M46_K1)
+
+
+# --- 46g, 46h, Gegenprobe 46d (K-98, D-483): die Markerform ausserhalb des Zaehlbereichs
+#
+# Kriterium 1 zaehlt den Kern. Die Wurzeldokumente und die Quellen des Hauptdokuments
+# liegen ausserhalb; seit 1.19.1 meldet Pruefung 46 dort jede Fundstelle einzeln, ohne
+# die Zaehlung zu veraendern. Die Gegenprobe haelt die Grenze zur anderen Seite: Eine
+# Wurzeldatei, die kein Einstiegsdokument ist, gehoert nicht zu diesem Gegenstand.
+def _46_marker_in(rel: str):
+    def praeparieren(root: str) -> None:
+        pfad = P(root, rel.replace("/", os.sep))
+        if not os.path.isfile(pfad):
+            raise Praeparationsfehler("Sonde 46: %s fehlt" % rel)
+        schreib(pfad, lies(pfad) + "\r\nSondenzeile: " + P46_MARKER + "\r\n")
+    return praeparieren
+
+
+def _46_marker_neben_der_wurzel(root: str) -> None:
+    schreib(P(root, "SONDENNOTIZ.txt"), "Sondenzeile: " + P46_MARKER + "\r\n")
+
+
+sonde("46g", "Die Markerform in der README der Wurzel wird gemeldet, obwohl sie ausserhalb "
+             "des Zaehlbereichs von Kriterium 1 liegt", _46_marker_in("README.md"),
+      M46_AUSSERHALB)
+
+sonde("46h", "Die Markerform in einer Quelle des Hauptdokuments unter build/doc wird "
+             "gemeldet", _46_marker_in(".koolie/core/build/doc/32-abschluss.md"),
+      M46_AUSSERHALB)
+
+gegenprobe("46d", "Die Markerform in einer Wurzeldatei, die kein Einstiegsdokument ist, "
+                  "gehoert nicht zu diesem Gegenstand", _46_marker_neben_der_wurzel,
+           M46_AUSSERHALB)
 
 
 # --- Selbstprobe C1: der Baumdurchlauf sieht mehr als die Mustersuche ----------------
