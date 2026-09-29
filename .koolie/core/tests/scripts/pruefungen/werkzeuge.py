@@ -1,0 +1,632 @@
+"""Die Werkzeuge des Kerns und ihre Lieferung: Bytecode, Erzeugnisse in .gitignore,
+Praefixerfassung, Erhebungsablage, Werkzeugnamen, Arbeitsplatzpfade, Kernlage und
+Lieferumfang.
+
+Pruefungen 45, 68, 69, 70, 71, 76 und 90. Teil des Validators validate-framework.py,
+seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das Register aller Pruefungen
+steht im Kopfkommentar des Einstiegs, die Grenze jeder einzelnen in ihrem Kopfkommentar
+hier."""
+from __future__ import annotations
+
+import builtins
+import json
+import os
+import re
+import symtable
+import sys
+
+from .gemeinsam import (
+    _clientmap, _verfolgte_dateien, err, hinweis, ist_quellrepositorium,
+    iter_text_files, KERN, nicht_geliefert, read, warn)
+
+
+# --- 45: Der Bytecode des Kerns gehoert nicht in die Versionierung (D-97) -----------
+#
+# ANLASS. Abgezaehlt am 2026-09-15 an **beiden** Projekten, die dieses Framework benutzen:
+# Der Pilot fuehrte sechs .pyc-Dateien unter .koolie/core/ in der Versionierung, das
+# Uebungsrepositorium zwei. Zwei von zwei. Der Uebernahmeleitfaden sagte zur .gitignore
+# nur, welche Zeilen man **weglassen** soll - die vier, die im Framework-Repositorium die
+# Wurzelbestandteile ausschliessen. Welche Zeile man **braucht**, sagte er nicht.
+#
+# **Das ist dieselbe Bauform wie der Befund von 0.45.0:** eine Anweisung, die die halbe
+# Migration beschreibt, ist gefaehrlicher als keine. Wer dem Leitfaden woertlich folgt,
+# schreibt eine eigene .gitignore - und versioniert danach den Bytecode eines Werkzeugs,
+# das bei jedem Lauf neuen erzeugt.
+#
+# ZWEI GEGENSTAENDE, und der zweite ist der, der den Fall wirklich faengt:
+#
+#   1. DIE REGEL. Die .gitignore des Projekts deckt __pycache__ ab. Geprueft wird gegen
+#      eine kleine Liste gebraeuchlicher Schreibweisen (GITIGNORE_DECKUNG), nicht gegen
+#      eine einzige - ein Projekt, das `*.pyc` schreibt, ist richtig, und eine Pruefung,
+#      die es meldete, waere zu eng. Genau der Fehler, den Pruefung 37 einmal gemacht hat.
+#   2. DER BESTAND. Wo git erreichbar und die Wurzel ein Repositorium ist: keine Datei
+#      unter <CORE_DIR>/ mit der Endung .pyc oder im Pfad __pycache__ darf verfolgt sein.
+#
+# WARUM BEIDE. Die Regel allein waere die halbe Migration ein zweites Mal: **git liest
+# die .gitignore fuer bereits verfolgte Dateien nicht.** Wer die Zeile nachtraegt und
+# `git rm --cached` vergisst, bekaeme einen gruenen Lauf und haette die sechs Dateien
+# weiter im Repositorium. Der Bestand allein wiederum sagt dem Projekt nicht, wie es die
+# Wiederholung verhindert - beim naechsten `git add` waeren sie zurueck.
+#
+# GRENZE. Gegenstand 2 laeuft nur, wo git erreichbar ist und die Wurzel ein Repositorium
+# ist. Wo nicht, sagt die Pruefung das als **Warnung** - dieselbe Bauform, die dieses
+# Skript fuer das fehlende PyYAML schon hat. Eine Pruefhaelfte, die stumm ausfaellt, waere
+# genau der Befundtyp, gegen den D-23 gebaut ist.
+# Und: Fehlt die .gitignore ganz, ist das eine **Warnung** und kein Fehler. Ob ein Projekt
+# ueberhaupt versioniert, kann dieses Skript nicht wissen; Gegenstand 2 faengt den echten
+# Fall ohnehin, sobald git da ist.
+GITIGNORE_DECKUNG = ("__pycache__/", "__pycache__", "**/__pycache__/",
+                     "*.pyc", "**/*.pyc")
+BYTECODE_MARKER = "__pycache__"
+
+
+def check_bytecode_versioniert(root: str) -> None:
+    """Pruefung 45 (D-97): Der Bytecode des Kerns steht nicht in der Versionierung."""
+    # --- Gegenstand 1: die Regel ---------------------------------------------------
+    pfad = os.path.join(root, ".gitignore")
+    if not os.path.exists(pfad):
+        warn(".gitignore: nicht vorhanden. Prüfung 45 kann die Regel gegen den Bytecode "
+             "des Kerns nicht prüfen. Versioniert dieses Projekt, gehört `__pycache__/` "
+             "dort hinein – die Python-Werkzeuge des Kerns erzeugen bei jedem Lauf "
+             "Bytecode unter " + KERN + "/ (D-97)")
+    else:
+        zeilen = [z.strip() for z in read(pfad).splitlines()]
+        if not any(z in GITIGNORE_DECKUNG for z in zeilen):
+            err(f".gitignore: deckt den Bytecode des Kerns nicht ab. Die Python-Werkzeuge "
+                f"unter {KERN}/ erzeugen bei jedem Lauf `.pyc`-Dateien; versioniert, "
+                f"ändern sie sich mit jedem Lauf und überleben den Kern, aus dem sie "
+                f"entstanden sind. Eine dieser Zeilen gehört in die Datei: "
+                f"{', '.join('`%s`' % m for m in GITIGNORE_DECKUNG)} "
+                f"(docs/ADOPTION_GUIDE.md Abschnitt 2, D-97)")
+
+    # --- Gegenstand 2: der Bestand ---------------------------------------------------
+    verfolgt = _verfolgte_dateien(root)
+    if verfolgt is None:
+        warn(f"Gegenstand 2 der Prüfung 45 ist nicht gelaufen – git ist nicht erreichbar "
+             f"oder {root} ist kein Repositorium. Ob unter {KERN}/ Bytecode versioniert "
+             f"ist, sagt dieser Lauf damit **nicht**; die Regel in der .gitignore allein "
+             f"entfernt bereits verfolgte Dateien nicht (D-97)")
+        return
+    bytecode = sorted(p for p in verfolgt
+                      if p.endswith(".pyc") or BYTECODE_MARKER in p)
+    if bytecode:
+        gezeigt = ", ".join(bytecode[:4]) + (" …" if len(bytecode) > 4 else "")
+        err(f"{len(bytecode)} Bytecode-Datei(en) unter {KERN}/ sind versioniert: "
+            f"{gezeigt}. **Die Regel in der .gitignore entfernt sie nicht** – git liest "
+            f"sie für bereits verfolgte Dateien nicht. Der Weg ist "
+            f"`git rm -r --cached {KERN}/**/__pycache__` und danach die Regel (D-97)")
+
+
+
+# --- 45, Gegenstand 3: Die Erzeugnisse der Packs im Quellrepositorium (D-383, K-124) --
+#
+# Im Quellrepositorium sind Wurzel-Anweisungsdatei, Laufzeitschicht und Overlay
+# ERZEUGNISSE von install.py und werden nicht versioniert (README, Abschnitt "Arbeiten an
+# diesem Repository"). Bis 1.9.0 schloss die .gitignore nur die Erzeugnisse EINES Packs
+# aus; nach `install.py --client` mit einem der anderen beiden waeren deren Dateien
+# versionierbar gewesen (K-124).
+#
+# ABGELEITET, NICHT AUFGEZAEHLT: Was ein Pack in die Wurzel schreibt, steht in seinem
+# Manifest (shared_core, shared_seed). Verlangt wird je Ziel der erste Pfadbestandteil
+# (unter .koolie/ die ersten zwei - der Kern selbst ist versioniert). Ein neues Pack
+# bringt seine Zeilen damit als Befund mit, statt still versionierbar zu sein.
+# Nur im Quellrepositorium: In einem Projekt gilt das Gegenteil (D-383).
+GITIGNORE_ERZEUGNIS_LISTEN = ("shared_core", "shared_seed")
+
+
+def _erzeugnis_wurzeln(root: str) -> dict:
+    """{Wurzelbestandteil: [Packs]} aller Ziele, die install.py im Quellrepositorium anlegt."""
+    kern = os.path.join(root, KERN)
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import clientmap
+    except ImportError:
+        warn("clientmap.py nicht gefunden – Gegenstand 3 der Prüfung 45 ist nicht "
+             "gelaufen (D-383)")
+        return {}
+    wurzeln: dict = {}
+    clients = os.path.join(root, KERN, "clients")
+    for pack in sorted(os.listdir(clients)):
+        pfad = os.path.join(clients, pack, "manifest.json")
+        if pack.startswith("_") or not os.path.isfile(pfad):
+            continue
+        man = json.loads(read(pfad))
+        for liste in GITIGNORE_ERZEUGNIS_LISTEN:
+            for eintrag in man.get(liste, []):
+                ziel = clientmap.resolve_placeholders(eintrag["dst"], man).strip("/")
+                teile = ziel.split("/")
+                if teile[0] == ".koolie":
+                    if len(teile) < 2 or teile[1] == "core":
+                        continue
+                    teile = teile[:2]
+                else:
+                    teile = teile[:1]
+                wurzeln.setdefault("/".join(teile), []).append(pack)
+    return wurzeln
+
+
+def check_gitignore_erzeugnisse(root: str) -> None:
+    """Pruefung 45, Gegenstand 3 (D-383): Die .gitignore des Quellrepositoriums schliesst
+    die Wurzelerzeugnisse jedes Packs aus."""
+    if not ist_quellrepositorium(root):
+        return
+    pfad = os.path.join(root, ".gitignore")
+    if not os.path.isfile(pfad):
+        return  # Gegenstand 1 meldet die fehlende Datei
+    zeilen = {z.strip().strip("/") for z in read(pfad).splitlines()
+              if z.strip() and not z.strip().startswith(("#", "!"))}
+    for wurzel, packs in sorted(_erzeugnis_wurzeln(root).items()):
+        if wurzel not in zeilen:
+            err(f".gitignore: schließt das Erzeugnis `/{wurzel}` nicht aus "
+                f"({', '.join(sorted(set(packs)))}). Im Quellrepositorium sind "
+                f"Wurzel-Anweisungsdatei, Laufzeitschicht und Overlay Erzeugnisse von "
+                f"install.py und werden nicht versioniert (Prüfung 45, D-383)")
+
+
+def check_lieferumfang(root: str) -> None:
+    """Pruefung 90 (D-367): Die Angabe des Lieferumfangs stimmt."""
+    cm = _clientmap(root)
+    if cm is None:
+        return  # ohne clientmap.py meldet Pruefung 1 die fehlende Pflichtdatei
+    kern = os.path.join(root, KERN)
+    datei = f"{KERN}/{cm.LIEFERUMFANG_DATEI}"
+    vorhanden = os.path.isfile(os.path.join(kern, cm.LIEFERUMFANG_DATEI))
+    if ist_quellrepositorium(root):
+        if vorhanden:
+            err(f"{datei}: liegt im Quellrepositorium. Die Datei schreibt install.py in "
+                f"ein Projekt; hier behauptete sie eine Installation, und eine Quelle mit "
+                f"'nutzung' lieferte keinen vollen Kern mehr (D-367)")
+        return
+    wert = cm.lieferumfang(kern)
+    if wert not in cm.LIEFERUMFAENGE:
+        err(f"{datei}: trägt '{wert}' – bekannt sind {', '.join(cm.LIEFERUMFAENGE)}. "
+            f"Das nächste Heben hält daran an (D-367)")
+        return
+    if wert != "nutzung":
+        return
+    da = [a for a in cm.NACHWEIS_ABLAGEN if os.path.exists(os.path.join(kern, *a.split("/")))]
+    if da:
+        err(f"{datei}: sagt 'nutzung', aber {', '.join(f'{KERN}/{a}/' for a in da)} "
+            f"liegt da. Das nächste Heben mit diesem Umfang löscht es; wer den ganzen "
+            f"Kern will, hebt mit --lieferumfang voll (D-367)")
+        return
+    hinweis(f"Lieferumfang 'nutzung' ({datei}): ohne die Nachweisschicht "
+            f"({', '.join(cm.NACHWEIS_ABLAGEN)}). Verweise dorthin sind Herkunftsangaben "
+            f"und werden nicht gemeldet; Belege stehen im Release-Archiv (D-367)")
+
+
+# --- Pruefung 68: Das Praefix, das mehr sperrt als sein Befehl ----------------------
+#
+# ANLASS, UND ER IST GEMESSEN. permissions.json fuehrt je exec-Regel einen `command`
+# (die woertliche Form) und optional einen `prefix` (die Form fuer Clients, die ueber
+# ein Praefix sperren). Ist der `prefix` kuerzer, sperrt die Regel MEHR, als ihr
+# Befehl nennt. Am 2026-09-20 hat genau das gekostet: Der Eintrag mit dem command
+# "git branch -D" traegt den prefix "git branch" und sperrt damit auch das blosse
+# Auflisten. Gemessen ueber 50 Laeufe des vierten Testblattbuendels: 25 Abweisungen
+# in 23 Laeufen, elf davon auf "git branch" - und zwei Skills schreiben in
+# Arbeitsschritt 1 und in ihrer Fehlerbehandlung eine Kandidatenliste vorhandener
+# Branches vor, die sie damit nicht liefern koennen (D-219).
+#
+# WARUM DIE SPERRE TROTZDEM BLEIBT, UND WARUM DAS EINE PRUEFUNG BRAUCHT. Der
+# allow-Korb dieser Datei ist praefixbasiert, und clientmap.py verbietet dort ein
+# kuerzeres Praefix als der Befehl ("bei allow waere das eine Lockerung"). Er traegt
+# deshalb bisher ausschliesslich Verben OHNE schreibende Form - git status, diff,
+# log, show, blame. `git branch` waere das erste mit einer. Die Uebererfassung ist
+# hier also GEWOLLT; was fehlte, war, dass sie irgendwo steht. Eine Schranke, die
+# mehr sperrt als sie sagt, ist die Schwester des wiederkehrenden Befundtyps dieses
+# Projekts mit umgekehrtem Vorzeichen - und sie faellt niemandem auf, weil ein
+# ueberschiessendes Verbot wie Sorgfalt aussieht.
+#
+# DER WAECHTER, DER ES NICHT SAH. clientmap.py prueft, ob der prefix ein Praefix des
+# command IST - sonst waere die Praefixform "nicht nachweislich breiter als die
+# woertliche". Er prueft die Richtung, nicht das Mass. Das ist D-205 an vierter
+# Stelle: ein Muster, das seinen Gegenstand enthaelt und mehr.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird die NENNUNG, nicht ihre Richtigkeit: Eine
+# Begruendung, die nicht traegt, laeuft durch - dieselbe Enthaltung, die Pruefung 65
+# fuer den Protokollverweis zieht und Pruefung 61 fuer das Pruefmittelwort.
+P68_FELD = "_uebererfasst"
+
+
+def check_praefix_uebererfassung(root: str) -> None:
+    """Pruefung 68 (D-219): Ein Praefix, das mehr sperrt als sein Befehl, sagt es."""
+    rel = f"{KERN}/framework/runtime/permissions.json"
+    pfad = os.path.join(root, KERN, "framework", "runtime", "permissions.json")
+    if not os.path.isfile(pfad):
+        return  # Pruefung 1 und 39 melden die fehlende Kernquelle bereits
+    try:
+        quelle = json.loads(read(pfad))
+    except ValueError:
+        return  # Pruefung 39 meldet die unlesbare Datei bereits
+    exec_regeln = 0
+    for korb in ("deny", "ask", "allow"):
+        eintraege = quelle.get(korb)
+        if not isinstance(eintraege, list):
+            continue
+        for regel in eintraege:
+            if not isinstance(regel, dict) or regel.get("tool") != "exec":
+                continue
+            exec_regeln += 1
+            befehl = str(regel.get("command", "")).strip()
+            praefix = str(regel.get("prefix", befehl)).strip()
+            if not befehl or praefix == befehl:
+                continue
+            if str(regel.get(P68_FELD, "")).strip():
+                continue
+            err(f"{rel}: die {korb}-Regel `{befehl}` sperrt über das Präfix "
+                f"`{praefix}` mehr, als ihr Befehl nennt – und sagt es nicht. Ein "
+                f"Feld `{P68_FELD}` mit der Begründung gehört dazu: Genau diese "
+                f"Bauform hat am 2026-09-20 fünfundzwanzig Abweisungen erzeugt und "
+                f"zwei Skills eine Zusage unmöglich gemacht, die sie selbst "
+                f"vorschreiben. Eine Schranke, die mehr sperrt als sie sagt, ist "
+                f"nicht weniger ein Befund als eine, die weniger hält (D-219)")
+    if exec_regeln == 0:
+        err(f"{rel}: keine einzige exec-Regel gefunden – Prüfung 68 rechnet ihre "
+            f"Präfixe gegen ihre Befehle und hat ihren Gegenstand verloren; sie "
+            f"bestünde sonst leise (D-23)")
+
+
+# --- Pruefung 69: Der Messapparat schreibt nicht in das Repositorium ----------------
+#
+# ANLASS, UND ER IST GEMESSEN - ER KOSTETE NICHTS, WEIL ER VOR DEM LAUF KAM. D-222
+# hat die Skripte der Erhebungen mit 0.79.0 ins Repositorium geholt und ihre Belege
+# ausdruecklich DRAUSSEN gelassen: "203 Dateien, darunter fuenfzig
+# Sitzungstranskripte mit Werkzeugeingaben; sie sind AUFZEICHNUNG, nicht Anweisung".
+# Fuenf dieser Skripte legten ihre Belege aber schlicht NEBEN SICH ab:
+#
+#     BELEGE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "belege")
+#
+# Solange das Skript daneben lag, war das richtig. Seit es im Kern liegt, zeigt
+# derselbe Ausdruck HINEIN - und lauf.py legt das Verzeichnis selbst an. Ein
+# Nachlauf haette die Mitschriften seiner Laeufe versioniert, ohne dass jemand es
+# entschieden haette. Gefunden am 2026-09-20 im Vorbedingungsdurchgang des
+# Nachlaufs, vor dem ersten bezahlten Lauf.
+#
+#   Wer einen Apparat umzieht, zieht seine relativen Pfade mit um - oder er
+#   verschiebt ihr Ziel, ohne es zu merken.
+#
+# WAS GEPRUEFT WIRD, UND WARUM SO. Nicht die Quelltexte (ein Zaehler, der Ausdruecke
+# liest, prueft die Schreibweise statt der Sache, D-223), sondern das ERGEBNIS: In
+# <CORE_DIR>/tests/erhebungen/ liegen Skripte und eine README - sonst nichts. Eine
+# Belegdatei, eine Zustandsaufnahme oder ein Promptverzeichnis dort ist der Befund
+# selbst, unabhaengig davon, welcher Ausdruck sie erzeugt hat.
+#
+# GRENZE, UND SIE STEHT HIER. Die Pruefung sieht nur, was schon geschrieben IST.
+# Den Wächter davor traegt `ablage.py`: Er verlangt die Erhebungsablage als Angabe
+# und weist einen Pfad im Repositorium ab. Zwei Haelften desselben Gegenstands -
+# dieselbe Aufteilung wie bei D-205 zwischen Schnitt und Waechter.
+#
+# SEIT 1.19.0 EIN VERZEICHNIS, BENANNT (D-473): Der Messapparat ist ein Paket
+# (`apparat/`). Zugelassen ist genau dieser Name, und darin nur Python-Quelltext - ein
+# Beleg, eine Reihe oder ein Unterverzeichnis dort ist derselbe Befund wie daneben.
+P69_ERLAUBT_DATEI = (".py", ".md")
+P69_PAKETE = ("apparat",)
+
+
+def _p69_paket_rest(pfad: str) -> list:
+    """Was in einem zugelassenen Paket liegt und kein Python-Quelltext ist."""
+    rest = []
+    for name in sorted(os.listdir(pfad)):
+        voll = os.path.join(pfad, name)
+        if name == "__pycache__" and os.path.isdir(voll):
+            continue
+        if os.path.isdir(voll) or not name.endswith(".py"):
+            rest.append(name)
+    return rest
+
+
+def check_erhebungen_sauber(root: str) -> None:
+    """Pruefung 69 (D-222): In der Erhebungsablage des Kerns liegen nur Werkzeuge."""
+    rel = f"{KERN}/tests/erhebungen"
+    ordner = os.path.join(root, KERN, "tests", "erhebungen")
+    if not os.path.isdir(ordner):
+        return  # ein uebernehmendes Projekt bekommt diese Ablage nicht ausgeliefert
+    gesehen = 0
+    for name in sorted(os.listdir(ordner)):
+        pfad = os.path.join(ordner, name)
+        if os.path.isdir(pfad):
+            if name == "__pycache__":
+                continue
+            if name in P69_PAKETE:
+                for fremd in _p69_paket_rest(pfad):
+                    err(f"{rel}/{name}/{fremd}: im Werkzeugpaket der Erhebungsablage des "
+                        f"Kerns liegt nur Python-Quelltext - Belege, Reihen und Prompts sind "
+                        f"Aufzeichnung und gehoeren neben das Repositorium (D-222, D-473)")
+                continue
+            err(f"{rel}/{name}/: ein VERZEICHNIS in der Erhebungsablage des Kerns. "
+                f"Hier liegen Werkzeuge; Belege, Prompts und Zustandsaufnahmen sind "
+                f"Aufzeichnung und gehoeren neben das Repositorium (D-222). Die "
+                f"Ablage wird ueber LW_ERHEBUNG gesagt, nicht abgeleitet")
+            continue
+        gesehen += 1
+        if not name.endswith(P69_ERLAUBT_DATEI):
+            err(f"{rel}/{name}: keine Datei der zugelassenen Art "
+                f"({', '.join(P69_ERLAUBT_DATEI)}) in der Erhebungsablage des "
+                f"Kerns. Eine Belegdatei, ein Ergebnis-JSON oder eine "
+                f"Zustandsaufnahme ist hier der Befund selbst - unabhaengig davon, "
+                f"welcher Ausdruck sie erzeugt hat (D-222)")
+    if gesehen == 0:
+        err(f"{rel}: kein einziges Werkzeug gefunden – Prüfung 69 zaehlt den Inhalt "
+            f"dieser Ablage und hat ihren Gegenstand verloren; sie bestuende sonst "
+            f"leise (D-23)")
+
+
+# --- Pruefung 70: Jedes Werkzeug des Kerns nennt nur Namen, die es gibt -------------
+#
+# ANLASS, UND ER IST GEMESSEN - ER KOSTETE NICHTS, WEIL ER VOR DEM LAUF KAM. Der
+# Wiederaufnahmepunkt des halb gefahrenen Messtags fuehrte `stand-b4.py` als Befehl 1
+# von 4 auf: das Skript, dessen Kopfkommentar sagt "EINE ZAHL IN EINER UEBERGABE IST
+# EINE MOMENTAUFNAHME, DIESES SKRIPT IST DER STAND". Es brach beim Import ab:
+#
+#     PROMPTS = os.path.join(os.path.dirname(S), "prompts")
+#
+# `S` trug bis D-222 den Ablageort NEBEN dem Skript. Der Umzug in den Kern hat ihn
+# entfernt und zwei Lesestellen stehen lassen - eine im Modulrumpf, eine in `main()`.
+# Seit 0.79.0 war das Werkzeug damit tot, und der Befund lag genau auf dem Weg der
+# Wiederaufnahme. Gefunden am 2026-09-21, vor dem ersten bezahlten Kontrollauf.
+#
+#   Ein Werkzeug, das niemand faehrt, verfaellt lautlos - und der Tag, an dem es
+#   gebraucht wird, ist der Tag, an dem es fehlt.
+#
+# WARUM KEINE DER 69 ES SAH, UND DAS IST DER EIGENTLICHE BEFUND. Pruefung 45 prueft,
+# dass KEIN Bytecode versioniert ist - also die Abwesenheit einer Datei. Pruefung 69
+# prueft die ART der Dateien in der Erhebungsablage - .py und .md, sonst nichts. Der
+# Apparat hatte damit zwei Waechter ueber seinen Ablageort und keinen einzigen
+# darueber, ob seine Werkzeuge laufen.
+#
+# WAS GEPRUEFT WIRD, UND WARUM SO. Nicht `import` - das fuehrt den Modulrumpf aus,
+# und Werkzeuge dieses Kerns brechen dabei mit Absicht ab (`ablage.py` ohne
+# LW_ERHEBUNG), waehrend `lauf.py` sein Belegverzeichnis anlegen wuerde: genau das,
+# was D-222 verworfen hat. Eine Pruefung, die ihren Gegenstand veraendert, misst ihn
+# nicht. Geprueft wird deshalb die SYMBOLTABELLE, die der Interpreter selbst baut:
+# Sie kennt jede Bindung und jeden Gueltigkeitsbereich - Modul, Funktion, Klasse,
+# Komprehension - und sagt je Name, ob er zugewiesen, importiert, Parameter, frei
+# oder global ist. Ein global gelesener Name, den weder der Modulrumpf noch die
+# eingebauten Namen binden, ist ein NameError, der auf seinen Lauf wartet.
+#
+# GRENZE, UND SIE STEHT HIER. Geprueft wird der NAME, nicht der WERT. Wer `S = None`
+# schreibt und `os.path.dirname(S)` aufruft, laeuft durch - dieselbe Enthaltung wie
+# bei Pruefung 68. Und ein Lauf des Werkzeugs bliebe der staerkere Nachweis; er
+# kostet Kontingent und legt Dateien an, diese Pruefung nicht.
+P70_EINGEBAUT = frozenset(dir(builtins))
+
+
+def _p70_offene_namen(quelle: str, name: str) -> list:
+    """Die global gelesenen Namen einer Quelle, die nirgends gebunden sind."""
+    top = symtable.symtable(quelle, name, "exec")
+    modul = {sym.get_name() for sym in top.get_symbols()
+             if sym.is_assigned() or sym.is_imported() or sym.is_parameter()}
+    offen = []
+
+    def geh(tab) -> None:
+        for sym in tab.get_symbols():
+            n = sym.get_name()
+            if not sym.is_referenced():
+                continue
+            if sym.is_assigned() or sym.is_imported() or sym.is_parameter():
+                continue
+            # Die Modulglobalen, die der Interpreter selbst setzt (__file__,
+            # __name__, und was eine Python-Fassung sonst hinzufuegt). Ohne diese
+            # Ausnahme meldete die Pruefung zwoelf Werkzeuge dieses Kerns, und alle
+            # zwoelf laufen - ein Waechter, der bei jedem Lauf meldet, wird
+            # abgeschaltet.
+            if n.startswith("__") and n.endswith("__"):
+                continue
+            if n in P70_EINGEBAUT or n in modul:
+                continue
+            # Nur, was im Modulrumpf steht oder ausdruecklich global gelesen wird.
+            # Eine freie Variable aus einer umschliessenden Funktion ist gebunden,
+            # nur nicht hier - `is_global()` unterscheidet das.
+            if tab is top or sym.is_global():
+                offen.append((tab.get_name(), n))
+        for kind in tab.get_children():
+            geh(kind)
+
+    geh(top)
+    return offen
+
+
+def check_werkzeugnamen(root: str) -> None:
+    """Pruefung 70 (D-229): Kein Werkzeug des Kerns liest einen Namen, den es nicht gibt."""
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return
+    apparat = os.path.join(kern, "tests", "erhebungen")
+    im_apparat = 0
+    for basis, ordner, dateien in os.walk(kern):
+        ordner[:] = [o for o in ordner if o != "__pycache__"]
+        for name in sorted(dateien):
+            if not name.endswith(".py"):
+                continue
+            pfad = os.path.join(basis, name)
+            rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+            if basis == apparat:
+                im_apparat += 1
+            try:
+                with open(pfad, encoding="utf-8") as f:
+                    quelle = f.read()
+            except (OSError, UnicodeDecodeError) as e:
+                err(f"{rel}: nicht lesbar ({e}) - ein Werkzeug des Kerns, das sich "
+                    f"nicht lesen laesst, laeuft auch nicht (D-229)")
+                continue
+            try:
+                offen = _p70_offene_namen(quelle, name)
+            except SyntaxError as e:
+                err(f"{rel}: laedt nicht - {e.msg} (Zeile {e.lineno}). Ein Werkzeug "
+                    f"des Kerns, das der Interpreter nicht uebersetzt, ist tot, und "
+                    f"es faellt erst an dem Tag auf, an dem es gebraucht wird (D-229)")
+                continue
+            for bereich, offener in offen:
+                wo = "im Modulrumpf" if bereich == name else f"in `{bereich}`"
+                err(f"{rel}: der Name `{offener}` wird {wo} gelesen und nirgends "
+                    f"gebunden - weder als Zuweisung noch als Import, Parameter "
+                    f"oder eingebauter Name. Das ist ein NameError, der auf seinen "
+                    f"Lauf wartet; genau so war `stand-b4.py` seit dem Umzug nach "
+                    f"D-222 tot (D-229)")
+    # DER ANKER, UND ER HAENGT AM MESSAPPARAT, NICHT AM KERN. Ein Anker `keine
+    # einzige .py-Datei im Kern` waere durch Konstruktion nie erreichbar: Dieses
+    # Skript ist selbst eine, und ohne es laeuft keine Pruefung. Eine Null durch
+    # Konstruktion sieht aus wie eine gemessene Null (0.59.1). Erreichbar - und der
+    # Gegenstand, um den es geht - ist der Messapparat: Steht seine Ablage und ist
+    # kein Werkzeug mehr darin, hat diese Pruefung den Anlass verloren, aus dem sie
+    # entstanden ist, und bestuende leise.
+    if os.path.isdir(apparat) and im_apparat == 0:
+        err(f"{KERN}/tests/erhebungen/: kein einziges Werkzeug geprueft - Pruefung "
+            f"70 hat den Gegenstand verloren, aus dem sie entstanden ist; sie "
+            f"bestuende sonst leise (D-23, D-229)")
+
+
+# --- Pruefung 71: Kein Traeger des Kerns nennt einen Arbeitsplatz -------------------
+#
+# ANLASS, UND ER IST GEMESSEN. Am 2026-09-21, beim Bauen der Dossiers des Nachlaufs,
+# brach `dossier-b4.py` ab - und im selben Blick fiel auf, was in seiner Zeile 33 stand:
+#
+#     KERN = os.path.join(r"C:\Users\<konto>\Documents\devpacks\koolie", ...)
+#
+# Neun Werkzeuge des Messapparats fuehrten einen Pfad dieses Arbeitsplatzes, acht davon
+# mit dem Ziel `...\devpacks\test-devin-framework`. Solange der Apparat NEBEN dem
+# Repositorium lag, stand das in einer unversionierten Ablage. Mit D-222 ist er
+# HINEINgewandert und hat die Pfade mitgebracht - in dasselbe Repositorium, fuer das
+# `0.78.1` eigens `UEBERGABE.local.md` eingefuehrt hat, weil eine Uebergabe mit
+# Servername und Konto den Validator mit drei Fehlern und drei Warnungen beantwortet.
+#
+#   Wer einen Apparat umzieht, zieht seine Arbeitsplatzpfade mit um - und
+#   veroeffentlicht sie, ohne es zu entscheiden.
+#
+# WARUM KEINE DER SIEBZIG ES SAH. Pruefung 6 kennt Secret-Muster, E-Mail-Adressen,
+# IP-Adressen, interne Hostnamen und URLs ausserhalb der Allowlist. Ein Pfad in ein
+# Benutzerprofil ist nichts davon - und er traegt trotzdem den Namen eines Menschen.
+#
+# WAS GEPRUEFT WIRD, UND WARUM SO. Ein absoluter Pfad in ein Benutzerprofil, dessen
+# Kontosegment KEIN Platzhalter ist. `<KONTO>`, `%USERNAME%` und `$HOME` laufen durch -
+# sie nennen niemanden. Eine Zeile mit der Marke `SYNTHETISCH` laeuft ebenso durch:
+# Dieselbe Bauform wie das Feld `_uebererfasst` von Pruefung 68 - wer einen solchen
+# Pfad braucht, sagt es in derselben Zeile, statt dass die Pruefung raet.
+#
+# GRENZE, UND SIE STEHT HIER: AUFZEICHNUNGEN SIND AUSGENOMMEN. `tests/protocols/` und
+# `governance/change-requests/` halten fest, WO gemessen wurde; ein Protokoll, das man
+# umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den Kontonamen weiter.
+# Was daraus folgt, ist `K-85` und hier NICHT entschieden - die Pruefung schweigt
+# darueber, statt es durch ihren Zuschnitt stillschweigend zu entscheiden.
+P71_MUSTER = re.compile(
+    r"(?:[A-Za-z]:[\\/]{1,2}Users|/home|/Users)[\\/]{1,2}([A-Za-z0-9._-]+)")
+P71_AUSNAHME_ORDNER = (f"{KERN}/tests/protocols/",
+                       f"{KERN}/governance/change-requests/")
+P71_MARKE = "SYNTHETISCH"
+# Die Selbstprobe des Musters: Ohne sie koennte ein Ausdruck, der nichts mehr trifft,
+# still bestehen - eine Null durch Konstruktion sieht aus wie eine gemessene Null
+# (0.59.1). Der Anker haengt deshalb am MUSTER, nicht am Bestand: Der Bestand kann
+# nicht verschwinden, solange dieses Skript selbst im Kern liegt.
+P71_SELBSTPROBE = ("C:" + chr(92) + "Users" + chr(92) + "kontoname" + chr(92) + "x",  # SYNTHETISCH
+                   "/home/kontoname/x",  # SYNTHETISCH
+                   "/Users/kontoname/x")  # SYNTHETISCH
+
+
+def check_arbeitsplatzpfad(root: str) -> None:
+    """Pruefung 71 (D-231): Kein Traeger des Kerns nennt einen Arbeitsplatz."""
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return
+    for probe in P71_SELBSTPROBE:
+        if not P71_MUSTER.search(probe):
+            err(f"Pruefung 71: das eigene Muster trifft {probe!r} nicht mehr - sie "
+                f"haette ihren Gegenstand verloren und bestuende leise (D-23, D-231)")
+            return
+    for pfad in iter_text_files(root):
+        rel = os.path.relpath(pfad, root).replace(os.sep, "/")
+        if not rel.startswith(f"{KERN}/"):
+            continue
+        if rel.startswith(P71_AUSNAHME_ORDNER):
+            continue
+        text = read(pfad)
+        for zeile in text.splitlines():
+            if P71_MARKE in zeile:
+                continue
+            for m in P71_MUSTER.finditer(zeile):
+                konto = m.group(1)
+                # Ein Platzhalter nennt niemanden. Die drei Schreibweisen, die
+                # dieses Repositorium und die beiden Betriebssysteme kennen.
+                davor = zeile[:m.start(1)]
+                if (konto.startswith(("<", "%", "$"))
+                        or davor.endswith(("<", "%", "$", "{"))
+                        or konto.upper() in ("USER", "USERNAME", "USERPROFILE")):
+                    continue
+                err(f"{rel}: der Pfad {m.group(0)!r} nennt ein Benutzerprofil mit "
+                    f"dem Kontosegment {konto!r}. Ein Arbeitsplatz gehoert nicht in "
+                    f"den Kern - der Ort wird gesagt (LW_ERHEBUNG, LW_UEBUNG) oder "
+                    f"abgeleitet (ablage.WURZEL). Ein Platzhalter oder die Marke "
+                    f"{P71_MARKE} in derselben Zeile laeuft durch (D-231)")
+
+
+# --- Pruefung 76: Die Lage des Kerns steht an vier Stellen - und ueberall gleich ----
+#
+# ANLASS (D-299). Bis 0.87.0 war der Kern EIN Verzeichnissegment, und vier Werkzeuge
+# haben <CORE_DIR> deshalb mit os.path.basename() aus dem eigenen Ort gebunden -
+# install.py, build/assemble.py, dieser Validator und der Schutz-Hook. In install.py
+# stand dabei woertlich, die Zeile stehe dort, "damit eine spaetere Umbenennung nur
+# eine Stelle beruehrt". Sie haette die Umbenennung nicht ueberlebt: os.path.basename
+# liefert fuer ".koolie/core" den Wert "core".
+#
+# WARUM DAS KEIN VALIDATORFEHLER GEWESEN WAERE: Dieser Validator bindet <CORE_DIR> an
+# derselben Stelle auf dieselbe Weise. Er haette denselben falschen Wert eingesetzt wie
+# install.py - und deshalb nichts gemeldet. Zwei Stellen, die einander decken (0.57.0),
+# diesmal ueber Werkzeuggrenzen hinweg.
+#
+# ZWEI GEGENSTAENDE, und sie sind dieselbe Frage aus zwei Richtungen:
+#   (1) Alle vier Angaben der Lage tragen denselben Wert.
+#   (2) Keine von ihnen leitet ihn ueber os.path.basename ab.
+# Ohne (2) waere (1) erfuellbar, indem alle vier denselben Fehler machen - und genau
+# das war der Zustand bis 0.87.0.
+#
+# WARUM VIER STELLEN UND NICHT EINE: Der Schutz-Hook darf nichts aus dem Kern
+# importieren - er muss auch dann entscheiden, wenn eine Installation unvollstaendig
+# ist (D-31). ablage.py laeuft ausserhalb des Kerns gegen fremde Messbaeume. Die
+# Doppelung ist gewollt; diese Pruefung ist ihr Preis.
+P76_WERT_RE = re.compile(r"^(?:CORE_REL|KERN)\s*=\s*\"([^\"]+)\"", re.M)
+
+P76_STELLEN = (
+    "clientmap.py",
+    "tests/scripts/pruefungen/gemeinsam.py",
+    "tests/scripts/hook-check-secrets.py",
+    "tests/erhebungen/ablage.py",
+)
+
+P76_BASENAME_RE = re.compile(r"<CORE_DIR>\"\]\s*=\s*os\.path\.basename")
+
+
+def check_kernlage(root: str) -> None:
+    """Pruefung 76 (D-299): Die Lage des Kerns steht ueberall gleich - und nirgends
+    als basename eines Pfades."""
+    if not P76_WERT_RE.search("CORE_REL = \"x/y\"\n"):
+        err("Prüfung 76: das eigene Muster liest keine Lageangabe mehr – sie bestünde "
+            "leise, während die vier Werkzeuge auseinanderlaufen (D-23)")
+        return
+    werte = {}
+    for rel in P76_STELLEN:
+        pfad = os.path.join(root, KERN, *rel.split("/"))
+        if not os.path.isfile(pfad) and nicht_geliefert(root, f"{KERN}/{rel}"):
+            hinweis(f"Prüfung 76 hält die Kernlage an drei statt vier Stellen: "
+                    f"{KERN}/{rel} gehört zur Nachweisschicht und ist nicht geliefert (D-367)")
+            continue
+        if not os.path.isfile(pfad):
+            err(f"{KERN}/{rel}: fehlt – Prüfung 76 hätte dort einen ihrer vier "
+                f"Gegenstände verloren (D-23)")
+            continue
+        text = read(pfad)
+        treffer = P76_WERT_RE.search(text)
+        if not treffer:
+            err(f"{KERN}/{rel}: führt keine Angabe der Kernlage mehr. Prüfung 76 hat "
+                f"dort ihren Anker verloren und bestünde sonst leise (D-23)")
+        else:
+            werte[rel] = treffer.group(1)
+        if P76_BASENAME_RE.search(text):
+            err(f"{KERN}/{rel}: bindet <CORE_DIR> über os.path.basename(). Der Kern "
+                f"liegt seit 0.88.0 zwei Segmente tief; basename() liefert davon nur "
+                f"das letzte, und jede gerenderte Regeldatei trüge einen Pfad, den es "
+                f"nicht gibt – ohne dass eine Prüfung es meldete (D-299)")
+    if len(set(werte.values())) > 1:
+        zeilen = ", ".join(f"{r} = '{w}'" for r, w in sorted(werte.items()))
+        err(f"Die Lage des Kerns steht in {len(werte)} Werkzeugen und nicht überall "
+            f"gleich: {zeilen}. Eine Installation läge dann je nach aufrufendem "
+            f"Werkzeug an einem anderen Ort (D-299)")
