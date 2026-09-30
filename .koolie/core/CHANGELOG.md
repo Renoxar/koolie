@@ -2,6 +2,59 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.20.1] - 2026-09-30
+
+**Die zweite Lesart von `/c/...` und die Schreibweise der Muster - und der Kurzname, der am Kernschutz vorbeischrieb**
+(`CR-2026-163` E1 bis E8, **D-491** bis **D-498**, **Pruefung 108** neu, Pruefungen 32 und 89 erweitert; `K-35`,
+`K-47`, `K-92`, `K-96`, `K-119` und `K-160` beantwortet, `K-32` zu `1.21.0`). 3 Sitzungslaeufe mit `claude-code`,
+0,11 USD nach Listenpreis, dazu 2 Laeufe mit `openai-codex` im Abonnement. Sondenlauf 418 Einheiten, 768 Zeilen, beide
+Kodierungen zeilengleich, alle bestanden. Kriterium 2 von D-11 bleibt 0.
+
+**Behoben**
+
+- 🔴 **Ein Schreibwerkzeug in POSIX-Schreibweise erreichte den Kern und das Overlay** (D-491, `K-96`). Der Schutz-Hook
+  las `/c/...` unter Windows als `C:\c\...` - einen Pfad, den es nicht gibt; `realpath` loeste darin weder einen
+  8.3-Kurznamen noch ein Punktsegment auf, und der Pfad galt als ausserhalb des Projekts. `Write` auf
+  `/c/<projekt>/KOOLIE~1/core/VERSION` oder `/c/<projekt>/.koolie/./core/VERSION` ging mit Exit 0 durch.
+  `claude-code` liest dieselbe Angabe als `C:\...` (gemessen). Der Hook loest `/<laufwerk>/...` jetzt in beiden
+  Lesarten auf, `X:\...` und `C:\<laufwerk>\...`; die strengere gewinnt.
+
+**Neu**
+
+- **Pruefung 108** (D-494, `K-47`): Warnung, wenn der Befehl eines allow-Eintrags ein echtes Wortpraefix eines
+  deny-Befehls desselben Werkzeugs ist - in der Kernquelle und im installierten JSON-Korb eines Packs mit
+  Praefixabgleich. Gemessen war `git -C <pfad> push` an `Bash(git push:*)` vorbei, als `Bash(git:*)` erlaubt war.
+  Sonde `108`, Buendel `108a` bis `108c`.
+
+**Geaendert**
+
+- Pruefung 32 mit dem Fall c): die POSIX-Schreibweise der Projektwurzel mit Punktsegment (nur unter Windows).
+  Sonde und Gegenprobe `32`.
+- Pruefung 89 (c) haelt auch jeden Glob von `<CI_CONFIG_PATHS>` und `<QUALITY_GATE_CONFIG_PATHS>` gegen eine eigene
+  Schreibsperre im deny-Korb (D-493, `K-35`) - ein zu eng gefuellter Schlitz ist eine stille Lockerung. Buendel `89e`,
+  `89f`.
+- Wo Berechtigungsschicht und Schutz-Hook verschieden entscheiden, gilt der Hook (D-492, `K-92`); die Grenze steht im
+  Hauptdokument (Kap. 29). `claude-code` (Pack 0.26.1): Zeile B3 - die Regeln unterscheiden Gross- und
+  Kleinschreibung unter Windows nicht (gemessen); Zeile H4 mit beiden Lesarten. `devin-desktop` (Pack 0.14.7):
+  Zeilen B3 und H4. `openai-codex` (Pack 0.1.9): Zeile B3 - der projektrelative Glob wird mit 0.157.1 angenommen,
+  das Leserecht verlangt weiter den erhoehten Sandkasten (D-495, `K-160`); Zeile B6 - die strengste Befehlsregel
+  gewinnt ueber Benutzer- und Projektablage hinweg (D-496, `K-119`).
+- `K-32` geht zu `1.21.0` Einsatzarchitektur: keine Tokensperre fuer Strukturpfade in der Shell (D-497).
+- Der macOS-Starter `install.command` ist vom Owner am 2026-09-30 abgenommen (D-498); die Koederlaeufe fuer die
+  Pfadmuster von `cursor` unter macOS (`K-176`) bleiben beim Owner.
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner. `install.py --update` bringt den Hook; Berechtigungs- und Hook-Dateien bleiben unveraendert. Ein Projekt,
+  das `<CI_CONFIG_PATHS>` oder `<QUALITY_GATE_CONFIG_PATHS>` gefuellt hat, sieht unter `--strict-overlay` jeden Glob
+  ohne eigene Schreibsperre.
+
+**Bekannte Einschraenkungen**
+
+- `/cygdrive/` und `/mnt/` sind nicht gemessen und bleiben bei einer Lesart (D-491).
+- Pruefung 108 vergleicht die Schreibweise, nicht die Befehlsaequivalenz; Pfadmuster bleiben aussen vor.
+- Der Shell-Kanal in den Kern bleibt offen (D-30, `K-32`).
+
 ## [1.20.0] - 2026-09-29
 
 **Die Wirksamkeitsprobe und der MCP-Aufruf am Schutz-Hook - und die Vorpruefung, die den Hook nie startete**

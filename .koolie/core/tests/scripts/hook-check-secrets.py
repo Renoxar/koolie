@@ -837,6 +837,34 @@ def aufloesen(wert: str, basis: str) -> str:
         raise Unpruefbar("Pfadwert nicht aufloesbar")
 
 
+# Die POSIX-Schreibweise eines Laufwerks: /c/... (MSYS, Git Bash). Nur unter Windows ein
+# Doppelsinn - unter POSIX ist /c/ ein gewoehnlicher Pfad.
+MSYS_LAUFWERK_RE = re.compile(r"^/([A-Za-z])(?=/|$)")
+
+
+def lesarten(wert: str, basis: str) -> list:
+    r"""Alle realen Pfade, die eine Angabe bezeichnen kann - die strengere gewinnt.
+
+    ZWEI LESARTEN VON /c/... (CR-2026-163, D-491, K-96). Python unter Windows liest
+    /c/x als C:\c\x, und so liest es auch devin-desktop (D-285). Eine Shell unter MSYS
+    und ein Client, der ihre Ausgabe weiterreicht, meinen C:\x. Gemessen am 2026-09-30:
+    Ein Schreibwerkzeug auf /c/<projekt>/KOOLIE~1/core/VERSION ging mit Exit 0 durch,
+    dieselbe Angabe in Windows-Form sperrte. Der Pfad C:\c\... existiert nicht, realpath
+    loeste den Kurznamen deshalb nicht auf, und der Pfad galt als ausserhalb des
+    Projekts. Der Ort ist die Aufloesung (D-63), nicht die Musterliste: Welche Lesart der
+    Client waehlt, weiss der Hook nicht - er misst beide.
+
+    GRENZE, BENANNT: /cygdrive/c/ und /mnt/c/ sind nicht gemessen und bleiben bei der
+    einen Lesart.
+    """
+    echt = aufloesen(wert, basis)
+    m = MSYS_LAUFWERK_RE.match(wert.strip()) if os.name == "nt" else None
+    if not m:
+        return [echt]
+    msys = aufloesen(m.group(1) + ":" + (wert.strip()[2:] or "/"), basis)
+    return [msys] if os.path.normcase(msys) == os.path.normcase(echt) else [msys, echt]
+
+
 def innerhalb(pfad: str, wurzel: str) -> bool:
     """Ist pfad ein Kind von wurzel? Kein Praefixvergleich.
 
@@ -861,14 +889,15 @@ def aufgeloestes_material(werte, basis: str) -> tuple:
     voll, nur_secret = [], []
     for nr, wert in enumerate(werte, 1):
         try:
-            echt = aufloesen(wert, basis)
+            alle = lesarten(wert, basis)
         except Unpruefbar as fehler:
             raise Unpruefbar(f"{fehler.args[0]} an Position {nr} der Pfadfelder")
-        if innerhalb(echt, PROJEKTWURZEL):
-            rel = os.path.relpath(echt, PROJEKTWURZEL)
-            voll.append(rel)
-        else:
-            nur_secret.append(echt)
+        for echt in alle:
+            if innerhalb(echt, PROJEKTWURZEL):
+                rel = os.path.relpath(echt, PROJEKTWURZEL)
+                voll.append(rel)
+            else:
+                nur_secret.append(echt)
     return voll, nur_secret
 
 
@@ -1006,13 +1035,14 @@ def main() -> None:
     if mandat:
         for roh in ziele:
             try:
-                echt = aufloesen(roh, basis)
+                alle = lesarten(roh, basis)
             except Unpruefbar:
                 continue
-            if innerhalb(echt, PROJEKTWURZEL):
-                rel = os.path.relpath(echt, PROJEKTWURZEL)
-                if mandat_deckt(rel, mandat):
-                    gedeckt.update((roh, rel))
+            for echt in alle:
+                if innerhalb(echt, PROJEKTWURZEL):
+                    rel = os.path.relpath(echt, PROJEKTWURZEL)
+                    if mandat_deckt(rel, mandat):
+                        gedeckt.update((roh, rel))
 
     for s in zu_pruefen + aufgeloest_voll:
         for pattern in muster:

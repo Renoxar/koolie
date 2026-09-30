@@ -2,7 +2,7 @@
 Regelablage, Ausfall mit Ersatz, Werkzeugabwesenheit, Zusagenfelder, Abwesenheitsbeleg,
 Schlitzinhalte, Zusatzschluessel, Matrixzeilen, Vorlage und formatgebundene Pruefungen.
 
-Pruefungen 19, 20, 23, 24, 25, 26, 27, 41, 42, 54, 74, 84 und 87. Teil des Validators
+Pruefungen 19, 20, 23, 24, 25, 26, 27, 41, 42, 54, 74, 84, 87, 105 und 108. Teil des Validators
 validate-framework.py, seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das
 Register aller Pruefungen steht im Kopfkommentar des Einstiegs, die Grenze jeder
 einzelnen in ihrem Kopfkommentar hier."""
@@ -1180,3 +1180,91 @@ def check_clientversion_in_spanne(root: str) -> None:
             if not any(v.startswith(s + ".") for v in versionen):
                 warn(f"{rel}: die Zielspanne {s}.x ist durch keine gepruefte Version "
                      f"belegt - gehoben, ohne gemessen zu sein? {P105_GRENZE}")
+
+
+# --- Pruefung 108: ein allow-Muster, das ein deny-Praefix umschliesst (CR-2026-163, D-494, K-47)
+#
+# ANLASS, GEMESSEN (D-123, 2026-09-17): Bei allow = Bash(git:*) und deny = Bash(git push:*)
+# wies der Client 'git push' ab und liess 'git -C <pfad> push' durch - der Commit stand am
+# Remote. Die ausgelieferte Fassung haelt, weil der allow-Korb nur fuenf lesende git-Befehle
+# fuehrt. Wer ihn verbreitert, verliert den Schutz ohne Meldung; keine Pruefung sah es.
+#
+# DIE BILLIGE ZWISCHENSTUFE, NICHT DIE SACHE: Gemeldet wird, wenn der Befehl eines
+# allow-Eintrags ein echtes Wortpraefix des Befehls eines deny-Eintrags desselben Werkzeugs
+# ist. Befehlsaequivalenz ('git -C x push' = 'git push') erkennt keine Zeichenkettenpruefung.
+# WARNUNG, kein Fehler: Ein Projekt darf den Korb bewusst weiten; es soll es wissen.
+#
+# GRENZEN, BENANNT: nur Befehlsregeln der Packs mit Praefixabgleich (permission_exec_match
+# 'prefix') und JSON-Korb - gemessen ist allein Bash(...). Read- und Edit-Pfadmuster sind
+# nicht gemessen und bleiben aussen vor. Ein leeres allow-Muster ('*') meldet die
+# Pruefung ebenfalls: Es umschliesst jedes deny-Praefix.
+P108_KERNQUELLE = "framework/runtime/permissions.json"
+P108_GRENZE = ("Die Prüfung vergleicht die Schreibweise, nicht die Befehlsäquivalenz "
+               "(K-47, D-123)")
+P108_REGEL_RE = re.compile(r"^([A-Za-z_][\w-]*)\((.*)\)$")
+
+
+def _p108_befehl(muster: str, suffix: str) -> str:
+    """Der Befehl eines Praefixmusters ohne Suffix und Stern ('git:*' -> 'git')."""
+    m = muster.strip()
+    for ende in (suffix, ":*", " *", "*"):
+        if ende and m.endswith(ende):
+            m = m[:-len(ende)]
+            break
+    return m.strip()
+
+
+def _p108_umschliesst(erlaubt: str, verboten: str) -> bool:
+    return erlaubt != verboten and (not erlaubt or verboten.startswith(erlaubt + " "))
+
+
+def _p108_paare(allow: list, deny: list) -> list:
+    """(allow, deny) je Paar, dessen allow-Befehl das deny-Praefix umschliesst."""
+    return [(a, d) for a in allow for d in deny if _p108_umschliesst(a, d)]
+
+
+def check_allow_umschliesst_deny(root: str, man: dict) -> None:
+    """Pruefung 108 (D-494, K-47): kein allow-Befehl umschliesst ein deny-Praefix."""
+    kq = os.path.join(root, KERN, *P108_KERNQUELLE.split("/"))
+    if os.path.isfile(kq):
+        try:
+            quelle = json.loads(read(kq))
+        except json.JSONDecodeError:
+            quelle = {}
+
+        def befehle(korb: str) -> list:
+            return [(r.get("prefix") or r.get("command") or "").strip()
+                    for r in quelle.get(korb, []) if isinstance(r, dict)
+                    and r.get("tool") == "exec" and r.get("command")
+                    and not PROJEKTPLATZHALTER.search(r.get("command"))]
+        for a, d in _p108_paare(befehle("allow"), befehle("deny")):
+            warn(f"{KERN}/{P108_KERNQUELLE}: der allow-Befehl '{a}' umschließt das "
+                 f"deny-Präfix '{d}' - bei Praefixabgleich läuft '{d}' in einer anderen "
+                 f"Schreibweise durch. {P108_GRENZE}")
+    if man.get("permission_exec_match") != "prefix":
+        return
+    rel = man.get("permissions_file") or ""
+    pfad = os.path.join(root, *rel.split("/")) if rel else ""
+    if not rel.endswith(".json") or not os.path.isfile(pfad):
+        return
+    try:
+        cfg = json.loads(read(pfad))
+    except json.JSONDecodeError:
+        return  # check_config hat das bereits gemeldet
+    koerbe = cfg.get("permissions") if isinstance(cfg.get("permissions"), dict) else cfg
+    werkzeuge = set((man.get("permission_tools") or {}).get("exec") or ())
+    suffix = man.get("permission_exec_suffix") or ""
+
+    def regeln(korb: str) -> dict:
+        je: dict = {}
+        for r in koerbe.get(korb, []) if isinstance(koerbe.get(korb), list) else []:
+            m = P108_REGEL_RE.match(r.strip()) if isinstance(r, str) else None
+            if m and m.group(1) in werkzeuge and not PROJEKTPLATZHALTER.search(m.group(2)):
+                je.setdefault(m.group(1), []).append(_p108_befehl(m.group(2), suffix))
+        return je
+    erlaubt, verboten = regeln("allow"), regeln("deny")
+    for werkzeug in sorted(werkzeuge):
+        for a, d in _p108_paare(erlaubt.get(werkzeug, []), verboten.get(werkzeug, [])):
+            warn(f"{rel}: {werkzeug}({a}{suffix}) im allow-Korb umschließt "
+                 f"{werkzeug}({d}{suffix}) im deny-Korb - gemessen lief 'git -C <pfad> push' "
+                 f"an Bash(git push:*) vorbei, als Bash(git:*) erlaubt war. {P108_GRENZE}")

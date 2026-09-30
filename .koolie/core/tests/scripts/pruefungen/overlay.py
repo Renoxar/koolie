@@ -996,6 +996,12 @@ def check_overlay_wertabgleich(root: str, man: dict) -> None:
 #   (c) Jeder Nur-Lese-Pfad hat im deny-Korb eine Schreibsperre. Seit 1.5.0 fuehrt die
 #       Kernquelle den Schlitz dafuer (D-356); bis dahin trugen beide uebernehmenden
 #       Projekte die Sperre von Hand - auf dieselbe Weise.
+#       Seit 1.20.1 ebenso jeder Glob von <CI_CONFIG_PATHS> und
+#       <QUALITY_GATE_CONFIG_PATHS> (CR-2026-163, D-493, K-35). Beide stehen nur im
+#       deny-Korb, und ein zu ENG gefuellter Schlitz ist eine stille Lockerung.
+#       "Deckungsgleich" heisst: Jeder Glob der Quelle hat seine eigene Regel - so
+#       entfaltet install.py den Schlitz auch. Die Laufzeitfassung fuehrt die beiden
+#       nicht; (a) und (b) gelten fuer sie deshalb nicht.
 #
 # DIE QUELLE IST DIE DREISPALTIGE ZEILE VON ABSCHNITT 4, gefunden ueber die
 # Platzhalterzelle. Ein Overlay, das anders bindet, ENTGEHT der Pruefung nicht still: Es
@@ -1010,6 +1016,7 @@ def check_overlay_wertabgleich(root: str, man: dict) -> None:
 # was danach steht ("zusaetzlich immer ...") ist Erlaeuterung und gehoert nicht zur
 # Menge. Und (c) prueft wie 59 nur die Richtung Quelle -> Korb.
 P89_PLATZHALTER = ("<ALLOWED_PATHS>", "<TEST_PATHS>", "<DOC_PATHS>", "<READ_ONLY_PATHS>")
+P89_SPERRPLATZHALTER = ("<READ_ONLY_PATHS>", "<CI_CONFIG_PATHS>", "<QUALITY_GATE_CONFIG_PATHS>")
 P89_KEIN_WERT = {"nicht vorhanden", "keine", "keiner", "kein", "–", "-"}
 
 
@@ -1058,7 +1065,7 @@ def check_overlay_pfadabgleich(root: str, man: dict) -> None:
     rel_rt = f"{man['pack_runtime_dir']}/{regeldatei(man, '20-project-overlay.md')}"
     runtime_pfad = os.path.join(root, *rel_rt.split("/"))
     laufzeit = read(runtime_pfad) if os.path.isfile(runtime_pfad) else None
-    nur_lesen = None
+    sperren: dict = {}
     for platzhalter in P89_PLATZHALTER:
         da, quelle = _p89_quelle(quelltext, platzhalter)
         if not da:
@@ -1070,7 +1077,7 @@ def check_overlay_pfadabgleich(root: str, man: dict) -> None:
         if quelle is None:
             continue  # noch nicht ausgefuellt - das meldet --check-overlay-ready
         if platzhalter == "<READ_ONLY_PATHS>":
-            nur_lesen = quelle
+            sperren[platzhalter] = quelle
         if laufzeit is None:
             continue
         da, ist = _p89_laufzeit(laufzeit, platzhalter)
@@ -1088,7 +1095,11 @@ def check_overlay_pfadabgleich(root: str, man: dict) -> None:
                 f"fehlend: {', '.join(fehlt) or 'keine'}; dort nicht vorgesehen: "
                 f"{', '.join(zuviel) or 'keine'}. Maßgeblich ist "
                 f".koolie/project-overlay/OVERLAY.md (K-69)")
-    if not nur_lesen or formatgebunden(man, 89):
+    for platzhalter in P89_SPERRPLATZHALTER[1:]:
+        da, quelle = _p89_quelle(quelltext, platzhalter)
+        if da and quelle:
+            sperren[platzhalter] = quelle  # fehlende Zeile: dasselbe Schweigen wie --strict
+    if not sperren or formatgebunden(man, 89):
         return
     rel_perm = man["permissions_file"]
     perm_pfad = os.path.join(root, *rel_perm.split("/"))
@@ -1099,13 +1110,19 @@ def check_overlay_pfadabgleich(root: str, man: dict) -> None:
     except json.JSONDecodeError:
         return  # check_config hat das bereits gemeldet
     deny = [r for r in cfg.get("permissions", {}).get("deny", []) if isinstance(r, str)]
-    if any("<READ_ONLY_PATHS>" in r for r in deny):
-        return  # Schlitz noch ungefuellt - das ist Sache von --strict-overlay
     praefix = man.get("permission_path_prefix", "")
-    for werkzeug in man.get("permission_tools", {}).get("write", ()):
-        for glob in nur_lesen:
-            if any(f"{werkzeug}({p}{glob})" in deny for p in ("", praefix)):
-                continue
-            err(f"{rel_perm}: der Nur-Lese-Pfad `{glob}` des Quell-Overlays hat keine Regel "
-                f"{werkzeug}({glob}) im deny-Korb. Ein Integritätsschutz, der nur im Overlay "
-                f"steht, sperrt nichts (K-69, D-356)")
+    for platzhalter, globs in sperren.items():
+        if any(platzhalter in r for r in deny):
+            continue  # Schlitz noch ungefuellt - das ist Sache von --strict-overlay
+        for werkzeug in man.get("permission_tools", {}).get("write", ()):
+            for glob in globs:
+                if any(f"{werkzeug}({p}{glob})" in deny for p in ("", praefix)):
+                    continue
+                if platzhalter == "<READ_ONLY_PATHS>":
+                    err(f"{rel_perm}: der Nur-Lese-Pfad `{glob}` des Quell-Overlays hat keine "
+                        f"Regel {werkzeug}({glob}) im deny-Korb. Ein Integritätsschutz, der nur "
+                        f"im Overlay steht, sperrt nichts (K-69, D-356)")
+                else:
+                    err(f"{rel_perm}: der Pfad `{glob}` aus {platzhalter} des Quell-Overlays "
+                        f"hat keine Regel {werkzeug}({glob}) im deny-Korb. Ein zu eng "
+                        f"gefüllter Schlitz ist eine stille Lockerung (K-35, D-493)")

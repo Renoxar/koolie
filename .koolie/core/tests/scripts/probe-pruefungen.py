@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 107, dazu fuer
+"""Wirkungsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 108, dazu fuer
 install.py (Clientwahl, Aktivierungspruefung, --list-skills, Schutz vorhandener
 Projektdateien bei der Erstinstallation, Auskunft ueber ignorierte Kerndateien,
 Overlay-Muster) und fuer den Praeparationswaechter dieses
@@ -67,7 +67,8 @@ from sonden import (  # noqa: E402,F401 - laden heisst anmelden
     teil09_pruefmittel_81_und_82,
     teil10_pruefungen_83_bis_95,
     teil11_pruefungen_104_und_105,
-    teil12_pruefungen_106_und_107)
+    teil12_pruefungen_106_und_107,
+    teil13_pfad_und_mustersemantik)
 
 
 if LISTE:

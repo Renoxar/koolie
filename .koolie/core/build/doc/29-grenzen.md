@@ -41,6 +41,13 @@
 > - **Die Schutzschicht wirkt nur für eine Sitzung, die im Verzeichnis der Installation startet**
 >   (seit Release 1.12.0 gemessen, D-408). Startet sie in einem Repository darunter, fallen
 >   Berechtigungen und Hooks bei allen drei Packs still aus (Kap. 28, Abschnitt 4).
+> - **Die Berechtigungsschicht vergleicht die Schreibweise, der Schutz-Hook die Pfadidentität**
+>   (seit Release 1.20.1, D-491, D-492). Wo beide Schichten verschieden entscheiden, gilt die
+>   Semantik des Hooks: Er löst jede Pfadangabe auf, vergleicht ohne Rücksicht auf Groß- und
+>   Kleinschreibung und liest `/c/…` unter Windows in beiden Lesarten. Die Berechtigungsschicht
+>   gehört dem Client – bei `devin-desktop` unterscheidet sie Groß- und Kleinschreibung (D-277),
+>   bei `claude-code` nicht. Eine Zusage, die nur die Regel trägt, gilt nur in der Schreibweise
+>   des Musters.
 > - **Kein Modulträger steht mehr auf `entwurf`** (seit Release 0.53.0), und **kein
 >   Decision Record mehr auf `entschieden (Vorschlag)`** (seit Release 0.49.0).
 > - **Die verbindliche Zielversion beider Packs ist festgelegt** (D-112). Sie ist der
