@@ -3,13 +3,13 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ROADMAP` |
-| Version | `0.4.10` |
+| Version | `0.4.11` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 1.21.0 (2026-09-30)
+## Stand nach Release 1.22.0 (2026-09-30)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -131,7 +131,8 @@ die Störung.**
 | ~~**1.20.1**~~ ✅ | 🟢 **DIE ZWEITE LESART VON `/c/…` UND DIE SCHREIBWEISE DER MUSTER – UND DER KURZNAME, DER AM KERNSCHUTZ VORBEISCHRIEB** (`CR-2026-163`, **D-491** bis **D-498**, **Prüfung 108** neu, Prüfungen 32 und 89 erweitert, `K-35`, `K-47`, `K-92`, `K-96`, `K-119` und `K-160` beantwortet, `K-32` zu `1.21.0`; 3 Sitzungsläufe, 0,11 USD nach Listenpreis, dazu 2 Läufe mit `openai-codex` im Abonnement). Der Schutz-Hook löst `/c/…` unter Windows in beiden Lesarten auf (D-491); wo Berechtigungsschicht und Hook verschieden entscheiden, gilt der Hook (D-492); Prüfung 89 hält die CI- und Quality-Gate-Pfade gegen den deny-Korb (D-493), Prüfung 108 warnt vor einem allow-Befehl, der ein deny-Präfix umschließt (D-494). `openai-codex`: Der projektrelative Glob wird angenommen, das Leserecht verlangt weiter den erhöhten Sandkasten (D-495); die strengste Befehlsregel gewinnt über die Ablagen hinweg (D-496). Der macOS-Starter ist vom Owner abgenommen (D-498). 🔴 **Mit einem 8.3-Kurznamen oder einem Punktsegment schrieb ein Schreibwerkzeug in POSIX-Schreibweise am Kernschutz vorbei** – der Hook las `/c/` als `C:\c\`, `claude-code` als `C:\` | – | ja (3 Sitzungsläufe, 2 Läufe im Abonnement) |
 | ~~**1.20.2**~~ ✅ | 🟢 **DIE MODUSBINDUNG UND DIE REGISTRIERTE AUSNAHME – UND DER UPLOAD, AN DEM DAS LESEVERBOT VORBEIGING** (`CR-2026-164`, **D-499** bis **D-505**, **Prüfungen 109 und 110** neu, Prüfungen 99 und 107 erweitert, `K-44`, `K-54`, `K-93`, `K-94`, `K-179`, `K-181` und `K-185` beantwortet, `K-201` und `K-202` neu; 7 Sitzungsläufe, 0,83 USD nach Listenpreis, dazu 2 Läufe mit `kiro` (0,31 Credits) und 2 mit `devin-desktop`). Der Kern ist ohne Regeländerung um 748 Zeichen gestrafft, der Pilot steht bei rund 39.250 von 40.000 (D-499); die Wurzel-Anweisung kennt die registrierte Ausnahme (D-500); M1 und M2 lassen sich mit `mandat.py modus` an den Schutz-Hook binden (D-501); bei `kiro` trägt ohne Hook die Rückfrage, `--trust-all-tools` öffnet das Overlay (D-502); Prüfung 110 hält die aktivierten Packs gegen die Regelablage (D-504), Prüfung 109 die beiden Werkzeugfelder eines Skills (D-505). 🔴 **Der eingebaute Skill `upload-secrets` von `devin-desktop` lädt über die CLI, und die liest die Werte selbst – ein Leseverbot trifft diesen Weg nicht.** Der Hook sperrt den Befehl jetzt (D-503) | – | ja (7 Sitzungsläufe, 2 `kiro`, 2 `devin-desktop`) |
 | ~~**1.20.3**~~ ✅ | 🟢 **ANWEISUNGEN MIT NACHLAUF, DIE AUFZEICHNUNGEN UND DAS BANNER DES INSTALLERS – UND DER SCHNITT, DER DIE PAKETE NICHT KANNTE** (`CR-2026-165`, `CR-2026-166`, **D-506** bis **D-512**, Prüfung 71 geändert, `K-85` und `K-183` beantwortet, `K-186` teilweise, `K-202` gemessen; 23 Sitzungsläufe, 15,41 USD nach Listenpreis, dazu 3 Läufe mit `kiro`). Der Installationsdialog gibt ein Banner aus, zeichengleich zum Entwurf des Owners (D-506); die Lizenz ist `GPL-3.0-only`, der Name bleibt an einer Stelle (D-507); Prüfung 71 prüft jede neue Aufzeichnung (D-508); `fw-overlay-pflege` fragt einen MCP-Server vollständig ab (D-509), `fw-bugfix-prepare` hält bei einem Anstieg aus der Aufgabe nicht mehr an (D-510) – beide Testblätter nachgemessen, 16 Zellen bestanden. `K-202` ist mit 0 von 5 Läufen nicht wiederholt (D-512). 🔴 **Der Schnitt der Messbäume kannte die Pakete von `1.19.1` nicht** – sein Wächter fand 31 Kennungen (D-511) | – | ja (23 Sitzungsläufe, 3 `kiro`) |
-| ~~**1.21.0**~~ ✅ | *dieses Release:* 🟢 **EINSATZARCHITEKTUR, KOEXISTENZ UND VERGLEICHSMESSUNG – UND DIE AKTUALISIERUNG, DIE DEN FREMDEN BLOCK LÖSCHTE** (`CR-2026-167`, **D-513** bis **D-517**, **Prüfung 111** neu, `K-31`, `K-32` und `K-193` beantwortet, `K-203` neu; 56 Sitzungsläufe, 14,55 USD nach Listenpreis). Der Übernahmeleitfaden nennt, was die Umgebung neben Koolie tragen muss (D-513); fremde Skills werden im Overlay-Manifest deklariert, Prüfung 111 hält die Deklaration, `install.py` nennt ein erkanntes Rahmenwerk (D-514); gegen eine gute Standardkonfiguration mit Regeltexten 0 : 0 Verletzungen, ohne Regeltexte 1 : 0, mit Koolie rund 65 bis 80 Prozent teurer (D-516) – Koolie ergänzt und ersetzt nicht (D-517). 🔴 **`install.py --update` löschte den markierten Block eines fremden Generators in der Wurzel-Anweisung ohne Meldung** – jetzt bricht es davor ab (D-515) | – | ja (56 Sitzungsläufe) |
+| ~~**1.21.0**~~ ✅ | 🟢 **EINSATZARCHITEKTUR, KOEXISTENZ UND VERGLEICHSMESSUNG – UND DIE AKTUALISIERUNG, DIE DEN FREMDEN BLOCK LÖSCHTE** (`CR-2026-167`, **D-513** bis **D-517**, **Prüfung 111** neu, `K-31`, `K-32` und `K-193` beantwortet, `K-203` neu; 56 Sitzungsläufe, 14,55 USD nach Listenpreis). Der Übernahmeleitfaden nennt, was die Umgebung neben Koolie tragen muss (D-513); fremde Skills werden im Overlay-Manifest deklariert, Prüfung 111 hält die Deklaration, `install.py` nennt ein erkanntes Rahmenwerk (D-514); gegen eine gute Standardkonfiguration mit Regeltexten 0 : 0 Verletzungen, ohne Regeltexte 1 : 0, mit Koolie rund 65 bis 80 Prozent teurer (D-516) – Koolie ergänzt und ersetzt nicht (D-517). 🔴 **`install.py --update` löschte den markierten Block eines fremden Generators in der Wurzel-Anweisung ohne Meldung** – jetzt bricht es davor ab (D-515) | – | ja (56 Sitzungsläufe) |
+| ~~**1.22.0**~~ ✅ | *dieses Release:* 🟢 **INSTALLATION ÜBER PAKETQUELLEN MIT DEM BANNER – UND DIE GEGENPROBE, DIE ZEHN FEHLER FÜR NULL HIELT** (`CR-2026-168`, **D-518** bis **D-522**, **Prüfung 112** neu, `K-155` gebaut, `K-204` bis `K-206` neu; kein Sitzungslauf, 0 USD). `paketquellen/bauen.py` baut aus dem Release-Archiv ein Wheel (PyPI), ein npm-Paket, ein Scoop-Manifest und eine Homebrew-Formel (D-520); der Befehl `koolie` gibt vor `install.py` das Banner aus, weil kein Installationsschritt einer Paketquelle ein Terminal verlässlich bereitstellt – gemessen für pip, uv, npm und Scoop in einer echten Konsole (D-519). Veröffentlicht ist nichts; das gibt der Owner je Paketquelle frei (D-521). Chocolatey und winget bleiben ohne Ziel (D-518). 🔴 **Eine Gegenprobe bestand, sobald „0 Fehler“ irgendwo in der Ausgabe stand – also auch bei zehn Fehlern** (D-522) | – | nein (lokale Installationen) |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -276,15 +277,15 @@ nur das erste (D-400). Getrennt wird, sobald ein zweites Projekt ein Übungsrepo
 
 > 🟢 **Gefahren mit `1.18.0`** (`CR-2026-157`, D-456 bis D-464). Lesen für Planung in drei Skills, Ablage im führenden System auf Anweisung, Werkzeuge je Server im Overlay (Abschnitt 13.2) und Prüfung 101. Gemessen an Atlassian Cloud mit dem offiziellen Remote-MCP-Server. ⚠️ **Offen:** MCP-Aufrufe erreichen den Schutz-Hook nicht (`K-184`); `fw-overlay-pflege` fragt die Server nicht ab (`K-183`).
 
-### Vorgemerkt ohne Ziel-Release: Veröffentlichung und Installation über Paketquellen (`K-155`)
+### Erledigt mit `1.22.0`: Installation über Paketquellen – gebaut, nicht veröffentlicht
 
-> ⏸️ **Am 2026-09-29 vom Owner ohne Ziel-Release zurückgestellt** (D-467). Die Vorprüfung dazu: Der Name `koolie` ist auf PyPI und TestPyPI frei, `install.py` kopiert auch aus einem Verzeichnis, das kein Klon ist – ein Kern im Wheel trüge ohne Umbau –, und auf GitHub legt der Owner die Releases schon von Hand an, mit denselben Anhängen wie auf Gitea.
+> 🟢 **Gefahren mit `1.22.0`** (`CR-2026-168`, D-518 bis D-522). `paketquellen/bauen.py` baut aus dem Release-Archiv Wheel, npm-Paket, Scoop-Manifest und Homebrew-Formel; der Befehl `koolie` gibt vor `install.py` das Banner aus (Prüfung 112). Gemessen für pip, uv, npm und Scoop: gleiche Projektinstallation, Banner wie im Starter. Offen: Chocolatey und winget (`K-204`), Homebrew auf macOS (`K-205`), `7zip` für Scoop (`K-206`).
 
-Idee und Auftrag des Owners vom 2026-09-26 (`K-155`, `CR-2026-147` E9), mit D-422 ans Ende des Plans gestellt; seit D-436 folgt ihm der Messapparat, seit D-445 steht er hinter `1.18.0`. Gitea bleibt führend; das öffentliche
-GitHub-Repositorium spiegelt es seit 2026-09-26 bei jedem Push (D-439). Die Spiegelung trägt
-Branches und Marken, nicht die Releases – das GitHub-Release entsteht in Schritt 7 mit denselben Anhängen. Die
-Historie ist damit schon öffentlich; ob sie so bleibt, entscheidet der Owner (`K-108`). Dann die Paketquellen, naheliegend zuerst PyPI (`pipx`), weil der Installer
-Python ist; dazu Absicherung der Lieferkette und der Hinweis in README und Übernahmeleitfaden.
+Auftrag des Owners vom 2026-09-26 (`K-155`), mit D-467 zurückgestellt und am 2026-09-30 wieder aufgenommen – mit der Bedingung, dass das Banner aus `1.20.3` auch auf diesen Wegen erscheint.
+
+### Vorgemerkt ohne Ziel-Release: Die erste Veröffentlichung über Paketquellen (`K-155`)
+
+Nur nach ausdrücklicher Freigabe des Owners, je Paketquelle (D-521): PyPI zuerst über TestPyPI, dann npm, Scoop und Homebrew. Dazu gehören eine Workflow-Datei für Trusted Publishing am GitHub-Spiegel, die Konten und Umgebungen beim Owner, eigene Repositorien für den Scoop-Bucket und den Homebrew-Tap und danach README und Quickstart. Die Historie ist über den Spiegel schon öffentlich (`K-108`).
 
 ### Erledigt mit `1.18.2`: Die PowerShell-Lücke von `claude-code`
 
@@ -335,9 +336,9 @@ Aus der Triage vom 2026-09-29 (D-466, D-467): achtzehn Klärungspunkte an der Sc
 
 🟢 **Seit dem Marktvergleich (D-478) der Kern dieses Postens: die Wirksamkeitsprobe** (`K-195`) – ohne Modell prüfen, ob Profil, Vertrauen und Schutz-Hook im Zielprojekt greifen, und mit Fehler enden, wenn eine Muss-Kontrolle fehlt. Die Bausteine liegen in der Vorprüfung des Apparats. Dazu die Connectoren des Kontos (`K-191`) und ein Entscheidungsprotokoll des Hooks (`K-192`).
 
-### Geplant: Modusbindung M3 bis M5 und die offenen Messfragen – Ziel-Release **1.22.0**
+### Geplant: Modusbindung M3 bis M5 und die offenen Messfragen – Ziel-Release **1.23.0**
 
-Was nach `1.21.0` offen bleibt und in einem Release zusammengehört: die Bindung der Modi M3 bis M5 an den Schutz-Hook (`K-201`), die Messfragen aus `1.18.0` (`K-186` (1), (4) und (5)), der Auftrag gegen die Regel ohne technische Schicht (`K-202`) und, bei Bedarf, die Erweiterung der Vergleichsmessung (`K-203`). Zuschnitt mit Entscheidungsfragen und Schätzung vor dem Bau; das Budget `K-185` bleibt das Tor jeder Zeile in der Laufzeitschicht.
+Was nach `1.21.0` offen bleibt und in einem Release zusammengehört – mit `1.22.0` hinter die Paketquellen gestellt (D-518): die Bindung der Modi M3 bis M5 an den Schutz-Hook (`K-201`), die Messfragen aus `1.18.0` (`K-186` (1), (4) und (5)), der Auftrag gegen die Regel ohne technische Schicht (`K-202`) und, bei Bedarf, die Erweiterung der Vergleichsmessung (`K-203`). Zuschnitt mit Entscheidungsfragen und Schätzung vor dem Bau; das Budget `K-185` bleibt das Tor jeder Zeile in der Laufzeitschicht.
 
 ### Erledigt mit `1.21.0`: Einsatzarchitektur, Koexistenz und Vergleichsmessung
 

@@ -474,6 +474,15 @@ def sonde(nummer: str, was: str, praeparieren, erwartet: str) -> None:
     eintragen("SONDE", nummer, was, arbeit)
 
 
+def fehlerfrei(ausgabe: str) -> bool:
+    """Endet der Validatorlauf ohne Fehler? Gelesen an der Ergebniszeile.
+
+    Bis 1.21.0 stand hier `"0 Fehler" in ausgabe` - das trifft auch "10 Fehler" und
+    "20 Fehler". Gemessen am 2026-09-30: Die Gegenprobe zu Pruefung 112 bestand an einem
+    Baum mit zehn offenen Fehlern (D-522). Sonde 112f haelt die Unterscheidung fest."""
+    return "Ergebnis: 0 Fehler," in ausgabe
+
+
 def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
     def arbeit() -> None:
         root = kopie()
@@ -491,7 +500,7 @@ def gegenprobe(nummer: str, was: str, praeparieren, verboten: str) -> None:
                     melde("GEGENPROBE", nummer, False, was + "  [nichts praepariert]")
                     return
             ausgabe = lauf(root)
-            ok = verboten not in ausgabe and "0 Fehler" in ausgabe
+            ok = verboten not in ausgabe and fehlerfrei(ausgabe)
             melde("GEGENPROBE", nummer, ok, was)
             if not ok:
                 notiz("        Ausgabe:", " | ".join(ausgabe.splitlines()[:6]))
