@@ -57,6 +57,11 @@ WEG = [
     ".koolie/core/tests/TEST_CATALOG.md",
     ".koolie/core/tests/scripts/probe-pruefungen.py",
     ".koolie/core/tests/scripts/validate-framework.py",
+    # 🔴 Seit 1.19.1 sind Sondenskript und Validator Einstieg UND Paket (D-479). Die
+    # Liste kannte nur die Einstiege, und der Waechter fand beim ersten Baum danach 31
+    # Kennungen in den Paketen (gemessen am 2026-09-30, Messung zu 1.20.3, D-511).
+    ".koolie/core/tests/scripts/sonden",
+    ".koolie/core/tests/scripts/pruefungen",
     ".koolie/core/tests/scripts/validate-output.py",
     ".koolie/core/build",
     ".koolie/core/CHANGELOG.md",

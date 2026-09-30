@@ -3,11 +3,11 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-LIC` |
-| Version | `0.2.1` |
+| Version | `0.2.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | den gesamten Inhalt dieses Frameworks – Kern, Client Packs, Regeltexte, Werkzeuge, Vorlagen und Dokumentation |
-| Entstehung | `CR-2026-126`, **D-316** bis **D-317** (2026-09-23); Rechteinhaber benannt mit `CR-2026-128`, **D-323** |
+| Entstehung | `CR-2026-126`, **D-316** bis **D-317** (2026-09-23); Rechteinhaber benannt mit `CR-2026-128`, **D-323**; SPDX-Kennung mit `CR-2026-165`, **D-507** |
 
 ## 1. Lizenz (normativ)
 
@@ -15,6 +15,10 @@
 wörtlicher Text der Free Software Foundation). Es ist damit **freie Software im Sinne der
 Open-Source-Definition** – jede und jeder darf es nutzen, untersuchen, ändern und
 weitergeben.
+
+SPDX-Kennung: `GPL-3.0-only` – es gilt Version 3, nicht „oder jede spätere Version“
+(D-507). Das Banner des Installationsdialogs liest diese Zeile und die folgende und nennt
+die Kurzform `GPL-3.0`.
 
 Copyright © 2026 René Hildebrand
 

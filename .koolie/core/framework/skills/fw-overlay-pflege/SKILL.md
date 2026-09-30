@@ -31,7 +31,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-013` |
 | Name | `fw-overlay-pflege` |
-| Version | `0.1.1` |
+| Version | `0.2.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M6 Mandated Maintenance |
@@ -66,17 +66,17 @@ triggers:
 
 **Zulässige Kontextquellen:** `.koolie/project-overlay/`; die Overlay-Vorlage des Kerns (`.koolie/core/templates/project-overlay/`); Laufzeitfassung und Berechtigungsdatei (nur lesend); `CHANGELOG.md` des Kerns für Migrationshinweise; Code und Struktur in `<ALLOWED_PATHS>`, soweit ein Wert daraus belegt werden soll.
 
-**Ausgeschlossene Informationen:** K3 gemäß `.koolie/core/framework/core/02-privacy.md`; `<EXCLUDED_PATHS>`; Personen-, Kunden- und Behördennamen, interne Adressen, Umgebungskennungen – auch nicht auf ausdrücklichen Wunsch (Platzhalter oder `<TBD: …>`); reale Werte für `forbidden-terms.txt` (die trägt der Mensch selbst ein).
+**Ausgeschlossene Informationen:** K3 gemäß `.koolie/core/framework/core/02-privacy.md`; `<EXCLUDED_PATHS>`; Personen-, Kunden- und Behördennamen, interne Adressen, Umgebungskennungen – auch nicht auf ausdrücklichen Wunsch (Platzhalter oder `<TBD: …>`); reale Werte für `forbidden-terms.txt` (die trägt der Mensch selbst ein); Zugangsdaten eines MCP-Servers (Token, Kennwort, Kopfzeile) – eingetragen wird nur die Art der Anmeldung.
 
 ## 3. Arbeitsschritte
 
 1. Anlass, Rolle und Mandat feststellen: `python .koolie/core/mandat.py status`. Kein gültiges Mandat → Blockade-Hinweis, weiter nur lesend (Schritte 2 bis 4 als Vorschlag).
 2. Ist-Stand lesen: betroffene Abschnitte des Overlays, Manifest, bei `hebung` die Vorlage des Kerns im Vergleich (neue oder umbenannte Abschnitte, neue Zeilen, geänderte Ausfüllhinweise) und die Migrationshinweise im `CHANGELOG.md`.
-3. Fragen stellen, abschnittsweise und knapp: bei `einrichtung` je Abschnitt die offenen Werte mit Vorschlag aus dem Repository (Pfade, Befehle, Sprache, Tests – je mit Fundstelle); bei `hebung` je neuer Zeile; bei `eintrag` nur, was an der Entscheidung unklar ist. Höchstens ein Abschnitt je Frage.
+3. Fragen stellen, abschnittsweise und knapp: bei `einrichtung` je Abschnitt die offenen Werte mit Vorschlag aus dem Repository (Pfade, Befehle, Sprache, Tests – je mit Fundstelle); bei `hebung` je neuer Zeile; bei `eintrag` nur, was an der Entscheidung unklar ist. Höchstens ein Abschnitt je Frage. Betrifft die Frage einen MCP-Server (Overlay Abschnitt 13 und 13.2), fehlt keine dieser Angaben: Name in `<MCP_FILE>`, System, Zweck (*lesen für Planung*, *schreiben für Ablage*), Lese- und Schreibwerkzeuge einzeln mit Namen, bei *schreiben für Ablage* das Ablageziel, Höchstzahl der Treffer, Art der Anmeldung. Ein Server ohne Zweck oder ohne Werkzeugliste wird nicht eingetragen (`.koolie/core/framework/core/02-privacy.md` 3.8), eine Werkzeugliste nicht geraten.
 4. [HALT] Änderungsliste vorlegen: Datei, Abschnitt, alter Wert, neuer Wert, Quelle (Entscheidung mit Rolle, oder Vorschlag). Berechtigungswirksame Zeilen – Pfadlisten, Befehle, MCP-Freigaben, Status – gesondert markieren. Die Hebung der Overlay-Version und die Zeile im Änderungsverlauf stehen mit auf der Liste; mit der Bestätigung der Liste sind sie bestätigt. Weiter nach Bestätigung.
 5. Eintragen, nur im Umfang des Mandats: bestätigte Werte setzen; Offenes als `<TBD: …>`; Architekturentscheidungen als eigene Datei `documents/architecture/decisions/ADR-<JJJJ-MM-TT>-<kurzname>.md`, registriert im Manifest (Overlay Abschnitt 13.1 und 19); die Overlay-Version im Steckbrief **ändern, nicht ersetzen** – nur dort; Manifest und Laufzeitfassung zieht `mandat.py beenden` nach; eine Zeile oben im Änderungsverlauf (Abschnitt 20) mit Rolle und dem Zusatz „eingetragen in M6“.
 6. Prüfen: `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay`. Meldet er einen Fehler, den die Eintragung verursacht hat → beheben oder zurücknehmen; einen vorbestehenden nur melden.
-7. Ergebnis im Ausgabeformat erzeugen; als nächsten Schritt für den Menschen `python .koolie/core/mandat.py beenden` nennen (gleicht die Laufzeitfassung ab) und, bei berechtigungswirksamen Änderungen, die Regeln, die er in der Berechtigungsdatei nachtragen muss.
+7. Ergebnis im Ausgabeformat erzeugen; als nächsten Schritt für den Menschen `python .koolie/core/mandat.py beenden` nennen (gleicht die Laufzeitfassung ab) und, bei berechtigungswirksamen Änderungen, die Regeln, die er in der Berechtigungsdatei nachtragen muss – bei einer MCP-Freigabe je Lesewerkzeug eine Freigabe, je Schreibwerkzeug eine Rückfrage, nie ein Muster für den ganzen Server, dazu den Eintrag in `<MCP_FILE>` ohne Zugangsdaten.
 
 ## 4. Grenzen und Rückfragenregeln
 

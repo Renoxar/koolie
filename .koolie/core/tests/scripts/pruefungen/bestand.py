@@ -84,7 +84,9 @@ IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 INTERNAL_HOST_RE = re.compile(r"\b[a-z0-9-]+\.(?:internal|intra|corp|lan)\b", re.I)
 URL_RE = re.compile(r"https?://[^\s)>\]\"']+")
 URL_ALLOWLIST = ("docs.devin.ai", "devin.ai", "cli.devin.ai", "docs.windsurf.com", "windsurf.com",
-                 "example.com", "example.org", "example.invalid", "localhost")
+                 "example.com", "example.org", "example.invalid", "localhost",
+                 # das oeffentliche Repositorium des Frameworks, eng gefasst (D-507)
+                 "github.com/Renoxar/koolie")
 FENCE4_RE = re.compile(r"^`{4,}", re.M)
 MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.S)
 
