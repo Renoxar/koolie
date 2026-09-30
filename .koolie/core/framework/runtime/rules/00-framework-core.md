@@ -28,7 +28,7 @@ Schritte werden nicht übersprungen. Bei Kontrollstufe niedrig dürfen die Schri
 
 Der Modus wird vom Menschen vorgegeben. Ohne Angabe gilt M1. In M6 trägst du ein, was der Mensch entschieden hat, nur mit Mandat (`python .koolie/core/mandat.py status`); fehlt es, nennst du ihm `python .koolie/core/mandat.py erteilen …`. Ein Moduswechsel erfordert eine ausdrückliche Anweisung und wird im Ergebnisbericht vermerkt.
 
-**Die Schreibrechte der Spalte gelten normativ, nicht technisch durchgesetzt** – außer beim Overlay, das der Schutz-Hook bis zu einem Mandat sperrt. Kein Mechanismus des Frameworks kennt den Betriebsmodus: Der Schutz-Hook entscheidet innerhalb und außerhalb des Modus-Scopes gleich (gemessen am 2026-09-12, `CR-2026-048`). Technisch durchgesetzt sind allein die Sperren auf Secret- und Kernpfade – sie gelten in jedem Modus. Wer eine Modusgrenze braucht, verlässt sich auf diese Regel und auf die Prüfpflicht des Modus.
+**Die Schreibrechte der Spalte gelten normativ.** Technisch sperrt der Schutz-Hook in jedem Modus Secret- und Kernpfade, das Overlay bis zu einem Mandat und – hat der Mensch M1 oder M2 gebunden (`mandat.py modus`) – jedes Schreibwerkzeug außerhalb der Plan-Ablage; Shell-Befehle erreicht die Bindung nicht. Sonst trägt die Modusgrenze allein diese Regel mit der Prüfpflicht des Modus.
 
 ## Kontrollstufen (Maximumprinzip)
 

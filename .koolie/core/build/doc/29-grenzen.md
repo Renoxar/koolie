@@ -48,6 +48,15 @@
 >   gehört dem Client – bei `devin-desktop` unterscheidet sie Groß- und Kleinschreibung (D-277),
 >   bei `claude-code` nicht. Eine Zusage, die nur die Regel trägt, gilt nur in der Schreibweise
 >   des Musters.
+> - **Die Modusgrenzen gelten normativ, M1 und M2 lassen sich binden** (seit Release 1.20.2,
+>   D-501). Bindet der Mensch M1 oder M2 im eigenen Terminal (`mandat.py modus`), sperrt der
+>   Schutz-Hook jedes Schreibwerkzeug beziehungsweise jedes außerhalb der Plan-Ablage. Ein
+>   Shell-Befehl, der schreibt, entgeht der Bindung wie dem Kernschutz (D-30); M3 bis M5 brauchen
+>   Pfadlisten aus dem Overlay und bleiben normativ (`K-201`).
+> - **Wo der Schutz-Hook nicht läuft, trägt die Rückfrage – bis ein Modus sie abschaltet**
+>   (seit Release 1.20.2, D-502). Bei `kiro` laufen Hooks nur interaktiv; ohne Rückfragekanal
+>   weist die Rückfrageregel einen Schreibversuch ins Overlay ab, mit `--trust-all-tools` geht
+>   er durch. Der Modus ist nach D-05 untersagt, und das ist die ganze Sicherung.
 > - **Kein Modulträger steht mehr auf `entwurf`** (seit Release 0.53.0), und **kein
 >   Decision Record mehr auf `entschieden (Vorschlag)`** (seit Release 0.49.0).
 > - **Die verbindliche Zielversion beider Packs ist festgelegt** (D-112). Sie ist der

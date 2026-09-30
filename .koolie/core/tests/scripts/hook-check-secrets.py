@@ -84,6 +84,15 @@ SEIT 1.20.0 (CR-2026-162) ZWEI ERWEITERUNGEN:
   Ohne Git-Verzeichnis kein Protokoll (wie beim Mandat). Ein Fehler beim Schreiben
   aendert keine Entscheidung. Grenze: Das Protokoll ist nicht manipulationsgeschuetzt.
 
+SEIT 1.20.2 (CR-2026-164) ZWEI SPERREN MEHR:
+- DIE MODUSBINDUNG (K-179, D-501). Bindet der Mensch M1 oder M2 im eigenen Terminal
+  ('mandat.py modus'), sperrt der Hook jeden Schreibaufruf (M1) oder jeden ausserhalb der
+  Plan-Ablage (M2). Datei und Befehl sind wie das Mandat fuer den Client gesperrt. Ohne
+  Bindung aendert sich nichts. Grenze: Ein Shell-Befehl, der schreibt, entgeht ihr.
+- DIE UEBERTRAGUNG VON SECRETS NACH AUSSEN (K-94, D-503). 'cloud drs secret-create' - der
+  Weg des eingebauten Skills 'upload-secrets' von devin-desktop - ist fuer jedes
+  ausfuehrende Werkzeug gesperrt, weil die CLI die Werte selbst liest.
+
 Das Skript gibt gefundene Secrets niemals aus; es nennt nur die Musterkategorie. Dasselbe
 gilt fuer einen unpruefbaren Pfadwert: Genannt wird die Position, nicht der Wert (D-39).
 Alle Muster sind generisch; sie enthalten keine realen Werte.
@@ -368,7 +377,28 @@ MANDAT_UMFAENGE = {
 # verschleiert, entgeht dem Muster; getragen wird der Rest von der Regelschicht.
 MANDATS_MUSTER = [
     re.compile(r"koolie-mandat", re.I),
+    re.compile(r"koolie-modus", re.I),
     re.compile(r"(^|[\s\\/])mandat\.py", re.I),
+]
+
+# DIE MODUSBINDUNG (CR-2026-164, D-501, K-179). Dieselbe Bauform wie das Mandat, fuer die
+# Modi, deren Schreibgrenze sich ohne Overlay-Pfadliste festmachen laesst: M1 schreibt
+# nichts, M2 nur in die Plan-Ablage, die der Mensch beim Binden nennt. Der Mensch bindet
+# im eigenen Terminal ('mandat.py modus'); ohne Bindung aendert sich nichts. Die Bindung
+# trifft Schreibwerkzeuge - ein Shell-Befehl, der schreibt, entgeht ihr wie dem
+# Kernschutz (D-30, K-32). Diese Grenze ist benannt, nicht verschwiegen.
+MODUS_DATEI = "koolie-modus.json"
+MODUS_GEBUNDEN = ("M1", "M2")
+
+# DIE UEBERTRAGUNG VON SECRETS NACH AUSSEN (CR-2026-164, D-503, K-94). Der eingebaute
+# Skill 'upload-secrets' von devin-desktop liest eine Secret-Datei nicht mit einem
+# Dateiwerkzeug: Er ruft die CLI des Clients, und die liest die Werte selbst und schickt
+# sie an den Secrets-Speicher des Anbieters (erhoben am 2026-09-30 mit 'devin skills show
+# upload-secrets', 3000.11.3). Ein Leseverbot der Berechtigungsschicht trifft diesen Weg
+# nicht, und mit '--from-env <VAR>' steht nicht einmal ein Pfad im Befehl. Gesperrt wird
+# deshalb der Befehl selbst - fuer jedes ausfuehrende Werkzeug, auch als Probelauf.
+UEBERTRAGUNGS_MUSTER = [
+    re.compile(r"\bcloud\s+drs\s+secret-create\b", re.I),
 ]
 MANDAT_BEFEHL = ("python " + CORE_REL + "/mandat.py erteilen --rolle <Rolle> "
                  "--umfang overlay --minuten 60")
@@ -461,6 +491,49 @@ def mandat_deckt(rel: str, mandat) -> bool:
         return False
     rel = rel.replace("\\", "/")
     return any(rel.lower().startswith(MANDAT_UMFAENGE[u].lower()) for u in mandat["umfang"])
+
+
+def modus_lesen():
+    """Die gueltige Modusbindung als dict - oder None.
+
+    Dieselben Bedingungen wie beim Mandat: lesbar, bekannter Modus, ein Ende in der
+    Zukunft und nicht weiter als die Hoechstdauer, dieses Projekt. M2 braucht zusaetzlich
+    eine projektrelative Plan-Ablage ausserhalb von .koolie/. Eine kaputte Bindung gilt
+    als KEINE - sie sperrt dann nichts, und die Regelschicht traegt den Modus wie vor
+    1.20.2. Das ist die schwaechere Seite, und sie ist gewaehlt: Eine Bindung ist eine
+    zusaetzliche Sperre, kein Schutz, von dem etwas anderes abhaengt.
+    """
+    gd = git_verzeichnis()
+    if not gd:
+        return None
+    try:
+        with io.open(os.path.join(gd, MODUS_DATEI), encoding="utf-8") as fh:
+            daten = json.load(fh)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(daten, dict) or daten.get("modus") not in MODUS_GEBUNDEN:
+        return None
+    try:
+        ende = datetime.datetime.strptime(str(daten.get("bis")), "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        return None
+    jetzt = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+    if ende <= jetzt or ende - jetzt > datetime.timedelta(minutes=MANDAT_HOECHSTDAUER_MIN + 1):
+        return None
+    projekt = daten.get("projekt")
+    if (not isinstance(projekt, str)
+            or os.path.normcase(os.path.realpath(projekt)) != os.path.normcase(PROJEKTWURZEL)):
+        return None
+    if daten["modus"] == "M2":
+        ablage = daten.get("ablage")
+        if not isinstance(ablage, str) or not ablage.strip():
+            return None
+        ablage = ablage.replace("\\", "/").strip().strip("/") + "/"
+        if (os.path.isabs(ablage) or ablage.startswith(("../", "./", ".koolie/"))
+                or "/../" in "/" + ablage):
+            return None
+        daten["ablage"] = ablage
+    return daten
 
 
 # Die Dateikoepfe eines Patchtextes (openai-codex, apply_patch). Nur sie sind Ziele;
@@ -985,6 +1058,16 @@ def main() -> None:
                     "schreiben; 'mandat.py status' zeigt es, 'mandat.py beenden' hebt "
                     "es auf."))
 
+    if tokenisieren and any(p.search(s) for p in UEBERTRAGUNGS_MUSTER for s in strings):
+        block(hinweis(
+            "das Hochladen von Secrets zu einem Dienst ausserhalb des Projekts "
+            "(cloud drs secret-create).",
+            "Secrets verlassen das Projekt nie ueber den KI-Client - auch nicht verschluesselt "
+            f"und auch nicht als Probelauf ({CORE_REL}/framework/core/02-privacy.md, K3).",
+            "Die Person laedt Secrets selbst hoch, im eigenen Terminal und nach den Regeln "
+            "der Organisation.",
+            "Die Operation laeuft nicht; nichts wird uebertragen."))
+
     # Das Material der Pfadpruefung. Ein Schreibwerkzeug wird an seinen ZIELEN gemessen,
     # nicht an seinem Inhalt (D-449); ein unbekanntes Werkzeug an allem.
     if verb == "write":
@@ -1112,6 +1195,39 @@ def main() -> None:
                         f"({CORE_REL}/governance/FEEDBACK_PROCESS.md); projekteigene "
                         "Regeln gehoeren ins Overlay (Modus M6).",
                         f"Die Operation laeuft nicht; 'install.py --check' bleibt gruen."))
+
+    # Die Modusbindung (K-179, D-501) - nach allen Sperren oben, damit deren Grund zuerst
+    # steht. Ein Ziel ausserhalb der Projektwurzel liegt nie in der Plan-Ablage.
+    if schreibend:
+        bindung = modus_lesen()
+        if bindung:
+            modus = bindung["modus"]
+            ablage = bindung.get("ablage")
+            fremd = []
+            if modus == "M1" or verb == "unbekannt":
+                fremd = list(ziele) or ["(Ziel unbekannt)"]
+            else:
+                for roh in ziele:
+                    try:
+                        alle = lesarten(roh, basis)
+                    except Unpruefbar:
+                        alle = []
+                    rels = [os.path.relpath(e, PROJEKTWURZEL).replace("\\", "/")
+                            for e in alle if innerhalb(e, PROJEKTWURZEL)]
+                    if not rels or not all(r.lower().startswith(ablage.lower())
+                                           for r in rels):
+                        fremd.append(roh)
+            if fremd:
+                block(hinweis(
+                    f"ein Schreibaufruf im gebundenen Modus {modus}"
+                    + (f" ausserhalb der Plan-Ablage {ablage}." if modus == "M2" else "."),
+                    f"Der Mensch hat {modus} gebunden: M1 schreibt nichts, M2 nur den Plan "
+                    f"({CORE_REL}/framework/core/05-working-model.md, Abschnitt 2).",
+                    (f"Den Plan unter {ablage} ablegen. " if modus == "M2" else "")
+                    + "Fuer einen anderen Modus bittet der Agent die Person, im eigenen "
+                    f"Terminal auszufuehren: python {CORE_REL}/mandat.py modus aus",
+                    f"Die Operation laeuft nicht; die Bindung endet von selbst um "
+                    f"{bindung['bis']} UTC."))
     durchlassen()
 
 

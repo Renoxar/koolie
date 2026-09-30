@@ -764,8 +764,10 @@ Prüft (statisch, ohne laufenden KI-Client):
      Auskunft 'mandat.py status' durch und sperrt das Overlay ohne Mandat; Hook und
      mandat.py fuehren dieselben Werte (Dateiname, Umfaenge, Hoechstdauer); die
      Kernquelle der Berechtigungen sperrt das Overlay nicht statisch, sonst hebt kein
-     Mandat die Sperre auf. GRENZE: Ein Befehl, der den Namen verschleiert, entgeht
-     dem Muster - wie bei K-32
+     Mandat die Sperre auf. Seit 1.20.2 ebenso die Modusbindung (D-501, K-179):
+     'mandat.py modus' und die Datei koolie-modus.json sind fuer den Client gesperrt,
+     Hook und mandat.py fuehren denselben Dateinamen und dieselben Modi. GRENZE: Ein
+     Befehl, der den Namen verschleiert, entgeht dem Muster - wie bei K-32
 100. Der Modellaufruf nur fuer rein lesende Skills (D-451): Ein Skill des Kerns oder
      eines Packs mit dem Trigger 'model' sperrt in permissions.deny 'edit' und 'exec'
      (08-skill-conventions.md, Zeile triggers). ANLASS: Drei rein lesende Skills trugen
@@ -823,7 +825,18 @@ Prüft (statisch, ohne laufenden KI-Client):
      Werkzeugs ist. ANLASS: Bei Bash(git:*) lief 'git -C <pfad> push' an
      Bash(git push:*) vorbei (D-123). GRENZE: die Schreibweise, nicht die
      Befehlsaequivalenz; nur Befehlsregeln, keine Pfadmuster
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 108 laeuft als eigenes
+109. Die beiden Werkzeugfelder eines Skills (D-505, K-93): Fuehrt ein Skill in einer
+     Ablage, die das Feld 'permissions' behaelt, 'allowed-tools' oder 'permissions',
+     dann fuehrt er beide. ANLASS: Bei devin-desktop wirkt die Beschraenkung nur mit
+     beiden Feldern, eines allein bleibt ohne Meldung folgenlos (D-287). GRENZE: die
+     Anwesenheit, nicht die Wirkung
+110. Die aktivierten Packs gegen die Regelablage (D-504, K-44), nur --strict-overlay:
+     Die Zeilen 'Aktivierte Role Packs' und 'Aktivierte Technology Packs' des Overlays
+     und die Laufzeitfassungen 30-role-* und 40-tech-* stimmen in beide Richtungen
+     ueberein; fehlt die Zeile bei vorhandenen Fassungen, gibt es eine Warnung. ANLASS:
+     Vier Regeldateien entfernt, und --strict-overlay meldete dasselbe wie vorher
+     (2026-09-17). GRENZE: die Laufzeitfassung und die Nennung, nicht Skills und Version
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 110 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -874,9 +887,10 @@ from pruefungen.packs import (  # noqa: E402
     check_clientversion_in_spanne, check_dokumenttabellen, check_formatgebundene_pruefungen,
     check_matrixzeile_in_tabelle, check_normative_kommentare, check_quellenauskunft,
     check_regelablage_sauber, check_schlitzinhalte, check_vorlage_kein_pack,
-    check_werkzeugabwesenheit, check_zusagenfelder, check_zusatzschluessel)
+    check_skill_werkzeugfelder, check_werkzeugabwesenheit, check_zusagenfelder,
+    check_zusatzschluessel)
 from pruefungen.overlay import (  # noqa: E402
-    check_ausgeschlossene_vorbedingung, check_befehlsschlitz_in_vorbedingung,
+    check_aktivierte_packs, check_ausgeschlossene_vorbedingung, check_befehlsschlitz_in_vorbedingung,
     check_excluded_paths, check_overlay_pfadabgleich, check_overlay_ready,
     check_overlay_schlitze, check_overlay_wertabgleich, check_pflichtplatzhalter,
     check_platzhalterbindung, check_strict_overlay, check_ungebundene_vorbedingung,
@@ -1044,12 +1058,14 @@ def main() -> int:
     check_hook_protokoll(root)
     check_wirksamkeitsprobe(root)
     check_allow_umschliesst_deny(root, man)
+    check_skill_werkzeugfelder(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
         check_ausgeschlossene_vorbedingung(root, man)
         check_overlay_wertabgleich(root, man)
         check_overlay_pfadabgleich(root, man)
+        check_aktivierte_packs(root, man)
     if args.check_overlay_ready:
         check_overlay_ready(root, man)
     if args.mermaid:
