@@ -437,16 +437,19 @@ gegenprobe("70b", "Ein gebundener Name mit untauglichem Wert laeuft durch - das 
 #
 # DREI GEGENPROBEN, UND SIE BELEGEN DEN ZUSCHNITT. Ein Platzhalter nennt niemanden
 # (71a). Die Marke `SYNTHETISCH` in derselben Zeile laeuft durch - dieselbe Bauform
-# wie das Begruendungsfeld von Pruefung 68 (71b). Und eine AUFZEICHNUNG bleibt
-# unbeanstandet: Ein Protokoll haelt fest, WO gemessen wurde, und wer es umschreibt,
-# hat keines mehr (71c, D-141) - das ist die angesagte Grenze und der Grund, aus dem
-# `K-85` offen steht.
+# wie das Begruendungsfeld von Pruefung 68 (71b). Und eine AUFZEICHNUNG DES BESTANDS
+# bleibt unbeanstandet: Ein Protokoll haelt fest, WO gemessen wurde, und wer es
+# umschreibt, hat keines mehr (71c, D-141). Seit 1.20.3 ist das eine geschlossene Liste
+# und keine Gattung mehr (D-508, `K-85`): Eine NEUE Aufzeichnung mit Kontonamen wird
+# gemeldet (71d).
 M71 = "nennt ein Benutzerprofil"
 M71_ANKER = "das eigene Muster trifft"
 P71_WERKZEUG = ".koolie/core/tests/erhebungen/stand-b4.py".replace("/", os.sep)
 P71_CHECKLISTE = ".koolie/core/checklists/11-framework-release.md".replace("/", os.sep)
 P71_PROTOKOLL = (".koolie/core/tests/protocols/"
                  "2026-09-21-wiederaufnahme-nachlauf-b4.md").replace("/", os.sep)
+P71_BESTAND = (".koolie/core/tests/protocols/"
+               "2026-09-19-testblaetter-buendel-1.md").replace("/", os.sep)
 P71_VALIDATOR = ".koolie/core/tests/scripts/pruefungen/werkzeuge.py".replace("/", os.sep)
 P71_PFAD = "C:" + chr(92) + "Users" + chr(92) + "sondenkonto" + chr(92) + "devpacks"
 
@@ -486,7 +489,13 @@ def _71_marke(root: str) -> None:
 
 
 def _71_aufzeichnung(root: str) -> None:
-    """Gegenprobe: eine Aufzeichnung bleibt unbeanstandet - die angesagte Grenze."""
+    """Gegenprobe: eine Aufzeichnung des Bestands bleibt unbeanstandet (D-141, D-508)."""
+    zeile_nach(P(root, P71_BESTAND), "## 1. Der Meßaufbau",
+               "" + chr(10) + "Gemessen wurde ausserhalb von `" + P71_PFAD + "`.")
+
+
+def _71_neue_aufzeichnung(root: str) -> None:
+    """Sonde: eine Aufzeichnung ausserhalb des Bestands wird geprueft (D-508, K-85)."""
     zeile_nach(P(root, P71_PROTOKOLL), "## 1. Die Lage vor dem Durchgang",
                "" + chr(10) + "Gemessen wurde ausserhalb von `" + P71_PFAD + "`.")
 
@@ -500,13 +509,16 @@ sonde("71b", "Dieselbe Bauform ausserhalb der Skripte: derselbe Pfad in einer Ch
 sonde("71c", "Trifft das eigene Muster seinen Gegenstand nicht mehr, meldet Pruefung 71 das, statt leise zu bestehen",
       _71_muster_verlieren, M71_ANKER)
 
+sonde("71d", "Eine neue Aufzeichnung mit Kontonamen wird gemeldet - ausgenommen ist seit 1.20.3 nur der Bestand der zehn, nicht die Gattung (D-508)",
+      _71_neue_aufzeichnung, M71)
+
 gegenprobe("71a", "Ein Platzhalter als Kontosegment nennt niemanden und wird NICHT gemeldet - die Pruefung haengt am Namen, nicht an der Pfadform",
            _71_platzhalter, M71)
 
 gegenprobe("71b", "Die Marke SYNTHETISCH in derselben Zeile laeuft durch - dieselbe Bauform wie das Begruendungsfeld von Pruefung 68",
            _71_marke, M71)
 
-gegenprobe("71c", "Eine Aufzeichnung bleibt unbeanstandet - ein Protokoll haelt fest, wo gemessen wurde, und wer es umschreibt, hat keines mehr (D-141)",
+gegenprobe("71c", "Eine Aufzeichnung des Bestands bleibt unbeanstandet - ein Protokoll haelt fest, wo gemessen wurde, und wer es umschreibt, hat keines mehr (D-141)",
            _71_aufzeichnung, M71)
 
 

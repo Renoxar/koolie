@@ -19,11 +19,17 @@ Skript entscheidet nichts, was install.py nicht selbst prueft - es sammelt nur d
 Parameter ein und zeigt den Befehl, bevor es ihn ausfuehrt.
 
 Die Ausgabe ist ASCII: Eine Windows-Konsole, die ein Doppelklick oeffnet, laeuft in
-ihrer eigenen Codepage, und ein Umlaut kaeme dort verstellt an.
+ihrer eigenen Codepage, und ein Umlaut kaeme dort verstellt an. Einzige Ausnahme ist
+das Banner vor der ersten Frage (banner.py, CR-2026-165): Es waehlt seine Zeichen nach
+der Kodierung, die Python fuer die Ausgabe meldet, faellt sonst auf ASCII zurueck und
+bricht den Dialog nie ab.
 
 Aufruf (normalerweise durch einen Starter):
 
-    python .koolie/core/install_dialog.py
+    python .koolie/core/install_dialog.py [--no-banner]
+
+Das Banner schaltet auch KOOLIE_NO_BANNER=1 ab - der Weg fuer die Starter, die keine
+Argumente weiterreichen.
 
 Exit-Code: der von install.py; 1 bei Abbruch im Dialog.
 """
@@ -161,7 +167,18 @@ def befehl_bauen(ziel: str) -> list[str]:
     return argv
 
 
-def main() -> int:
+def banner_ausgeben(argv: list) -> None:
+    """Das Banner - in einer eigenen Huelle, damit selbst ein fehlendes Modul den Dialog
+    nicht aufhaelt (F-5)."""
+    try:
+        import banner
+        banner.ausgeben(argv=argv, version=install.kern_version(HERE))
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def main(argv: list) -> int:
+    banner_ausgeben(argv)
     print(f"Koolie {install.kern_version(HERE)} - Installation in ein Projekt")
     print(f"Quelle: {install.quellwurzel()}")
     print("Abbrechen jederzeit mit q.")
@@ -184,4 +201,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

@@ -69,7 +69,8 @@ from sonden import (  # noqa: E402,F401 - laden heisst anmelden
     teil11_pruefungen_104_und_105,
     teil12_pruefungen_106_und_107,
     teil13_pfad_und_mustersemantik,
-    teil14_modi_ausnahmen_skills)
+    teil14_modi_ausnahmen_skills,
+    teil15_banner_und_nachlauf)
 
 
 if LISTE:

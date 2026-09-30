@@ -2,6 +2,61 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.20.3] - 2026-09-30
+
+**Anweisungen mit Nachlauf, die Aufzeichnungen und das Banner des Installers - und der Schnitt, der die Pakete nicht kannte**
+(`CR-2026-165` E1 bis E8, `CR-2026-166` E1 bis E4, **D-506** bis **D-512**, Pruefung 71 geaendert; `K-85` und `K-183`
+beantwortet, `K-186` teilweise, `K-202` gemessen). 23 Sitzungslaeufe mit `claude-code`, 15,41 USD nach Listenpreis,
+dazu 3 Laeufe mit `kiro`. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **Das Banner des Installationsdialogs** (D-506, `CR-2026-165`, Antrag des Owners): `install.cmd` und
+  `install.command` zeigen vor der ersten Frage einen Koolie ueber einer Box mit Wortmarke, Version, zwei Zeilen und
+  Copyright, Lizenz und Repository. Eigenes Modul `banner.py`; Vollvariante ab 80 Spalten, Kompaktvariante ab 66,
+  sonst und ohne Terminal eine Textvariante; Farbe nur im Terminal, `NO_COLOR` wird beachtet. Abschalten mit
+  `--no-banner` oder `KOOLIE_NO_BANNER=1`. Das Banner bricht den Dialog nie ab. Vorschau:
+  `python .koolie/core/banner.py --variante voll --farbe true`.
+- `SK-013-P03`: eine Zelle zur Einrichtung eines MCP-Servers.
+
+**Geaendert**
+
+- `fw-overlay-pflege` 0.2.0 (D-509, `K-183`): Bei einem MCP-Server fragt der Skill alle Angaben aus Overlay
+  Abschnitt 13.2 ab, traegt ohne Zweck oder Werkzeugliste nichts ein und nennt die Einzelregeln fuer die
+  Berechtigungsdatei; Zugangsdaten sind ausgeschlossen. Testblatt nachgemessen, 7 Zellen bestanden.
+- `fw-bugfix-prepare` 0.1.8 (D-510, `K-186` (2), (3)): Steigt die Kontrollstufe schon aus der Aufgabe, wird der Plan
+  zu Ende gefuehrt und die Abweichung hervorgehoben; eine abgewiesene Anmeldung ist auch an fehlenden
+  Lesewerkzeugen erkennbar, und angebotene fremde Werkzeuge werden nicht aufgerufen. Testblatt nachgemessen,
+  9 Zellen bestanden.
+- Pruefung 71 (D-508, `K-85`): Ausgenommen ist nur noch der Bestand der zehn Aufzeichnungen mit dem Kontonamen des
+  Owners, nicht mehr die Ordner `tests/protocols/` und `governance/change-requests/`. Sonde `71d` neu.
+- `LICENSE-HINWEIS.md` 0.2.2 (D-507): SPDX-Kennung `GPL-3.0-only` - es galt schon Version 3 allein.
+- Pruefung 6: `https://github.com/Renoxar/koolie` steht in der URL-Allowlist (D-507).
+- `UEB-33` (D-510, `K-186` (6)): Die Verlaufszeile "keinen Server frei" wird im Messbaum berichtigt, beim Zweck
+  *lesen* stehen keine Schreibwerkzeuge in 13.2.
+
+**Behoben**
+
+- 🔴 **`messbaum-schnitt.py` schnitt die Pakete `tests/scripts/sonden/` und `tests/scripts/pruefungen/` nicht**
+  (D-511). Seit `1.19.1` sind Sondenskript und Validator Einstieg und Paket; der Schnitt kannte nur die Einstiege.
+  Gefunden vom Waechter beim ersten Baum aus dem Uebungsrepositorium seither - 31 Kennungen.
+
+**Gemessen**
+
+- `K-202` (D-512): Ein ausdruecklicher Auftrag, ohne technische Schicht ins Overlay zu schreiben, wurde in 0 von 5
+  Laeufen ausgefuehrt (`claude-code` 2, `kiro` 3). Der Regeltext bleibt; `K-202` bleibt offen.
+
+**Migrationshinweis fuer Overlays**
+
+- Keine Aenderung der Laufzeitschicht. `install.py --update` bringt `banner.py`, die beiden Skills und den Validator.
+
+**Bekannte Einschraenkungen**
+
+- Ob die alte Windows-Konsole alle Zeichen des Banners darstellt, ist nicht gemessen (Sichtpruefung).
+- `fw-plan` und `fw-change-analyze` kennen das Merkmal der abgewiesenen Anmeldung nicht; `K-186` (1), (4) und (5)
+  bleiben offen.
+- Bei `kiro` ist das Overlay mit `--trust-all-tools` weiter ohne technische Schicht (`K-202`).
+
 ## [1.20.2] - 2026-09-30
 
 **Die Modusbindung und die registrierte Ausnahme - und der Upload, an dem das Leseverbot vorbeiging**

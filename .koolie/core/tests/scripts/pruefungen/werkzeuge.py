@@ -505,15 +505,29 @@ def check_werkzeugnamen(root: str) -> None:
 # Dieselbe Bauform wie das Feld `_uebererfasst` von Pruefung 68 - wer einen solchen
 # Pfad braucht, sagt es in derselben Zeile, statt dass die Pruefung raet.
 #
-# GRENZE, UND SIE STEHT HIER: AUFZEICHNUNGEN SIND AUSGENOMMEN. `tests/protocols/` und
+# GRENZE, UND SIE STEHT HIER: DER BESTAND DER AUFZEICHNUNGEN IST AUSGENOMMEN, NICHT DIE
+# GATTUNG (seit 1.20.3, D-508, `K-85`). `tests/protocols/` und
 # `governance/change-requests/` halten fest, WO gemessen wurde; ein Protokoll, das man
-# umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den Kontonamen weiter.
-# Was daraus folgt, ist `K-85` und hier NICHT entschieden - die Pruefung schweigt
-# darueber, statt es durch ihren Zuschnitt stillschweigend zu entscheiden.
+# umschreibt, ist keines mehr (D-141). Zehn von ihnen tragen den Kontonamen des Owners
+# weiter, und dabei bleibt es - der Name steht nach D-323 ohnehin im Lizenzhinweis.
+# Bis 1.20.2 nahm die Pruefung aber die ganzen beiden Ordner aus und liess damit jede
+# KUENFTIGE Aufzeichnung ungeprueft. Seither ist die Ausnahme eine geschlossene Liste:
+# Wer eine neue Aufzeichnung schreibt, schreibt `<konto>` oder die Marke.
 P71_MUSTER = re.compile(
     r"(?:[A-Za-z]:[\\/]{1,2}Users|/home|/Users)[\\/]{1,2}([A-Za-z0-9._-]+)")
 P71_AUSNAHME_ORDNER = (f"{KERN}/tests/protocols/",
                        f"{KERN}/governance/change-requests/")
+P71_BESTAND = frozenset(f"{KERN}/{rel}" for rel in (
+    "governance/change-requests/CR-2026-076-erster-sitzungstest.md",
+    "governance/change-requests/CR-2026-077-sitzungstest-schranken.md",
+    "tests/protocols/2026-09-11-erhebungen-K21-K26.md",
+    "tests/protocols/2026-09-13-B06-gegenpruefung.md",
+    "tests/protocols/2026-09-17-sitzungstest-pi-ds.md",
+    "tests/protocols/2026-09-17-sitzungstest-schranken.md",
+    "tests/protocols/2026-09-18-sitzungstest-5.md",
+    "tests/protocols/2026-09-18-sitzungstest-ne-sc.md",
+    "tests/protocols/2026-09-18-sitzungstest-pi-ds-2.md",
+    "tests/protocols/2026-09-19-testblaetter-buendel-1.md"))
 P71_MARKE = "SYNTHETISCH"
 # Die Selbstprobe des Musters: Ohne sie koennte ein Ausdruck, der nichts mehr trifft,
 # still bestehen - eine Null durch Konstruktion sieht aus wie eine gemessene Null
@@ -538,7 +552,7 @@ def check_arbeitsplatzpfad(root: str) -> None:
         rel = os.path.relpath(pfad, root).replace(os.sep, "/")
         if not rel.startswith(f"{KERN}/"):
             continue
-        if rel.startswith(P71_AUSNAHME_ORDNER):
+        if rel.startswith(P71_AUSNAHME_ORDNER) and rel in P71_BESTAND:
             continue
         text = read(pfad)
         for zeile in text.splitlines():
