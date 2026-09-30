@@ -123,5 +123,5 @@ The practice repository can be deleted afterwards – seen from the directory wh
 ## Next steps
 
 - [README](README.en.md): what Koolie is, who it is for, which clients are supported and how far.
-- [Adoption guide](.koolie/core/docs/ADOPTION_GUIDE.md) (German): taking Koolie into an existing project, updates, costs.
+- [Adoption guide](.koolie/core/docs/ADOPTION_GUIDE.md) (German): taking Koolie into an existing project, updates, costs, deployment architecture and coexistence with another agent framework.
 - [Overview of the client packs](.koolie/core/clients/README.md) (German): capability matrices and their evidence.

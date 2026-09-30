@@ -350,6 +350,24 @@ def korb_zerlegung(ist: list, soll_korb: list) -> tuple:
     return pflicht, schlitze, ungefuellt, zusatz
 
 
+def fremde_praefixe(root: str) -> list:
+    """Die zulaessig deklarierten Praefixe fremder Skills (1.21.0, K-31, Pruefung 111).
+
+    Fehlt koexistenz.py (etwa in einer Teilkopie des Kerns), gilt nichts als deklariert -
+    die Skills werden dann wie bisher als Koolie-Skills geprueft, strenger und nicht lockerer.
+    """
+    kern = os.path.join(root, KERN)
+    if not os.path.isdir(kern):
+        return []
+    if kern not in sys.path:
+        sys.path.insert(0, kern)
+    try:
+        import koexistenz
+    except ImportError:
+        return []
+    return [p for p in koexistenz.deklariert(root) if koexistenz.zulaessig(p)]
+
+
 def soll_korbregeln(root: str, man: dict) -> dict | None:
     """Die drei Koerbe in der Schreibweise dieses Clients, aus der Kernquelle.
 

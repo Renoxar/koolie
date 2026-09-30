@@ -127,6 +127,22 @@ der Inbetriebnahme eine Freigabe der Sicherheitsverantwortlichen.
 wird von Menschen. Koolie macht nicht sicher und nicht regelkonform – es macht sichtbar, **wo** eine Regel
 technisch hält und wo ein Mensch sie halten muss.
 
+## Braucht es Koolie neben einer guten Standardkonfiguration?
+
+Gemessen am 2026-09-30 mit Claude Code und Opus 5.5: eine gute Standardkonfiguration – Einstellungen
+außerhalb des Repositoriums, eine kurze `CLAUDE.md` mit Teamregeln, Branch-Schutz und Secret-Scan – gegen
+dieselbe Konfiguration mit Koolie. Jede Rückfrage des Clients wurde bejaht.
+
+- Mit Regeltexten hielt in beiden Fällen schon das Modell: kein Leck, keine abgeschwächte Kontrolle.
+- Ohne Regeltexte las in der Standardkonfiguration ein Unterprozess die Secret-Datei; mit Koolie sperrte ihn
+  der Schutz-Hook.
+- Eine normale kleine Änderung gelang in beiden Fällen, mit Koolie zu rund 65 bis 80 Prozent höheren Kosten.
+
+**Koolie ergänzt eine gute Standardkonfiguration; es ersetzt sie nicht.** Verwaltete Einstellungen,
+Branch-Schutz und CI und, wo nötig, eine Isolationsschicht bleiben Sache der Umgebung – was wer trägt, steht
+im [Übernahmeleitfaden, Abschnitt 8](.koolie/core/docs/ADOPTION_GUIDE.md). Die Messung ist klein – ein
+Client, ein Modell, je Sicherheitsfall ein Lauf – und trägt keine Aussage über Überlegenheit.
+
 ## Wie beginne ich?
 
 1. **Ausprobieren:** Der [Quickstart](QUICKSTART.md) installiert Koolie in ein leeres Übungs-Repository und

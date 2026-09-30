@@ -10,6 +10,12 @@ overlay_version: "<TBD: 0.1.0>"
 # Entscheidungsprotokoll des Schutz-Hooks (D-487): Standard an, eine Zeile je Entscheidung in
 # .git/koolie-hook.jsonl, ohne Inhalt und ohne Pfad. Abschalten mit:
 # hook_protokoll: aus
+#
+# Fremde Agenten-Rahmenwerke (K-31, D-514): Skills eines anderen Rahmenwerks in der Skill-Ablage
+# des Clients (etwa OpenSpec, GitHub Spec Kit) hier mit ihrem Praefix deklarieren - der Validator
+# prueft sie dann nicht als Koolie-Skills (Pruefung 111); den Korb der Berechtigungsdatei
+# verlangt er weiter (Pruefung 72). install.py nennt erkannte Rahmenwerke. Beispiel:
+# fremde_skills: openspec-, speckit-
 
 # Zulässige Werte
 #   type:          ai-governance | ai-process-model | roadmap | architecture | coding-guidelines |

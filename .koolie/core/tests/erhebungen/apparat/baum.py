@@ -135,17 +135,48 @@ def basis_bauen(ziel: str, kern_quelle: str, client: str, praeparation: list) ->
     return sollstand(ziel)
 
 
-def _remote_neu(baum: str, basis: str) -> None:
-    """Ein Wegwerf-Remote je Baum - ein durchgelassener Push landet dort und nirgends sonst."""
+def _remote_neu(baum: str, basis: str, hooks: str = "") -> None:
+    """Ein Wegwerf-Remote je Baum - ein durchgelassener Push landet dort und nirgends sonst.
+
+    Mit 'hooks' traegt das Remote Branch-Schutz und CI der Referenzgruppe (1.21.0): Die
+    Hooks liegen ausserhalb des Messbaums, der Agent erreicht sie nur ueber einen Push.
+    """
     remote = baum.rstrip("\\/") + ".remote.git"
     entfernen(remote)
     subprocess.run(["git", "clone", "-q", "--bare", basis, remote], check=True,
                    capture_output=True)
+    if hooks:
+        for name in sorted(os.listdir(hooks)):
+            ziel = os.path.join(remote, "hooks", name)
+            shutil.copy2(os.path.join(hooks, name), ziel)
+            os.chmod(ziel, 0o755)
     git(baum, "remote", "remove", "origin", pruefen=False)
     git(baum, "remote", "add", "origin", remote)
 
 
-def herrichten(basis: str, baum: str, branch: str, soll: dict, remote: bool, ohne=()) -> None:
+def verbinden(baum: str, verbindungen: dict) -> None:
+    """Verzeichnisverbindungen, die weder Hash noch Zuruecksetzen betreten (1.21.0).
+
+    Der geteilte node_modules-Bestand (node-waechter.py): 118 MB je Baum waeren der Preis
+    einer Kopie. Eine vorhandene Verbindung bleibt; ein echtes Verzeichnis an ihrer Stelle
+    ist ein Abbruch - es waere ein Rest oder eine Kopie.
+    """
+    for rel, quelle in (verbindungen or {}).items():
+        ziel = os.path.join(baum, *rel.replace("\\", "/").split("/"))
+        if os.path.lexists(ziel):
+            if _ist_verbindung(ziel):
+                continue
+            raise RuntimeError(f"{rel} besteht im Baum und ist keine Verbindung")
+        os.makedirs(os.path.dirname(ziel), exist_ok=True)
+        if os.name == "nt":
+            subprocess.run(["cmd", "/c", "mklink", "/J", ziel, os.path.abspath(quelle)],
+                           check=True, capture_output=True)
+        else:
+            os.symlink(os.path.abspath(quelle), ziel, target_is_directory=True)
+
+
+def herrichten(basis: str, baum: str, branch: str, soll: dict, remote: bool, ohne=(),
+               verbindungen=None, remote_hooks: str = "") -> None:
     """Den Baum auf den Sollstand der Basis bringen - neu kopiert oder zurueckgesetzt.
 
     Fehlt er, wird die Basis kopiert (mit .git und ignorierten Dateien). Besteht er, setzt
@@ -178,5 +209,6 @@ def herrichten(basis: str, baum: str, branch: str, soll: dict, remote: bool, ohn
                 os.rmdir(wurzel)
     if branch != soll["branch"]:
         git(baum, "checkout", "-q", "-B", branch, soll["commit"])
+    verbinden(baum, verbindungen)
     if remote:
-        _remote_neu(baum, basis)
+        _remote_neu(baum, basis, remote_hooks)

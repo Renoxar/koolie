@@ -2,6 +2,53 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.21.0] - 2026-09-30
+
+**Einsatzarchitektur, Koexistenz und Vergleichsmessung - und die Aktualisierung, die den fremden Block loeschte**
+(`CR-2026-167` E1 bis E5, **D-513** bis **D-517**, **Pruefung 111** neu, Pruefungen 5, 37 und 72 fuer deklarierte
+fremde Skills angepasst; `K-31`, `K-32` und `K-193` beantwortet, `K-203` neu). 56 Sitzungslaeufe mit `claude-code`,
+14,55 USD nach Listenpreis. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **Die Einsatzarchitektur** (D-513, Uebernahmeleitfaden Abschnitt 8.1): was Koolie traegt und was verwaltete
+  Einstellungen, Branch-Schutz und CI und eine Isolationsschicht tragen muessen. `K-32`: Die Arbeit am Kern in einer
+  isolierten Laufzeit geht ueber die registrierte, befristete Ausnahme.
+- **Koexistenz mit einem anderen Agenten-Rahmenwerk** (D-514, Abschnitt 8.2): Fremde Skills werden im
+  Overlay-Manifest deklariert (`fremde_skills: openspec-, speckit-`) und vom Validator nicht als Koolie-Skills
+  geprueft; den Korb der Berechtigungsdatei verlangt er weiter, auch als Muster (`Skill(openspec-*)`). Pruefung 111
+  haelt die Deklaration: Ein Praefix, das einen Koolie-Skill treffen koennte, nimmt nichts aus. `install.py` nennt
+  ein erkanntes Rahmenwerk (neues Modul `koexistenz.py`). Gemessen an OpenSpec 1.13.2 und GitHub Spec Kit.
+- **Die Vergleichsmessung gegen eine gute Standardkonfiguration** (D-516, Abschnitt 8.3, `K-193`): mit Regeltexten
+  in beiden Gruppen 0 Verletzungen; ohne Regeltexte 1 Leck in der Referenz, 0 mit Koolie; normale Aenderung beide
+  5 von 5, mit Koolie rund 65 bis 80 Prozent teurer. README und QUICKSTART nennen das Ergebnis (D-517): Koolie
+  ergaenzt eine gute Standardkonfiguration und ersetzt sie nicht.
+- Messapparat: die Referenzgruppe (`einstellungen` ausserhalb des Baums, `zusatz`, `verbindungen`, `remote_hooks`,
+  `unterverzeichnis`) und der Freigabe-Stellvertreter `apparat/freigabe.py`; Selbsttest 12 Faelle.
+
+**Behoben**
+
+- 🔴 **`install.py --update` loeschte den markierten Block eines fremden Generators in der Wurzel-Anweisung ohne
+  Meldung** (D-515). Die Wurzel-Anweisung gehoert dem Kern und wird neu geschrieben; ein Block
+  `<!-- NAME:START -->` ... `<!-- NAME:END -->` ging dabei verloren, und der Generator haette ihn zurueckgeschrieben.
+  Die Aktualisierung bricht jetzt vor dem ersten Schreibvorgang ab; Pruefung 111 warnt vorher.
+
+**Migrationshinweis fuer Overlays**
+
+- Keine Aenderung der Laufzeitschicht. Neuer, optionaler Schluessel `fremde_skills:` im Overlay-Manifest - nur
+  fuer Projekte mit einem anderen Agenten-Rahmenwerk; die Vorlage nennt ihn als Kommentar.
+- Traegt die Wurzel-Anweisung einen markierten Block eines Generators, bricht `install.py --update` ab: den Generator
+  auf eine eigene Datei umstellen, den Block entfernen, erneut aufrufen (Uebernahmeleitfaden Abschnitt 8.2).
+
+**Bekannte Einschraenkungen**
+
+- Die Vergleichsmessung deckt einen Client, ein Modell und je Sicherheitsfall einen Lauf; verwaltete Einstellungen
+  und ein aktiv umgehender Agent sind nicht gemessen (`K-203`).
+- Die Sperre des Schutz-Hooks fuer Secret-Pfade in Befehlen ist eine Musterpruefung: Ein Befehl, der den Pfad
+  zusammensetzt, kam synthetisch vorbei (D-516, D-497).
+- Erkannt werden OpenSpec und GitHub Spec Kit; ein anderes Rahmenwerk faellt als Skill ohne Koolie-Praefix oder an
+  seinen Markierungen auf.
+
 ## [1.20.3] - 2026-09-30
 
 **Anweisungen mit Nachlauf, die Aufzeichnungen und das Banner des Installers - und der Schnitt, der die Pakete nicht kannte**

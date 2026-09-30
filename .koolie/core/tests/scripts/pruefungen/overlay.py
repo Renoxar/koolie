@@ -2,7 +2,7 @@
 Schlitze, Freigabefolge, Pflichtplatzhalter, Platzhalterbindung, Vorbedingungen,
 Befehlsschlitz, Wert- und Pfadabgleich.
 
-Pruefungen 9, 9a, 28, 51, 52, 55a, 55b, 56, 57, 59, 60, 89 und 110. Teil des Validators
+Pruefungen 9, 9a, 28, 51, 52, 55a, 55b, 56, 57, 59, 60, 89, 110 und 111. Teil des Validators
 validate-framework.py, seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das
 Register aller Pruefungen steht im Kopfkommentar des Einstiegs, die Grenze jeder
 einzelnen in ihrem Kopfkommentar hier."""
@@ -17,6 +17,7 @@ from overlay_status import (
 
 from .gemeinsam import (
     _tabellenspalte, _ueb_katalogdateien, err, formatgebunden, KERN, PLACEHOLDER_RE,
+    fremde_praefixe,
     PROJEKTPLATZHALTER, read, regeldatei, tabellenzellen, TBD_RE, warn)
 
 
@@ -1191,3 +1192,60 @@ def check_aktivierte_packs(root: str, man: dict) -> None:
             err(f"{man['pack_runtime_dir']}/{praefix}{pack}{endung}: lädt in jeder passenden "
                 f"Sitzung, aber das Overlay führt '{pack}' nicht unter '{beschriftung}' - "
                 f"aktiviert wird ein Pack im Overlay (K-44)")
+
+
+# --- Pruefung 111: fremde Skills, deklariert (CR-2026-167, D-514, K-31) ----------------
+#
+# ANLASS, GEMESSEN (2026-09-30): OpenSpec 1.13.2 und GitHub Spec Kit legen ihre Skills in
+# dieselbe Laufzeitablage wie Koolie (.claude/skills/openspec-*, speckit-*). Der Validator
+# prueft jeden Skill dort nach den Regeln fuer Koolie-Skills - sechs OpenSpec-Skills ergaben
+# 60 Fehler und 18 Warnungen, in einem Projekt, in dem beide Rahmenwerke einander keine
+# Datei aendern. Seither deklariert das Projekt sie im Overlay-Manifest
+# ('fremde_skills: openspec-, speckit-'), und Pruefung 5 nimmt sie aus.
+#
+# GEPRUEFT: FEHLER, wenn ein deklariertes Praefix einen Koolie-Skill treffen koennte (fw-,
+# prj-, role-, tech-, oder kuerzer als drei Zeichen) - die Deklaration waere sonst ein Weg,
+# die eigenen Skills der Pruefung zu entziehen; ein solches Praefix nimmt nichts aus.
+# WARNUNG, wenn ein Praefix keinen Skill der Laufzeitablage trifft (Deklaration ohne
+# Gegenstand), wenn koexistenz.py ein bekanntes fremdes Rahmenwerk mit Skills erkennt,
+# deren Praefix nicht deklariert ist, und wenn die Wurzel-Anweisung den markierten Block
+# eines fremden Generators traegt - er zaehlt ins Budget (Pruefung 4, K-185), und die
+# naechste Aktualisierung bricht davor ab (D-515).
+# GRENZE: die Deklaration und die Ablage, nicht der Inhalt eines fremden Skills. Den Korb
+# der Berechtigungsdatei verlangt Pruefung 72 weiter (D-238); was ein fremder Skill tut,
+# prueft Koolie nicht - das ist die Abgrenzung nach Gegenstand (D-478).
+def check_fremde_skills(root: str, man: dict) -> None:
+    """Pruefung 111 (D-514, K-31): deklarierte fremde Skills - zulaessig und mit Gegenstand."""
+    manifest = os.path.join(root, ".koolie", "project-overlay", "overlay-manifest.yaml")
+    if not os.path.isfile(manifest):
+        return
+    fremde_praefixe(root)  # legt den Kern in den Suchpfad
+    try:
+        import koexistenz
+    except ImportError:
+        return
+    wurzel = man.get("root_instruction_file", "")
+    wurzel_pfad = os.path.join(root, *wurzel.split("/")) if wurzel else ""
+    if wurzel_pfad and os.path.isfile(wurzel_pfad):
+        for name, zeichen in koexistenz.markierte_bloecke(read(wurzel_pfad)):
+            warn(f"{wurzel}: traegt den markierten Block '{name}' eines fremden Generators "
+                 f"({zeichen} Zeichen) - er zaehlt ins Budget der stets geladenen Texte "
+                 f"(K-185), und install.py --update bricht davor ab (D-515)")
+    ablage = os.path.join(root, *man["skills_dir"].split("/"))
+    skills = sorted(os.listdir(ablage)) if os.path.isdir(ablage) else []
+    deklariert = koexistenz.deklariert(root)
+    rel = ".koolie/project-overlay/overlay-manifest.yaml"
+    for p in deklariert:
+        if not koexistenz.zulaessig(p):
+            err(f"{rel}: fremde_skills nennt '{p}' - das Praefix koennte einen Koolie-Skill "
+                f"treffen (fw-, prj-, role-, tech-) und nimmt deshalb nichts aus (D-514)")
+        elif not any(s.startswith(p) for s in skills):
+            warn(f"{rel}: fremde_skills nennt '{p}', aber kein Skill in {man['skills_dir']}/ "
+                 f"beginnt damit - eine Deklaration ohne Gegenstand (D-514)")
+    for b in koexistenz.erkennen(root, man["skills_dir"]):
+        offen = [s for s in b["skills"] if not koexistenz.ist_deklariert(s, deklariert)]
+        if b["name"] != "unbekannt" and offen:
+            warn(f"{man['skills_dir']}/: {len(offen)} Skill(s) von {b['name']} "
+                 f"({b['praefix']}*) sind nicht deklariert - im Overlay-Manifest "
+                 f"'fremde_skills: {b['praefix']}' eintragen, sonst prueft Pruefung 5 sie als "
+                 f"Koolie-Skills (K-31, D-514)")

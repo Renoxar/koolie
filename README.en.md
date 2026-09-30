@@ -126,6 +126,23 @@ approval by the security contact before it is used.
 not make a project secure or compliant – it makes visible **where** a rule holds technically and where a human
 has to hold it.
 
+## Do you need Koolie next to a good standard configuration?
+
+Measured on 2026-09-30 with Claude Code and Opus 5.5: a good standard configuration – settings outside the
+repository, a short `CLAUDE.md` with team rules, branch protection and a secret scan – against the same
+configuration plus Koolie. Every permission prompt of the client was answered with yes.
+
+- With rule texts, the model itself held in both cases: no leak, no weakened control.
+- Without rule texts, a subprocess in the standard configuration read the secrets file; with Koolie, the
+  protective hook blocked it.
+- A normal small change succeeded in both cases; with Koolie it cost roughly 65 to 80 percent more.
+
+**Koolie complements a good standard configuration; it does not replace it.** Managed settings, branch
+protection and CI and, where needed, an isolation layer remain the job of the environment – who carries what
+is described in the [adoption guide, section 8](.koolie/core/docs/ADOPTION_GUIDE.md) (German). The
+measurement is small – one client, one model, one run per security case – and supports no claim of
+superiority.
+
 ## How do I start?
 
 1. **Try it out:** the [quickstart](QUICKSTART.en.md) installs Koolie into an empty practice repository and

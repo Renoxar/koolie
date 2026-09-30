@@ -65,6 +65,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import clientmap  # noqa: E402  (liegt neben dieser Datei)
 import wirksamkeit  # noqa: E402  (liegt neben dieser Datei; K-195, D-488)
+import koexistenz  # noqa: E402  (liegt neben dieser Datei; K-31, D-514)
 
 CLIENT_PACKS = os.path.join(HERE, "clients")
 # Der Standard bleibt der Client, fuer den das Framework urspruenglich gebaut wurde.
@@ -1020,6 +1021,46 @@ def veraltete_overlaysperre(root: str, man: dict) -> list[str]:
         return []
     return [z.strip() for z in zeilen
             if "project-overlay/**" in z and "deny_must_contain" not in z]
+
+
+def koexistenz_auskunft(root: str, man: dict) -> list[str]:
+    """Die Auskunft zu fremden Agenten-Rahmenwerken im Projekt (1.21.0, K-31, D-514).
+
+    GEMESSEN am 2026-09-30: OpenSpec und GitHub Spec Kit aendern keine Datei von Koolie und
+    Koolie keine ihrer Dateien - in beiden Reihenfolgen. Die Reibung ist der geteilte
+    Namensraum der Skills (Pruefung 111) und, bei einem Generator, der in die Wurzel-Anweisung
+    schreibt, das Budget der stets geladenen Texte (Pruefung 4, K-185) - diesen Fall faengt
+    schon der Abbruch vor der Aktualisierung (D-515). Eine Auskunft und keine Schranke:
+    install.py schreibt in keiner fremden Datei.
+    """
+    befunde = koexistenz.erkennen(root, man["skills_dir"])
+    if not befunde:
+        return []
+    deklariert = koexistenz.deklariert(root)
+    aus = [f"HINWEIS ({len(befunde)}): In diesem Projekt liegt ein fremdes Agenten-Rahmenwerk "
+           f"neben Koolie (K-31):"]
+    offen = []
+    for b in befunde:
+        teile = []
+        if b["skills"]:
+            teile.append(f"{len(b['skills'])} Skill(s) in {man['skills_dir']}/")
+        teile += b["spuren"]
+        aus.append(f"  {b['name']}: {', '.join(teile)}")
+        if b["praefix"] and not any(koexistenz.ist_deklariert(s, deklariert) for s in b["skills"]):
+            if b["skills"]:
+                offen.append(b["praefix"])
+    aus.append("Koolie traegt Ebene 1 (Sicherheit, Berechtigungen, Schutz-Hook); das fremde")
+    aus.append("Rahmenwerk seine Prozessartefakte in seiner eigenen Ablage. Keines aendert die")
+    aus.append("Dateien des anderen (gemessen fuer OpenSpec und Spec Kit, 2026-09-30).")
+    if offen:
+        aus.append("Seine Skills folgen nicht den Regeln fuer Koolie-Skills. Im Overlay-Manifest")
+        aus.append(f"deklarieren, damit der Validator sie nicht als solche prueft (Pruefung 111):")
+        aus.append(f"  fremde_skills: {', '.join(offen)}")
+    if any(b["skills"] for b in befunde):
+        aus.append(f"Jeden fremden Skill in {man['permissions_file']} einem Korb zuordnen (allow")
+        aus.append("oder ask), sonst faellt sein Aufruf in die Rueckfrage (Pruefung 72, D-238).")
+    aus.append("Uebernahmeleitfaden Abschnitt 8. Dies ist eine Auskunft und keine Schranke.")
+    return aus
 
 
 def traegt_quellrepo_kennzeichen(root: str) -> bool:
@@ -2140,6 +2181,31 @@ def main() -> int:
                   "2N-overlay-<name>.md. Danach die\nDatei entfernen und erneut aufrufen "
                   "(.koolie/core/docs/ADOPTION_GUIDE.md, Abschnitt 2).", file=sys.stderr)
             return 1
+    if mode == "update":
+        # GEMESSEN am 2026-09-30 (K-31, D-515): Die Wurzel-Anweisung gehoert dem Kern, und
+        # --update schrieb sie neu - der markierte Block eines fremden Generators ging dabei
+        # OHNE Meldung verloren, und der Generator schriebe ihn beim naechsten Lauf zurueck.
+        # Dieselbe Bauform wie die Kollision der Erstinstallation: Abbruch vor dem ersten
+        # Schreibvorgang, nicht Datenverlust.
+        wurzel_rel = man.get("root_instruction_file", "")
+        wurzel_pfad = os.path.join(root, *wurzel_rel.split("/")) if wurzel_rel else ""
+        bloecke = (koexistenz.markierte_bloecke(read_text(wurzel_pfad))
+                   if wurzel_pfad and os.path.isfile(wurzel_pfad) else [])
+        if bloecke:
+            print(f"FEHLER: {wurzel_rel} traegt {len(bloecke)} markierte(n) Block/Bloecke "
+                  f"eines fremden Generators:", file=sys.stderr)
+            for name, zeichen in bloecke:
+                print(f"  {name}: {zeichen} Zeichen", file=sys.stderr)
+            print("", file=sys.stderr)
+            print(f"Die Aktualisierung schreibt {wurzel_rel} neu - die Datei gehoert dem Kern "
+                  f"(Ebene 1).\nDer Block ginge verloren, und der Generator schriebe ihn "
+                  f"beim naechsten Lauf zurueck.", file=sys.stderr)
+            print("", file=sys.stderr)
+            print("Abgrenzung nach Gegenstand (K-31): den Generator auf eine eigene Datei "
+                  "umstellen,\netwa eine, die bei Bedarf laedt; den Block entfernen und "
+                  "erneut aufrufen\n(.koolie/core/docs/ADOPTION_GUIDE.md, Abschnitt 8).",
+                  file=sys.stderr)
+            return 1
     version_file = os.path.join(HERE, "VERSION")
     version = open(version_file, encoding="utf-8").read().strip() if os.path.exists(version_file) else "unbekannt"
 
@@ -2317,6 +2383,12 @@ def main() -> int:
         print("Arbeitsbaum des Frameworks bringt dessen Overlay mit.")
         print("Im Framework-Repositorium selbst ist nichts zu tun. Dies ist eine Auskunft und")
         print("keine Schranke.")
+
+    fremd = koexistenz_auskunft(root, man)
+    if fremd:
+        print()
+        for zeile in fremd:
+            print(zeile)
 
     print()
     print("Diese Pfade gehoeren dem Projekt und werden von install.py nie geschrieben:")

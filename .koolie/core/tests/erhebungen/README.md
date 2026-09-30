@@ -92,12 +92,22 @@ python messen.py selbsttest                             # gegen den Attrappen-Cl
 | `clients.py` | Adapter `claude-code` (vollständig), `cursor` (Lauf; Kosten, Hook-Probe unerhoben – Pfad in `LW_CURSOR`), Attrappe; `devin-desktop`, `openai-codex`, `kiro` sagen **unerhoben** | D-276: ein Apparat, der einen Client nie sah, meldet nichts |
 | `belege.py` | sichert je Turn Ergebnis, Ausgabe, Antwort, Mitschrift und Laufdaten (Client, Version, **Modell**, Gruppe, Variante, Branch, Baum-Hash) – nur außerhalb des Repositoriums | D-222, D-280 |
 | `stand.py` | die Standmarke einer Ergebniszelle, gerechnet vom Validator (`stand_wert()`) | `K-61`: ein `bestanden` veraltet mit seinem Gegenstand |
-| `selbsttest.py` | zehn Fälle gegen die Attrappe, darunter drei Gegenfälle (falscher Branch, Rest im Baum, Deckel) | bis `1.18.2` kein einziger Test |
+| `selbsttest.py` | zwölf Fälle gegen die Attrappe, darunter drei Gegenfälle (falscher Branch, Rest im Baum, Deckel) und seit `1.21.0` zwei zur Referenzgruppe | bis `1.18.2` kein einziger Test |
+| `freigabe.py` | der **Freigabe-Stellvertreter**: ein MCP-Server, der im Druckmodus jede Rückfrage mit „ja“ beantwortet und protokolliert (`--permission-prompt-tool`) – nur für Messbäume | `1.21.0`: Eine Konfiguration, die jede Änderung erfragt, maß im Druckmodus sonst nur ihre Einstellung (D-516) |
 
 **Baummodi:** `fest` (ein Verzeichnis je Reihe, zurückgesetzt zwischen den Läufen), `je_lauf`
 (ein Verzeichnis je Lauf), `vorhanden` (Bäume eines anderen Werkzeugs, etwa `baeume-b4.py`;
 der Apparat hält ihren Sollstand fest und prüft ihn vor jedem Lauf). Ein Lauf auf eigenem
 Branch heißt im Modus `fest` `arbeit/…` (`K-172`).
+
+**Seit `1.21.0` – die Referenzgruppe der Vergleichsmessung** (`K-193`, D-516). Fünf Felder der
+Reihe: `einstellungen` (eine Einstellungsdatei **außerhalb** jedes Baums, bei `claude-code` als
+`--settings`; eine Datei unter der Wurzel ist ein Schemafehler, weil der Agent sie erreichen
+könnte), `zusatz` (Argumente an den Client, etwa der Freigabe-Stellvertreter), im Baum
+`verbindungen` (Verzeichnisverbindungen, die weder Hash noch Zurücksetzen betreten – der geteilte
+`node_modules`-Bestand) und `remote_hooks` (Hooks des Wegwerf-Remotes: Branch-Schutz und CI
+außerhalb des Baums), je Lauf `unterverzeichnis` (Startverzeichnis im Baum, für den Fall des
+falschen Startverzeichnisses).
 
 🔴 **Der feste Pfad spart keinen Cache** (D-475, gemessen mit `1.19.0`): Dieselben acht
 Läufe kosteten im festen Baum, je Lauf in eigenem Baum und in `1.18.2` gleich viel – je

@@ -19,7 +19,8 @@ import tempfile
 import mermaid_renderer
 
 from .gemeinsam import (
-    _clientmap, err, formatgebunden, hinweis, iter_text_files, KERN, NEUTRAL_CHRONIK,
+    _clientmap, err, formatgebunden, fremde_praefixe, hinweis, iter_text_files, KERN,
+    NEUTRAL_CHRONIK,
     NEUTRAL_CHRONIK_BASENAMES, NEUTRAL_DOKUMENT, nicht_geliefert, parse_frontmatter,
     PLACEHOLDER_RE, read, regel_endung, regeldatei, skill_dirs, SKILL_STATUS,
     SKIP_DIRS, TBD_RE, TEXT_EXT, warn, yaml, ZELLTRENNER_RE)
@@ -447,18 +448,25 @@ def check_rules(root: str, man: dict) -> None:
 def check_skills(root: str, man: dict) -> None:
     ids: dict[str, str] = {}
     runtime = man["skills_dir"]
+    # Fremde Skills, die das Projekt im Overlay-Manifest deklariert, sind keine Koolie-Skills
+    # und werden nicht nach dessen Regeln geprueft - nur in der Laufzeitablage, nie in den
+    # Quellen des Kerns (1.21.0, K-31). Den Korb verlangt Pruefung 72 weiter (D-238).
+    fremd = fremde_praefixe(root)
     for skills_dir, prefix in skill_dirs(root, man):
         # Die Modellwahl-Sperre wird nur in der *installierten* Fassung geprueft: In der
         # Quelle steht die Aussage als `triggers`, erst die Abbildung uebersetzt sie.
         check_skills_in(skills_dir, prefix, ids,
-                        man if prefix == runtime else None)
+                        man if prefix == runtime else None,
+                        fremd if prefix == runtime else ())
 
 
 def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str],
-                    man: dict | None = None) -> None:
+                    man: dict | None = None, fremd=()) -> None:
     for name in sorted(os.listdir(skills_dir)):
         sdir = os.path.join(skills_dir, name)
         if not os.path.isdir(sdir):
+            continue
+        if fremd and any(name.startswith(p) for p in fremd):
             continue
         rel = f"{prefix}/{name}"
         if not re.fullmatch(r"[a-z0-9-]+", name):

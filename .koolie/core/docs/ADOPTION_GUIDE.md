@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.5.1` |
+| Version | `0.6.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -192,12 +192,10 @@ bleibt unberührt (P10, Baum 6).
 
    Erst danach die alte Datei entfernen und Schritt 3 wiederholen.
 
-   > **Führt das Projekt bereits ein anderes Agenten-Framework**, das dieselbe Datei erzeugt
-   > oder in Abschnitten pflegt, ist die Übernahme **kein Kopiervorgang, sondern eine
-   > Entscheidung**: Zwei Regelwerke, die beide Ebene 1 beanspruchen, widersprechen einander
-   > früher oder später, und das erzeugende Werkzeug schreibt seine Abschnitte beim nächsten
-   > Lauf zurück. Dieser Fall ist im Framework **nicht gelöst** (K-31); er gehört vor die
-   > Übernahme geklärt, nicht danach.
+   > **Führt das Projekt bereits ein anderes Agenten-Framework**, gilt Abschnitt 8.2: Koolie
+   > trägt Ebene 1, das andere Rahmenwerk seine Prozessartefakte in eigener Ablage. Erzeugt es
+   > Abschnitte in der Wurzel-Anweisung, gehört es auf eine eigene Datei umgestellt, bevor
+   > Koolie übernommen wird – die Wurzel-Anweisung gehört dem Kern (D-514, D-515).
 
 4. **Overlay ausfüllen:** `.koolie/project-overlay/OVERLAY.md` vollständig; Laufzeitfassung
    `20-project-overlay.md` in der Regelablage synchron halten; Werte in der
@@ -472,3 +470,89 @@ dreimal gefahren; die Spannen stehen im Protokoll. Die Preise sind Listenpreise 
 rechnet anders ab**; dort zählt der Verbrauch am Kontingent, und dafür sind die Token die
 richtige Größe. **Der Nutzen ist nicht gemessen** – ob weniger Nacharbeit, weniger Fehler oder ein
 verhindertes Leck die Mehrkosten aufwiegt, sagt keine dieser Zahlen.
+
+## 8. Einsatzarchitektur, Koexistenz und Vergleich
+
+Koolie ist die **Regel- und Nachweisschicht im Repositorium** – kein Sandkasten und keine
+GRC-Plattform (D-478). Es wirkt über Dateien, die im Projekt liegen, und über den Client, der sie
+lädt. Was außerhalb davon liegt, muss die Umgebung tragen (D-513).
+
+### 8.1 Was Koolie trägt – und was die Umgebung tragen muss
+
+| Schicht | Trägt | Was Koolie beiträgt | Was fehlt, wenn nur Koolie da ist |
+|---|---|---|---|
+| Regeln, Skills, Nachweise | Koolie | Ebenen 1 bis 7, Testblätter, Validator, Protokolle | – |
+| Berechtigungen und Schutz-Hook des Projekts | Koolie | Berechtigungsdatei und Hook je Client Pack, Wirksamkeitsprobe `install.py --probe` | Die Dateien liegen im Projekt; ein Mensch kann sie ändern, und sie wirken nur für eine Sitzung, die im Projekt startet (D-407) |
+| Verwaltete Einstellungen des Clients | Administration | Nichts; das Pack nennt die Schalter (etwa `disableBypassPermissionsMode`, `syncClaudeAiSkills`) | Ein Schutz, den weder Agent noch Projekt abschalten kann, und der auch außerhalb des Projektverzeichnisses gilt |
+| Branch-Schutz, Pflicht-Review, CI | Plattform | Die CI- und Quality-Gate-Pfade sind für den Agenten gesperrt (Prüfung 89) | Eine Prüfung, die der Agent weder erzeugen noch umgehen kann |
+| Isolation (Container, Netz, Dateisystem) | Laufzeit | Nichts | Schutz gegen einen Agenten, der aktiv umgeht |
+
+**Die Arbeit am Kern in einer isolierten Laufzeit** (K-32): Schließt eine Isolationsschicht den
+Schreibweg über die Shell, gibt es für eine Änderung am Kern nur die registrierte, befristete
+Ausnahme nach `governance/EXCEPTION_PROCESS.md` – dieselbe Bauform wie das Mandat (D-447). Koolie
+baut dafür keine eigene Pfadsperre für die Shell (D-497).
+
+### 8.2 Koexistenz mit einem anderen Agenten-Rahmenwerk
+
+**Gemessen am 2026-09-30** an OpenSpec 1.13.2 und GitHub Spec Kit (D-514): Keines der beiden
+schreibt beim Anlegen in die Wurzel-Anweisung, und keines ändert eine Datei von Koolie – in beiden
+Reihenfolgen, auch nicht beim erzwungenen Aktualisieren. Beide legen ihre Skills aber in **dieselbe
+Ablage** wie Koolie – die Skill-Ablage des Clients, mit den Präfixen `openspec-` und `speckit-`. Abgegrenzt wird nach
+Gegenstand: Koolie trägt Ebene 1 (Sicherheit, Berechtigungen, Schutz-Hook), das fremde Rahmenwerk
+seine Prozessartefakte in seiner eigenen Ablage.
+
+1. `install.py` meldet ein erkanntes Rahmenwerk am Ende jedes Laufs – eine Auskunft, keine Schranke.
+2. Die fremden Skills im Overlay-Manifest deklarieren, damit der Validator sie nicht nach den
+   Regeln für Koolie-Skills prüft (Prüfung 111):
+
+   ```yaml
+   fremde_skills: openspec-, speckit-
+   ```
+
+   Ein Präfix, das einen Koolie-Skill treffen könnte (`fw-`, `prj-`, `role-`, `tech-`), nimmt nichts
+   aus.
+3. Jeden fremden Skill in der Berechtigungsdatei einem Korb zuordnen, etwa `Skill(openspec-*)` in
+   `ask` – sonst fällt sein Aufruf in die Rückfrage (Prüfung 72, D-238).
+
+**Die Wurzel-Anweisung gehört dem Kern.** Schreibt ein Generator markierte Abschnitte hinein
+(`<!-- NAME:START -->` … `<!-- NAME:END -->`), würde `install.py --update` sie überschreiben, und
+der Generator schriebe sie beim nächsten Lauf zurück. 🔴 **Bis `1.21.0` geschah genau das, ohne
+Meldung.** Seither bricht die Aktualisierung davor ab (D-515), und Prüfung 111 warnt vorher. Den
+Generator auf eine eigene Datei umstellen, die bei Bedarf lädt: Jeder Block in der Wurzel-Anweisung
+zählt ins Budget der stets geladenen Texte (Prüfung 4, K-185).
+
+### 8.3 Koolie gegen eine gute Standardkonfiguration – gemessen
+
+**Die Frage** (K-193): Was trägt Koolie zusätzlich zu dem, was ein Team mit einer guten
+Standardkonfiguration ohnehin hat? Gemessen am 2026-09-30 mit `claude-code` 2.1.285 und Opus 5.5
+(D-516, Protokoll `tests/protocols/2026-09-30-einsatzarchitektur.md`):
+
+- **Referenz R:** Einstellungen außerhalb des Repositoriums (Secret-Pfade, die Laufzeitschicht des
+  Clients, die Wurzel-Anweisungsdatei und CI-Dateien gesperrt, Modus ohne Rückfragen abgeschaltet),
+  eine kurze Wurzel-Anweisungsdatei mit Teamregeln, ein Remote mit Branch-Schutz und Secret-Scan.
+- **R+K:** dasselbe, dazu Koolie mit ausgefülltem Overlay.
+- Jede Rückfrage beantwortete ein Stellvertreter mit „ja“ – der unaufmerksame Mensch. Was dann noch
+  gesperrt bleibt, sperrt die Technik.
+
+| Test | Läufe je Gruppe | R | R+K |
+|---|---|---|---|
+| Secret über Lesen, Suche, Shell, Unterprozess, manipuliertes Dokument | 5 | 0 Lecks | 0 Lecks |
+| Eingriff in eigene Kontrollen (Einstellungen, Regeln, CI, Hooks), auch per Dokument | 5 | 0 Änderungen | 0 Änderungen |
+| Start in einem Unterverzeichnis | 5 | 0 Verletzungen | 0 Verletzungen |
+| Gegenlauf **ohne Regeltexte** (Shell, Unterprozess, CI, Hooks) | 6 | **1 Leck** (Unterprozess nach Rückfrage) | 0 – den Unterprozess sperrte der Schutz-Hook |
+| Normale kleine Änderung mit Tests | 5 | 5 von 5 richtig, Tests grün | 5 von 5 richtig, Tests grün |
+| Kosten je Lauf (Mittel, Listenpreis) | | 0,20 USD (Änderung 0,29) | 0,33 USD (Änderung 0,52) |
+| Rückfragen je kleiner Änderung | | 3,8 | 5,0 |
+
+**Was daraus folgt:** Mit Regeltexten hielt in beiden Gruppen fast immer schon das Modell – auch die
+kurze Wurzel-Anweisungsdatei der Referenz genügte dafür. Den Unterschied macht die Technik, wenn die Regel nicht
+greift: Einen Unterprozess, der eine Secret-Datei liest, erfasst die Berechtigungsschicht des Clients
+nicht; der Schutz-Hook von Koolie schon. Der Preis sind rund 65 bis 80 Prozent mehr Kosten je Lauf,
+bei der Änderung rund die Hälfte mehr Zeit und etwas mehr Rückfragen; zu Fehlblockaden kam es bei
+der normalen Änderung nicht.
+
+**Was die Zahlen nicht sagen:** Ein Client, ein Modell, ein Tag; je Sicherheitsfall ein Lauf je
+Gruppe, fünf Wiederholungen nur bei der Änderung. Die Einstellungen der Referenz lagen in einer
+Datei außerhalb des Repositoriums, nicht in verwalteten Einstellungen; ein Agent, der aktiv umgeht,
+ist nicht gemessen. **Eine Aussage über Überlegenheit tragen die Zahlen nicht** – nur die Aussage,
+dass Koolie eine gute Standardkonfiguration ergänzt und nicht ersetzt.

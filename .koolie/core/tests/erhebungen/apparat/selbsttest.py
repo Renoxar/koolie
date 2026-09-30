@@ -208,6 +208,56 @@ def t10(w):
         pass
 
 
+@fall("T11", "Referenzgruppe (1.21.0): Einstellungen im Messbaum, ein Startverzeichnis ausserhalb "
+             "und Remote-Hooks ohne Remote sind Schemafehler")
+def t11(w):
+    b = _basis(w)
+    innen = os.path.join(w, "baeume", "settings.json")
+    os.makedirs(os.path.dirname(innen))
+    io.open(innen, "w", encoding="utf-8").write("{}")
+    r = Reihe({"name": "x", "client": "attrappe", "wurzel": os.path.join(w, "baeume"),
+               "kontingent": {"laeufe": 1, "usd": 1}, "einstellungen": innen,
+               "baum": {"modus": "fest", "basis": b, "remote_hooks": w},
+               "laeufe": [{"kennung": "a", "prompt": "p", "erwartung": "e",
+                           "unterverzeichnis": "../nachbar"}]}, w)
+    f = " | ".join(reihe_pruefen(r, ("attrappe",)))
+    for teil in ("unter der wurzel", "muss im Baum liegen", "remote_hooks ohne remote"):
+        assert teil in f, f"'{teil}' nicht gemeldet: {f}"
+
+
+@fall("T12", "Referenzgruppe (1.21.0): der Lauf startet im Unterverzeichnis mit der Einstellungsdatei, "
+             "die Verbindung uebersteht das Zuruecksetzen und zaehlt nicht im Baum-Hash")
+def t12(w):
+    b = _basis(w)
+    os.makedirs(os.path.join(b, "frontend"))
+    io.open(os.path.join(b, "frontend", "a.ts"), "w", encoding="utf-8", newline="\n").write("x\n")
+    baum_mod.git(b, "add", "-A")
+    baum_mod.git(b, *baum_mod.AUTOR, "commit", "-q", "-m", "frontend")
+    quelle = os.path.join(w, "geteilt")
+    os.makedirs(quelle)
+    io.open(os.path.join(quelle, "paket.js"), "w").write("geteilt")
+    aussen = os.path.join(w, "referenz-settings.json")
+    io.open(aussen, "w", encoding="utf-8").write("{}")
+    _antworten(w, {"": {}})
+    r = Reihe({"name": "selbsttest", "client": "attrappe", "wurzel": os.path.join(w, "baeume"),
+               "kontingent": {"laeufe": 5, "usd": 5}, "einstellungen": aussen,
+               "baum": {"modus": "fest", "basis": b,
+                        "verbindungen": {"frontend/node_modules": quelle}},
+               "laeufe": [{"kennung": "h1", "prompt": "p", "erwartung": "e",
+                           "unterverzeichnis": "frontend", "gruppe": "referenz"},
+                          {"kennung": "h2", "prompt": "p", "erwartung": "e"}]},
+              os.path.join(w, "ablage"))
+    assert not reihe_pruefen(r, ("attrappe",)), reihe_pruefen(r, ("attrappe",))
+    laeufer.aufbau(r)
+    assert laeufer.fahren(r, ausgabe=_still) == 2
+    pfad = r.baumpfad(r.laeufe[0])
+    assert io.open(os.path.join(pfad, "frontend", "node_modules", "paket.js")).read() == "geteilt"
+    assert baum_mod.baumhash(pfad) == baum_mod.baumhash(b)
+    e = json.loads(io.open(os.path.join(r.belege, "h1-ergebnis.json"), encoding="utf-8").read())
+    assert os.path.normcase(e["start"]) == os.path.normcase(os.path.join(pfad, "frontend")), e
+    assert e["einstellungen"] == aussen, e
+
+
 def main() -> int:
     schlecht = 0
     for nummer, was, f in FAELLE:

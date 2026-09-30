@@ -70,7 +70,8 @@ def _herrichten(reihe, lauf) -> tuple:
     soll = _soll_lesen(reihe, "basis")
     pfad = reihe.baumpfad(lauf)
     baum_mod.herrichten(reihe.baum["basis"], pfad, lauf.ziel_branch(reihe), soll,
-                        reihe.baum.get("remote"), ohne)
+                        reihe.baum.get("remote"), ohne, reihe.baum.get("verbindungen"),
+                        reihe.baum.get("remote_hooks") or "")
     return pfad, soll
 
 
@@ -107,12 +108,19 @@ def fahren(reihe, kennungen=None, ausgabe=print) -> int:
         meta = {"reihe": reihe.name, "client": reihe.client, "clientversion": version,
                 "gruppe": lauf.gruppe, "variante": lauf.variante, "baum": pfad,
                 "branch": lauf.ziel_branch(reihe), "hash_vorher": hash_vorher,
-                "berechtigung": reihe.berechtigung, "zeit": time.strftime("%Y-%m-%dT%H:%M:%S")}
+                "berechtigung": reihe.berechtigung, "einstellungen": reihe.einstellungen or None,
+                "zusatz": reihe.zusatz or None,
+                "unterverzeichnis": lauf.unterverzeichnis or None,
+                "zeit": time.strftime("%Y-%m-%dT%H:%M:%S")}
+        start = os.path.join(pfad, *lauf.unterverzeichnis.split("/")) if lauf.unterverzeichnis else pfad
+        if not os.path.isdir(start):
+            raise SystemExit(f"ABBRUCH vor {lauf.kennung}: Startverzeichnis {start} fehlt im Baum")
         turns = [lauf.prompt] + lauf.folgeturns
         sitzung = None
         summe = {"usd": 0.0, "cache_neu": 0, "cache_gelesen": 0, "abweisungen": 0, "turns": 0}
         for i, prompt in enumerate(turns):
-            erg = a.lauf(prompt, pfad, lauf.modell, reihe.berechtigung, sitzung)
+            erg = a.lauf(prompt, start, lauf.modell, reihe.berechtigung, sitzung,
+                         einstellungen=reihe.einstellungen or None, zusatz=reihe.zusatz or None)
             belege_mod.sichern(reihe.belege, lauf.kennung, i, erg, dict(meta, turn=i + 1), a)
             summe["usd"] += erg["usd"]
             for k in ("cache_neu", "cache_gelesen", "abweisungen", "turns"):
