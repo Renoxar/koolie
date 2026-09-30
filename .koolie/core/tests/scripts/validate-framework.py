@@ -689,7 +689,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      <READ_ONLY_PATHS> dieselben drei Gegenstaende wie Pruefung 59 fuer
      <EXCLUDED_PATHS>: (a) die Laufzeitfassung NENNT den Platzhalter, (b) ihr Wert ist
      dieselbe Menge wie in der dreispaltigen Zeile von Abschnitt 4 des Quell-Overlays,
-     (c) jeder Nur-Lese-Pfad hat im deny-Korb eine Schreibsperre. ANLASS: Laufzeitfassung
+     (c) jeder Nur-Lese-Pfad hat im deny-Korb eine Schreibsperre - seit 1.20.1 auch
+     jeder Glob von <CI_CONFIG_PATHS> und <QUALITY_GATE_CONFIG_PATHS> (K-35, D-493). ANLASS: Laufzeitfassung
      und Berechtigungsdatei bleiben Saat (D-353), die Handpflege an drei Stellen bleibt -
      und nur eine Pruefung faengt sie auf; von sechs Werten des Uebungs-Overlays wich am
      2026-09-18 einer ab. Ein Overlay, das anders bindet, bekommt eine eigene Meldung und
@@ -816,7 +817,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      nichts, ohne Hook-Skript H3 und H4, mit einem Matcher ohne mcp H2. ANLASS: Die
      Hook-Vorpruefung des Messapparats bestand seit 1.19.0 auch einen Baum ohne Hook,
      weil Exit 2 als Sperre galt. GRENZE: der Hook-Teil der Probe an einem Pack
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 107 laeuft als eigenes
+108. Ein allow-Befehl, der ein deny-Praefix umschliesst (D-494, K-47): Warnung, wenn
+     in der Kernquelle oder im installierten JSON-Korb eines Packs mit Praefixabgleich
+     der Befehl eines allow-Eintrags ein echtes Wortpraefix eines deny-Befehls desselben
+     Werkzeugs ist. ANLASS: Bei Bash(git:*) lief 'git -C <pfad> push' an
+     Bash(git push:*) vorbei (D-123). GRENZE: die Schreibweise, nicht die
+     Befehlsaequivalenz; nur Befehlsregeln, keine Pfadmuster
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 108 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -863,8 +870,8 @@ from pruefungen.berechtigungen import (  # noqa: E402
     check_pack_im_korb, check_skill_deny_abbildung, check_skillfreigabe,
     check_verdraengende_wurzelanweisung, check_werkzeugabbildung)
 from pruefungen.packs import (  # noqa: E402
-    check_abwesenheitsbeleg, check_ausfall_mit_ersatz, check_clientversion_in_spanne,
-    check_dokumenttabellen, check_formatgebundene_pruefungen,
+    check_abwesenheitsbeleg, check_allow_umschliesst_deny, check_ausfall_mit_ersatz,
+    check_clientversion_in_spanne, check_dokumenttabellen, check_formatgebundene_pruefungen,
     check_matrixzeile_in_tabelle, check_normative_kommentare, check_quellenauskunft,
     check_regelablage_sauber, check_schlitzinhalte, check_vorlage_kein_pack,
     check_werkzeugabwesenheit, check_zusagenfelder, check_zusatzschluessel)
@@ -1036,6 +1043,7 @@ def main() -> int:
     check_clientversion_in_spanne(root)
     check_hook_protokoll(root)
     check_wirksamkeitsprobe(root)
+    check_allow_umschliesst_deny(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

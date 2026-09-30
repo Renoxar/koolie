@@ -502,6 +502,16 @@ KEIN_EREIGNIS = ("", "   ", "[]", "null", '"x"', "42", '{"tool_input": {}}',
                  '{"tool_name": "Write", "tool_input": "x"}')
 
 
+def _msys_form(root: str) -> str:
+    """Die Projektwurzel in POSIX-Schreibweise (/c/...) - nur unter Windows, sonst ''."""
+    if os.name != "nt":
+        return ""
+    echt = os.path.realpath(root)
+    if len(echt) < 2 or echt[1] != ":":
+        return ""  # Netzpfad: keine Laufwerksform
+    return "/" + echt[0].lower() + echt[2:].replace("\\", "/").rstrip("/")
+
+
 def check_hook_eingabeschema(root: str, man: dict) -> None:
     """Pruefung 32 (D-61 bis D-63): Ereignisschema, Umschlag und Pfadidentitaet."""
     skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
@@ -651,6 +661,22 @@ def check_hook_eingabeschema(root: str, man: dict) -> None:
                     f"abweichender Schreibweise durch, wenn die Datei nicht existiert. "
                     f"Eine nicht vorhandene Datei kann die Aufloesung nicht "
                     f"kanonisieren; hier traegt allein re.I (D-63)")
+
+        #   c) Nur die ZWEITE LESART (CR-2026-163, D-491, K-96): die POSIX-Schreibweise
+        #      /c/... der Projektwurzel mit einem Punktsegment. Der Rohtext nennt den
+        #      Kern nicht ('.koolie/./core'), und Python liest /c/ als C:\c\ - ausserhalb
+        #      des Projekts. Bis 1.20.0 ging der Schreibvorgang durch. Nur unter Windows:
+        #      unter POSIX ist /c/ ein gewoehnlicher Pfad.
+        msys = _msys_form(root)
+        if msys:
+            teile = KERN.split("/")
+            variante = "/".join([msys] + teile[:1] + ["."] + teile[1:] + ["VERSION"])
+            if _hook_lauf(interpreter, skript, ereignis(
+                    werkzeug, {"file_path": variante, "content": "9"})) != 2:
+                err(f"{pack}/manifest.json: Der Schutz-Hook laesst die POSIX-Schreibweise "
+                    f"'{variante}' in das Kernverzeichnis schreiben. Unter MSYS bezeichnet "
+                    f"/c/ das Laufwerk C:, der Hook muss beide Lesarten aufloesen "
+                    f"(D-491, K-96)")
 
         # Gegenprobe: Ein Verzeichnis, das nur so ANFAENGT wie der Kern, ist kein Kind
         # von ihm. Ohne sie bestuende eine Praefixpruefung, die jeden Nachbarn sperrt.
