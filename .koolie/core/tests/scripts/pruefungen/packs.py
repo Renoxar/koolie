@@ -2,7 +2,7 @@
 Regelablage, Ausfall mit Ersatz, Werkzeugabwesenheit, Zusagenfelder, Abwesenheitsbeleg,
 Schlitzinhalte, Zusatzschluessel, Matrixzeilen, Vorlage und formatgebundene Pruefungen.
 
-Pruefungen 19, 20, 23, 24, 25, 26, 27, 41, 42, 54, 74, 84, 87, 105 und 108. Teil des Validators
+Pruefungen 19, 20, 23, 24, 25, 26, 27, 41, 42, 54, 74, 84, 87, 105, 108 und 109. Teil des Validators
 validate-framework.py, seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das
 Register aller Pruefungen steht im Kopfkommentar des Einstiegs, die Grenze jeder
 einzelnen in ihrem Kopfkommentar hier."""
@@ -15,7 +15,7 @@ import re
 from .gemeinsam import (
     _client_packs, _walk_text_files, err, formatgebunden, FORMATGEBUNDENE_PRUEFUNGEN,
     FRONTMATTER_BLOECKE, KERN, korb_zerlegung, P73_ZEILE_RE, PROJEKTPLATZHALTER, read,
-    soll_korbregeln, tabellenzellen, warn)
+    skill_dirs, soll_korbregeln, tabellenzellen, warn)
 
 
 def nicht_erreicht(man: dict) -> set:
@@ -1268,3 +1268,47 @@ def check_allow_umschliesst_deny(root: str, man: dict) -> None:
             warn(f"{rel}: {werkzeug}({a}{suffix}) im allow-Korb umschließt "
                  f"{werkzeug}({d}{suffix}) im deny-Korb - gemessen lief 'git -C <pfad> push' "
                  f"an Bash(git push:*) vorbei, als Bash(git:*) erlaubt war. {P108_GRENZE}")
+
+# --- Pruefung 109: die beiden Werkzeugfelder eines Skills (CR-2026-164, D-505, K-93)
+#
+# ANLASS, GEMESSEN (D-287, 2026-09-22 an devin-desktop): Die Werkzeugbeschraenkung eines
+# Skills wirkt dort nur, wenn das Frontmatter BEIDE Felder traegt - 'allowed-tools' ohne das
+# Werkzeug UND einen 'permissions'-Block. Jedes Feld allein bleibt folgenlos, und der Client
+# meldet nichts. Alle ausgelieferten Skills tragen beide; der Validator verlangte nur
+# 'allowed-tools'. Ein neuer Skill mit nur einem Feld haette eine Beschraenkung behauptet,
+# die er nicht hat.
+#
+# GEPRUEFT: jede Ablage, in der das Feld 'permissions' die installierte Fassung erreicht -
+# die Quellablagen des Kerns und der Packs und die Skill-Ablage eines Packs, das
+# 'permissions' nicht verwirft. Bei claude-code wird es auf 'disallowed-tools' abgebildet
+# (D-64); dort haelt Pruefung 33 die Abbildung.
+# GRENZE: die Anwesenheit beider Felder, nicht ihre Wirkung - warum der Client beide
+# braucht, sagt keine Quelle des Herstellers.
+P109_FELDER = ("allowed-tools", "permissions")
+
+
+def _p109_felder(text: str) -> set:
+    """Die Werkzeugfelder, die das Frontmatter auf oberster Ebene fuehrt."""
+    m = re.match(r"^---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(\r?\n|$)", text, re.S)
+    if not m:
+        return set()
+    return {f for f in P109_FELDER if re.search(r"^" + re.escape(f) + r"[ \t]*:", m.group(1), re.M)}
+
+
+def check_skill_werkzeugfelder(root: str, man: dict) -> None:
+    """Pruefung 109 (D-505, K-93): Fuehrt ein Skill ein Werkzeugfeld, fuehrt er beide."""
+    runtime = man.get("skills_dir")
+    verworfen = "permissions" in ((man.get("skill_frontmatter") or {}).get("drop_fields") or [])
+    for skills_dir, prefix in skill_dirs(root, man):
+        if prefix == runtime and verworfen:
+            continue
+        for name in sorted(os.listdir(skills_dir)):
+            pfad = os.path.join(skills_dir, name, "SKILL.md")
+            if not os.path.isfile(pfad):
+                continue
+            da = _p109_felder(read(pfad))
+            if da and da != set(P109_FELDER):
+                fehlt = [f for f in P109_FELDER if f not in da][0]
+                err(f"{prefix}/{name}/SKILL.md: führt {sorted(da)[0]}, aber nicht {fehlt}. "
+                    f"Die Werkzeugbeschränkung eines Skills wirkt nur mit beiden Feldern; "
+                    f"eines allein bleibt ohne Meldung folgenlos (D-287, K-93)")

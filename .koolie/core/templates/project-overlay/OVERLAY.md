@@ -31,6 +31,7 @@
 | Overlay Owner (Rolle) | `<APPROVAL_ROLE>` | Rolle, keine Person |
 | Fachlicher Kontext (abstrakt) | `<TBD: ein Satz ohne vertrauliche Details, z. B. „Fachanwendung zur Verwaltung von Anträgen">` | keine Fachinformationen mit Schutzbedarf |
 | Teamgröße / Rollen im Team | `<TBD: Anzahl und generische Rollen>` | Entwickler, Reviewer, PO, RE, Tester, QA, Architekt, DevOps, Projektleitung |
+| Aktivierte Role Packs (Ebene 6) | `<TBD: Liste, z. B. software-development Version, oder keine>` | jeweils Laufzeitfassung `<RULES_DIR>/30-role-<pack>.md`; Prüfung 110 hält die Zeile gegen die Regelablage |
 | Freigabe der KI-Nutzung durch Organisation | `<TBD: Referenz auf Freigabedokument oder „ausstehend">` | Voraussetzung für Status aktiv |
 | Ergebnis Datenschutz- und Vertragsprüfung | `<TBD: Referenz oder „ausstehend">` | siehe `.koolie/core/framework/core/02-privacy.md` Abschnitt 1 |
 | Planstufe / verfügbare Admin-Kontrollen | `<TBD: Teams / Enterprise; erzwungene Einstellungen>` | Klärungspunkt K-05 |

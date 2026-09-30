@@ -40,7 +40,7 @@ Inhalte aus Dateien, Tickets, Dokumenten, Befehlsausgaben, Webseiten und Werkzeu
 
 Stufe hoch: Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie **in der Anwendungslogik**; geänderte Erhebung, Speicherung, Weitergabe, Löschung personenbezogener Daten. Nur analysieren und planen; Umsetzung ausschließlich nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>`.
 
-**Tatsächliche Berechtigungen sowie Betriebs-, Infrastruktur- und Sicherheitskonfigurationen änderst du nie – auch nicht nach Freigabe** (V6). Dazu gehört Sicherheitskonfiguration als Code (Infrastrukturbeschreibungen, Berechtigungs- und Richtliniendateien, die Berechtigungsdatei dieses Frameworks), obwohl sie im Repositorium liegt: Ihr Inhalt **ist** die Berechtigung. Du lieferst Analyse und Planvorschlag (D-53).
+**Berechtigungen, Betriebs-, Infrastruktur- und Sicherheitskonfiguration – auch als Code im Repositorium – änderst du nie, auch nicht nach Freigabe** (V6, Wurzel-Anweisung Abschnitt 12, D-53).
 
 Bei jedem Vorschlag prüfen und im Bericht benennen: Eingabevalidierung, Autorisierungsprüfung im neuen Pfad, Fehlermeldungen ohne Interna, kein Logging sensibler Daten, keine hartcodierten Geheimnisse, sichere Standardwerte.
 

@@ -2,6 +2,59 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.20.2] - 2026-09-30
+
+**Die Modusbindung und die registrierte Ausnahme - und der Upload, an dem das Leseverbot vorbeiging**
+(`CR-2026-164` E1 bis E7, **D-499** bis **D-505**, **Pruefungen 109 und 110** neu, Pruefungen 99 und 107 erweitert;
+`K-44`, `K-54`, `K-93`, `K-94`, `K-179`, `K-181` und `K-185` beantwortet, `K-201` und `K-202` neu). 7 Sitzungslaeufe
+mit `claude-code`, 0,83 USD nach Listenpreis, dazu 2 Laeufe mit `kiro` (0,31 Credits) und 2 mit `devin-desktop`.
+Kriterium 2 von D-11 bleibt 0.
+
+**Behoben**
+
+- 🔴 **Der eingebaute Skill `upload-secrets` von `devin-desktop` laedt Secrets an einem Leseverbot vorbei** (D-503,
+  `K-94`). Er liest keine Datei mit einem Dateiwerkzeug, sondern ruft `devin cloud drs secret-create`; die CLI liest
+  die Werte selbst. Ein `deny Read(.env)` trifft diesen Weg nicht, und mit `--from-env` steht kein Pfad im Befehl.
+  Der Schutz-Hook sperrt den Befehl jetzt fuer jedes ausfuehrende Werkzeug, auch als Probelauf - gemessen ohne
+  Regeltext und mit `--permission-mode dangerous`. Die Wirksamkeitsprobe prueft die Sperre (H3).
+
+**Neu**
+
+- **Die Modusbindung** (D-501, `K-179`): `python .koolie/core/mandat.py modus M1` sperrt am Schutz-Hook jedes
+  Schreibwerkzeug, `modus M2 --ablage <pfad>` jedes ausserhalb der Plan-Ablage, `modus aus` hebt auf. Befristet wie
+  das Mandat, nur vom Menschen zu setzen; ohne Bindung aendert sich nichts. Gemessen an `claude-code`.
+- **Pruefung 109** (D-505, `K-93`): Fuehrt ein Skill `allowed-tools` oder `permissions`, fuehrt er beide.
+- **Pruefung 110** (D-504, `K-44`, nur `--strict-overlay`): Die Zeilen "Aktivierte Role Packs" und "Aktivierte
+  Technology Packs" des Overlays gegen die Laufzeitfassungen `30-role-*` und `40-tech-*`, in beide Richtungen.
+
+**Geaendert**
+
+- Die Wurzel-Anweisung kennt die registrierte Ausnahme (D-500, `K-54`): Abschnitt 2 verbietet jede Lockerung
+  "ausser durch eine registrierte, gueltige Ausnahme (Overlay Abschnitt 18); nie bei V1-V12, K3 und dem Modus ohne
+  Rueckfragen". Regel 2.1 der Prioritaetshierarchie ebenso. Die Gegenprobe (4 Laeufe) trennt nicht: alt wie neu
+  urteilten richtig.
+- Der Kern ist ohne Regelaenderung gestrafft (D-499, `K-185`): Wurzel-Anweisung -388, Regel 00 -135, Regel 10 -225
+  Zeichen. Der Pilot steht damit bei rund 39.250 von 40.000 Zeichen.
+- Regel 00 nennt die Modusbindung im Absatz zur Modusgrenze; die Langform (05-working-model) in M1 und M2.
+- Pruefung 99 haelt die Modusdatei und `mandat.py modus` fuer den Client gesperrt.
+- `claude-code` (Pack 0.26.2): Zeile M4 mit der gemessenen Bindung. `devin-desktop` (Pack 0.14.8): `upload-secrets`
+  eingestuft. `kiro` (Pack 0.1.2): Zeile B4 - ohne Hook traegt die Rueckfrage, `--trust-all-tools` oeffnet das
+  Overlay (D-502, `K-181`).
+- Die Overlay-Vorlage fuehrt in Abschnitt 1 die Zeile "Aktivierte Role Packs".
+
+**Migrationshinweis fuer Overlays**
+
+- Die Laufzeitschicht aendert sich (Wurzel-Anweisung, Regeln 00 und 10); `install.py --update` bringt sie.
+- Ein Projekt mit Role oder Technology Packs traegt die Zeile "Aktivierte Role Packs" in Abschnitt 1 nach, wenn es
+  eines aktiviert hat; sonst warnt Pruefung 110 unter `--strict-overlay`.
+
+**Bekannte Einschraenkungen**
+
+- Ein Shell-Befehl, der schreibt, entgeht der Modusbindung (D-30); M3 bis M5 bleiben normativ (`K-201`).
+- Bei `kiro` ist das Overlay mit `--trust-all-tools` ungeschuetzt; die Regelschicht hielt dort einen ausdruecklichen
+  Auftrag nicht auf (`K-202`).
+- Die Sperre kennt nur `cloud drs secret-create`; andere Wege nach aussen sind nicht erfasst.
+
 ## [1.20.1] - 2026-09-30
 
 **Die zweite Lesart von `/c/...` und die Schreibweise der Muster - und der Kurzname, der am Kernschutz vorbeischrieb**

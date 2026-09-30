@@ -203,11 +203,16 @@ def pruefe_hook(root: str, man: dict, verben: list[str], erg: Ergebnis) -> None:
                 "tool_input": eingabe, "koolie_probe": True}
 
     sonden = []
-    for verb, eingabe in (("read", {"file_path": ".env"}),
-                          ("write", {"file_path": ".env", "content": "x"}),
-                          ("exec", {"command": "cat .env"})):
+    for titel, verb, eingabe in (
+            ("read .env", "read", {"file_path": ".env"}),
+            ("write .env", "write", {"file_path": ".env", "content": "x"}),
+            ("exec .env", "exec", {"command": "cat .env"}),
+            # Der Weg des eingebauten Skills upload-secrets (K-94, D-503): Die CLI liest
+            # die Werte selbst, im Befehl steht kein Pfad.
+            ("exec Secret-Upload", "exec",
+             {"command": "devin cloud drs secret-create --from-env KOOLIE_PROBE --dry-run"})):
         for name in (abbildung.get(verb) or [])[:1]:
-            sonden.append((f"{verb} .env", ereignis(name, eingabe)))
+            sonden.append((titel, ereignis(name, eingabe)))
     if "mcp" in verben:
         for praefix in (man.get("hook_mcp_prefixes") or [])[:1]:
             sonden.append(("mcp Koederwert",

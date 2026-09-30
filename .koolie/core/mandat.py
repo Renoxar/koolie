@@ -12,6 +12,15 @@ uebernehmen. Die Pruefung ist der Merge Request, den der Mensch ohnehin freigibt
     python .koolie/core/mandat.py status
     python .koolie/core/mandat.py beenden      (gleicht danach die Laufzeitfassung ab)
     python .koolie/core/mandat.py abgleichen
+    python .koolie/core/mandat.py modus M2 --ablage docs/plaene --minuten 120
+    python .koolie/core/mandat.py modus M1
+    python .koolie/core/mandat.py modus aus
+
+DIE MODUSBINDUNG (D-501, K-179). Bis 1.20.1 galten die Modusgrenzen ausser M6 nur
+normativ. 'modus M1' bindet den Nur-Lese-Modus an den Schutz-Hook: Er sperrt jeden
+Schreibaufruf. 'modus M2 --ablage <pfad>' laesst nur das Schreiben unter der Plan-Ablage
+zu. Die Bindung liegt neben dem Mandat (.git/koolie-modus.json), ist befristet und nur
+vom Menschen zu setzen. Grenze: Ein Shell-Befehl, der schreibt, entgeht ihr (D-30).
 
 WARUM EIN BEFEHL IM EIGENEN TERMINAL: Der Schutz-Hook sperrt diese Datei und die
 Mandatsdatei fuer jede nicht lesende Operation des Clients - bis auf 'status'. Ein Satz
@@ -52,6 +61,10 @@ MANDAT_UMFAENGE = {
     "overlay": ".koolie/project-overlay/",
     "dokumente": ".koolie/project-overlay/documents/",
 }
+# Die Modusbindung (CR-2026-164, D-501, K-179): M1 oder M2 fuer eine begrenzte Zeit an den
+# Schutz-Hook binden. Dieselbe Hoechstdauer und derselbe Ort wie das Mandat.
+MODUS_DATEI = "koolie-modus.json"
+MODUS_GEBUNDEN = ("M1", "M2")
 
 _KERN = os.path.dirname(os.path.abspath(__file__))
 PROJEKTWURZEL = os.path.realpath(os.path.dirname(os.path.dirname(_KERN)))
@@ -313,6 +326,11 @@ def erteilen(args) -> int:
 
 
 def status(_args) -> int:
+    bindung = modusbindung()
+    if bindung:
+        print("Modus %s gebunden, noch %d Minuten (bis %s UTC)%s." % (
+            bindung["modus"], bindung["_rest_min"], bindung["bis"],
+            ", Plan-Ablage %s" % bindung["ablage"] if bindung.get("ablage") else ""))
     pfad = mandatspfad()
     daten = lesen(pfad) if pfad else None
     if not daten:
@@ -330,6 +348,95 @@ def status(_args) -> int:
              gueltig["bis"]))
     if gueltig.get("anlass"):
         print("Anlass: %s" % gueltig["anlass"])
+    return 0
+
+
+def modusbindung():
+    """Die gueltige Modusbindung - dieselben Bedingungen wie im Schutz-Hook - oder None."""
+    gd = git_verzeichnis()
+    daten = lesen(os.path.join(gd, MODUS_DATEI)) if gd else None
+    if not daten or daten.get("modus") not in MODUS_GEBUNDEN:
+        return None
+    try:
+        ende = datetime.datetime.strptime(str(daten.get("bis")), ZEITFORMAT)
+    except ValueError:
+        return None
+    rest = ende - jetzt()
+    if (rest.total_seconds() <= 0
+            or rest > datetime.timedelta(minutes=MANDAT_HOECHSTDAUER_MIN + 1)):
+        return None
+    projekt = daten.get("projekt")
+    if (not isinstance(projekt, str) or os.path.normcase(os.path.realpath(projekt))
+            != os.path.normcase(PROJEKTWURZEL)):
+        return None
+    daten["_rest_min"] = int(rest.total_seconds() // 60) + 1
+    return daten
+
+
+def _ablage_pruefen(roh: str):
+    """Die Plan-Ablage projektrelativ mit '/' am Ende - oder None mit Grund."""
+    ablage = (roh or "").replace("\\", "/").strip().strip("/")
+    if not ablage or ablage == ".":
+        return None, "Die Plan-Ablage fehlt (zum Beispiel --ablage docs/plaene)."
+    if os.path.isabs(roh) or re.match(r"^[A-Za-z]:", ablage):
+        return None, "Die Plan-Ablage ist projektrelativ anzugeben, nicht absolut."
+    teile = ablage.split("/")
+    if ".." in teile or teile[0] == "." or teile[0].lower() == ".koolie":
+        return None, ("Die Plan-Ablage liegt im Projekt und ausserhalb von .koolie/ - "
+                      "Kern und Overlay sind kein Ort fuer Plaene.")
+    return ablage + "/", None
+
+
+def modus(args) -> int:
+    gd = git_verzeichnis()
+    pfad = os.path.join(gd, MODUS_DATEI) if gd else None
+    wahl = args.modus.strip()
+    if wahl.lower() == "aus":
+        if pfad and os.path.exists(pfad):
+            os.remove(pfad)
+            print("Modusbindung aufgehoben. Die Modusgrenze gilt wieder nur normativ.")
+        else:
+            print("Es bestand keine Modusbindung.")
+        return 0
+    wahl = wahl.upper()
+    if wahl not in MODUS_GEBUNDEN:
+        print("Binden lassen sich %s (oder 'aus'). M3 bis M5 brauchen Pfadlisten aus dem "
+              "Overlay und gelten weiter normativ; M6 ist das Mandat ('erteilen')."
+              % " und ".join(MODUS_GEBUNDEN))
+        return 2
+    if not pfad:
+        print("Gesperrt: Modusbindung ohne Git-Repositorium.\n"
+              "Warum: Die Bindung liegt wie das Mandat im Git-Verzeichnis.\n"
+              "Loesung: Das Projekt als Git-Repositorium fuehren (git init).\n"
+              "Folge: Bis dahin gilt die Modusgrenze nur normativ.")
+        return 1
+    if not 1 <= args.minuten <= MANDAT_HOECHSTDAUER_MIN:
+        print("Die Dauer liegt zwischen 1 und %d Minuten." % MANDAT_HOECHSTDAUER_MIN)
+        return 2
+    ablage = None
+    if wahl == "M2":
+        ablage, grund = _ablage_pruefen(args.ablage)
+        if grund:
+            print(grund)
+            return 2
+    elif args.ablage:
+        print("Hinweis: M1 schreibt nichts - die Plan-Ablage wird nicht verwendet.")
+    ende = jetzt() + datetime.timedelta(minutes=args.minuten)
+    daten = {"modus": wahl, "bis": ende.strftime(ZEITFORMAT),
+             "erteilt": jetzt().strftime(ZEITFORMAT), "projekt": PROJEKTWURZEL}
+    if ablage:
+        daten["ablage"] = ablage
+    with io.open(pfad, "w", encoding="utf-8", newline="\n") as fh:
+        json.dump(daten, fh, ensure_ascii=False, indent=2)
+        fh.write("\n")
+    print("Modus %s gebunden bis %s UTC (%d Minuten)." % (wahl, daten["bis"], args.minuten))
+    if wahl == "M1":
+        print("Der KI-Client kann mit keinem Schreibwerkzeug schreiben.")
+    else:
+        print("Der KI-Client schreibt nur unter %s." % ablage)
+    print("Grenze: Ein Shell-Befehl, der schreibt, entgeht der Bindung (Rueckfrage und "
+          "Regelschicht tragen dort).")
+    print("Aufheben: python %s/mandat.py modus aus" % CORE_REL)
     return 0
 
 
@@ -361,7 +468,14 @@ def main(argv=None) -> int:
                    help="nur beenden, die Laufzeitfassung nicht abgleichen")
     sub.add_parser("abgleichen",
                    help="Overlay-Werte in Laufzeitfassung und Manifest uebernehmen")
+    m = sub.add_parser("modus", help="M1 oder M2 an den Schutz-Hook binden, 'aus' hebt auf")
+    m.add_argument("modus", help="M1, M2 oder aus")
+    m.add_argument("--ablage", default="", help="M2: projektrelative Plan-Ablage")
+    m.add_argument("--minuten", type=int, default=120,
+                   help="Dauer, hoechstens %d" % MANDAT_HOECHSTDAUER_MIN)
     args = ap.parse_args(argv)
+    if args.befehl == "modus":
+        return modus(args)
     if args.befehl == "erteilen":
         return erteilen(args)
     if args.befehl == "beenden":

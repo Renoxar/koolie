@@ -1304,7 +1304,10 @@ def check_cursor_berechtigungen(root: str, man: dict) -> None:
 P99_ANKER = ("MANDAT_DATEI = ", "MANDATS_MUSTER = ", "def mandat_lesen(")
 P99_WERTE_RE = (re.compile(r'^MANDAT_DATEI = "([^"]+)"', re.M),
                 re.compile(r"^MANDAT_HOECHSTDAUER_MIN = (\d+)", re.M),
-                re.compile(r"^MANDAT_UMFAENGE = \{(.*?)\n\}", re.M | re.S))
+                re.compile(r"^MANDAT_UMFAENGE = \{(.*?)\n\}", re.M | re.S),
+                # Die Modusbindung liegt neben dem Mandat (D-501, K-179)
+                re.compile(r'^MODUS_DATEI = "([^"]+)"', re.M),
+                re.compile(r"^MODUS_GEBUNDEN = (\(.*?\))", re.M))
 
 
 def _p99_werte(text: str) -> tuple:
@@ -1364,6 +1367,13 @@ def check_mandatsschutz(root: str, man: dict) -> None:
         ("die Auskunft mit einem zweiten Befehl dahinter",
          {"tool_name": "exec", "tool_input": {"command":
           f"python {KERN}/mandat.py status; python {KERN}/mandat.py erteilen --rolle P99"}}, 2),
+        # Die Modusbindung setzt wie das Mandat nur der Mensch (D-501, K-179)
+        ("Aufruf von mandat.py modus",
+         {"tool_name": "exec", "tool_input": {"command": f"python {KERN}/mandat.py modus aus"}},
+         2),
+        ("Schreiben der Modusdatei",
+         {"tool_name": "write", "tool_input": {"file_path": ".git/koolie-modus.json",
+                                               "content": "{}"}}, 2),
     ]
     # Das Overlay ohne Mandat - nur, wenn im gepruefen Baum gerade keines erteilt ist: Ein
     # erteiltes Mandat ist ein gueltiger Zustand, kein Befund.

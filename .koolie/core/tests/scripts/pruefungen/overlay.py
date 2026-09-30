@@ -2,7 +2,7 @@
 Schlitze, Freigabefolge, Pflichtplatzhalter, Platzhalterbindung, Vorbedingungen,
 Befehlsschlitz, Wert- und Pfadabgleich.
 
-Pruefungen 9, 9a, 28, 51, 52, 55a, 55b, 56, 57, 59, 60 und 89. Teil des Validators
+Pruefungen 9, 9a, 28, 51, 52, 55a, 55b, 56, 57, 59, 60, 89 und 110. Teil des Validators
 validate-framework.py, seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das
 Register aller Pruefungen steht im Kopfkommentar des Einstiegs, die Grenze jeder
 einzelnen in ihrem Kopfkommentar hier."""
@@ -17,7 +17,7 @@ from overlay_status import (
 
 from .gemeinsam import (
     _tabellenspalte, _ueb_katalogdateien, err, formatgebunden, KERN, PLACEHOLDER_RE,
-    PROJEKTPLATZHALTER, read, regeldatei, tabellenzellen, TBD_RE)
+    PROJEKTPLATZHALTER, read, regeldatei, tabellenzellen, TBD_RE, warn)
 
 
 # Abschnitte des Overlays, die ueber die Aktivierungsreife entscheiden. Sie muessen da
@@ -1126,3 +1126,68 @@ def check_overlay_pfadabgleich(root: str, man: dict) -> None:
                     err(f"{rel_perm}: der Pfad `{glob}` aus {platzhalter} des Quell-Overlays "
                         f"hat keine Regel {werkzeug}({glob}) im deny-Korb. Ein zu eng "
                         f"gefüllter Schlitz ist eine stille Lockerung (K-35, D-493)")
+
+# --- Pruefung 110: die aktivierten Packs gegen die Regelablage (CR-2026-164, D-504, K-44)
+#
+# ANLASS, GEGENGEPRUEFT (2026-09-17, CR-2026-076 Abschnitt 6.3): Das Overlay des
+# Uebungsrepositoriums fuehrt zwei Role Packs und zwei Technology Packs als aktiviert. Vier
+# Regeldateien und zwei Skills entfernt - --strict-overlay meldete vorher wie nachher
+# dasselbe. Ein Projekt verlor so seine Ebenen 5 und 6 still: durch einen Packwechsel, einen
+# verunglueckten Lauf von --update oder ein Versehen. Aufgefallen war es dem KI-Client, nicht dem
+# Pruefapparat.
+#
+# GEPRUEFT (nur --strict-overlay): Die Zeilen 'Aktivierte Role Packs' und 'Aktivierte
+# Technology Packs' des Overlays gegen die Laufzeitfassungen 30-role-<pack> und
+# 40-tech-<pack> der Regelablage, in beide Richtungen. Ein Pack gilt als genannt, wenn sein
+# Name in Backticks in der Wertzelle steht ('tech-' davor ist erlaubt); `keine` heisst
+# keines. Eine Zeile, die noch `<TBD…>` traegt, wird nicht gelesen.
+# FEHLER: ein genanntes Pack ohne Laufzeitfassung und eine Laufzeitfassung ohne Nennung.
+# WARNUNG: Laufzeitfassungen, aber keine Zeile - die Vorlage fuehrt die Zeile fuer Role
+# Packs erst seit 1.20.2.
+# GRENZE: die Laufzeitfassung, nicht die Skills eines Packs (die haelt Pruefung 72 gegen
+# die Berechtigungen); die Nennung, nicht die Version.
+P110_ZEILEN = (("Aktivierte Role Packs", "30-role-"), ("Aktivierte Technology Packs", "40-tech-"))
+P110_NAME_RE = re.compile(r"`([a-z0-9][a-z0-9-]*)`")
+
+
+def _p110_genannt(text: str, beschriftung: str):
+    """(Zeile vorhanden?, genannte Packs oder None bei `<TBD…>`)."""
+    m = re.search(r"^\|\s*" + re.escape(beschriftung) + r"[^|]*\|([^|\n]*)\|", text, re.M)
+    if not m:
+        return False, None
+    zelle = m.group(1)
+    if TBD_RE.search(zelle):
+        return True, None
+    namen = {n[len("tech-"):] if n.startswith("tech-") else n
+             for n in P110_NAME_RE.findall(zelle)}
+    return True, namen - {"keine"}
+
+
+def check_aktivierte_packs(root: str, man: dict) -> None:
+    """Pruefung 110 (D-504, K-44): Was das Overlay als aktiviert fuehrt, liegt in der Regelablage."""
+    overlay_pfad = os.path.join(root, ".koolie/project-overlay", "OVERLAY.md")
+    ablage = os.path.join(root, *man["pack_runtime_dir"].split("/"))
+    if not os.path.isfile(overlay_pfad) or not os.path.isdir(ablage):
+        return
+    text = read(overlay_pfad)
+    endung = regeldatei(man, "x.md")[1:]
+    dateien = [f for f in os.listdir(ablage) if f.endswith(endung)]
+    for beschriftung, praefix in P110_ZEILEN:
+        da = {f[len(praefix):-len(endung)] for f in dateien if f.startswith(praefix)}
+        zeile, genannt = _p110_genannt(text, beschriftung)
+        if not zeile:
+            if da:
+                warn(f".koolie/project-overlay/OVERLAY.md: keine Zeile '{beschriftung}', aber "
+                     f"{len(da)} Laufzeitfassung(en) {praefix}* in {man['pack_runtime_dir']}/ - "
+                     f"welches Pack aktiviert ist, entscheidet das Overlay (K-44)")
+            continue
+        if genannt is None:
+            continue
+        for pack in sorted(genannt - da):
+            err(f".koolie/project-overlay/OVERLAY.md: führt '{pack}' unter '{beschriftung}', "
+                f"aber {man['pack_runtime_dir']}/{praefix}{pack}{endung} fehlt - die Ebene "
+                f"dieses Packs lädt in keiner Sitzung (K-44)")
+        for pack in sorted(da - genannt):
+            err(f"{man['pack_runtime_dir']}/{praefix}{pack}{endung}: lädt in jeder passenden "
+                f"Sitzung, aber das Overlay führt '{pack}' nicht unter '{beschriftung}' - "
+                f"aktiviert wird ein Pack im Overlay (K-44)")
