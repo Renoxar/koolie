@@ -118,5 +118,5 @@ Das Übungs-Repository kann danach gelöscht werden – aus dem Verzeichnis, in 
 ## Wie es weitergeht
 
 - [README](README.md): was Koolie ist, für wen es gedacht ist, welche Clients in welchem Stand unterstützt werden.
-- [Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md): Aufnahme in ein bestehendes Projekt, Aktualisierung, Kosten.
+- [Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md): Aufnahme in ein bestehendes Projekt, Aktualisierung, Kosten, Einsatzarchitektur und das Nebeneinander mit einem anderen Agenten-Rahmenwerk.
 - [Übersicht der Client Packs](.koolie/core/clients/README.md): Fähigkeitsmatrizen und ihre Belege.

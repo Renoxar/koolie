@@ -79,7 +79,8 @@ class Adapter:
     name = ""
     code = ""
 
-    def lauf(self, prompt: str, baum: str, modell, berechtigung: str, sitzung=None) -> dict:
+    def lauf(self, prompt: str, baum: str, modell, berechtigung: str, sitzung=None,
+             einstellungen=None, zusatz=None) -> dict:
         raise Unerhoben(f"{self.name}: Lauf")
 
     def version(self) -> str:
@@ -119,9 +120,13 @@ class AdapterCC(Adapter):
                            encoding="utf-8", errors="replace", env=_umgebung())
         return (p.stdout or "").strip() or "unbekannt"
 
-    def lauf(self, prompt, baum, modell, berechtigung, sitzung=None) -> dict:
+    def lauf(self, prompt, baum, modell, berechtigung, sitzung=None, einstellungen=None,
+             zusatz=None) -> dict:
         argv = [self.BEFEHL, "-p", prompt, "--output-format", "json",
                 "--permission-mode", berechtigung]
+        if einstellungen:
+            argv += ["--settings", einstellungen]  # Referenzgruppe (1.21.0): ausserhalb des Baums
+        argv += list(zusatz or [])
         if modell:
             argv += ["--model", modell]
         if sitzung:
@@ -219,7 +224,10 @@ class AdapterCU(Adapter):
             raise Unerhoben("cursor: LW_CURSOR zeigt auf keine Agent-CLI")
         return a
 
-    def lauf(self, prompt, baum, modell, berechtigung, sitzung=None) -> dict:
+    def lauf(self, prompt, baum, modell, berechtigung, sitzung=None, einstellungen=None,
+             zusatz=None) -> dict:
+        if einstellungen or zusatz:
+            raise Unerhoben("cursor: Einstellungsdatei oder Zusatzargumente")
         argv = ["cmd", "/c", self._agent(), "-p", prompt, "--trust", "--output-format", "json"]
         if berechtigung == "force":
             argv.append("--force")  # nur ausdruecklich: ueberspringt Rueckfragen, deny gilt (M2)
@@ -259,7 +267,8 @@ class AdapterAttrappe(Adapter):
     name = "attrappe"
     code = "ATTRAPPE"
 
-    def lauf(self, prompt, baum, modell, berechtigung, sitzung=None) -> dict:
+    def lauf(self, prompt, baum, modell, berechtigung, sitzung=None, einstellungen=None,
+             zusatz=None) -> dict:
         antworten = json.loads(io.open(os.environ["LW_ATTRAPPE"], encoding="utf-8").read())
         a = next((v for k, v in antworten.items() if prompt.startswith(k)), {})
         for rel, inhalt in (a.get("schreibe") or {}).items():
@@ -269,7 +278,8 @@ class AdapterAttrappe(Adapter):
         erg = {"result": a.get("antwort", "OK"), "session_id": "attrappe-" + str(time.time()),
                "total_cost_usd": a.get("usd", 0.1), "is_error": False, "num_turns": 1,
                "permission_denials": a.get("abweisungen", []),
-               "usage": {"cache_creation_input_tokens": 100, "cache_read_input_tokens": 0}}
+               "usage": {"cache_creation_input_tokens": 100, "cache_read_input_tokens": 0},
+               "start": baum, "einstellungen": einstellungen, "zusatz": zusatz}
         return {"ergebnis": erg, "stdout": json.dumps(erg), "stderr": "", "exit": 0,
                 "sekunden": 0.0, "sitzung": erg["session_id"], "usd": float(erg["total_cost_usd"]),
                 "is_error": False, "turns": 1, "abweisungen": len(erg["permission_denials"]),

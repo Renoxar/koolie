@@ -836,7 +836,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      ueberein; fehlt die Zeile bei vorhandenen Fassungen, gibt es eine Warnung. ANLASS:
      Vier Regeldateien entfernt, und --strict-overlay meldete dasselbe wie vorher
      (2026-09-17). GRENZE: die Laufzeitfassung und die Nennung, nicht Skills und Version
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 110 laeuft als eigenes
+111. Fremde Skills, deklariert (D-514, K-31): Fehler, wenn ein Praefix unter
+     'fremde_skills:' im Overlay-Manifest einen Koolie-Skill treffen koennte; Warnung bei
+     einer Deklaration ohne Gegenstand und bei einem erkannten fremden Rahmenwerk ohne
+     Deklaration. Deklarierte Skills prueft Pruefung 5 nicht, den Korb verlangt Pruefung
+     72 weiter. ANLASS: sechs OpenSpec-Skills ergaben 60 Fehler und 18 Warnungen
+     (2026-09-30). GRENZE: die Deklaration und die Ablage, nicht der Inhalt
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 111 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -891,7 +897,7 @@ from pruefungen.packs import (  # noqa: E402
     check_zusatzschluessel)
 from pruefungen.overlay import (  # noqa: E402
     check_aktivierte_packs, check_ausgeschlossene_vorbedingung, check_befehlsschlitz_in_vorbedingung,
-    check_excluded_paths, check_overlay_pfadabgleich, check_overlay_ready,
+    check_excluded_paths, check_fremde_skills, check_overlay_pfadabgleich, check_overlay_ready,
     check_overlay_schlitze, check_overlay_wertabgleich, check_pflichtplatzhalter,
     check_platzhalterbindung, check_strict_overlay, check_ungebundene_vorbedingung,
     check_v6_freigabefolge)
@@ -1059,6 +1065,7 @@ def main() -> int:
     check_wirksamkeitsprobe(root)
     check_allow_umschliesst_deny(root, man)
     check_skill_werkzeugfelder(root, man)
+    check_fremde_skills(root, man)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

@@ -15,14 +15,25 @@ Form (Pflicht ist, was ohne Standard steht):
     "kontingent": {"laeufe": 12, "usd": 8.0, "reserve_usd": 0.8},
     "baum": {"modus": "fest" | "je_lauf" | "vorhanden",
              "basis": "Pfad eines hergerichteten git-Baums (fest, je_lauf)",
-             "branch": "main", "remote": false, "ohne": ["node_modules"]},
+             "branch": "main", "remote": false, "ohne": ["node_modules"],
+             "verbindungen": {"frontend/node_modules": "geteilter Bestand"},
+             "remote_hooks": "Verzeichnis mit Hooks fuer das Wegwerf-Remote"},
     "berechtigung": "bypassPermissions",
+    "einstellungen": "Einstellungsdatei AUSSERHALB der Baeume (claude-code: --settings)",
+    "zusatz": ["--mcp-config", "...", "--permission-prompt-tool", "..."],
     "vorpruefung": {"hook": true, "vertrauen": true, "startmeldung": []},
     "laeufe": [{"kennung": "...", "prompt": "..." | "prompt_datei": "...",
                 "folgeturns": ["..."], "erwartung": "...",
                 "gruppe": "koolie" | "referenz", "modell": null,
-                "branch": null, "variante": null, "baum": "nur bei modus vorhanden"}]
+                "branch": null, "variante": null, "baum": "nur bei modus vorhanden",
+                "unterverzeichnis": "Startverzeichnis relativ zum Baum, sonst die Wurzel"}]
   }
+
+SEIT 1.21.0 (CR-2026-167) traegt die Reihe die Referenzgruppe der Vergleichsmessung (K-193):
+Einstellungen, die der Agent nicht aendern kann, liegen ausserhalb jedes Baums; Branch-Schutz
+und CI stehen als Hooks im Wegwerf-Remote; ein Lauf kann in einem Unterverzeichnis starten.
+'zusatz' reicht Argumente an den Client durch - etwa den Freigabe-Stellvertreter (freigabe.py),
+der im Druckmodus jede Rueckfrage beantwortet und protokolliert.
 """
 from __future__ import annotations
 
@@ -48,6 +59,7 @@ class Lauf:
         self.modell = d.get("modell") or reihe.modell
         self.branch = d.get("branch")
         self.variante = d.get("variante")
+        self.unterverzeichnis = (d.get("unterverzeichnis") or "").replace("\\", "/").strip("/")
         self.baum_vorhanden = d.get("baum")
         self.folgeturns = list(d.get("folgeturns") or [])
         if "prompt_datei" in d:
@@ -80,7 +92,13 @@ class Reihe:
         self.baum.setdefault("branch", "main")
         self.baum.setdefault("remote", False)
         self.baum.setdefault("ohne", ["node_modules"])
+        self.baum.setdefault("verbindungen", {})
+        self.baum.setdefault("remote_hooks", "")
         self.berechtigung = d.get("berechtigung", "default")
+        self.einstellungen = d.get("einstellungen") or ""
+        self.zusatz = [str(x) for x in d.get("zusatz") or []]
+        if self.einstellungen and not os.path.isabs(self.einstellungen):
+            self.einstellungen = os.path.join(ablage, self.einstellungen)
         v = dict(d.get("vorpruefung") or {})
         v.setdefault("hook", True)
         v.setdefault("vertrauen", True)
@@ -108,6 +126,12 @@ class Reihe:
         return os.path.join(self.wurzel, self.name + "-" + lauf.kennung)
 
 
+def _unter(pfad: str, wurzel: str) -> bool:
+    p = os.path.normcase(os.path.abspath(pfad))
+    w = os.path.normcase(os.path.abspath(wurzel)).rstrip("\\/") + os.sep
+    return p.startswith(w)
+
+
 def pruefen(r: Reihe, clients_bekannt) -> list:
     """Alle Schemafehler auf einmal - nicht den ersten."""
     f = []
@@ -125,6 +149,23 @@ def pruefen(r: Reihe, clients_bekannt) -> list:
             f.append("wurzel fehlt")
         if not r.baum.get("basis"):
             f.append("baum.basis fehlt")
+    if r.einstellungen:
+        if not os.path.isfile(r.einstellungen):
+            f.append(f"einstellungen '{r.einstellungen}' fehlt")
+        elif r.wurzel and _unter(r.einstellungen, r.wurzel):
+            f.append("einstellungen liegen unter der wurzel - im Messbaum erreichbar, keine "
+                     "Referenz (1.21.0)")
+    for rel, quelle in (r.baum.get("verbindungen") or {}).items():
+        teile = rel.replace("\\", "/").split("/")
+        if os.path.isabs(rel) or ".." in teile:
+            f.append(f"verbindungen: '{rel}' muss relativ im Baum liegen")
+        if not os.path.isdir(quelle):
+            f.append(f"verbindungen: Quelle '{quelle}' fehlt")
+    if r.baum.get("remote_hooks"):
+        if not r.baum.get("remote"):
+            f.append("remote_hooks ohne remote")
+        elif not os.path.isdir(r.baum["remote_hooks"]):
+            f.append(f"remote_hooks '{r.baum['remote_hooks']}' fehlt")
     gesehen = set()
     for x in r.laeufe:
         if not KENNUNG_RE.match(x.kennung or ""):
@@ -140,6 +181,9 @@ def pruefen(r: Reihe, clients_bekannt) -> list:
             f.append(f"{x.kennung}: keine Erwartung - ein Lauf ohne Erwartung misst nichts")
         if x.gruppe not in GRUPPEN:
             f.append(f"{x.kennung}: gruppe '{x.gruppe}' - erlaubt: {', '.join(GRUPPEN)}")
+        if x.unterverzeichnis and (os.path.isabs(x.unterverzeichnis) or ":" in x.unterverzeichnis
+                                   or ".." in x.unterverzeichnis.split("/")):
+            f.append(f"{x.kennung}: unterverzeichnis '{x.unterverzeichnis}' muss im Baum liegen")
         if modus == "vorhanden" and not x.baum_vorhanden:
             f.append(f"{x.kennung}: bei modus 'vorhanden' braucht jeder Lauf 'baum'")
         if modus == "fest" and x.branch and not x.branch.startswith("arbeit/"):

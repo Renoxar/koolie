@@ -13,7 +13,8 @@ import re
 import sys
 
 from .gemeinsam import (
-    _hook_interpreter, _hook_lauf, err, formatgebunden, FRONTMATTER_BLOECKE, KERN,
+    _hook_interpreter, _hook_lauf, err, formatgebunden, fremde_praefixe, FRONTMATTER_BLOECKE,
+    KERN,
     korb_zerlegung, parse_frontmatter, read, skill_dirs, soll_korbregeln,
     tabellenzellen, TBD_RE, warn, yaml)
 
@@ -59,6 +60,15 @@ def skillfreigaben(root: str, man: dict) -> set:
         return set()
     namen = installierte_skills(root, man)
     return {f"{w}({n})" for w in werkzeuge for n in namen}
+
+
+def _fremder_skilleintrag(regel: str, man: dict, fremd) -> bool:
+    """Der Korbeintrag eines deklarierten fremden Skills (1.21.0, K-31, D-514), auch als Muster."""
+    if not fremd:
+        return False
+    m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\(([^()]*)\)$", regel.strip())
+    namen = [w for w in (man.get("permission_tools", {}).get("skill") or []) if isinstance(w, str)]
+    return bool(m and m.group(1) in namen and any(m.group(2).startswith(p) for p in fremd))
 
 
 def check_berechtigungskoerbe(root: str, man: dict) -> None:
@@ -117,6 +127,9 @@ def check_berechtigungskoerbe(root: str, man: dict) -> None:
         # Ausweitung, sondern der dritte Teil seiner Aktivierung - Pruefung 72
         # verlangt ihn und deckt beide Richtungen ab (D-238, D-243).
         zusatz = [r for r in zusatz if r not in skillkorb]
+        # Ebenso der Eintrag eines deklarierten fremden Skills (1.21.0, K-31, D-514):
+        # Pruefung 72 verlangt ihn, Pruefung 111 haelt die Deklaration.
+        zusatz = [r for r in zusatz if not _fremder_skilleintrag(r, man, fremde_praefixe(root))]
         # Gedeckt wird ein Ueberschuss nur von den Schlitzen, die NICHT mehr
         # woertlich dastehen - ein woertlich vorhandener Schlitz ist ungefuellt.
         offen = [s for s in schlitze if s not in ungefuellt]
@@ -957,8 +970,15 @@ def check_pack_im_korb(root: str, man: dict) -> None:
         m = P72_MUSTER.match(eintrag.strip())
         if m and m.group(1) in namen and m.group(2):
             genannt.append(m.group(2))
+    # Ein deklarierter fremder Skill (1.21.0, K-31) ist auch durch ein Muster seines
+    # Praefixes genannt, etwa Skill(openspec-*) - der Korb bleibt Pflicht, nur die
+    # Schreibweise ist die des fremden Rahmenwerks.
+    fremd = fremde_praefixe(root)
+    muster = [g[:-1] for g in genannt if g.endswith("*")]
     for name in im_baum:
-        if name not in genannt:
+        if name not in genannt and not (
+                any(name.startswith(p) for p in fremd)
+                and any(m and name.startswith(m) for m in muster)):
             err(f"{rel_perm}: der Skill '{name}' liegt in {rel_skills}/, wird aber "
                 f"von keinem Eintrag der Berechtigungsdatei genannt. Sein Aufruf "
                 f"faellt in den Rueckfragekorb und im rueckfragefreien Betrieb in die "
