@@ -2,6 +2,52 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.22.0] - 2026-09-30
+
+**Installation ueber Paketquellen mit dem Banner - und die Gegenprobe, die zehn Fehler fuer null hielt**
+(`CR-2026-168` E1 bis E9, **D-518** bis **D-522**, **Pruefung 112** neu; `K-155` gebaut, `K-204` bis `K-206` neu).
+Kein Sitzungslauf, 0 USD; lokal 13 Paketinstallationen und 40 Aufrufe des Befehls in einer echten Konsole.
+Kriterium 2 von D-11 bleibt 0. **Veroeffentlicht ist nichts** - das gibt der Owner je Paketquelle frei (D-521).
+
+**Neu**
+
+- **Der Befehl `koolie`** (D-519, `paketquellen/koolie_befehl.py`): ohne Argumente der Installationsdialog, mit
+  Argumenten `install.py` mit genau diesen Argumenten, davor das Banner aus `1.20.3` mit derselben Auswahl wie im
+  Starter (Terminal: Voll- oder Kompaktvariante, Pipe: Textvariante, `NO_COLOR`: einfarbig, `--no-banner` und
+  `KOOLIE_NO_BANNER`: nichts); `koolie --version`. Huellen fuer Scoop (`koolie.cmd`) und npm (`npm/koolie.js`).
+- **Die Pakete** (D-520, `paketquellen/bauen.py`): aus dem Release-Archiv ein Wheel fuer PyPI (pip, pipx, uv), ein
+  npm-Paket ohne Installationsskript, ein Scoop-Manifest und eine Homebrew-Formel, die das Archiv laden und seine
+  SHA-256 pruefen. Der Bau ist bytegleich wiederholbar und prueft sich selbst nach.
+- **Pruefung 112**: Der Befehl gibt vor `install.py` das Banner aus, der Schalter wirkt, die Version stimmt, und
+  `bauen.py` baut aus einem Wegwerfarchiv ohne Befund. Sondenteil 17.
+- `RELEASE_PROCESS.md` Abschnitt 4.2: Pakete bauen und nachpruefen in jedem Release (Schritt 8), Veroeffentlichen
+  als ruhender Schritt nach Freigabe (Schritt 9).
+
+**Gemessen**
+
+- Warum das Banner im Befehl steht (D-519): pip fuehrt beim Installieren eines Wheels nichts aus; npm gibt
+  `postinstall` kein Terminal und verschluckt die Ausgabe; Chocolatey gibt seinem Skript kein Terminal (nur
+  Textvariante); Scoop gibt `post_install` eines. Der Befehl selbst hatte bei pip, uv, npm und Scoop ein Terminal,
+  und die Projektinstallation war auf allen vier Wegen bytegleich.
+- Beifunde: npm benennt beim Entpacken die `.gitignore` der Paketwurzel in `.npmignore` um (ohne Wirkung auf die
+  Installation); Scoop braucht fuer ein `.tar.gz` `7zip` und installiert es mit (`K-206`).
+
+**Behoben**
+
+- 🔴 **Eine Gegenprobe des Sondenapparats bestand, sobald "0 Fehler" irgendwo in der Ausgabe stand - also auch bei
+  "10 Fehler"** (D-522). Gefunden an der Gegenprobe zu Pruefung 112, die an einem Baum mit zehn offenen Fehlern
+  bestand. Sie liest jetzt die Ergebniszeile; Sonde `112f`.
+
+**Migrationshinweis fuer Overlays**
+
+- Keine. Die Laufzeitschicht ist unveraendert, `paketquellen/` liegt in der Wurzel des Frameworks und kommt in
+  kein Projekt.
+
+**Bekannte Einschraenkungen**
+
+- Chocolatey und winget ohne Ziel (`K-204`); die Homebrew-Formel ist gebaut, nicht gemessen (`K-205`).
+- Frei heisst nicht reserviert: Der Name `koolie` ist heute auf allen sechs Paketquellen frei.
+
 ## [1.21.0] - 2026-09-30
 
 **Einsatzarchitektur, Koexistenz und Vergleichsmessung - und die Aktualisierung, die den fremden Block loeschte**

@@ -1,8 +1,8 @@
 """Die Werkzeuge des Kerns und ihre Lieferung: Bytecode, Erzeugnisse in .gitignore,
-Praefixerfassung, Erhebungsablage, Werkzeugnamen, Arbeitsplatzpfade, Kernlage und
-Lieferumfang.
+Praefixerfassung, Erhebungsablage, Werkzeugnamen, Arbeitsplatzpfade, Kernlage,
+Lieferumfang und die Paketquellen.
 
-Pruefungen 45, 68, 69, 70, 71, 76, 90 und 107. Teil des Validators validate-framework.py,
+Pruefungen 45, 68, 69, 70, 71, 76, 90, 107 und 112. Teil des Validators validate-framework.py,
 seit 1.19.1 nach Gegenstand in Module geteilt (K-174). Das Register aller Pruefungen
 steht im Kopfkommentar des Einstiegs, die Grenze jeder einzelnen in ihrem Kopfkommentar
 hier."""
@@ -845,3 +845,98 @@ def check_wirksamkeitsprobe(root: str) -> None:
     if "H2" not in alt:
         err("Pruefung 107: Die Wirksamkeitsprobe erkennt einen Matcher ohne die "
             "Werkzeugklasse mcp nicht - ein veralteter Matcher fiele nicht auf (K-184, D-488)")
+
+
+# --- Pruefung 112: Die Paketquellen und das Banner (CR-2026-168, D-518 bis D-521, K-155) --
+#
+# ANLASS, GEMESSEN (2026-09-30): Eine Paketquelle legt Koolie auf den Rechner, ins Projekt
+# kommt es erst durch den Befehl `koolie` - und nur dieser Aufruf laeuft bei jeder
+# Paketquelle im Terminal des Nutzers. pip fuehrt beim Installieren eines Wheels nichts
+# aus, npm verschluckt die Ausgabe eines Installationsskripts, Chocolatey gibt ihm kein
+# Terminal. Das Banner, das der Owner auf diesen Wegen verlangt, steht deshalb im Befehl
+# (D-519), und die Pakete entstehen aus dem Release-Archiv mit paketquellen/bauen.py
+# (D-520). Beides kann still brechen: ein Befehl, der install.py ohne Banner startet, und
+# ein Bau, dessen Paket auf eine Datei zeigt, die es nicht traegt.
+#
+# GEPRUEFT, nur im Quellrepositorium (Projekte bekommen paketquellen/ nicht):
+#   (a) die vier Dateien unter paketquellen/ liegen da;
+#   (b) der Befehl: `--version` nennt die Version aus VERSION; ueber eine Pipe steht vor
+#       der Ausgabe von install.py die Textvariante des Banners mit dieser Version; mit
+#       KOOLIE_NO_BANNER=1 steht sie nicht da;
+#   (c) der Bau: bauen.py baut aus einem Wegwerfarchiv mit den Dateien unter
+#       paketquellen/ ohne Befund - seine Nachpruefung haelt Dateimenge, Version, RECORD,
+#       die Ziele der Befehle, das Fehlen eines npm-Installationsskripts und die
+#       Pruefsumme in beiden Manifesten.
+# GRENZE: Ob eine Paketquelle dem Befehl ein Terminal gibt, prueft keine Pruefung - das ist
+# gemessen (Protokoll 2026-09-30-paketquellen: pip, uv, npm, Scoop). Die Homebrew-Formel ist
+# gebaut, nicht gemessen. Die Veroeffentlichung erreicht keine Pruefung (D-521).
+P112_DATEIEN = ("paketquellen/bauen.py", "paketquellen/koolie_befehl.py",
+                "paketquellen/koolie.cmd", "paketquellen/npm/koolie.js")
+
+
+def _p112_befehl(root: str, *argv: str, ohne_banner: bool = False) -> str:
+    import subprocess
+    umgebung = {k: v for k, v in os.environ.items()
+                if k not in ("KOOLIE_NO_BANNER", "NO_COLOR", "COLUMNS")}
+    umgebung["PYTHONIOENCODING"] = "utf-8"
+    if ohne_banner:
+        umgebung["KOOLIE_NO_BANNER"] = "1"
+    p = subprocess.run([sys.executable, os.path.join(root, "paketquellen", "koolie_befehl.py"),
+                        *argv], capture_output=True, encoding="utf-8", errors="replace",
+                       env=umgebung, timeout=120)
+    return p.stdout or ""
+
+
+def check_paketquellen(root: str) -> None:
+    """Pruefung 112 (D-519, D-520, K-155): Der Befehl gibt das Banner aus, der Bau traegt."""
+    if not ist_quellrepositorium(root):
+        return
+    fehlend = [rel for rel in P112_DATEIEN if not os.path.isfile(os.path.join(root, *rel.split("/")))]
+    if fehlend:
+        err(f"{fehlend[0]}: fehlt - ohne diese Datei baut keine Paketquelle den Befehl "
+            f"'koolie' (Pruefung 112, D-520)")
+        return
+    version = read(os.path.join(root, *KERN.split("/"), "VERSION")).strip()
+    try:
+        aus = _p112_befehl(root, "--version")
+        if aus.strip() != f"koolie {version}":
+            err(f"paketquellen/koolie_befehl.py: '--version' liefert {aus.strip()[:40]!r} statt "
+                f"'koolie {version}' (Pruefung 112)")
+        aus = _p112_befehl(root, "--help")
+        b, u = aus.find(f"KOOLIE v{version}"), aus.find("usage:")
+        if b < 0 or u < 0 or b > u:
+            err("paketquellen/koolie_befehl.py: startet install.py ohne das Banner davor - auf "
+                "den Wegen der Paketquellen erschiene es nicht (Pruefung 112, D-519)")
+        aus = _p112_befehl(root, "--help", ohne_banner=True)
+        if "KOOLIE v" in aus or "usage:" not in aus:
+            err("paketquellen/koolie_befehl.py: KOOLIE_NO_BANNER=1 schaltet das Banner nicht ab "
+                "oder unterdrueckt install.py mit (Pruefung 112, D-506)")
+    except Exception as fehler:  # noqa: BLE001 - jeder Startfehler ist der Befund
+        err(f"paketquellen/koolie_befehl.py: laesst sich nicht starten ({type(fehler).__name__}) "
+            f"(Pruefung 112)")
+    import contextlib
+    import importlib.util
+    import io
+    import tarfile
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="koolie-p112-") as w:
+        archiv = os.path.join(w, f"koolie-{version}.tar.gz")
+        with tarfile.open(archiv, "w:gz") as tf:
+            for rel in P112_DATEIEN + (f"{KERN}/VERSION", "LICENSE", "README.en.md"):
+                tf.add(os.path.join(root, *rel.split("/")), arcname=f"koolie-{version}/{rel}")
+        puffer = io.StringIO()
+        try:
+            spec = importlib.util.spec_from_file_location(
+                "koolie_bauen_p112", os.path.join(root, "paketquellen", "bauen.py"))
+            bauen = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(bauen)
+            with contextlib.redirect_stdout(puffer), contextlib.redirect_stderr(puffer):
+                rc = bauen.main(["--archiv", archiv, "--aus", os.path.join(w, "aus")])
+        except Exception as fehler:  # noqa: BLE001
+            rc, puffer = 1, io.StringIO(f"{type(fehler).__name__}: {fehler}")
+        if rc != 0:
+            text = puffer.getvalue()
+            befunde = ([z.strip() for z in text.split("BEFUNDE:", 1)[1].splitlines() if z.strip()]
+                       if "BEFUNDE:" in text else text.strip().splitlines()[-1:])[:3]
+            err(f"paketquellen/bauen.py: baut aus einem Wegwerfarchiv nicht ohne Befund "
+                f"({' | '.join(befunde)}) (Pruefung 112, D-520)")

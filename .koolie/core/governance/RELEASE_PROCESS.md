@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.6` |
+| Version | `0.3.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -136,6 +136,22 @@ grün und in jeder Installation ohne Archiv rot (D-299).
 ⚠️ **Das Archiv enthält nur Versioniertes.** Hauptdokument und Word-Fassung sind
 Erzeugnisse unter `build/out/` und stehen in der `.gitignore`; wer sie mitliefern will,
 legt sie **neben** das Archiv, nicht hinein.
+
+### 4.2 Die Pakete der Paketquellen (normativ, seit `1.22.0` – D-520, D-521)
+
+**Die Pakete entstehen aus dem Archiv aus Schritt 5, nicht aus dem Arbeitsbaum** (D-520):
+Wheel (PyPI), npm-Paket, Scoop-Manifest und Homebrew-Formel tragen oder laden genau den
+Baum der Marke. Der Befehl `koolie` in jedem Paket gibt vor `install.py` das Banner aus
+(D-519, Prüfung 112).
+
+| Schritt | Was | Wer | Lage |
+|---|---|---|---|
+| 8 | **Pakete bauen und nachprüfen:** `python paketquellen/bauen.py --archiv <Archiv aus Schritt 5> --aus <Ablage>`. Das Skript prüft selbst nach – Dateimenge gleich dem Archiv, Version aus `VERSION`, `RECORD` des Wheels, Ziele der Befehle, kein Installationsskript im npm-Paket, Prüfsumme des Archivs in beiden Manifesten – und baut zweimal bytegleich; Exit 0 heißt ohne Befund. Die Erzeugnisse und `SHA256SUMS` liegen neben dem Archiv | Werkzeug oder Mensch | **nach** Schritt 7, jedes Release |
+| 9 | **Veröffentlichen** – ruhend: **nur nach ausdrücklicher Freigabe des Framework Owners, je Paketquelle** (D-521). Vorgesehen: PyPI und npm über Trusted Publishing aus GitHub Actions am Spiegel (PyPI zuerst über TestPyPI), Scoop und Homebrew über eigene Repositorien; die Download-Adresse der Manifeste ist das GitHub-Release der Marke, das es dafür schon geben muss | **der Framework Owner gibt frei** | **nach** Schritt 8 |
+
+⚠️ **Grenze, benannt:** Ob eine Paketquelle dem Befehl ein Terminal gibt, prüft keine
+Prüfung – es ist gemessen (Protokoll `2026-09-30-paketquellen`). Die Homebrew-Formel ist
+gebaut, nicht gemessen (`K-205`); Chocolatey und winget sind ohne Ziel (`K-204`).
 
 ## 5. Freigabe und Deprecation von Skills (normativ)
 

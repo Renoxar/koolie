@@ -842,7 +842,15 @@ Prüft (statisch, ohne laufenden KI-Client):
      Deklaration. Deklarierte Skills prueft Pruefung 5 nicht, den Korb verlangt Pruefung
      72 weiter. ANLASS: sechs OpenSpec-Skills ergaben 60 Fehler und 18 Warnungen
      (2026-09-30). GRENZE: die Deklaration und die Ablage, nicht der Inhalt
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 111 laeuft als eigenes
+112. Die Paketquellen und das Banner (D-519, D-520, K-155), nur im Quellrepositorium:
+     Fehler, wenn eine Datei unter paketquellen/ fehlt, wenn der Befehl koolie ueber
+     eine Pipe install.py ohne die Textvariante des Banners davor startet, wenn
+     --version nicht die Version aus VERSION nennt, wenn KOOLIE_NO_BANNER=1 das Banner
+     nicht abschaltet, und wenn bauen.py aus einem Wegwerfarchiv nicht ohne Befund baut.
+     ANLASS: pip, npm und Chocolatey geben dem Installationsschritt kein Terminal
+     (gemessen 2026-09-30). GRENZE: ob eine Paketquelle dem Befehl ein Terminal gibt
+     (gemessen, nicht geprueft); die Veroeffentlichung
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 112 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -918,7 +926,7 @@ from pruefungen.dokumente import (  # noqa: E402
     check_verirrtes_steuerzeichen, check_zeilenendeform, check_zielangabe)
 from pruefungen.werkzeuge import (  # noqa: E402
     check_arbeitsplatzpfad, check_bytecode_versioniert, check_erhebungen_sauber,
-    check_gitignore_erzeugnisse, check_kernlage, check_lieferumfang,
+    check_gitignore_erzeugnisse, check_kernlage, check_lieferumfang, check_paketquellen,
     check_praefix_uebererfassung, check_verdrahtung, check_werkzeugnamen,
     check_wirksamkeitsprobe)
 
@@ -1066,6 +1074,7 @@ def main() -> int:
     check_allow_umschliesst_deny(root, man)
     check_skill_werkzeugfelder(root, man)
     check_fremde_skills(root, man)
+    check_paketquellen(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)
