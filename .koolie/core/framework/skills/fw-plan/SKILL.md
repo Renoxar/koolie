@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-004` |
 | Name | `fw-plan` |
-| Version | `0.1.8` |
+| Version | `0.1.9` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -61,7 +61,7 @@ triggers:
 ## 3. Arbeitsschritte
 
 1. Aufgabe wiedergeben: Ziel, Akzeptanzkriterien, Kontrollstufe mit Faktor, Modus M2, Scope (Pfade), Referenz auf die Analyse. Fehlende oder widersprüchliche Akzeptanzkriterien: [RÜCKFRAGE]. Fehlende Kontrollstufe: [RÜCKFRAGE] – der Skill legt sie nicht fest.
-2. Analyse übernehmen oder verkürzt durchführen: Liegt das Ergebnis von `fw-change-analyze` vor, Befunde übernehmen und Fundstellen stichprobenartig erneut lesen (Aktualität). Fehlt es und ist die Verkürzung angewiesen: betroffene Einheiten, Verwender per Suche, berührte Schnittstellen und bestehende Tests je mit Fundstelle erheben; Verkürzung im Plan-Abschnitt 3 als Annahme vermerken. Ist ein Server zum Lesen freigegeben (Overlay Abschnitt 13.2): Ticket und frühere Entscheidungen zum Gegenstand (Architekturentscheidungen, verwandte Anforderungen) lesen, soweit die Analyse sie nicht schon nennt – höchstens fünf Treffer je Suche, jede Aussage mit Ticketschlüssel und Stand oder Seite mit Version; ein Widerspruch zu Code, Analyse oder einer anderen Quelle wird als offene Frage in Plan-Abschnitt 3 gemeldet, nicht aufgelöst.
+2. Analyse übernehmen oder verkürzt durchführen: Liegt das Ergebnis von `fw-change-analyze` vor, Befunde übernehmen und Fundstellen stichprobenartig erneut lesen (Aktualität). Fehlt es und ist die Verkürzung angewiesen: betroffene Einheiten, Verwender per Suche, berührte Schnittstellen und bestehende Tests je mit Fundstelle erheben; Verkürzung im Plan-Abschnitt 3 als Annahme vermerken. Ist ein Server zum Lesen freigegeben (Overlay Abschnitt 13.2): Ticket und frühere Entscheidungen zum Gegenstand (Architekturentscheidungen, verwandte Anforderungen) lesen, soweit die Analyse sie nicht schon nennt – höchstens fünf Treffer je Suche – hat eine Suche mehr, eine zweite mit den ältesten zuerst (nach Erstellung aufsteigend), denn die frühere Entscheidung ist oft der älteste Treffer; jede Aussage mit Ticketschlüssel und Stand oder Seite mit Version; ein Widerspruch zu Code, Analyse oder einer anderen Quelle wird als offene Frage in Plan-Abschnitt 3 gemeldet, nicht aufgelöst.
 3. Ist-Zustand dokumentieren (Plan-Abschnitt 2): nur tatsächlich gelesene Stellen, jede Aussage mit `pfad/datei:zeile`.
 4. Annahmen und offene Fragen kennzeichnen (Plan-Abschnitt 3): jede Annahme mit Auswirkung, falls sie falsch ist; jede Frage mit benötigter Entscheidung und Rolle. Bestimmt eine offene Frage die Wahl der Option oder die Schrittfolge: [RÜCKFRAGE] vor Fertigstellung; andernfalls Plan „unter Vorbehalt" mit `<TBD: …>` an den betroffenen Stellen.
 5. Optionen bewerten (Plan-Abschnitt 4): bei Stufe mittel und hoch mindestens zwei Optionen, bei niedrig KANN eine genügen (mit Begründung); Kriterien Risiko, Aufwand, Reversibilität, Konsistenz mit den Architekturvorgaben des Overlays (Fundstelle im Overlay-Dokument); Empfehlung ausschließlich als Vorschlag; Optionen mit neuer Abhängigkeit als solche kennzeichnen (V3, `.koolie/core/checklists/07-new-dependency.md`); Optionen, die die Delegationsverbotsliste berühren, mit V-Nummer ausweisen und nicht empfehlen.

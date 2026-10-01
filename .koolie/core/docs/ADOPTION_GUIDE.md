@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.6.0` |
+| Version | `0.7.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -59,6 +59,16 @@ bleibt unberührt (P10, Baum 6).
 1. **Voraussetzungen der Organisation:** Werkzeugfreigabe, Datenschutz- und Vertragsprüfung,
    dokumentierte Team-Einstellungen (`.koolie/core/framework/org-policies/`;
    Klärungspunkte K-05/K-06).
+
+   **Schritt 2 und 3 in einem Zug – über eine Paketquelle (D-532, D-533):** Im
+   Projektverzeichnis holt `uvx koolie` (oder `pipx run koolie`, `npx @renoxar/koolie`)
+   Koolie aus PyPI beziehungsweise npm und startet denselben Dialog wie der Starter – mit
+   dem aktuellen Verzeichnis als Vorgabe. Dauerhaft installiert (`pipx install koolie`,
+   `uv tool install koolie`, `npm install -g @renoxar/koolie`) heißt der Befehl `koolie`
+   und nimmt dieselben Argumente wie `install.py`, etwa
+   `koolie --target /pfad/zum/projekt --client <client>`. `pip install koolie` installiert
+   nur den Befehl; liegt er außerhalb des `PATH`, trägt `python -m koolie`. Jedes Paket
+   trägt genau den Baum des Release-Archivs (D-520).
 
    **Schritt 2 und 3 in einem Zug – der Starter (D-362):** Im entpackten
    Release-Archiv liegen in der Wurzel `install.cmd` (Windows) und `install.command`
@@ -556,3 +566,17 @@ Gruppe, fünf Wiederholungen nur bei der Änderung. Die Einstellungen der Refere
 Datei außerhalb des Repositoriums, nicht in verwalteten Einstellungen; ein Agent, der aktiv umgeht,
 ist nicht gemessen. **Eine Aussage über Überlegenheit tragen die Zahlen nicht** – nur die Aussage,
 dass Koolie eine gute Standardkonfiguration ergänzt und nicht ersetzt.
+
+## 9. Befehle im Überblick
+
+| Befehl | Zweck |
+|---|---|
+| `uvx koolie` · `pipx run koolie` · `npx @renoxar/koolie` | Im Projektverzeichnis: Koolie holen und installieren oder heben, mit Dialog |
+| `python .koolie/core/install.py --target <projekt> [--update] [--lieferumfang voll\|nutzung]` | Aus einem Klon oder entpackten Archiv den Kern in ein Projekt kopieren und dort installieren oder heben; die Starter `install.cmd` und `install.command` fragen die Angaben ab |
+| `python .koolie/core/install.py --update` | Im Projekt: die Wurzelbestandteile nach einem Austausch von `.koolie/core/` nachziehen |
+| `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
+| `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
+| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*; `--overlay` ohne Namen zählt die Muster auf |
+| `python .koolie/core/install.py --probe` | Ohne Modell prüfen, ob die Schutzschicht im Projekt greift |
+| `python .koolie/core/install.py --list-clients` / `--list-skills` | Verfügbare Client Packs beziehungsweise die Skills dieser Installation |
+| `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay` | Den aktiven Zustand des Projekts prüfen |

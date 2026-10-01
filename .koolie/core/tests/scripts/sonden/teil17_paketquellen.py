@@ -83,6 +83,12 @@ def _112_vorgabe(root: str) -> None:
 sonde("112i", "Ein Befehl, der dem Dialog das Verzeichnis des Aufrufs nicht als Vorgabe gibt, "
               "wird gemeldet - uvx, pipx run und npx starten ihn im Projekt", _112_vorgabe,
       "nimmt das Verzeichnis des Aufrufs")
+def _112_npm_privat(root: str) -> None:
+    ersetze(_p(root, BAUEN), ('"publishConfig": {"access": "public"},', ''))
+
+
+sonde("112j", "Ein npm-Paket mit Scope ohne oeffentlichen Zugang wird gemeldet - npm wiese "
+              "das Hochladen ab", _112_npm_privat, M112_BAU)
 sonde("112g", "Ein Bau, der die Links der Beschreibung relativ laesst, wird gemeldet - auf PyPI "
               "und npm fuehrten sie ins Leere", _112_relative_links, M112_BAU)
 sonde("112h", "Eine Vorabversion, deren npm-Paket die Version der Marke traegt, wird gemeldet - "

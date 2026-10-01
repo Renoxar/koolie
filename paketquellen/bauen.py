@@ -9,7 +9,8 @@ nichts anderem - vier Erzeugnisse, damit jede Paketquelle denselben Inhalt liefe
     koolie-<V>-py3-none-any.whl   PyPI (pip, pipx, uv): der Baum unter koolie/baum/,
                                   der Befehl `koolie` als Einstiegspunkt
     koolie-<V>.tgz                npm: der Baum unter package/, der Befehl ueber
-                                  paketquellen/npm/koolie.js, KEIN Installationsskript
+                                  paketquellen/npm/koolie.js, KEIN Installationsskript;
+                                  Paketname @renoxar/koolie (D-535)
     scoop/koolie.json             Scoop: laedt das Archiv von der Download-Adresse und
                                   prueft seine SHA-256
     homebrew/koolie.rb            Homebrew: ebenso
@@ -59,6 +60,9 @@ import tarfile
 import zipfile
 
 REPO = "https://github.com/Renoxar/koolie"
+# npm sperrt "koolie" als zu aehnlich zu "cookie" (E403 beim ersten Hochladen, 2026-10-01);
+# der Befehl heisst weiter koolie, nur das Paket traegt den Scope des Kontos (D-535)
+NPM_NAME = "@renoxar/koolie"
 ZEIT_ZIP = (1980, 1, 1, 0, 0, 0)
 ZEIT_TAR = 315532800  # 1980-01-01, wie im Wheel
 BESCHREIBUNG = ("Rules, skills and a protective hook for AI coding assistants - "
@@ -196,7 +200,7 @@ def wheel_bauen(version: str, dateien: dict, paketversion: str | None = None) ->
 # --- npm -----------------------------------------------------------------------------
 def package_json(version: str, dateien: dict, paketversion: str | None = None) -> bytes:
     daten = {
-        "name": "koolie",
+        "name": NPM_NAME,
         "version": paketversion or version,
         "description": BESCHREIBUNG,
         "license": "GPL-3.0-only",
@@ -205,6 +209,8 @@ def package_json(version: str, dateien: dict, paketversion: str | None = None) -
         "bin": {"koolie": "paketquellen/npm/koolie.js"},
         "engines": {"node": ">=16"},
         "readme": beschreibung(version, dateien),
+        # ein Paket mit Scope ist auf npm sonst privat - und das Hochladen scheitert
+        "publishConfig": {"access": "public"},
     }
     return (json.dumps(daten, indent=2, ensure_ascii=True) + "\n").encode()
 
@@ -326,6 +332,8 @@ def nachpruefen(version: str, dateien: dict, whl: bytes, tgz: bytes,
         befunde.append("npm: Version oder Installationsskript in package.json")
     if pj["bin"]["koolie"] not in soll:
         befunde.append("npm: bin zeigt auf keine Datei des Baums")
+    if pj.get("name") != NPM_NAME or pj.get("publishConfig", {}).get("access") != "public":
+        befunde.append(f"npm: Name nicht {NPM_NAME} oder nicht oeffentlich (publishConfig)")
     if not pj.get("readme") or RELATIVER_LINK.search(pj["readme"]):
         befunde.append("npm: readme fehlt oder traegt einen relativen Link")
     sc = json.loads(scoop)
