@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.8` |
+| Version | `0.3.9` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -155,7 +155,10 @@ gebaut, nicht gemessen (`K-205`); Chocolatey und winget sind ohne Ziel (`K-204`)
 
 **Vor einer ersten Veröffentlichung** – einer neuen Paketquelle oder eines geänderten Pakets – baut
 `bauen.py --vorab N` aus dem Arbeitsbaum eine Vorabversion `<V>.devN` für TestPyPI, **vor** der
-Signatur (D-529). Das Archiv dafür entsteht mit `git archive --prefix=koolie-<V>/ $(git stash create)`.
+Signatur (D-529). Das Archiv dafür entsteht mit `git -c core.eol=lf -c core.autocrlf=input archive --prefix=koolie-<V>/ $(git stash create)` –
+mit denselben Zeilenenden wie das Release-Archiv; ohne die beiden Schalter trägt es unter Windows
+CRLF (D-534). **Die Probe macht der Owner im eigenen Projektverzeichnis mit**: Sie prüft, was ein Nutzer
+erlebt, nicht nur, ob der Befehl startet (D-533).
 
 ## 5. Freigabe und Deprecation von Skills (normativ)
 

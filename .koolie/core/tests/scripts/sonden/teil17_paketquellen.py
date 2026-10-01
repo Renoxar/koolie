@@ -76,6 +76,13 @@ def _112_vorab(root: str) -> None:
                               'return f"{version}.dev{vorab}", version'))
 
 
+def _112_vorgabe(root: str) -> None:
+    ersetze(_p(root, BEFEHL), (', "--vorgabe", os.getcwd()]).returncode', ']).returncode'))
+
+
+sonde("112i", "Ein Befehl, der dem Dialog das Verzeichnis des Aufrufs nicht als Vorgabe gibt, "
+              "wird gemeldet - uvx, pipx run und npx starten ihn im Projekt", _112_vorgabe,
+      "nimmt das Verzeichnis des Aufrufs")
 sonde("112g", "Ein Bau, der die Links der Beschreibung relativ laesst, wird gemeldet - auf PyPI "
               "und npm fuehrten sie ins Leere", _112_relative_links, M112_BAU)
 sonde("112h", "Eine Vorabversion, deren npm-Paket die Version der Marke traegt, wird gemeldet - "
