@@ -4,7 +4,7 @@ Dieser Ordner baut Koolie für Paketquellen (`CR-2026-168`, D-518 bis D-521). **
 
 | Datei | Zweck |
 |---|---|
-| `koolie_befehl.py` | Der Befehl `koolie`: ohne Argumente der Installationsdialog, mit Argumenten `install.py`, davor das Banner (D-519); `koolie --version` |
+| `koolie_befehl.py` | Der Befehl `koolie`: ohne Argumente der Installationsdialog mit dem aktuellen Verzeichnis als Vorgabe (D-532), mit Argumenten `install.py`, davor das Banner (D-519); `koolie --version` |
 | `koolie.cmd` | Hülle für Windows aus dem entpackten Release-Archiv (Scoop) |
 | `npm/koolie.js` | Hülle für npm: sucht Python ab 3.8 und erbt das Terminal |
 | `bauen.py` | Baut aus dem Release-Archiv Wheel, npm-Paket, Scoop-Manifest und Homebrew-Formel und prüft sie nach |
@@ -20,7 +20,7 @@ Das Archiv ist das aus `RELEASE_PROCESS.md` 4.1, Schritt 5. Die Download-Adresse
 `--vorab N` baut eine Vorabversion für TestPyPI (`<V>.devN`, npm `<V>-dev.N`), vor der Signatur aus dem Arbeitsbaum (D-529):
 
 ```
-git archive --format=tar.gz --prefix=koolie-<V>/ -o <ablage>/koolie-<V>.tar.gz $(git stash create)
+git -c core.eol=lf -c core.autocrlf=input archive --format=tar.gz --prefix=koolie-<V>/ -o <ablage>/koolie-<V>.tar.gz $(git stash create)
 python paketquellen/bauen.py --archiv <ablage>/koolie-<V>.tar.gz --aus <ablage> --vorab 1
 ```
 
@@ -34,8 +34,8 @@ Gemessen am 2026-09-30 (Protokoll `.koolie/core/tests/protocols/2026-09-30-paket
 
 | Paketquelle | Stand |
 |---|---|
-| PyPI (pip, pipx, uv) | **veröffentlicht** seit `1.24.0` (TestPyPI zuerst, D-529) |
-| npm | **veröffentlicht** seit `1.24.0` |
+| PyPI (pip, pipx, uv) | **veröffentlicht** seit `1.24.1` (TestPyPI zuerst, D-529; `1.24.0` nur auf TestPyPI, D-534) |
+| npm | **veröffentlicht** seit `1.24.1` |
 | Scoop | gebaut, lokal gemessen (`7zip` wird mitinstalliert, `K-206`), nicht veröffentlicht (`K-209`) |
 | Homebrew | gebaut, nicht gemessen (`K-205`), nicht veröffentlicht (`K-209`) |
 | Chocolatey, winget | ohne Ziel (`K-204`) |

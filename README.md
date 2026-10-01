@@ -154,7 +154,7 @@ Client, ein Modell, je Sicherheitsfall ein Lauf – und trägt keine Aussage üb
    [Quick-Start des Onboardings](.koolie/core/onboarding/QUICKSTART.md).
 
 Die Befehle der Installation stehen unten unter [Framework in ein Projekt übernehmen](#framework-in-ein-projekt-übernehmen) –
-über eine Paketquelle (`pipx install koolie`, `npx koolie`), mit dem Starter aus dem Release-Archiv oder von Hand.
+über eine Paketquelle (`uvx koolie`, `pipx run koolie`, `npx koolie`), mit dem Starter aus dem Release-Archiv oder von Hand.
 
 ## Wo finde ich Details und Grenzen?
 
@@ -187,20 +187,29 @@ Der KI-Client ist ein unterstützendes Werkzeug – Verantwortung, Prüfung und 
 
 ## Framework in ein Projekt übernehmen
 
-**Über eine Paketquelle** (seit `1.24.0`, D-531): Koolie liegt auf PyPI und npm als Paket `koolie`. Es legt
-den Befehl `koolie` auf den Rechner, nicht in ein Projekt – ins Projekt kommt Koolie erst mit dem Aufruf im
-Projektverzeichnis, und erst dort erscheint das Banner (D-519). Voraussetzung ist Python ab 3.8, bei npm
-zusätzlich Node.js ab 16.
+**Über eine Paketquelle** (seit `1.24.1`, D-531, D-533): Koolie liegt auf PyPI und npm als Paket `koolie`.
+**Ein Befehl im Projektverzeichnis** holt es und startet den Dialog – das aktuelle Verzeichnis ist die Vorgabe,
+Enter übernimmt es (D-532):
 
 ```bash
-pipx install koolie          # oder: uv tool install koolie · pip install koolie
-npx koolie                   # ohne Installation über npm; dauerhaft: npm install -g koolie
-koolie                       # im Projektverzeichnis: der Dialog wie beim Starter
+cd /pfad/zum/projekt
+uvx koolie                   # mit uv – oder: pipx run koolie · npx koolie
+```
+
+Wer den Befehl dauerhaft haben will, installiert ihn und ruft ihn danach im Projektverzeichnis auf:
+
+```bash
+pipx install koolie          # oder: uv tool install koolie · npm install -g koolie
+koolie                       # der Dialog, Vorgabe ist das aktuelle Verzeichnis
 koolie --target /pfad/zum/projekt --client claude-code   # dieselben Argumente wie install.py
 ```
 
-Jedes Paket trägt genau den Baum des Release-Archivs (D-520). Wer die Prüfsumme des Archivs selbst nachrechnen
-will, nimmt das Archiv.
+⚠️ **`pip install koolie` installiert nur den Befehl, nicht Koolie ins Projekt** – ein Paket führt beim
+Installieren keinen Code aus (D-519). Ohne Administratorrechte legt pip den Befehl in einen Ordner, der oft
+nicht im `PATH` steht (*„The script koolie.exe is installed in … which is not on PATH“*); dann trägt
+`python -m koolie` denselben Befehl. Voraussetzung ist Python ab 3.8, bei npm zusätzlich Node.js ab 16. Jedes
+Paket trägt genau den Baum des Release-Archivs (D-520); wer die Prüfsumme des Archivs selbst nachrechnen will,
+nimmt das Archiv.
 
 **Mit dem Starter:** Das Release-Archiv entpacken und in seiner Wurzel
 `install.cmd` (Windows) oder `install.command` (macOS) per Doppelklick starten. Der

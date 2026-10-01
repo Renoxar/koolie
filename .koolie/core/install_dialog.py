@@ -26,10 +26,14 @@ bricht den Dialog nie ab.
 
 Aufruf (normalerweise durch einen Starter):
 
-    python .koolie/core/install_dialog.py [--no-banner]
+    python .koolie/core/install_dialog.py [--no-banner] [--vorgabe <verzeichnis>]
 
 Das Banner schaltet auch KOOLIE_NO_BANNER=1 ab - der Weg fuer die Starter, die keine
 Argumente weiterreichen.
+
+--vorgabe setzt der Befehl `koolie` der Paketquellen: das Verzeichnis, in dem er
+aufgerufen wurde (D-532). Die Frage nach dem Projektverzeichnis nimmt es dann mit Enter.
+Die Starter setzen es nicht - ihr Arbeitsverzeichnis ist das Release-Archiv.
 
 Exit-Code: der von install.py; 1 bei Abbruch im Dialog.
 """
@@ -104,10 +108,18 @@ def auswahl(text: str, optionen: list[tuple[str, str]], vorgabe: int) -> str:
     raise Abbruch("keine gueltige Auswahl")
 
 
-def projekt_erfragen() -> str:
+def projekt_erfragen(vorgabe: str = "") -> str:
     wurzel = install.quellwurzel()
+    # Eine Vorgabe gilt nur, wenn es sie gibt und sie nicht das Framework selbst ist (D-532)
+    if vorgabe and (not os.path.isdir(vorgabe) or install._gleicher_pfad(vorgabe, wurzel)):
+        vorgabe = ""
+    text = "Projektverzeichnis (Ordner hier hineinziehen oder Pfad eingeben): "
+    if vorgabe:
+        text = f"Projektverzeichnis [Enter = {vorgabe}]: "
     for _ in range(VERSUCHE):
-        eingabe = frage("Projektverzeichnis (Ordner hier hineinziehen oder Pfad eingeben): ")
+        eingabe = frage(text)
+        if not eingabe and vorgabe:
+            eingabe = vorgabe
         if not eingabe:
             continue
         ziel = pfad_bereinigen(eingabe)
@@ -177,14 +189,25 @@ def banner_ausgeben(argv: list) -> None:
         pass
 
 
+def vorgabe_lesen(argv: list) -> tuple[str, list]:
+    """(--vorgabe <verzeichnis>, uebrige Argumente) - die Vorgabe des Befehls koolie (D-532)."""
+    if "--vorgabe" in argv:
+        i = argv.index("--vorgabe")
+        if i + 1 < len(argv):
+            return os.path.abspath(argv[i + 1]), argv[:i] + argv[i + 2:]
+        return "", argv[:i]
+    return "", argv
+
+
 def main(argv: list) -> int:
+    vorgabe, argv = vorgabe_lesen(argv)
     banner_ausgeben(argv)
     print(f"Koolie {install.kern_version(HERE)} - Installation in ein Projekt")
     print(f"Quelle: {install.quellwurzel()}")
     print("Abbrechen jederzeit mit q.")
     print()
     try:
-        ziel = projekt_erfragen()
+        ziel = projekt_erfragen(vorgabe)
         argv = befehl_bauen(ziel)
         print()
         print("Ausgefuehrt wird:")

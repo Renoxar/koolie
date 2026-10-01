@@ -20,9 +20,10 @@ To adopt Koolie in an **existing** project, read the [adoption guide](.koolie/co
   for the same information. The other steps need the command line.
 - Koolie itself: the **unpacked release archive** or a **clone** of this repository. Steps 1 to 4 run from its
   root directory, steps 5 and 6 inside the practice repository.
-- **Or from a package source:** `pipx install koolie` (also `uv tool install koolie`, `pip install koolie`) or
-  `npm install -g koolie`. Then `koolie` replaces `python .koolie/core/install.py` in steps 2 and 3, and steps
-  1 to 4 run from any directory; the command shows the banner first.
+- **Or from a package source**, without archive or clone: `uvx koolie` (also `pipx run koolie`, `npx koolie`)
+  replaces `python .koolie/core/install.py` in steps 2 and 3, and steps 1 to 4 run from any directory; the
+  command shows the banner first. If you installed it with `pip install koolie` and `koolie` is not found, run
+  `python -m koolie`.
 
 All output of the installer and the validator is in German; this guide quotes the lines you need.
 
@@ -42,7 +43,9 @@ git -C ../koolie-uebung commit -m "Start"
 python .koolie/core/install.py --target ../koolie-uebung --client claude-code
 ```
 
-From a package source, the same step is `koolie --target ../koolie-uebung --client claude-code`.
+From a package source, the same step is `uvx koolie --target ../koolie-uebung --client claude-code`.
+Without arguments, `uvx koolie` started inside the practice repository opens the dialog with that directory as
+the default.
 
 `--target` copies only the core (`.koolie/core/`) into the practice repository and creates the files the
 client needs there. At the end, the installer lists the next steps for a real project. Its messages are in

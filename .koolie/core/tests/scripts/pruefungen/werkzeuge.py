@@ -862,7 +862,8 @@ def check_wirksamkeitsprobe(root: str) -> None:
 #   (a) die vier Dateien unter paketquellen/ liegen da;
 #   (b) der Befehl: `--version` nennt die Version aus VERSION; ueber eine Pipe steht vor
 #       der Ausgabe von install.py die Textvariante des Banners mit dieser Version; mit
-#       KOOLIE_NO_BANNER=1 steht sie nicht da;
+#       KOOLIE_NO_BANNER=1 steht sie nicht da; ohne Argumente nimmt der Dialog das
+#       Verzeichnis des Aufrufs mit Enter als Projekt (seit 1.24.1, D-532);
 #   (c) der Bau: bauen.py baut aus einem Wegwerfarchiv mit den Dateien unter
 #       paketquellen/ ohne Befund - seine Nachpruefung haelt Dateimenge, Version, RECORD,
 #       die Ziele der Befehle, das Fehlen eines npm-Installationsskripts und die
@@ -876,7 +877,8 @@ P112_DATEIEN = ("paketquellen/bauen.py", "paketquellen/koolie_befehl.py",
                 "paketquellen/koolie.cmd", "paketquellen/npm/koolie.js")
 
 
-def _p112_befehl(root: str, *argv: str, ohne_banner: bool = False) -> str:
+def _p112_befehl(root: str, *argv: str, ohne_banner: bool = False, cwd: str | None = None,
+                 eingabe: str | None = None) -> str:
     import subprocess
     umgebung = {k: v for k, v in os.environ.items()
                 if k not in ("KOOLIE_NO_BANNER", "NO_COLOR", "COLUMNS")}
@@ -885,7 +887,7 @@ def _p112_befehl(root: str, *argv: str, ohne_banner: bool = False) -> str:
         umgebung["KOOLIE_NO_BANNER"] = "1"
     p = subprocess.run([sys.executable, os.path.join(root, "paketquellen", "koolie_befehl.py"),
                         *argv], capture_output=True, encoding="utf-8", errors="replace",
-                       env=umgebung, timeout=120)
+                       env=umgebung, timeout=120, cwd=cwd, input=eingabe)
     return p.stdout or ""
 
 
@@ -913,6 +915,13 @@ def check_paketquellen(root: str) -> None:
         if "KOOLIE v" in aus or "usage:" not in aus:
             err("paketquellen/koolie_befehl.py: KOOLIE_NO_BANNER=1 schaltet das Banner nicht ab "
                 "oder unterdrueckt install.py mit (Pruefung 112, D-506)")
+        import tempfile as _tf
+        with _tf.TemporaryDirectory(prefix="koolie-p112-hier-") as hier:
+            aus = _p112_befehl(root, ohne_banner=True, cwd=hier, eingabe="\nq\n")
+            if "Welcher KI-Client" not in aus:
+                err("paketquellen/koolie_befehl.py: der Dialog nimmt das Verzeichnis des Aufrufs "
+                    "nicht mit Enter als Projekt - uvx, pipx run und npx starten ihn dort "
+                    "(Pruefung 112, D-532)")
     except Exception as fehler:  # noqa: BLE001 - jeder Startfehler ist der Befund
         err(f"paketquellen/koolie_befehl.py: laesst sich nicht starten ({type(fehler).__name__}) "
             f"(Pruefung 112)")

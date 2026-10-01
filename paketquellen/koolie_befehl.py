@@ -10,7 +10,8 @@ Wheels nichts aus, npm verschluckt die Ausgabe eines Installationsskripts, Choco
 ihm kein Terminal, winget installiert still. Deshalb steht das Banner HIER und nicht in
 einem Installationsskript.
 
-    koolie                           der Dialog aus install_dialog.py, mit Banner
+    koolie                           der Dialog aus install_dialog.py, mit Banner; das
+                                     aktuelle Verzeichnis ist die Vorgabe (D-532)
     koolie <Argumente von install.py> Banner, dann install.py mit genau diesen Argumenten
     koolie --version                 nur die Version, ohne Banner
 
@@ -67,9 +68,11 @@ def main(argv: list | None = None) -> int:
         return 0
     rest = [a for a in argv if a != KEIN_BANNER]
     if not rest:
-        # Der Dialog gibt das Banner selbst aus und wertet --no-banner selbst aus.
+        # Der Dialog gibt das Banner selbst aus und wertet --no-banner selbst aus. Das
+        # Verzeichnis des Aufrufs ist die Vorgabe fuer das Projekt (D-532): uvx, pipx run
+        # und npx starten den Befehl dort, wo der Nutzer steht.
         return subprocess.run([sys.executable, os.path.join(KERN, "install_dialog.py"),
-                               *argv]).returncode
+                               *argv, "--vorgabe", os.getcwd()]).returncode
     banner_ausgeben(argv)
     sys.stdout.flush()
     return subprocess.run([sys.executable, os.path.join(KERN, "install.py"), *rest]).returncode

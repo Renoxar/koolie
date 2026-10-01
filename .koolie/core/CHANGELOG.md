@@ -2,6 +2,33 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.24.1] - 2026-10-01
+
+**Der Befehl im Projektverzeichnis - und die Probe, die nur fragte, ob er startet**
+(`CR-2026-171` E1 bis E5, **D-532** bis **D-534**, Pruefung 112 erweitert). Kein Sitzungslauf, 0 USD. Die erste
+Version auf PyPI und npm; `1.24.0` liegt nur auf TestPyPI. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **`koolie` ohne Argumente nimmt das aktuelle Verzeichnis als Vorgabe** (D-532): `Projektverzeichnis [Enter =
+  <verzeichnis>]`. Mit `uvx koolie`, `pipx run koolie` oder `npx koolie` im Projektverzeichnis holt ein einziger
+  Befehl Koolie und startet den Dialog dort. Die Starter bleiben wie bisher.
+- **README und Quickstart** beginnen mit diesem Einbefehl-Weg; `pip install koolie` ist als "nur der Befehl"
+  benannt, mit `python -m koolie`, wenn pip den Befehl ausserhalb des `PATH` ablegt (D-533).
+- **Pruefung 112** prueft die Vorgabe im Dialog; Sonde `112i`.
+
+**Behoben**
+
+- 🔴 **Die Probe von `1.24.0` fragte nur, ob der Befehl startet.** Der Owner probierte `pip install` aus TestPyPI
+  in seinem Projekt: Es installierte nichts ins Projekt, und der Befehl lag ausserhalb des `PATH`. Er hielt vor
+  dem Hochladen auf PyPI an; `1.24.0` wird dort und auf npm nicht veroeffentlicht (D-534).
+- Das Archiv der Vorabversion trug unter Windows CRLF; der Befehl in `RELEASE_PROCESS.md` 4.2 und
+  `paketquellen/README.md` setzt jetzt `core.eol=lf` und `core.autocrlf=input` (D-534).
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner. `install_dialog.py` kennt `--vorgabe`; ohne diesen Schalter verhaelt er sich wie bisher.
+
 ## [1.24.0] - 2026-10-01
 
 **Die erste Veroeffentlichung auf PyPI und npm - und die beiden Tokens, die eines waren**
