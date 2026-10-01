@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.7` |
+| Version | `0.3.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -137,7 +137,7 @@ grün und in jeder Installation ohne Archiv rot (D-299).
 Erzeugnisse unter `build/out/` und stehen in der `.gitignore`; wer sie mitliefern will,
 legt sie **neben** das Archiv, nicht hinein.
 
-### 4.2 Die Pakete der Paketquellen (normativ, seit `1.22.0` – D-520, D-521)
+### 4.2 Die Pakete der Paketquellen (normativ, seit `1.22.0` – D-520, D-521; Schritt 9 seit `1.24.0` – D-529, D-530)
 
 **Die Pakete entstehen aus dem Archiv aus Schritt 5, nicht aus dem Arbeitsbaum** (D-520):
 Wheel (PyPI), npm-Paket, Scoop-Manifest und Homebrew-Formel tragen oder laden genau den
@@ -147,11 +147,15 @@ Baum der Marke. Der Befehl `koolie` in jedem Paket gibt vor `install.py` das Ban
 | Schritt | Was | Wer | Lage |
 |---|---|---|---|
 | 8 | **Pakete bauen und nachprüfen:** `python paketquellen/bauen.py --archiv <Archiv aus Schritt 5> --aus <Ablage>`. Das Skript prüft selbst nach – Dateimenge gleich dem Archiv, Version aus `VERSION`, `RECORD` des Wheels, Ziele der Befehle, kein Installationsskript im npm-Paket, Prüfsumme des Archivs in beiden Manifesten – und baut zweimal bytegleich; Exit 0 heißt ohne Befund. Die Erzeugnisse und `SHA256SUMS` liegen neben dem Archiv | Werkzeug oder Mensch | **nach** Schritt 7, jedes Release |
-| 9 | **Veröffentlichen** – ruhend: **nur nach ausdrücklicher Freigabe des Framework Owners, je Paketquelle** (D-521). Vorgesehen: PyPI und npm über Trusted Publishing aus GitHub Actions am Spiegel (PyPI zuerst über TestPyPI), Scoop und Homebrew über eigene Repositorien; die Download-Adresse der Manifeste ist das GitHub-Release der Marke, das es dafür schon geben muss | **der Framework Owner gibt frei** | **nach** Schritt 8 |
+| 9 | **Veröffentlichen auf PyPI und npm** (D-530): **die Signatur der Marke durch den Framework Owner ist die Freigabe.** Reihenfolge: das Wheel aus Schritt 8 auf TestPyPI und eine Installation daraus in ein Wegwerfprojekt; dann **dieselben Bytes** auf PyPI (`uv publish`, Token `PYPI_TOKEN`); dann das npm-Paket (`npm publish <tgz>`, Token `NPM_TOKEN`). Danach die Seiten beider Quellen und `pip download`/`npm view` gegen `SHA256SUMS` lesen. Eine Version lässt sich nicht zurücknehmen und nicht neu vergeben – ein Befund nach dem Hochladen wird ein PATCH-Release. **Scoop und Homebrew ruhen** (`K-209`); Trusted Publishing ist `K-210` | Werkzeug oder Mensch; **der Framework Owner gibt mit der Signatur frei** | **nach** Schritt 8 |
 
 ⚠️ **Grenze, benannt:** Ob eine Paketquelle dem Befehl ein Terminal gibt, prüft keine
 Prüfung – es ist gemessen (Protokoll `2026-09-30-paketquellen`). Die Homebrew-Formel ist
 gebaut, nicht gemessen (`K-205`); Chocolatey und winget sind ohne Ziel (`K-204`).
+
+**Vor einer ersten Veröffentlichung** – einer neuen Paketquelle oder eines geänderten Pakets – baut
+`bauen.py --vorab N` aus dem Arbeitsbaum eine Vorabversion `<V>.devN` für TestPyPI, **vor** der
+Signatur (D-529). Das Archiv dafür entsteht mit `git archive --prefix=koolie-<V>/ $(git stash create)`.
 
 ## 5. Freigabe und Deprecation von Skills (normativ)
 

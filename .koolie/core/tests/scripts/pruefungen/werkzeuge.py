@@ -866,10 +866,12 @@ def check_wirksamkeitsprobe(root: str) -> None:
 #   (c) der Bau: bauen.py baut aus einem Wegwerfarchiv mit den Dateien unter
 #       paketquellen/ ohne Befund - seine Nachpruefung haelt Dateimenge, Version, RECORD,
 #       die Ziele der Befehle, das Fehlen eines npm-Installationsskripts und die
-#       Pruefsumme in beiden Manifesten.
+#       Pruefsumme in beiden Manifesten; seit 1.24.0 auch die Beschreibung fuer PyPI und
+#       npm ohne relativen Link (D-528) - und dasselbe fuer die Vorabversion --vorab 1 (D-529).
 # GRENZE: Ob eine Paketquelle dem Befehl ein Terminal gibt, prueft keine Pruefung - das ist
 # gemessen (Protokoll 2026-09-30-paketquellen: pip, uv, npm, Scoop). Die Homebrew-Formel ist
-# gebaut, nicht gemessen. Die Veroeffentlichung erreicht keine Pruefung (D-521).
+# gebaut, nicht gemessen. Die Veroeffentlichung erreicht keine Pruefung (D-521); ob die
+# Paketseite die Beschreibung darstellt, ist gemessen (Protokoll 2026-10-01-erste-veroeffentlichung).
 P112_DATEIEN = ("paketquellen/bauen.py", "paketquellen/koolie_befehl.py",
                 "paketquellen/koolie.cmd", "paketquellen/npm/koolie.js")
 
@@ -924,19 +926,23 @@ def check_paketquellen(root: str) -> None:
         with tarfile.open(archiv, "w:gz") as tf:
             for rel in P112_DATEIEN + (f"{KERN}/VERSION", "LICENSE", "README.en.md"):
                 tf.add(os.path.join(root, *rel.split("/")), arcname=f"koolie-{version}/{rel}")
-        puffer = io.StringIO()
-        try:
-            spec = importlib.util.spec_from_file_location(
-                "koolie_bauen_p112", os.path.join(root, "paketquellen", "bauen.py"))
-            bauen = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(bauen)
-            with contextlib.redirect_stdout(puffer), contextlib.redirect_stderr(puffer):
-                rc = bauen.main(["--archiv", archiv, "--aus", os.path.join(w, "aus")])
-        except Exception as fehler:  # noqa: BLE001
-            rc, puffer = 1, io.StringIO(f"{type(fehler).__name__}: {fehler}")
-        if rc != 0:
-            text = puffer.getvalue()
-            befunde = ([z.strip() for z in text.split("BEFUNDE:", 1)[1].splitlines() if z.strip()]
-                       if "BEFUNDE:" in text else text.strip().splitlines()[-1:])[:3]
-            err(f"paketquellen/bauen.py: baut aus einem Wegwerfarchiv nicht ohne Befund "
-                f"({' | '.join(befunde)}) (Pruefung 112, D-520)")
+        # einmal die Version der Marke, einmal die Vorabversion fuer TestPyPI (D-529)
+        for art, zusatz in (("", []), (", als Vorabversion gebaut", ["--vorab", "1"])):
+            puffer = io.StringIO()
+            try:
+                spec = importlib.util.spec_from_file_location(
+                    "koolie_bauen_p112", os.path.join(root, "paketquellen", "bauen.py"))
+                bauen = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(bauen)
+                with contextlib.redirect_stdout(puffer), contextlib.redirect_stderr(puffer):
+                    rc = bauen.main(["--archiv", archiv, "--aus", os.path.join(w, "aus"), *zusatz])
+            except Exception as fehler:  # noqa: BLE001
+                rc, puffer = 1, io.StringIO(f"{type(fehler).__name__}: {fehler}")
+            if rc != 0:
+                text = puffer.getvalue()
+                befunde = ([z.strip() for z in text.split("BEFUNDE:", 1)[1].splitlines()
+                            if z.strip()]
+                           if "BEFUNDE:" in text else text.strip().splitlines()[-1:])[:3]
+                err(f"paketquellen/bauen.py: baut aus einem Wegwerfarchiv nicht ohne Befund{art} "
+                    f"({' | '.join(befunde)}) (Pruefung 112, D-520)")
+                return

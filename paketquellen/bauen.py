@@ -22,13 +22,22 @@ Die Erzeugnisse sind bytegleich wiederholbar (feste Zeitstempel, sortierte Eintr
 feste Modi); bauen.py prueft nach dem Bau selbst nach: Dateimenge von Wheel und
 npm-Paket = Dateimenge des Archivs, Version, Pruefsumme in beiden Manifesten, RECORD.
 
-Veroeffentlicht wird hier NICHTS (D-521): Das ist ein eigener Schritt mit ausdruecklicher
-Freigabe des Owners je Paketquelle.
+Die Beschreibung auf den Seiten von PyPI und npm ist README.en.md mit absoluten Links auf
+die Marke im GitHub-Spiegel (CR-2026-170, D-528): Ein relativer Link fuehrt dort ins Leere.
+Die Dateien im Paket bleiben die des Archivs; nur die Beschreibung in METADATA und das Feld
+`readme` der package.json tragen die umgeschriebenen Links - npm zeigt so die englische
+statt der deutschen README.md des Baums.
+
+--vorab N baut eine Vorabversion fuer die Installationsprobe auf TestPyPI vor der
+Signatur der Marke (D-529): Wheel `<V>.devN`, npm `<V>-dev.N`. Der Baum im Paket bleibt
+der des Archivs, `koolie --version` nennt deshalb weiter <V>.
+
+Veroeffentlicht wird hier NICHTS (D-521): Das ist Schritt 9 von RELEASE_PROCESS.md 4.2.
 
 Aufruf:
 
     python paketquellen/bauen.py --archiv <koolie-V.tar.gz> --aus <verzeichnis>
-                                 [--url-basis <adresse>]
+                                 [--url-basis <adresse>] [--vorab N]
 
 --url-basis ist die Adresse, unter der das Archiv liegt; Standard ist das GitHub-Release
 der Marke. Fuer eine Messung ohne Veroeffentlichung darf es eine lokale Adresse sein.
@@ -44,6 +53,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import sys
 import tarfile
 import zipfile
@@ -55,6 +65,9 @@ BESCHREIBUNG = ("Rules, skills and a protective hook for AI coding assistants - 
                 "one rule source, installed per project.")
 HINWEIS = ("Koolie {v} ist installiert. Ins Projekt kommt es mit dem Befehl 'koolie' "
            "im Projektverzeichnis (Dialog mit Banner) oder 'koolie --target <projekt>'.")
+
+# Ein Markdown-Link, dessen Ziel keine Adresse und kein Anker ist: ](ziel) oder ](ziel#anker)
+RELATIVER_LINK = re.compile(r"\]\((?!https?://|mailto:|#)([^)\s]+)\)")
 
 INIT_PY = '''"""Koolie aus dem Wheel (CR-2026-168). Der Baum des Releases liegt unter baum/."""
 '''
@@ -106,6 +119,26 @@ def archiv_lesen(pfad: str) -> tuple[str, str, dict]:
     return version, praefix, dateien
 
 
+def beschreibung(version: str, dateien: dict) -> str:
+    """README.en.md mit absoluten Links auf die Marke v<version> im GitHub-Spiegel (D-528)."""
+    text = dateien["README.en.md"].decode("utf-8").replace("\r\n", "\n")
+
+    def absolut(treffer: re.Match) -> str:
+        ziel = treffer.group(1)
+        while ziel.startswith("./"):
+            ziel = ziel[2:]
+        return f"]({REPO}/blob/v{version}/{ziel})"
+
+    return RELATIVER_LINK.sub(absolut, text)
+
+
+def paketversionen(version: str, vorab: int | None) -> tuple[str, str]:
+    """(Wheel-Version nach PEP 440, npm-Version nach SemVer) - mit --vorab N eine Vorabversion."""
+    if vorab is None:
+        return version, version
+    return f"{version}.dev{vorab}", f"{version}-dev.{vorab}"
+
+
 def sha256(daten: bytes) -> str:
     return hashlib.sha256(daten).hexdigest()
 
@@ -115,11 +148,11 @@ def _record_hash(daten: bytes) -> str:
     return "sha256=" + base64.urlsafe_b64encode(hashlib.sha256(daten).digest()).decode().rstrip("=")
 
 
-def metadaten(version: str, dateien: dict) -> str:
+def metadaten(version: str, dateien: dict, paketversion: str | None = None) -> str:
     kopf = [
         "Metadata-Version: 2.1",
         "Name: koolie",
-        f"Version: {version}",
+        f"Version: {paketversion or version}",
         f"Summary: {BESCHREIBUNG}",
         "License: GPL-3.0-only",
         f"Project-URL: Repository, {REPO}",
@@ -129,16 +162,16 @@ def metadaten(version: str, dateien: dict) -> str:
         "Requires-Python: >=3.8",
         "Description-Content-Type: text/markdown",
     ]
-    text = dateien["README.en.md"].decode("utf-8").replace("\r\n", "\n")
-    return "\n".join(kopf) + "\n\n" + text
+    return "\n".join(kopf) + "\n\n" + beschreibung(version, dateien)
 
 
-def wheel_bauen(version: str, dateien: dict) -> tuple[str, bytes]:
-    di = f"koolie-{version}.dist-info"
+def wheel_bauen(version: str, dateien: dict, paketversion: str | None = None) -> tuple[str, bytes]:
+    paketversion = paketversion or version
+    di = f"koolie-{paketversion}.dist-info"
     inhalt = {"koolie/__init__.py": INIT_PY.encode(), "koolie/__main__.py": MAIN_PY.encode()}
     for rel, daten in dateien.items():
         inhalt["koolie/baum/" + rel] = daten
-    inhalt[f"{di}/METADATA"] = metadaten(version, dateien).encode("utf-8")
+    inhalt[f"{di}/METADATA"] = metadaten(version, dateien, paketversion).encode("utf-8")
     inhalt[f"{di}/WHEEL"] = (b"Wheel-Version: 1.0\nGenerator: koolie-bauen\n"
                              b"Root-Is-Purelib: true\nTag: py3-none-any\n")
     inhalt[f"{di}/entry_points.txt"] = b"[console_scripts]\nkoolie = koolie.__main__:main\n"
@@ -157,20 +190,21 @@ def wheel_bauen(version: str, dateien: dict) -> tuple[str, bytes]:
             zi.external_attr = (0o100644 << 16)
             zi.compress_type = zipfile.ZIP_DEFLATED
             zf.writestr(zi, inhalt[n])
-    return f"koolie-{version}-py3-none-any.whl", puffer.getvalue()
+    return f"koolie-{paketversion}-py3-none-any.whl", puffer.getvalue()
 
 
 # --- npm -----------------------------------------------------------------------------
-def package_json(version: str) -> bytes:
+def package_json(version: str, dateien: dict, paketversion: str | None = None) -> bytes:
     daten = {
         "name": "koolie",
-        "version": version,
+        "version": paketversion or version,
         "description": BESCHREIBUNG,
         "license": "GPL-3.0-only",
         "homepage": REPO,
         "repository": {"type": "git", "url": f"git+{REPO}.git"},
         "bin": {"koolie": "paketquellen/npm/koolie.js"},
         "engines": {"node": ">=16"},
+        "readme": beschreibung(version, dateien),
     }
     return (json.dumps(daten, indent=2, ensure_ascii=True) + "\n").encode()
 
@@ -183,16 +217,17 @@ def _tar_eintrag(tf: tarfile.TarFile, name: str, daten: bytes) -> None:
     tf.addfile(ti, io.BytesIO(daten))
 
 
-def npm_bauen(version: str, dateien: dict) -> tuple[str, bytes]:
+def npm_bauen(version: str, dateien: dict, paketversion: str | None = None) -> tuple[str, bytes]:
+    paketversion = paketversion or version
     roh = io.BytesIO()
     with tarfile.open(fileobj=roh, mode="w", format=tarfile.PAX_FORMAT) as tf:
-        _tar_eintrag(tf, "package/package.json", package_json(version))
+        _tar_eintrag(tf, "package/package.json", package_json(version, dateien, paketversion))
         for rel in sorted(dateien):
             _tar_eintrag(tf, "package/" + rel, dateien[rel])
     gz = io.BytesIO()
     with gzip.GzipFile(filename="", mode="wb", fileobj=gz, mtime=0, compresslevel=9) as g:
         g.write(roh.getvalue())
-    return f"koolie-{version}.tgz", gz.getvalue()
+    return f"koolie-{paketversion}.tgz", gz.getvalue()
 
 
 # --- Manifeste -----------------------------------------------------------------------
@@ -252,15 +287,21 @@ end
 
 # --- Nachpruefen ---------------------------------------------------------------------
 def nachpruefen(version: str, dateien: dict, whl: bytes, tgz: bytes,
-                scoop: bytes, brew: bytes, hashwert: str) -> list:
+                scoop: bytes, brew: bytes, hashwert: str, vorab: int | None = None) -> list:
     befunde = []
+    wversion, nversion = paketversionen(version, vorab)
+    # unabhaengig von paketversionen(): eine Vorabversion darf nie die Version der Marke
+    # belegen - eine Version laesst sich auf PyPI und npm nur einmal vergeben (D-529)
+    soll_w, soll_n = (version, version) if vorab is None else         (f"{version}.dev{vorab}", f"{version}-dev.{vorab}")
+    if (wversion, nversion) != (soll_w, soll_n):
+        befunde.append(f"Vorabversion: Wheel {wversion}, npm {nversion} statt {soll_w}, {soll_n}")
     soll = set(dateien)
     with zipfile.ZipFile(io.BytesIO(whl)) as zf:
         namen = zf.namelist()
         baum = {n[len("koolie/baum/"):] for n in namen if n.startswith("koolie/baum/")}
         if baum != soll:
             befunde.append(f"Wheel: {len(baum ^ soll)} Dateien weichen vom Archiv ab")
-        di = f"koolie-{version}.dist-info/"
+        di = f"koolie-{wversion}.dist-info/"
         record = zf.read(di + "RECORD").decode().splitlines()
         for zeile in record:
             name, h, groesse = zeile.rsplit(",", 2)
@@ -271,17 +312,22 @@ def nachpruefen(version: str, dateien: dict, whl: bytes, tgz: bytes,
                 befunde.append(f"Wheel: RECORD stimmt nicht fuer {name}")
         if len(record) != len(namen):
             befunde.append("Wheel: RECORD zaehlt nicht jede Datei")
-        if f"Version: {version}\n" not in zf.read(di + "METADATA").decode("utf-8"):
+        meta = zf.read(di + "METADATA").decode("utf-8")
+        if f"Version: {wversion}\n" not in meta:
             befunde.append("Wheel: Version in METADATA")
+        if RELATIVER_LINK.search(meta):
+            befunde.append("Wheel: relativer Link in der Beschreibung - auf PyPI fuehrt er ins Leere")
     with tarfile.open(fileobj=io.BytesIO(tgz), mode="r:gz") as tf:
         namen = {m.name[len("package/"):] for m in tf.getmembers() if m.isfile()}
         pj = json.loads(tf.extractfile("package/package.json").read())
     if namen - {"package.json"} != soll:
         befunde.append("npm: Dateimenge weicht vom Archiv ab")
-    if pj.get("version") != version or "scripts" in pj:
+    if pj.get("version") != nversion or "scripts" in pj:
         befunde.append("npm: Version oder Installationsskript in package.json")
     if pj["bin"]["koolie"] not in soll:
         befunde.append("npm: bin zeigt auf keine Datei des Baums")
+    if not pj.get("readme") or RELATIVER_LINK.search(pj["readme"]):
+        befunde.append("npm: readme fehlt oder traegt einen relativen Link")
     sc = json.loads(scoop)
     if sc["hash"] != hashwert or sc["version"] != version:
         befunde.append("Scoop: Hash oder Version")
@@ -298,6 +344,8 @@ def main(argv: list | None = None) -> int:
     ap.add_argument("--aus", required=True)
     ap.add_argument("--url-basis", default=None,
                     help="Adresse des Archivs ohne Dateinamen (Standard: GitHub-Release der Marke)")
+    ap.add_argument("--vorab", type=int, default=None, metavar="N",
+                    help="Vorabversion <V>.devN (Wheel) und <V>-dev.N (npm) fuer TestPyPI (D-529)")
     a = ap.parse_args(argv)
     try:
         version, praefix, dateien = archiv_lesen(a.archiv)
@@ -310,13 +358,18 @@ def main(argv: list | None = None) -> int:
     basis = (a.url_basis or f"{REPO}/releases/download/v{version}").rstrip("/")
     url = f"{basis}/{praefix}.tar.gz"
 
-    whl_name, whl = wheel_bauen(version, dateien)
-    tgz_name, tgz = npm_bauen(version, dateien)
+    if a.vorab is not None and a.vorab < 1:
+        print("FEHLER: --vorab braucht eine Zahl ab 1", file=sys.stderr)
+        return 2
+    wversion, nversion = paketversionen(version, a.vorab)
+    whl_name, whl = wheel_bauen(version, dateien, wversion)
+    tgz_name, tgz = npm_bauen(version, dateien, nversion)
     scoop = scoop_bauen(version, url, hashwert)
     brew = homebrew_bauen(version, url, hashwert)
-    befunde = nachpruefen(version, dateien, whl, tgz, scoop, brew, hashwert)
+    befunde = nachpruefen(version, dateien, whl, tgz, scoop, brew, hashwert, a.vorab)
     # bytegleich wiederholbar - ein zweiter Bau muss dieselben Bytes liefern
-    if (wheel_bauen(version, dateien)[1], npm_bauen(version, dateien)[1]) != (whl, tgz):
+    if (wheel_bauen(version, dateien, wversion)[1],
+            npm_bauen(version, dateien, nversion)[1]) != (whl, tgz):
         befunde.append("zweiter Bau nicht bytegleich")
 
     os.makedirs(os.path.join(a.aus, "scoop"), exist_ok=True)
@@ -332,6 +385,8 @@ def main(argv: list | None = None) -> int:
         for rel in sorted(summen):
             fh.write(f"{summen[rel]}  {rel}\n")
 
+    if a.vorab is not None:
+        print(f"Vorabversion: Wheel {wversion}, npm {nversion} (nur fuer TestPyPI, D-529)")
     print(f"Koolie {version}: {len(dateien)} Dateien aus {os.path.basename(a.archiv)} "
           f"(SHA-256 {hashwert[:8]}...{hashwert[-8:]})")
     for rel, daten in erzeugt.items():

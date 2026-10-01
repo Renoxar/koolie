@@ -64,6 +64,22 @@ sonde("112d", "Ein npm-Paket mit Installationsskript wird gemeldet - bauen.py pr
       _112_npm_skript, M112_BAU)
 sonde("112e", "Fehlt die Huelle koolie.cmd fuer Scoop, wird es gemeldet", _112_ohne_huelle,
       M112_FEHLT)
+# Seit 1.24.0 (D-528, D-529): die Beschreibung fuer PyPI und npm mit absoluten Links und
+# die Vorabversion fuer TestPyPI.
+def _112_relative_links(root: str) -> None:
+    ersetze(_p(root, BAUEN), ("    return RELATIVER_LINK.sub(absolut, text)",
+                              "    return text  # SYNTHETISCH"))
+
+
+def _112_vorab(root: str) -> None:
+    ersetze(_p(root, BAUEN), ('return f"{version}.dev{vorab}", f"{version}-dev.{vorab}"',
+                              'return f"{version}.dev{vorab}", version'))
+
+
+sonde("112g", "Ein Bau, der die Links der Beschreibung relativ laesst, wird gemeldet - auf PyPI "
+              "und npm fuehrten sie ins Leere", _112_relative_links, M112_BAU)
+sonde("112h", "Eine Vorabversion, deren npm-Paket die Version der Marke traegt, wird gemeldet - "
+              "sie belegte die Version vor der Signatur", _112_vorab, M112_BAU)
 gegenprobe("112", "Der ausgelieferte Befehl gibt das Banner vor install.py aus, und bauen.py "
                   "baut ohne Befund", None, M112)
 

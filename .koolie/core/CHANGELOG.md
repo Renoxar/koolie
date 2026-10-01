@@ -2,6 +2,52 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.24.0] - 2026-10-01
+
+**Die erste Veroeffentlichung auf PyPI und npm - und die beiden Tokens, die eines waren**
+(`CR-2026-170` E1 bis E7, **D-527** bis **D-531**, Pruefung 112 erweitert; `K-155` geklaert, `K-209` und `K-210`
+neu). Kein Sitzungslauf, 0 USD; lokal 3 Paketinstallationen und 2 Ende-zu-Ende-Installationen, dazu die
+Vorabversion auf TestPyPI. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **Koolie liegt auf PyPI und npm** als `koolie` (D-527) - veroeffentlicht als Schritt 9 nach der Marke, mit den
+  Tokens des Owners vom Arbeitsplatz. README und Quickstart nennen den Weg gleichwertig neben dem Starter:
+  `pipx install koolie`, `uv tool install koolie`, `pip install koolie`, `npx koolie`, danach `koolie` im
+  Projektverzeichnis (D-531).
+- **Die Paketseiten tragen `README.en.md` mit absoluten Links** auf die Marke im GitHub-Spiegel (D-528); npm
+  bekommt den Text ueber das Feld `readme`, die Dateien im Paket bleiben die des Archivs.
+- **`bauen.py --vorab N`** baut eine Vorabversion `<V>.devN` (npm `<V>-dev.N`) fuer TestPyPI vor der Signatur
+  und prueft unabhaengig, dass sie nie die Version der Marke belegt (D-529).
+- **Pruefung 112** baut zusaetzlich die Vorabversion und haelt die Beschreibung ohne relativen Link; Sonden
+  `112g` und `112h`.
+- **Release-Prozess 4.2, Schritt 9**: fuer PyPI und npm ab `1.25.0` mit der Signatur der Marke freigegeben, in
+  der Reihenfolge TestPyPI, PyPI, npm (D-530). Scoop und Homebrew ruhen (`K-209`), Trusted Publishing ist
+  `K-210`.
+
+**Gemessen**
+
+- Name `koolie` auf PyPI, TestPyPI und npm frei; das npm-Token meldet sich als Konto des Owners an.
+- Vorabversion aus dem Arbeitsbaum: `twine check` bestanden, `npm publish --dry-run` ohne Befund; Installation
+  ueber uv, pip und npm, `koolie --version` nennt `1.24.0`, das Banner steht vor `install.py`; die
+  Projektinstallationen ueber uv und npm sind gleich bis auf `__pycache__`.
+
+**Behoben**
+
+- 🔴 **`TESTPYPI_TOKEN` und `PYPI_TOKEN` trugen am Arbeitsplatz dasselbe Token fuer pypi.org.** TestPyPI wies das
+  erste Hochladen mit 403 ab - bevor irgendetwas veroeffentlicht war. Erkannt ohne Ausgabe der Werte (Vergleich
+  und Ort im Token); der Owner hat das TestPyPI-Token nachgetragen.
+
+**Migrationshinweis fuer Overlays**
+
+- Keiner. Die Laufzeitschicht ist unveraendert; `paketquellen/` liegt in der Wurzel und erreicht Projekte nicht.
+
+**Bekannte Einschraenkungen**
+
+- Ein Token mit Schreibrecht liegt am Arbeitsplatz; ohne Trusted Publishing fehlen Attestierung und Provenienz
+  (`K-210`).
+- Die Links der Paketseite tragen erst, wenn die Marke auf dem GitHub-Spiegel liegt.
+
 ## [1.23.0] - 2026-10-01
 
 **Modusbindung M3 bis M5 und die offenen Messfragen - und der Befehl im Folgeturn, den es nicht gab**
