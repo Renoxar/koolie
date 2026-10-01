@@ -19,6 +19,10 @@ ersten Arbeitstag hat, beginnt mit dem [Quick-Start des Onboardings](.koolie/cor
   sie fragen dieselben Angaben ab. Die übrigen Schritte brauchen die Kommandozeile.
 - Koolie selbst: das **entpackte Release-Archiv** oder ein **Klon** dieses Repositorys. Die Schritte 1 bis 4
   laufen aus dessen Wurzelverzeichnis, ab Schritt 5 im Übungs-Repository.
+- **Oder über eine Paketquelle:** `pipx install koolie` (auch `uv tool install koolie`, `pip install koolie`)
+  oder `npm install -g koolie`. Dann ersetzt `koolie` in den Schritten 2 und 3 den Aufruf
+  `python .koolie/core/install.py`, und die Schritte 1 bis 4 laufen aus einem beliebigen Verzeichnis; der
+  Befehl gibt vorher das Banner aus.
 
 ## Schritt 1: Ein Übungs-Repository anlegen
 
@@ -35,6 +39,8 @@ git -C ../koolie-uebung commit -m "Start"
 ```bash
 python .koolie/core/install.py --target ../koolie-uebung --client claude-code
 ```
+
+Über eine Paketquelle lautet derselbe Schritt `koolie --target ../koolie-uebung --client claude-code`.
 
 `--target` kopiert nur den Kern (`.koolie/core/`) in das Übungs-Repository und legt dort die Dateien an, die
 der Client braucht. Am Ende nennt der Installer die nächsten Schritte für ein echtes Projekt.

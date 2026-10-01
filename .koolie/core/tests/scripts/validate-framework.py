@@ -846,7 +846,9 @@ Prüft (statisch, ohne laufenden KI-Client):
      Fehler, wenn eine Datei unter paketquellen/ fehlt, wenn der Befehl koolie ueber
      eine Pipe install.py ohne die Textvariante des Banners davor startet, wenn
      --version nicht die Version aus VERSION nennt, wenn KOOLIE_NO_BANNER=1 das Banner
-     nicht abschaltet, und wenn bauen.py aus einem Wegwerfarchiv nicht ohne Befund baut.
+     nicht abschaltet, und wenn bauen.py aus einem Wegwerfarchiv nicht ohne Befund baut -
+     auch als Vorabversion (--vorab 1) und mit der Beschreibung fuer PyPI und npm ohne
+     relativen Link (D-528, D-529).
      ANLASS: pip, npm und Chocolatey geben dem Installationsschritt kein Terminal
      (gemessen 2026-09-30). GRENZE: ob eine Paketquelle dem Befehl ein Terminal gibt
      (gemessen, nicht geprueft); die Veroeffentlichung

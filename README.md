@@ -153,7 +153,8 @@ Client, ein Modell, je Sicherheitsfall ein Lauf – und trägt keine Aussage üb
 3. **Einarbeiten:** Für den ersten Arbeitstag in einem Projekt, das Koolie schon nutzt, gibt es den
    [Quick-Start des Onboardings](.koolie/core/onboarding/QUICKSTART.md).
 
-Die Befehle der Installation stehen unten unter [Framework in ein Projekt übernehmen](#framework-in-ein-projekt-übernehmen).
+Die Befehle der Installation stehen unten unter [Framework in ein Projekt übernehmen](#framework-in-ein-projekt-übernehmen) –
+über eine Paketquelle (`pipx install koolie`, `npx koolie`), mit dem Starter aus dem Release-Archiv oder von Hand.
 
 ## Wo finde ich Details und Grenzen?
 
@@ -185,6 +186,21 @@ Die Namensentscheidung mit ihrer Begründung und den verworfenen Alternativen st
 Der KI-Client ist ein unterstützendes Werkzeug – Verantwortung, Prüfung und Freigabe bleiben bei Menschen. Kontext wird bewusst und minimal bereitgestellt (Klassen K0–K3), Aufgaben werden eingestuft (Kontrollstufen niedrig/mittel/hoch) und in definierten Betriebsmodi (M1–M5) bearbeitet. Alles Projektspezifische lebt im austauschbaren Overlay; der Kern bleibt bei Projektwechseln unverändert.
 
 ## Framework in ein Projekt übernehmen
+
+**Über eine Paketquelle** (seit `1.24.0`, D-531): Koolie liegt auf PyPI und npm als Paket `koolie`. Es legt
+den Befehl `koolie` auf den Rechner, nicht in ein Projekt – ins Projekt kommt Koolie erst mit dem Aufruf im
+Projektverzeichnis, und erst dort erscheint das Banner (D-519). Voraussetzung ist Python ab 3.8, bei npm
+zusätzlich Node.js ab 16.
+
+```bash
+pipx install koolie          # oder: uv tool install koolie · pip install koolie
+npx koolie                   # ohne Installation über npm; dauerhaft: npm install -g koolie
+koolie                       # im Projektverzeichnis: der Dialog wie beim Starter
+koolie --target /pfad/zum/projekt --client claude-code   # dieselben Argumente wie install.py
+```
+
+Jedes Paket trägt genau den Baum des Release-Archivs (D-520). Wer die Prüfsumme des Archivs selbst nachrechnen
+will, nimmt das Archiv.
 
 **Mit dem Starter:** Das Release-Archiv entpacken und in seiner Wurzel
 `install.cmd` (Windows) oder `install.command` (macOS) per Doppelklick starten. Der

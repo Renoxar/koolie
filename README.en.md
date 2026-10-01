@@ -153,7 +153,20 @@ superiority.
 3. **Onboard:** for the first working day in a project that already uses Koolie, there is the
    [onboarding quick start](.koolie/core/onboarding/QUICKSTART.md) (German).
 
-The installation commands are in the German README under
+**Install from a package source** (since `1.24.0`): Koolie is on PyPI and npm as `koolie`. The package puts
+the command `koolie` on your machine, not into a project – Koolie reaches a project only when you run the
+command in the project directory, and that is where the banner appears. Python 3.8 or later is required; npm
+additionally needs Node.js 16 or later.
+
+```bash
+pipx install koolie          # or: uv tool install koolie · pip install koolie
+npx koolie                   # without installing, via npm; permanently: npm install -g koolie
+koolie                       # in the project directory: the same dialog as the starter
+koolie --target /path/to/project --client claude-code   # the same arguments as install.py
+```
+
+Every package carries exactly the tree of the release archive. The other installation paths – the starter
+from the release archive and the manual steps – are in the German README under
 [„Framework in ein Projekt übernehmen“](README.md#framework-in-ein-projekt-übernehmen).
 
 ## Where can I find details and limits?
