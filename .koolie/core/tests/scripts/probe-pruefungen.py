@@ -72,7 +72,8 @@ from sonden import (  # noqa: E402,F401 - laden heisst anmelden
     teil14_modi_ausnahmen_skills,
     teil15_banner_und_nachlauf,
     teil16_koexistenz,
-    teil17_paketquellen)
+    teil17_paketquellen,
+    teil18_modusbindung_m3_m5)
 
 
 if LISTE:

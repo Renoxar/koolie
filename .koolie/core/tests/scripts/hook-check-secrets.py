@@ -85,9 +85,10 @@ SEIT 1.20.0 (CR-2026-162) ZWEI ERWEITERUNGEN:
   aendert keine Entscheidung. Grenze: Das Protokoll ist nicht manipulationsgeschuetzt.
 
 SEIT 1.20.2 (CR-2026-164) ZWEI SPERREN MEHR:
-- DIE MODUSBINDUNG (K-179, D-501). Bindet der Mensch M1 oder M2 im eigenen Terminal
-  ('mandat.py modus'), sperrt der Hook jeden Schreibaufruf (M1) oder jeden ausserhalb der
-  Plan-Ablage (M2). Datei und Befehl sind wie das Mandat fuer den Client gesperrt. Ohne
+- DIE MODUSBINDUNG (K-179, D-501; K-201). Bindet der Mensch einen Modus im eigenen
+  Terminal ('mandat.py modus'), sperrt der Hook jeden Schreibaufruf (M1), jeden ausserhalb
+  der Plan-Ablage (M2) oder jeden ausserhalb der Pfade des Modus aus dem Overlay, die beim
+  Binden kopiert wurden (M3 bis M5). Datei und Befehl sind wie das Mandat fuer den Client gesperrt. Ohne
   Bindung aendert sich nichts. Grenze: Ein Shell-Befehl, der schreibt, entgeht ihr.
 - DIE UEBERTRAGUNG VON SECRETS NACH AUSSEN (K-94, D-503). 'cloud drs secret-create' - der
   Weg des eingebauten Skills 'upload-secrets' von devin-desktop - ist fuer jedes
@@ -387,8 +388,16 @@ MANDATS_MUSTER = [
 # im eigenen Terminal ('mandat.py modus'); ohne Bindung aendert sich nichts. Die Bindung
 # trifft Schreibwerkzeuge - ein Shell-Befehl, der schreibt, entgeht ihr wie dem
 # Kernschutz (D-30, K-32). Diese Grenze ist benannt, nicht verschwiegen.
+#
+# M3 BIS M5 (CR-2026-169, K-201). Ihre Schreibgrenze steht im Overlay: M3 <ALLOWED_PATHS>,
+# M4 <TEST_PATHS>, M5 <DOC_PATHS>. Der Hook liest das Overlay trotzdem nicht - 'mandat.py
+# modus' kopiert die Globs beim Binden in die Bindungsdatei ("pfade", bei M3 optional
+# "umfang"), dazu <READ_ONLY_PATHS> ("nur_lesen"). Ein Ziel ist frei, wenn JEDE Lesart im
+# Projekt liegt, auf ein Muster von "pfade" (und "umfang") passt und auf keines von
+# "nur_lesen". Aendert sich das Overlay, gilt das erst nach neuem Binden.
 MODUS_DATEI = "koolie-modus.json"
-MODUS_GEBUNDEN = ("M1", "M2")
+MODUS_GEBUNDEN = ("M1", "M2", "M3", "M4", "M5")
+MODUS_MIT_PFADEN = ("M3", "M4", "M5")
 
 # DIE UEBERTRAGUNG VON SECRETS NACH AUSSEN (CR-2026-164, D-503, K-94). Der eingebaute
 # Skill 'upload-secrets' von devin-desktop liest eine Secret-Datei nicht mit einem
@@ -533,7 +542,63 @@ def modus_lesen():
                 or "/../" in "/" + ablage):
             return None
         daten["ablage"] = ablage
+    if daten["modus"] in MODUS_MIT_PFADEN:
+        for feld, pflicht in (("pfade", True), ("umfang", False), ("nur_lesen", False)):
+            wert = daten.get(feld)
+            if wert is None and not pflicht:
+                daten[feld] = []
+                continue
+            if (not isinstance(wert, list) or (pflicht and not wert)
+                    or not all(isinstance(g, str) and g.strip() for g in wert)):
+                return None
     return daten
+
+
+def glob_muster(glob: str):
+    """Ein Glob des Overlays als regulaerer Ausdruck ueber den projektrelativen Pfad.
+
+    '**' steht fuer beliebig viele Segmente (auch keines), '*' und '?' bleiben in einem
+    Segment, ein Muster ohne Joker ist genau diese Datei. Klammern und Mengen kennt das
+    Overlay nicht; sie gelten woertlich - ein Muster, das dadurch nichts trifft, sperrt
+    mehr, nicht weniger. Ohne Gross- und Kleinschreibung wie jeder Pfadvergleich des
+    Hooks (D-492). Dieselbe Funktion steht in mandat.py; Pruefung 99 haelt beide gleich.
+    """
+    g = glob.replace("\\", "/").strip()
+    while g.startswith("./"):
+        g = g[2:]
+    g = g.lstrip("/")
+    raus, i = "", 0
+    while i < len(g):
+        if g.startswith("**/", i):
+            raus, i = raus + "(?:[^/]*/)*", i + 3
+        elif g.startswith("**", i):
+            raus, i = raus + ".*", i + 2
+        elif g[i] == "*":
+            raus, i = raus + "[^/]*", i + 1
+        elif g[i] == "?":
+            raus, i = raus + "[^/]", i + 1
+        else:
+            raus, i = raus + re.escape(g[i]), i + 1
+    return re.compile("^" + raus + "$", re.I)
+
+
+def glob_trifft(rel: str, globs: list) -> bool:
+    """Passt der projektrelative Pfad (mit '/') auf eines der Muster?"""
+    return any(glob_muster(g).match(rel) for g in globs)
+
+
+def modus_erlaubt(rel: str, bindung: dict) -> bool:
+    """Darf im gebundenen Modus unter diesem projektrelativen Pfad geschrieben werden?"""
+    modus = bindung["modus"]
+    if modus == "M1":
+        return False
+    if modus == "M2":
+        return rel.lower().startswith(bindung["ablage"].lower())
+    if not glob_trifft(rel, bindung["pfade"]):
+        return False
+    if bindung["umfang"] and not glob_trifft(rel, bindung["umfang"]):
+        return False
+    return not glob_trifft(rel, bindung["nur_lesen"])
 
 
 # Die Dateikoepfe eines Patchtextes (openai-codex, apply_patch). Nur sie sind Ziele;
@@ -1214,17 +1279,24 @@ def main() -> None:
                         alle = []
                     rels = [os.path.relpath(e, PROJEKTWURZEL).replace("\\", "/")
                             for e in alle if innerhalb(e, PROJEKTWURZEL)]
-                    if not rels or not all(r.lower().startswith(ablage.lower())
-                                           for r in rels):
+                    if (not rels or len(rels) < len(alle)
+                            or not all(modus_erlaubt(r, bindung) for r in rels)):
                         fremd.append(roh)
             if fremd:
+                if modus == "M2":
+                    wo, tun = f" ausserhalb der Plan-Ablage {ablage}.",                         f"Den Plan unter {ablage} ablegen. "
+                elif modus in MODUS_MIT_PFADEN:
+                    wo = (" ausserhalb der gebundenen Pfade "
+                          + ", ".join(bindung["umfang"] or bindung["pfade"]) + ".")
+                    tun = "Nur unter den gebundenen Pfaden schreiben. "
+                else:
+                    wo, tun = ".", ""
                 block(hinweis(
-                    f"ein Schreibaufruf im gebundenen Modus {modus}"
-                    + (f" ausserhalb der Plan-Ablage {ablage}." if modus == "M2" else "."),
-                    f"Der Mensch hat {modus} gebunden: M1 schreibt nichts, M2 nur den Plan "
+                    f"ein Schreibaufruf im gebundenen Modus {modus}" + wo,
+                    f"Der Mensch hat {modus} gebunden: M1 schreibt nichts, M2 nur den Plan, "
+                    "M3 bis M5 nur in ihre Pfade aus dem Overlay "
                     f"({CORE_REL}/framework/core/05-working-model.md, Abschnitt 2).",
-                    (f"Den Plan unter {ablage} ablegen. " if modus == "M2" else "")
-                    + "Fuer einen anderen Modus bittet der Agent die Person, im eigenen "
+                    tun + "Fuer einen anderen Modus bittet der Agent die Person, im eigenen "
                     f"Terminal auszufuehren: python {CORE_REL}/mandat.py modus aus",
                     f"Die Operation laeuft nicht; die Bindung endet von selbst um "
                     f"{bindung['bis']} UTC."))

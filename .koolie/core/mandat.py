@@ -14,6 +14,7 @@ uebernehmen. Die Pruefung ist der Merge Request, den der Mensch ohnehin freigibt
     python .koolie/core/mandat.py abgleichen
     python .koolie/core/mandat.py modus M2 --ablage docs/plaene --minuten 120
     python .koolie/core/mandat.py modus M1
+    python .koolie/core/mandat.py modus M3 --umfang "src/billing/**" --minuten 90
     python .koolie/core/mandat.py modus aus
 
 DIE MODUSBINDUNG (D-501, K-179). Bis 1.20.1 galten die Modusgrenzen ausser M6 nur
@@ -21,6 +22,11 @@ normativ. 'modus M1' bindet den Nur-Lese-Modus an den Schutz-Hook: Er sperrt jed
 Schreibaufruf. 'modus M2 --ablage <pfad>' laesst nur das Schreiben unter der Plan-Ablage
 zu. Die Bindung liegt neben dem Mandat (.git/koolie-modus.json), ist befristet und nur
 vom Menschen zu setzen. Grenze: Ein Shell-Befehl, der schreibt, entgeht ihr (D-30).
+Seit 1.23.0 (K-201) auch M3, M4 und M5: 'modus' liest beim Binden die Pfadliste des
+Modus aus Abschnitt 4 des Overlays (M3 <ALLOWED_PATHS>, M4 <TEST_PATHS>, M5 <DOC_PATHS>)
+und <READ_ONLY_PATHS> und KOPIERT sie in die Bindung - der Hook liest das Overlay nicht.
+Bei M3 grenzt '--umfang' auf den freigegebenen Scope ein (Schnittmenge). Ist die Liste
+leer oder offen, bindet 'modus' nicht: Eine Bindung, die nichts erlaubt, ist M1.
 
 WARUM EIN BEFEHL IM EIGENEN TERMINAL: Der Schutz-Hook sperrt diese Datei und die
 Mandatsdatei fuer jede nicht lesende Operation des Clients - bis auf 'status'. Ein Satz
@@ -64,7 +70,9 @@ MANDAT_UMFAENGE = {
 # Die Modusbindung (CR-2026-164, D-501, K-179): M1 oder M2 fuer eine begrenzte Zeit an den
 # Schutz-Hook binden. Dieselbe Hoechstdauer und derselbe Ort wie das Mandat.
 MODUS_DATEI = "koolie-modus.json"
-MODUS_GEBUNDEN = ("M1", "M2")
+MODUS_GEBUNDEN = ("M1", "M2", "M3", "M4", "M5")
+MODUS_PFADE = {"M3": "<ALLOWED_PATHS>", "M4": "<TEST_PATHS>", "M5": "<DOC_PATHS>"}
+MODUS_MIT_PFADEN = tuple(MODUS_PFADE)
 
 _KERN = os.path.dirname(os.path.abspath(__file__))
 PROJEKTWURZEL = os.path.realpath(os.path.dirname(os.path.dirname(_KERN)))
@@ -331,6 +339,14 @@ def status(_args) -> int:
         print("Modus %s gebunden, noch %d Minuten (bis %s UTC)%s." % (
             bindung["modus"], bindung["_rest_min"], bindung["bis"],
             ", Plan-Ablage %s" % bindung["ablage"] if bindung.get("ablage") else ""))
+        if bindung.get("pfade"):
+            print("  Pfade %s: %s" % (MODUS_PFADE[bindung["modus"]],
+                                       ", ".join(bindung["pfade"])))
+            if bindung.get("umfang"):
+                print("  Umfang: %s" % ", ".join(bindung["umfang"]))
+            if bindung.get("nur_lesen"):
+                print("  Nie geschrieben (<READ_ONLY_PATHS>): %s"
+                      % ", ".join(bindung["nur_lesen"]))
     pfad = mandatspfad()
     daten = lesen(pfad) if pfad else None
     if not daten:
@@ -387,6 +403,66 @@ def _ablage_pruefen(roh: str):
     return ablage + "/", None
 
 
+def glob_muster(glob: str):
+    """Ein Glob des Overlays als regulaerer Ausdruck - gleichlautend im Schutz-Hook.
+
+    '**' beliebig viele Segmente (auch keines), '*' und '?' in einem Segment, ohne Joker
+    genau diese Datei; ohne Gross- und Kleinschreibung wie der Hook (D-492).
+    Pruefung 99 haelt beide Ruempfe gleich.
+    """
+    g = glob.replace("\\", "/").strip()
+    while g.startswith("./"):
+        g = g[2:]
+    g = g.lstrip("/")
+    raus, i = "", 0
+    while i < len(g):
+        if g.startswith("**/", i):
+            raus, i = raus + "(?:[^/]*/)*", i + 3
+        elif g.startswith("**", i):
+            raus, i = raus + ".*", i + 2
+        elif g[i] == "*":
+            raus, i = raus + "[^/]*", i + 1
+        elif g[i] == "?":
+            raus, i = raus + "[^/]", i + 1
+        else:
+            raus, i = raus + re.escape(g[i]), i + 1
+    return re.compile("^" + raus + "$", re.I)
+
+
+def _glob_pruefen(roh: str):
+    """Ein Glob projektrelativ - oder None mit Grund."""
+    g = (roh or "").replace("\\", "/").strip()
+    if not g:
+        return None, "Ein Muster ist leer."
+    if os.path.isabs(g) or re.match(r"^[A-Za-z]:", g) or g.startswith("/"):
+        return None, "Das Muster %r ist projektrelativ anzugeben, nicht absolut." % roh
+    if ".." in g.split("/"):
+        return None, "Das Muster %r verlaesst das Projekt ('..')." % roh
+    return g, None
+
+
+def _overlay_pfade(platzhalter: str):
+    """(Globs, Grund) aus Abschnitt 4 des Overlays - Globs leer mit Grund, wenn offen."""
+    pfad = os.path.join(PROJEKTWURZEL, ".koolie", "project-overlay", "OVERLAY.md")
+    if not os.path.isfile(pfad):
+        return [], "Kein Overlay unter .koolie/project-overlay/OVERLAY.md."
+    V = _validator()
+    gefunden, werte = V._p89_quelle(V.read(pfad), platzhalter)
+    if not gefunden:
+        return [], "Das Overlay hat keine Zeile mit `%s` in Abschnitt 4." % platzhalter
+    if werte is None:
+        return [], "`%s` ist im Overlay noch offen (<TBD>)." % platzhalter
+    raus = []
+    for w in werte:
+        g, grund = _glob_pruefen(w)
+        if grund:
+            return [], grund
+        raus.append(g)
+    if not raus:
+        return [], "`%s` hat im Overlay keinen Wert." % platzhalter
+    return raus, None
+
+
 def modus(args) -> int:
     gd = git_verzeichnis()
     pfad = os.path.join(gd, MODUS_DATEI) if gd else None
@@ -400,9 +476,8 @@ def modus(args) -> int:
         return 0
     wahl = wahl.upper()
     if wahl not in MODUS_GEBUNDEN:
-        print("Binden lassen sich %s (oder 'aus'). M3 bis M5 brauchen Pfadlisten aus dem "
-              "Overlay und gelten weiter normativ; M6 ist das Mandat ('erteilen')."
-              % " und ".join(MODUS_GEBUNDEN))
+        print("Binden lassen sich %s (oder 'aus'). M6 ist das Mandat ('erteilen')."
+              % ", ".join(MODUS_GEBUNDEN))
         return 2
     if not pfad:
         print("Gesperrt: Modusbindung ohne Git-Repositorium.\n"
@@ -420,20 +495,54 @@ def modus(args) -> int:
             print(grund)
             return 2
     elif args.ablage:
-        print("Hinweis: M1 schreibt nichts - die Plan-Ablage wird nicht verwendet.")
+        print("Hinweis: Nur M2 hat eine Plan-Ablage - --ablage wird nicht verwendet.")
+    pfade = umfang = nur_lesen = None
+    if wahl in MODUS_MIT_PFADEN:
+        pfade, grund = _overlay_pfade(MODUS_PFADE[wahl])
+        if grund:
+            print("Nicht gebunden: %s\nEine Bindung, die nichts erlaubt, ist M1 - "
+                  "'modus M1' binden oder den Wert im Overlay eintragen (Modus M6)." % grund)
+            return 2
+        nur_lesen, _grund = _overlay_pfade("<READ_ONLY_PATHS>")
+        umfang = []
+        for roh in args.umfang or []:
+            g, grund = _glob_pruefen(roh)
+            if grund:
+                print(grund)
+                return 2
+            umfang.append(g)
+        if umfang and wahl != "M3":
+            print("Hinweis: --umfang gilt nur fuer M3 - %s bindet seine Pfadliste ganz."
+                  % wahl)
+            umfang = []
+    elif args.umfang:
+        print("Hinweis: --umfang gilt nur fuer M3 - wird nicht verwendet.")
     ende = jetzt() + datetime.timedelta(minutes=args.minuten)
     daten = {"modus": wahl, "bis": ende.strftime(ZEITFORMAT),
              "erteilt": jetzt().strftime(ZEITFORMAT), "projekt": PROJEKTWURZEL}
     if ablage:
         daten["ablage"] = ablage
+    if pfade:
+        daten["pfade"] = pfade
+        daten["umfang"] = umfang
+        daten["nur_lesen"] = nur_lesen
     with io.open(pfad, "w", encoding="utf-8", newline="\n") as fh:
         json.dump(daten, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
     print("Modus %s gebunden bis %s UTC (%d Minuten)." % (wahl, daten["bis"], args.minuten))
     if wahl == "M1":
         print("Der KI-Client kann mit keinem Schreibwerkzeug schreiben.")
-    else:
+    elif wahl == "M2":
         print("Der KI-Client schreibt nur unter %s." % ablage)
+    else:
+        print("Der KI-Client schreibt nur unter %s %s."
+              % (MODUS_PFADE[wahl], ", ".join(pfade)))
+        if umfang:
+            print("  und davon nur unter dem Umfang %s." % ", ".join(umfang))
+        if nur_lesen:
+            print("  Nie unter <READ_ONLY_PATHS> %s." % ", ".join(nur_lesen))
+        print("Die Pfade sind kopiert: Aendert sich das Overlay, gilt das erst nach neuem "
+              "Binden.")
     print("Grenze: Ein Shell-Befehl, der schreibt, entgeht der Bindung (Rueckfrage und "
           "Regelschicht tragen dort).")
     print("Aufheben: python %s/mandat.py modus aus" % CORE_REL)
@@ -468,9 +577,11 @@ def main(argv=None) -> int:
                    help="nur beenden, die Laufzeitfassung nicht abgleichen")
     sub.add_parser("abgleichen",
                    help="Overlay-Werte in Laufzeitfassung und Manifest uebernehmen")
-    m = sub.add_parser("modus", help="M1 oder M2 an den Schutz-Hook binden, 'aus' hebt auf")
-    m.add_argument("modus", help="M1, M2 oder aus")
+    m = sub.add_parser("modus", help="M1 bis M5 an den Schutz-Hook binden, 'aus' hebt auf")
+    m.add_argument("modus", help="M1, M2, M3, M4, M5 oder aus")
     m.add_argument("--ablage", default="", help="M2: projektrelative Plan-Ablage")
+    m.add_argument("--umfang", nargs="+", default=[],
+                   help="M3: freigegebener Scope als Globs, enger als <ALLOWED_PATHS>")
     m.add_argument("--minuten", type=int, default=120,
                    help="Dauer, hoechstens %d" % MANDAT_HOECHSTDAUER_MIN)
     args = ap.parse_args(argv)
