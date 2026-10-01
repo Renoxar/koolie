@@ -48,11 +48,15 @@
 >   gehört dem Client – bei `devin-desktop` unterscheidet sie Groß- und Kleinschreibung (D-277),
 >   bei `claude-code` nicht. Eine Zusage, die nur die Regel trägt, gilt nur in der Schreibweise
 >   des Musters.
-> - **Die Modusgrenzen gelten normativ, M1 und M2 lassen sich binden** (seit Release 1.20.2,
->   D-501). Bindet der Mensch M1 oder M2 im eigenen Terminal (`mandat.py modus`), sperrt der
->   Schutz-Hook jedes Schreibwerkzeug beziehungsweise jedes außerhalb der Plan-Ablage. Ein
->   Shell-Befehl, der schreibt, entgeht der Bindung wie dem Kernschutz (D-30); M3 bis M5 brauchen
->   Pfadlisten aus dem Overlay und bleiben normativ (`K-201`).
+> - **Die Modusgrenzen gelten normativ, M1 bis M5 lassen sich binden** (M1 und M2 seit Release
+>   1.20.2, D-501; M3 bis M5 seit Release 1.23.0, D-523). Bindet der Mensch einen Modus im
+>   eigenen Terminal (`mandat.py modus`), sperrt der Schutz-Hook jedes Schreibwerkzeug (M1), jedes
+>   außerhalb der Plan-Ablage (M2) oder jedes außerhalb der Pfadliste des Modus (M3
+>   `<ALLOWED_PATHS>`, M4 `<TEST_PATHS>`, M5 `<DOC_PATHS>`, nie in `<READ_ONLY_PATHS>`). Die
+>   Pfadliste kopiert `mandat.py` beim Binden aus dem Overlay; ändert es sich, gilt das erst nach
+>   neuem Binden. Ein Shell-Befehl, der schreibt, entgeht der Bindung wie dem Kernschutz (D-30),
+>   und Befehle bindet sie nicht – die freigegebenen Befehle von M3 und M4 trägt weiter die
+>   Regelschicht.
 > - **Wo der Schutz-Hook nicht läuft, trägt die Rückfrage – bis ein Modus sie abschaltet**
 >   (seit Release 1.20.2, D-502). Bei `kiro` laufen Hooks nur interaktiv; ohne Rückfragekanal
 >   weist die Rückfrageregel einen Schreibversuch ins Overlay ab, mit `--trust-all-tools` geht

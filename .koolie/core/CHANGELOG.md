@@ -2,6 +2,52 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.23.0] - 2026-10-01
+
+**Modusbindung M3 bis M5 und die offenen Messfragen - und der Befehl im Folgeturn, den es nicht gab**
+(`CR-2026-169` E1 bis E8, **D-523** bis **D-526**, Pruefung 99 erweitert; `K-201`, `K-186` und `K-202` geklaert,
+`K-207` und `K-208` neu). 21 Sitzungslaeufe `claude-code`, 11,08 USD nach Listenpreis (5 verworfen, Messaufbau);
+dazu 1 Lauf `cursor` (Free) und 3 Laeufe `openai-codex` (Abonnement). Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **M3, M4 und M5 lassen sich an den Schutz-Hook binden** (D-523): `mandat.py modus M3|M4|M5` kopiert die
+  Pfadliste des Modus aus dem Overlay (`<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>`) und `<READ_ONLY_PATHS>` in
+  die Bindung; der Hook laesst ein Schreibziel nur durch, wenn jede Lesart im Projekt liegt, auf ein Muster passt
+  und kein Nur-Lese-Pfad ist. M3 grenzt mit `--umfang` auf den freigegebenen Scope ein. Globs mit `**`, `*` und `?`,
+  auch mitten im Pfad. Eine leere oder offene Liste bindet nicht. Grenze wie bei M1 und M2: Ein Shell-Befehl, der
+  schreibt, entgeht der Bindung.
+- **Pruefung 99** vergleicht die Glob-Auswertung in Hook und `mandat.py`. Sondenteil 18 (`K201a` bis `K201n`).
+- **Zelle `SK-003-P05`** (`fw-change-analyze`): die Suche nach frueheren Anforderungen und Entscheidungen mit der
+  Grenze von fuenf Treffern.
+
+**Gemessen**
+
+- Modusbindung an `claude-code`: je ein Lauf M3, M4, M5 und ein Kontrolllauf; der Hook liess je Modus das Ziel in
+  der Liste durch und wies die uebrigen ab, ohne Bindung liess er beide durch.
+- `K-186` (1): Verlangt die Aufgabe die Suche, suchen alle vier Laeufe und halten die Grenze im Aufruf und in der
+  Ausgabe; die Kappung schneidet nach Aktualitaet die aeltesten Treffer ab (`K-207`). (4): Bei kleiner Trefferliste
+  erreicht der Beifund das Modell (D-524).
+- `K-202`: ohne technische Schicht 0 von 9 Laeufen ueber vier Packs ins Overlay geschrieben (D-526).
+
+**Behoben**
+
+- 🔴 **`K-186` (5) war eine Fehllesung** (D-525): Der in `1.18.0` gezaehlte Befehl im Folgeturn war die
+  Wiederholung aus dem ersten Turn. Nachgemessen gilt die Sperre eines Skills nur in seinem Turn; im Folgeturn
+  tragen Regelschicht, Berechtigungsdatei und Hook - benannte Grenze in der Faehigkeitsmatrix `claude-code` (S3).
+  Zelle `SK-004-N04` berichtigt.
+
+**Migrationshinweis fuer Overlays**
+
+- Die Laufzeitregel 00 nennt die Bindung jetzt fuer M1 bis M5 (ein Satz umformuliert, ein Zeichen kuerzer). Wer M3
+  bis M5 binden will, braucht ausgefuellte Pfadlisten in Abschnitt 4 des Overlays; `<TBD>` oder `nicht vorhanden`
+  bindet nicht.
+
+**Bekannte Einschraenkungen**
+
+- Die Bindung ist eine Momentaufnahme der Pfadlisten bis zum naechsten Binden; Befehle bindet sie nicht.
+- `K-203` (Erweiterung der Vergleichsmessung) bleibt ohne Ziel-Release.
+
 ## [1.22.0] - 2026-09-30
 
 **Installation ueber Paketquellen mit dem Banner - und die Gegenprobe, die zehn Fehler fuer null hielt**

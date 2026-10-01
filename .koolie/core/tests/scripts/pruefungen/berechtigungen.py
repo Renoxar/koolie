@@ -7,6 +7,7 @@ Das Register aller Pruefungen steht im Kopfkommentar des Einstiegs, die Grenze j
 einzelnen in ihrem Kopfkommentar hier."""
 from __future__ import annotations
 
+import ast
 import json
 import os
 import re
@@ -1335,6 +1336,26 @@ def _p99_werte(text: str) -> tuple:
                  for r in P99_WERTE_RE)
 
 
+# Seit 1.23.0 (CR-2026-169, K-201): M3 bis M5 binden Globs aus dem Overlay. mandat.py
+# zeigt sie an, der Hook wertet sie aus - mit je einer Funktion 'glob_muster'. Zwei
+# Lesarten desselben Globs hiessen: Der Mensch sieht eine Grenze, der Hook zieht eine
+# andere. Verglichen wird der Rumpf ohne Docstring, als Syntaxbaum.
+def _p99_glob_rumpf(text: str):
+    try:
+        baum = ast.parse(text)
+    except SyntaxError:
+        return None
+    for knoten in baum.body:
+        if isinstance(knoten, ast.FunctionDef) and knoten.name == "glob_muster":
+            rumpf = list(knoten.body)
+            if (rumpf and isinstance(rumpf[0], ast.Expr)
+                    and isinstance(getattr(rumpf[0], "value", None), ast.Constant)
+                    and isinstance(rumpf[0].value.value, str)):
+                rumpf = rumpf[1:]
+            return "".join(ast.dump(k) for k in rumpf)
+    return None
+
+
 def check_mandatsschutz(root: str, man: dict) -> None:
     """Pruefung 99 (D-447, D-448): Das Mandat erteilt nur der Mensch, und es wirkt."""
     skript = os.path.join(root, KERN, "tests", "scripts", "hook-check-secrets.py")
@@ -1356,6 +1377,12 @@ def check_mandatsschutz(root: str, man: dict) -> None:
             f"Dateiname, Hoechstdauer oder Umfaenge des Mandats: Hook {_p99_werte(hook)}, "
             f"mandat.py {_p99_werte(read(mandat))}. Ein Mandat, das das Werkzeug schreibt und "
             f"der Hook nicht liest, gibt nichts frei (D-447)")
+    glob_hook, glob_mandat = _p99_glob_rumpf(hook), _p99_glob_rumpf(read(mandat))
+    if glob_hook is None or glob_hook != glob_mandat:
+        err(f"{KERN}/mandat.py und hook-check-secrets.py werten die Globs der Modusbindung "
+            f"nicht gleich aus: Die Funktion glob_muster fehlt in einer der beiden Dateien "
+            f"oder ihr Rumpf weicht ab. Der Mensch saehe beim Binden eine andere Grenze, als "
+            f"der Hook zieht (K-201)")
     quelle = os.path.join(root, KERN, "framework", "runtime", "permissions.json")
     if os.path.isfile(quelle):
         try:
