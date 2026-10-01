@@ -2,6 +2,45 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [1.25.0] - 2026-10-01
+
+**Ein neuer Auftritt, npm unter dem Scope und die Suche nach dem Aeltesten - und der Name, den npm fuer cookie hielt**
+(`CR-2026-172` E1 bis E6, **D-535** bis **D-538**, Pruefung 112 erweitert; `K-207` und `K-208` geklaert, `K-211` und
+`K-212` neu). 35 Sitzungslaeufe `claude-code`, 28,19 USD nach Listenpreis (3 verworfen, Messaufbau). Kriterium 2 von
+D-11 bleibt 0.
+
+**Neu**
+
+- **Die README ist eine Startseite** (D-538): rund 110 statt 444 Zeilen, deutsch und englisch, ohne Kennungen und
+  Messdetails - Schnellstart mit `uvx koolie`, ein Textdiagramm, die Durchsetzung in einer Tabelle, die Clients, eine
+  Linktabelle in die Dokumentation. Maintainer-Inhalte stehen in `CONTRIBUTING.md`, die Befehle im
+  Uebernahmeleitfaden (Abschnitte 2 und 9).
+- **npm unter `@renoxar/koolie`** (D-535): npm sperrt `koolie` als zu aehnlich zu `cookie`. Der Befehl heisst weiter
+  `koolie`, ueber npm `npx @renoxar/koolie`. Sonde `112j`.
+- **Die zweite Suche** (D-536, `K-207`): Hat eine Suche mehr als fuenf Treffer, suchen `fw-change-analyze`, `fw-plan`
+  und `fw-bugfix-prepare` ein zweites Mal mit den aeltesten zuerst.
+
+**Gemessen**
+
+- Nachlauf aller 27 Zellen der drei Testblaetter: 24 bestanden, 3 fehlgeschlagen (`SK-003-P04`, `SK-004-P02`,
+  `SK-004-P03`; `K-211`, `K-212`). In `SK-003-P05` kam das aelteste Ticket mit der frueheren Entscheidung zurueck.
+- `K-208`: `claude-code` gibt lesende Befehle im Druckmodus selbst frei; `deny` haelt (D-537, Zeile B2).
+
+**Behoben**
+
+- 🔴 **npm wies `koolie` erst beim Hochladen ab** - die Abfrage der Registry hatte 404 geliefert.
+- Die PyPI-Seite nannte `npx koolie`; sie traegt mit `1.25.0` die neue README.
+
+**Migrationshinweis fuer Overlays**
+
+- `install.py --update`. Drei Skills tragen einen Satz mehr in Schritt 1 beziehungsweise 2; wer eigene Kopien
+  pflegt, zieht ihn nach.
+
+**Bekannte Einschraenkungen**
+
+- `K-211`: Suchgrenze im Aufruf und Versionshinweis hielten nicht in jedem Lauf; `K-212`: Suchmuster der
+  Verwendersuche fehlte einmal.
+
 ## [1.24.1] - 2026-10-01
 
 **Der Befehl im Projektverzeichnis - und die Probe, die nur fragte, ob er startet**

@@ -20,7 +20,7 @@ To adopt Koolie in an **existing** project, read the [adoption guide](.koolie/co
   for the same information. The other steps need the command line.
 - Koolie itself: the **unpacked release archive** or a **clone** of this repository. Steps 1 to 4 run from its
   root directory, steps 5 and 6 inside the practice repository.
-- **Or from a package source**, without archive or clone: `uvx koolie` (also `pipx run koolie`, `npx koolie`)
+- **Or from a package source**, without archive or clone: `uvx koolie` (also `pipx run koolie`, `npx @renoxar/koolie`)
   replaces `python .koolie/core/install.py` in steps 2 and 3, and steps 1 to 4 run from any directory; the
   command shows the banner first. If you installed it with `pip install koolie` and `koolie` is not found, run
   `python -m koolie`.
@@ -77,7 +77,7 @@ them. The file names in step 4 apply to `claude-code`; which files another pack 
 | `.koolie/core/` | the **core** – identical in every project, never edit by hand |
 | `.koolie/project-overlay/` | the **project overlay** – the project configuration the team fills in |
 
-The block from the example in the [README](README.en.md#what-does-it-look-like-in-practice) is in
+The blocked publication from the [README](README.en.md#what-is-enforced--and-what-is-not) – `git push` – is in
 `.claude/settings.json`:
 
 ```bash

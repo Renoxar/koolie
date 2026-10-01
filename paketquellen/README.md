@@ -34,8 +34,8 @@ Gemessen am 2026-09-30 (Protokoll `.koolie/core/tests/protocols/2026-09-30-paket
 
 | Paketquelle | Stand |
 |---|---|
-| PyPI (pip, pipx, uv) | **veröffentlicht** seit `1.24.1` (TestPyPI zuerst, D-529; `1.24.0` nur auf TestPyPI, D-534) |
-| npm | **veröffentlicht** seit `1.24.1` |
+| PyPI (pip, pipx, uv) | **veröffentlicht** seit `1.24.1` als `koolie` (TestPyPI zuerst, D-529; `1.24.0` nur auf TestPyPI, D-534) |
+| npm | als `@renoxar/koolie` (D-535) – der Name `koolie` ist auf npm gesperrt; erste Veröffentlichung mit `1.25.0` |
 | Scoop | gebaut, lokal gemessen (`7zip` wird mitinstalliert, `K-206`), nicht veröffentlicht (`K-209`) |
 | Homebrew | gebaut, nicht gemessen (`K-205`), nicht veröffentlicht (`K-209`) |
 | Chocolatey, winget | ohne Ziel (`K-204`) |

@@ -87,7 +87,11 @@ URL_RE = re.compile(r"https?://[^\s)>\]\"']+")
 URL_ALLOWLIST = ("docs.devin.ai", "devin.ai", "cli.devin.ai", "docs.windsurf.com", "windsurf.com",
                  "example.com", "example.org", "example.invalid", "localhost",
                  # das oeffentliche Repositorium des Frameworks, eng gefasst (D-507)
-                 "github.com/Renoxar/koolie")
+                 "github.com/Renoxar/koolie",
+                 # die Paketseiten und die Badges der README, ebenso eng (D-535)
+                 "pypi.org/project/koolie", "npmjs.com/package/@renoxar/koolie",
+                 "img.shields.io/pypi/v/koolie", "img.shields.io/npm/v/@renoxar/koolie",
+                 "img.shields.io/badge/Lizenz-GPL", "img.shields.io/badge/license-GPL")
 FENCE4_RE = re.compile(r"^`{4,}", re.M)
 MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.S)
 

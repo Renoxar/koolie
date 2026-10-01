@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-003` |
 | Name | `fw-change-analyze` |
-| Version | `0.1.6` |
+| Version | `0.1.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -57,7 +57,7 @@ triggers:
 
 ## 3. Arbeitsschritte
 
-1. Aufgabe in eigenen Worten wiedergeben: Ziel, Akzeptanzkriterien, Nicht-Ziele, vermuteter Bereich, Modus M1, vorläufige Kontrollstufe. Enthält die Beschreibung Personen, Kunden, Adressen, Kennungen oder Zugangsdaten: [HALT], Inhalte nicht wiederholen, Bereinigung anfordern. Fehlende oder widersprüchliche Akzeptanzkriterien: [RÜCKFRAGE]. Ist ein Server zum Lesen freigegeben (Overlay Abschnitt 13.2): das genannte Ticket lesen und nach bestehenden Anforderungen und früheren Entscheidungen zum Gegenstand suchen – höchstens fünf Treffer je Suche, jede Aussage mit Ticketschlüssel und Stand oder Seite mit Version; widerspricht eine Quelle dem Code oder einer anderen Quelle, den Widerspruch melden, nicht auflösen (`02-privacy.md` Abschnitt 3.8). Ohne Freigabe entfällt der Zugriff; der Bericht sagt es.
+1. Aufgabe in eigenen Worten wiedergeben: Ziel, Akzeptanzkriterien, Nicht-Ziele, vermuteter Bereich, Modus M1, vorläufige Kontrollstufe. Enthält die Beschreibung Personen, Kunden, Adressen, Kennungen oder Zugangsdaten: [HALT], Inhalte nicht wiederholen, Bereinigung anfordern. Fehlende oder widersprüchliche Akzeptanzkriterien: [RÜCKFRAGE]. Ist ein Server zum Lesen freigegeben (Overlay Abschnitt 13.2): das genannte Ticket lesen und nach bestehenden Anforderungen und früheren Entscheidungen zum Gegenstand suchen – höchstens fünf Treffer je Suche – hat eine Suche mehr, eine zweite mit den ältesten zuerst (nach Erstellung aufsteigend), denn die frühere Entscheidung ist oft der älteste Treffer; jede Aussage mit Ticketschlüssel und Stand oder Seite mit Version; widerspricht eine Quelle dem Code oder einer anderen Quelle, den Widerspruch melden, nicht auflösen (`02-privacy.md` Abschnitt 3.8). Ohne Freigabe entfällt der Zugriff; der Bericht sagt es.
 2. Delegierbarkeit prüfen: Berührt die Änderung die Delegationsverbotsliste V1–V12 (`.koolie/core/framework/core/09-risk-model.md` Abschnitt 4), zum Beispiel Secrets, Produktionssysteme oder Berechtigungskonfiguration? Berührung im Bericht kennzeichnen; die Analyse bleibt zulässig, die Umsetzung des betroffenen Anteils ist nicht delegierbar.
 3. Betroffene Komponenten identifizieren: aus der Beschreibung abgeleitete Bezeichner (Fachbegriffe, Klassen-, Funktions-, Endpunkt-, Feld- und Konfigurationsschlüsselnamen) per `grep` und `glob` suchen; Suchmuster protokollieren; Treffer nach Komponente ordnen; Kandidaten ohne eindeutige Zuordnung als Vorschlag kennzeichnen.
 4. Verwender ermitteln: für jede voraussichtlich zu ändernde Einheit eingehende Verwendungen suchen (Symbolname, Endpunktpfad, Ereignisname, Konfigurationsschlüssel); Anzahl und Fundstellen je Bereich; Verwender außerhalb des vermuteten Bereichs sowie externe Konsumenten laut Schnittstellenbeschreibung gesondert ausweisen (R8).

@@ -20,7 +20,7 @@ ersten Arbeitstag hat, beginnt mit dem [Quick-Start des Onboardings](.koolie/cor
 - Koolie selbst: das **entpackte Release-Archiv** oder ein **Klon** dieses Repositorys. Die Schritte 1 bis 4
   laufen aus dessen Wurzelverzeichnis, ab Schritt 5 im Übungs-Repository.
 - **Oder über eine Paketquelle**, ohne Archiv und ohne Klon: `uvx koolie` (auch `pipx run koolie`,
-  `npx koolie`) ersetzt in den Schritten 2 und 3 den Aufruf `python .koolie/core/install.py`, und die
+  `npx @renoxar/koolie`) ersetzt in den Schritten 2 und 3 den Aufruf `python .koolie/core/install.py`, und die
   Schritte 1 bis 4 laufen aus einem beliebigen Verzeichnis; der Befehl gibt vorher das Banner aus. Wer ihn mit
   `pip install koolie` installiert und `koolie` danach nicht findet, ruft `python -m koolie` auf.
 
@@ -71,7 +71,7 @@ für `claude-code`; welche Dateien ein anderes Pack anlegt, nennt das
 | `.koolie/core/` | der **Kern** – in jedem Projekt gleich, nie von Hand ändern |
 | `.koolie/project-overlay/` | das **Project Overlay** – die Projektkonfiguration, die das Team ausfüllt |
 
-Die Sperre aus dem Beispiel der [README](README.md#wie-sieht-ein-konkreter-einsatz-aus) steht in
+Die gesperrte Veröffentlichung aus der [README](README.md#was-durchgesetzt-wird--und-was-nicht) – `git push` – steht in
 `.claude/settings.json`:
 
 ```bash

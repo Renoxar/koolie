@@ -848,8 +848,8 @@ Prüft (statisch, ohne laufenden KI-Client):
      --version nicht die Version aus VERSION nennt, wenn KOOLIE_NO_BANNER=1 das Banner
      nicht abschaltet, wenn der Dialog ohne Argumente das Verzeichnis des Aufrufs nicht
      mit Enter als Projekt nimmt (D-532), und wenn bauen.py aus einem Wegwerfarchiv nicht ohne Befund baut -
-     auch als Vorabversion (--vorab 1) und mit der Beschreibung fuer PyPI und npm ohne
-     relativen Link (D-528, D-529).
+     auch als Vorabversion (--vorab 1), mit der Beschreibung fuer PyPI und npm ohne
+     relativen Link (D-528, D-529) und mit dem oeffentlichen npm-Namen @renoxar/koolie (D-535).
      ANLASS: pip, npm und Chocolatey geben dem Installationsschritt kein Terminal
      (gemessen 2026-09-30). GRENZE: ob eine Paketquelle dem Befehl ein Terminal gibt
      (gemessen, nicht geprueft); die Veroeffentlichung

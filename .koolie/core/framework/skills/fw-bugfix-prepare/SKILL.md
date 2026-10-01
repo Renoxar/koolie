@@ -19,7 +19,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-009` |
 | Name | `fw-bugfix-prepare` |
-| Version | `0.1.8` |
+| Version | `0.1.9` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -60,7 +60,7 @@ triggers:
 
 ## 3. Arbeitsschritte
 
-1. Aufgabe wiedergeben: Fehlverhalten (Ist), Soll-Verhalten, Referenz der Analyse, Kontrollstufe mit Faktor, Modus M2, Scope (Pfade). Fehlt die Kontrollstufe, das Soll-Verhalten oder die Analyse ohne Anweisung zur verkürzten Prüfung: [RÜCKFRAGE]. Enthält die Beschreibung unbereinigte Inhalte: [HALT] ohne Wiederholung dieser Inhalte. Ist ein Server zum Lesen freigegeben (Overlay Abschnitt 13.2): das Fehlerticket und frühere Anforderungen oder Entscheidungen zum Soll-Verhalten lesen – höchstens fünf Treffer je Suche, jede Aussage mit Ticketschlüssel und Stand oder Seite mit Version; widerspricht eine Quelle dem Code, dem Soll-Verhalten oder einer anderen Quelle, den Widerspruch als offene fachliche Frage melden, nicht auflösen (`02-privacy.md` Abschnitt 3.8).
+1. Aufgabe wiedergeben: Fehlverhalten (Ist), Soll-Verhalten, Referenz der Analyse, Kontrollstufe mit Faktor, Modus M2, Scope (Pfade). Fehlt die Kontrollstufe, das Soll-Verhalten oder die Analyse ohne Anweisung zur verkürzten Prüfung: [RÜCKFRAGE]. Enthält die Beschreibung unbereinigte Inhalte: [HALT] ohne Wiederholung dieser Inhalte. Ist ein Server zum Lesen freigegeben (Overlay Abschnitt 13.2): das Fehlerticket und frühere Anforderungen oder Entscheidungen zum Soll-Verhalten lesen – höchstens fünf Treffer je Suche – hat eine Suche mehr, eine zweite mit den ältesten zuerst (nach Erstellung aufsteigend), denn die frühere Entscheidung ist oft der älteste Treffer; jede Aussage mit Ticketschlüssel und Stand oder Seite mit Version; widerspricht eine Quelle dem Code, dem Soll-Verhalten oder einer anderen Quelle, den Widerspruch als offene fachliche Frage melden, nicht auflösen (`02-privacy.md` Abschnitt 3.8).
 2. Ursache prüfen: Ursachenkandidaten an den Fundstellen erneut lesen (Aktualität); Konfidenz übernehmen. Bei verkürzter Prüfung: Code-Pfad vom Einstieg bis zur vermuteten Fehlerstelle lesen; Ursache mit Fundstelle benennen oder als nicht bestätigt kennzeichnen. Bei Konfidenz niedrig oder mehreren gleichwertigen Kandidaten: Korrekturschritt als „blockiert bis Ursache bestätigt" planen; [RÜCKFRAGE] mit Vorschlag, welche Zusatzinformation die Kandidaten trennt.
 3. Verwender und gleichartige Stellen erheben: Verwender der zu ändernden Einheit per Suche nach Bezeichnern in `<ALLOWED_PATHS>` und `<READ_ONLY_PATHS>` mit Suchmuster und Fundstellen; Stellen mit demselben Fehlermuster (Kopien, gleichartige Bedingungen) suchen und als getrennte Aufgaben ausweisen (Q1), nicht in den Fix aufnehmen.
 4. Bestehende Tests erfassen: Tests der betroffenen Einheit, Testkonventionen und `<TEST_FRAMEWORK>` mit Fundstellen; prüfen, ob ein bestehender Test das Fehlverhalten hätte abdecken müssen oder es zementiert (dann fachliche Klärung, Test nicht ändern).
