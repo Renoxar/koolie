@@ -26,27 +26,27 @@ Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine
 
 Sechs dieser Zusagen sind **Kernzusagen** (B1 bis B6) und entsprechen dem Integritätsblock der Berechtigungsdatei. Weicht eine von `[TECHNISCH]` ab, ist sie im Pack einzeln zu begründen, im Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben.
 
-Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich hier die beiden anderen Packs – derselbe Kern, andere Clients. Zuerst `claude-code`:
+Dieses Dokument verwendet `devin-desktop` als durchgehendes Beispiel; seine Matrix steht in Kap. 15.1. Zum Vergleich folgen zwei weitere Packs, derselbe Kern an anderen Clients. Zuerst `claude-code`:
 
 {{EMBED-RAW:.koolie/core/clients/claude-code/CLIENT_PACK.md:1}}
-Dann `openai-codex`, dessen Belege durchweg Messungen sind (D-396):
+Dann `openai-codex`, dessen Belege durchweg Messungen sind:
 
 {{EMBED-RAW:.koolie/core/clients/openai-codex/CLIENT_PACK.md:1}}
-Der Vergleich der Matrizen ist die Probe aufs Exempel: `devin-desktop` und `claude-code` bilden alle sechs Kernzusagen ab – **drei davon technisch in jedem Zugriffskanal** (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess tragen sie die Regelschicht. Bei `openai-codex` sind B3 und B5 `[NICHT ABBILDBAR]`; das Pack begründet es, und ein Projekt braucht dafür eine dokumentierte Ausnahme mit Freigabe durch `<SECURITY_CONTACT>` (siehe oben).
+Im Vergleich: `devin-desktop` und `claude-code` bilden alle sechs Kernzusagen ab, drei davon technisch in jedem Zugriffskanal (B1, B2, B6), drei nur für den direkten Zugriff (B3, B4, B5); für Shell und Unterprozess trägt dort die Regelschicht. Bei `openai-codex` sind B3 und B5 `[NICHT ABBILDBAR]`; das Pack begründet es, und ein Projekt braucht dafür eine dokumentierte Ausnahme mit Freigabe durch `<SECURITY_CONTACT>` (siehe oben).
 
-**Ein Vergleich der Gesamtzahlen trägt dagegen nicht, und das hat zwei Gründe.** Erstens sind die Matrizen unterschiedlich lang. Zweitens – und das wiegt schwerer – **messen die Zahlen Verschiedenes:** Die Belege sind auf verschiedenen Wegen gewonnen – durch Beobachtung an einer laufenden Installation, durch Messung am Client oder durch Abgleich mit der Herstellerdokumentation –, und welcher Weg für eine Zeile gilt, sagt ihre Belegspalte. Bei `claude-code` ist der Beleg überwiegend ein Dokumentenabgleich, bei `openai-codex` durchweg eine Messung. **Ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung.** Die Summen stehen in Abschnitt 3 jedes Packs; Prüfung 31 rechnet sie bei jedem Validatorlauf aus der Matrix nach.
+**Ein Vergleich der Gesamtzahlen trägt dagegen nicht.** Die Matrizen sind unterschiedlich lang, und die Zahlen messen Verschiedenes: Die Belege stammen aus Beobachtung an einer laufenden Installation, aus Messung am Client oder aus dem Abgleich mit der Herstellerdokumentation; welcher Weg für eine Zeile gilt, sagt ihre Belegspalte. Bei `claude-code` ist der Beleg überwiegend ein Dokumentenabgleich, bei `openai-codex` durchweg eine Messung. **Ein Dokumentenabgleich belegt `[DOK]`, nicht `[TECHNISCH]` im Sinne einer beobachteten Wirkung.** Die Summen stehen in Abschnitt 3 jedes Packs; Prüfung 31 rechnet sie bei jedem Validatorlauf aus der Matrix nach.
 
 ## 7a.4 Form und Semantik
 
-Ein Client Pack enthält **drei Dateien** – die Fähigkeitsmatrix `CLIENT_PACK.md`, die maschinenlesbare Abbildung `manifest.json` und eine erklärende README der Laufzeitschicht unter `root-template/`. Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei sind zwei Fälle zu unterscheiden, und der Unterschied ist wesentlich:
+Ein Client Pack enthält drei Dateien: die Fähigkeitsmatrix `CLIENT_PACK.md`, die maschinenlesbare Abbildung `manifest.json` und eine erklärende README der Laufzeitschicht unter `root-template/`. Alles Übrige liegt einmal im Kern und wird bei der Installation übersetzt. Dabei gibt es zwei Fälle:
 
 **Formtransformation.** Der Inhalt ist derselbe, nur die Schreibweise unterscheidet sich – ein Frontmatter-Feld heißt anders, eine Werkzeugliste ist kommagetrennt statt eingerückt. Das betrifft Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills und die Vorlagen.
 
-Die Ladebedingung einer Regel ist dagegen **keine** Formfrage, sondern eine zweite Semantikabbildung (D-27): Die Kernquelle kennt fünf Ladetrigger, ein Client kennt seine eigene Bedingungssprache. Bei `claude-code` heißt sie `paths` und bindet eine Regel an Glob-Muster; `always_on` und `model_decision` bilden dort auf unbedingtes Laden ab – eine Verschärfung. Ein Ladetrigger ohne Eintrag in der Abbildung lässt die Installation scheitern; er wird nicht verworfen.
+Die Ladebedingung einer Regel ist dagegen keine Formfrage, sondern eine zweite Semantikabbildung: Die Kernquelle kennt fünf Ladetrigger, ein Client kennt seine eigene Bedingungssprache. Bei `claude-code` heißt sie `paths` und bindet eine Regel an Glob-Muster; `always_on` und `model_decision` bilden dort auf unbedingtes Laden ab – eine Verschärfung. Ein Ladetrigger ohne Eintrag in der Abbildung lässt die Installation scheitern; er wird nicht verworfen.
 
 **Semantikabbildung.** Die Werkzeuge selbst unterscheiden sich. Ein Client trennt Ändern und Anlegen in zwei Werkzeuge, ein anderer nicht; Befehlsverbote greifen hier wörtlich (`Exec(git reset --hard)`) und dort präfixbasiert (`Bash(git reset:*)`); Netzzugriff ist einmal ein Werkzeug mit Muster und einmal zwei ohne. Das betrifft Berechtigungen und Hooks – und damit genau die Regeln, an denen die Kernzusagen hängen.
 
-Für den zweiten Fall genügt Sorgfalt nicht. Eine beim Nachziehen vergessene Regel wäre eine stille Lücke, während die Fähigkeitsmatrix weiterhin `[TECHNISCH]` behauptet. Die Abbildung erzwingt deshalb drei Eigenschaften und bricht die Installation ab, wenn eine verletzt ist:
+Eine beim Nachziehen vergessene Regel wäre hier eine stille Lücke, während die Fähigkeitsmatrix weiter `[TECHNISCH]` behauptet. Die Abbildung erzwingt deshalb drei Eigenschaften und bricht die Installation ab, wenn eine verletzt ist:
 
 | Zusicherung | Warum |
 |---|---|
@@ -61,6 +61,6 @@ Die werkzeugneutrale Regelmenge, aus der jedes Pack seine Berechtigungen erzeugt
 {{EMBED:.koolie/core/framework/runtime/permissions.json:json}}
 ## 7a.5 Was das für ein Projekt bedeutet
 
-Die Wahl des Client Packs fällt bei der Erstinstallation (`install.py --client`; der Dialog der Starter fragt sie ab, Kap. 15.2) und wird im Overlay dokumentiert. Sie ist keine Geschmacksfrage: Bevor ein Pack in Betrieb geht, ist seine Fähigkeitsmatrix zu lesen und jede Kernzusage ohne technische Durchsetzung freizugeben. Ein Wechsel des Clients ist ein eigener Vorgang mit erneuter Bewertung – nicht ein Schalter.
+Die Wahl des Client Packs fällt bei der Erstinstallation (`install.py --client`; der Dialog fragt sie ab, Kap. 15.2) und wird im Overlay dokumentiert. Bevor ein Pack in Betrieb geht, ist seine Fähigkeitsmatrix zu lesen und jede Kernzusage ohne technische Durchsetzung freizugeben. Ein Wechsel des Clients ist ein eigener Vorgang mit erneuter Bewertung.
 
-Für ein weiteres Client Pack ist Roadmap-AP2 mit der Fähigkeitsmatrix des neuen Packs zu wiederholen. Solange dessen Zielversion nicht festgelegt und geprüft ist, gilt das Pack als **unbelegt**.
+Ein neues Client Pack durchläuft dieselbe Validierung an einer realen Installation (Roadmap-AP2) mit seiner eigenen Fähigkeitsmatrix. Solange seine Zielversion nicht festgelegt und geprüft ist, gilt es als unbelegt.

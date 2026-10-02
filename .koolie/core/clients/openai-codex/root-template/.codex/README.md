@@ -1,6 +1,6 @@
 # Laufzeitschicht `.codex/` – was hier liegt und wem es gehört
 
-Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `openai-codex`. Die kanonische, werkzeugneutrale Langform steht in `.koolie/core/framework/`; was hier liegt, ist daraus erzeugt (D-02). **Inhaltliche Änderungen gehören in den Kern und laufen als Änderungsantrag** (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`).
+Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `openai-codex`. Die kanonische, werkzeugneutrale Langform steht in `.koolie/core/framework/`; was hier liegt, ist daraus erzeugt. **Inhaltliche Änderungen gehören in den Kern und laufen als Änderungsantrag** (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`).
 
 ## Was hier liegt
 
@@ -13,7 +13,7 @@ Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `openai-cod
 | `rules/koolie.rules` | **Befehlsregeln** – die Befehlsseite der Berechtigungsschicht | Framework |
 | `config.toml` | **Rechteprofil** – die Pfadseite der Berechtigungsschicht, dazu die Projektwerte | Projekt (aus dem Kern erzeugt) |
 | `hooks.json` | Schutz-Hook und Statusmeldung | Framework |
-| `skills/fw-*/` | Skills des Frameworks | Framework |
+| `skills/koolie-*/` | Skills des Frameworks | Framework |
 | `agents/` | Agentenprofile | Framework |
 
 ## Drei Dinge, die bei diesem Client anders sind

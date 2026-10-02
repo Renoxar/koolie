@@ -53,12 +53,12 @@ Pack** – das [Laufzeitglossar](.koolie/core/docs/RUNTIME_GLOSSARY.md) löst je
 ├── <Wurzel-Anweisungsdatei>             # Agentenanweisung (aus dem Kern installiert)
 ├── <Laufzeitschicht>/                   # vollständig erzeugt – nie von Hand schreiben
 │   ├── <Berechtigungsdatei>             # Kernregeln + Projektwerte (je Pack: samt Hooks)
-│   ├── agents/fw-reviewer.md            # nur lesendes Review-Subagentenprofil
+│   ├── agents/koolie-reviewer.md        # nur lesendes Review-Subagentenprofil
 │   ├── rules/00-, 10-, 15-*.md          # Core-Kurzfassungen ....... aus dem Kern
 │   ├── rules/20-project-overlay.md      # Overlay-Laufzeitfassung ... Projekt
 │   ├── rules/2N-overlay-*.md            # Overlay-Regelerweiterungen  Projekt
 │   ├── rules/30-, 40-*.md               # aktivierte Packs
-│   └── skills/fw-* role-* tech-* prj-*  # Kern | aktivierte Packs | Projekt
+│   └── skills/koolie-*, prj-*           # Koolie (Kern, aktivierte Packs) | Projekt
 │
 ├── .koolie/
 │   ├── core/                            # DER KERN: unveränderlich, byte-gleich
@@ -109,11 +109,17 @@ ein offener Klärungspunkt, `CR-…` ein Änderungsantrag unter `.koolie/core/go
 
 ## Konventionen
 
-Verbindlichkeit über **MUSS/SOLL/KANN/DARF NICHT**; produktbezogene Aussagen tragen einen Belegstatus
-`[DOK]`/`[EMPF]`/`[KONZ]` oder `BELEG OFFEN` mit Grund und Datum; variable Inhalte ausschließlich als
-registrierte Platzhalter ([`PLACEHOLDER_REGISTRY.md`](.koolie/core/docs/PLACEHOLDER_REGISTRY.md)); Beispiele
-sind stets als synthetisch gekennzeichnet; Personen werden nirgends genannt – nur Rollen.
-
-Die Lizenzdatei liegt an **zwei** Stellen mit demselben Inhalt – in der Wurzel und unter
-`.koolie/core/LICENSE` –, weil ein übernehmendes Projekt den Kern als Ganzes kopiert und ein Werk nicht ohne
-seine Lizenz weitergegeben werden darf. Der Validator hält beide gegeneinander.
+- **Verbindlichkeit** über MUSS, SOLL, KANN und DARF NICHT.
+- **Belegstatus:** Eine produktbezogene Aussage trägt `[DOK]`, `[EMPF]`, `[KONZ]` oder `BELEG OFFEN` mit Grund
+  und Datum.
+- **Platzhalter:** Variable Inhalte stehen nur als registrierte Platzhalter
+  ([`PLACEHOLDER_REGISTRY.md`](.koolie/core/docs/PLACEHOLDER_REGISTRY.md)). Beispiele sind als synthetisch
+  gekennzeichnet, und genannt werden Rollen, keine Personen.
+- **Skillnamen:** Mitgelieferte Skills heißen `koolie-<name>`, eindeutig über alle Packs; `prj-<name>` gehört
+  dem Projekt.
+- **Schreiben:** Die Produktdokumentation sagt, was gilt und was zu tun ist – ohne `CR-`, `D-` oder
+  `K-`-Kennung und ohne Entscheidungsgeschichte. Begründungen gehören in Änderungsantrag und Decision Log.
+  Die Regeln stehen im [Dokumentationsstandard](.koolie/core/docs/DOCUMENTATION_STANDARD.md), Abschnitt 3;
+  der Validator meldet eine Kennung am falschen Ort.
+- **Lizenz an zwei Stellen:** in der Wurzel und unter `.koolie/core/LICENSE`, weil ein Projekt nur den Kern
+  kopiert und ein Werk nicht ohne seine Lizenz weitergegeben werden darf. Der Validator hält beide gleich.

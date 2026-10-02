@@ -27,7 +27,7 @@ from .apparat import (
 M57_UNGEBUNDEN = "als nicht gesetzt ("
 
 P57_BLATT = (".koolie/core/framework/role-packs/requirements-engineering/skills/"
-             "role-re-ticket/TESTS.md").replace("/", os.sep)
+             "koolie-ticket/TESTS.md").replace("/", os.sep)
 
 # Die berichtigte Fassung der Zelle - Anker beider Eingriffe.
 P57_HEUTE = "Übungs-Overlay, dessen `<ISSUE_TRACKER>` **gebunden** ist"
@@ -170,14 +170,14 @@ def _60_katalogzeile(root: str, zeile: str) -> None:
 
 
 def _60_ohne_schlitz(root: str) -> None:
-    """Ein sitzung-Testfall ruft `/fw-change-small` und nennt keinen Befehlsschlitz.
+    """Ein sitzung-Testfall ruft `/koolie-change-small` und nennt keinen Befehlsschlitz.
 
     Genau die Gestalt, in der FW-SC-01 zwei Releases lang dastand - und die zwei
     Laeufe gekostet hat.
     """
     _60_katalogzeile(root,
         "| FW-SO-08 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
-        "| `/fw-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
+        "| `/koolie-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
         "| sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -185,7 +185,7 @@ def _60_mit_schlitz(root: str) -> None:
     """Gegenprobe: dieselbe Zeile, aber die Vorbedingung nennt beide Schlitze."""
     _60_katalogzeile(root,
         "| FW-SO-09 | Sondenzeile | Sondenvorbedingung; `<TEST_COMMAND>` und "
-        "`<LINT_COMMAND>` im `allow`-Korb | `/fw-change-small \"<Sondenaufgabe>\"` "
+        "`<LINT_COMMAND>` im `allow`-Korb | `/koolie-change-small \"<Sondenaufgabe>\"` "
         "| Ablehnung | Zugriff | sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -196,19 +196,19 @@ def _60_andere_pruefmethode(root: str) -> None:
     """
     _60_katalogzeile(root,
         "| FW-SO-10 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
-        "| `/fw-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
+        "| `/koolie-change-small \"<Sondenaufgabe>\"` | Ablehnung | Zugriff "
         "| review | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _60_skill_ohne_schlitz(root: str) -> None:
     """Gegenprobe: ein Skill, dessen Frontmatter keinen Befehl ausfuehrt.
 
-    Sie belegt, dass der Zuschnitt nicht zu breit ist. `fw-repo-analyze` ist rein
+    Sie belegt, dass der Zuschnitt nicht zu breit ist. `koolie-repo-analyze` ist rein
     lesend und fuehrt keinen Befehlsschlitz.
     """
     _60_katalogzeile(root,
         "| FW-SO-11 | Sondenzeile | Sondenvorbedingung ohne Befehlsangabe "
-        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| `/koolie-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
         "| sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -275,7 +275,7 @@ M61_FREMD = "steht nicht im Vokabular"
 M61_ANKER = "keine Zelle mit Prüfmethode gefunden"
 P61_KATALOG = ".koolie/core/tests/TEST_CATALOG.md".replace("/", os.sep)
 P61_KATALOGANKER = "| FW-AK-02 (Basis) |"
-P61_BLATT = ".koolie/core/framework/skills/fw-repo-analyze/TESTS.md".replace("/", os.sep)
+P61_BLATT = ".koolie/core/framework/skills/koolie-repo-analyze/TESTS.md".replace("/", os.sep)
 P61_BLATTANKER = "| SK-001-N03 |"
 
 
@@ -287,7 +287,7 @@ def _61_fremdes_wort(root: str) -> None:
     """Eine Katalogzeile mit dem Wort `manuell` - genau der Stand vor 0.67.0."""
     _61_katalogzeile(root,
         "| FW-SO-12 | Sondenzeile | Sondenvorbedingung "
-        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| `/koolie-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
         "| manuell | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -295,7 +295,7 @@ def _61_fremdes_wort_im_blatt(root: str) -> None:
     """Dasselbe Wort in einem der dreizehn Blaetter - dort stand es 87-mal."""
     zeile_nach(P(root, P61_BLATT), P61_BLATTANKER,
         "| SK-001-S99 | Sondenzeile | Sondenvorbedingung "
-        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| `/koolie-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
         "| manuell | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -303,8 +303,8 @@ def _61_zulaessiger_zusatz(root: str) -> None:
     """Gegenprobe: `sitzung` mit Zusatz - die Schreibweise beider Bestaende."""
     _61_katalogzeile(root,
         "| FW-SO-13 | Sondenzeile | Sondenvorbedingung "
-        "| `/fw-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
-        "| sitzung + Skript `validate-output.py --skill fw-repo-analyze` "
+        "| `/koolie-repo-analyze <Sondenmodul>` | Ablehnung | Zugriff "
+        "| sitzung + Skript `validate-output.py --skill koolie-repo-analyze` "
         "| bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -352,30 +352,30 @@ gegenprobe("61c", "`skript+sitzung` und `review` bleiben zulaessig - der Zuschni
 # nicht getroffen - und genau sie trugen zwei Skills doppelt.
 M62_WOERTLICH = "nennt die Version wörtlich"
 
-P62_SKILL = ".koolie/core/framework/skills/fw-code-explain/SKILL.md".replace("/", os.sep)
-P62_PLAN = ".koolie/core/framework/skills/fw-plan/SKILL.md".replace("/", os.sep)
+P62_SKILL = ".koolie/core/framework/skills/koolie-code-explain/SKILL.md".replace("/", os.sep)
+P62_PLAN = ".koolie/core/framework/skills/koolie-plan/SKILL.md".replace("/", os.sep)
 P62_SCHLITZ = "v<Version aus dem Steckbrief>"
 
 
 def _62_kopfzeile(root: str) -> None:
     """Die Kopfzeile der Ausgabevorlage traegt wieder eine woertliche Version."""
     ersetze(P(root, P62_SKILL),
-            ("## Code-Erklärung – fw-code-explain " + P62_SCHLITZ,
-             "## Code-Erklärung – fw-code-explain v9.9.9", 1))
+            ("## Code-Erklärung – koolie-code-explain " + P62_SCHLITZ,
+             "## Code-Erklärung – koolie-code-explain v9.9.9", 1))
 
 
 def _62_erstellt_mit(root: str) -> None:
     """Die zweite Gestalt: die Zeile `Erstellt mit` im Ergebnisbericht."""
     ersetze(P(root, P62_PLAN),
-            ("| Erstellt mit | fw-plan " + P62_SCHLITZ + " |",
-             "| Erstellt mit | fw-plan v9.9.9 |", 1))
+            ("| Erstellt mit | koolie-plan " + P62_SCHLITZ + " |",
+             "| Erstellt mit | koolie-plan v9.9.9 |", 1))
 
 
 def _62_zweiter_schlitz(root: str) -> None:
     """Gegenprobe: der Schlitz darf mehrfach stehen - geprueft wird die ZAHL."""
     ersetze(P(root, P62_SKILL),
-            ("## Code-Erklärung – fw-code-explain " + P62_SCHLITZ,
-             "## Code-Erklärung – fw-code-explain " + P62_SCHLITZ
+            ("## Code-Erklärung – koolie-code-explain " + P62_SCHLITZ,
+             "## Code-Erklärung – koolie-code-explain " + P62_SCHLITZ
              + " (Vorlage " + P62_SCHLITZ + ")", 1))
 
 
@@ -407,7 +407,7 @@ gegenprobe("62b", "Der Schlitz darf mehrfach in einer Zeile stehen - geprueft wi
 M63_INS_LEERE = "diese Nummer fuehrt dort keine Ueberschrift"
 
 P63_PROMPT = ".koolie/core/prompts/02-impact-analysis.md".replace("/", os.sep)
-P63_BLATT = ".koolie/core/framework/skills/fw-error-analyze/TESTS.md".replace("/", os.sep)
+P63_BLATT = ".koolie/core/framework/skills/koolie-error-analyze/TESTS.md".replace("/", os.sep)
 P63_ZIEL = ".koolie/core/framework/core/02-privacy.md".replace("/", os.sep)
 P63_PROTOKOLL = (".koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-1.md"
                  .replace("/", os.sep))
@@ -494,19 +494,19 @@ def _64_rueckfrage_ungedeckt(root: str) -> None:
     """
     _64_katalogzeile(root,
         "| FW-SO-12 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
-        " | `/fw-change-small \"<Sondenaufgabe>\"` | [RÜCKFRAGE] zur Aufteilung "
+        " | `/koolie-change-small \"<Sondenaufgabe>\"` | [RÜCKFRAGE] zur Aufteilung "
         "| Zugriff | sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
 def _64_halt_ungedeckt(root: str) -> None:
     """Eine Zelle verlangt [HALT] von einem Skill, der sie nur als Anweisung fuehrt.
 
-    `fw-refactor` nennt [HALT] elfmal - in Arbeitsschritten und Fehlerbildern, und
+    `koolie-refactor` nennt [HALT] elfmal - in Arbeitsschritten und Fehlerbildern, und
     in keinem Ausgabeformat. Fuenf seiner sieben Zellen standen so da.
     """
     _64_katalogzeile(root,
         "| FW-SO-13 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | [HALT] nach dem "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | [HALT] nach dem "
         "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -518,7 +518,7 @@ def _64_unzulaessig_ungedeckt(root: str) -> None:
     """
     _64_katalogzeile(root,
         "| FW-SO-14 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Ablehnung "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | Ablehnung "
         "| Änderungen vor dem [HALT] | sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -526,11 +526,11 @@ def _64_gedeckt(root: str) -> None:
     """Gegenprobe: dieselbe Marke bei einem Skill, der sie in Abschnitt 5 und 6 fuehrt.
 
     Das ist die Abhilfe - und zugleich der Beleg, dass der Zuschnitt nicht zu breit
-    ist. `fw-change-small` fuehrt [HALT] in beiden Abschnitten.
+    ist. `koolie-change-small` fuehrt [HALT] in beiden Abschnitten.
     """
     _64_katalogzeile(root,
         "| FW-SO-15 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
-        " | `/fw-change-small \"<Sondenaufgabe>\"` | [HALT] vor dem ersten "
+        " | `/koolie-change-small \"<Sondenaufgabe>\"` | [HALT] vor dem ersten "
         "Schreibzugriff | Zugriff | sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278) |")
 
 
@@ -543,7 +543,7 @@ def _64_letzte_zelle(root: str) -> None:
     """
     _64_katalogzeile(root,
         "| FW-SO-16 | Sondenzeile | Sondenvorbedingung; " + P64_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten nach dem "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten nach dem "
         "Testnachweis | Zugriff | sitzung | bestanden (Sondenbeleg, `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-3.md`; Client Pack `claude-code` 2.1.278): der Lauf hat "
         "[HALT] wörtlich geschrieben |")
 
@@ -580,7 +580,7 @@ sonde("64a", "Eine Zelle verlangt [RUECKFRAGE] - die Marke steht in KEINEM Absch
              "Handlungsmarke",
       _64_rueckfrage_ungedeckt, M64_UNGEDECKT)
 
-sonde("64b", "Eine Zelle verlangt [HALT] von fw-refactor, das die Marke nur in "
+sonde("64b", "Eine Zelle verlangt [HALT] von koolie-refactor, das die Marke nur in "
              "Arbeitsschritten und Fehlerbildern fuehrt - fuenf seiner sieben Zellen "
              "standen so da",
       _64_halt_ungedeckt, M64_UNGEDECKT)
@@ -641,7 +641,7 @@ def _65_ohne_protokoll(root: str) -> None:
     """
     _65_katalogzeile(root,
         "| FW-SO-17 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
         "| sitzung | bestanden (Sondenbeleg ohne Protokollverweis) |")
 
 
@@ -655,7 +655,7 @@ def _65_ohne_pack(root: str) -> None:
     """
     _65_katalogzeile(root,
         "| FW-SO-18 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
         "| sitzung | bestanden (" + P65_PROTOKOLL + ") |")
 
 
@@ -667,7 +667,7 @@ def _65_fremdes_wort(root: str) -> None:
     """
     _65_katalogzeile(root,
         "| FW-SO-19 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
         "| sitzung | geprüft (" + P65_PROTOKOLL + "; " + P65_PACK + ") |")
 
 
@@ -707,7 +707,7 @@ def _65_vollstaendig(root: str) -> None:
     """
     _65_katalogzeile(root,
         "| FW-SO-21 | Sondenzeile | Sondenvorbedingung; " + P65_SCHLITZE +
-        " | `/fw-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
+        " | `/koolie-refactor <Sondenmodul> \"<Sondenziel>\"` | Anhalten | Zugriff "
         "| sitzung | bestanden (" + P65_PROTOKOLL + "; " + P65_PACK + ") |")
 
 

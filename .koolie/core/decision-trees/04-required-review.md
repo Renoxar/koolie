@@ -45,5 +45,5 @@ flowchart TD
 
 ## Hinweise
 
-- `fw-review-support` liefert Zulieferung für diese Prüfungen, zählt aber nicht als eine der geforderten menschlichen Prüfungen (V1).
+- `koolie-review-support` liefert Zulieferung für diese Prüfungen, zählt aber nicht als eine der geforderten menschlichen Prüfungen (V1).
 - Reviewerinnen und Reviewer erhalten den Nutzungsvermerk vor Beginn; ohne Vermerk wird das Review nicht begonnen (Prozessbefund).

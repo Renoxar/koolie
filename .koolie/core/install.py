@@ -1023,6 +1023,86 @@ def veraltete_overlaysperre(root: str, man: dict) -> list[str]:
             if "project-overlay/**" in z and "deny_must_contain" not in z]
 
 
+# Die Namen der mitgelieferten Skills und des Agentenprofils bis 1.25.0 und seit 2.0.0.
+# Seit 2.0.0 gehoert koolie-* dem Framework und prj-* dem Projekt.
+ALTE_NAMEN = {f"fw-{n}": f"koolie-{n}" for n in (
+    "bugfix-prepare", "change-analyze", "change-small", "code-explain", "docs-update",
+    "error-analyze", "mr-description", "overlay-pflege", "plan", "refactor",
+    "repo-analyze", "review-support", "tests", "reviewer")}
+ALTE_NAMEN["role-re-ticket"] = "koolie-ticket"
+_ALTER_NAME_RE = re.compile(
+    r"(?<![A-Za-z0-9_-])(" + "|".join(sorted(map(re.escape, ALTE_NAMEN), key=len, reverse=True))
+    + r")(?![A-Za-z0-9_-])")
+
+
+def namen_migrieren(root: str, man: dict, dry: bool) -> list[str]:
+    """Hebt ein Projekt von den Namen bis 1.25.0 auf koolie-* und meldet, was es tat.
+
+    Skillordner mit altem Namen werden umbenannt - ein aktivierter Pack-Skill bleibt so
+    aktiviert, und run() schreibt danach den neuen Inhalt hinein. Liegt der neue Ordner
+    schon da, wird der alte entfernt. Das alte Agentenprofil wird entfernt; das neue legt
+    run() an. In der Berechtigungsdatei werden die alten Namen einmalig ersetzt - sonst
+    fielen die umbenannten Skills dort in keinen Korb mehr.
+    """
+    aus: list[str] = []
+    ablage = man["skills_dir"]
+    basis = os.path.join(root, *ablage.split("/"))
+    for alt, neu in sorted(ALTE_NAMEN.items()):
+        alt_pfad = os.path.join(basis, alt)
+        if not os.path.isdir(alt_pfad):
+            continue
+        neu_pfad = os.path.join(basis, neu)
+        if os.path.exists(neu_pfad):
+            aus.append(f"{ablage}/{alt}/ entfernt ({neu}/ liegt schon da)")
+            if not dry:
+                _loesche_baum(alt_pfad)
+        else:
+            aus.append(f"{ablage}/{alt}/ -> {neu}/")
+            if not dry:
+                os.rename(alt_pfad, neu_pfad)
+    for _src, dst_rel in shared_files(man, "shared_core"):
+        kopf, _, datei = dst_rel.rpartition("/")
+        for alt, neu in ALTE_NAMEN.items():
+            if not datei.startswith(neu + "."):
+                continue
+            alt_rel = f"{kopf}/{alt}{datei[len(neu):]}" if kopf else alt + datei[len(neu):]
+            alt_pfad = os.path.join(root, *alt_rel.split("/"))
+            if os.path.isfile(alt_pfad):
+                aus.append(f"{alt_rel} entfernt (neu: {dst_rel})")
+                if not dry:
+                    os.remove(alt_pfad)
+    rechte_rel = man.get("permissions_file", "")
+    rechte = os.path.join(root, *rechte_rel.split("/")) if rechte_rel else ""
+    if rechte and os.path.isfile(rechte):
+        with open(rechte, "rb") as fh:
+            roh = fh.read()
+        text = roh.decode("utf-8")
+        neu_text, anzahl = _ALTER_NAME_RE.subn(lambda m: ALTE_NAMEN[m.group(1)], text)
+        if anzahl:
+            aus.append(f"{rechte_rel}: {anzahl} Eintrag/Eintraege auf koolie-* umbenannt")
+            if not dry:
+                with open(rechte, "wb") as fh:
+                    fh.write(neu_text.encode("utf-8"))
+    return aus
+
+
+def alte_namen_im_projekt(root: str) -> list[str]:
+    """Projektdateien im Overlay, die noch einen alten Skillnamen nennen (nur Auskunft)."""
+    overlay = os.path.join(root, ".koolie", "project-overlay")
+    treffer: list[str] = []
+    for dirpath, dirnames, filenames in os.walk(overlay):
+        dirnames[:] = [d for d in dirnames if d != "__pycache__"]
+        for fn in sorted(filenames):
+            pfad = os.path.join(dirpath, fn)
+            try:
+                text = read_text(pfad)
+            except (OSError, UnicodeDecodeError):
+                continue
+            if _ALTER_NAME_RE.search(text):
+                treffer.append(os.path.relpath(pfad, root).replace(os.sep, "/"))
+    return treffer
+
+
 def koexistenz_auskunft(root: str, man: dict) -> list[str]:
     """Die Auskunft zu fremden Agenten-Rahmenwerken im Projekt (1.21.0, K-31, D-514).
 
@@ -2217,6 +2297,25 @@ def main() -> int:
     if muster:
         print(f"Overlay: Muster {muster['name']} {muster['version']}")
     print()
+
+    if mode in ("update", "check"):
+        umbenannt = namen_migrieren(root, man, dry=args.dry_run or mode == "check")
+        if umbenannt and mode == "check":
+            print(f"HINWEIS ({len(umbenannt)}): Dieses Projekt traegt noch die Skillnamen von "
+                  f"vor 2.0.0.")
+            print("  --update benennt sie auf koolie-* um:")
+        elif umbenannt:
+            print(f"Seit 2.0.0 heissen die mitgelieferten Skills koolie-* ({len(umbenannt)}):")
+        for zeile in umbenannt:
+            print(f"  {zeile}")
+        alt_overlay = alte_namen_im_projekt(root) if umbenannt else []
+        if alt_overlay:
+            print("  Im Overlay stehen noch alte Namen - von Hand anpassen, etwa /fw-plan ->"
+                  " /koolie-plan:")
+            for rel in alt_overlay:
+                print(f"    {rel}")
+        if umbenannt:
+            print()
 
     try:
         rep = run(root, template, man, mode, args.dry_run, muster)

@@ -3,123 +3,101 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.7.0` |
+| Version | `0.8.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
 
-> Kennungen in diesem Dokument: `D-…` ist ein Decision Record in `.koolie/core/governance/DECISION_LOG.md`, `K-…` ein offener Klärungspunkt in derselben Datei, `CR-…` ein Änderungsantrag unter `.koolie/core/governance/change-requests/`. Zum Handeln braucht man sie nicht – sie sagen, wo die Begründung steht.
-
 ## 1. Grundprinzip
 
-Der gesamte unveränderliche Kern liegt in **einem** Verzeichnis: `.koolie/core/`. Es
-wird als Release in das Wurzelverzeichnis des Projekt-Repositorys kopiert und bleibt
-byte-gleich zum Release. Änderungswünsche laufen als Änderungsantrag an den Framework Owner
-(`.koolie/core/governance/FEEDBACK_PROCESS.md`), nicht als lokale Bearbeitung.
+Der unveränderliche Kern liegt in **einem** Verzeichnis: `.koolie/core/`. Er wird als Release in
+die Wurzel des Projekt-Repositorys kopiert und bleibt byte-gleich zum Release. Änderungswünsche
+gehen als Änderungsantrag an den Framework Owner (`.koolie/core/governance/FEEDBACK_PROCESS.md`),
+nicht als lokale Bearbeitung.
 
-Zwei Ladeorte lassen sich nicht mitbündeln, weil sie Werkzeugkonvention sind und nicht
-konfigurierbar `[DOK]`:
+Zwei Dinge kann der Kern nicht mitbringen, weil der KI-Client sie nur an festen Orten sucht `[DOK]`:
 
 | Bestandteil | Rolle |
 |---|---|
-| Wurzel-Anweisungsdatei | Zentrale Agentenanweisung, wird vom Client automatisch geladen |
-| Laufzeitschicht | Regelablage, Skill-Ablage, Agentenprofile, Berechtigungsdatei, Hook-Konfiguration |
+| Wurzel-Anweisungsdatei | die zentrale Agentenanweisung, die der Client beim Start lädt |
+| Laufzeitschicht | Regeln, Skills, Agentenprofile, Berechtigungen und Hooks, die der Client selbst lädt und ausführt |
 
-**Laufzeitschicht** heißt alles, was der KI-Client selbst lädt und ausführt: die Regeltexte,
-die Skills, die Agentenprofile, die Berechtigungen und die Hooks. Der Client findet sie nur an
-den Orten, die er kennt – deshalb heißen und liegen sie je Client anders. Die tatsächlichen
-Pfade stehen in
-`.koolie/core/docs/RUNTIME_GLOSSARY.md` und im `CLIENT_PACK.md` des gewählten Packs.
+Name und Ort hängen vom Client ab; die Pfade je Client stehen in
+`.koolie/core/docs/RUNTIME_GLOSSARY.md` und im `CLIENT_PACK.md` des Packs. Die Quellen liegen
+trotzdem im Kern (`framework/runtime/`, `framework/skills/`, `templates/`), und
+`.koolie/core/install.py` legt sie in der Form des gewählten Clients an. Welcher Client gilt,
+entscheidet `--client`; `--list-clients` zeigt die verfügbaren. Wer eine gemeinsame Quelle ändern
+will, ändert sie im Kern, nicht im Pack.
 
-Deshalb liegen diese Bestandteile **im Kern** – `.koolie/core/framework/runtime/`,
-`.koolie/core/framework/skills/` und `.koolie/core/templates/` –, und
-`.koolie/core/install.py` legt sie in der Form des gewählten Clients an ihrem Platz an.
-Welcher Client gilt, entscheidet `--client`; `--list-clients` zeigt die verfügbaren.
-
-> Das `root-template/` eines Client Packs enthält **nur die README der Laufzeitschicht**;
-> `seed_paths` ist in allen Manifesten leer (`CR-2026-010`). Wer eine gemeinsame Quelle
-> ändern will, ändert sie im Kern, nicht im Pack.
-
-**Projektspezifisch sind ausschließlich:**
+**Dem Projekt gehören nur:**
 
 | Bestandteil | Ebene |
 |---|---|
 | `.koolie/project-overlay/` einschließlich `forbidden-terms.txt` | 4 |
-| `20-project-overlay.md` in der Regelablage (plus optionale `2N-overlay-*`) | 4 |
+| `20-project-overlay.md` in der Regelablage (und optionale `2N-overlay-*`) | 4 |
 | die ausgefüllten Werte in der Berechtigungsdatei | 3/4 |
-| die **Entscheidung**, welche Packs aktiviert sind (Overlay Abschnitt 1) | 5/6 |
+| die Entscheidung, welche Packs aktiviert sind (Overlay Abschnitt 1) | 5/6 |
 | `prj-*`-Skills in der Skill-Ablage | 4 |
-| die **Entscheidung**, welches Client Pack verwendet wird | – |
+| die Entscheidung, welches Client Pack verwendet wird | – |
 
-Alles andere ist Core. Ein Projektwechsel tauscht nur die Overlay-Bestandteile; der Core
-bleibt unberührt (P10, Baum 6).
+Alles andere ist Kern. Wechselt ein Team das Projekt, tauscht es nur das Overlay (P10, Baum 6).
 
 ## 2. Neuaufnahme (Schrittfolge)
 
 1. **Voraussetzungen der Organisation:** Werkzeugfreigabe, Datenschutz- und Vertragsprüfung,
-   dokumentierte Team-Einstellungen (`.koolie/core/framework/org-policies/`;
-   Klärungspunkte K-05/K-06).
+   dokumentierte Team-Einstellungen (`.koolie/core/framework/org-policies/`; die Projektwerte
+   stehen im Overlay).
 
-   **Schritt 2 und 3 in einem Zug – über eine Paketquelle (D-532, D-533):** Im
-   Projektverzeichnis holt `uvx koolie` (oder `pipx run koolie`, `npx @renoxar/koolie`)
-   Koolie aus PyPI beziehungsweise npm und startet denselben Dialog wie der Starter – mit
-   dem aktuellen Verzeichnis als Vorgabe. Dauerhaft installiert (`pipx install koolie`,
-   `uv tool install koolie`, `npm install -g @renoxar/koolie`) heißt der Befehl `koolie`
-   und nimmt dieselben Argumente wie `install.py`, etwa
-   `koolie --target /pfad/zum/projekt --client <client>`. `pip install koolie` installiert
-   nur den Befehl; liegt er außerhalb des `PATH`, trägt `python -m koolie`. Jedes Paket
-   trägt genau den Baum des Release-Archivs (D-520).
+   Die Schritte 2 und 3 gehen auch in einem Zug – auf zwei Wegen:
 
-   **Schritt 2 und 3 in einem Zug – der Starter (D-362):** Im entpackten
-   Release-Archiv liegen in der Wurzel `install.cmd` (Windows) und `install.command`
-   (macOS). Sie suchen ein Python ab 3.8 (D-363), fragen Projektverzeichnis, Client,
-   Overlay-Muster und Lieferumfang ab und rufen dann genau einen Befehl auf, der auch
-   direkt geht:
+   **Über eine Paketquelle.** Im Projektverzeichnis holt `uvx koolie` (oder `pipx run koolie`,
+   `npx @renoxar/koolie`) Koolie aus PyPI beziehungsweise npm und startet einen Dialog mit dem
+   aktuellen Verzeichnis als Vorgabe. Dauerhaft installiert (`pipx install koolie`,
+   `uv tool install koolie`, `npm install -g @renoxar/koolie`) heißt der Befehl `koolie` und nimmt
+   dieselben Argumente wie `install.py`, etwa `koolie --target /pfad/zum/projekt --client <client>`.
+   `pip install koolie` installiert nur den Befehl; liegt er außerhalb des `PATH`, geht
+   `python -m koolie`. Jedes Paket enthält genau den Baum des Release-Archivs.
+
+   **Mit dem Starter.** In der Wurzel des entpackten Release-Archivs liegen `install.cmd` (Windows)
+   und `install.command` (macOS). Sie suchen ein Python ab 3.8, fragen Projektverzeichnis, Client,
+   Overlay-Muster und Lieferumfang ab und rufen dann diesen Befehl auf, der auch direkt geht:
 
    ```bash
    python .koolie/core/install.py --target /pfad/zum/projekt --client <client> [--overlay general] [--lieferumfang nutzung]
    ```
 
-   **Der Lieferumfang (D-367):** `voll` – die Vorgabe – kopiert den ganzen
-   Kern. `nutzung` lässt die **Nachweisschicht** weg: Änderungsanträge
-   (`governance/change-requests/`), Abnahmeprotokolle (`tests/protocols/`), Erhebungen
-   (`tests/erhebungen/`) und den Bau des Hauptdokuments (`build/`) – zusammen der größere
-   Teil der Dateien. Alles zur Nutzung bleibt, auch Hooks und Validator. Die Wahl steht danach in
-   `.koolie/core/LIEFERUMFANG` und **gilt beim Heben weiter**; gewechselt wird nur mit
-   ausdrücklichem `--lieferumfang`. Der Validator nennt in einem reduzierten Projekt das
-   Weggelassene in `HINWEIS`-Zeilen, die weder als Fehler noch als Warnung zählen. ⚠️
-   Preis: Verweise auf Protokolle zeigen dort ins Leere – die Belege stehen im
+   `--target` kopiert nur `.koolie/core/` – aus einem Klon das Versionierte, aus dem Archiv alles
+   außer Bytecode und `build/out/` – und ruft dann das kopierte `install.py` im Projekt auf.
+   Scheitert es, wird der kopierte Kern wieder entfernt. Python und PyYAML installiert der Starter
+   nicht, und die Schritte ab 4 bleiben Handarbeit.
+
+   **Lieferumfang:** `voll` (Vorgabe) kopiert den ganzen Kern. `nutzung` lässt die Nachweisschicht
+   weg – Änderungsanträge, Abnahmeprotokolle, Erhebungen und den Bau des Hauptdokuments, zusammen
+   der größere Teil der Dateien. Alles zur Nutzung bleibt, auch Hooks und Validator. Die Wahl steht
+   in `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter; gewechselt wird nur mit ausdrücklichem
+   `--lieferumfang`. In einem reduzierten Projekt nennt der Validator das Weggelassene in
+   `HINWEIS`-Zeilen. Verweise auf Protokolle zeigen dort ins Leere; die Belege stehen im
    Release-Archiv.
 
-   `--target` kopiert **nur** `.koolie/core/` – aus einem Klon nur das Verfolgte, aus dem
-   Archiv alles außer Bytecode und `build/out/` – und ruft danach das **kopierte**
-   `install.py` im Projekt auf; scheitert es dort, wird der kopierte Kern wieder entfernt.
-   Der Warnhinweis unten zu `.koolie/` betrifft diesen Weg nicht. **Was der Starter nicht
-   tut:** Er installiert kein Python und kein PyYAML, und er ersetzt die Schritte ab 4
-   nicht. ⚠️ Unter Windows muss der Pfad zum Projekt kurz genug sein, dass kein Pfad im
-   Kern die Grenze von 259 Zeichen reißt – ab 146 Zeichen Projektpfad (Stand `1.8.0`) hält
-   `--target` vor der ersten Kopie mit dieser Begründung an (D-368). ⚠️ Beim ersten Start
-   warnt das System vor dem unsignierten Starter (SmartScreen, Gatekeeper); unter macOS
-   ist der sichere Weg `sh install.command` im Terminal. Der macOS-Starter ist unter
-   Git Bash und Linux geprüft, auf macOS selbst noch nicht (`CR-2026-140`).
+   ⚠️ Unter Windows muss der Projektpfad so kurz sein, dass kein Pfad im Kern 259 Zeichen
+   überschreitet; sonst hält `--target` vor der ersten Kopie an. Beim ersten Start warnt das
+   System vor dem unsignierten Starter (SmartScreen, Gatekeeper); unter macOS ist
+   `sh install.command` im Terminal der sichere Weg. Der macOS-Starter ist unter Git Bash und
+   Linux geprüft, auf macOS selbst noch nicht.
 
-2. **Kern kopieren (Handweg):** Das Verzeichnis `.koolie/core/` in das Wurzelverzeichnis des
-   Projekt-Repositorys kopieren. Bei Monorepos in das Wurzelverzeichnis des Workspace, den
-   der KI-Client öffnet (A-01).
+2. **Kern kopieren (von Hand):** `.koolie/core/` in die Wurzel des Projekt-Repositorys kopieren,
+   bei einem Monorepo in die Wurzel des Workspace, den der KI-Client öffnet.
 
    ```bash
    mkdir -p /pfad/zum/projekt/.koolie
    cp -r .koolie/core /pfad/zum/projekt/.koolie/
    ```
 
-   ⚠️ **Nur `.koolie/core/` kopieren – nie ganz `.koolie/`.** Daneben liegt das
-   Kennzeichen des Framework-Repositoriums (`.koolie/QUELLREPOSITORIUM.md`), im
-   Release-Archiv ebenso wie in einem Klon. Mitkopiert hält der Validator das Projekt für
-   das Framework-Repositorium: Prüfung 79 verlangt die Lizenz in der Projektwurzel, und
-   sobald die Datei committet ist, misst Prüfung 81 die Zeilenenden jedes Projektträgers –
-   keine der Meldungen nennt die Ursache. Aus einem Klon kommt zusätzlich dessen eigenes
-   Overlay mit (`.koolie/project-overlay/`). `install.py` meldet ein mitkopiertes
-   Kennzeichen; die Abhilfe ist, die Datei zu entfernen (D-354).
+   ⚠️ **Nur `.koolie/core/` kopieren, nie ganz `.koolie/`.** Daneben liegt das Kennzeichen des
+   Framework-Repositoriums (`.koolie/QUELLREPOSITORIUM.md`). Kopiert hält der Validator das Projekt
+   für das Framework selbst und meldet Fehler, die die Ursache nicht nennen; aus einem Klon kommt
+   außerdem dessen Overlay mit. `install.py` meldet ein mitkopiertes Kennzeichen – dann die Datei
+   löschen.
 
 3. **Wurzelbestandteile anlegen:**
 
@@ -131,109 +109,77 @@ bleibt unberührt (P10, Baum 6).
    python .koolie/core/install.py --client <client> --overlay general
    ```
 
-   **Das Overlay-Muster `general` ist wählbar, nicht Standard** (D-126, D-355). Ohne
-   `--overlay` beginnt das Projekt mit dem leeren Overlay. Mit ihm füllt
-   `install.py` drei Pfadplatzhalter, deren Wert sich ohne Kenntnis des Projekts sicher
-   angeben lässt – `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>` und
-   `<EXCLUDED_PATHS>` –, und zwar **einmal** und in **allen drei** Trägern: Overlay,
-   Laufzeitfassung und Berechtigungsdatei. **Das Muster sperrt, es gibt nichts frei:**
-   Erlaubte Pfade, Befehle, Rollen und Freigaben bleiben Schlitze, und ein Overlay aus dem
-   Muster ist **nicht** aktivierungsreif. Was es füllt und warum, steht in
-   `.koolie/core/framework/overlay-patterns/general.md`; `--overlay` ohne Namen zählt die
-   Muster auf. ⚠️ **Liegt die Saat schon, bricht `--overlay` ab** – vorhandene Saat gehört
-   dem Projekt, und mit `--update` gibt es das Muster nicht.
+   Vor der Wahl des Client Packs dessen Fähigkeitsmatrix lesen
+   (`.koolie/core/clients/<client>/CLIENT_PACK.md`): Sie zeigt, welche Zusagen der Client
+   technisch erzwingt und welche nur als Anweisung wirken.
 
-   **Das Muster bringt außerdem sechs Dokumente mit** (D-359, D-360):
-   allgemeine Praktiken für Coding Guidelines, Definition of Ready, Definition of Done,
-   Qualität, Sicherheit und Branching – nur, was auf jedes Projekt passt, ohne Werkzeuge und
-   Schwellenwerte. Sie liegen danach unter `.koolie/project-overlay/documents/<typ>/` und
-   stehen im Manifest mit Status `entwurf`. **Verbindlich werden sie erst durch den
-   Overlay Owner:** prüfen, anpassen, im Manifest auf `aktuell` setzen, Freigabe eintragen
-   und in der Laufzeitfassung als K1-Dokumente führen. Bis dahin liest der KI-Client sie
-   nicht als Vorgabe.
+   Das Skript legt die Wurzel-Anweisungsdatei, ihre `.example`-Vorlage für persönliche
+   Ergänzungen, die Laufzeitschicht und – falls noch nicht vorhanden – `.koolie/project-overlay/`
+   an. **Berechtigungsdatei und Overlay werden nie überschrieben**, auch bei `--update` nicht.
 
-   Das Skript legt die Wurzel-Anweisungsdatei, ihre `.example`-Vorlage für nutzerlokale
-   Ergänzungen, die Laufzeitschicht und – sofern noch nicht vorhanden – `.koolie/project-overlay/`
-   an. **Die Saatdateien – Berechtigungsdatei und Overlay – werden nie überschrieben**, auch
-   bei `--update` nicht.
+   **Das Overlay-Muster `general` ist wählbar, nicht Standard.** Ohne `--overlay` beginnt das
+   Projekt mit einem leeren Overlay. Mit ihm füllt `install.py` drei Pfadplatzhalter, deren Wert
+   sich ohne Kenntnis des Projekts sicher angeben lässt – `<CI_CONFIG_PATHS>`,
+   `<QUALITY_GATE_CONFIG_PATHS>` und `<EXCLUDED_PATHS>` –, in Overlay, Laufzeitfassung und
+   Berechtigungsdatei zugleich. Das Muster sperrt nur, es gibt nichts frei; ein Overlay daraus ist
+   noch nicht aktivierungsreif. Dazu kommen sechs Musterdokumente – Coding Guidelines, Definition
+   of Ready, Definition of Done, Qualität, Sicherheit, Branching – unter
+   `.koolie/project-overlay/documents/<typ>/` mit Status `entwurf`. Verbindlich werden sie erst,
+   wenn der Overlay Owner sie prüft, im Manifest auf `aktuell` setzt, freigibt und in der
+   Laufzeitfassung als K1-Dokumente führt. Einzelheiten:
+   `.koolie/core/framework/overlay-patterns/general.md`. Liegt schon ein Overlay im Projekt, bricht
+   `--overlay` ab.
 
-   **Belegt das Projekt einen Pfad des Frameworks schon, bricht die Erstinstallation ab** und
-   nennt die betroffenen Dateien (D-46). Der wahrscheinliche Fall ist die
-   Wurzel-Anweisungsdatei: Ihr Name ist die Konvention des Clients, nicht die Erfindung des
-   Frameworks – ein Projekt, das bereits mit diesem Client arbeitet, führt sie meistens. Wie
-   der vorhandene Inhalt übernommen wird, steht in Schritt 3a.
+   **Belegt das Projekt schon einen Pfad des Frameworks, bricht die Installation ab** und nennt die
+   Dateien. Meist ist es die Wurzel-Anweisungsdatei, weil das Projekt bereits mit dem Client
+   arbeitet. Wie ihr Inhalt übernommen wird, steht in Schritt 3a.
 
-   **Vor der Wahl des Client Packs** die Fähigkeitsmatrix des Kandidaten lesen
-   (`.koolie/core/clients/<client>/CLIENT_PACK.md`): Sie weist aus, welche Zusagen
-   des Frameworks dieser Client technisch erzwingt und welche nur als Anweisung im Kontext
-   stehen.
-
-   Übernimm die `.gitignore` des Framework-Repositorys **nicht** unverändert: Dort sind
-   die Wurzel-Anweisungsdatei, die Laufzeitschicht und `.koolie/project-overlay/` ausgeschlossen,
-   weil sie im Framework-Repository Erzeugnisse sind. Im Projekt gehören sie in die
-   Versionierung.
-
-   **Eine Zeile gehört umgekehrt hinein** (D-97):
+   **`.gitignore`:** Die des Framework-Repositorys nicht übernehmen – sie schließt
+   Wurzel-Anweisungsdatei, Laufzeitschicht und Overlay aus, die im Projekt versioniert werden.
+   Hinein gehört dagegen diese Zeile, weil die Werkzeuge des Kerns bei jedem Lauf Bytecode
+   erzeugen:
 
    ```gitignore
-   # Bytecode der Python-Werkzeuge des Kerns – ein Erzeugnis, kein Quelltext
    __pycache__/
    ```
 
-   `install.py` importiert `clientmap.py`, Validator und Hook laufen als Skript: Bei
-   jedem Lauf entsteht Bytecode unter `.koolie/core/`. Versioniert ändert er sich mit
-   jedem Lauf und überlebt den Kern, aus dem er entstanden ist. **Prüfung 45 verlangt die
-   Zeile und meldet außerdem bereits versionierten Bytecode** – denn die Zeile allein
-   entfernt ihn nicht: Git liest die `.gitignore` für bereits verfolgte Dateien nicht.
-   Der Weg dorthin ist `git rm -r --cached .koolie/core/**/__pycache__`, **danach** die
-   Zeile.
+   Ist Bytecode schon versioniert, entfernt die Zeile ihn nicht. Zuerst
+   `git rm -r --cached .koolie/core/**/__pycache__`, dann die Zeile. Der Validator meldet beides
+   (Prüfung 45).
 
-3a. **Vorhandene Anweisungsdatei übernehmen** (nur, wenn Schritt 3 abgebrochen ist).
-
-   Das Framework beansprucht die Wurzel-Anweisungsdatei für Ebene 1. Ihr bisheriger Inhalt
-   geht nicht verloren, er wechselt die Ebene:
+3a. **Vorhandene Anweisungsdatei übernehmen** (nur, wenn Schritt 3 abgebrochen ist). Die
+   Wurzel-Anweisungsdatei gehört dem Kern. Ihr bisheriger Inhalt geht nicht verloren, er zieht um:
 
    | Bisheriger Inhalt | Neuer Ort |
    |---|---|
-   | Projektwissen – Stack, Befehle, Architektur, Konventionen | `.koolie/project-overlay/OVERLAY.md`, in den passenden Abschnitt |
+   | Projektwissen – Stack, Befehle, Architektur, Konventionen | `.koolie/project-overlay/OVERLAY.md`, passender Abschnitt |
    | Projektspezifische **Regeln** an den Agenten | eine eigene Regeldatei `2N-overlay-<name>.md` in der Regelablage (Ebene 4) |
-   | Persönliche Gewohnheiten einzelner Personen | die `.example`-Vorlage für nutzerlokale Ergänzungen, nicht das Repositorium |
-   | Abschnitte, die ein **anderes Werkzeug** erzeugt und pflegt | siehe den Hinweis unten |
+   | Persönliche Gewohnheiten | die `.example`-Vorlage für persönliche Ergänzungen, nicht das Repositorium |
+   | Abschnitte, die ein **anderes Werkzeug** erzeugt | siehe Abschnitt 8.2 |
 
-   Erst danach die alte Datei entfernen und Schritt 3 wiederholen.
+   Danach die alte Datei löschen und Schritt 3 wiederholen. Führt das Projekt bereits ein anderes
+   Agenten-Rahmenwerk, das Abschnitte in die Wurzel-Anweisung schreibt, wird es vorher auf eine
+   eigene Datei umgestellt.
 
-   > **Führt das Projekt bereits ein anderes Agenten-Framework**, gilt Abschnitt 8.2: Koolie
-   > trägt Ebene 1, das andere Rahmenwerk seine Prozessartefakte in eigener Ablage. Erzeugt es
-   > Abschnitte in der Wurzel-Anweisung, gehört es auf eine eigene Datei umgestellt, bevor
-   > Koolie übernommen wird – die Wurzel-Anweisung gehört dem Kern (D-514, D-515).
+4. **Overlay ausfüllen:** `.koolie/project-overlay/OVERLAY.md` vollständig; die Laufzeitfassung
+   `20-project-overlay.md` synchron halten; Werte in die Berechtigungsdatei eintragen, ohne die
+   Kernregeln im Block `_core_rules_integrity` zu entfernen; Manifest und Dokumente einpflegen.
 
-4. **Overlay ausfüllen:** `.koolie/project-overlay/OVERLAY.md` vollständig; Laufzeitfassung
-   `20-project-overlay.md` in der Regelablage synchron halten; Werte in der
-   Berechtigungsdatei eintragen, ohne die Kernregeln im Block `_core_rules_integrity` zu entfernen; Manifest und
-   Dokumente einpflegen.
+   **Mehr als ein Technologiestrang?** Die Berechtigungsdatei hat drei Befehlsschlitze –
+   `<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>` –, ein Projekt mit Backend und Frontend
+   aber sechs Befehle. So gehen sie zusammen:
 
-   **Mehr als ein Technologiestrang? Die Berechtigungsdatei hat drei Befehlsschlitze.**
-   `<BUILD_COMMAND>`, `<TEST_COMMAND>` und `<LINT_COMMAND>` – einen vierten Eintrag kann
-   ein Overlay dort nicht erzeugen, und die Datei wird nach der Erstinstallation nie
-   wieder geschrieben (D-76). Ein Projekt mit Backend **und** Frontend hat aber sechs
-   Build-, Test- und Prüfbefehle. Drei Sätze regeln den Fall:
+   - **Je Platzhalter genau eine Tabellenzeile** in Abschnitt 5 oder 6 des Overlays, mit dem
+     Platzhalter in spitzen Klammern und dem Befehl rechts daneben (Prüfung 42).
+   - **Den Schlitz bekommt der Befehl, der auf den Arbeitsplätzen tatsächlich läuft.** Ein Schlitz
+     mit einem Befehl, der nicht läuft, sichert nichts ab.
+   - **Die übrigen Befehle bleiben gelistet und wirken über die Regelschicht** – als Anweisung,
+     nicht als technische Schranke. Von Hand in die Berechtigungsdatei eintragen hilft nicht;
+     Prüfung 42 meldet jeden Befehl, den kein Platzhalter erklärt.
 
-   - **Je Platzhalter genau eine Tabellenzeile** in Abschnitt 5 oder 6, mit spitzen
-     Klammern in der Platzhalterspalte und dem Befehl in der Zelle rechts daneben. Stehen
-     zwei Zeilen für denselben Platzhalter, ist nicht entschieden, welcher Befehl für den
-     Schlitz gilt – Prüfung 42 meldet es (D-91).
-   - **Den Schlitz bekommt der Befehl, der auf den Arbeitsplätzen des Projekts tatsächlich
-     läuft.** Ein Schlitz, der einen nicht ausführbaren Befehl trägt, sichert nichts ab
-     und verdeckt, welcher Befehl wirklich läuft (Befund am Übungsrepository:
-     `.koolie/core/tests/protocols/2026-09-15-herrichtung-uebungsrepositorium.md`).
-   - **Die übrigen Befehle bleiben gelistet und wirken über die Regelschicht.** Das ist
-     eine Anweisung an den KI-Client und keine technische Schranke; die Tabelle sagt es,
-     damit niemand mehr erwartet. **Ein Eintrag von Hand in die Berechtigungsdatei ist
-     kein Ersatz:** Prüfung 42 meldet jeden Befehl, den kein Platzhalter erklärt (D-90).
-
-5. **Packs aktivieren.** Kein Pack ist nach der Installation aktiv — auch nicht das
-   Referenzpack `software-development`. Je benötigtem Pack: Rolle im Overlay Abschnitt 1
-   aufführen, dann Laufzeitfassung und – falls vorhanden – Skills kopieren:
+5. **Packs aktivieren.** Nach der Installation ist kein Pack aktiv, auch nicht das Referenzpack
+   `software-development`. Je benötigtem Pack die Rolle im Overlay Abschnitt 1 eintragen, dann
+   die Laufzeitfassung und – falls vorhanden – die Skills kopieren:
 
    ```bash
    # <regelablage> ist der Pfad aus dem manifest.json des gewählten Client Packs
@@ -241,12 +187,12 @@ bleibt unberührt (P10, Baum 6).
    cp $P/runtime/30-role-software-development.md <regelablage>/
    ```
 
-   Einmal aktiviert, hält `install.py --update` diese Bestandteile auf dem Stand des
-   Releases; `--check` meldet lokale Abweichungen.
+   Danach hält `install.py --update` diese Bestandteile auf dem Stand des Releases; `--check`
+   meldet lokale Abweichungen.
 
-6. **Projektlokale Härtung:** `.koolie/project-overlay/forbidden-terms.txt` mit den realen Projekt-,
-   Kunden-, Behörden-, Produkt- und Systemnamen füllen (bleibt projektlokal); gegebenenfalls
-   zusätzliche Verweigerungsregeln in der Berechtigungsdatei.
+6. **Projektlokal härten:** `.koolie/project-overlay/forbidden-terms.txt` mit den echten Projekt-,
+   Kunden-, Behörden-, Produkt- und Systemnamen füllen (bleibt projektlokal); bei Bedarf weitere
+   Verbote in der Berechtigungsdatei.
 
 7. **Validieren und testen:**
 
@@ -255,110 +201,102 @@ bleibt unberührt (P10, Baum 6).
    python .koolie/core/install.py --check
    ```
 
-   Der erste Lauf prüft Struktur, Inhalte und die **Aktivierungsreife eines Kandidaten**:
-   Er erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist; `aktiv` setzt erst
-   Schritt 9, und erst dort gilt `--strict-overlay` (D-57). Der zweite
-   prüft, ob eine Core-Datei lokal verändert wurde – das wäre eine Bearbeitung an der
-   falschen Stelle. Anschließend die Basistests des Testkatalogs auf dem Übungsrepository
-   ausführen und das Übungsrepository für das Onboarding erzeugen
-   (`.koolie/core/onboarding/exercises/README.md`).
+   Der erste Befehl prüft Struktur, Inhalte und ob das Overlay aktivierungsreif ist; er erwartet
+   einen Status, der noch nicht `aktiv` ist. Der zweite prüft, ob eine Kerndatei lokal verändert
+   wurde. Danach die Basistests des Testkatalogs auf dem Übungsrepository fahren und das
+   Übungsrepository für das Onboarding anlegen (`.koolie/core/onboarding/exercises/README.md`).
 
-8. **Organisation im Projekt:** Rollen zuordnen (außerhalb des Repos), Eskalationskanäle,
+8. **Organisation im Projekt:** Rollen zuordnen (außerhalb des Repositorys), Eskalationskanäle,
    Ablageorte für Berichte und Pläne, Feedbackkanal.
 
-9. **Overlay aktivieren:** Checkliste 10 abschließen, Overlay-Status `aktiv` an **jeder**
-   Stelle, an der das Overlay ihn erklärt, dann
-   `validate-framework.py --strict-overlay` als Nachprüfung des aktiven Zustands; Meldung
-   an den Framework Owner (Bestandsliste). **Erst danach** beginnt der erste Agentenlauf
-   mit Schreibrechten.
+9. **Overlay aktivieren:** Checkliste 10 abschließen, den Overlay-Status an jeder Stelle, an der
+   das Overlay ihn führt, auf `aktiv` setzen, dann `validate-framework.py --strict-overlay` und
+   `install.py --probe` laufen lassen und das Projekt beim Framework Owner melden (Bestandsliste).
+   **Erst danach** arbeitet der Agent mit Schreibrechten.
 
-10. **Menschen befähigen:** Onboarding vor produktiver Nutzung; Pilotparameter setzen, wenn das
-   Projekt als Pilot läuft.
+10. **Menschen befähigen:** Onboarding vor der produktiven Nutzung; Pilotparameter setzen, wenn
+   das Projekt als Pilot läuft.
 
 ## 3. Aktualisierung auf ein neues Framework-Release
 
-1. Release-Notes und Migrationshinweise lesen
-   (`.koolie/core/CHANGELOG.md` des neuen Releases).
+1. Die Release-Notes und Migrationshinweise im `CHANGELOG.md` des neuen Releases lesen.
 
-2. Das Verzeichnis `.koolie/core/` durch das neue ersetzen – **nur dieses Verzeichnis**:
-   Eine Kopie von ganz `.koolie/` aus einem Klon des Frameworks ersetzt das Overlay des
-   Projekts durch das des Frameworks, und zwar **ohne Meldung** (Abschnitt 2, Schritt 2;
-   D-354). Dann die Wurzelbestandteile nachziehen:
+2. **Heben.** Am einfachsten aus dem neuen Release heraus – mit `uvx koolie` im Projekt, mit dem
+   Starter oder direkt:
+
+   ```bash
+   python .koolie/core/install.py --target /pfad/zum/projekt --update
+   ```
+
+   Der alte Kern wird als Ganzes ersetzt und erst entfernt, wenn `--update` im Projekt geklappt
+   hat; sonst liegt er wieder an seinem Platz. Der Lieferumfang bleibt, wie er war.
+
+   **Von Hand:** `.koolie/core/` im Projekt löschen, das neue Verzeichnis hineinkopieren – nur
+   dieses, nie ganz `.koolie/` (Abschnitt 2, Schritt 2) – und im Projekt aufrufen:
 
    ```bash
    python .koolie/core/install.py --update
    ```
 
-   **Oder beides in einem Befehl aus dem neuen Release heraus** (D-362):
-   `python .koolie/core/install.py --target /pfad/zum/projekt --update` – oder der
-   Starter, der ein vorhandenes Projekt erkennt und das Heben anbietet. Das Verzeichnis
-   wird als Ganzes ersetzt, nicht Datei für Datei, und erst nach erfolgreichem
-   `--update` im Projekt ist der alte Kern weg; scheitert es, liegt er wieder an seinem
-   Platz. Der Lieferumfang bleibt dabei, wie er war (`.koolie/core/LIEFERUMFANG`,
-   D-367); wer wechseln will, nennt `--lieferumfang voll` oder `nutzung` ausdrücklich. ⚠️
-   **Nur `--target` kennt den Lieferumfang:** Wer ein reduziertes Projekt von Hand hebt
-   (`rm -rf` und Kopie), bekommt den ganzen Kern und verliert die Datei – das Projekt ist
-   danach wieder `voll`.
+   Von Hand geht der Lieferumfang `nutzung` verloren; das Projekt ist danach wieder `voll`.
 
-   **Das Client Pack wird erkannt, nicht vermutet.** `install.py` liest, welche Laufzeitschicht im Wurzelverzeichnis liegt, und aktualisiert dieses Pack – `--client` ist dafür nicht nötig und sollte weggelassen werden. Die erste Ausgabezeile nennt das erkannte Pack; stimmt es nicht, bricht der Lauf ab, statt eine zweite Laufzeitschicht anzulegen (D-45). Findet die Erkennung nichts – etwa bei einer unvollständigen Installation –, ist `--client <pack>` anzugeben.
+   **Das Client Pack wird erkannt.** `install.py` sieht, welche Laufzeitschicht im Projekt liegt,
+   und aktualisiert dieses Pack; `--client` ist nicht nötig. Die erste Ausgabezeile nennt das
+   erkannte Pack. Findet die Erkennung nichts, etwa bei einer unvollständigen Installation, ist
+   `--client <pack>` anzugeben.
 
-   `--update` überschreibt die Core-Dateien im Wurzelverzeichnis (Wurzel-Anweisungsdatei,
-   Regelablage `00-`, `10-`, `15-`, die `*-TEMPLATE`-Vorlagen, Skill-Ablage `fw-*`,
-   Agentenprofile; bei `openai-codex` zusätzlich die Hook-Datei und die
-   Befehlsregeldatei) **und die Bestandteile aktivierter Packs**, deren
-   Quelle im Kern liegt (Regelablage `30-`, `40-` sowie Skill-Ablage `role-*`, `tech-*`).
-   Welche Datei dazuzählt, steht im `manifest.json` des Client Packs. Unberührt bleiben die
-   Projektbestandteile: Berechtigungsdatei (bei `devin-desktop` und `claude-code` samt
-   Hook-Konfiguration), Overlay, `prj-*`-Skills und projekteigene Packs. Die
-   Berechtigungsdatei wird bewusst nicht angefasst, weil sie Projektwerte enthält – prüfe
-   nach dem Wechsel, ob die Kernregeln noch vollständig sind, und trage Hook-Änderungen
-   aus den Migrationshinweisen von Hand nach. ⚠️ Bei `openai-codex` ändert `--update`
-   die Hook-Datei und damit ihren Hash: Der Schutz-Hook läuft erst wieder, wenn ihm
-   erneut vertraut wurde (`.koolie/core/clients/openai-codex/CLIENT_PACK.md` Abschnitt 1b).
+   **Was `--update` schreibt:** die Kerndateien in der Wurzel – Wurzel-Anweisungsdatei, Regeln
+   `00-`, `10-`, `15-`, die `*-TEMPLATE`-Vorlagen, die `koolie-*`-Skills, die Agentenprofile, bei
+   `openai-codex` auch Hook-Datei und Befehlsregeldatei – und die Bestandteile aktivierter Packs
+   (Regeln `30-`, `40-` und ihre Skills). Welche Dateien das sind, steht im `manifest.json` des
+   Packs.
 
-3. Overlay-Bestandteile gegen die Migrationshinweise prüfen (neue Pflichtfelder, geänderte
-   Platzhalter, deprecatete Skills). Nennt ein Release einen geänderten Kernpfad, betrifft
-   das nicht nur die Berechtigungsdatei: Das Overlay, seine Laufzeitfassung, projekteigene
-   Packs, `prj-*`-Skills, `README`, Onboarding-Material und die `.gitignore` verweisen
-   ebenfalls darauf. Beim Wechsel von 0.4.0 auf 0.10.0 waren es 74 Nennungen in 19
-   Projektdateien (`.koolie/core/tests/protocols/2026-09-10-FW-RE-02.md`). Der Validator
-   meldet davon nur, was er als Verweis erkennt – die Suche über das Projekt gehört dazu.
+   **Was `--update` nicht schreibt:** Berechtigungsdatei (bei `devin-desktop` und `claude-code`
+   samt Hooks), Overlay, `prj-*`-Skills und projekteigene Packs. Die Berechtigungsdatei trägt
+   Projektwerte; nach dem Heben prüfen, ob die Kernregeln vollständig sind, und Hook-Änderungen
+   aus den Migrationshinweisen von Hand nachtragen.
 
-   **Feste Versionswerte in Projektdateien sind dabei die unauffälligste Stelle.** Eine
-   Merge-Request-Vorlage, ein `README` oder ein Onboarding-Dokument, das die Framework- oder
-   Overlay-Version als **Wert** statt als Platzhalter nennt, veraltet mit dem nächsten Release,
-   ohne dass eine Prüfung anschlägt – der Validator kennt die Projektvorlage nicht.
-   Empfehlung: An dieser Stelle Platzhalter eintragen
-   (`<Inhalt der Datei .koolie/core/VERSION>`), keine Werte.
+   ⚠️ Bei `openai-codex` ändert `--update` die Hook-Datei und damit ihren Hash. Der Schutz-Hook
+   läuft erst wieder, wenn ihm erneut vertraut wurde
+   (`.koolie/core/clients/openai-codex/CLIENT_PACK.md` Abschnitt 1b).
 
-   **Die Musterdokumente des Overlay-Musters `general` erreichen ein bestehendes Projekt
-   nicht** – das Muster wirkt nur bei der Erstinstallation (D-126, D-359). Wer eines davon
-   übernehmen will, kopiert es aus
-   `.koolie/core/framework/overlay-patterns/general/documents/<typ>/` in die
-   Dokumentablage des Overlays, registriert es im Manifest wie jedes andere Dokument
-   (`.koolie/project-overlay/OVERLAY.md` Abschnitt 19) und prüft es vorher gegen die
-   vorhandenen Dokumente desselben Typs: Zwei Coding Guidelines nebeneinander sind zwei
-   Register.
+   **Wechsel auf 2.0.0: neue Skillnamen.** Die mitgelieferten Skills heißen jetzt `koolie-<name>`
+   statt `fw-<name>`, `role-re-ticket` heißt `koolie-ticket` und das Agentenprofil
+   `koolie-reviewer`. `--update` benennt die Skillordner um, entfernt das alte Agentenprofil und
+   ersetzt die alten Namen einmalig in der Berechtigungsdatei – das ist die einzige Stelle, an der
+   es die Berechtigungsdatei anfasst. Die Ausgabe listet jede Änderung. Ins Overlay schreibt es
+   nicht; es nennt die Dateien, in denen noch ein alter Name steht (etwa `/fw-plan`), zum Anpassen
+   von Hand.
 
-4. Validator (`--strict-overlay`) und Basistests erneut ausführen; bei MAJOR-Releases
+3. **Projektdateien nachziehen.** Overlay, Laufzeitfassung, projekteigene Packs, `prj-*`-Skills,
+   `README`, Onboarding-Material und `.gitignore` können auf geänderte Kernpfade, Platzhalter oder
+   Skillnamen verweisen. Der Validator findet nur, was er als Verweis erkennt – eine Suche über das
+   Projekt gehört dazu.
+
+   Feste Versionswerte in Projektdateien fallen dabei am wenigsten auf: Nennt eine
+   Merge-Request-Vorlage oder ein `README` die Framework-Version als Wert, veraltet sie mit dem
+   nächsten Release. Besser einen Platzhalter eintragen (`<Inhalt der Datei .koolie/core/VERSION>`).
+
+   Die Musterdokumente des Overlay-Musters `general` kommen bei einem Update nicht ins Projekt.
+   Wer eines übernehmen will, kopiert es aus
+   `.koolie/core/framework/overlay-patterns/general/documents/<typ>/`, registriert es im Manifest
+   (`.koolie/project-overlay/OVERLAY.md` Abschnitt 19) und gleicht es vorher mit den vorhandenen
+   Dokumenten desselben Typs ab.
+
+4. Validator (`--strict-overlay`) und Basistests erneut ausführen; bei einem MAJOR-Release
    zusätzlich FW-RE-01/02.
 
-5. Overlay-Änderungsverlauf ergänzen (neue kompatible Framework-Version); Team über relevante
-   Änderungen informieren; Onboarding-Materialstand prüfen.
+5. Den Overlay-Änderungsverlauf ergänzen, das Team informieren, das Onboarding-Material prüfen.
 
-6. **Die Hebung im Projekt committen** – Kern, Laufzeitschicht und Overlay in einem Commit.
-   Erst dann ist der neue Stand dauerhaft; ein gehobener, aber nicht committeter Arbeitsbaum
-   ist ein Zustand, kein Stand (D-343).
+6. **Kern, Laufzeitschicht und Overlay in einem Commit festhalten.** Erst dann ist der neue Stand
+   dauerhaft.
 
 ## 4. Mehrere Repositories, ein Projekt
 
-**Entscheidend ist, wo die Sitzung startet – nicht, wo das Framework liegt.** Gemessen am
-2026-09-26 für alle drei Client Packs (D-408, `.koolie/core/tests/protocols/2026-09-26-mehrprojekt-tokenlast.md`):
-Eine Installation wirkt technisch nur für eine Sitzung, die **im Verzeichnis der Installation**
-startet. Startet die Sitzung in einem Repository darunter, laden bei allen drei Packs weder
-Berechtigungen noch Hooks, bei `devin-desktop` und `openai-codex` auch die Wurzel-Anweisung nicht.
-**Nichts meldet es** – die Sitzung verhält sich, als gäbe es das Framework nicht, oder kennt bei
-`claude-code` sogar ihre Regeln und hat keine Durchsetzung.
+**Entscheidend ist, wo die Sitzung startet, nicht wo das Framework liegt.** Eine Installation
+wirkt nur für eine Sitzung, die im Verzeichnis der Installation startet. Startet sie in einem
+Repository darunter, laden weder Berechtigungen noch Hooks – und nichts meldet es. Gemessen am
+2026-09-26 (`.koolie/core/tests/protocols/2026-09-26-mehrprojekt-tokenlast.md`):
 
 | Client Pack (Clientversion) | Sitzung im Verzeichnis der Installation | Sitzung im Repository darunter: Wurzel-Anweisung | … Berechtigungen und Hooks | Eigene Installation im Repository |
 |---|---|---|---|---|
@@ -368,22 +306,19 @@ Berechtigungen noch Hooks, bei `devin-desktop` und `openai-codex` auch die Wurze
 
 **Drei Einsatzszenarien:**
 
-1. **Ein Repository** – Installation in dessen Wurzel. Der Normalfall.
-2. **Lose ausgecheckte Repositories** – **je Repository eine eigene Installation**, die Sitzung
-   startet im Repository. Das Overlay kann gemeinsam gepflegt und je Repository ausgerollt werden
-   (unten). Eine zusätzliche Installation im gemeinsamen Arbeitsbereich schadet nicht, trägt aber
-   nichts für Sitzungen, die in einem Repository starten.
-3. **Ein Multimodul-Projekt in einem Repository** – eine Installation in der Wurzel, die Sitzung
-   startet immer dort. Unterschiede der Module tragen Technology Packs mit Pfad-Ladebedingung (bei
-   `openai-codex` ohne Ladebedingung, D-348).
+1. **Ein Repository:** Installation in dessen Wurzel. Der Normalfall.
+2. **Mehrere lose Repositories:** je Repository eine eigene Installation; die Sitzung startet im
+   Repository. Das Overlay kann gemeinsam gepflegt und je Repository ausgerollt werden.
+3. **Ein Multimodul-Projekt in einem Repository:** eine Installation in der Wurzel, die Sitzung
+   startet dort. Unterschiede der Module tragen Technology Packs mit Pfad-Ladebedingung (bei
+   `openai-codex` ohne Ladebedingung).
 
-⚠️ **Eine einzige Installation über mehreren Repositories** trägt nur, solange jede Sitzung im
-Arbeitsbereich startet – eine Bedingung, die kein Werkzeug prüft (`K-159`). Sie ist nicht zu
-empfehlen, wenn Menschen Repositories einzeln öffnen.
+⚠️ Eine einzige Installation über mehreren Repositories trägt nur, solange jede Sitzung im
+gemeinsamen Arbeitsbereich startet. Das prüft kein Werkzeug; wenn Menschen Repositories einzeln
+öffnen, ist davon abzuraten.
 
-Das Overlay KANN geteilt gepflegt und je Repository ausgerollt werden;
-das Heben des Kerns ist ein Kopiervorgang plus Skriptaufruf und damit skriptbar – am
-einfachsten mit `--target` aus dem neuen Release heraus, das nur den Kern kopiert:
+Mehrere Repositories lassen sich in einer Schleife heben; `--target` kopiert nur den Kern, das
+Overlay jedes Repositorys bleibt:
 
 ```bash
 for repo in repo-a repo-b; do
@@ -391,127 +326,91 @@ for repo in repo-a repo-b; do
 done
 ```
 
-Von Hand sieht dieselbe Schleife so aus:
-
-```bash
-for repo in repo-a repo-b; do
-  rm -rf "$repo/.koolie/core"   # ersetzen, nicht überkopieren: sonst bleiben entfernte Dateien liegen
-  mkdir -p "$repo/.koolie"
-  cp -r .koolie/core "$repo/.koolie/"
-  (cd "$repo" && python .koolie/core/install.py --update)
-done
-```
-
-Die Pfadlisten (Abschnitt 4 des Overlays) sind je Repository spezifisch und werden nicht
-mitkopiert — `install.py` überschreibt `.koolie/project-overlay/` nie. ⚠️ **Das gilt nur,
-solange die Schleife `.koolie/core` kopiert:** Ein `cp -r .koolie` überschreibt das Overlay,
-bevor `install.py` läuft, und `install.py` meldet es danach als unberührt (D-354).
-
 ## 5. Deinstallation oder Werkzeugwechsel
 
-**Deaktivierung:** Overlay-Status `inaktiv` (das Werkzeug arbeitet nur noch lesend), danach
-Entfernen der Laufzeitschicht, wenn gewünscht. Das Verzeichnis
-`.koolie/core/` kann als Nachweis im Repository bleiben.
+**Deaktivieren:** Overlay-Status auf `inaktiv` setzen – das Werkzeug arbeitet dann nur noch
+lesend –, danach bei Bedarf die Laufzeitschicht entfernen. `.koolie/core/` kann als Nachweis im
+Repository bleiben.
 
-**Werkzeugwechsel:** Die kanonische Ebene `.koolie/core/framework/` bleibt unverändert —
-sie ist werkzeugneutral. Ein anderer KI-Client wird als **Client Pack** unter
-`.koolie/core/clients/<client>/` angelegt: eine `CLIENT_PACK.md` mit Pfadabbildung und
-Fähigkeitsmatrix und ein `manifest.json` mit der maschinenlesbaren Abbildung. **Die
-Wurzelartefakte kommen aus dem Kern**, nicht aus dem Pack (`.koolie/core/clients/README.md`,
-Abschnitt 5).
-
-Vor dem Wechsel ist die **Fähigkeitsmatrix** des Zielclients auszuwerten: Sie weist je Zusage
-aus, ob der Client sie technisch erzwingt oder ob sie nur noch als Anweisung im Kontext steht.
-Eine Kernzusage, die der Zielclient nicht technisch durchsetzt, ist begründungspflichtig, im
-Overlay als Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben. Ein Wechsel, der
-diese Prüfung überspringt, senkt das Schutzniveau, ohne dass es jemand bemerkt.
+**Werkzeug wechseln:** Die Regeln unter `.koolie/core/framework/` sind werkzeugneutral und bleiben.
+Für einen neuen KI-Client entsteht ein Client Pack unter `.koolie/core/clients/<client>/`
+(`.koolie/core/clients/README.md`, Abschnitt 5). Vorher die Fähigkeitsmatrix des Zielclients
+auswerten: Eine Kernzusage, die er nicht technisch durchsetzt, ist zu begründen, im Overlay als
+Ausnahme zu führen und durch `<SECURITY_CONTACT>` freizugeben. Wer das überspringt, senkt das
+Schutzniveau, ohne dass es jemand merkt.
 
 ## 6. Warum der Kern gebündelt ist
 
-Liegt der gesamte Kern in einem Ordner, muss bei der Übernahme und beim Heben niemand
-entscheiden, welches Verzeichnis zum Framework und welches zum Projekt gehört, und das
-Wurzelverzeichnis des Projekts bleibt übersichtlich.
-
-Die Bündelung ändert nichts an der Ebenenhierarchie und an keiner inhaltlichen Regel. Sie
-trennt physisch, was ohnehin logisch getrennt war: **Der Kern ist ein Ordner, den man
-ersetzt. Das Projekt ist alles daneben.**
+Liegt der Kern in einem Ordner, muss beim Übernehmen und Heben niemand entscheiden, was zum
+Framework und was zum Projekt gehört, und die Wurzel des Projekts bleibt übersichtlich. **Der Kern
+ist ein Ordner, den man ersetzt. Das Projekt ist alles daneben.**
 
 ## 7. Was das Framework kostet – gemessen
 
-**Für Entscheider:** Das Framework verteuert eine Aufgabe des KI-Clients, weil es Regeln in jeden
-Modellaufruf lädt und mehr verlangt – Fundstellen, einen Ergebnisbericht, den passenden Skill.
-Gemessen am 2026-09-26 im Übungsrepository, je Client Pack derselbe Auftrag mit und ohne
-Installation, jeder dreimal (D-409, `.koolie/core/tests/protocols/2026-09-26-mehrprojekt-tokenlast.md`).
-Mittelwerte; die Fixlast-Zeilen mit angelegtem Cache; die gemessenen Modelle nennt das Protokoll:
+Koolie verteuert eine Aufgabe des KI-Clients: Es lädt Regeln in jeden Modellaufruf und verlangt
+mehr – Fundstellen, einen Ergebnisbericht, den passenden Skill. Gemessen am 2026-09-26 im
+Übungsrepository, je Client Pack derselbe Auftrag mit und ohne Installation, jeder dreimal
+(`.koolie/core/tests/protocols/2026-09-26-mehrprojekt-tokenlast.md`). Mittelwerte; die feste Last
+mit angelegtem Cache:
 
 | Client Pack | Aufgabe | Eingabe-Token ohne → mit | Kosten je Aufgabe ohne → mit (USD) | Faktor Kosten |
 |---|---|---|---|---|
-| `claude-code` | nur „OK“ antworten (Fixlast) | 32.330 → 47.232 | 0,007 → 0,010 (erster Aufruf einer Sitzung: 0,137 → 0,285) | 1,4 (2,1) |
+| `claude-code` | nur „OK“ antworten (feste Last) | 32.330 → 47.232 | 0,007 → 0,010 (erster Aufruf einer Sitzung: 0,137 → 0,285) | 1,4 (2,1) |
 | | kleine Änderung als Diff | 65.466 → 99.443 | 0,065 → 0,184 | 2,8 |
 | | Analyse über mehrere Dateien | 104.503 → 173.236 | 0,137 → 0,284 | 2,1 |
-| `devin-desktop` | Fixlast (seit 1.12.1 mit geladener Regelablage, `K-156`) | 23.556 → 31.913 | 0,012 → 0,016 | 1,3 |
+| `devin-desktop` | feste Last | 23.556 → 31.913 | 0,012 → 0,016 | 1,3 |
 | | kleine Änderung als Diff | 47.983 → 81.585 | 0,051 → 0,123 | 2,4 |
 | | Analyse über mehrere Dateien | 167.503 → 295.203 | 0,272 → 0,494 | 1,8 |
-| `openai-codex` | Fixlast | 15.346 → 19.755 | 0,006 → 0,011 | 1,7 |
+| `openai-codex` | feste Last | 15.346 → 19.755 | 0,006 → 0,011 | 1,7 |
 | | kleine Änderung als Diff | 63.503 → 107.119 | 0,021 → 0,049 | 2,4 |
 | | Analyse über mehrere Dateien | 89.826 → 135.566 | 0,035 → 0,062 | 1,8 |
 
 **Was daraus folgt:**
 
-- **Die feste Last je Modellaufruf ist klein und kommt fast immer aus dem Cache:** rund 15.000
-  Token bei `claude-code`, 4.400 bei `openai-codex`, 8.400 bei `devin-desktop` – dort mit der
-  Regelablage, die bis `1.12.0` nicht lud (`K-156`; mit `1.12.1` nachgemessen: 8.344). Der Cache
-  kostet ein Zehntel des Eingabepreises; teuer ist nur
-  der **erste** Aufruf einer Sitzung, der ihn anlegt.
-- **Eine kleine Aufgabe wird rund zwei- bis dreimal so teuer, eine größere rund doppelt so teuer.**
-  Den Unterschied macht weniger die feste Last als die Arbeitsweise: Die Sitzung liest den Skill und
-  Framework-Dokumente, belegt mit Fundstellen und schreibt einen Ergebnisbericht – die Ausgabe ist
-  bei der kleinen Änderung rund dreimal so lang.
-- **In Beträgen:** Je hundert kleine Aufgaben rund 3 bis 12 USD mehr, je hundert Analysen rund 3 bis
-  22 USD mehr, je nach Client (Listenpreise vom 2026-09-26). Die Laufzeit steigt um bis zu das
+- **Die feste Last ist klein und kommt fast immer aus dem Cache:** rund 15.000 Token bei
+  `claude-code`, 8.400 bei `devin-desktop`, 4.400 bei `openai-codex`. Der Cache kostet ein Zehntel
+  des Eingabepreises; teuer ist nur der erste Aufruf einer Sitzung.
+- **Eine kleine Aufgabe wird zwei- bis dreimal so teuer, eine größere rund doppelt so teuer.** Den
+  Unterschied macht die Arbeitsweise: Die Sitzung liest den Skill, belegt mit Fundstellen und
+  schreibt einen Ergebnisbericht.
+- **In Beträgen:** je hundert kleine Aufgaben rund 3 bis 12 USD mehr, je hundert Analysen rund 3
+  bis 22 USD mehr, je nach Client (Listenpreise vom 2026-09-26). Die Laufzeit steigt bis auf das
   Doppelte.
-- **Gesenkt wird nur, wo keine Schranke nachgibt** (`K-144`). Die feste Last ist nicht der Hebel;
-  eine kürzere Zuordnung von Arbeitsschritt zu Skill ist vorgeschlagen und nicht umgesetzt.
 
-**Was die Zahlen nicht sagen:** Sie stammen aus drei Aufgaben in einem Repository an einem Tag, je
-dreimal gefahren; die Spannen stehen im Protokoll. Die Preise sind Listenpreise der API – für
-`claude-code` die Kostenangabe des Clients, für `devin-desktop` dessen Preisliste, für
-`openai-codex` dieselbe Preisliste als Ersatzquelle, weil der Client keinen Preis nennt. **Ein Abo
-rechnet anders ab**; dort zählt der Verbrauch am Kontingent, und dafür sind die Token die
-richtige Größe. **Der Nutzen ist nicht gemessen** – ob weniger Nacharbeit, weniger Fehler oder ein
-verhindertes Leck die Mehrkosten aufwiegt, sagt keine dieser Zahlen.
+**Was die Zahlen nicht sagen:** Sie stammen aus drei Aufgaben in einem Repository an einem Tag;
+die Spannen stehen im Protokoll. Die Preise sind Listenpreise der API. Ein Abo rechnet anders ab –
+dort zählt der Verbrauch am Kontingent, und dafür sind die Token die richtige Größe. **Den Nutzen
+messen sie nicht:** ob weniger Nacharbeit, weniger Fehler oder ein verhindertes Leck die
+Mehrkosten aufwiegen.
 
 ## 8. Einsatzarchitektur, Koexistenz und Vergleich
 
-Koolie ist die **Regel- und Nachweisschicht im Repositorium** – kein Sandkasten und keine
-GRC-Plattform (D-478). Es wirkt über Dateien, die im Projekt liegen, und über den Client, der sie
-lädt. Was außerhalb davon liegt, muss die Umgebung tragen (D-513).
+Koolie ist die Regel- und Nachweisschicht im Repositorium – kein Sandkasten und keine
+GRC-Plattform. Es wirkt über Dateien im Projekt und über den Client, der sie lädt. Was außerhalb
+davon liegt, muss die Umgebung tragen.
 
 ### 8.1 Was Koolie trägt – und was die Umgebung tragen muss
 
 | Schicht | Trägt | Was Koolie beiträgt | Was fehlt, wenn nur Koolie da ist |
 |---|---|---|---|
 | Regeln, Skills, Nachweise | Koolie | Ebenen 1 bis 7, Testblätter, Validator, Protokolle | – |
-| Berechtigungen und Schutz-Hook des Projekts | Koolie | Berechtigungsdatei und Hook je Client Pack, Wirksamkeitsprobe `install.py --probe` | Die Dateien liegen im Projekt; ein Mensch kann sie ändern, und sie wirken nur für eine Sitzung, die im Projekt startet (D-407) |
-| Verwaltete Einstellungen des Clients | Administration | Nichts; das Pack nennt die Schalter (etwa `disableBypassPermissionsMode`, `syncClaudeAiSkills`) | Ein Schutz, den weder Agent noch Projekt abschalten kann, und der auch außerhalb des Projektverzeichnisses gilt |
+| Berechtigungen und Schutz-Hook des Projekts | Koolie | Berechtigungsdatei und Hook je Client Pack, Wirksamkeitsprobe `install.py --probe` | Die Dateien liegen im Projekt; ein Mensch kann sie ändern, und sie wirken nur für eine Sitzung, die im Projekt startet |
+| Verwaltete Einstellungen des Clients | Administration | Das Pack nennt die Schalter (etwa `disableBypassPermissionsMode`, `syncClaudeAiSkills`) | Ein Schutz, den weder Agent noch Projekt abschalten kann und der auch außerhalb des Projekts gilt |
 | Branch-Schutz, Pflicht-Review, CI | Plattform | Die CI- und Quality-Gate-Pfade sind für den Agenten gesperrt (Prüfung 89) | Eine Prüfung, die der Agent weder erzeugen noch umgehen kann |
-| Isolation (Container, Netz, Dateisystem) | Laufzeit | Nichts | Schutz gegen einen Agenten, der aktiv umgeht |
+| Isolation (Container, Netz, Dateisystem) | Laufzeit | – | Schutz gegen einen Agenten, der aktiv umgeht |
 
-**Die Arbeit am Kern in einer isolierten Laufzeit** (K-32): Schließt eine Isolationsschicht den
-Schreibweg über die Shell, gibt es für eine Änderung am Kern nur die registrierte, befristete
-Ausnahme nach `governance/EXCEPTION_PROCESS.md` – dieselbe Bauform wie das Mandat (D-447). Koolie
-baut dafür keine eigene Pfadsperre für die Shell (D-497).
+Schließt eine Isolationsschicht den Schreibweg über die Shell, gibt es für eine Änderung am Kern
+nur die registrierte, befristete Ausnahme nach `governance/EXCEPTION_PROCESS.md`.
 
 ### 8.2 Koexistenz mit einem anderen Agenten-Rahmenwerk
 
-**Gemessen am 2026-09-30** an OpenSpec 1.13.2 und GitHub Spec Kit (D-514): Keines der beiden
-schreibt beim Anlegen in die Wurzel-Anweisung, und keines ändert eine Datei von Koolie – in beiden
-Reihenfolgen, auch nicht beim erzwungenen Aktualisieren. Beide legen ihre Skills aber in **dieselbe
-Ablage** wie Koolie – die Skill-Ablage des Clients, mit den Präfixen `openspec-` und `speckit-`. Abgegrenzt wird nach
-Gegenstand: Koolie trägt Ebene 1 (Sicherheit, Berechtigungen, Schutz-Hook), das fremde Rahmenwerk
-seine Prozessartefakte in seiner eigenen Ablage.
+OpenSpec und GitHub Spec Kit schreiben beim Anlegen nicht in die Wurzel-Anweisung und ändern keine
+Datei von Koolie, auch umgekehrt nicht (gemessen am 2026-09-30 mit OpenSpec 1.13.2). Beide legen
+ihre Skills aber in **dieselbe Ablage** wie Koolie, mit den Präfixen `openspec-` und `speckit-`.
+Die Aufteilung: Koolie trägt Ebene 1 – Sicherheit, Berechtigungen, Schutz-Hook –, das andere
+Rahmenwerk seine Prozessartefakte in eigener Ablage.
 
-1. `install.py` meldet ein erkanntes Rahmenwerk am Ende jedes Laufs – eine Auskunft, keine Schranke.
+1. `install.py` meldet ein erkanntes Rahmenwerk am Ende jedes Laufs.
 2. Die fremden Skills im Overlay-Manifest deklarieren, damit der Validator sie nicht nach den
    Regeln für Koolie-Skills prüft (Prüfung 111):
 
@@ -519,27 +418,25 @@ seine Prozessartefakte in seiner eigenen Ablage.
    fremde_skills: openspec-, speckit-
    ```
 
-   Ein Präfix, das einen Koolie-Skill treffen könnte (`fw-`, `prj-`, `role-`, `tech-`), nimmt nichts
-   aus.
+   Ein Präfix, das einen Koolie-Skill treffen könnte (`koolie-`, `prj-`), nimmt nichts aus.
 3. Jeden fremden Skill in der Berechtigungsdatei einem Korb zuordnen, etwa `Skill(openspec-*)` in
-   `ask` – sonst fällt sein Aufruf in die Rückfrage (Prüfung 72, D-238).
+   `ask` – sonst fällt sein Aufruf in die Rückfrage (Prüfung 72).
 
 **Die Wurzel-Anweisung gehört dem Kern.** Schreibt ein Generator markierte Abschnitte hinein
-(`<!-- NAME:START -->` … `<!-- NAME:END -->`), würde `install.py --update` sie überschreiben, und
-der Generator schriebe sie beim nächsten Lauf zurück. 🔴 **Bis `1.21.0` geschah genau das, ohne
-Meldung.** Seither bricht die Aktualisierung davor ab (D-515), und Prüfung 111 warnt vorher. Den
-Generator auf eine eigene Datei umstellen, die bei Bedarf lädt: Jeder Block in der Wurzel-Anweisung
-zählt ins Budget der stets geladenen Texte (Prüfung 4, K-185).
+(`<!-- NAME:START -->` … `<!-- NAME:END -->`), bricht `install.py --update` ab, statt sie zu
+überschreiben, und Prüfung 111 warnt vorher. Abhilfe: den Generator auf eine eigene Datei
+umstellen, die bei Bedarf lädt. Jeder Block in der Wurzel-Anweisung zählt außerdem ins Budget der
+stets geladenen Texte (Prüfung 4).
 
 ### 8.3 Koolie gegen eine gute Standardkonfiguration – gemessen
 
-**Die Frage** (K-193): Was trägt Koolie zusätzlich zu dem, was ein Team mit einer guten
-Standardkonfiguration ohnehin hat? Gemessen am 2026-09-30 mit `claude-code` 2.1.285 und Opus 5.5
-(D-516, Protokoll `tests/protocols/2026-09-30-einsatzarchitektur.md`):
+Was trägt Koolie zusätzlich zu dem, was ein Team mit einer guten Standardkonfiguration ohnehin hat?
+Gemessen am 2026-09-30 mit `claude-code` 2.1.285 und Opus 5.5
+(Protokoll `tests/protocols/2026-09-30-einsatzarchitektur.md`):
 
-- **Referenz R:** Einstellungen außerhalb des Repositoriums (Secret-Pfade, die Laufzeitschicht des
-  Clients, die Wurzel-Anweisungsdatei und CI-Dateien gesperrt, Modus ohne Rückfragen abgeschaltet),
-  eine kurze Wurzel-Anweisungsdatei mit Teamregeln, ein Remote mit Branch-Schutz und Secret-Scan.
+- **Referenz R:** Einstellungen außerhalb des Repositoriums (Secret-Pfade, Laufzeitschicht,
+  Wurzel-Anweisungsdatei und CI-Dateien gesperrt, Modus ohne Rückfragen abgeschaltet), eine kurze
+  Wurzel-Anweisungsdatei mit Teamregeln, ein Remote mit Branch-Schutz und Secret-Scan.
 - **R+K:** dasselbe, dazu Koolie mit ausgefülltem Overlay.
 - Jede Rückfrage beantwortete ein Stellvertreter mit „ja“ – der unaufmerksame Mensch. Was dann noch
   gesperrt bleibt, sperrt die Technik.
@@ -554,18 +451,17 @@ Standardkonfiguration ohnehin hat? Gemessen am 2026-09-30 mit `claude-code` 2.1.
 | Kosten je Lauf (Mittel, Listenpreis) | | 0,20 USD (Änderung 0,29) | 0,33 USD (Änderung 0,52) |
 | Rückfragen je kleiner Änderung | | 3,8 | 5,0 |
 
-**Was daraus folgt:** Mit Regeltexten hielt in beiden Gruppen fast immer schon das Modell – auch die
-kurze Wurzel-Anweisungsdatei der Referenz genügte dafür. Den Unterschied macht die Technik, wenn die Regel nicht
-greift: Einen Unterprozess, der eine Secret-Datei liest, erfasst die Berechtigungsschicht des Clients
-nicht; der Schutz-Hook von Koolie schon. Der Preis sind rund 65 bis 80 Prozent mehr Kosten je Lauf,
-bei der Änderung rund die Hälfte mehr Zeit und etwas mehr Rückfragen; zu Fehlblockaden kam es bei
-der normalen Änderung nicht.
+**Was daraus folgt:** Mit Regeltexten hielt in beiden Gruppen fast immer schon das Modell – dafür
+genügte auch die kurze Anweisungsdatei der Referenz. Den Unterschied macht die Technik, wenn die
+Regel nicht greift: Einen Unterprozess, der eine Secret-Datei liest, erfasst die
+Berechtigungsschicht des Clients nicht, der Schutz-Hook von Koolie schon. Der Preis: rund 65 bis
+80 Prozent mehr Kosten je Lauf, bei der Änderung rund die Hälfte mehr Zeit und etwas mehr
+Rückfragen; Fehlblockaden gab es nicht.
 
 **Was die Zahlen nicht sagen:** Ein Client, ein Modell, ein Tag; je Sicherheitsfall ein Lauf je
-Gruppe, fünf Wiederholungen nur bei der Änderung. Die Einstellungen der Referenz lagen in einer
-Datei außerhalb des Repositoriums, nicht in verwalteten Einstellungen; ein Agent, der aktiv umgeht,
-ist nicht gemessen. **Eine Aussage über Überlegenheit tragen die Zahlen nicht** – nur die Aussage,
-dass Koolie eine gute Standardkonfiguration ergänzt und nicht ersetzt.
+Gruppe. Die Einstellungen der Referenz lagen in einer Datei außerhalb des Repositoriums, nicht in
+verwalteten Einstellungen; ein Agent, der aktiv umgeht, ist nicht gemessen. Die Zahlen belegen
+keine Überlegenheit – nur, dass Koolie eine gute Standardkonfiguration ergänzt und nicht ersetzt.
 
 ## 9. Befehle im Überblick
 

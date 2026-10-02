@@ -35,12 +35,12 @@ Stellt vor dem ersten Prompt sicher, dass die Aufgabe delegierbar, richtig einge
 
 - [ ] **MUSS** Erlaubte Pfade für diese Aufgabe benannt; `<EXCLUDED_PATHS>` und `<READ_ONLY_PATHS>` bekannt.
 - [ ] **MUSS** Kontextquellen gelistet und je Quelle die Kontextklasse bestimmt (`.koolie/core/checklists/02-privacy-context.md`); K2 nur mit Freigabe, K3 nie.
-- [ ] **MUSS** Overlay-Status ist `aktiv` (Ausnahme: Onboarding-Übung auf dem Übungsrepository; am Quellrepositorium des Frameworks gilt stattdessen `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md`, das **keine** technische Berechtigung erteilt und dessen Geltung der KI-Client nicht selbst feststellt – D-253).
-- [ ] **SOLL** Passender Skill als vorgesehener Weg gewählt (`/fw-…`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1; `.koolie/core/prompts/README.md` Abschnitt 2). Die Wahl liegt **nicht allein** hier: Der KI-Client prüft sie vor jedem Schritt selbst.
+- [ ] **MUSS** Overlay-Status ist `aktiv` (Ausnahme: Onboarding-Übung auf dem Übungsrepository; am Quellrepositorium des Frameworks gilt stattdessen `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md`, das **keine** technische Berechtigung erteilt und dessen Geltung der KI-Client nicht selbst feststellt).
+- [ ] **SOLL** Passender Skill als vorgesehener Weg gewählt (`/koolie-…`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1; `.koolie/core/prompts/README.md` Abschnitt 2). Die Wahl liegt **nicht allein** hier: Der KI-Client prüft sie vor jedem Schritt selbst.
 
 ### Sitzung und Werkzeug
 
-- [ ] **MUSS** Neue Sitzung für diese Aufgabe; rückfragender Standardmodus; weder der Modus ohne Rückfragen noch ein Modus mit selbsttätiger Übernahme aktiv (D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs).
+- [ ] **MUSS** Neue Sitzung für diese Aufgabe; rückfragender Standardmodus; weder der Modus ohne Rückfragen noch ein Modus mit selbsttätiger Übernahme aktiv (wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs).
 - [ ] **MUSS** Freigaben werden nur einmalig oder sitzungsweise erteilt; keine projekt- oder globalen Freigaben.
 - [ ] **SOLL** Arbeitsstand sauber (kein offener Diff fremder Arbeit im Arbeitsbereich).
 - [ ] **KANN** Bei M3/M4: `.koolie/core/checklists/03-before-code-change.md` bereitgelegt.

@@ -8,7 +8,7 @@
   "agents_dir": ".devin/agents",
   "pack_runtime_dir": ".devin/rules",
   "has_rule_triggers": true,
-  "core_skill_prefix": "fw-",
+  "core_skill_prefix": "koolie-",
   "core_paths": [
     ".devin/README.md"
   ],
@@ -57,8 +57,8 @@
       "dst": "<RULES_DIR>/15-development-rules.md"
     },
     {
-      "src": "framework/runtime/agents/fw-reviewer.md",
-      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+      "src": "framework/runtime/agents/koolie-reviewer.md",
+      "dst": "<AGENTS_DIR>/koolie-reviewer.md"
     },
     {
       "src": "templates/rules/21-overlay-TEMPLATE.md.template",
@@ -98,7 +98,7 @@
     "tools_format": "list",
     "tool_names": {"read": ["read"], "grep": ["grep"], "glob": ["glob"], "edit": ["edit"], "exec": ["exec"]},
     "tool_names_namespace": "eigen",
-    "_tool_names_note": "Wie skill_frontmatter - dasselbe eigene Frontmatter-Vokabular an der zweiten Stelle, an der es abgebildet wird (2026-09-14, tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-88). Das Agentenprofil fw-reviewer traegt danach unveraendert 'allowed-tools: read, grep, glob'; und seit dem 2026-09-22 ist gemessen, dass dieser Client damit die Zusage A1 EINLOEST: Ein Unteragent mit diesem Profil ruft kein schreibendes Werkzeug auf, das Vollzugriffsprofil des Clients ruft exec und write (D-284). GRENZE: Belegt ist der Werkzeugbestand, nicht die Reichweite je Werkzeug."
+    "_tool_names_note": "Wie skill_frontmatter - dasselbe eigene Frontmatter-Vokabular an der zweiten Stelle, an der es abgebildet wird (2026-09-14, tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, D-88). Das Agentenprofil koolie-reviewer traegt danach unveraendert 'allowed-tools: read, grep, glob'; und seit dem 2026-09-22 ist gemessen, dass dieser Client damit die Zusage A1 EINLOEST: Ein Unteragent mit diesem Profil ruft kein schreibendes Werkzeug auf, das Vollzugriffsprofil des Clients ruft exec und write (D-284). GRENZE: Belegt ist der Werkzeugbestand, nicht die Reichweite je Werkzeug."
   },
   "agent_start_tools": ["run_subagent"],
   "agent_start_tools_absent": [],
@@ -122,7 +122,7 @@
     ],
     "skill": []
   },
-  "_permission_tools_skill_note": "ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-89; Klaerungspunkt K-33 damit geschlossen). Der Skill-Aufruf IST bei diesem Client ein eigener Werkzeugaufruf: Das Werkzeug heisst skill, der Skillname steht im Argument skill (Laeufe K1, K1b, P2, P3). Die Liste bleibt trotzdem leer, und der Grund ist ein anderer als bisher: Es ist keine Schreibweise bekannt, mit der eine Regel dieser Datei den Aufruf erreicht. Skill(fw-code-explain) laeuft durch (P2), skill(fw-code-explain) laeuft durch (P3) - waehrend Read(**/.env) in derselben Datei und denselben Laeufen abweist (P1b, Kontrolllauf). Eine Regel zu schreiben, die nichts tut, waere die Bauform von D-66 und D-82. ZWEITER WEG, nicht gesucht: Die Slash-Form /fw-name wird CLIENTSEITIG in den Prompt expandiert - im user-Schritt der Mitschrift steht der Inhalt der SKILL.md, nicht der Befehl (K1b). Eine Schranke auf dem Werkzeug erreicht diesen Weg ohnehin nicht. Offen als K-34: ob dieser Client eine wirksame Schreibweise kennt.",
+  "_permission_tools_skill_note": "ERHOBEN am 2026-09-14 (tests/protocols/2026-09-14-erhebung-devin-werkzeuge.md, CR-2026-065, D-89; Klaerungspunkt K-33 damit geschlossen). Der Skill-Aufruf IST bei diesem Client ein eigener Werkzeugaufruf: Das Werkzeug heisst skill, der Skillname steht im Argument skill (Laeufe K1, K1b, P2, P3). Die Liste bleibt trotzdem leer, und der Grund ist ein anderer als bisher: Es ist keine Schreibweise bekannt, mit der eine Regel dieser Datei den Aufruf erreicht. Skill(koolie-code-explain) laeuft durch (P2), skill(koolie-code-explain) laeuft durch (P3) - waehrend Read(**/.env) in derselben Datei und denselben Laeufen abweist (P1b, Kontrolllauf). Eine Regel zu schreiben, die nichts tut, waere die Bauform von D-66 und D-82. ZWEITER WEG, nicht gesucht: Die Slash-Form /koolie-name wird CLIENTSEITIG in den Prompt expandiert - im user-Schritt der Mitschrift steht der Inhalt der SKILL.md, nicht der Befehl (K1b). Eine Schranke auf dem Werkzeug erreicht diesen Weg ohnehin nicht. Offen als K-34: ob dieser Client eine wirksame Schreibweise kennt.",
   "permission_tools_bare": [
     "mcp__*"
   ],

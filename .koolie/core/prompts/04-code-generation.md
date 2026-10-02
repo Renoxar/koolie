@@ -3,16 +3,22 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-004` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M3 Controlled Modification |
 | Typische Kontrollstufe | niedrig; mittel nur mit bestätigtem Plan; hoch nur mit dokumentierter Freigabe `<APPROVAL_ROLE>` und Pairing – Maximumprinzip über R1–R13 |
-| Verwandter Skill | `fw-change-small` |
+| Verwandter Skill | `koolie-change-small` |
 
 ## 1. Zweck
 
-Die Vorlage setzt eine bestätigte, klar abgegrenzte Änderung in kleinen, nachvollziehbaren Schritten um: neuer oder geänderter Produktivcode innerhalb des freigegebenen Scopes, nach den Coding Conventions des Overlays, mit Nachweis der Existenz jeder verwendeten Schnittstelle, mit Ausführung der freigegebenen Prüfbefehle und mit Schrittprotokoll. Ab Stufe mittel DARF sie NICHT ohne bestätigten Plan verwendet werden; bei Stufe niedrig genügt eine klare, bereinigte Aufgabe, aus der der KI-Client die Schrittfolge ableitet und vor dem ersten Schreibzugriff zur Bestätigung vorlegt (`fw-change-small` Abschnitt 3, Schritte 5 und 6). Liegt der Skill `fw-change-small` vor, SOLL er als vorgesehener Weg verwendet werden (`/fw-change-small`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage dient als strukturierte Anweisung für einen einzelnen Planschritt oder als Ersatz, wenn der Skill in der Laufzeitschicht nicht verfügbar ist. Für verhaltensneutrale Umbauten gilt FW-PR-006, für Tests ohne Produktivcodeänderung FW-PR-005.
+Die Vorlage setzt eine bestätigte, klar abgegrenzte Änderung in kleinen Schritten um: Produktivcode im freigegebenen Scope, nach den Coding Conventions des Overlays, mit Existenznachweis jeder verwendeten Schnittstelle, ausgeführten Prüfbefehlen und Schrittprotokoll.
+
+Ab Stufe mittel DARF sie NICHT ohne bestätigten Plan verwendet werden. Bei Stufe niedrig genügt eine klare, bereinigte Aufgabe; der KI-Client leitet daraus die Schrittfolge ab und legt sie vor dem ersten Schreibzugriff zur Bestätigung vor (`koolie-change-small` Abschnitt 3, Schritte 5 und 6).
+
+Liegt der Skill `koolie-change-small` vor, SOLL er als vorgesehener Weg verwendet werden (`/koolie-change-small`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage dient als strukturierte Anweisung für einen einzelnen Planschritt oder als Ersatz, wenn der Skill in der Laufzeitschicht fehlt.
+
+Verhaltensneutrale Umbauten: FW-PR-006. Tests ohne Änderung am Produktivcode: FW-PR-005.
 
 ## 2. Einzusetzender Kontext
 
@@ -96,5 +102,5 @@ Regeln:
 | Codegenerierung ohne bestätigten Plan („bau das Feature ein") | Kein Scope, kein Freigabepunkt, keine Prüfbarkeit (P5, P7) | FW-PR-002 und FW-PR-003 vorschalten; Plan bestätigen |
 | Mehrere Planschritte oder Ziele in einer Änderung bündeln | Unübersichtlicher Diff, nicht einzeln rücknehmbar (Q1, P7) | Ein logischer Schritt je Änderung; ein Commit je Schritt |
 | „Nutze eine passende Bibliothek dafür" | Neue Abhängigkeit ohne Prüfung (V3, T4); halluzinierte Pakete möglich | Optionsanalyse anfordern; Entscheidung nach `.koolie/core/checklists/07-new-dependency.md` |
-| Fehlschlagende Tests „passend machen" lassen | Zementiertes Fehlverhalten, umgangene Quality Gates (T6) | Unverändertes Ergebnis berichten lassen; Ursache über `fw-error-analyze` klären |
-| Übernahme von Code, der nicht erklärt werden kann | Verantwortung ohne Verständnis (Q3, P1) | Erklärung mit `fw-code-explain` einholen oder Vorschlag verwerfen |
+| Fehlschlagende Tests „passend machen" lassen | Zementiertes Fehlverhalten, umgangene Quality Gates (T6) | Unverändertes Ergebnis berichten lassen; Ursache über `koolie-error-analyze` klären |
+| Übernahme von Code, der nicht erklärt werden kann | Verantwortung ohne Verständnis (Q3, P1) | Erklärung mit `koolie-code-explain` einholen oder Vorschlag verwerfen |

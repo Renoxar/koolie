@@ -13,7 +13,7 @@
 
 ## Zweck
 
-Operationalisiert die Prüfpunkte RV1–RV12 aus `.koolie/core/framework/core/07-review-rules.md` für die tägliche Anwendung. Ein KI-Befund (`fw-review-support`) ersetzt keine dieser Prüfungen.
+Operationalisiert die Prüfpunkte RV1–RV12 aus `.koolie/core/framework/core/07-review-rules.md` für die tägliche Anwendung. Ein KI-Befund (`koolie-review-support`) ersetzt keine dieser Prüfungen.
 
 ## Prüfpunkte
 

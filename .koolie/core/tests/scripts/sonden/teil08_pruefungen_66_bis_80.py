@@ -548,7 +548,7 @@ M72 = "wird aber von keinem Eintrag der Berechtigungsdatei genannt"
 M72_RUECK = "nennt keinen Skill in"
 M72_FELD = "Feld permission_tools.skill fehlt"
 P72_PACKSKILL = (".koolie/core/framework/role-packs/requirements-engineering/"
-                 "skills/role-re-ticket").replace("/", os.sep)
+                 "skills/koolie-ticket").replace("/", os.sep)
 
 
 def _72_pack_aktivieren(root: str, pack_skills: str) -> str:
@@ -591,9 +591,9 @@ def sonden_pack_im_korb() -> None:
             # --- Sonde 72b: die Gegenrichtung -------------------------------
             # Der Eintrag bleibt, sein Skill geht - eine Freigabe ohne Gegenstand.
             shutil.rmtree(os.path.join(root, *skills.split("/"), name))
-            shutil.rmtree(os.path.join(root, *skills.split("/"), "fw-plan"))
+            shutil.rmtree(os.path.join(root, *skills.split("/"), "koolie-plan"))
             ausgabe = validator_ausgabe(root)
-            melde("SONDE", "72b", M72_RUECK in ausgabe and "fw-plan" in ausgabe,
+            melde("SONDE", "72b", M72_RUECK in ausgabe and "koolie-plan" in ausgabe,
                   "Ein Korbeintrag ohne Skill in der Ablage wird gemeldet - eine "
                   "Freigabe fuer einen Skill, den es nicht gibt (D-81)")
 

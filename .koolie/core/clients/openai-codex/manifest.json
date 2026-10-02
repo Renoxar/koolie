@@ -12,7 +12,7 @@
   "agents_dir": ".codex/agents",
   "pack_runtime_dir": ".codex/rules",
   "has_rule_triggers": false,
-  "core_skill_prefix": "fw-",
+  "core_skill_prefix": "koolie-",
   "core_paths": [
     ".codex/README.md"
   ],
@@ -134,8 +134,8 @@
       "dst": "<RULES_DIR>/15-development-rules.md"
     },
     {
-      "src": "framework/runtime/agents/fw-reviewer.md",
-      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+      "src": "framework/runtime/agents/koolie-reviewer.md",
+      "dst": "<AGENTS_DIR>/koolie-reviewer.md"
     },
     {
       "src": "templates/rules/21-overlay-TEMPLATE.md.template",

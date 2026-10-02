@@ -4,97 +4,98 @@
 |---|---|
 | Modul-ID | `FW-CLIENT-PACKS` |
 | Ebene | keine – Querschnittsschicht (siehe Abschnitt 2) |
-| Version | 0.9.0 |
+| Version | 0.10.0 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 ## 1. Zweck
 
-Das Framework trennt seit D-02 zwei Formen derselben Regeln: die kanonische, **werkzeugneutrale** Langform in `.koolie/core/framework/` und die kompakte **Laufzeitform** in der Wurzel des Projekts. Die Laufzeitform ist an den KI-Client gebunden, der sie lädt.
+Koolie führt jede Regel in zwei Formen: als werkzeugneutrale Langform unter `.koolie/core/framework/` und als kompakte Laufzeitform in der Wurzel des Projekts. Die Laufzeitform gehört zu dem KI-Client, der sie lädt. Ein **Client Pack** beschreibt diese Bindung für genau einen Client und beantwortet zwei Fragen:
 
-Ein **Client Pack** macht diese Bindung explizit und austauschbar. Es beantwortet für genau einen Client zwei Fragen:
+1. **Wohin** gehören Anweisungsdatei, Regeln, Skills, Berechtigungen, Hooks und Agentenprofile?
+2. **Welche Zusagen setzt dieser Client technisch durch** – und welche bleiben eine Anweisung, der das Modell folgen kann oder nicht?
 
-1. **Wohin** gehören die Laufzeitartefakte – Wurzel-Anweisungsdatei, Regeldateien, Skills, Berechtigungen, Hooks, Subagentenprofile?
-2. **Welche Zusagen des Frameworks setzt dieser Client technisch durch** – und welche bleiben eine Anweisung, der das Modell folgen kann oder auch nicht?
-
-Die zweite Frage ist der eigentliche Grund für diese Schicht. Ein Framework, dessen Datenschutz- und Sicherheitszusagen bei einem Client von der Engine erzwungen werden und bei einem anderen nur als Prosa im Prompt stehen, muss diesen Unterschied sichtbar machen. Sonst erzeugt es falsche Sicherheit – genau dort, wo es am meisten schadet.
+Die zweite Frage ist der Kern. Dieselbe Datenschutzregel kann bei einem Client von der Engine erzwungen werden und beim anderen nur als Text im Prompt stehen. Das Pack macht diesen Unterschied sichtbar, damit keine falsche Sicherheit entsteht.
 
 ## 2. Ein Client Pack ist keine Regelebene
 
-Die Prioritätshierarchie (`.koolie/core/governance/PRIORITY_HIERARCHY.md`, D-06) bleibt achtstufig und **unverändert**. Ein Client Pack
-
-- führt **keine** neuen Verhaltensregeln ein,
-- **lockert** keine bestehende Regel,
-- und steht in keiner Konfliktbeziehung zu Core, Overlay oder Packs.
-
-Es ist eine **Abbildungsschicht**: Es übersetzt die Ebenen 3 bis 7 in die Artefakte eines konkreten Clients und dokumentiert die Durchsetzungstiefe. Entsteht ein Widerspruch zwischen einem Client Pack und der Langform, gilt die Langform; das Client Pack wird korrigiert.
+Die Prioritätshierarchie (`.koolie/core/governance/PRIORITY_HIERARCHY.md`) bleibt unverändert. Ein Client Pack führt keine neue Regel ein, lockert keine bestehende und steht in keinem Konflikt mit Core, Overlay oder Packs. Es übersetzt die Ebenen 3 bis 7 in die Dateien eines Clients und dokumentiert, wie tief sie durchgesetzt werden. Widerspricht ein Pack der Langform, gilt die Langform, und das Pack wird korrigiert.
 
 ## 3. Bestandteile
 
 | Bestandteil | Inhalt |
 |---|---|
-| `CLIENT_PACK.md` | Pfadabbildung, **Semantikabbildung**, **Fähigkeitsmatrix**, Abweichungen, Belegstatus – die menschenlesbare Fassung |
-| `manifest.json` | Dieselben Abbildungen maschinenlesbar; `install.py` und `validate-framework.py` lesen sie. **Ohne Manifest ist ein Pack nicht installierbar** |
-| `root-template/` | Nur die Artefakte, die tatsächlich clientspezifisch sind: **eine** erklärende README der Laufzeitschicht je Pack (D-36) |
+| `CLIENT_PACK.md` | Pfadabbildung, Semantikabbildung, **Fähigkeitsmatrix**, Abweichungen, Belegstand – für Menschen |
+| `manifest.json` | dieselben Abbildungen maschinenlesbar für `install.py` und den Validator. Ohne Manifest ist ein Pack nicht installierbar |
+| `root-template/` | nur die erklärende README der Laufzeitschicht |
 
-**Die Vorlage `_template/` trägt von diesen drei Bestandteilen genau einen: `CLIENT_PACK.md`.** Sie ist damit kein Pack, und die Packmenge der Prüfungen nimmt sie ausdrücklich nicht auf (D-336). **Prüfung 84** hält fest, dass die Vorlage eine Vorlage bleibt.
+Die Vorlage `_template/` enthält nur `CLIENT_PACK.md` und ist damit kein Pack; Prüfung 84 hält das fest.
 
-Alles andere liegt einmal im Kern und wird bei der Installation in die Form dieses Clients gebracht: Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills, Overlay-Laufzeitregel und die beiden Vorlagen als **Formtransformation** (D-16, D-17, D-20), Berechtigungen und Hooks als **Semantikabbildung** (D-18). `seed_paths` ist in allen Packs leer – die gesamte Saat kommt aus dem Kern. Der Unterschied ist wesentlich: Bei einer Formtransformation ist der Inhalt derselbe und nur die Schreibweise anders. Bei der Semantikabbildung unterscheiden sich die Werkzeuge selbst – ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich und dort über ein Präfix. Weil an genau diesen Regeln die Kernzusagen hängen, prüft die Abbildung drei Eigenschaften und bricht ab, wenn eine verletzt ist:
+Alles andere liegt einmal im Kern und wird bei der Installation in die Form des Clients gebracht:
 
-| Zusicherung | Warum |
+- **Formtransformation** – gleicher Inhalt, andere Schreibweise: Regeltexte, Wurzel-Anweisung, Agentenprofil, Skills, Overlay-Laufzeitregel, Vorlagen.
+- **Semantikabbildung** – andere Werkzeuge: Berechtigungen und Hooks. Ein Client trennt Ändern und Anlegen, ein anderer nicht; ein Befehlsverbot greift hier wörtlich, dort über ein Präfix.
+
+Weil an der Semantikabbildung die Kernzusagen hängen, bricht die Installation ab, wenn eine dieser Bedingungen verletzt ist:
+
+| Bedingung | Grund |
 |---|---|
-| Keine `deny`- oder `ask`-Regel ohne Zielwerkzeug | Sie wegzulassen wäre eine Lockerung. Bei `allow` ist Weglassen zulässig – es fällt auf den strengeren Standard zurück |
-| Die Präfixform eines Befehlsverbots muss ein Präfix der wörtlichen Form sein | Damit ist sie nachweislich mindestens so breit; die Abweichung ist belegbar eine Verschärfung |
-| Bei `allow` müssen beide Formen übereinstimmen | Dort wäre jede Verbreiterung eine Lockerung |
+| Jede `deny`- und `ask`-Regel hat ein Zielwerkzeug | Eine weggelassene Sperre wäre eine Lockerung. Bei `allow` ist Weglassen erlaubt, es gilt dann der strengere Standard |
+| Die Präfixform eines Befehlsverbots ist ein Präfix der wörtlichen Form | So ist sie mindestens so breit wie das Original |
+| Bei `allow` stimmen beide Formen überein | Jede Verbreiterung wäre eine Lockerung |
 
 ## 4. Die Fähigkeitsmatrix
 
-Kern jedes Client Packs. Sie stuft jede technische Zusage des Frameworks in eine von drei Klassen ein:
+Jedes Pack stuft jede technische Zusage von Koolie in eine von drei Klassen ein:
 
 | Klasse | Bedeutung |
 |---|---|
-| `[TECHNISCH]` | Der Client erzwingt die Zusage. Ein Verstoß ist nicht möglich, **unabhängig vom Modellverhalten** – nicht notwendig unabhängig vom **Betriebsmodus**. Die Abhängigkeit vom Betriebsmodus weist der B-Block des jeweiligen Packs in einer Vorbemerkung aus; sie ist dort Pflicht (D-35). |
-| `[TEXTUELL]` | Die Zusage steht als Anweisung im Kontext. Ein Modell kann ihr folgen; erzwungen ist sie nicht. |
-| `[NICHT ABBILDBAR]` | Der Client bietet keinen Mechanismus. Die Zusage entfällt für diesen Client. |
+| `[TECHNISCH]` | Der Client erzwingt die Zusage, unabhängig vom Verhalten des Modells – nicht unbedingt unabhängig vom Betriebsmodus. Wovon sie im Betriebsmodus abhängt, sagt die Vorbemerkung des B-Blocks; sie ist Pflicht. |
+| `[TEXTUELL]` | Die Zusage steht als Anweisung im Kontext. Das Modell kann ihr folgen; erzwungen ist sie nicht. |
+| `[NICHT ABBILDBAR]` | Der Client bietet keinen Mechanismus; die Zusage entfällt für ihn. |
 
-**Kernzusage** im Sinne dieses Abschnitts ist **jede Zeile des B-Blocks mit `Kern = ja`** sowie **jede Regel aus `_core_rules_integrity`** der Berechtigungsdatei. Zusagen der übrigen Blöcke sind **Fähigkeitszusagen**: Ihr Ausfall wird im Pack begründet und im Overlay des aufnehmenden Projekts als bekannte Einschränkung geführt, sperrt die Inbetriebnahme aber nicht.
+**Kernzusagen** sind die Zeilen des B-Blocks mit `Kern = ja` und jede Regel aus `_core_rules_integrity` der Berechtigungsdatei. Sie sagen zu, dass etwas **verhindert** wird. Alle übrigen Zeilen sind **Fähigkeitszusagen**: Sie sagen zu, dass etwas **möglich** ist, etwa nachzusehen. Fällt eine Kernzusage aus, fehlt eine Schranke; fällt eine Fähigkeitszusage aus, fehlt Sicht. Nur das Erste sperrt die Inbetriebnahme.
 
-Die Unterscheidung ist nicht redaktionell. **Eine Kernzusage sagt zu, dass etwas verhindert wird; eine Fähigkeitszusage sagt zu, dass etwas möglich ist** – zum Beispiel, dass man nachsehen kann. Fällt das Erste aus, fehlt eine Schranke. Fällt das Zweite aus, fehlt Sicht. Beides ist ernst, nur das Erste sperrt (`CR-2026-041`, D-41).
+Daraus folgt:
 
-**Verbindliche Folgen:**
+- Eine Kernzusage, die ein Client nicht `[TECHNISCH]` abbildet, MUSS im Pack begründet und im Overlay des Projekts als Ausnahme geführt werden (`.koolie/project-overlay/exceptions/EXCEPTIONS.md`).
+- Ein Pack mit einer Kernzusage auf `[NICHT ABBILDBAR]` DARF nur mit Freigabe durch `<SECURITY_CONTACT>` in Betrieb gehen.
+- Eine Fähigkeitszusage auf `[NICHT ABBILDBAR]` MUSS in ihrer Zeile den Ersatz nennen oder festhalten, dass es keinen gibt (Prüfung 25).
+- `[TECHNISCH]` MUSS an einer realen Installation belegt sein. Bis dahin sagt die Belegzelle `BELEG OFFEN` mit Grund und Datum. Ein Belegstand hat keine Frist: Er sagt, was heute belegt ist.
+- Eine Zeile mit `[DOK]` nennt im Belegkopf – der Zelle bis zum ersten Satzbruch – die Kennung ihrer Quelle aus Anhang 31.4 (`QC-n`, `QD-n` …). Ein Verweis wie *„wie B3"* erbt die Kennung seines Ziels. Gibt es keine Quelle, steht `QUELLE NICHT ZUGEORDNET` mit Grund und Datum; geraten wird nicht (Prüfung 73).
+- `[DOK]` belegt gegen die Dokumentation des Herstellers. Ein Nachweis von Koolie über sich selbst – ein Manifestfeld, eine erzeugte Datei – trägt die Marke nicht.
+- Eine Matrixzeile steht in ihrer Tabelle, ohne Leerzeile oder Fremdtext davor (Prüfung 74).
 
-- Eine Kernzusage aus `_core_rules_integrity` in der Berechtigungsdatei, die ein Client nicht `[TECHNISCH]` abbildet, MUSS im Client Pack begründet und im Overlay des aufnehmenden Projekts als dokumentierte Ausnahme geführt werden (`.koolie/project-overlay/exceptions/EXCEPTIONS.md`).
-- Ein Client Pack, das eine Kernzusage auf `[NICHT ABBILDBAR]` setzt, DARF nicht ohne Freigabe durch `<SECURITY_CONTACT>` in Betrieb genommen werden.
-- Eine **Fähigkeitszusage** auf `[NICHT ABBILDBAR]` MUSS in derselben Zeile den Ersatz benennen – oder ausdrücklich festhalten, dass es keinen gibt. Ein Ausfall, der nur eingetragen und nicht ersetzt wird, ist eine stillschweigende Verschlechterung. Prüfung 25 meldet eine Zeile, die das unterlässt.
-- Die Einstufung `[TECHNISCH]` MUSS gegen eine reale Installation belegt sein. Bis dahin sagt die Belegzelle `BELEG OFFEN` **mit Grund und Datum** – und, wenn die Frage länger offen bleibt, mit ihrem Klärungspunkt. **Ein Belegstand trägt keine Frist:** Er sagt, was heute belegt ist, nicht, bis wann es belegt sein muss (`CR-2026-121`, D-291).
-- **Eine mit `[DOK]` belegte Matrixzeile MUSS im Belegkopf die Quellenkennung der Liste in Anhang 31.4 nennen** (`QC-n`/`QD-n`). Belegkopf ist die Zelle bis zum ersten Satzbruch; was danach steht, ist Erläuterung, und eine Marke dort ist eine **Nennung** und kein Beleg (D-265). Ein Seitenpfad darf danebenstehen, trägt aber nicht – allein die Kennung lässt sich gegen die Liste halten (D-266). Ein Verweisbeleg (*„wie B3"*) erbt die Kennung seines Ziels. **Gibt der Bestand für eine Zeile keine Seite her, sagt sie `QUELLE NICHT ZUGEORDNET` mit Grund und Datum** – geraten wird nicht, *eine geratene Zuordnung sähe wie ein Beleg aus* (D-156, D-263). **Prüfung 73 setzt es durch.**
-- **Die Marke `[DOK]` belegt gegen die Herstellerdokumentation.** Ein Nachweis des Frameworks über sich selbst – ein Manifestfeld, eine erzeugte Datei – trägt sie nicht und wird als das benannt, was er ist (D-267).
-- **Eine Matrixzeile steht in ihrer Tabelle.** Zwischen ihr und der Trennzeile liegt keine Leerzeile und kein Fremdtext; sonst rendert Markdown sie als Absatz, während die Zusammenfassung des Packs sie weiterzählt (D-264, **Prüfung 74**).
-
-Die Delegationsverbote V1 bis V12 (`.koolie/core/framework/core/09-risk-model.md`) sind davon ausgenommen: Sie beschreiben Aufgaben, die nicht delegiert werden dürfen, und sind ihrer Natur nach organisatorisch. Kein Client setzt sie technisch durch; sie sind bei jedem Client `[TEXTUELL]`.
+Die Delegationsverbote V1 bis V12 (`.koolie/core/framework/core/09-risk-model.md`) sind ausgenommen. Sie betreffen Aufgaben, nicht Werkzeuge, und sind bei jedem Client `[TEXTUELL]`.
 
 ## 5. Ein Client Pack erstellen
 
-1. `_template/CLIENT_PACK.md` nach `<client-name>/` kopieren und alle Platzhalter ersetzen. **Die Vorlage trägt nur diesen einen Bestandteil, und das ist eine Entscheidung, keine Lücke (D-336):** `manifest.json` (Schritt 5) und `root-template/` (Schritt 4) entstehen in ihren eigenen Schritten – eine vollständige Vorlage wäre ein Pack ohne Client, und jede Prüfung müsste sie einzeln ausnehmen. `_client_packs()` nimmt die Vorlage nicht in die Packmenge auf, und Prüfung 84 hält fest, dass sie keine Packbestandteile trägt.
-2. Pfadabbildung eintragen: Wo erwartet dieser Client Anweisungsdatei, Regeln, Skills, Berechtigungen, Hooks?
-3. Fähigkeitsmatrix ausfüllen. Jede Zeile ohne Beleg sagt `BELEG OFFEN` mit Grund und Datum. Der B-Block trägt die **Vorbemerkung zur Betriebsmodus-Abhängigkeit** von `[TECHNISCH]`, ergänzt um den eigenen Belegstand (D-35). Keine Prüfung meldet ihr Fehlen – sie ist eine Anweisung, und das ist hier bewusst so entschieden (`CR-2026-033` E4).
-4. `root-template/` anlegen: **nur die erklärende README der Laufzeitschicht**. Die Wurzelartefakte selbst kommen aus dem Kern und werden bei der Installation in die Form dieses Clients gebracht – `seed_paths` bleibt leer (D-20, `CR-2026-010`).
-5. `manifest.json` anlegen: Pflichtfelder `client`, `skills_dir`, `pack_runtime_dir`, `core_skill_prefix`, `core_paths`, `seed_paths`; zusätzlich `runtime_dir`, `root_instruction_file`, `permissions_file`, `agents_dir`, `has_rule_triggers`. Kennt der Client eine **eigene** Bedingungssprache für Regeldateien, kommt `rule_triggers` dazu: Es bildet jeden Ladetrigger der Kernquelle auf sie ab. Ein Ladetrigger ohne Eintrag lässt die Installation scheitern – ersatzloses Verwerfen wäre ein Verlust der Zusage (D-26, D-27).
-6. Semantikabbildung eintragen: `permission_tools`, `permission_tools_bare`, `permission_path_prefix`, `permission_exec_match` und gegebenenfalls `permission_exec_suffix`, `permissions_extra`, `permissions_note`; für die Hooks `hook_tools` und `hook_project_dir_var`. **`hook_tools` führt jedes Werkzeugverb, das die Hook-Quelle nennt**, auch `search`. Kennt der Client kein Werkzeug einer Klasse, wird die Abwesenheit in `hook_tools_absent` **ausdrücklich erklärt**, samt `_hook_tools_absent_note`; eine leere Liste allein bricht die Abbildung ab, und Prüfung 26 verlangt, dass ein so erklärtes Verb auch in `permission_tools` leer ist. **Verwirft das Pack ein zusagentragendes Frontmatter-Feld eines Skills** (`permissions`, `triggers`) über `skill_frontmatter.drop_fields`, muss es den Ersatz benennen – `skill_permissions_ersatz` beziehungsweise `model_invocation_field`; sonst bricht die Installation ab und Prüfung 27 meldet es (D-47, D-50). **Kennt der Client ein Werkzeug, mit dem ein Unteragent gestartet wird, führt `agent_start_tools` seine Namen** – alle Schreibweisen, die der Client annimmt, und gemessen, nicht angenommen. Kennt er keines oder ist es unerhoben, wird die Abwesenheit in `agent_start_tools_absent` **ausdrücklich erklärt**, samt `_agent_start_tools_absent_note`; Prüfung 34 verlangt eines von beidem und lässt ein Pack, das Zeile **A1** auf `[TECHNISCH]` stellt, nicht mit einer Erklärung davonkommen (D-70). **Und `skill_frontmatter.tool_names` wie `agent_frontmatter.tool_names` führen jedes Verb des Frontmatter-Vokabulars** (`read`, `grep`, `glob`, `edit`, `exec`; die Liste steht in `clientmap.FRONTMATTER_VERBEN`). **Führt der Client für das Frontmatter ein eigenes Vokabular, das mit seinen Laufzeit-Werkzeugnamen nicht übereinstimmt, sagt das Pack es in `tool_names_namespace` samt `_tool_names_note`** – Prüfung 38 setzt ihre Richtungsregel dann aus, weil sie sonst zwei Namensräume vergliche (D-88, gemessen bei `devin-desktop`: `glob` wird im Frontmatter angenommen, `find_file_by_name` verworfen, und zur Laufzeit ist es umgekehrt). Bildet der Client ein Verb nicht ab – weil er die Verben selbst als Werkzeugnamen führt oder weil es unerhoben ist –, gehört es in `tool_names_unmapped` samt `_tool_names_unmapped_note`; eine Lücke allein ist keine Aussage (D-78). Prüfung 38 verlangt eines von beidem und hält zugleich die **Richtung** fest: `hook_tools` darf für kein Verbpaar enger sein als `tool_names` – sonst bekäme ein Skill ein Werkzeug vorab freigegeben, das seine eigene Sperre nicht erfasst (D-80). Kennt der Client keine eigene Hook-Datei, zeigt `<HOOKS_FILE>` auf dieselbe Datei wie `<PERMISSIONS_FILE>` – daran wird die Einbettung erkannt. `<CORE_DIR>` wird **nicht** belegt; den setzt die Installation.
-7. **Anweisungs- und Konfigurationsquellen außerhalb des Projekts erheben und eintragen.** Der gleichnamige Abschnitt des Packs führt je bekannter Quelle eine Zeile – Pfad, Ladebedingung, Belegstatus, Maßnahme – **oder** einen datierten Abwesenheitsbeleg samt Erhebungsweg („keine bekannt, Stand `<JJJJ-MM-TT>`, erhoben mit `<Kommando>`"). Er umfasst Regeltexte, Skills und Agentenprofile ebenso wie Berechtigungen, Hooks und Einstellungen (D-34, D-37). Prüfung 19 meldet ein Pack ohne diesen Abschnitt; sie prüft seine **Anwesenheit**, nicht seine Richtigkeit. Kennt der Client eine Importsteuerung für fremde Werkzeugformate, wird sie gesetzt und in Zeile R6 ausgewiesen – abschalten statt nur ausweisen.
-8. Pack in dieser Datei und in `.koolie/core/OWNERS.md` eintragen.
-9. Probeinstallation in ein leeres Verzeichnis; Validator dagegen ausführen; Testkatalog-Basistests gegen eine Installation des Clients fahren.
+1. `_template/CLIENT_PACK.md` nach `<client-name>/` kopieren und alle Platzhalter ersetzen. `manifest.json` und `root-template/` entstehen in eigenen Schritten.
+2. **Pfadabbildung** eintragen: Wo erwartet der Client Anweisungsdatei, Regeln, Skills, Berechtigungen und Hooks?
+3. **Fähigkeitsmatrix** ausfüllen. Jede Zeile ohne Beleg sagt `BELEG OFFEN` mit Grund und Datum. Der B-Block bekommt die Vorbemerkung zur Abhängigkeit vom Betriebsmodus, mit eigenem Belegstand. Keine Prüfung meldet, wenn sie fehlt.
+4. **`root-template/`** anlegen, mit nichts als der erklärenden README der Laufzeitschicht. Alles andere kommt aus dem Kern; `seed_paths` bleibt leer.
+5. **`manifest.json`** anlegen. Pflicht sind `client`, `skills_dir`, `pack_runtime_dir`, `core_skill_prefix` (`koolie-`), `core_paths` und `seed_paths`; dazu kommen `runtime_dir`, `root_instruction_file`, `permissions_file`, `agents_dir` und `has_rule_triggers`. Kennt der Client eine eigene Bedingungssprache für Regeldateien, bildet `rule_triggers` jeden Ladetrigger des Kerns darauf ab – ein Trigger ohne Eintrag lässt die Installation scheitern.
+6. **Semantikabbildung** eintragen:
+   - **Berechtigungen:** `permission_tools`, `permission_tools_bare`, `permission_path_prefix`, `permission_exec_match`, bei Bedarf `permission_exec_suffix`, `permissions_extra` und `permissions_note`.
+   - **Hooks:** `hook_tools` mit jedem Werkzeugverb der Hook-Quelle, auch `search`, und `hook_project_dir_var`. Hat der Client für ein Verb kein Werkzeug, steht das in `hook_tools_absent` samt `_hook_tools_absent_note`; dann ist das Verb auch in `permission_tools` leer (Prüfung 26). Hat der Client keine eigene Hook-Datei, zeigt `<HOOKS_FILE>` auf dieselbe Datei wie `<PERMISSIONS_FILE>`.
+   - **Skill-Frontmatter:** Verwirft das Pack ein zusagentragendes Feld (`permissions`, `triggers`) über `skill_frontmatter.drop_fields`, nennt es den Ersatz in `skill_permissions_ersatz` beziehungsweise `model_invocation_field` (Prüfung 27).
+   - **Unteragenten:** `agent_start_tools` führt jede Schreibweise des Werkzeugs, das einen Unteragenten startet – gemessen, nicht angenommen. Gibt es keines oder ist es unerhoben, steht das in `agent_start_tools_absent` samt Notiz. Eine Zeile **A1** auf `[TECHNISCH]` braucht das Werkzeug (Prüfung 34).
+   - **Werkzeugnamen im Frontmatter:** `skill_frontmatter.tool_names` und `agent_frontmatter.tool_names` führen jedes Verb aus `clientmap.FRONTMATTER_VERBEN` (`read`, `grep`, `glob`, `edit`, `exec`). Ein Verb, das der Client nicht abbildet, steht in `tool_names_unmapped` samt Notiz. Hat der Client für das Frontmatter einen eigenen Namensraum, sagt das `tool_names_namespace` samt `_tool_names_note`. `hook_tools` darf für kein Verb enger sein als `tool_names` – sonst wäre ein Werkzeug vorab freigegeben, das die Sperre nicht erfasst (Prüfung 38).
+   - `<CORE_DIR>` bleibt unbelegt; den setzt die Installation.
+7. **Quellen außerhalb des Projekts** eintragen: je bekannter Quelle eine Zeile mit Pfad, Ladebedingung, Belegstand und Maßnahme – oder ein datierter Abwesenheitsbeleg mit Erhebungsweg (*„keine bekannt, Stand `<JJJJ-MM-TT>`, erhoben mit `<Kommando>`"*). Gemeint sind Regeltexte, Skills und Agentenprofile ebenso wie Berechtigungen, Hooks und Einstellungen; Prüfung 19 verlangt den Abschnitt. Kennt der Client eine Importsteuerung für fremde Formate, wird sie abgeschaltet und in Zeile R6 ausgewiesen.
+8. Das Pack in dieser Datei und in `.koolie/core/OWNERS.md` eintragen.
+9. In ein leeres Verzeichnis installieren, den Validator laufen lassen und die Basistests des Testkatalogs gegen eine Installation des Clients fahren.
 
 ## 6. Verfügbare Client Packs
 
-> **Die Spalte `[TECHNISCH]` wird von Prüfung 31 aus der Fähigkeitsmatrix des jeweiligen Packs nachgerechnet** (D-71): Eine Zahl mit eindeutiger Grenze gehört ausgerechnet, nicht an zweiter Stelle gepflegt.
+> Die Spalte `[TECHNISCH]` rechnet Prüfung 31 aus der Fähigkeitsmatrix des Packs nach.
 
 | Pack | Code | Status | `[TECHNISCH]` | Kernzusagen | Fähigkeitsmatrix belegt |
 |---|---|---|---|---|---|
-| `devin-desktop` | `CP-DD` | pilot | 21 von 36 | 6 von 6 | An einer Installation gemessen sind unter anderem `S3`, `B3`, `B10`, `A1` (`CR-2026-120`), `H1`, `H2`, `R5`, `R6` und `S5`. Genau eine Zeile sagt `BELEG OFFEN`, und dauerhaft: `X2` (`K-20`). ⚠️ **Die Einstufungen `[TECHNISCH]` des B-Blocks gelten nicht im Betriebsmodus `dangerous`** – dort trägt der Schutz-Hook (D-281); die Vorbemerkung des Blocks sagt es |
+| `devin-desktop` | `CP-DD` | pilot | 21 von 36 | 6 von 6 | An einer Installation gemessen sind unter anderem `S3`, `B3`, `B10`, `A1`, `H1`, `H2`, `R5`, `R6` und `S5`. Genau eine Zeile sagt `BELEG OFFEN`, und dauerhaft: `X2`. ⚠️ **Die Einstufungen `[TECHNISCH]` des B-Blocks gelten nicht im Betriebsmodus `dangerous`** – dort trägt der Schutz-Hook; die Vorbemerkung des Blocks sagt es |
 | `openai-codex` | `CP-OC` | pilot | 10 von 35 | **4 von 6** | Alle Belege stammen aus Messungen am Client, keiner aus seiner Dokumentation – das Pack trägt keine `[DOK]`-Zeile, und `FW-AK-01` ist für diesen Client nicht gefahren. Gemessen an einer realen Installation sind `B2`, `B4`, `B6`, `H1` bis `H3`, `R1`, `R5`, `S1` und `S5`; vier Zeilen sagen `BELEG OFFEN` (`S2`, `S3`, `M3`, `M4`), dazu `X2` dauerhaft. 🔴 **Zwei Kernzusagen sind `[NICHT ABBILDBAR]`** – `B3` und `B5` –, und damit greift Abschnitt 4 dieser Datei vollständig: **keine Inbetriebnahme ohne Freigabe durch `<SECURITY_CONTACT>`** |
-| `kiro` | `CP-KI` | pilot | 21 von 35 | 6 von 6 | Gebaut **mit Zugang zum Client** (Kommandozeile 2.24.1, Engine V3): Gemessen an realen Installationen sind unter anderem `R1` bis `R3`, `S1`, `S2`, `S5`, `B1` bis `B8`, `H1` bis `H4` und `M4`; die Zeilen der IDE stehen auf der Dokumentation (`QK-1` bis `QK-9`, `K-162`). Fünf Zeilen sagen `BELEG OFFEN` (`A1`, `A2`, `M3`, `M7`, `X1`), dazu `X2` dauerhaft. 🔴 **Alle Zeilen des B-Blocks stehen unter der Bedingung des aktiven Agenten** – fehlt das Agentenprofil oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück (Prüfung 96); die Hooks laufen nur in der interaktiven Sitzung |
-| `cursor` | `CP-CU` | pilot | 20 von 35 | 6 von 6 | Gebaut **mit Zugang zum Client** (Kommandozeile 2026.09.26, unter Windows): Gemessen an realen Installationen sind unter anderem `R1` bis `R3`, `S1`, `S3`, `B1` bis `B4`, `B6` bis `B9`, `H1` bis `H4` und `M4`; die Zeilen der IDE stehen auf der Dokumentation (`QU-1` bis `QU-8`, `K-175`). Sieben Zeilen sagen `BELEG OFFEN` (`S4`, `S5`, `A1`, `A2`, `M3`, `M7`, `X1`), dazu `X2` dauerhaft. 🔴 **Die Pfadmuster treffen nur in der Schreibweise mit führendem `*`**, weil der Client sie mit dem absoluten Pfad vergleicht; die Schreibweise für macOS und Linux ist nicht gemessen (`K-176`). **Schreiben im Arbeitsbereich fragt nicht zurück** (`B7`) |
+| `kiro` | `CP-KI` | pilot | 21 von 35 | 6 von 6 | Gebaut **mit Zugang zum Client** (Kommandozeile 2.24.1, Engine V3): Gemessen an realen Installationen sind unter anderem `R1` bis `R3`, `S1`, `S2`, `S5`, `B1` bis `B8`, `H1` bis `H4` und `M4`; die Zeilen der IDE stehen auf der Dokumentation (`QK-1` bis `QK-9`). Fünf Zeilen sagen `BELEG OFFEN` (`A1`, `A2`, `M3`, `M7`, `X1`), dazu `X2` dauerhaft. 🔴 **Alle Zeilen des B-Blocks stehen unter der Bedingung des aktiven Agenten** – fehlt das Agentenprofil oder ist es kaputt, fällt der Client still auf seinen eingebauten Agenten zurück (Prüfung 96); die Hooks laufen nur in der interaktiven Sitzung |
+| `cursor` | `CP-CU` | pilot | 20 von 35 | 6 von 6 | Gebaut **mit Zugang zum Client** (Kommandozeile 2026.09.26, unter Windows): Gemessen an realen Installationen sind unter anderem `R1` bis `R3`, `S1`, `S3`, `B1` bis `B4`, `B6` bis `B9`, `H1` bis `H4` und `M4`; die Zeilen der IDE stehen auf der Dokumentation (`QU-1` bis `QU-8`). Sieben Zeilen sagen `BELEG OFFEN` (`S4`, `S5`, `A1`, `A2`, `M3`, `M7`, `X1`), dazu `X2` dauerhaft. 🔴 **Die Pfadmuster treffen nur in der Schreibweise mit führendem `*`**, weil der Client sie mit dem absoluten Pfad vergleicht; die Schreibweise für macOS und Linux ist nicht gemessen. **Schreiben im Arbeitsbereich fragt nicht zurück** (`B7`) |
 | `claude-code` | `CP-CC` | pilot | 22 von 32 | 6 von 6 | teilweise – Dokumentenabgleich gegen 2.1.267 (AP2), Belegspalte nennt je Zeile die Quelle; **für sechs Zeilen liegen Messungen vor** – S3, S4, A1, die Reichweite von H2, B6 und, zur Hälfte, B2 –, für die übrigen stehen die Wirkungsnachweise aus. **Eine Zeile sagt `BELEG OFFEN`** (`M4`, die Planablage) |
 
 ## 7. Änderungsverlauf
@@ -111,3 +112,4 @@ Die Delegationsverbote V1 bis V12 (`.koolie/core/framework/core/09-risk-model.md
 | 0.7.2 | 2026-09-25 | Die Planablage (Zeile `M4`) steht jetzt in allen drei Matrizen; bei `claude-code` und `openai-codex` als `BELEG OFFEN`. Die Zählungen der Übersicht sind nachgezogen (`CR-2026-147`, D-402, `K-149`) | `<FRAMEWORK_OWNER>` |
 | 0.8.0 | 2026-09-26 | 🟢 **Das vierte Client Pack `kiro`, und mit ihm die dritte Ausgabeform der Berechtigungsdatei: ein Agentenprofil mit Fähigkeitsregeln** (`CR-2026-150`, D-414 bis D-417). Die Menge der formatgebundenen Prüfungen nennt je Eintrag die Formen, die er erreicht; sie führte 76 statt 72 (D-416) | `<FRAMEWORK_OWNER>` |
 | 0.9.0 | 2026-09-26 | 🟢 **Das fünfte Client Pack `cursor`, und mit ihm die vierte Ausgabeform der Berechtigungsdatei: nur `allow` und `deny`, ohne jeden weiteren Schlüssel** (`CR-2026-155`, D-440 bis D-443). Mit einem Kommentarschlüssel startet der Client nicht; die Kernregeln hält **Prüfung 97** gegen die Kernquelle. Die Regelablage trägt eine eigene Endung (`rule_file_ext`) | `<FRAMEWORK_OWNER>` |
+| 0.10.0 | 2026-10-02 | Abschnitte 1 bis 5 neu gefasst, knapper und ohne Entscheidungsgeschichte; Schritt 6 nach Gegenständen gegliedert; `core_skill_prefix` ist `koolie-` (`CR-2026-173`) | `<FRAMEWORK_OWNER>` |

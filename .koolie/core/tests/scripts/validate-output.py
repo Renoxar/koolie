@@ -3,7 +3,7 @@
 validate-output.py – Prüft eine Ausgabe des KI-Clients gegen das Ausgabeformat eines Skills.
 
 Aufruf:
-    python3 .koolie/core/tests/scripts/validate-output.py --skill fw-repo-analyze [--file ausgabe.md]
+    python3 .koolie/core/tests/scripts/validate-output.py --skill koolie-repo-analyze [--file ausgabe.md]
     (ohne --file wird die Ausgabe von stdin gelesen)
 
 Prüft:

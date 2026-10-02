@@ -7,7 +7,7 @@
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Anzahl der Grenzfälle | 20 |
-| Entstehung | Abnahmekriterium zu den Befunden **B07** und **B09** des unabhängigen Reviews vom 2026-09-12 (`CR-2026-052`, `CR-2026-053`) |
+| Entstehung | Abnahmekriterium zu den Befunden **B07** und **B09** des unabhängigen Reviews vom 2026-09-12 |
 | Geprüft durch | Prüfung 30 des Validators (Vollständigkeit der Tabelle), `FW-KO-05` des Testkatalogs (Auslegung durch eine zweite Rolle) |
 
 ## 1. Zweck (normativ)
@@ -53,15 +53,12 @@ Alle Pfade sind relativ zum Wurzelverzeichnis des Repositoriums.
 - **Sie belegt keine technische Durchsetzung.** G-08, G-09 und G-12 nennen Einstufungen; ob ein
   Mechanismus sie erzwingt, steht in der Fähigkeitsmatrix des jeweiligen Client Packs. Bei G-12 ist
   die Blockierung für schreibende Werkzeuge belegt und für den Shell-Kanal ausdrücklich **nicht**
-  (D-47, `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md` Abschnitt 5).
+  (`.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md` Abschnitt 5).
 - **Sie prüft die Texte, nicht den Client.** `FW-KO-05` ist ein **Dokumentenreview** durch eine
   zweite Rolle (Prüfmittel `review`): Die zwanzig Grenzfälle werden gegen Wurzel-Anweisungsdatei,
   Regelablage, Langform, Overlay-Vorlage, Skills und Checklisten gehalten. **Ob ein KI-Client einen
-  Grenzfall tatsächlich so einstuft, ist nicht sein Gegenstand** – diese Frage ist offen und wird als
-  `K-60` geführt. Bis 0.60.0 sagte dieser Absatz *„wird in einer Sitzung geprüft“* und widersprach
-  damit dem Steckbrief derselben Datei (*„Auslegung durch eine zweite Rolle“*) und Abschnitt 1
-  (*„nicht gegen die Implementierung“*); der Widerspruch entstand mit der Zeile (0.32.0) und stand
-  vierunddreißig Releases (D-148). Prüfung 30 prüft die Vollständigkeit dieser Tabelle – nicht,
+  Grenzfall tatsächlich so einstuft, ist nicht sein Gegenstand** – diese Frage ist offen und
+  im Decision Log als Klärungspunkt geführt. Prüfung 30 prüft die Vollständigkeit dieser Tabelle – nicht,
   dass die Texte ihr folgen.
 - **Sie ist nicht abgeschlossen.** Jede weitere entschiedene Auslegungsfrage bekommt hier eine
   Zeile, und die Anzahl im Steckbrief wird mitgeführt.

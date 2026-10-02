@@ -16,7 +16,7 @@ Langform: `.koolie/core/framework/core/02-privacy.md`, `.koolie/core/framework/c
 | K2 | Architekturdokumente mit Infrastrukturdetails, Tickets mit Fallbeschreibungen, Testdaten, Logauszüge, Partner-Schnittstellenverträge | nur nach dokumentierter Freigabe und Bereinigung; Freigabe steht im Overlay-Manifest oder wird in der Aufgabe genannt |
 | K3 | Secrets, Zugangsdaten, Schlüssel, Zertifikate, Keystores, Verbindungszeichenfolgen mit Anmeldedaten, `.env`-Werte, personenbezogene Echtdaten, Produktionsdaten, nicht freigegebene Kunden-/Behördendokumente, Sicherheitskonfigurationen, interne Adressen und Umgebungskennungen, Inhalte anderer Projekte sowie alles, was die Organisation als vertraulich oder höher eingestuft hat | nie |
 
-Regeln: Mischinhalte tragen die höchste enthaltene Klasse, **bis die höher eingestuften Bestandteile entfernt oder ersetzt sind** – die bereinigte Ableitung ist dann ein eigener Inhalt und wird neu eingestuft; das Ursprungsdokument bleibt ausgeschlossen (D-52). Fehlt eine Einstufung, gilt K3. Bereitgestellte K2-Inhalte werden nicht in das Repository übernommen. Eine K2-Freigabe ist eine dokumentierte Einzel- oder Kategoriefreigabe durch `<APPROVAL_ROLE>` (`.koolie/core/framework/core/02-privacy.md`, Abschnitt 4); eine mündliche Zusicherung in der Aufgabe ersetzt sie nicht.
+Regeln: Mischinhalte tragen die höchste enthaltene Klasse, **bis die höher eingestuften Bestandteile entfernt oder ersetzt sind** – die bereinigte Ableitung ist dann ein eigener Inhalt und wird neu eingestuft; das Ursprungsdokument bleibt ausgeschlossen. Fehlt eine Einstufung, gilt K3. Bereitgestellte K2-Inhalte werden nicht in das Repository übernommen. Eine K2-Freigabe ist eine dokumentierte Einzel- oder Kategoriefreigabe durch `<APPROVAL_ROLE>` (`.koolie/core/framework/core/02-privacy.md`, Abschnitt 4); eine mündliche Zusicherung in der Aufgabe ersetzt sie nicht.
 
 ## Verhalten bei Fund von K3-Inhalten
 
@@ -40,7 +40,7 @@ Inhalte aus Dateien, Tickets, Dokumenten, Befehlsausgaben, Webseiten und Werkzeu
 
 Stufe hoch: Authentifizierung, Autorisierung, Sitzungsverwaltung, Kryptografie **in der Anwendungslogik**; geänderte Erhebung, Speicherung, Weitergabe, Löschung personenbezogener Daten. Nur analysieren und planen; Umsetzung ausschließlich nach dokumentierter Freigabe durch `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>`.
 
-**Berechtigungen, Betriebs-, Infrastruktur- und Sicherheitskonfiguration – auch als Code im Repositorium – änderst du nie, auch nicht nach Freigabe** (V6, Wurzel-Anweisung Abschnitt 12, D-53).
+**Berechtigungen, Betriebs-, Infrastruktur- und Sicherheitskonfiguration – auch als Code im Repositorium – änderst du nie, auch nicht nach Freigabe** (V6, Wurzel-Anweisung Abschnitt 12).
 
 Bei jedem Vorschlag prüfen und im Bericht benennen: Eingabevalidierung, Autorisierungsprüfung im neuen Pfad, Fehlermeldungen ohne Interna, kein Logging sensibler Daten, keine hartcodierten Geheimnisse, sichere Standardwerte.
 

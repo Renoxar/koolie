@@ -22,7 +22,7 @@ from .apparat import (
     Praeparationsfehler, schreib, sonde, strict_ausgabe, unterprozess)
 
 HOOK = ".koolie/core/tests/scripts/hook-check-secrets.py"
-SKILL_109 = ".koolie/core/framework/skills/fw-code-explain/SKILL.md"
+SKILL_109 = ".koolie/core/framework/skills/koolie-code-explain/SKILL.md"
 
 
 def _p(root: str, rel: str) -> str:

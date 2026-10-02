@@ -107,8 +107,8 @@ M105_MARKE = "(K-40, D-482)"
 
 
 def _105_spanne_gehoben(root: str) -> None:
-    ersetze(_p(root, P105_CLAUDE), ("| Verbindliche Zielversion | `2.1.x` (D-112).",
-                                    "| Verbindliche Zielversion | `2.2.x` (D-112)."))
+    ersetze(_p(root, P105_CLAUDE), ("| Verbindliche Zielversion | `2.1.x`.",
+                                    "| Verbindliche Zielversion | `2.2.x`."))
 
 
 def _105_version_ausserhalb(root: str) -> None:

@@ -1,6 +1,6 @@
 # Änderungsplan – Vorlage (Betriebsmodus M2 Guided Planning)
 
-<!-- Verwendung: Ausgabeformat des Skills fw-plan und Grundlage der Planbestätigung (Schritt 9 des
+<!-- Verwendung: Ausgabeformat des Skills koolie-plan und Grundlage der Planbestätigung (Schritt 9 des
      Standardarbeitsablaufs). Der Plan wird vom Menschen bestätigt (Stufe mittel) oder durch
      <APPROVAL_ROLE> freigegeben (Stufe hoch). Jede Planänderung nach Bestätigung erfordert eine
      erneute Bestätigung. Keine Personen, keine internen Adressen, keine Secrets. -->
@@ -9,7 +9,7 @@
 
 | Attribut | Wert |
 |---|---|
-| Erstellt mit | `fw-plan` v<Version> |
+| Erstellt mit | `koolie-plan` v<Version> |
 | Betriebsmodus der Umsetzung | M3 / M4 / M5 |
 | Kontrollstufe | <niedrig / mittel / hoch> (auslösender Faktor <R#>) |
 | Bestätigungsstatus | entwurf / bestätigt durch <Rolle> am <Datum> / abgelehnt |

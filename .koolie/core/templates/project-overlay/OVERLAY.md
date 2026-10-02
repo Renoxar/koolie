@@ -14,9 +14,9 @@
      - Nach jeder Änderung: python3 .koolie/core/tests/scripts/validate-framework.py ausführen und die Laufzeitfassung
        <RULES_DIR>/20-project-overlay.md synchron halten. Status, Version und die Pfadlisten übernimmt
        python .koolie/core/mandat.py abgleichen (der Mensch, eigenes Terminal); fehlende Regeln der
-       Berechtigungsdatei nennt es (D-452).
+       Berechtigungsdatei nennt es.
      - Ausfüllen lassen: Im Modus M6 trägt der KI-Client Entscheidungen des Menschen direkt hier ein – mit
-       Mandat (python .koolie/core/mandat.py erteilen …) und über den Skill fw-overlay-pflege (Einrichtung und
+       Mandat (python .koolie/core/mandat.py erteilen …) und über den Skill koolie-overlay-pflege (Einrichtung und
        Framework-Update). Entscheiden bleibt Sache des Menschen; geprüft wird im Merge Request. -->
 
 ## 1. Projektsteckbrief
@@ -34,9 +34,9 @@
 | Aktivierte Role Packs (Ebene 6) | `<TBD: Liste, z. B. software-development Version, oder keine>` | jeweils Laufzeitfassung `<RULES_DIR>/30-role-<pack>.md`; Prüfung 110 hält die Zeile gegen die Regelablage |
 | Freigabe der KI-Nutzung durch Organisation | `<TBD: Referenz auf Freigabedokument oder „ausstehend">` | Voraussetzung für Status aktiv |
 | Ergebnis Datenschutz- und Vertragsprüfung | `<TBD: Referenz oder „ausstehend">` | siehe `.koolie/core/framework/core/02-privacy.md` Abschnitt 1 |
-| Planstufe / verfügbare Admin-Kontrollen | `<TBD: Teams / Enterprise; erzwungene Einstellungen>` | Klärungspunkt K-05 |
-| Nutzungsumfang | `<TBD: nur lokal / zusätzlich weitere Betriebsarten>` | Klärungspunkt K-04; Standard: nur lokal. Welche Betriebsarten der Client kennt, führt sein Client Pack |
-| Betriebssysteme der Arbeitsplätze | `<TBD>` | relevant für Sandbox-Verfügbarkeit (K-11) |
+| Planstufe / verfügbare Admin-Kontrollen | `<TBD: Teams / Enterprise; erzwungene Einstellungen>` | Projektwert, Punkt der Übernahmecheckliste |
+| Nutzungsumfang | `<TBD: nur lokal / zusätzlich weitere Betriebsarten>` | Projektwert; Standard: nur lokal. Welche Betriebsarten der Client kennt, führt sein Client Pack |
+| Betriebssysteme der Arbeitsplätze | `<TBD>` | relevant für Sandbox-Verfügbarkeit |
 
 ## 2. Technische Architektur (für den KI-Client relevante Kurzfassung)
 
@@ -49,7 +49,7 @@
 | Externe Schnittstellen (abstrakt) | `<TBD: Typ und Richtung, z. B. „REST-Schnittstelle zu externem Fachverfahren (ausgehend)">` | keine Partnernamen, keine Adressen |
 | Architekturvorgaben (Dokument) | `<TBD: Pfad im Overlay-Dokumentenverzeichnis, Kontextklasse>` | siehe Abschnitt 19 |
 | Architekturentscheidungen (ADR-Ablage) | `<TBD: Pfad oder „nicht vorhanden">` | Der KI-Client liest ADRs nur lesend |
-| Änderungsschwelle (`CHANGE_SIZE_THRESHOLD`) | `<TBD: Zahl geänderter Dateien, ab der aufgeteilt oder die Kontrollstufe erhöht wird>` | Pflicht vor der Aktivierung. Sie steht hier und nicht im Ausnahmeregister: Eine Schwelle, die erst im Ausnahmefall entsteht, ist keine (D-160) |
+| Änderungsschwelle (`CHANGE_SIZE_THRESHOLD`) | `<TBD: Zahl geänderter Dateien, ab der aufgeteilt oder die Kontrollstufe erhöht wird>` | Pflicht vor der Aktivierung. Sie steht hier und nicht im Ausnahmeregister: Eine Schwelle, die erst im Ausnahmefall entsteht, ist keine |
 
 ## 3. Repository-Struktur
 
@@ -66,7 +66,7 @@
 └── <TBD: deploy/ infra/ config/>  # ausgeschlossen (siehe Abschnitt 4)
 ```
 
-Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten Ebene beschreiben. Der KI-Client erschließt Details selbst (Skill `fw-repo-analyze`). Mehrere Repositories: **je Repository eine eigene Installation mit eigenem Overlay** – die Schutzschicht wirkt nur für eine Sitzung, die im Verzeichnis der Installation startet; ein Overlay über mehreren Repositories mit einem Abschnitt je Repository ist **nicht gleichwertig**, weil eine Sitzung im Repository darunter Berechtigungen und Hooks verliert, ohne dass es gemeldet wird (D-408, `.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt 4).
+Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten Ebene beschreiben; Details erschließt der KI-Client selbst (Skill `koolie-repo-analyze`). Mehrere Repositories bekommen **je eine eigene Installation mit eigenem Overlay**. Die Schutzschicht wirkt nur für eine Sitzung, die im Verzeichnis der Installation startet; ein gemeinsames Overlay mit einem Abschnitt je Repository ist nicht gleichwertig, denn eine Sitzung im Repository darunter verliert Berechtigungen und Hooks ohne Meldung (`.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt 4).
 
 ## 4. Erlaubte und ausgeschlossene Verzeichnisse
 
@@ -75,14 +75,16 @@ Ausfüllhinweis: Nur Verzeichnisse auf der obersten und gegebenenfalls zweiten E
 | Erlaubte Pfade (Lesen und Ändern in M3) | `<ALLOWED_PATHS>` | `<TBD: z. B. src/**, test/**, docs/**>` | Glob-Muster; alles Übrige ist nicht erlaubt |
 | Testpfade (Ändern in M4) | `<TEST_PATHS>` | `<TBD>` | Teilmenge der erlaubten Pfade |
 | Dokumentationspfade (Ändern in M5) | `<DOC_PATHS>` | `<TBD>` | Teilmenge der erlaubten Pfade |
-| Ausgeschlossene Pfade (weder lesen noch ändern) | `<EXCLUDED_PATHS>` | `<TBD: z. B. deploy/**, infra/**, config/prod/**, **/fixtures/real/**>` | **Vertraulichkeitsschutz.** Zusätzlich zum festen Framework-Ausschluss der Secret-Dateien. Die Strukturpfade des Frameworks gehören **nicht** hierher – sie sind schreibgeschützt, nicht lesegesperrt (nächste Zeile, D-55) |
-| Nur-Lese-Pfade (Lesen erlaubt, Ändern nie) | `<READ_ONLY_PATHS>` | `<TBD: z. B. api-contracts/**, db/migrations/**>` | **Integritätsschutz.** Schnittstellenverträge, Migrationen, generierter Code; wird in `<PERMISSIONS_FILE>` als `Write`-deny eingetragen (eigener Schlitz, D-356). Zusätzlich immer die Strukturpfade des Frameworks: `<ROOT_INSTRUCTION_FILE>`, `<RUNTIME_DIR>/`, `<CORE_DIR>/`, `.koolie/project-overlay/`. Sie MÜSSEN lesbar bleiben – der KI-Client lädt sie als Anweisungsquelle |
+| Ausgeschlossene Pfade (weder lesen noch ändern) | `<EXCLUDED_PATHS>` | `<TBD: z. B. deploy/**, infra/**, config/prod/**, **/fixtures/real/**>` | **Vertraulichkeitsschutz.** Zusätzlich zum festen Framework-Ausschluss der Secret-Dateien. Die Strukturpfade des Frameworks gehören **nicht** hierher – sie sind schreibgeschützt, nicht lesegesperrt (nächste Zeile) |
+| Nur-Lese-Pfade (Lesen erlaubt, Ändern nie) | `<READ_ONLY_PATHS>` | `<TBD: z. B. api-contracts/**, db/migrations/**>` | **Integritätsschutz.** Schnittstellenverträge, Migrationen, generierter Code; wird in `<PERMISSIONS_FILE>` als `Write`-deny eingetragen (eigener Schlitz). Zusätzlich immer die Strukturpfade des Frameworks: `<ROOT_INSTRUCTION_FILE>`, `<RUNTIME_DIR>/`, `<CORE_DIR>/`, `.koolie/project-overlay/`. Sie MÜSSEN lesbar bleiben – der KI-Client lädt sie als Anweisungsquelle |
 | CI/CD-Konfiguration | `<CI_CONFIG_PATHS>` | `<TBD: z. B. .gitlab-ci.yml, .github/workflows/**, Jenkinsfile>` | wird in `<PERMISSIONS_FILE>` als `Write`-deny eingetragen |
 | Quality-Gate-Konfiguration | `<QUALITY_GATE_CONFIG_PATHS>` | `<TBD: z. B. Linter-, Coverage-, Analyse-Konfigurationsdateien>` | `Write`-deny |
 
-Diese Werte MÜSSEN in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overlay.md` übernommen werden; die Laufzeitfassung **bindet** den Platzhalter, statt seinen Wert einzusetzen (D-160). **Weicht ein Träger ab, ist das ein Befund und kein Auslegungsfall:** Maßgeblich ist diese Datei. Bis die Abweichung behoben ist, gilt die restriktivere Angabe – sie ist ein Notbehelf, keine Entscheidung, und der Widerspruch wird gemeldet. **Prüfung 59 des Validators findet ihn für `<EXCLUDED_PATHS>`, Prüfung 89 für `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>`** – beide lesen den Wert aus der Spalte **Wert** dieser Tabelle und verlangen, dass die Laufzeitfassung den Platzhalter **nennt**. `<CI_CONFIG_PATHS>` und `<QUALITY_GATE_CONFIG_PATHS>` führt die Laufzeitfassung nicht; für sie hält Prüfung 89 seit 1.20.1, dass jeder Glob dieser Tabelle seine eigene Schreibsperre in `<PERMISSIONS_FILE>` hat – ein zu eng gefüllter Schlitz wäre eine stille Lockerung (K-35).
+Diese Werte MÜSSEN in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overlay.md` übernommen werden; die Laufzeitfassung **bindet** den Platzhalter, statt seinen Wert einzusetzen. Maßgeblich ist diese Datei. Weicht ein Träger ab, ist das ein Befund und wird gemeldet; bis er behoben ist, gilt die restriktivere Angabe.
 
-> **Eine Lesesperre und eine Schreibsperre sind zwei verschiedene Dinge.** `<EXCLUDED_PATHS>` wird in der Berechtigungsdatei zu einer `read`- **und** einer `write`-Verweigerung; die Strukturpfade des Frameworks stehen dort ausschließlich als `write`-Verweigerung, bei `read allow **`. Wer sie in `<EXCLUDED_PATHS>` einträgt, erzeugt eine Lesesperre auf die eigenen Regeldateien – und der KI-Client kann dann die Anweisungen nicht mehr laden, die er befolgen soll. **Prüfung 28 des Validators findet diesen Fall.** Ein Schreibschutz ist kein Leseverbot (D-55).
+Der Validator prüft das: Prüfung 59 für `<EXCLUDED_PATHS>`, Prüfung 89 für `<ALLOWED_PATHS>`, `<TEST_PATHS>`, `<DOC_PATHS>` und `<READ_ONLY_PATHS>`. Beide lesen die Spalte **Wert** dieser Tabelle und verlangen, dass die Laufzeitfassung den Platzhalter nennt. `<CI_CONFIG_PATHS>` und `<QUALITY_GATE_CONFIG_PATHS>` stehen nicht in der Laufzeitfassung; für sie verlangt Prüfung 89, dass jeder Glob dieser Tabelle eine eigene Schreibsperre in `<PERMISSIONS_FILE>` hat.
+
+> **Eine Lesesperre ist keine Schreibsperre.** `<EXCLUDED_PATHS>` wird in der Berechtigungsdatei zu einer `read`- und einer `write`-Verweigerung. Die Strukturpfade des Frameworks stehen dort nur als `write`-Verweigerung, bei `read allow **`. Wer sie in `<EXCLUDED_PATHS>` einträgt, sperrt dem KI-Client die eigenen Regeldateien, und er kann seine Anweisungen nicht mehr laden. Prüfung 28 des Validators findet diesen Fall.
 
 ## 5. Build-Befehle
 
@@ -102,11 +104,15 @@ Diese Werte MÜSSEN in `<PERMISSIONS_FILE>` und in `<RULES_DIR>/20-project-overl
 | Linting / Formatprüfung | `<LINT_COMMAND>` | `<TBD>` | M3, M4, M5 | `<PERMISSIONS_FILE>`, Korb ask – und Regelschicht |
 | Statische Codeanalyse (lokal) | – | `<TBD oder „nur in CI">` | M3 | **nur Regelschicht** |
 | Weitere freigegebene Befehle | – | `<TBD: Liste oder „keine">` | `<TBD>` | **nur Regelschicht** |
-| Prüfbefehle des Frameworks (lesend) | – | `python .koolie/core/tests/scripts/validate-framework.py` (auch mit `--strict-overlay`), `python .koolie/core/install.py --check`, `python .koolie/core/mandat.py status` | alle | `<PERMISSIONS_FILE>`, Korb allow – aus der Kernquelle, nicht aus diesem Overlay (D-453) |
+| Prüfbefehle des Frameworks (lesend) | – | `python .koolie/core/tests/scripts/validate-framework.py` (auch mit `--strict-overlay`), `python .koolie/core/install.py --check`, `python .koolie/core/mandat.py status` | alle | `<PERMISSIONS_FILE>`, Korb allow – aus der Kernquelle, nicht aus diesem Overlay |
 
 Alle nicht gelisteten Befehle sind nicht freigegeben. Befehle mit Fernwirkung (Push, Merge, Deployment, Veröffentlichung) werden hier nie gelistet.
 
-**Zum Wirkungsort (D-76).** Die Berechtigungsdatei hat für Befehle genau drei Platzhalter – `<BUILD_COMMAND>` aus Abschnitt 5 sowie `<TEST_COMMAND>` und `<LINT_COMMAND>` aus dieser Tabelle. **Einen vierten Eintrag kann ein Overlay dort nicht erzeugen, und das ist so gewollt:** Die Datei wird bei der Erstinstallation aus der Kernregelmenge erzeugt und danach nie wieder geschrieben; eine Erweiterungsquelle, die nur bei der Installation gelesen würde, wäre eine Zusage, die beim ersten Releasewechsel bricht. Alle übrigen Zeilen dieser Tabelle wirken deshalb über die **Regelschicht**: `.koolie/core/framework/core/05-working-model.md` Abschnitt 3.2 und die Wurzel-Anweisungsdatei binden den KI-Client daran, nur hier gelistete Befehle auszuführen. Das ist eine Anweisung und keine technische Schranke – die Tabelle sagt es, damit niemand mehr erwartet. Ein Eintrag von Hand in `<PERMISSIONS_FILE>` ist **kein** Ersatz, und der Validator meldet ihn: Prüfung 37 als Ausweitung, sobald alle drei Schlitze belegt sind, und Prüfung 42 unabhängig davon, sobald der eingetragene Befehl in keiner Platzhalterzeile dieser Tabelle oder des Abschnitts 5 steht (D-90). **Was auch Prüfung 42 nicht prüft:** die Pfadlisten dieser Datei. Mit dem `deny`-Korb verglichen werden `<EXCLUDED_PATHS>` (Prüfung 59) und `<READ_ONLY_PATHS>` (Prüfung 89); die beiden Konfigurationslisten vergleicht keine Prüfung.
+**Zum Wirkungsort.** Die Berechtigungsdatei hat für Befehle genau drei Platzhalter: `<BUILD_COMMAND>` aus Abschnitt 5 sowie `<TEST_COMMAND>` und `<LINT_COMMAND>` aus dieser Tabelle. Einen vierten Eintrag kann ein Overlay dort nicht erzeugen, denn die Datei wird bei der Erstinstallation aus der Kernregelmenge erzeugt und danach nie wieder geschrieben.
+
+Alle übrigen Zeilen wirken über die **Regelschicht**: `.koolie/core/framework/core/05-working-model.md` Abschnitt 3.2 und die Wurzel-Anweisungsdatei binden den KI-Client daran, nur hier gelistete Befehle auszuführen. Das ist eine Anweisung, keine technische Schranke.
+
+Ein Eintrag von Hand in `<PERMISSIONS_FILE>` ist **kein** Ersatz, und der Validator meldet ihn: Prüfung 37 als Ausweitung, sobald alle drei Schlitze belegt sind, Prüfung 42, sobald der eingetragene Befehl in keiner Platzhalterzeile dieser Tabelle oder des Abschnitts 5 steht. Die Pfadlisten gleicht nicht Prüfung 42 ab, sondern Prüfung 59 (`<EXCLUDED_PATHS>`) und Prüfung 89 (`<READ_ONLY_PATHS>`, `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>`).
 
 ## 7. Qualitätsprüfungen (Quality Gates)
 
@@ -180,14 +186,14 @@ Zusätzlich zur projektweiten Definition of Done (`<TBD: Pfad>`) gilt `.koolie/c
 | Inhalte aus `<DOCUMENTATION_PLATFORM>` | `<TBD: K1 nach Freigabe je Seite / K2>` | `<TBD>` | – |
 | Logauszüge, Stacktraces | K2 | je Aufgabe | bereinigt (keine personenbezogenen Daten, Hostnamen, Kennungen) |
 | Testdaten | K1 nur synthetisch | pauschal für synthetische Daten | Echtdaten nie |
-| Freigegebene MCP-Server | – | `<TBD: „keine" oder „siehe Abschnitt 13.2">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask; ein Server ohne Zweck und Werkzeugliste ist nicht freigegeben (`02-privacy.md` 3.8, D-455, D-459) |
-| Kommentarverläufe aus `<ISSUE_TRACKER>` | K2 | **„nicht freigegeben“** – oder Kategoriefreigabe im Overlay-Manifest | nur bereinigt und nur, soweit sie eine Anforderung oder Entscheidung tragen (`02-privacy.md` 3.4, D-455) |
-| Freigegebene externe Domains (Fetch) | K0 | **„keine"** | **Eine Freigabe je Domain ist nicht vorgesehen** (D-59): `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar. Das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar |
-| Cloud-Sessions / CLI / ACP-Fremdagenten | – | `<TBD: nicht freigegeben / freigegeben mit Auflagen>` | Standard: nicht freigegeben (D-10) |
+| Freigegebene MCP-Server | – | `<TBD: „keine" oder „siehe Abschnitt 13.2">` | Eintrag in `<MCP_FILE>` erst nach Freigabe; Standard ask; ein Server ohne Zweck und Werkzeugliste ist nicht freigegeben (`02-privacy.md` 3.8) |
+| Kommentarverläufe aus `<ISSUE_TRACKER>` | K2 | **„nicht freigegeben“** – oder Kategoriefreigabe im Overlay-Manifest | nur bereinigt und nur, soweit sie eine Anforderung oder Entscheidung tragen (`02-privacy.md` 3.4) |
+| Freigegebene externe Domains (Fetch) | K0 | **„keine"** | **Eine Freigabe je Domain ist nicht vorgesehen**: `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar. Das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar |
+| Cloud-Sessions / CLI / ACP-Fremdagenten | – | `<TBD: nicht freigegeben / freigegeben mit Auflagen>` | Standard: nicht freigegeben |
 
 ### 13.1 Ablage und führendes System
 
-Wo Änderungsanträge, Pläne, Freigaben und Architekturentscheidungen des Projekts leben (D-454). **Führend ist ein zentrales System**, sobald es über einen für *schreiben für Ablage* freigegebenen MCP-Server erreichbar ist: Es vergibt die Kennungen, und mehrere Arbeitsplätze können sich nicht in die Quere kommen. **Das Repositorium ist der Rückfall** – mit Kennungen, die ohne zentrale Nummernvergabe eindeutig sind, und einer Datei je Entscheidung, damit parallele Änderungen beim Merge nicht kollidieren.
+Wo Änderungsanträge, Pläne, Freigaben und Architekturentscheidungen des Projekts leben. **Führend ist ein zentrales System**, sobald es über einen für *schreiben für Ablage* freigegebenen MCP-Server erreichbar ist: Es vergibt die Kennungen, und mehrere Arbeitsplätze können sich nicht in die Quere kommen. **Das Repositorium ist der Rückfall** – mit Kennungen, die ohne zentrale Nummernvergabe eindeutig sind, und einer Datei je Entscheidung, damit parallele Änderungen beim Merge nicht kollidieren.
 
 | Gegenstand | Führendes System | Rückfallablage im Repositorium | Kennung im Rückfall |
 |---|---|---|---|
@@ -200,7 +206,7 @@ Ausfüllhinweis: Wer ein zentrales System einträgt, gibt dessen MCP-Server in A
 
 ### 13.2 MCP-Server: Zweck und Werkzeuge
 
-Eine Zeile je freigegebenem Server (D-457, D-459). **Lesewerkzeuge** laufen ohne Rückfrage und stehen in `<PERMISSIONS_FILE>` einzeln auf `allow`; **Schreibwerkzeuge** verlangen bei jedem Aufruf die Bestätigung des Menschen und stehen einzeln auf `ask` – nie auf `allow`, auch nicht über ein Muster für den ganzen Server. Ein Werkzeug, das hier nicht steht, ruft der KI-Client nicht auf. Die Namen sind die des Servers (seine Werkzeugliste), ohne den Vorsatz des Clients. Prüfung 101 gleicht diese Tabelle mit `<PERMISSIONS_FILE>` ab; `python .koolie/core/mandat.py abgleichen` nennt fehlende Regeln, schreibt sie aber nicht (V6).
+Eine Zeile je freigegebenem Server. **Lesewerkzeuge** laufen ohne Rückfrage und stehen in `<PERMISSIONS_FILE>` einzeln auf `allow`; **Schreibwerkzeuge** verlangen bei jedem Aufruf die Bestätigung des Menschen und stehen einzeln auf `ask` – nie auf `allow`, auch nicht über ein Muster für den ganzen Server. Ein Werkzeug, das hier nicht steht, ruft der KI-Client nicht auf. Die Namen sind die des Servers (seine Werkzeugliste), ohne den Vorsatz des Clients. Prüfung 101 gleicht diese Tabelle mit `<PERMISSIONS_FILE>` ab; `python .koolie/core/mandat.py abgleichen` nennt fehlende Regeln, schreibt sie aber nicht (V6).
 
 | Server (Name in `<MCP_FILE>`) | System | Zweck | Lesewerkzeuge | Schreibwerkzeuge | Ablageziel |
 |---|---|---|---|---|---|
@@ -230,7 +236,7 @@ Zusätzlich zu den festen K3-Kategorien (`.koolie/core/framework/core/02-privacy
 | Datenschutzkontakt | `<DATA_PROTECTION_CONTACT>` | Kontextfreigaben K2 mit Personenbezug, Vorfälle |
 | Product Owner | `<PRODUCT_OWNER_ROLE>` | fachliche Klärungen, Akzeptanzkriterien |
 | Softwarearchitektur | `<ARCHITECT_ROLE>` | Architekturentscheidungen, Review Stufe hoch |
-| Mandat für Modus M6 | `<APPROVAL_ROLE>`, für `documents/` auch `<ARCHITECT_ROLE>` | erteilt im eigenen Terminal das Mandat, mit dem der KI-Client getroffene Entscheidungen in das Overlay einträgt (`mandat.py`, D-446) |
+| Mandat für Modus M6 | `<APPROVAL_ROLE>`, für `documents/` auch `<ARCHITECT_ROLE>` | erteilt im eigenen Terminal das Mandat, mit dem der KI-Client getroffene Entscheidungen in das Overlay einträgt (`mandat.py`) |
 | Reviewerinnen und Reviewer | – | Review nach `.koolie/core/framework/core/07-review-rules.md` |
 | Mentorinnen und Mentoren | – | Onboarding, Freigabe zur selbstständigen Nutzung |
 | Modul-Owner projektspezifischer Skills | – | Pflege der `prj-*`-Skills |
@@ -250,7 +256,7 @@ Ausfüllhinweis: Rollen bleiben generisch. Die Zuordnung zu Personen erfolgt au�
 
 | Skill | ID | Status | Owner (Rolle) | Zweck | Ersetzt/ergänzt Framework-Skill |
 |---|---|---|---|---|---|
-| `prj-<TBD>` | `PRJ-SK-001` | entwurf | `<TBD>` | `<TBD>` | `<TBD: keiner / fw-...>` |
+| `prj-<TBD>` | `PRJ-SK-001` | entwurf | `<TBD>` | `<TBD>` | `<TBD: keiner / koolie-...>` |
 
 Regeln: Projekt-Skills folgen dem Skill-Standard (`.koolie/core/framework/core/08-skill-conventions.md`), tragen das Präfix `prj-`, liegen unter `<SKILLS_DIR>/prj-<name>/` und DÜRFEN Framework-Skills ergänzen, aber deren Prüfschritte nicht entfernen.
 
@@ -306,7 +312,7 @@ Ausfüllhinweis: Die neueste Zeile steht oben. Eine Eintragung im Modus M6 nennt
 
 ## 21. Aktivierung
 
-Die Reihenfolge ist bindend (D-57):
+Die Reihenfolge ist bindend:
 
 1. **Ausfüllen.** Alle Pflichtwerte setzen, den Overlay-Status auf `inaktiv` – an **jeder** Stelle, an der das Overlay ihn erklärt (Steckbrief und dieser Abschnitt).
 2. **Kandidat prüfen:** `python3 .koolie/core/tests/scripts/validate-framework.py --check-overlay-ready` ohne Befund. Diese Prüfung erwartet einen Status, der **noch nicht** `aktiv` ist.

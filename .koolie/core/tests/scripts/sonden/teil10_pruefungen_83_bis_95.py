@@ -1137,7 +1137,7 @@ buendel(sonden_zeichengrenze,
 # Gegenprobe ist der ausgelieferte Bestand: Er fuehrt aeltere Zeilen ohne die Nennung, und
 # die duerfen nicht gemeldet werden - sonst schriebe die Pruefung Register um (Klasse C).
 M95 = "nennt nicht, ob sie eine Anweisung berührt"
-P95_SKILL = ".koolie/core/framework/skills/fw-docs-update"
+P95_SKILL = ".koolie/core/framework/skills/koolie-docs-update"
 
 
 def sonden_aenderungsart() -> None:
@@ -1172,7 +1172,7 @@ def sonden_aenderungsart() -> None:
             raise Praeparationsfehler("Sonde 95a: die aktuelle Zeile traegt keine Nennung")
         schreib(cl, text.replace(aktuell[0], ohne, 1))
         aus = validator_ausgabe(root)
-        ok = any(M95 in z and "fw-docs-update" in z for z in aus.splitlines())
+        ok = any(M95 in z and "koolie-docs-update" in z for z in aus.splitlines())
         melde("SONDE", "95a", ok,
               "Die Zeile der aktuellen Version ohne Nennung der Art wird gemeldet (D-403)")
         if not ok:
@@ -1202,7 +1202,7 @@ def sonden_aenderungsart() -> None:
         spaet = re.sub(r"2026-09-1\d", "2026-09-24", alt[0], count=1)
         schreib(cl, text.replace(alt[0], spaet, 1))
         aus = validator_ausgabe(root)
-        ok = any(M95 in z and "fw-docs-update" in z for z in aus.splitlines())
+        ok = any(M95 in z and "koolie-docs-update" in z for z in aus.splitlines())
         melde("SONDE", "95b", ok,
               "Eine Zeile nach dem Stichtag ohne Nennung wird gemeldet, auch wenn sie "
               "nicht die aktuelle Version ist (D-403)")

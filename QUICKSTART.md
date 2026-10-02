@@ -4,25 +4,24 @@
 
 Dieser Quickstart installiert Koolie in ein **leeres Übungs-Repository** und zeigt, was dabei entsteht. Er
 startet keinen KI-Client und verändert kein bestehendes Projekt. Als Beispiel dient das Client Pack
-`claude-code`; jedes andere Pack funktioniert genauso (Schritt 3).
+`claude-code`; die anderen Packs funktionieren genauso.
 
-Wer Koolie in ein **bestehendes** Projekt übernehmen will, liest danach den
-[Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md). Wer in einem Projekt, das Koolie schon nutzt, den
-ersten Arbeitstag hat, beginnt mit dem [Quick-Start des Onboardings](.koolie/core/onboarding/QUICKSTART.md).
+Für ein **bestehendes** Projekt gilt danach der [Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md).
+Wer in einem Projekt neu ist, das Koolie schon nutzt, beginnt mit dem
+[Quick-Start des Onboardings](.koolie/core/onboarding/QUICKSTART.md).
 
 ## Voraussetzungen
 
-- **Git** und **Python ab 3.8** (ohne Zusatzpakete). Heißt der Aufruf auf dem System `python3`, gilt er in allen
-  Befehlen unten statt `python`.
-- Eine Kommandozeile mit POSIX-Shell – unter Windows zum Beispiel Git Bash. Schritt 2 lässt sich auch mit den
-  Startern `install.cmd` (Windows) oder `install.command` (macOS) in der Wurzel des Release-Archivs erledigen;
-  sie fragen dieselben Angaben ab. Die übrigen Schritte brauchen die Kommandozeile.
-- Koolie selbst: das **entpackte Release-Archiv** oder ein **Klon** dieses Repositorys. Die Schritte 1 bis 4
-  laufen aus dessen Wurzelverzeichnis, ab Schritt 5 im Übungs-Repository.
-- **Oder über eine Paketquelle**, ohne Archiv und ohne Klon: `uvx koolie` (auch `pipx run koolie`,
-  `npx @renoxar/koolie`) ersetzt in den Schritten 2 und 3 den Aufruf `python .koolie/core/install.py`, und die
-  Schritte 1 bis 4 laufen aus einem beliebigen Verzeichnis; der Befehl gibt vorher das Banner aus. Wer ihn mit
-  `pip install koolie` installiert und `koolie` danach nicht findet, ruft `python -m koolie` auf.
+- **Git** und **Python ab 3.8**, ohne Zusatzpakete. Heißt der Aufruf auf deinem System `python3`, nimm ihn
+  in allen Befehlen statt `python`.
+- Eine Kommandozeile mit POSIX-Shell, unter Windows zum Beispiel Git Bash.
+- Koolie selbst, auf einem von zwei Wegen:
+  - **über eine Paketquelle:** `uvx koolie` (oder `pipx run koolie`, `npx @renoxar/koolie`). Es ersetzt in
+    den Schritten 2 und 3 den Aufruf `python .koolie/core/install.py`, und du kannst aus jedem Verzeichnis
+    starten. Wer `pip install koolie` nutzt und `koolie` danach nicht findet, ruft `python -m koolie` auf.
+  - **aus dem entpackten Release-Archiv oder einem Klon:** Die Schritte 1 bis 4 laufen dann aus dessen
+    Wurzelverzeichnis. Statt Schritt 2 gehen auch die Starter `install.cmd` (Windows) und `install.command`
+    (macOS); sie fragen dieselben Angaben ab.
 
 ## Schritt 1: Ein Übungs-Repository anlegen
 
@@ -40,15 +39,15 @@ git -C ../koolie-uebung commit -m "Start"
 python .koolie/core/install.py --target ../koolie-uebung --client claude-code
 ```
 
-Über eine Paketquelle lautet derselbe Schritt `uvx koolie --target ../koolie-uebung --client claude-code`.
-Ohne Argumente startet `uvx koolie` im Übungs-Repository den Dialog, mit diesem Verzeichnis als Vorgabe.
+Über eine Paketquelle: `uvx koolie --target ../koolie-uebung --client claude-code`. Ohne Argumente startet
+`uvx koolie` einen Dialog mit dem aktuellen Verzeichnis als Vorgabe.
 
-`--target` kopiert nur den Kern (`.koolie/core/`) in das Übungs-Repository und legt dort die Dateien an, die
-der Client braucht. Am Ende nennt der Installer die nächsten Schritte für ein echtes Projekt.
+Der Installer kopiert den Kern (`.koolie/core/`) ins Übungs-Repository, legt die Dateien an, die der Client
+braucht, und nennt am Ende die nächsten Schritte für ein echtes Projekt.
 
-⚠️ Unter Windows darf kein kopierter Pfad länger als 259 Zeichen werden. Liegt das Übungs-Repository zu tief,
-hält der Installer vor der ersten Kopie an und nennt, wie viele Zeichen zu viel sind – dann einen kürzeren Ort
-wählen und `../koolie-uebung` in allen Befehlen durch ihn ersetzen, in Git Bash zum Beispiel `/c/koolie-uebung`.
+⚠️ Unter Windows darf kein Pfad länger als 259 Zeichen werden. Liegt das Übungs-Repository zu tief, hält der
+Installer vor der ersten Kopie an. Dann einen kürzeren Ort wählen, in Git Bash etwa `/c/koolie-uebung`, und
+ihn in allen Befehlen statt `../koolie-uebung` einsetzen.
 
 ## Schritt 3: Einen anderen Client wählen (optional)
 
@@ -56,30 +55,29 @@ wählen und `../koolie-uebung` in allen Befehlen durch ihn ersetzen, in Git Bash
 python .koolie/core/install.py --list-clients
 ```
 
-zeigt die verfügbaren Client Packs. Welcher Client was technisch durchsetzt, steht in der
-[Übersicht der Client Packs](.koolie/core/clients/README.md), Abschnitt 6. Die Dateinamen in Schritt 4 gelten
-für `claude-code`; welche Dateien ein anderes Pack anlegt, nennt das
+zeigt die verfügbaren Client Packs. Was jeder Client technisch durchsetzt, steht in der
+[Übersicht der Client Packs](.koolie/core/clients/README.md), Abschnitt 6; welche Dateien ein Pack anlegt, im
 [Laufzeitglossar](.koolie/core/docs/RUNTIME_GLOSSARY.md). Für diesen Quickstart genügt `claude-code`.
 
 ## Schritt 4: Ansehen, was entstanden ist
 
 | Pfad im Übungs-Repository | Was es ist |
 |---|---|
-| `CLAUDE.md` | die **Anweisungsdatei**, die der Client beim Start lädt – mit den Regeln des Frameworks, zum Beispiel *„Nie: `git push` …“* |
-| `.claude/settings.json` | die **Berechtigungsdatei**: Was der Client technisch verweigert (`deny`), erfragt (`ask`) oder ohne Rückfrage darf (`allow`), dazu die Hooks |
-| `.claude/rules/`, `.claude/skills/`, `.claude/agents/` | Kurzfassungen der Regeln, die Skills des Frameworks und ein nur lesendes Review-Profil |
+| `CLAUDE.md` | die **Anweisungsdatei**, die der Client beim Start lädt – mit den Regeln von Koolie, zum Beispiel *„Nie: `git push` …“* |
+| `.claude/settings.json` | die **Berechtigungsdatei**: was der Client verweigert (`deny`), erfragt (`ask`) oder ohne Rückfrage darf (`allow`), dazu die Hooks |
+| `.claude/rules/`, `.claude/skills/`, `.claude/agents/` | Kurzfassungen der Regeln, die Skills (`/koolie-plan` und andere) und ein nur lesendes Review-Profil |
 | `.koolie/core/` | der **Kern** – in jedem Projekt gleich, nie von Hand ändern |
 | `.koolie/project-overlay/` | das **Project Overlay** – die Projektkonfiguration, die das Team ausfüllt |
 
-Die gesperrte Veröffentlichung aus der [README](README.md#was-durchgesetzt-wird--und-was-nicht) – `git push` – steht in
-`.claude/settings.json`:
+Die Sperre für `git push` aus der [README](README.md#was-durchgesetzt-wird--und-was-nicht) steht in der
+Berechtigungsdatei:
 
 ```bash
 grep -n "git push" ../koolie-uebung/.claude/settings.json
 ```
 
-Die Ausgabe nennt `Bash(git push:*)` zweimal: in `permissions.deny`, wo der Client die Sperre liest, und in
-`_core_rules_integrity.deny_must_contain`, der Liste der Kernregeln, gegen die der Validator die Datei prüft.
+`Bash(git push:*)` erscheint zweimal: in `permissions.deny`, wo der Client die Sperre liest, und in
+`_core_rules_integrity.deny_must_contain`, wogegen der Validator die Datei prüft.
 
 ## Schritt 5: Den Stand festhalten und prüfen
 
@@ -91,9 +89,9 @@ cd ../koolie-uebung
 python .koolie/core/tests/scripts/validate-framework.py
 ```
 
-**Erwartet:** `Ergebnis: 0 Fehler, 0 Warnungen`. Der Validator prüft unter anderem, dass die Kernregeln der
-Berechtigungsdatei vollständig sind. Die `.gitignore` gehört dazu, weil die Werkzeuge des Kerns bei jedem Lauf
-Python-Bytecode erzeugen; ohne sie meldet der Validator eine Warnung.
+**Erwartet:** `Ergebnis: 0 Fehler, 0 Warnungen`. Der Validator prüft unter anderem, ob die Kernregeln der
+Berechtigungsdatei vollständig sind. Die `.gitignore` hält den Python-Bytecode der Werkzeuge aus dem
+Repository; ohne sie gibt es eine Warnung.
 
 ## Schritt 6: Sehen, was für den echten Einsatz fehlt
 
@@ -101,29 +99,25 @@ Python-Bytecode erzeugen; ohne sie meldet der Validator eine Warnung.
 python .koolie/core/tests/scripts/validate-framework.py --check-overlay-ready
 ```
 
-**Erwartet:** mehrere Zeilen mit `FEHLER` und `enthält offene <TBD>-Werte` zu Dateien unter
-`.koolie/project-overlay/` und zur Overlay-Regel in `.claude/rules/`. Das ist richtig so: Das Overlay ist noch
-nicht ausgefüllt. Solange es nicht ausgefüllt, geprüft und auf aktiv gesetzt ist, arbeitet der Agent im
-Projekt nur lesend. Welche Werte
-ein Projekt eintragen muss und wer sie freigibt, beschreibt der
-[Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md).
+**Erwartet:** mehrere `FEHLER` mit `enthält offene <TBD>-Werte` zu Dateien unter `.koolie/project-overlay/`
+und zur Overlay-Regel in `.claude/rules/`. Das ist richtig so: Das Overlay ist noch leer. Bis es ausgefüllt,
+geprüft und aktiv ist, arbeitet der Agent im Projekt nur lesend. Welche Werte ein Projekt einträgt und wer sie
+freigibt, beschreibt der [Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md).
 
 ## Schritt 7: Den Client dagegen laufen lassen (optional)
 
-Wer Claude Code installiert hat, kann im Übungs-Repository eine Sitzung starten und den Assistenten bitten,
-einen Commit zu pushen. **Erwartet**, weil so gemessen: Der Assistent lehnt ab; versucht er es trotzdem,
-weist der Client den Aufruf zurück. Für diesen Quickstart ist das **nicht erneut geprüft** worden – gemessen
-wurde es am 2026-09-17 mit Claude Code 2.1.274
-([Protokoll](.koolie/core/tests/protocols/2026-09-17-sitzungstest-schranken.md)). Ein Modell kann sich
-anders verhalten – deshalb gibt es die technische Sperre, und deshalb nennt die Fähigkeitsmatrix ihre Grenze.
+Mit installiertem Claude Code kannst du im Übungs-Repository eine Sitzung starten und den Assistenten bitten,
+einen Commit zu pushen. **Erwartet:** Er lehnt ab; versucht er es trotzdem, weist der Client den Aufruf
+zurück. So wurde es mit Claude Code 2.1.274 gemessen
+([Protokoll](.koolie/core/tests/protocols/2026-09-17-sitzungstest-schranken.md)); für diesen Quickstart ist es
+nicht erneut geprüft. Ein Modell kann sich anders verhalten – genau dafür gibt es die technische Sperre.
 
 ## Aufräumen
 
-Das Übungs-Repository kann danach gelöscht werden – aus dem Verzeichnis, in dem Schritt 1 lief, ist es
-`../koolie-uebung`.
+Das Übungs-Repository `../koolie-uebung` kann danach gelöscht werden.
 
 ## Wie es weitergeht
 
-- [README](README.md): was Koolie ist, für wen es gedacht ist, welche Clients in welchem Stand unterstützt werden.
+- [README](README.md): was Koolie ist, für wen es gedacht ist und welche Clients es unterstützt.
 - [Übernahmeleitfaden](.koolie/core/docs/ADOPTION_GUIDE.md): Aufnahme in ein bestehendes Projekt, Aktualisierung, Kosten, Einsatzarchitektur und das Nebeneinander mit einem anderen Agenten-Rahmenwerk.
 - [Übersicht der Client Packs](.koolie/core/clients/README.md): Fähigkeitsmatrizen und ihre Belege.

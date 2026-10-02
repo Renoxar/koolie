@@ -8,7 +8,7 @@
   "agents_dir": ".claude/agents",
   "pack_runtime_dir": ".claude/rules",
   "has_rule_triggers": true,
-  "core_skill_prefix": "fw-",
+  "core_skill_prefix": "koolie-",
   "core_paths": [
     ".claude/README.md"
   ],
@@ -58,7 +58,7 @@
     "skill_deny_field": "disallowed-tools",
     "_skill_deny_note": "Die Abbildung von permissions.deny (CR-2026-057, D-64/D-65). Gemessen am 2026-09-13 (tests/protocols/2026-09-13-erhebung-disallowed-tools.md): 'disallowed-tools' nimmt das Werkzeug aus dem Vorrat und schlaegt dabei sogar eine ausdrueckliche allow-Regel - ein Skill mit 'disallowed-tools: Write, Edit' konnte NICHT schreiben, obwohl Write in der allow-Liste stand; derselbe Skill ohne das Feld konnte es. Das ist genau das, was 'allowed-tools' nach B01 nicht ist. Die Werkzeugnamen kommen aus hook_tools dieses Manifests und NICHT aus skill_frontmatter.tool_names (D-28, CR-2026-057 E2): edit -> hook_tools.write, exec -> hook_tools.exec. Der Unterschied ist gewollt und gemessen - tool_names.edit fuehrt nur Edit und Write, hook_tools.write fuehrt zusaetzlich NotebookEdit; fuer eine Sperre waere das eine Luecke, und eine Luecke in der Liste ist ausnutzbar (Lauf E der Erhebung: mit gesperrtem Write, Edit schrieb der Skill ueber Bash).",
     "skill_deny_unmapped": "argumentmuster",
-    "_skill_deny_unmapped_note": "Was dieses Pack bewusst NICHT abbildet, deklariert statt verschwiegen (CR-2026-057 E3, Bauart wie hook_tools_absent nach D-47): befehlsgenaue Verbote der Form Exec(git push). Gemessen am 2026-09-13, Laeufe G' und G'' (tests/protocols/2026-09-13-erhebung-disallowed-tools.md Abschnitt 4.3): Ein Eintrag mit Klammer - 'disallowed-tools: Bash(echo verboten:*)' und ebenso die Schreibweise mit Leerzeichen - laesst den Befehl LAUTLOS durchlaufen, ohne Verweigerung und ohne Fehlermeldung; derselbe Skill mit 'disallowed-tools: Bash' wies beide Befehle ab. Wer ein Argumentmuster schreibt, hat deshalb GAR KEINE Schranke, nicht bloss eine groebere. Die Alternative - das ganze Werkzeug sperren - ist strenger als gemeint und macht die allow-Eintraege derselben Skills wirkungslos: fw-tests koennte seinen Testbefehl nicht mehr ausfuehren. Betroffen sind fuenf der zwoelf Quellskills, und sie sind NICHT gleich betroffen - nachgezaehlt an der erzeugten Fassung, nicht an der Quelle: DREI tragen ausschliesslich befehlsgenaue Verbote und bekommen deshalb GAR KEINE Schranke je Skill (fw-change-small, fw-refactor, fw-tests); ZWEI nennen daneben das grobe Verb edit und bekommen eine TEILWEISE Schranke - ihre Editierwerkzeuge sind gesperrt, ihre git-Verbote nicht (fw-mr-description, fw-review-support). Die uebrigen sieben sind vollstaendig abgebildet. Pruefung 33 weist jedes Argumentmuster in einer erzeugten Fassung ab.",
+    "_skill_deny_unmapped_note": "Was dieses Pack bewusst NICHT abbildet, deklariert statt verschwiegen (CR-2026-057 E3, Bauart wie hook_tools_absent nach D-47): befehlsgenaue Verbote der Form Exec(git push). Gemessen am 2026-09-13, Laeufe G' und G'' (tests/protocols/2026-09-13-erhebung-disallowed-tools.md Abschnitt 4.3): Ein Eintrag mit Klammer - 'disallowed-tools: Bash(echo verboten:*)' und ebenso die Schreibweise mit Leerzeichen - laesst den Befehl LAUTLOS durchlaufen, ohne Verweigerung und ohne Fehlermeldung; derselbe Skill mit 'disallowed-tools: Bash' wies beide Befehle ab. Wer ein Argumentmuster schreibt, hat deshalb GAR KEINE Schranke, nicht bloss eine groebere. Die Alternative - das ganze Werkzeug sperren - ist strenger als gemeint und macht die allow-Eintraege derselben Skills wirkungslos: koolie-tests koennte seinen Testbefehl nicht mehr ausfuehren. Betroffen sind fuenf der zwoelf Quellskills, und sie sind NICHT gleich betroffen - nachgezaehlt an der erzeugten Fassung, nicht an der Quelle: DREI tragen ausschliesslich befehlsgenaue Verbote und bekommen deshalb GAR KEINE Schranke je Skill (koolie-change-small, koolie-refactor, koolie-tests); ZWEI nennen daneben das grobe Verb edit und bekommen eine TEILWEISE Schranke - ihre Editierwerkzeuge sind gesperrt, ihre git-Verbote nicht (koolie-mr-description, koolie-review-support). Die uebrigen sieben sind vollstaendig abgebildet. Pruefung 33 weist jedes Argumentmuster in einer erzeugten Fassung ab.",
     "drop_fields": [
       "permissions",
       "triggers"
@@ -83,8 +83,8 @@
       "dst": "<RULES_DIR>/15-development-rules.md"
     },
     {
-      "src": "framework/runtime/agents/fw-reviewer.md",
-      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+      "src": "framework/runtime/agents/koolie-reviewer.md",
+      "dst": "<AGENTS_DIR>/koolie-reviewer.md"
     },
     {
       "src": "templates/rules/21-overlay-TEMPLATE.md.template",
@@ -189,7 +189,7 @@
   "permission_name_tools": [
     "Skill"
   ],
-  "_permission_name_tools_note": "Werkzeuge, deren Regelargument kein Pfad ist, sondern ein Name. Fuer sie haengt die Abbildung weder das Wurzelpraefix (permission_path_prefix) noch das Praefixzeichen (permission_exec_suffix) an, und der Validator laesst sie neben permission_path_tools zu. Gemessen am 2026-09-14 (tests/protocols/2026-09-14-erhebung-skillaufruf.md, D-82): Der Skill-Aufruf ist bei diesem Client ein eigener Werkzeugaufruf mit dem Namen Skill und laeuft ohne allow-Regel in die Rueckfrage; das Argument wird WOERTLICH verglichen - Skill(fw-code-explain) laesst den Aufruf durch (Lauf C1), Skill(fw-*) nicht (Lauf D1), und Skill(fw-plan) weist fw-code-explain ab (Lauf E1, Kontrolllauf). Deshalb zwoelf woertliche Regeln statt eines Musters.",
+  "_permission_name_tools_note": "Werkzeuge, deren Regelargument kein Pfad ist, sondern ein Name. Fuer sie haengt die Abbildung weder das Wurzelpraefix (permission_path_prefix) noch das Praefixzeichen (permission_exec_suffix) an, und der Validator laesst sie neben permission_path_tools zu. Gemessen am 2026-09-14 (tests/protocols/2026-09-14-erhebung-skillaufruf.md, D-82): Der Skill-Aufruf ist bei diesem Client ein eigener Werkzeugaufruf mit dem Namen Skill und laeuft ohne allow-Regel in die Rueckfrage; das Argument wird WOERTLICH verglichen - Skill(koolie-code-explain) laesst den Aufruf durch (Lauf C1), Skill(koolie-*) nicht (Lauf D1), und Skill(koolie-plan) weist koolie-code-explain ab (Lauf E1, Kontrolllauf). Deshalb zwoelf woertliche Regeln statt eines Musters.",
   "mcp_permission_rule": {"werkzeug": "mcp__{server}__{werkzeug}", "pauschal": "mcp__*", "rueckfrage_schlaegt_freigabe": true},
   "_mcp_permission_rule_note": "Die Regelform eines MCP-Werkzeugs in der Berechtigungsdatei (Pruefung 101, D-459). Gemessen am 2026-09-28 mit Clientversion 2.1.283 (Vorpruefung zu 1.18.0): allow auf mcp__<server>__<werkzeug> laesst ein Lesewerkzeug im Druckmodus durch, ein Schreibwerkzeug auf ask wird abgewiesen (V4); steht mcp__* im ask-Korb - so erzeugt die Kernquelle die Datei -, wird auch das einzeln freigegebene Lesewerkzeug abgewiesen (V5). Die Freigabe zum Lesen ersetzt deshalb die Pauschale durch Einzelregeln.",
   "permission_tools_bare": [

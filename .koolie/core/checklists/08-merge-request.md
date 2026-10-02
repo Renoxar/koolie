@@ -20,7 +20,7 @@ Sichert Schritt 14 des Standardarbeitsablaufs: Übernahme ausschließlich über 
 ### Vor dem Erstellen (Bearbeiterin oder Bearbeiter)
 
 - [ ] **MUSS** Der Merge Request verfolgt genau ein Ziel (Q1); vermischte Änderungen sind aufgeteilt.
-- [ ] **MUSS** Beschreibung liegt vor (Skill `fw-mr-description` oder manuell) und folgt `<MR_TEMPLATE_PATH>`; Ticket-Bezug hergestellt.
+- [ ] **MUSS** Beschreibung liegt vor (Skill `koolie-mr-description` oder manuell) und folgt `<MR_TEMPLATE_PATH>`; Ticket-Bezug hergestellt.
 - [ ] **MUSS** KI-Nutzungsvermerk enthalten (`.koolie/core/templates/MR_AI_DISCLOSURE.md`): Kurzform bei Stufe niedrig, Langform ab Stufe mittel (mit Plan-Referenz, Kontextliste, Befehlen, Abweichungen, Restrisiken).
 - [ ] **MUSS** Selbstreview nach `.koolie/core/checklists/04-review-ai-code.md` durchgeführt und im Vermerk bestätigt.
 - [ ] **MUSS** Lokale Prüfungen grün (`<LINT_COMMAND>`, `<TEST_COMMAND>`); Tests für geänderte Logik vorhanden (Q2, `.koolie/core/checklists/05-testing.md`).

@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.5 |
+| Version | 0.3.6 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -26,12 +26,12 @@ Skill-Ablage der Laufzeitschicht
 
 - Ablageort: die Skill-Ablage der Laufzeitschicht, je Skill ein Unterverzeichnis mit `SKILL.md`. Der konkrete Pfad je Client steht in `.koolie/core/docs/RUNTIME_GLOSSARY.md` (Zeile „Skill-Ablage“), etwaige Alternativpfade im Client Pack.
 - Der Verzeichnisname ist der Aufrufname; die Aufrufform je Client (etwa `/skill-name`) nennt Zeile S2 der Fähigkeitsmatrix seines Client Packs.
-- Framework-Skills tragen das Präfix `fw-`, projektspezifische Skills `prj-`, Role-Pack-Skills `role-<pack>-`, Technology-Pack-Skills `tech-<pack>-`.
+- Mitgelieferte Skills – aus dem Kern wie aus Role und Technology Packs – tragen das Präfix `koolie-`, projektspezifische Skills `prj-`. Ein mitgelieferter Name ist über alle Packs eindeutig.
 - Skill-Namen bestehen aus Kleinbuchstaben, Ziffern und Bindestrichen.
 
 ## 3. Frontmatter (normativ)
 
-Die Tabelle beschreibt das Frontmatter der **Quelle** unter `framework/skills/`. Es ist das Quellformat des Frameworks: `install.py` bildet es je Client Pack ab, und Felder wie `permissions` und `triggers` erscheinen in der installierten Fassung unter dem Namen, den das Manifest des Packs dafür führt, oder werden durch den dort benannten Ersatz getragen. **Die installierte Fassung enthält ausschließlich Felder, die in der Dokumentation des Clients belegt sind** `[DOK]`; wo das für ein Pack nicht erhoben ist, sagt es dessen Fähigkeitsmatrix (D-388).
+Die Tabelle beschreibt das Frontmatter der **Quelle** unter `framework/skills/`. Es ist das Quellformat des Frameworks: `install.py` bildet es je Client Pack ab, und Felder wie `permissions` und `triggers` erscheinen in der installierten Fassung unter dem Namen, den das Manifest des Packs dafür führt, oder werden durch den dort benannten Ersatz getragen. **Die installierte Fassung enthält ausschließlich Felder, die in der Dokumentation des Clients belegt sind** `[DOK]`; wo das für ein Pack nicht erhoben ist, sagt es dessen Fähigkeitsmatrix.
 
 | Feld | Pflicht | Regel |
 |---|---|---|
@@ -43,7 +43,7 @@ Die Tabelle beschreibt das Frontmatter der **Quelle** unter `framework/skills/`.
 | `triggers` | MUSS | `["user"]` für alle Skills, die Dateien ändern oder Befehle ausführen; `["user", "model"]` nur für rein lesende Skills |
 | `model`, `subagent`, `agent` | KANN | nur mit dokumentierter Begründung im Metadatenblock |
 
-Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, sondern im Metadatenblock des Dateikörpers (D-08).
+Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, sondern im Metadatenblock des Dateikörpers.
 
 ## 4. Pflichtinhalte je Skill (normativ)
 
@@ -57,7 +57,7 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 | 6 | Zielgruppe | SKILL.md Abschnitt 1 | Rollen |
 | 7 | Trigger | SKILL.md Abschnitt 1 | Situationen, in denen der Skill verwendet wird; Aufrufform |
 | 8 | Vorbedingungen | SKILL.md Abschnitt 2 | Was vor dem Aufruf erfüllt sein muss (Preflight, Kontrollstufe, Modus) |
-| 9 | Benötigte Eingaben | SKILL.md Abschnitt 2 | Argumente und Kontext mit Kontextklasse; „K2 (bereinigt)“ heißt bereinigt **und** freigegeben (`02-privacy.md` Abschnitt 4, D-420) |
+| 9 | Benötigte Eingaben | SKILL.md Abschnitt 2 | Argumente und Kontext mit Kontextklasse; „K2 (bereinigt)“ heißt bereinigt **und** freigegeben (`02-privacy.md` Abschnitt 4) |
 | 10 | Zulässige Kontextquellen | SKILL.md Abschnitt 2 | Positivliste |
 | 11 | Ausgeschlossene Informationen | SKILL.md Abschnitt 2 | Negativliste, mindestens K3 |
 | 12 | Arbeitsschritte | SKILL.md Abschnitt 3 | nummeriert, mit Halte- und Rückfragepunkten |
@@ -85,7 +85,7 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 2. Rückfragen bei Unklarheiten verlangen (P3) und Annahmen sichtbar machen.
 3. Scope ausdrücklich begrenzen (Pfade, Modus, Kontrollstufe) und Überschreitungen melden.
 4. Relevante Prüfungen definieren (welche Tests, welche Checkliste).
-5. Festes Ausgabeformat verwenden. Die Überschriften des Gerüsts werden **wörtlich** übernommen – ohne Umformulierung, ohne Zusatz, in derselben Ebene; was ein Abschnitt für den Fall erläutert, steht im Text darunter. Auch die Ergebnisausgabe eines Folgeturns trägt jede Pflichtüberschrift; ein Abschnitt, dessen Inhalt schon in einem früheren Turn steht, verweist dort darauf (D-432).
+5. Festes Ausgabeformat verwenden. Die Überschriften des Gerüsts werden **wörtlich** übernommen – ohne Umformulierung, ohne Zusatz, in derselben Ebene; was ein Abschnitt für den Fall erläutert, steht im Text darunter. Auch die Ergebnisausgabe eines Folgeturns trägt jede Pflichtüberschrift; ein Abschnitt, dessen Inhalt schon in einem früheren Turn steht, verweist dort darauf.
 6. Delegationsverbotsliste beachten.
 7. Bei Kontrollstufe hoch ohne dokumentierte Freigabe die Bearbeitung ablehnen.
 
@@ -99,16 +99,16 @@ Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, so
 | `veraltet` | ersetzt oder nicht mehr empfohlen; Nutzung mit Hinweis | Nachfolger benannt oder Begründung dokumentiert |
 | `zurückgezogen` | entfernt; Verzeichnis bleibt bis zum nächsten Major-Release mit Hinweisdatei | Deprecation-Frist abgelaufen |
 
-**Reichweite dieser Tabelle.** Die fünf Statuswerte und ihre Bedeutung gelten für **jeden** Modulträger des Frameworks; die Spalte *Voraussetzung für Übergang* gilt für Skills. Die Bedingungen für Modulträger, die keine Skills sind, stehen in `01-governance.md` Abschnitt 5 (D-102). **„Testfälle bestanden" ist Bedingung für `aktiv`, nicht für `pilot`** – für `pilot` genügt, dass sie vorliegen (D-103).
+**Reichweite dieser Tabelle.** Die fünf Statuswerte und ihre Bedeutung gelten für jeden Modulträger des Frameworks; die Spalte *Voraussetzung für Übergang* gilt für Skills. Die Bedingungen für Modulträger, die keine Skills sind, stehen in `01-governance.md` Abschnitt 5. **„Testfälle bestanden" ist Bedingung für `aktiv`, nicht für `pilot`** – für `pilot` genügt, dass sie vorliegen.
 
 - MAJOR: Änderung des Ausgabeformats oder des Scopes; MINOR: neue Schritte oder Prüfungen ohne Formatbruch; PATCH: Korrekturen und Formulierungen.
-- Jede Versionsänderung, die eine **Anweisung** des Skills berührt, erfordert die erneute Ausführung der Testfälle in `TESTS.md`; Ergebnisse werden im Testkatalog vermerkt. **Eine Änderung, die ausschließlich Erläuterung, Schreibweise oder einen Namen betrifft, tut das nicht** – ein Testblatt nimmt ab, was der Skill anweist, und was er erläutert, hat es nie geprüft (D-303, `K-84`).
-  ⚠️ Die Grenze zwischen Anweisung und Erläuterung zieht ein Mensch; keine Prüfung setzt sie durch (D-303). Wer sie zieht, schreibt in den Änderungsverlauf des Skills, **welche** Art von Änderung er vorgenommen hat.
+- Jede Versionsänderung, die eine **Anweisung** des Skills berührt, erfordert die erneute Ausführung der Testfälle in `TESTS.md`; Ergebnisse werden im Testkatalog vermerkt. Eine Änderung, die ausschließlich Erläuterung, Schreibweise oder einen Namen betrifft, tut das nicht – ein Testblatt nimmt ab, was der Skill anweist, und was er erläutert, hat es nie geprüft.
+  Die Grenze zwischen Anweisung und Erläuterung zieht ein Mensch; keine Prüfung setzt sie durch. Wer sie zieht, schreibt in den Änderungsverlauf des Skills, welche Art von Änderung er vorgenommen hat.
 - Die strukturelle Konformität prüft `.koolie/core/tests/scripts/validate-framework.py` (Pflichtabschnitte, Frontmatter, Platzhalter, verbotene Muster).
 
-**Reichweite dieser Konventionen.** Sie gelten für die **Skill-Ablage, die das Framework schreibt**. Skills aus Ablagen außerhalb des Repositoriums – etwa aus dem Benutzerprofil – unterliegen ihnen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken, nie erweitern. Der KI-Client kann sie dennoch aufrufen: Am 2026-09-11 führte eine Installation 81 Skills, 67 davon aus einer fremden Ablage und mit Aufrufbarkeit durch Mensch **und** Modell.
+**Reichweite dieser Konventionen.** Sie gelten für die Skill-Ablage, die das Framework schreibt. Skills aus Ablagen außerhalb des Repositoriums – etwa aus dem Benutzerprofil – unterliegen ihnen nicht; sie sind nach Regel 2.6 der Prioritätshierarchie ebenenlos und dürfen den Handlungsspielraum nur einschränken, nie erweitern. Der KI-Client kann sie dennoch aufrufen: Am 2026-09-11 führte eine Installation 81 Skills, 67 davon aus einer fremden Ablage und mit Aufrufbarkeit durch Mensch und Modell.
 
-Was ein solcher Skill tut, läuft durch die normalen Werkzeuge des Clients und erreicht damit Berechtigungsregeln und Schutz-Hook – gemessen im selben Lauf, einschließlich Positivkontrolle und einschließlich des Modus ohne Rückfragen. **Der Skill-Aufruf selbst ist kein Werkzeugaufruf** und damit nicht einzeln kontrollierbar; kontrolliert wird, was er auslöst. Welche fremden Ablagen ein Client führt und ob sie abschaltbar sind, steht im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts" seines Client Packs (D-34, D-37).
+Was ein solcher Skill tut, läuft durch die normalen Werkzeuge des Clients und erreicht damit Berechtigungsregeln und Schutz-Hook – gemessen im selben Lauf, einschließlich Positivkontrolle und einschließlich des Modus ohne Rückfragen. **Der Skill-Aufruf selbst ist kein Werkzeugaufruf** und damit nicht einzeln kontrollierbar; kontrolliert wird, was er auslöst. Welche fremden Ablagen ein Client führt und ob sie abschaltbar sind, steht im Abschnitt „Anweisungs- und Konfigurationsquellen außerhalb des Projekts" seines Client Packs.
 
 ## 8. Erläuterung
 

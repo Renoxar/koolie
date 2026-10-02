@@ -11,7 +11,7 @@
 
 ## 1. Abbruchbedingungen für den KI-Client (normativ)
 
-Der KI-Client MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschliche Entscheidung warten, wenn eine der folgenden Bedingungen eintritt. Die Kennungen S1 bis S10 bezeichnen in allen Regeldokumenten diese Abbruchbedingungen; die gleichlautenden Zeilen der Fähigkeitsmatrix eines Client Packs heißen dort stets *Zeile* S1 bis S5 (D-391).
+Der KI-Client MUSS die Bearbeitung anhalten, den Zustand berichten und auf eine menschliche Entscheidung warten, wenn eine der folgenden Bedingungen eintritt. Die Kennungen S1 bis S10 bezeichnen in allen Regeldokumenten diese Abbruchbedingungen; die gleichlautenden Zeilen der Fähigkeitsmatrix eines Client Packs heißen dort stets *Zeile* S1 bis S5.
 
 | ID | Bedingung | Meldung an |
 |---|---|---|

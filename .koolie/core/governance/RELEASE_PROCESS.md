@@ -3,23 +3,28 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.3.10` |
+| Version | `0.5.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
 ## 1. Versionierung (normativ)
 
 1. Das Framework folgt Semantic Versioning (`.koolie/core/VERSION`, `.koolie/core/CHANGELOG.md`): **MAJOR** bei Struktur- oder Hierarchieänderungen, die Overlays anpassen müssen; **MINOR** bei neuen Modulen, Skills oder Regeln ohne Overlay-Bruch; **PATCH** bei Korrekturen und Formulierungen.
+2. Skills, Packs, Checklisten, Prompts und Overlays tragen eigene Versionen (Metadatentabellen). Jede Änderung an einem dieser Artefakte erhöht dessen Version im selben Release; die Release-Checkliste (`.koolie/core/checklists/11-framework-release.md`) fordert das je Artefaktklasse ein. Ein reiner Statuswechsel zählt nicht als Änderung (`.koolie/core/framework/core/01-governance.md` Abschnitt 5 Punkt 5).
 
-   **Solange die Hauptversion 0 ist, gilt die MAJOR-Regel nicht:** Eine brechende Änderung erscheint dort als MINOR mit einem Migrationsabschnitt im Änderungsverzeichnis, weil `1.0.0` durch D-11 an fünf prüfbare Kriterien gebunden ist und eine vorzeitige Hauptversion das Release-Gate `FW-CL-11` entwerten würde. Ab `1.0.0` gilt die Regel oben unverändert.
-2. Skills, Packs, Checklisten, Prompts und Overlays tragen eigene Versionen (Metadatentabellen). Jede Änderung an einem dieser Artefakte erhöht dessen Version im selben Release; die Release-Checkliste fordert das je Artefaktklasse ein. **Ein reiner Statuswechsel zählt dabei nicht als Änderung** (`.koolie/core/framework/core/01-governance.md` Abschnitt 5 Punkt 5, D-106) (`.koolie/core/checklists/11-framework-release.md`).
+   Eine kompatible Framework-Version nennen nur die Artefakte, die vom Kern abweichen können:
 
-   **Eine kompatible Framework-Version nennen nur die Artefakte, die vom Kern abweichen können:** das Overlay (Steckbriefzeile „Kompatible Framework-Version") und das Client Pack (Zeile „Geprüfte Clientversion" für den Client, gegen den es belegt ist). Beide gehören nicht zum Kern – ein Overlay gehört dem Projekt, ein Pack bildet einen fremden Client ab, und beide können einem älteren Stand folgen. Skills, Checklisten und Prompts werden byte-gleich im Release ausgeliefert; ihre kompatible Framework-Version ist der Inhalt von `.koolie/core/VERSION` im selben Verzeichnis. Ein eigenes Feld je Datei wäre ein Wert, der bei jedem Release in Dutzenden Dateien nachzuziehen wäre und veraltet, ohne dass es auffällt (D-25).
+   | Artefakt | Steckbriefzeile | Warum |
+   |---|---|---|
+   | Overlay | „Kompatible Framework-Version" | gehört dem Projekt und kann einem älteren Stand folgen |
+   | Client Pack | „Geprüfte Clientversion" | bildet einen fremden Client ab und ist gegen eine Version belegt |
+
+   Skills, Checklisten und Prompts werden byte-gleich ausgeliefert; ihre kompatible Framework-Version ist der Inhalt von `.koolie/core/VERSION` daneben. Ein eigenes Feld je Datei müsste bei jedem Release in Dutzenden Dateien nachgezogen werden.
 3. Jede Auslieferung erfolgt als Release-Archiv mit Stand aus dem Framework-Repository; Projekte übernehmen nur Releases, keine Zwischenstände.
 
 ## 2. Review-Zyklus (normativ)
 
-1. Regelmäßiger Review-Termin des Frameworks: **quartalsweise**, und die Produktbeobachtung (Abschnitt 6) **zusätzlich vor jedem Release, das die Zielspanne eines Client Packs berührt** (D-466, `K-14`) – Inhalte: offene Änderungsanträge, Feedback- und Lessons-Learned-Einträge, Vorfallauswertung, Metrik-Signale aus Piloten, Ergebnis der Produktbeobachtung.
+1. Das Framework wird **quartalsweise** überprüft; die Produktbeobachtung (Abschnitt 6) zusätzlich vor jedem Release, das die Zielspanne eines Client Packs berührt. Inhalte: offene Änderungsanträge, Feedback- und Lessons-Learned-Einträge, Vorfallauswertung, Metrik-Signale aus Piloten, Ergebnis der Produktbeobachtung.
 2. Zwischen den Terminen sind Hotfix-Releases zulässig für: Sicherheits- oder Datenschutzlücken im Framework, gebrochene Mechanismen des KI-Clients, fehlerhafte Skills mit Schadenspotenzial.
 
 ## 3. Änderungsanträge (normativ)
@@ -35,66 +40,55 @@
 3. Kommunikation an alle übernehmenden Projekte mit Migrationshinweisen (betroffene Overlay-Felder, neue Pflichtprüfungen, deprecatete Skills).
 4. Projekte übernehmen Releases über `.koolie/core/docs/ADOPTION_GUIDE.md` Abschnitt „Aktualisierung"; der Framework Owner führt die Bestandsliste der Projekte mit eingesetzter Version in `.koolie/core/governance/ADOPTION_REGISTRY.md` (Auditierbarkeit).
 
-### 4.1 Das Release-Archiv (normativ, seit `1.0.0` – D-321)
+### 4.1 Das Release-Archiv (normativ)
 
-**Ein Release ist ab `1.0.0` erst dann eines, wenn es einen benannten Stand hat:** eine
-annotierte, signierte Marke und ein daraus erzeugtes Archiv (Punkt 2), weil Abschnitt 8
-die Nachweiskette mit dem Archiv beginnt.
+Ein Release hat einen benannten Stand: eine annotierte, signierte Marke und ein daraus erzeugtes
+Archiv. Mit dem Archiv beginnt die Nachweiskette aus Abschnitt 8.
 
-**Die Reihenfolge ist normativ, und die Trennlinie ist der Freigabe-Commit** (D-330).
-Die Schritte 1 bis 3 stehen **davor**, die Schritte 4 bis 7 **danach** – weil das Archiv
-aus der **Marke** entsteht und die Marke auf dem Release-Commit sitzt.
+Die Reihenfolge ist normativ. Die Trennlinie ist der Release-Commit: Die Schritte 1 bis 3 stehen
+davor, die Schritte 4 bis 7 danach, weil das Archiv aus der Marke entsteht und die Marke auf dem
+Release-Commit sitzt.
 
 | Schritt | Was | Wer | Lage |
 |---|---|---|---|
-| 1 | **Bestandsliste fortschreiben:** `.koolie/core/governance/ADOPTION_REGISTRY.md` nennt je Projekt den Stand, auf den es gehoben wurde. **Prüfung 82 hält die Spalte gegen `VERSION`** | Werkzeug oder Mensch | **vor** dem Commit |
-| 2 | **Übernehmende Projekte heben**, und zwar aus dem **Arbeitsbaum**, beschränkt auf das Verfolgte (D-333): `rm -rf .koolie/core`, dann `(cd <framework> && git ls-files -z .koolie/core \| tar --null -T - -cf -) \| tar -xf - -C .`; danach `install.py --update` – alle drei Handgriffe in einem: `python <framework>/.koolie/core/install.py --target <projekt> --update` (D-362; aus dem Klon nur Verfolgtes, aus dem Arbeitsbaum) –, den Overlay-Wert in **drei** Trägern nachziehen, `validate-framework.py --strict-overlay` dort fahren **und im übernehmenden Projekt committen** (D-343). **Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt** | Werkzeug oder Mensch | **vor** dem Commit, **nach dem letzten Eingriff in den Kern** |
-| 3 | **Erzeugnisse der Lieferung bauen:** Hauptdokument (`build/assemble.py`) und Word-Fassung (`build/build-docx.py`) **je Client Pack**, und im Erzeugnis nachzählen | Werkzeug oder Mensch | **vor** dem Commit |
-| 4 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`. Die Nachricht nennt Release, Antrag, die Entscheidungen **und die Freigabezeile** – *„Freigegeben durch den Framework Owner am `<JJJJ-MM-TT>`"* (D-334, `K-111`). Damit trägt die Marke die Unterschrift, und deshalb setzt sie der Mensch | **der Framework Owner, nicht ein Werkzeug** | **nach** dem Commit |
-| 5 | **Archiv** aus der Marke, mit **ausdrücklicher** Zeilenendeform **und ausdrücklichem Dateimodus**: `git -c core.eol=lf -c core.autocrlf=input -c tar.umask=022 archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` – ohne `tar.umask=022` trägt git jede Datei mit `0664` und `install.command` mit `0775` (gemessen an `v1.7.0`, D-369) | Werkzeug oder Mensch | **nach** dem Commit |
-| 6 | **Im Erzeugnis nachzählen**, nicht der Meldung glauben: Dateizahl, Zeilenendeform, Lizenz in Wurzel **und** Kern, keine Erzeugnisse aus `build/out/`, **Modus der Tar-Einträge** – `install.command` `0755`, jede übrige Datei `0644` | Werkzeug oder Mensch | **nach** dem Commit |
-| 7 | **Ablage außerhalb des Repositoriums**, zusammen mit der Prüfsumme des Archivs; Mitteilung an die übernehmenden Projekte nach Punkt 3 | Werkzeug oder Mensch | **nach** dem Commit |
+| 1 | **Bestandsliste fortschreiben:** `.koolie/core/governance/ADOPTION_REGISTRY.md` nennt je Projekt den Zielstand. Prüfung 82 hält die Spalte gegen `VERSION` | Werkzeug oder Mensch | vor dem Commit |
+| 2 | **Übernehmende Projekte heben:** `python <framework>/.koolie/core/install.py --target <projekt> --update` (kopiert aus dem Arbeitsbaum nur Verfolgtes und ruft dann `install.py --update` im Projekt auf); den Overlay-Wert in den drei Trägern nachziehen; dort `validate-framework.py --strict-overlay` und `install.py --probe` fahren; die Hebung **im übernehmenden Projekt committen**. Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt | Werkzeug oder Mensch | vor dem Commit, nach dem letzten Eingriff in den Kern |
+| 3 | **Erzeugnisse der Lieferung bauen:** Hauptdokument (`build/assemble.py`) und Word-Fassung (`build/build-docx.py`) je Client Pack, und im Erzeugnis nachzählen | Werkzeug oder Mensch | vor dem Commit |
+| 4 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`. Die Nachricht nennt Release, Antrag, Entscheidungen und die Freigabezeile *„Freigegeben durch den Framework Owner am `<JJJJ-MM-TT>`"* | **der Framework Owner, nicht ein Werkzeug** | nach dem Commit |
+| 5 | **Archiv** aus der Marke: `git -c core.eol=lf -c core.autocrlf=input -c tar.umask=022 archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch | nach dem Commit |
+| 6 | **Im Erzeugnis nachzählen**, nicht der Meldung glauben: Dateizahl, Zeilenenden (LF), Lizenz in Wurzel und Kern, nichts aus `build/out/`, Modus der Tar-Einträge (`install.command` `0755`, jede übrige Datei `0644`) | Werkzeug oder Mensch | nach dem Commit |
+| 7 | **Ablage außerhalb des Repositoriums** mit Prüfsumme des Archivs; Mitteilung an die übernehmenden Projekte nach Punkt 3 | Werkzeug oder Mensch | nach dem Commit |
 
-**Das Heben gehört vor den Commit** (D-330), weil es ein Lauf gegen eine fremde
-Installation ist und nicht die Fortschreibung einer Tabelle: Es findet, was kein
-Validatorlauf findet, und hinter dem Merge läge dieser Prüfschritt hinter der Freigabe, die
-er absichern soll. ⚠️ **Preis, benannt:** Wer vor dem Commit hebt, hebt aus einem
-unveröffentlichten Stand; ändert sich der Baum danach noch, muss erneut gehoben werden –
-Heben und Commit gehören als Paar, wie Commit und Marke.
+**Zu Schritt 1 und 2.** Die Bestandsliste liegt im Framework und in jeder ausgelieferten Kopie.
+Deshalb nennt Schritt 1 den Zielstand, bevor Schritt 2 hebt – sonst kopiert das Heben den alten
+Stand in die Projekte. Prüfung 82 prüft nur die Zeile, nicht den Stand des Projekts; den Git-Stand
+eines fremden Repositoriums erreicht keine Prüfung.
 
-**Die Bestandsliste wird an zwei Stellen geführt:** im Framework und in jeder
-ausgelieferten Kopie. Deshalb nennt Schritt 1 den Zielstand, **bevor** Schritt 2 hebt –
-sonst kopiert das Heben den alten Stand in die Projekte (D-331).
+**Zu Schritt 2.** Das Heben ist ein Lauf gegen eine fremde Installation und findet, was kein
+Validatorlauf im Framework findet; deshalb steht es vor dem Commit und nicht hinter der Freigabe.
 
-**Das Heben ist der letzte Eingriff in den Kern** (D-333): Jede Änderung an
-`.koolie/core/**` danach macht die Kopien wieder falsch. Die Übergabe darf danach noch
-geschrieben werden – sie ist ein lokales Arbeitsdokument, wird nicht versioniert und in
-kein Projekt installiert (D-350).
+- Es ist der letzte Eingriff in den Kern. Jede Änderung an `.koolie/core/**` danach macht die
+  Kopien falsch und verlangt erneutes Heben. Die lokale Übergabe darf danach noch geschrieben
+  werden; sie wird nicht versioniert und nicht installiert.
+- Quelle ist der Arbeitsbaum, nicht `HEAD`: Vor dem Commit fehlen in `HEAD` der Änderungsantrag
+  und das Protokoll des Releases. Die Beschränkung auf verfolgte Dateien hält Bytecode und
+  `build/out/` draußen.
+- `--update` schreibt Berechtigungs- und Hook-Datei nie. Erst `install.py --probe` meldet, wenn
+  eine neue Werkzeugklasse im Matcher des Projekts fehlt (Kontrolle H2).
+- Der Schritt endet mit dem Commit im übernehmenden Projekt, damit die Hebung dauerhaft ist.
 
-**Vor diesem Commit steht die Wirksamkeitsprobe** (D-488): `install.py --probe` im
-übernehmenden Projekt. `--update` schreibt die Berechtigungs- und Hook-Datei nie; führt ein
-Release eine neue Werkzeugklasse im Matcher, meldet erst die Probe, dass sie im Projekt
-fehlt (Kontrolle H2).
+**Zu Schritt 3.** Hauptdokument und Word-Fassung liegen unter `build/out/`, stehen in der
+`.gitignore` und gehören nicht ins Archiv. Keine Prüfung erreicht sie. Wer sie mitliefert, legt sie
+neben das Archiv.
 
-**Schritt 2 endet mit dem Commit im übernehmenden Projekt** (D-343), weil ein
-Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist, einen Zustand liefert und
-keinen Stand. ⚠️ **Grenze, benannt:** Prüfung 82 misst nur die Behauptung der
-Bestandsliste, nicht den Stand des Projekts (D-331), und der Git-Stand eines Projekts
-außerhalb dieses Repositoriums ist für keine Prüfung erreichbar (D-299). Es bleibt ein
-Verfahrensschritt, dessen Gegenstand im übernehmenden Repositorium jederzeit sichtbar ist.
+**Zu Schritt 4.** Die Marke sagt, wer freigegeben hat; deshalb setzt sie der Mensch. Ein Werkzeug
+könnte sie mit einem vorhandenen Schlüssel signieren und darf es gerade deshalb nicht. Für Commits
+gilt: Ein Commit ist nur dann nicht delegierbar, wenn er eine Unterschrift trägt – eine
+Gegenzeichnung oder eine Freigabezeile nach `FW-CL-11`. Ein Release-Commit ohne solchen Inhalt darf
+ein Werkzeug setzen.
 
-**Die Quelle des Hebens ist der Arbeitsbaum, nicht `HEAD`** (D-333): Vor dem Commit
-fehlen `git archive HEAD` der Änderungsantrag und das Protokoll des Releases. ⚠️ **Die
-Beschränkung auf das Verfolgte ist nicht verzichtbar:** Sie hält Bytecode und `build/out/`
-draußen.
-
-⚠️ **Grenze zu Schritt 3, benannt:** Hauptdokument und Word-Fassung liegen unter
-`build/out/` und stehen in der `.gitignore`; keine Prüfung erreicht sie (D-332, `K-110`).
-Deshalb ist ihr Bau ein benannter Schritt.
-
-**Die Signatur braucht eine Prüfvorrichtung, sonst belegt sie die halbe Aussage**
-(D-327): Ohne hinterlegten Unterzeichner meldet `git tag -v` keine Bestätigung. Einmal je
-Arbeitsplatz:
+Damit `git tag -v` den Unterzeichner bestätigt, braucht jeder Arbeitsplatz einmal eine
+Prüfvorrichtung:
 
 ```
 git config --local gpg.ssh.allowedSignersFile ".git/allowed_signers"
@@ -102,63 +96,62 @@ printf '%s %s\n' "<Adresse des Taggers>" "$(cat ~/.ssh/id_ed25519.pub)" \
   > .git/allowed_signers
 ```
 
-⚠️ **Die Datei liegt unter `.git/` und wird nicht versioniert** – sie bindet eine Adresse
-an einen Schlüssel, und eine Adresse im Kern meldet Prüfung 6 zu Recht. Ohne sie belegt
-die Signatur nur, dass jemand mit diesem Schlüssel unterschrieben hat – nicht, wem der
-Schlüssel gehört.
+Die Datei liegt unter `.git/` und wird nicht versioniert: Sie bindet eine Adresse an einen
+Schlüssel, und eine Adresse im Kern meldet Prüfung 6.
 
-**Die Marke ist nicht delegierbar** (D-319, D-321): Sie sagt, **wer** freigegeben hat. Ein
-Werkzeug kann sie technisch setzen und mit einem vorhandenen Schlüssel sogar signieren –
-und genau deshalb darf es nicht.
+**Zu Schritt 5 und 6.** Zeilenenden und Dateimodus setzt der Befehl, nicht die `.gitattributes`.
+`git archive` schreibt im Arbeitsbaum-Format: Mit `core.autocrlf` `true` oder `false` entsteht CRLF,
+mit `input` LF. Ohne `tar.umask=022` trägt jede Datei `0664` und `install.command` `0775`
+(gemessen an `v1.7.0`). Mit beiden Schaltern ist das Archiv bytegleich wiederholbar.
 
-**Für den Commit gilt eine engere, prüfbare Regel** (D-334): Ein Commit ist genau dann
-nicht delegierbar, wenn er eine **Unterschrift trägt** – eine Gegenzeichnung nach D-319
-oder eine Freigabezeile nach `FW-CL-11`. Ein Release-Commit ohne solchen Inhalt trägt
-keine, und ein Werkzeug, das ihn setzt, fälscht nichts.
+Die Schritte 1 bis 7 sind Verfahrensschritte, keine Prüfungen: Ihr Gegenstand liegt außerhalb des
+Repositoriums, und eine Prüfung dagegen wäre in jeder Installation ohne Archiv rot.
 
-**Die Zeilenenden des Archivs setzt der Befehl, nicht die `.gitattributes`** (D-328):
-`git archive` schreibt im Arbeitsbaum-Format aus, nicht im Blob-Format – mit
-`core.autocrlf` `true` oder `false` entsteht CRLF, mit `input` LF. Deshalb stehen die
-Schalter in Schritt 5, und deshalb wird in Schritt 6 nachgezählt. ⚠️ **Verworfen:**
-`eol=lf` in der `.gitattributes` – sie zwänge auch den Arbeitsbaum auf LF (D-328,
-`CR-2026-128` E1).
+### 4.2 Die Pakete der Paketquellen (normativ)
 
-**Den Dateimodus setzt ebenfalls der Befehl** (D-369): Mit gits Voreinstellung
-`tar.umask=0002` trägt das Archiv jede Datei mit `0664` und `install.command` mit `0775`,
-gruppenschreibbar; mit `-c tar.umask=022` sind es `0644` und `0755`, bytegleich
-wiederholbar. Der Modus ist deshalb ein Gegenstand von Schritt 6, nicht nur die
-Zeilenendeform.
-
-⚠️ **Grenze, benannt:** Ein Verfahrensschritt ist schwächer als eine Prüfung. Der
-Gegenstand liegt **außerhalb** des Repositoriums; eine Prüfung dagegen wäre im Framework
-grün und in jeder Installation ohne Archiv rot (D-299).
-
-⚠️ **Das Archiv enthält nur Versioniertes.** Hauptdokument und Word-Fassung sind
-Erzeugnisse unter `build/out/` und stehen in der `.gitignore`; wer sie mitliefern will,
-legt sie **neben** das Archiv, nicht hinein.
-
-### 4.2 Die Pakete der Paketquellen (normativ, seit `1.22.0` – D-520, D-521; Schritt 9 seit `1.24.0` – D-529, D-530)
-
-**Die Pakete entstehen aus dem Archiv aus Schritt 5, nicht aus dem Arbeitsbaum** (D-520):
-Wheel (PyPI), npm-Paket, Scoop-Manifest und Homebrew-Formel tragen oder laden genau den
-Baum der Marke. Der Befehl `koolie` in jedem Paket gibt vor `install.py` das Banner aus
-(D-519, Prüfung 112).
+Die Pakete entstehen aus dem Archiv aus Schritt 5, nicht aus dem Arbeitsbaum. Wheel (PyPI),
+npm-Paket, Scoop-Manifest und Homebrew-Formel tragen oder laden genau den Baum der Marke. Der Befehl
+`koolie` in jedem Paket gibt vor `install.py` das Banner aus (Prüfung 112).
 
 | Schritt | Was | Wer | Lage |
 |---|---|---|---|
-| 8 | **Pakete bauen und nachprüfen:** `python paketquellen/bauen.py --archiv <Archiv aus Schritt 5> --aus <Ablage>`. Das Skript prüft selbst nach – Dateimenge gleich dem Archiv, Version aus `VERSION`, `RECORD` des Wheels, Ziele der Befehle, kein Installationsskript im npm-Paket, Prüfsumme des Archivs in beiden Manifesten – und baut zweimal bytegleich; Exit 0 heißt ohne Befund. Die Erzeugnisse und `SHA256SUMS` liegen neben dem Archiv | Werkzeug oder Mensch | **nach** Schritt 7, jedes Release |
-| 9 | **Veröffentlichen auf PyPI und npm** (D-530): **die Signatur der Marke durch den Framework Owner ist die Freigabe.** Reihenfolge: das Wheel aus Schritt 8 auf TestPyPI und eine Installation daraus in ein Wegwerfprojekt; dann **dieselben Bytes** auf PyPI (`uv publish`, Token `PYPI_TOKEN`); dann das npm-Paket `@renoxar/koolie` (`npm publish <tgz>`, Token `NPM_TOKEN`; der Name `koolie` ist auf npm gesperrt, D-535). Danach die Seiten beider Quellen und `pip download`/`npm view` gegen `SHA256SUMS` lesen. Eine Version lässt sich nicht zurücknehmen und nicht neu vergeben – ein Befund nach dem Hochladen wird ein PATCH-Release. **Scoop und Homebrew ruhen** (`K-209`); Trusted Publishing ist `K-210` | Werkzeug oder Mensch; **der Framework Owner gibt mit der Signatur frei** | **nach** Schritt 8 |
+| 8 | **Pakete bauen und nachprüfen:** `python paketquellen/bauen.py --archiv <Archiv aus Schritt 5> --aus <Ablage>`. Das Skript prüft selbst nach – Dateimenge gleich dem Archiv, Version aus `VERSION`, `RECORD` des Wheels, Ziele der Befehle, kein Installationsskript im npm-Paket, Prüfsumme des Archivs in beiden Manifesten – und baut zweimal bytegleich; Exit 0 heißt ohne Befund. Die Erzeugnisse und `SHA256SUMS` liegen neben dem Archiv | Werkzeug oder Mensch | nach Schritt 7, jedes Release |
+| 9 | **Veröffentlichen auf PyPI und npm** über den Workflow `.github/workflows/publish.yml` (Trusted Publishing, ohne Token). Er startet, sobald die Marke auf dem GitHub-Spiegel ankommt, und prüft zuerst Signatur und `VERSION` der Marke. Dann baut er die Pakete wie Schritt 8, lädt das Wheel auf TestPyPI und installiert es in ein Wegwerfprojekt. Erst nach der Freigabe des Framework Owners in der GitHub-Umgebung `release` gehen dieselben Bytes auf PyPI (mit Attestierung) und `@renoxar/koolie` auf npm (mit Provenienz); zum Schluss liest er beide Quellen gegen `SHA256SUMS`. Scheitert ein Schritt, läuft keiner danach. Eine Version lässt sich nicht zurücknehmen und nicht neu vergeben – ein Befund nach dem Hochladen wird ein PATCH-Release. Scoop und Homebrew ruhen | Workflow; **der Framework Owner signiert die Marke und gibt die Umgebung `release` frei** | nach Schritt 8 |
 
-⚠️ **Grenze, benannt:** Ob eine Paketquelle dem Befehl ein Terminal gibt, prüft keine
-Prüfung – es ist gemessen (Protokoll `2026-09-30-paketquellen`). Die Homebrew-Formel ist
-gebaut, nicht gemessen (`K-205`); Chocolatey und winget sind ohne Ziel (`K-204`).
+Ob eine Paketquelle dem Befehl ein Terminal gibt, prüft keine Prüfung; es ist gemessen (Protokoll
+`2026-09-30-paketquellen`). Die Homebrew-Formel ist gebaut, nicht gemessen.
 
 **Vor einer ersten Veröffentlichung** – einer neuen Paketquelle oder eines geänderten Pakets – baut
-`bauen.py --vorab N` aus dem Arbeitsbaum eine Vorabversion `<V>.devN` für TestPyPI, **vor** der
-Signatur (D-529). Das Archiv dafür entsteht mit `git -c core.eol=lf -c core.autocrlf=input archive --prefix=koolie-<V>/ $(git stash create)` –
-mit denselben Zeilenenden wie das Release-Archiv; ohne die beiden Schalter trägt es unter Windows
-CRLF (D-534). **Die Probe macht der Owner im eigenen Projektverzeichnis mit**: Sie prüft, was ein Nutzer
-erlebt, nicht nur, ob der Befehl startet (D-533).
+`bauen.py --vorab N` aus dem Arbeitsbaum eine Vorabversion `<V>.devN` für TestPyPI, vor der
+Signatur. Das Archiv dafür entsteht mit
+`git -c core.eol=lf -c core.autocrlf=input archive --prefix=koolie-<V>/ $(git stash create)`; ohne
+die beiden Schalter trägt es unter Windows CRLF. Die Probe macht der Owner im eigenen
+Projektverzeichnis mit: Sie prüft, was ein Nutzer erlebt, nicht nur, ob der Befehl startet.
+
+**Die Prüfsumme des Workflows** stimmt mit Schritt 8 überein, weil beide das Archiv mit denselben
+Schaltern aus der Marke erzeugen. Weicht `SHA256SUMS` im Lauf von der lokalen Datei ab, wird nicht
+freigegeben.
+
+#### Einrichtung für Schritt 9 (einmalig, durch den Framework Owner)
+
+| Wo | Was |
+|---|---|
+| Gitea, Repository → Einstellungen | **Actions abschalten.** Gitea liest ohne eigenes `.gitea/workflows/` auch `.github/workflows/` und startete den Workflow ein zweites Mal |
+| GitHub `Renoxar/koolie` → Settings → Environments | Umgebung `testpypi` ohne Freigabe; Umgebung `release` mit dem Owner als *Required reviewer*. Bei beiden *Deployment branches and tags* auf das Muster `v*` für Tags beschränken |
+| GitHub → Settings → Secrets and variables → Actions → *Variables* | Variable `KOOLIE_ALLOWED_SIGNERS` mit dem Inhalt der lokalen Datei `.git/allowed_signers` (eine Zeile: Adresse, Schlüsseltyp, öffentlicher Schlüssel). Eine Variable, kein Secret: Der Schlüssel ist öffentlich |
+| pypi.org → Projekt `koolie` → Manage → Publishing | *Add a new publisher* → GitHub: Owner `Renoxar`, Repository `koolie`, Workflow `publish.yml`, Environment `release` |
+| test.pypi.org → Projekt `koolie` → Manage → Publishing | dasselbe mit Environment `testpypi` |
+| npmjs.com → Paket `@renoxar/koolie` → Settings → Trusted Publisher | GitHub Actions: Organization or user `Renoxar`, Repository `koolie`, Workflow filename `publish.yml`, Environment name `release` |
+
+Nach dem ersten Lauf, der auf allen drei Quellen ankommt, werden die Tokens zurückgezogen: auf
+PyPI, TestPyPI und npm löschen, die Benutzervariablen `PYPI_TOKEN`, `TESTPYPI_TOKEN` und
+`NPM_TOKEN` entfernen. Bei npm zusätzlich unter *Publishing access* „Require two-factor
+authentication and disallow tokens“ wählen.
+
+**Rückfall.** Scheitert der Workflow an der Einrichtung, nicht an den Paketen, geht Schritt 9 von
+Hand mit den Erzeugnissen aus Schritt 8: `uv publish` auf TestPyPI, Probe, PyPI; dann
+`npm publish <tgz> --access public`. Das braucht die Tokens – sie werden deshalb erst nach dem
+ersten erfolgreichen Lauf zurückgezogen.
 
 ## 5. Freigabe und Deprecation von Skills (normativ)
 
@@ -169,7 +162,7 @@ Lebenszyklus und Kriterien: `.koolie/core/framework/core/08-skill-conventions.md
 1. **Beobachtung:** Der Framework Owner sichtet im Review-Zyklus (und anlassbezogen) die offiziellen Quellen **je installiertem Client Pack**: Produkt-Changelog und Dokumentation des jeweiligen Clients. Quellenliste: Hauptdokument, Anhang „Quellen und Verifikationsbedarf".
 2. **Bewertung:** Jede relevante Änderung wird klassifiziert: (a) kosmetisch – keine Aktion; (b) erweiternd – Chance, als Änderungsantrag bewerten; (c) brechend – betroffene `[DOK]`-Aussagen, Pfade, Berechtigungen oder Skills identifizieren.
 3. **Reaktion auf brechende Änderungen:** Sofortmaßnahme kommunizieren (zum Beispiel betroffenen Mechanismus nicht nutzen), Änderungsantrag mit Priorität, gegebenenfalls Hotfix-Release; Belegspalte der betroffenen Matrixzeilen aktualisieren; Testkatalog-Klasse AK (Aktualität) erneut ausführen.
-4. **Werkzeugwechsel:** Dank Tool Independence (P8) beschränkt sich ein Wechsel oder Parallelbetrieb eines anderen KI-Werkzeugs auf ein neues Client Pack (`.koolie/core/clients/README.md`); die kanonischen Regeln in `.koolie/core/framework/` bleiben unverändert. Vor dem Wechsel ist die Fähigkeitsmatrix des Zielclients auszuwerten. Ein solcher Schritt ist ein MAJOR-Release.
+4. **Werkzeugwechsel:** Ein Wechsel oder Parallelbetrieb eines anderen KI-Werkzeugs beschränkt sich auf ein neues Client Pack (`.koolie/core/clients/README.md`, Tool Independence P8); die kanonischen Regeln in `.koolie/core/framework/` bleiben unverändert. Vor dem Wechsel ist die Fähigkeitsmatrix des Zielclients auszuwerten. Ein solcher Schritt ist ein MAJOR-Release.
 
 ## 7. Behandlung von Sicherheitsvorfällen, Lessons Learned, Feedback, Ausnahmen (Verweise)
 

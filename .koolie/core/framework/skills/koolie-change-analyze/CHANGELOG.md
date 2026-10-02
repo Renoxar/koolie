@@ -1,0 +1,13 @@
+# koolie-change-analyze – Änderungsverlauf
+
+| Version | Datum | Änderung | Autor (Rolle) |
+|---|---|---|---|
+| 0.1.0 | 2026-09-01 | Erstfassung (Status entwurf) | Framework-Erstellung |
+| 0.1.1 | 2026-09-10 | Pfadnennungen dem umbenannten Kernverzeichnis angepasst (`CR-2026-009`); Versionsanhebung nachgeholt (`CR-2026-015`) | `<FRAMEWORK_OWNER>` |
+| 0.1.2 | 2026-09-13 | Vorbedingung nennt neben dem Übungsrepositorium das Quellrepositorium des Frameworks (`CR-2026-053`, B07, D-56) | `<FRAMEWORK_OWNER>` |
+| 0.1.3 | 2026-09-19 | Version der Ausgabevorlage wird aus dem Steckbrief abgeleitet statt gepflegt (`CR-2026-094`, D-185) | `<FRAMEWORK_OWNER>` |
+| 0.1.4 | 2026-09-22 | Pfadnennungen der Umbenennung auf `Koolie` angepasst; Kernverzeichnis `.koolie/core/`, Overlay `.koolie/project-overlay/` (`CR-2026-122`, D-299). **Keine Anweisung beruehrt** - die Zellen des Testblatts bleiben abgenommen (D-303) | `<FRAMEWORK_OWNER>` |
+| 0.1.5 | 2026-09-27 | Art: *Anweisung*. Trigger `user` und `model`: Der Skill ist rein lesend und darf nach `08-skill-conventions.md` auch vom KI-Client aufgerufen werden; die Trigger-Zeile sagt es statt „Nur auf Anweisung des Menschen“; Abschnitt 7: K3-Auslöser wie `fw-plan` (`K-165`) (`CR-2026-156`, D-451). **Anweisung berührt** – die Zellen des Testblatts sind offen und werden nachgemessen (D-303) | `<FRAMEWORK_OWNER>` |
+| 0.1.6 | 2026-09-28 | Art: *Anweisung*. Externe Quellen: Ein zum Lesen freigegebener Server wird in Schritt 1 einbezogen – Ticket lesen, frühere Anforderungen und Entscheidungen suchen, höchstens fünf Treffer, Fundstelle mit Stand oder Version, Widerspruch melden; neuer Ausgabeabschnitt „Externe Quellen“; kein Schreiben in externe Systeme; Server nicht erreichbar → Rückfall. Abschnitt 7: Ein Anstieg der Kontrollstufe, der schon aus der Aufgabe folgt, und ein ungeöffneter Beifund halten nicht an (`K-182` (1), (2)) (`CR-2026-157`, D-457, D-460). **Anweisung berührt** – die Zellen des Testblatts sind offen und werden nachgemessen (D-303) | `<FRAMEWORK_OWNER>` |
+| 0.1.7 | 2026-10-01 | Art: *Anweisung*. Externe Quellen, Schritt 1: Hat eine Suche mehr als fünf Treffer, folgt eine zweite mit den ältesten zuerst (nach Erstellung aufsteigend) – die Grenze schnitt bisher nach Aktualität ab und mit den ältesten Treffern gerade die frühere Entscheidung (`K-207`) (`CR-2026-172`, D-536). **Anweisung berührt** – die Zellen des Testblatts sind offen und werden nachgemessen (D-303) | `<FRAMEWORK_OWNER>` |
+| 0.1.8 | 2026-10-02 | Art: *Namensanpassung*. Der Skill heißt `koolie-change-analyze` (bis 1.25.0 `fw-change-analyze`); mitgelieferte Skills tragen das Präfix `koolie-` (`CR-2026-173`, D-539). **Keine Anweisung berührt** – die Zellen des Testblatts bleiben abgenommen (D-303) | `<FRAMEWORK_OWNER>` |

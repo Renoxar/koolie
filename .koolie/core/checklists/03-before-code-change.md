@@ -24,9 +24,9 @@ Sichert die Voraussetzungen aus Schritt 9–10 des Standardarbeitsablaufs, bevor
 
 ### Ist-Zustand und Auswirkungen
 
-- [ ] **MUSS** Relevanter Ist-Zustand ist analysiert; Befunde mit Fundstellen liegen vor (P4; Skills `fw-repo-analyze`, `fw-change-analyze`).
+- [ ] **MUSS** Relevanter Ist-Zustand ist analysiert; Befunde mit Fundstellen liegen vor (P4; Skills `koolie-repo-analyze`, `koolie-change-analyze`).
 - [ ] **MUSS** Verwender der zu ändernden Elemente sind ermittelt (Aufrufer, Konfigurationsreferenzen, Schnittstellen).
-- [ ] **MUSS** Tests des betroffenen Bereichs sind vor der Änderung ausgeführt; Ausgangsergebnis dokumentiert („grün vorher"; bei rotem Stand zuerst `fw-error-analyze`).
+- [ ] **MUSS** Tests des betroffenen Bereichs sind vor der Änderung ausgeführt; Ausgangsergebnis dokumentiert („grün vorher"; bei rotem Stand zuerst `koolie-error-analyze`).
 
 ### Arbeitsumgebung
 

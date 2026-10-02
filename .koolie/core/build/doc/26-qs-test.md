@@ -1,9 +1,38 @@
 # 26 Qualitätssicherung und Testkonzept des Frameworks
 
-Nicht nur KI-Ergebnisse, auch das Framework selbst wird geprüft – auf zwei Wegen. **Statisch** prüft `.koolie/core/tests/scripts/validate-framework.py` Struktur und Inhalte: Pflichtdateien, Frontmatter und Trigger der Regeln, Zeichenlimits, Skill-Konformität (Pflichtdateien, Metadaten, Pflichtabschnitte, Trigger-Regel für schreibende Skills, Beispiel- und Testpflichten), JSON-Gültigkeit und Kernregel-Integrität der Berechtigungen, Manifest-Schema, Platzhalterregister, verbotene Inhalte (Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen, URLs außerhalb der Quellen-Allowlist, projektlokale Sperrbegriffe aus `.koolie/project-overlay/forbidden-terms.txt`) sowie – mit `--mermaid` – die Syntax aller Diagramme und – mit `--strict-overlay` – die Aktivierungsreife eines Overlays. Ergänzend prüft `.koolie/core/tests/scripts/validate-output.py` konkrete Assistenz-Ausgaben gegen das Ausgabeformat des jeweiligen Skills, und die Hook-Skripte besitzen Selbsttests. **Der Lauf zum Stand dieser Dokumentfassung: 0 Fehler, 0 Warnungen.** Der Validator führt **112 Prüfungen** über 676 versionierte Dateien des Kerns, davon 569 Markdown-Dateien; das Register der Prüfungen steht im Kopfkommentar des Skripts und wird von Prüfung 40 gegen den Bestand nachgezählt, und diese drei Zahlen hält Prüfung 78 gegen den Bestand (D-315). **Jede Prüfung hat einen eigenen Wirkungsnachweis:** `.koolie/core/tests/scripts/probe-pruefungen.py` legt je Prüfung einen Fehlerfall an und verlangt die Meldung, dazu eine Gegenprobe, die den korrekten Träger durchlaufen lässt – *eine Prüfung ohne Sonde gilt als nicht vorhanden.* Acht Mermaid-Blöcke (sechs Entscheidungsbäume, das Architekturdiagramm aus Kap. 7 und das Roadmap-Diagramm) prüft der Schalter `--mermaid`; er setzt das Mermaid-Kommandozeilenwerkzeug voraus.
+Das Framework selbst wird auf zwei Wegen geprüft: statisch und in Testsitzungen.
 
-**Dynamisch** prüft der Testkatalog das Verhalten in Testsitzungen auf dem synthetischen Übungsrepository – in elf Klassen: Konsistenz und Widerspruchserkennung (KO), Positivtests (PO), Negativtests (NE), Datenschutz (DS), Prompt Injection (PI), Scope-Einhaltung (SC), Verhalten bei fehlenden Informationen (FI), unerlaubte Datei- und Befehlszugriffe (ZA), Regression bei Framework-Änderungen (RE), Versionsnachvollziehbarkeit (VN) und Aktualität gegenüber Produktänderungen des Clients (AK). Die skill-spezifischen Testfälle in den TESTS.md-Dateien (je Skill mindestens zwei Positiv- und drei Negativtests) sind Teil des Katalogs. **Sechs dynamische Tests stehen auf `offen`** – Kriterium 2 der 1.0.0-Definition (D-11) ist damit nicht erfüllt, und Prüfung 46 zählt es bei jedem Lauf nach: Im Nachlauf von Release 1.14.0 tragen sechs Zellen der Testblätter mit Opus 5.5 nicht, keine wegen einer Änderung an ihrem Skill (D-424, `K-167`, eingeplant als 1.14.1); `SK-002-N03` trägt seither. Alle 38 Ergebniszellen des zentralen Katalogs und 81 der 87 Zellen der dreizehn dezentralen Testblätter tragen `bestanden`.
+**Statisch** prüft `.koolie/core/tests/scripts/validate-framework.py` Struktur und Inhalte:
 
-**Was ein `bestanden` sagt und was nicht.** Es sagt, dass das erwartete Verhalten eingetreten ist – nicht, dass das Framework es bewirkt hat (D-115). Die Zurechnung trägt ein eigener Kontrollauf gegen einen Baum ohne die geprüfte Schranke; wo er fehlt, sagt die Zelle es. Jede Zelle nennt außerdem das gemessene Client Pack mit Produktstand: Ein Ergebnis gilt für den Client, an dem es erhoben wurde, und für keinen anderen (D-117). Ausführungsdisziplin und Protokollpflicht sind im Katalog normiert.
+- Pflichtdateien, Frontmatter und Trigger der Regeln, Zeichenlimits;
+- Skill-Konformität: Pflichtdateien, Metadaten, Pflichtabschnitte, Trigger-Regel für schreibende Skills, Beispiel- und Testpflichten;
+- JSON-Gültigkeit und Kernregel-Integrität der Berechtigungen, Manifest-Schema, Platzhalterregister;
+- verbotene Inhalte: Secret-Muster, E-Mail-Adressen, IP-Adressen, interne Hostnamen, URLs außerhalb der Quellen-Allowlist und die projektlokalen Sperrbegriffe aus `.koolie/project-overlay/forbidden-terms.txt`;
+- mit `--mermaid` die Syntax aller Diagramme, mit `--strict-overlay` die Aktivierungsreife eines Overlays.
+
+`.koolie/core/tests/scripts/validate-output.py` prüft konkrete Ausgaben gegen das Ausgabeformat des jeweiligen Skills; die Hook-Skripte haben Selbsttests. Der Lauf zum Stand dieser Dokumentfassung: 0 Fehler, 0 Warnungen. Der Validator führt **113 Prüfungen** über 680 versionierte Dateien des Kerns, davon 571 Markdown-Dateien. Das Register der Prüfungen steht im Kopfkommentar des Skripts; Prüfung 40 zählt es gegen den Bestand nach, Prüfung 78 diese drei Zahlen.
+
+Jede Prüfung hat einen eigenen Wirkungsnachweis: `.koolie/core/tests/scripts/probe-pruefungen.py` legt je Prüfung einen Fehlerfall an und verlangt die Meldung, dazu eine Gegenprobe, die den korrekten Träger durchlaufen lässt. Eine Prüfung ohne Sonde gilt als nicht vorhanden. Die acht Mermaid-Blöcke (sechs Entscheidungsbäume, das Architekturdiagramm aus Kap. 7 und das Roadmap-Diagramm) prüft `--mermaid`; der Schalter setzt das Mermaid-Kommandozeilenwerkzeug voraus.
+
+**In Testsitzungen** prüft der Testkatalog das Verhalten auf dem synthetischen Übungsrepository, in zwölf Klassen:
+
+| Kürzel | Klasse |
+|---|---|
+| KO | Konsistenz und Widerspruchserkennung |
+| PO | Positivtests |
+| NE | Negativtests |
+| DS | Datenschutz |
+| PI | Prompt Injection |
+| SC | Scope-Einhaltung |
+| FI | Verhalten bei fehlenden Informationen |
+| ZA | unerlaubte Datei- und Befehlszugriffe |
+| RE | Regression bei Framework-Änderungen |
+| VN | Versionsnachvollziehbarkeit |
+| AK | Aktualität gegenüber Produktänderungen des Clients |
+| EX | externe Systeme über MCP |
+
+Die Testfälle der Skills in den `TESTS.md`-Dateien (je Skill mindestens zwei Positiv- und drei Negativtests) gehören zum Katalog. Den Stand der Ergebniszellen rechnet Prüfung 46 bei jedem Lauf aus; er steht in der Roadmap (Kap. 30).
+
+**Was ein `bestanden` sagt.** Es sagt, dass das erwartete Verhalten eingetreten ist – nicht, dass das Framework es bewirkt hat. Die Zurechnung trägt ein eigener Kontrolllauf gegen einen Baum ohne die geprüfte Schranke; wo er fehlt, sagt die Zelle es. Jede Zelle nennt das gemessene Client Pack mit Produktstand: Ein Ergebnis gilt für den Client, an dem es erhoben wurde. Ausführungsdisziplin und Protokollpflicht sind im Katalog geregelt.
 
 {{EMBED-RAW:.koolie/core/tests/TEST_CATALOG.md:1}}

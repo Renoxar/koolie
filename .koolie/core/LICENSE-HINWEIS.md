@@ -7,7 +7,6 @@
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | den gesamten Inhalt dieses Frameworks – Kern, Client Packs, Regeltexte, Werkzeuge, Vorlagen und Dokumentation |
-| Entstehung | `CR-2026-126`, **D-316** bis **D-317** (2026-09-23); Rechteinhaber benannt mit `CR-2026-128`, **D-323**; SPDX-Kennung mit `CR-2026-165`, **D-507** |
 
 ## 1. Lizenz (normativ)
 
@@ -17,13 +16,13 @@ Open-Source-Definition** – jede und jeder darf es nutzen, untersuchen, ändern
 weitergeben.
 
 SPDX-Kennung: `GPL-3.0-only` – es gilt Version 3, nicht „oder jede spätere Version“
-(D-507). Das Banner des Installationsdialogs liest diese Zeile und die folgende und nennt
+. Das Banner des Installationsdialogs liest diese Zeile und die folgende und nennt
 die Kurzform `GPL-3.0`.
 
 Copyright © 2026 René Hildebrand
 
 > 🔴 **Diese eine Zeile nennt eine Person, und sie ist die einzige im ganzen Kern, die
-> das tut** (D-323, `CR-2026-128` E7). Überall sonst gilt die Projektneutralität: Rollen
+> das tut**. Überall sonst gilt die Projektneutralität: Rollen
 > statt Personen, Platzhalter statt Namen. **Hier gilt sie nicht, und der Grund ist
 > keine Ausnahme vom Prinzip, sondern seine Grenze.** Die Neutralitätsregel hält
 > **fremde** Personen aus generischen Bestandteilen – Kunden, Behörden, Kolleginnen und
@@ -35,7 +34,7 @@ Copyright © 2026 René Hildebrand
 > übernehmende Projekt. ⚠️ **Und der Widerspruch, der ihn nötig machte, ist gemessen:**
 > Die Historie dieses Repositoriums führt denselben Namen in **122 Commits** und die
 > Adresse in allen **261** – *er stand dort, wo er niemandem nützt, und fehlte dort, wo
-> er rechtlich wirkt* (D-324).
+> er rechtlich wirkt*.
 
 > Dieses Programm ist freie Software: Sie können es unter den Bedingungen der GNU General
 > Public License, Version 3, weitergeben und/oder verändern. Es wird **ohne jede
@@ -80,11 +79,11 @@ nur benutzt, entsteht keine einzige Pflicht.
 | Mit dem Framework wird ein Produkt entwickelt und verkauft | **keine Pflicht.** Das Produkt ist keine Ableitung: Es enthält keine Zeile dieses Frameworks, und die Ausgabe eines Werkzeugs ist keine Ableitung des Werkzeugs (Abschnitt 2) |
 | Das Projektrepositorium wird veröffentlicht, mit `<CORE_DIR>/` darin | `<CORE_DIR>/` steht unter GPL-3.0 – **es steht ohnehin schon so da.** Der eigene Code daneben bleibt frei: §5 GPL-3.0 nennt das ein *aggregate*, und ein gemeinsames Repositorium ist genau das |
 | Code dieses Frameworks wird **in** ein Produkt hineinkopiert | Dieser Teil wird GPL-3.0. **Das ist gewollt** und der einzige Fall, in dem die Lizenz greift |
-| Das Framework selbst wird weitergegeben, entgeltlich oder unentgeltlich | Es muss unter GPL-3.0 weitergegeben werden, mit Quelltext. **Ein Umbenennen-und-proprietär-Verkaufen ist damit ausgeschlossen** – das war der tragende Grund der Lizenzwahl (D-316) |
+| Das Framework selbst wird weitergegeben, entgeltlich oder unentgeltlich | Es muss unter GPL-3.0 weitergegeben werden, mit Quelltext. **Ein Umbenennen-und-proprietär-Verkaufen ist damit ausgeschlossen** – das war der tragende Grund der Lizenzwahl |
 
 ## 4. Die verworfenen Alternativen (Erläuterung)
 
-Beides ist in `CR-2026-126` Abschnitt 4 einzeln vorgelegt und in D-316 entschieden:
+Zwei Alternativen lagen nahe:
 
 - **Apache-2.0** – verworfen: Sie erlaubt ausdrücklich, das Werk umzubenennen, zu schließen
   und zu verkaufen. Ihr einziger Riegel ist §6, und der schützt den **Namen**, nicht die

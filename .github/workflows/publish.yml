@@ -1,0 +1,177 @@
+# Veroeffentlicht Koolie auf TestPyPI, PyPI und npm - ohne Token, ueber Trusted Publishing.
+#
+# Ausloeser ist nur eine Marke v<Version>. Die Marke muss vom Framework Owner signiert sein
+# (geprueft gegen die Variable KOOLIE_ALLOWED_SIGNERS) und zu .koolie/core/VERSION passen.
+# Ablauf: pruefen und bauen -> TestPyPI mit Installationsprobe -> nach Freigabe in der
+# Umgebung "release" PyPI und npm. Scheitert ein Schritt, laeuft keiner danach.
+# Einrichtung und Ablauf: .koolie/core/governance/RELEASE_PROCESS.md, Abschnitt 4.2, Schritt 9.
+name: Veroeffentlichen
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: veroeffentlichen
+  cancel-in-progress: false
+
+jobs:
+  pruefen:
+    name: Marke pruefen und Pakete bauen
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.marke.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - id: marke
+        name: Marke gegen VERSION und Signatur pruefen
+        env:
+          MARKE: ${{ github.ref_name }}
+          ERLAUBTE_SIGNIERER: ${{ vars.KOOLIE_ALLOWED_SIGNERS }}
+        run: |
+          set -euo pipefail
+          # Die annotierte Marke selbst holen; der Checkout legt sonst nur den Commit ab.
+          git fetch --force origin "refs/tags/${MARKE}:refs/tags/${MARKE}"
+          version="$(tr -d '\r\n' < .koolie/core/VERSION)"
+          if [ "${MARKE}" != "v${version}" ]; then
+            echo "::error::Marke ${MARKE} passt nicht zu VERSION ${version}"; exit 1
+          fi
+          if [ -z "${ERLAUBTE_SIGNIERER}" ]; then
+            echo "::error::Variable KOOLIE_ALLOWED_SIGNERS fehlt - ohne sie ist die Signatur nicht pruefbar"; exit 1
+          fi
+          printf '%s\n' "${ERLAUBTE_SIGNIERER}" > "${RUNNER_TEMP}/allowed_signers"
+          git config gpg.ssh.allowedSignersFile "${RUNNER_TEMP}/allowed_signers"
+          git tag -v "${MARKE}"
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Archiv aus der Marke und Pakete bauen
+        env:
+          MARKE: ${{ github.ref_name }}
+          VERSION: ${{ steps.marke.outputs.version }}
+        run: |
+          set -euo pipefail
+          git -c core.eol=lf -c core.autocrlf=input -c tar.umask=022 archive \
+            --format=tar.gz --prefix="koolie-${VERSION}/" -o "koolie-${VERSION}.tar.gz" "${MARKE}"
+          python paketquellen/bauen.py --archiv "koolie-${VERSION}.tar.gz" --aus pakete
+          mkdir -p dist/pypi dist/npm
+          cp "pakete/koolie-${VERSION}-py3-none-any.whl" dist/pypi/
+          cp "pakete/koolie-${VERSION}.tgz" dist/npm/
+          cp pakete/SHA256SUMS dist/
+          cat dist/SHA256SUMS
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pakete
+          path: dist/
+          if-no-files-found: error
+
+  testpypi:
+    name: TestPyPI und Installationsprobe
+    needs: pruefen
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/koolie/${{ needs.pruefen.outputs.version }}/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pakete
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/pypi/
+          skip-existing: true
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+
+      - name: Aus TestPyPI in ein Wegwerfprojekt installieren
+        env:
+          VERSION: ${{ needs.pruefen.outputs.version }}
+          KOOLIE_NO_BANNER: "1"
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 40); do
+            curl -fsS https://test.pypi.org/simple/koolie/ | grep -q "koolie-${VERSION}-py3" && break
+            sleep 15
+          done
+          projekt="${RUNNER_TEMP}/probe"
+          mkdir -p "${projekt}" && git -C "${projekt}" init -q
+          uvx --no-cache --index-url https://test.pypi.org/simple/ "koolie==${VERSION}" \
+            --target "${projekt}" --client claude-code | tee "${RUNNER_TEMP}/probe.txt"
+          grep -Eq "Zusammenfassung: [1-9][0-9]* angelegt" "${RUNNER_TEMP}/probe.txt"
+          [ "$(tr -d '\r\n' < "${projekt}/.koolie/core/VERSION")" = "${VERSION}" ]
+          echo "Probe bestanden: koolie ${VERSION} aus TestPyPI installiert"
+
+  veroeffentlichen:
+    name: PyPI und npm
+    needs: [pruefen, testpypi]
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/project/koolie/${{ needs.pruefen.outputs.version }}/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pakete
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: dist/pypi/
+          skip-existing: true
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+
+      - name: npm-Paket veroeffentlichen
+        env:
+          VERSION: ${{ needs.pruefen.outputs.version }}
+        run: |
+          set -euo pipefail
+          # Trusted Publishing braucht npm ab 11.5.1.
+          npm install -g npm@11
+          if npm view "@renoxar/koolie@${VERSION}" version >/dev/null 2>&1; then
+            echo "@renoxar/koolie@${VERSION} liegt schon auf npm - uebersprungen"
+          else
+            npm publish "dist/npm/koolie-${VERSION}.tgz" --access public
+          fi
+
+      - name: Veroeffentlichte Bytes gegen SHA256SUMS lesen
+        env:
+          VERSION: ${{ needs.pruefen.outputs.version }}
+        run: |
+          set -euo pipefail
+          soll_whl="$(grep " koolie-${VERSION}-py3-none-any.whl$" dist/SHA256SUMS | cut -d' ' -f1)"
+          soll_tgz="$(grep " koolie-${VERSION}.tgz$" dist/SHA256SUMS | cut -d' ' -f1)"
+          for i in $(seq 1 40); do
+            ist_whl="$(curl -fsS https://pypi.org/pypi/koolie/json \
+              | python3 -c "import json,sys;d=json.load(sys.stdin);print(next((u['digests']['sha256'] for u in d['releases'].get('${VERSION}',[]) if u['filename'].endswith('.whl')),''))")"
+            [ -n "${ist_whl}" ] && break
+            sleep 15
+          done
+          [ "${ist_whl}" = "${soll_whl}" ] || { echo "::error::PyPI: SHA-256 ${ist_whl} statt ${soll_whl}"; exit 1; }
+          ist_npm="$(npm view "@renoxar/koolie@${VERSION}" dist.integrity)"
+          soll_npm="sha512-$(openssl dgst -sha512 -binary "dist/npm/koolie-${VERSION}.tgz" | base64 -w0)"
+          [ "${ist_npm}" = "${soll_npm}" ] || { echo "::error::npm: ${ist_npm} statt ${soll_npm}"; exit 1; }
+          sha256sum "dist/npm/koolie-${VERSION}.tgz" | grep -q "^${soll_tgz} "
+          echo "PyPI und npm tragen die Bytes aus SHA256SUMS"

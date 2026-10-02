@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-OB-GUIDE` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Zielgruppe | neue Entwicklerinnen und Entwickler im Projekt `<PROJECT_NAME>`; Begleitung durch Mentorin oder Mentor |
@@ -55,7 +55,7 @@ Lies `.koolie/core/framework/core/02-privacy.md` und arbeite `.koolie/core/decis
 
 ## Modul 3 – Sichere Arbeitsweise
 
-Lies `.koolie/core/framework/core/05-working-model.md` (14 Schritte, M1–M6) und im `CLIENT_PACK.md` deines Client Packs (unter `.koolie/core/clients/`) den Abschnitt „M – Modi und Sitzungsfreigaben“ (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`.koolie/core/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, Modus Normal, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
+Lies `.koolie/core/framework/core/05-working-model.md` (14 Schritte, M1–M6) und im `CLIENT_PACK.md` deines Client Packs (unter `.koolie/core/clients/`) den Abschnitt „M – Modi und Sitzungsfreigaben“ (Permission-Modi, Sitzungsfreigaben). Führe zwei Preflights (`.koolie/core/checklists/01-preflight.md`) unter Begleitung durch – einen für eine Analyse-, einen für eine Änderungsaufgabe. Verinnerliche die Sitzungsdisziplin: eine Aufgabe je Sitzung, rückfragender Standardmodus, Freigaben höchstens sitzungsweise, Ergebnisbericht am Ende.
 
 ## Modul 4 – Repository- und Framework-Struktur
 
@@ -63,19 +63,19 @@ Rundgang mit der Mentorin oder dem Mentor durch: die Wurzel-Anweisungsdatei (Hie
 
 ## Modul 5 – Nutzung von Skills und effektives Prompting
 
-Lies `.koolie/core/framework/core/06-prompting-rules.md` und `.koolie/core/prompts/README.md`. Führe auf dem Übungsrepository aus: `/fw-repo-analyze` (Ü1), `/fw-code-explain` auf zwei Ebenen (Überblick, Detail). Regeln, die du dabei einübst: Skills vor freien Prompts; Pflichtelemente jeder Anweisung (Ziel, Modus, Stufe, Scope, Kontext, Akzeptanzkriterien); Fundstellen-Stichprobe nach jeder Antwort; unzulässige Muster erkennen („mach einfach", „behebe alles", „mach die Tests grün").
+Lies `.koolie/core/framework/core/06-prompting-rules.md` und `.koolie/core/prompts/README.md`. Führe auf dem Übungsrepository aus: `/koolie-repo-analyze` (Ü1), `/koolie-code-explain` auf zwei Ebenen (Überblick, Detail). Regeln, die du dabei einübst: Skills vor freien Prompts; Pflichtelemente jeder Anweisung (Ziel, Modus, Stufe, Scope, Kontext, Akzeptanzkriterien); Fundstellen-Stichprobe nach jeder Antwort; unzulässige Muster erkennen („mach einfach", „behebe alles", „mach die Tests grün").
 
 ## Modul 6 – Analyse bestehender Komponenten
 
-Wende `fw-code-explain` und die Schulungsvorlage `.koolie/core/prompts/12-developer-training.md` auf eine echte, von der Mentorin oder dem Mentor gewählte Komponente des Projekts an (nur lesend, K1). Ergebnis: Du kannst den Ablauf der Komponente mit Fundstellen erklären und hast eine Fragenliste für das Mentorengespräch – Historie und Absichten beantwortet das Team, nicht der KI-Client.
+Wende `koolie-code-explain` und die Schulungsvorlage `.koolie/core/prompts/12-developer-training.md` auf eine echte, von der Mentorin oder dem Mentor gewählte Komponente des Projekts an (nur lesend, K1). Ergebnis: Du kannst den Ablauf der Komponente mit Fundstellen erklären und hast eine Fragenliste für das Mentorengespräch – Historie und Absichten beantwortet das Team, nicht der KI-Client.
 
 ## Modul 7 – Bearbeitung einer ungefährlichen Übungsaufgabe
 
-Auf dem Übungsrepository, Stufe niedrig, kompletter Durchlauf: Preflight → `/fw-change-analyze` → `/fw-plan` (Ü3) → Planbestätigung durch Mentorin oder Mentor → `/fw-change-small` → `/fw-tests` (Ü4) → Ergebnisbericht → Selbstreview (CL-04) → Übungs-Merge-Request mit Nutzungsvermerk (`fw-mr-description`). Ziel ist der Prozess, nicht die Änderung: kleine Schritte, Berichte, Halte-Punkte.
+Auf dem Übungsrepository, Stufe niedrig, kompletter Durchlauf: Preflight → `/koolie-change-analyze` → `/koolie-plan` (Ü3) → Planbestätigung durch Mentorin oder Mentor → `/koolie-change-small` → `/koolie-tests` (Ü4) → Ergebnisbericht → Selbstreview (CL-04) → Übungs-Merge-Request mit Nutzungsvermerk (`koolie-mr-description`). Ziel ist der Prozess, nicht die Änderung: kleine Schritte, Berichte, Halte-Punkte.
 
 ## Modul 8 – Test und Review
 
-Vertiefe `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` an deiner Übungsänderung: Prüfe RV2 (stimmen die Fundstellen?), RV4 (prüfen die Tests Verhalten?), RV5 (existieren alle verwendeten APIs?). Tausche anschließend mit einer anderen Person die Übungs-Diffs und reviewt gegenseitig – mit `fw-review-support` als Zulieferung, nicht als Ersatz.
+Vertiefe `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` an deiner Übungsänderung: Prüfe RV2 (stimmen die Fundstellen?), RV4 (prüfen die Tests Verhalten?), RV5 (existieren alle verwendeten APIs?). Tausche anschließend mit einer anderen Person die Übungs-Diffs und reviewt gegenseitig – mit `koolie-review-support` als Zulieferung, nicht als Ersatz.
 
 ## Modul 9 – Typische Fehlanwendungen
 
@@ -86,7 +86,7 @@ Vertiefe `.koolie/core/checklists/04-review-ai-code.md` und `05-testing.md` an d
 | „Mach die Tests grün" | Frust über rote Pipeline | M4-Regeln: Ursache verstehen; Tests nie anpassen lassen |
 | Scope-Aufweichung („räum bei der Gelegenheit auf") | Effizienzillusion | Q1/P7: ein Ziel je Änderung; Aufräumen als eigene Aufgabe |
 | Sitzungs-Marathon über mehrere Aufgaben | Kontext „ist ja schon da" | Least Context: neue Aufgabe, neue Sitzung |
-| Modus ohne Rückfragen aktivieren | „geht schneller“ | D-05: untersagt; Modi mit selbsttätiger Übernahme von Änderungen nur per dokumentierter Ausnahme bei Stufe niedrig; der rückfragende Standardmodus bestätigt in Sekunden (wie die Modi im Client heißen, nennt die Fähigkeitsmatrix des Client Packs) |
+| Modus ohne Rückfragen aktivieren | „geht schneller“ | untersagt (`.koolie/core/framework/core/03-security.md` Abschnitt 4); Modi mit selbsttätiger Übernahme von Änderungen nur per dokumentierter Ausnahme bei Stufe niedrig; der rückfragende Standardmodus bestätigt in Sekunden (wie die Modi im Client heißen, nennt die Fähigkeitsmatrix des Client Packs) |
 | Der KI-Client als Entscheidungsinstanz („was sollen wir nehmen?") | Autoritätsillusion | V3: Optionen ja, Entscheidung Mensch |
 | Vertrauen auf die Selbstauskunft des KI-Clients („bist du sicher?") | Anthropomorphisierung | Belege verlangen (Tests, Fundstellen), nicht Beteuerungen |
 

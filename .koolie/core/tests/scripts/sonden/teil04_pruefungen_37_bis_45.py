@@ -305,9 +305,9 @@ def sonden_berechtigungskoerbe() -> None:
         # Skill bleibt einer.
         skillablage = os.path.join(root, ".claude", "skills")
         quelle = os.path.join(root, ".koolie/core", "framework", "role-packs",
-                              "requirements-engineering", "skills", "role-re-ticket")
-        shutil.copytree(quelle, os.path.join(skillablage, "role-re-ticket"))
-        _37_schreiben(root, lambda d: _37_dazu(d, "allow", "Skill(role-re-ticket)"))
+                              "requirements-engineering", "skills", "koolie-ticket")
+        shutil.copytree(quelle, os.path.join(skillablage, "koolie-ticket"))
+        _37_schreiben(root, lambda d: _37_dazu(d, "allow", "Skill(koolie-ticket)"))
         aus = validator_ausgabe(root)
         melde("GEGENPROBE", "37c", MELDUNG_ZUVIEL not in aus,
               "Vollstaendig aktiviertes Role Pack - Skill in der Ablage UND im Korb, "
@@ -323,7 +323,7 @@ def sonden_berechtigungskoerbe() -> None:
               "Dieselbe Schreibweise auf einen Namen ohne Skill in der Ablage bleibt "
               "eine Ausweitung - der Zuschnitt haengt an der Ablage, nicht am Wort")
         schreib(pfad, ausgang)
-        shutil.rmtree(os.path.join(skillablage, "role-re-ticket"))
+        shutil.rmtree(os.path.join(skillablage, "koolie-ticket"))
 
         # --- 37g: der verlorene Anker ----------------------------------------------
         cm = os.path.join(root, ".koolie/core", "clientmap.py")
@@ -354,7 +354,7 @@ buendel(sonden_berechtigungskoerbe,
 # woertlich als Werkzeugname durchgereicht, in permissions.deny fiel es lautlos aus.
 MANIFEST_CC_38 = ".koolie/core/clients/claude-code/manifest.json"
 MANIFEST_DD_38 = ".koolie/core/clients/devin-desktop/manifest.json"
-SKILL_38 = ".koolie/core/framework/skills/fw-plan/SKILL.md"
+SKILL_38 = ".koolie/core/framework/skills/koolie-plan/SKILL.md"
 CLIENTMAP_38 = ".koolie/core/clientmap.py"
 
 
@@ -504,19 +504,19 @@ def _p39(root: str) -> str:
 def _39_regel_fehlt(root: str) -> None:
     """Ein ausgelieferter Skill verliert seine Freigabe - der Zustand vor 0.41.0."""
     ersetze(_p39(root),
-            ('    { "tool": "skill",  "pattern": "fw-code-explain" },\r\n', ""))
+            ('    { "tool": "skill",  "pattern": "koolie-code-explain" },\r\n', ""))
 
 
 def _39_regel_ohne_skill(root: str) -> None:
     """Eine Freigabe fuer einen Skill, den es nicht gibt."""
     ersetze(_p39(root),
-            ('"pattern": "fw-code-explain" }', '"pattern": "fw-code-erklaeren" }'))
+            ('"pattern": "koolie-code-explain" }', '"pattern": "koolie-code-erklaeren" }'))
 
 
 def _39_muster(root: str) -> None:
     """Das Praefixmuster, das gemessen nichts freigibt (D-82)."""
     ersetze(_p39(root),
-            ('"pattern": "fw-code-explain" }', '"pattern": "fw-*" }'))
+            ('"pattern": "koolie-code-explain" }', '"pattern": "koolie-*" }'))
 
 
 def _39_anker_weg(root: str) -> None:
@@ -541,9 +541,9 @@ def _39_traeger_weg(root: str) -> None:
 
 def _39_skill_ohne_regel(root: str) -> None:
     """Ein neuer Skill im Verzeichnis, ohne dass jemand die Freigabe nachtraegt."""
-    quelle = P(root, ".koolie/core/framework/skills/fw-code-explain"
+    quelle = P(root, ".koolie/core/framework/skills/koolie-code-explain"
                .replace("/", os.sep))
-    ziel = P(root, ".koolie/core/framework/skills/fw-zwischenstand"
+    ziel = P(root, ".koolie/core/framework/skills/koolie-zwischenstand"
              .replace("/", os.sep))
     shutil.copytree(quelle, ziel)
 
@@ -572,7 +572,7 @@ sonde("39e", "Ein Regeltraeger verliert die Skillwahl",
       _39_traeger_weg, "die Skillwahl fehlt")
 
 sonde("39f", "Ein neuer Skill, dessen Freigabe niemand nachtraegt",
-      _39_skill_ohne_regel, "'fw-zwischenstand' hat keine allow-Regel")
+      _39_skill_ohne_regel, "'koolie-zwischenstand' hat keine allow-Regel")
 
 gegenprobe("39a", "Die unveraenderte Datei bleibt unbeanstandet - zwoelf Regeln, zwoelf "
            "Skills", None, "allow-Regel")

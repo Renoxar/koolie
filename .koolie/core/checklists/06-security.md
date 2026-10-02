@@ -20,7 +20,7 @@ Operationalisiert das Sicherheitsmodell (`.koolie/core/framework/core/03-securit
 ### Einstufung und Prozess
 
 - [ ] **MUSS** Berührung von Authentifizierung, Autorisierung, Sitzungsverwaltung oder Kryptografie **in der Anwendungslogik** erkannt → Kontrollstufe hoch, Umsetzung nur mit Freigabe `<APPROVAL_ROLE>` und `<SECURITY_CONTACT>` (R3/R10).
-- [ ] **MUSS** Berührung tatsächlicher Berechtigungen oder einer Betriebs-, Infrastruktur- oder Sicherheitskonfiguration erkannt → **V6, nicht delegierbar, auch nicht nach Freigabe**; zulässig sind Analyse und Planvorschlag. Das gilt auch für Sicherheitskonfiguration als Code im Repositorium – ihr Inhalt **ist** die Berechtigung (D-53, Grenzfälle G-05 und G-06).
+- [ ] **MUSS** Berührung tatsächlicher Berechtigungen oder einer Betriebs-, Infrastruktur- oder Sicherheitskonfiguration erkannt → **V6, nicht delegierbar, auch nicht nach Freigabe**; zulässig sind Analyse und Planvorschlag. Das gilt auch für Sicherheitskonfiguration als Code im Repositorium – ihr Inhalt **ist** die Berechtigung (Grenzfälle G-05 und G-06).
 - [ ] **MUSS** Security Scans und statische Analyse der CI sind für den Änderungssatz erfolgreich (P6); Schwellenwerte unverändert (T6).
 
 ### Code-Prüfpunkte (soweit für die Änderung relevant)

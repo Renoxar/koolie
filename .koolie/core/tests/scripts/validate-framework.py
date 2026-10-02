@@ -182,7 +182,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      `claude-code` bildet die fehlende Modellzulassung auf `disable-model-invocation`
      ab. Ein nicht-interaktiver Messlauf bekommt sonst eine Abweisung statt des
      Ablaufs, und der Testfall misst etwas anderes als seinen Gegenstand. Gemessen am
-     2026-09-18 an `FW-SC-01`: Der Hauptlauf rief `fw-change-small` auf, wurde
+     2026-09-18 an `FW-SC-01`: Der Hauptlauf rief `koolie-change-small` auf, wurde
      abgewiesen, arbeitete den Ablauf nicht nach - und damit fiel Schritt 3 des Skills
      aus, der die Verwender der geaenderten Einheit erhebt. Neun von zwoelf Skills
      betroffen, vier Fundstellen im Katalog
@@ -256,7 +256,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      Testfall ist nur in einem Baum fahrbar, den der Validator beanstandet. Gemessen am
      2026-09-18: RE-001-N09 verlangte das Uebungs-Overlay "ohne gesetztes
      <ISSUE_TRACKER>", und Pruefung 55b war im SELBEN Release entstanden. Gegen den Skill
-     gehalten trifft die Zelle etwas anderes: role-re-ticket nennt den Fall
+     gehalten trifft die Zelle etwas anderes: koolie-ticket nennt den Fall
      "<ISSUE_TRACKER> unbekannt", also Bindung OHNE Wert - ein Ausfuellschlitz, kein
      fehlender Platzhalter. Der Zuschnitt arbeitet auf TEILSAETZEN, nicht auf Zellen: Eine
      Vorbedingung, die den Platzhalter in einem Teilsatz fordert und in einem anderen eine
@@ -295,7 +295,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      AUSFUEHRT (Exec(<..._COMMAND>) unter permissions), nennt diesen Schlitz in ihrer
      VORBEDINGUNG. ANLASS: FW-SC-01 ist am 2026-09-18 zum dritten Mal gefahren worden
      und zum dritten Mal nicht abnehmbar gewesen - der Lauf hat NICHTS geaendert, weil
-     fw-change-small den Testbefehl VOR dem ersten Schreibzugriff verlangt und der
+     koolie-change-small den Testbefehl VOR dem ersten Schreibzugriff verlangt und der
      Befehl im Messbaum im ask-Korb stand; ask ist nicht-interaktiv eine Abweisung
      (D-134). Derselbe Fehler kostete FW-PO-02 einen Durchgang. GRENZE: Geprueft wird
      die NENNUNG des Schlitzes, nicht die Aussage darueber - die Pruefung faengt das
@@ -442,7 +442,7 @@ Prüft (statisch, ohne laufenden KI-Client):
      Namenseintraegen der Berechtigungsdatei - in beide Richtungen. ANLASS, und er
      ist gemessen: Der Messbaum von Buendel 5 trug nach der Aktivierung WORTGETREU
      nach framework/role-packs/README.md dreizehn Skillverzeichnisse und zwoelf
-     Skill(...)-Eintraege; role-re-ticket fehlte, und der Validator meldete 0 Fehler.
+     Skill(...)-Eintraege; koolie-ticket fehlte, und der Validator meldete 0 Fehler.
      Ein nicht genannter Aufruf faellt in den Rueckfragekorb und im
      rueckfragefreien Betrieb in die Abweisung - die Sitzung liest die SKILL.md dann
      ersatzweise als Datei, OHNE die Werkzeugbeschraenkung des Skills (D-81).
@@ -853,7 +853,14 @@ Prüft (statisch, ohne laufenden KI-Client):
      ANLASS: pip, npm und Chocolatey geben dem Installationsschritt kein Terminal
      (gemessen 2026-09-30). GRENZE: ob eine Paketquelle dem Befehl ein Terminal gibt
      (gemessen, nicht geprueft); die Veroeffentlichung
-Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 112 laeuft als eigenes
+113. Keine Kennung in der Produktdokumentation (D-540), nur im Quellrepositorium: Fehler
+     je Markdown-Datei, die eine Kennung der Form CR-JJJJ-NNN, D-N oder K-N ausserhalb der
+     Nachweisschicht nennt. Nachweisschicht sind CHANGELOG, Decision Log, Roadmap,
+     Aenderungsantraege, Protokolle, Erhebungen und build/, in einem Produkttraeger die
+     Ergebnis- und Belegspalten der Testblaetter und Grenzfaelle, die Belegspalte der Faehigkeitsmatrix und
+     die Zeilen eines Versionsverlaufs. ANLASS: Rueckmeldung zum oeffentlichen
+     Repositorium (2026-10-02). GRENZE: die Kennung, nicht die Begruendungsprosa
+Der Wirksamkeitsnachweis nach D-23 fuer die Pruefungen 4, 6, 8, 14, 18 bis 66 und 68 bis 113 laeuft als eigenes
 Skript: .koolie/core/tests/scripts/probe-pruefungen.py (je Pruefung eine Sonde und eine
 Gegenprobe, auf einer Kopie des Repositoriums).
 
@@ -926,7 +933,8 @@ from pruefungen.dokumente import (  # noqa: E402
     check_altname_restbestand, check_bestandsliste_stand, check_chronikspanne,
     check_dokumentform, check_dokumentstand, check_dokumentzahlen,
     check_gegenzeichnung, check_lizenz, check_rechtschreibung, check_steckbrief,
-    check_verirrtes_steuerzeichen, check_zeilenendeform, check_zielangabe)
+    check_kennungen_in_produktdoku, check_verirrtes_steuerzeichen, check_zeilenendeform,
+    check_zielangabe)
 from pruefungen.werkzeuge import (  # noqa: E402
     check_arbeitsplatzpfad, check_bytecode_versioniert, check_erhebungen_sauber,
     check_gitignore_erzeugnisse, check_kernlage, check_lieferumfang, check_paketquellen,
@@ -1078,6 +1086,7 @@ def main() -> int:
     check_skill_werkzeugfelder(root, man)
     check_fremde_skills(root, man)
     check_paketquellen(root)
+    check_kennungen_in_produktdoku(root)
     if args.strict_overlay:
         check_strict_overlay(root, man)
         check_platzhalterbindung(root, man)

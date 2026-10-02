@@ -91,7 +91,10 @@ URL_ALLOWLIST = ("docs.devin.ai", "devin.ai", "cli.devin.ai", "docs.windsurf.com
                  # die Paketseiten und die Badges der README, ebenso eng (D-535)
                  "pypi.org/project/koolie", "npmjs.com/package/@renoxar/koolie",
                  "img.shields.io/pypi/v/koolie", "img.shields.io/npm/v/@renoxar/koolie",
-                 "img.shields.io/badge/Lizenz-GPL", "img.shields.io/badge/license-GPL")
+                 "img.shields.io/badge/Lizenz-GPL", "img.shields.io/badge/license-GPL",
+                 # die Adressen der Veroeffentlichung ueber Trusted Publishing, ebenso eng (2.0.0)
+                 "test.pypi.org/legacy/", "test.pypi.org/simple/", "pypi.org/pypi/koolie/json",
+                 "registry.npmjs.org")
 FENCE4_RE = re.compile(r"^`{4,}", re.M)
 MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.S)
 
@@ -456,6 +459,20 @@ def check_skills(root: str, man: dict) -> None:
     # und werden nicht nach dessen Regeln geprueft - nur in der Laufzeitablage, nie in den
     # Quellen des Kerns (1.21.0, K-31). Den Korb verlangt Pruefung 72 weiter (D-238).
     fremd = fremde_praefixe(root)
+    # Mitgelieferte Skills teilen sich eine Skill-Ablage: Ein Name aus dem Kern und einer aus
+    # einem Pack duerfen nicht gleich lauten, sonst ueberschreibt die Aktivierung den anderen.
+    herkunft: dict[str, str] = {}
+    for skills_dir, prefix in skill_dirs(root, man):
+        if prefix == runtime:
+            continue
+        for name in sorted(os.listdir(skills_dir)):
+            if not os.path.isdir(os.path.join(skills_dir, name)):
+                continue
+            if name in herkunft:
+                err(f"{prefix}/{name}: Skillname schon vergeben in {herkunft[name]} - "
+                    f"mitgelieferte Skills brauchen einen eindeutigen Namen")
+            else:
+                herkunft[name] = prefix
     for skills_dir, prefix in skill_dirs(root, man):
         # Die Modellwahl-Sperre wird nur in der *installierten* Fassung geprueft: In der
         # Quelle steht die Aussage als `triggers`, erst die Abbildung uebersetzt sie.
@@ -475,8 +492,8 @@ def check_skills_in(skills_dir: str, prefix: str, ids: dict[str, str],
         rel = f"{prefix}/{name}"
         if not re.fullmatch(r"[a-z0-9-]+", name):
             err(f"{rel}: Verzeichnisname muss aus Kleinbuchstaben, Ziffern, Bindestrichen bestehen")
-        if not re.match(r"^(fw|prj|role-[a-z0-9]+|tech-[a-z0-9]+)-", name):
-            warn(f"{rel}: Präfix entspricht nicht fw-/prj-/role-<pack>-/tech-<pack>-")
+        if not re.match(r"^(koolie|prj)-", name):
+            warn(f"{rel}: Präfix entspricht nicht koolie-/prj-")
         for req in ("SKILL.md", "EXAMPLES.md", "TESTS.md", "CHANGELOG.md"):
             if not os.path.exists(os.path.join(sdir, req)):
                 err(f"{rel}: {req} fehlt")

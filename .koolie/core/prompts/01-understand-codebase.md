@@ -3,16 +3,20 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-001` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | niedrig bis hoch (rein lesend zulässig) – Maximumprinzip über R1–R13 im Preflight |
-| Verwandter Skill | `fw-repo-analyze` |
+| Verwandter Skill | `koolie-repo-analyze` |
 
 ## 1. Zweck
 
-Die Vorlage liefert einer Entwicklerin oder einem Entwickler – insbesondere im Onboarding (`.koolie/core/checklists/09-onboarding.md`) – einen belegten Überblick über ein Repository oder Modul und beantwortet einen selbst formulierten Fragenkatalog ausschließlich mit Fundstellen. Ergebnis ist ein Analysebericht; es wird nichts verändert. Liegt der Skill `fw-repo-analyze` vor, SOLL er als vorgesehener Weg verwendet werden (`/fw-repo-analyze`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage ergänzt ihn um den Fragenkatalog und die Onboarding-Hinweise oder ersetzt ihn, wenn er in der Laufzeitschicht nicht verfügbar ist. Für die Erklärung einer einzelnen Einheit gilt `fw-code-explain` beziehungsweise FW-PR-012; für die Bewertung einer konkreten Änderung FW-PR-002.
+Die Vorlage gibt einen belegten Überblick über ein Repository oder Modul, vor allem im Onboarding (`.koolie/core/checklists/09-onboarding.md`). Sie beantwortet einen selbst formulierten Fragenkatalog ausschließlich mit Fundstellen. Ergebnis ist ein Analysebericht; es wird nichts verändert.
+
+Liegt der Skill `koolie-repo-analyze` vor, SOLL er als vorgesehener Weg verwendet werden (`/koolie-repo-analyze`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage ergänzt den Skill um Fragenkatalog und Onboarding-Hinweise oder ersetzt ihn, wenn er in der Laufzeitschicht fehlt.
+
+Eine einzelne Einheit erklären `koolie-code-explain` und FW-PR-012; eine konkrete Änderung bewertet FW-PR-002.
 
 (Erläuterung) Der Bericht ersetzt nicht das Gespräch mit dem Team. Er hilft, die richtigen Fragen an die Mentorin oder den Mentor zu stellen und Befunde selbst nachzuvollziehen.
 
@@ -49,12 +53,12 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, festgelegt im Pref
 Scope: Erlaubt ist ausschließlich {zielpfad} innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen sind <EXCLUDED_PATHS>, Dateien mit Secret-Mustern, Konfigurations- und Datendateien mit Umgebungswerten sowie alles außerhalb des Repositorys.
 Kontext: Quellcode, Build- und Manifestdateien, Tests und Dokumentation in {zielpfad} (K1); {kontextquellen} (K1 laut Overlay-Manifest); Framework-Dateien (K0). Keine K2-Inhalte ohne dokumentierte Freigabe, keine K3-Inhalte.
 Akzeptanzkriterien: Jede Aussage zu Struktur, Einstiegspunkten, Abhängigkeiten, Tests und Konventionen trägt eine Fundstelle; jede Frage des Katalogs ist beantwortet oder das Nichtfinden ist mit Suchmuster belegt; Vermutungen sind gekennzeichnet; ausgeschlossene Pfade wurden nicht gelesen.
-Ausgabeformat: Repository-Analyse nach Abschnitt 5 der SKILL.md des Skills fw-repo-analyze, ergänzt um den Abschnitt „Antworten auf den Fragenkatalog"; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Repository-Analyse nach Abschnitt 5 der SKILL.md des Skills koolie-repo-analyze, ergänzt um den Abschnitt „Antworten auf den Fragenkatalog"; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Ohne Antwort bearbeitest du nur die belastbaren Teile und kennzeichnest den Rest als <TBD: …>.
 
 Vorgehen:
 1. Gib Ziel, Zielpfad, Scope und Modus in eigenen Worten wieder. Ist {zielpfad} mehrdeutig oder für einen belegten Überblick in einer Sitzung zu groß, stelle vor jeder weiteren Analyse eine Rückfrage mit Kandidatenliste beziehungsweise einem Vorschlag zur Aufteilung.
-2. Arbeite nach dem Verfahren des Skills fw-repo-analyze (Arbeitsschritte 2 bis 8): Verzeichnisstruktur bis Ebene 2, Build- und Abhängigkeitsmechanik aus Manifestdateien (nur Namen und Versionen), Einstiegspunkte, Schichtung und Abhängigkeitsrichtungen, Testlandschaft, Konventionen aus vorhandenen Regeldateien, belegte Auffälligkeiten. Schwerpunkt: {schwerpunkt}.
+2. Arbeite nach dem Verfahren des Skills koolie-repo-analyze (Arbeitsschritte 2 bis 8): Verzeichnisstruktur bis Ebene 2, Build- und Abhängigkeitsmechanik aus Manifestdateien (nur Namen und Versionen), Einstiegspunkte, Schichtung und Abhängigkeitsrichtungen, Testlandschaft, Konventionen aus vorhandenen Regeldateien, belegte Auffälligkeiten. Schwerpunkt: {schwerpunkt}.
 3. Beantworte danach jede Frage des Fragenkatalogs einzeln und in der Reihenfolge des Katalogs, ausschließlich mit Fundstellen (pfad/datei:zeile). Nicht Gefundenes weist du als „nicht gefunden mit Suchmuster …" aus. Fragen zu Laufzeitverhalten, Historie oder Absichten beantwortest du nur, soweit sie aus dem Repository belegbar sind; den Rest kennzeichnest du als Vermutung oder als Frage an das Team.
 4. Nenne abschließend drei bis fünf Fundstellen, die ich zur Prüfung deiner Befunde selbst öffnen sollte.
 
@@ -72,7 +76,7 @@ Regeln:
 
 ## 6. Erwartetes Ergebnis
 
-- Repository-Analyse im Format von `fw-repo-analyze` Abschnitt 5: Aufgabe und Scope (einschließlich „nicht analysiert (ausgeschlossen)"), Überblick, Einstiegspunkte, Schichtung und Abhängigkeiten, Tests, Konventionen, belegte Auffälligkeiten.
+- Repository-Analyse im Format von `koolie-repo-analyze` Abschnitt 5: Aufgabe und Scope (einschließlich „nicht analysiert (ausgeschlossen)"), Überblick, Einstiegspunkte, Schichtung und Abhängigkeiten, Tests, Konventionen, belegte Auffälligkeiten.
 - Zusatzabschnitt „Antworten auf den Fragenkatalog": je Frage Antwort mit Fundstellen oder „nicht gefunden mit Suchmuster …"; Vermutungen und Fragen an das Team getrennt ausgewiesen.
 - Liste von drei bis fünf Fundstellen zur eigenen Prüfung.
 - Abschnitt „Annahmen (gekennzeichnet) und offene Fragen".
@@ -96,4 +100,4 @@ Regeln:
 | Fragen zur Historie oder zu Entscheidungsgründen stellen („Warum wurde das so gebaut?") | Der KI-Client erfindet plausible Begründungen ohne Beleg | Fragen auf Belegbares beschränken; Entscheidungsgründe im Team oder im Decision Log klären |
 | Bericht als Architekturbewertung oder Aufgabenliste weiterverwenden | Beobachtungen werden zu Entscheidungen (V3); ungeprüfte Tickets | Auffälligkeiten mit `<ARCHITECT_ROLE>` besprechen; Änderungen über FW-PR-002 bewerten |
 | Konfigurationsdateien mit Umgebungswerten „zum Verständnis" einbinden | K3-Risiko (interne Adressen, Zugangsdaten) | Nur Struktur beschreiben lassen; Werte nie bereitstellen |
-| Vorlage für eine einzelne Funktion oder ein Lernziel nutzen | Zu breiter Kontext, unpassende Tiefe | `fw-code-explain` oder FW-PR-012 (Schulung) |
+| Vorlage für eine einzelne Funktion oder ein Lernziel nutzen | Zu breiter Kontext, unpassende Tiefe | `koolie-code-explain` oder FW-PR-012 (Schulung) |

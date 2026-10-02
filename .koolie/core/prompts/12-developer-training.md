@@ -3,16 +3,18 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-012` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | niedrig (rein lesend, Lernkontext) |
-| Verwandter Skill | `fw-code-explain` |
+| Verwandter Skill | `koolie-code-explain` |
 
 ## 1. Zweck
 
-Die Vorlage macht den KI-Client zum geduldigen Erklärwerkzeug im Onboarding: Ein technisches Lernziel wird anhand des realen Projektcodes in aufeinander aufbauenden Schritten erarbeitet – mit Fundstellen, Verständnisfragen zur Selbstkontrolle und klar getrennten „beobachtet/geschlossen"-Aussagen. Sie ersetzt weder die Mentorin oder den Mentor noch das Onboarding-Programm (`.koolie/core/onboarding/GUIDE.md`); sie bereitet Gespräche vor und vertieft Module. Der KI-Client bewertet dabei niemals Personen oder Lernfortschritte (V7) – die Verständnisfragen dienen ausschließlich der Selbstkontrolle der oder des Lernenden.
+Die Vorlage macht den KI-Client zum geduldigen Erklärwerkzeug im Onboarding: Ein technisches Lernziel wird anhand des realen Projektcodes in aufeinander aufbauenden Schritten erarbeitet – mit Fundstellen, Verständnisfragen zur Selbstkontrolle und klar getrennten „beobachtet/geschlossen"-Aussagen.
+
+Sie ersetzt weder die Mentorin oder den Mentor noch das Onboarding-Programm (`.koolie/core/onboarding/GUIDE.md`); sie bereitet Gespräche vor und vertieft Module. Der KI-Client bewertet dabei niemals Personen oder Lernfortschritte (V7) – die Verständnisfragen dienen ausschließlich der Selbstkontrolle der oder des Lernenden.
 
 (Erläuterung) Der Unterschied zu FW-PR-001: Dort entsteht ein Überblicksbericht; hier eine dialogische Erklärstrecke zu einem Lernziel („Wie funktioniert die Anfrageverarbeitung von Eingang bis Persistenz?").
 

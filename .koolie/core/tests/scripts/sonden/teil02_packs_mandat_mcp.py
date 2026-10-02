@@ -53,7 +53,7 @@ def lade(name, pfad):
 sys.path.insert(0, sys.argv[2])
 vo = lade("_vo407", sys.argv[1])
 mw = lade("_mw407", sys.argv[3])
-pfad, grund = vo.skill_pfad(sys.argv[4], "fw-code-explain")
+pfad, grund = vo.skill_pfad(sys.argv[4], "koolie-code-explain")
 pack, _ = mw._manifest(sys.argv[4])
 print(json.dumps({"pfad": pfad, "grund": grund, "pack": pack}))
 """
@@ -95,7 +95,7 @@ def sonden_messapparat() -> None:
             ist = json.loads((q.stdout or "").strip().splitlines()[-1])
         except (ValueError, IndexError):
             ist = {}
-        erwartet = os.path.join(root, ".claude", "skills", "fw-code-explain", "SKILL.md")
+        erwartet = os.path.join(root, ".claude", "skills", "koolie-code-explain", "SKILL.md")
         ok = (p.returncode == 0 and q.returncode == 0 and ist.get("pack") == "claude-code"
               and os.path.normcase(ist.get("pfad") or "") == os.path.normcase(erwartet))
         melde("SONDE", "D407", ok,
@@ -207,7 +207,7 @@ buendel(sonden_importkanaele,
 # bricht die Installation ab, statt eine halb gekuerzte Zelle weiterzugeben.
 M471_ERSATZ = "(D-471)"
 M471_ABBRUCH = "nicht sicher kuerzbar"
-P471_BLATT = ("framework", "skills", "fw-refactor", "TESTS.md")
+P471_BLATT = ("framework", "skills", "koolie-refactor", "TESTS.md")
 P471_BELEG = "tests/protocols/2026-09-26-testblaetter-modellwechsel.md"
 
 
@@ -493,7 +493,7 @@ def sonden_kiro() -> None:
                                                  for x in d["permissions"]["rules"]
                                                  if x.get("exclude")])),
             ("D416", "Pruefung 72: Skill ohne Freigaberegel", M416_SKILL,
-             lambda r: _414_profil(r, lambda d: _414_regeln_ohne(d, "skill", "allow", "fw-plan"))),
+             lambda r: _414_profil(r, lambda d: _414_regeln_ohne(d, "skill", "allow", "koolie-plan"))),
         )
         # Die Kennungen stehen unten WOERTLICH: Pruefung 40 liest die Sondenmenge aus dem
         # Quelltext (melde("SONDE", "<nr>")), und eine Kennung in einer Variablen ist fuer
@@ -590,7 +590,7 @@ def sonden_cursor() -> None:
         hooks = json.loads(lies(os.path.join(root, ".cursor", "hooks.json")))
         kern = lies(os.path.join(root, ".cursor", "rules", "00-framework-core.mdc"))
         vorlage = lies(os.path.join(root, ".cursor", "rules", "40-tech-TEMPLATE.mdc.template"))
-        agent = lies(os.path.join(root, ".cursor", "agents", "fw-reviewer.md"))
+        agent = lies(os.path.join(root, ".cursor", "agents", "koolie-reviewer.md"))
         ignore = lies(os.path.join(root, ".cursorignore")).splitlines()
         deny = cli.get("permissions", {}).get("deny", [])
         pre = hooks.get("hooks", {}).get("preToolUse", [])
@@ -717,7 +717,7 @@ buendel(sonden_cursor,
 P98_HOOK = ".koolie/core/tests/scripts/hook-check-secrets.py".replace("/", os.sep)
 P99_MANDAT = ".koolie/core/mandat.py".replace("/", os.sep)
 P99_RECHTE = ".koolie/core/framework/runtime/permissions.json".replace("/", os.sep)
-P100_SKILL = ".koolie/core/framework/skills/fw-docs-update/SKILL.md".replace("/", os.sep)
+P100_SKILL = ".koolie/core/framework/skills/koolie-docs-update/SKILL.md".replace("/", os.sep)
 M98_INHALT = "weil sein Inhalt geschuetzte Pfade NENNT"
 M98_ANKER = "Pruefung 98 misst"
 M99_WERTE = "fuehren verschiedene Werte fuer"

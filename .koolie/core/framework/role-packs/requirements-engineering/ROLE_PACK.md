@@ -4,18 +4,18 @@
 |---|---|
 | Modul-ID | RP-RE |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.4 |
+| Version | 0.1.5 |
 | Status | pilot |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Requirements Engineering, Product Owner, fachlich zuarbeitende Entwicklung |
 | Laufzeitfassung | `30-role-requirements-engineering.md` in der Regelablage |
-| Skills | `role-re-ticket` (`RP-RE-SK-001`) |
+| Skills | `koolie-ticket` (`RP-RE-SK-001`) |
 
 ## 1. Zweck und Abgrenzung
 
 Dieses Pack konkretisiert das Arbeitsmodell für die **Formulierung von Anforderungen**: aus einer Absicht, einem Gesprächsergebnis oder einer Fehlermeldung eine prüfbare, umsetzungsreife Aufgabenbeschreibung machen — mit Anforderungen in EARS-Syntax, abgeleiteten Arbeitspaketen, überprüfbaren Abnahmekriterien und einer verständlichen Änderungsmitteilung.
 
-Der Unterschied zu einer reinen Textarbeit ist der **Einbezug der Codebasis**: Bevor eine Anforderung formuliert wird, wird geprüft, was es schon gibt, welche Begriffe der Code verwendet und welche Randbedingungen sich aus Datenmodell und Schnittstellenvertrag ergeben. Eine Anforderung, die eine bereits vorhandene Funktion beschreibt oder gegen ein Schema arbeitet, kostet im Verlauf mehr als die Recherche vorher.
+Der Unterschied zu einer reinen Textarbeit ist der **Einbezug der Codebasis**: Bevor eine Anforderung formuliert wird, wird geprüft, was es schon gibt, welche Begriffe der Code verwendet und welche Randbedingungen sich aus Datenmodell und Schnittstellenvertrag ergeben. Eine Anforderung, die eine vorhandene Funktion beschreibt oder gegen ein Schema arbeitet, kostet später mehr als die Recherche vorher.
 
 **Nicht Gegenstand dieses Packs:**
 
@@ -24,8 +24,8 @@ Der Unterschied zu einer reinen Textarbeit ist der **Einbezug der Codebasis**: B
 | Entscheidung, **ob** und **wann** etwas gebaut wird | `<PRODUCT_OWNER_ROLE>` |
 | Priorisierung, Aufwandsschätzung, Terminzusagen | `<PRODUCT_OWNER_ROLE>`, Projektleitung |
 | Architektur- und Technologieentscheidungen | `<ARCHITECT_ROLE>`, V3 der Delegationsverbotsliste |
-| Risikobewertung und Kontrollstufenvorschlag einer Änderung | `fw-change-analyze` |
-| Änderungsplan für die Umsetzung | `fw-plan` |
+| Risikobewertung und Kontrollstufenvorschlag einer Änderung | `koolie-change-analyze` |
+| Änderungsplan für die Umsetzung | `koolie-plan` |
 | Eintragen oder Ändern von Vorgängen im Ticketsystem | Mensch (V11: keine Außenkommunikation im Namen des Projekts) |
 
 ## 2. Der zentrale Grundsatz dieses Packs
@@ -48,12 +48,12 @@ Ein Befund kann eine Anforderung **auslösen** — aber erst, nachdem ein Mensch
 
 | Aufgabe | Modus | Typische Kontrollstufe | Skill |
 |---|---|---|---|
-| Neue Anforderung aus einer Absicht formulieren | M1 | niedrig | `role-re-ticket` |
-| Bestehende Aufgabenbeschreibung überarbeiten | M1 | niedrig | `role-re-ticket` |
-| Fehlermeldung in eine Aufgabenbeschreibung überführen | M1 | niedrig–mittel | `role-re-ticket`, davor `fw-error-analyze` |
-| Prüfen, was eine Anforderung technisch berührt | M1 | niedrig–mittel | `fw-change-analyze` |
-| Codebasis für die Recherche kennenlernen | M1 | niedrig | `fw-repo-analyze` |
-| Umsetzung planen | M2 | mittel | `fw-plan` |
+| Neue Anforderung aus einer Absicht formulieren | M1 | niedrig | `koolie-ticket` |
+| Bestehende Aufgabenbeschreibung überarbeiten | M1 | niedrig | `koolie-ticket` |
+| Fehlermeldung in eine Aufgabenbeschreibung überführen | M1 | niedrig–mittel | `koolie-ticket`, davor `koolie-error-analyze` |
+| Prüfen, was eine Anforderung technisch berührt | M1 | niedrig–mittel | `koolie-change-analyze` |
+| Codebasis für die Recherche kennenlernen | M1 | niedrig | `koolie-repo-analyze` |
+| Umsetzung planen | M2 | mittel | `koolie-plan` |
 
 Alle Aufgaben dieses Packs sind **M1 Read-only Analysis**: Der Skill liest und gibt Text aus. Er schreibt keine Datei und trägt nichts in ein Ticketsystem ein. Soll der Entwurf im Repository abgelegt werden, ist das ein eigener Schritt in M5 durch den Menschen.
 
@@ -63,19 +63,19 @@ Alle Aufgaben dieses Packs sind **M1 Read-only Analysis**: Der Skill liest und g
 Absicht, Gespräch, Fehlermeldung
         │
         ▼
-  role-re-ticket ──── enge Recherche: Gibt es das schon? Welche Begriffe
+  koolie-ticket ──── enge Recherche: Gibt es das schon? Welche Begriffe
         │             nutzt der Code? Welche Randbedingungen gelten?
         │             Ergebnis: Aufgabenbeschreibung mit EARS-Anforderungen
         ▼
-  fw-change-analyze ── Vollanalyse: betroffene Komponenten, Verwender,
+  koolie-change-analyze ── Vollanalyse: betroffene Komponenten, Verwender,
         │             Testlücken, Risiken R1–R13, Kontrollstufenvorschlag
         ▼
-  fw-plan ─────────── Änderungsplan (M2)
+  koolie-plan ─────────── Änderungsplan (M2)
         ▼
-  fw-change-small / fw-tests / fw-refactor (M3/M4)
+  koolie-change-small / koolie-tests / koolie-refactor (M3/M4)
 ```
 
-**Bewusste Aufgabenteilung:** `role-re-ticket` bewertet **kein** Risiko und schlägt **keine** Kontrollstufe vor. Das leistet `fw-change-analyze` mit ausgearbeiteter Faktorenliste. Zwei Skills, die dieselbe Codeanalyse mit unterschiedlicher Tiefe machen, liefern über die Zeit widersprüchliche Ergebnisse — deshalb recherchiert `role-re-ticket` nur so weit, wie es zum Formulieren nötig ist, und empfiehlt den Folge-Skill.
+**Aufgabenteilung:** `koolie-ticket` bewertet **kein** Risiko und schlägt keine Kontrollstufe vor; das leistet `koolie-change-analyze` mit der ausgearbeiteten Faktorenliste. `koolie-ticket` recherchiert nur so weit, wie es zum Formulieren nötig ist, und empfiehlt den Folge-Skill – zwei Skills mit derselben Analyse in unterschiedlicher Tiefe würden sich widersprechen.
 
 ## 5. Werkzeug- und Sprachneutralität
 
@@ -139,10 +139,10 @@ Aufgabenbeschreibungen und Ticketinhalte sind in der Regel **K2** (`.koolie/core
    `.koolie/core/framework/role-packs/requirements-engineering/runtime/30-role-requirements-engineering.md`
    → `30-role-requirements-engineering.md` in der Regelablage
 3. Skill kopieren:
-   `.koolie/core/framework/role-packs/requirements-engineering/skills/role-re-ticket/`
-   → `role-re-ticket/` in der Skill-Ablage
-3a. `python .koolie/core/install.py --update` ausführen – er bringt die kopierte Laufzeitfassung in die Form des installierten Client Packs. 🔴 **Ohne diesen Schritt steht dort die Quellform**, und ein Client mit eigener Bedingungssprache wertet Felder aus, die er für Regeldateien nicht kennt (`K-18`, gemessen 2026-09-21: zwei Validatorfehler).
-3b. Den Skill in die **Berechtigungsdatei** eintragen – `<Werkzeug>(role-re-ticket)` nach `permission_tools.skill` des Client Packs. 🔴 **Ohne den Eintrag fällt der Aufruf in den Rückfragekorb und im rückfragefreien Betrieb in die Abweisung**; die Sitzung liest die `SKILL.md` dann ersatzweise als Datei, ohne die Werkzeugbeschränkung des Skills (D-81, D-238). **Prüfung 72** setzt es in beide Richtungen durch.
+   `.koolie/core/framework/role-packs/requirements-engineering/skills/koolie-ticket/`
+   → `koolie-ticket/` in der Skill-Ablage
+3a. `python .koolie/core/install.py --update` ausführen. Er bringt die kopierte Laufzeitfassung in die Form des installierten Client Packs; ohne ihn steht dort die Quellform, die der Validator als Fehler meldet.
+3b. Den Skill in die Berechtigungsdatei eintragen: `<Werkzeug>(koolie-ticket)` nach `permission_tools.skill` des Client Packs. Ohne Eintrag fällt der Aufruf in den Rückfragekorb und im rückfragefreien Betrieb in die Abweisung, und die Sitzung liest die `SKILL.md` als Datei, ohne die Werkzeugbeschränkung des Skills. Prüfung 72 meldet einen fehlenden Eintrag.
 4. `<ISSUE_TRACKER>` im Overlay Abschnitt 13 setzen und die Sprachregeln in Abschnitt 9 prüfen.
 5. Ein Glossar als Manifest-Typ `glossary` registrieren, falls vorhanden — der Skill nutzt es für verbindliche Fachbegriffe.
 6. Validieren: `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay`
@@ -153,6 +153,7 @@ Nicht aktivierte Packs liegen nur im Verzeichnis und werden vom KI-Client nicht 
 
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
-| 0.1.0 | 2026-09-09 | angelegt: Pack, Skill `role-re-ticket`, Laufzeitfassung | `<FRAMEWORK_OWNER>` |
+| 0.1.0 | 2026-09-09 | angelegt: Pack, Skill `koolie-ticket`, Laufzeitfassung | `<FRAMEWORK_OWNER>` |
 | 0.1.2 | 2026-09-21 | Abschnitt 9: Die Aktivierung hat vier Schritte statt zwei – die kopierte Laufzeitfassung wird über `install.py --update` in die Form des Client Packs gebracht (3a), und der Skill gehört in die Berechtigungsdatei (3b). Beides gemessen am Messbaum von Bündel 5 (`CR-2026-115`, D-244; D-238) | `<FRAMEWORK_OWNER>` |
-| 0.1.4 | 2026-09-25 | Abschnitt 2: Als Herkunft einer Randbedingung gilt auch durch Tests zugesichertes Verhalten, wie in `role-re-ticket` und der Laufzeitfassung (`CR-2026-147`, D-402, K-149) | `<FRAMEWORK_OWNER>` |
+| 0.1.4 | 2026-09-25 | Abschnitt 2: Als Herkunft einer Randbedingung gilt auch durch Tests zugesichertes Verhalten, wie in `koolie-ticket` und der Laufzeitfassung (`CR-2026-147`, D-402, K-149) | `<FRAMEWORK_OWNER>` |
+| 0.1.5 | 2026-10-02 | Sprachlich überarbeitet (Abschnitte 4 und 9), Bedeutung unverändert | `<FRAMEWORK_OWNER>` |

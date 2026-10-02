@@ -1260,3 +1260,91 @@ def check_steckbrief(root: str) -> None:
                 f"vor dem ersten Abschnitt. Klasse {klasse} trägt eine Tabelle "
                 f"'{P94_KOPF}' mit Kennung, Version und Status – sonst unterscheidet das "
                 f"Dokument keine zwei Stände (D-375)")
+
+
+# --- Pruefung 113: keine Kennung in der Produktdokumentation (CR-2026-173, D-540) -------
+# Die Produktdokumentation spricht zu Menschen, die Koolie benutzen. Woher eine Regel
+# kommt, steht in der Nachweisschicht: Decision Log, Aenderungsantraege, CHANGELOG,
+# Protokolle, Erhebungen, Roadmap. Ausgenommen sind ausserdem die Stellen der
+# Produktdokumentation, die selbst Nachweis sind: die Ergebnis- und Belegspalten der
+# Testblaetter und der Grenzfaelle, die Belegspalte der Faehigkeitsmatrix und die Zeilen eines
+# Versionsverlaufs. Vom Hauptdokument sind drei Kapitel Nachweis: die Grenzen und offenen
+# Entscheidungen, die Anhaenge mit der Quellenliste und der Abschluss (Owner 2026-10-02,
+# analog den vier Ausnahmen des Laufzeitglossars). Der Rest von build/ - Skripte, README,
+# Erzeugnisse - ist kein Produkttext.
+P113_RE = re.compile(r"(?<![A-Za-z0-9])(CR-\d{4}-\d{3}|D-\d{1,4}|K-\d{1,4})(?![0-9])")
+P113_NACHWEIS = (KERN + "/CHANGELOG.md", KERN + "/governance/DECISION_LOG.md",
+                 KERN + "/docs/ROADMAP.md")
+P113_NACHWEIS_ORDNER = (KERN + "/governance/change-requests/", KERN + "/tests/protocols/",
+                        KERN + "/tests/erhebungen/")
+P113_HAUPTDOKUMENT = KERN + "/build/doc/"
+P113_HAUPTDOKUMENT_NACHWEIS = ("29-grenzen.md", "31-anhaenge.md", "32-abschluss.md")
+P113_VERLAUF_RE = re.compile(r"^\|\s*\d+\.\d+\.\d+\s*\|")
+P113_BELEGKOPF_RE = re.compile(r"Ergebnis|Status|Beleg|Befund|Protokoll|Grundlage")
+
+
+def _p113_nachweis(rel: str) -> bool:
+    if rel.startswith(KERN + "/build/"):
+        return (not rel.startswith(P113_HAUPTDOKUMENT)
+                or rel[len(P113_HAUPTDOKUMENT):] in P113_HAUPTDOKUMENT_NACHWEIS)
+    return (rel in P113_NACHWEIS or rel.startswith(P113_NACHWEIS_ORDNER)
+            or rel.endswith("/CHANGELOG.md"))
+
+
+def p113_fundstellen(rel: str, text: str) -> list:
+    """[(Zeile, Kennung)] ausserhalb der Nachweisstellen eines Produkttraegers."""
+    testblatt = rel.endswith(("/TESTS.md", "/TEST_CATALOG.md", "/EDGE_CASES.md"))
+    pack = rel.startswith(KERN + "/clients/") and rel.endswith("/CLIENT_PACK.md")
+    aus, kopf, matrix = [], None, False
+    for nr, zeile in enumerate(text.replace("\r\n", "\n").split("\n"), 1):
+        if zeile.startswith("## "):
+            matrix = zeile.startswith("## 2. ")
+        tabelle = zeile.startswith("|")
+        if not tabelle:
+            kopf = None
+        elif not re.match(r"^\|[\s:|-]+\|?\s*$", zeile) and kopf is None:
+            kopf = tabellenzellen(zeile)
+        treffer = P113_RE.findall(zeile)
+        if not treffer or P113_VERLAUF_RE.match(zeile):
+            continue
+        if tabelle and (testblatt or (pack and matrix)):
+            zellen = tabellenzellen(zeile)
+            if pack and matrix:
+                frei = zellen[-1:] if zellen else []
+            else:
+                spalten = [i for i, k in enumerate(kopf or []) if P113_BELEGKOPF_RE.search(k)]
+                frei = [zellen[i] for i in spalten if i < len(zellen)]
+            erlaubt = [k for z in frei for k in P113_RE.findall(z)]
+            for k in erlaubt:
+                if k in treffer:
+                    treffer.remove(k)
+        aus += [(nr, k) for k in treffer]
+    return aus
+
+
+def check_kennungen_in_produktdoku(root: str) -> None:
+    """Pruefung 113 (D-540): Keine CR-, D- oder K-Kennung ausserhalb der Nachweisschicht."""
+    if not ist_quellrepositorium(root):
+        return
+    # SYNTHETISCH: K-99 ist eine belegte synthetische Kennung (Decision Log)
+    gut = p113_fundstellen(KERN + "/docs/X.md", "Siehe K-99 und `CR-2026-001`.\n| 1.0.0 | K-99 |\n")
+    if [k for _, k in gut] != ["K-99", "CR-2026-001"]:
+        err("Pruefung 113: die eigene Selbstprobe traegt nicht mehr - die Pruefung haette "
+            "ihren Gegenstand verloren und bestuende leise (D-23)")
+        return
+    for path in iter_text_files(root):
+        if not path.endswith(".md"):
+            continue
+        rel = os.path.relpath(path, root).replace(os.sep, "/")
+        # Das Overlay gehoert dem Projekt; im Quellrepositorium ist es eine lokale Saat.
+        if rel.startswith(".koolie/project-overlay/"):
+            continue
+        if _p113_nachweis(rel) or not (rel.startswith(".koolie/") or "/" not in rel
+                                       or rel.startswith("paketquellen/")):
+            continue
+        funde = p113_fundstellen(rel, read(path))
+        if funde:
+            erste = ", ".join(f"Z. {nr} {k}" for nr, k in funde[:3])
+            err(f"{rel}: {len(funde)} Kennung(en) in der Produktdokumentation ({erste}"
+                f"{' …' if len(funde) > 3 else ''}). Kennungen gehören in die Nachweisschicht "
+                f"(Decision Log, Änderungsanträge, CHANGELOG); hier steht die Aussage selbst")

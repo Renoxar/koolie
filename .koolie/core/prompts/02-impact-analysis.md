@@ -3,23 +3,33 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-002` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | niedrig bis hoch (rein lesend zulässig); die Analyse schlägt die Stufe der späteren Änderung vor – Maximumprinzip über R1–R13 |
-| Verwandter Skill | `fw-change-analyze` |
+| Verwandter Skill | `koolie-change-analyze` |
 
 ## 1. Zweck
 
-Die Vorlage klärt vor jeder Planung oder Umsetzung, was eine gewünschte Änderung im Repository tatsächlich berührt: betroffene Komponenten und deren Verwender, Schnittstellen und Datenmodell, bestehende Tests und Testlücken, Risiken je Faktor R1–R13 mit einem nicht bindenden Vorschlag der Kontrollstufe, offene fachliche Fragen und die Empfehlung des nächsten Schritts. Ergebnis ist ein Analysebericht – kein Plan, kein Code, keine Entscheidung. Liegt der Skill `fw-change-analyze` vor, SOLL er als vorgesehener Weg verwendet werden (`/fw-change-analyze`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage dient als strukturierte Anweisung mit zusätzlichen Parametern oder als Ersatz, wenn der Skill in der Laufzeitschicht nicht verfügbar ist. Die Kontrollstufe legt der Mensch im Preflight fest (`.koolie/core/checklists/01-preflight.md`); der Vorschlag vom KI-Client bindet nicht.
+Die Vorlage klärt vor Planung und Umsetzung, was eine gewünschte Änderung im Repository berührt:
+
+- betroffene Komponenten und ihre Verwender,
+- Schnittstellen und Datenmodell,
+- bestehende Tests und Testlücken,
+- Risiken je Faktor R1–R13 mit einem nicht bindenden Vorschlag der Kontrollstufe,
+- offene fachliche Fragen und den empfohlenen nächsten Schritt.
+
+Ergebnis ist ein Analysebericht – kein Plan, kein Code, keine Entscheidung. Die Kontrollstufe legt der Mensch im Preflight fest (`.koolie/core/checklists/01-preflight.md`); der Vorschlag des KI-Clients bindet nicht.
+
+Liegt der Skill `koolie-change-analyze` vor, SOLL er als vorgesehener Weg verwendet werden (`/koolie-change-analyze`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage dient als strukturierte Anweisung mit zusätzlichen Parametern oder als Ersatz, wenn der Skill in der Laufzeitschicht fehlt.
 
 ## 2. Einzusetzender Kontext
 
 - Bereinigte Aufgabenbeschreibung: Titel, technische Beschreibung, Akzeptanzkriterien (K2, bereinigt nach `.koolie/core/framework/core/02-privacy.md` Abschnitt 3.3 und 3.4).
 - Quellcode, Tests, Schnittstellenbeschreibungen (Verträge, Schemata) und Manifestdateien in `<ALLOWED_PATHS>` und `<READ_ONLY_PATHS>` (K1).
 - Overlay-Dokumente der Klasse K1 laut Manifest: Architektur-Kurzfassung, Liste kritischer Komponenten, `<PROJECT_RULES_PATH>` (K1).
-- Ergebnis einer vorangegangenen Analyse mit FW-PR-001 oder `fw-repo-analyze` (K1).
+- Ergebnis einer vorangegangenen Analyse mit FW-PR-001 oder `koolie-repo-analyze` (K1).
 
 ## 3. Nicht einzusetzender Kontext
 
@@ -47,7 +57,7 @@ Kontrollstufe: vorläufig {kontrollstufe} (Faktor {faktor}); du bestätigst dies
 Scope: Erlaubt sind {vermuteter_bereich} sowie per Suche ermittelte Verwender innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen sind <EXCLUDED_PATHS>, Konfigurations- und Umgebungsdateien mit Werten sowie alles außerhalb des Repositorys.
 Kontext: Aufgabenbeschreibung unten (K2, bereinigt); Quellcode, Tests, Schnittstellenbeschreibungen und Manifestdateien im Scope (K1); {kontextquellen} (K1 laut Overlay-Manifest); Framework-Dateien (K0). Keine K3-Inhalte.
 Akzeptanzkriterien: Jede Aussage zu Komponenten, Verwendern, Schnittstellen und Tests hat eine Fundstelle oder ein protokolliertes Suchmuster; alle dreizehn Faktoren sind bewertet oder als „durch den Menschen festzulegen" gekennzeichnet; der Stufenvorschlag folgt dem Maximumprinzip und ist als nicht bindend gekennzeichnet; fachliche Fragen sind gestellt, nicht beantwortet.
-Ausgabeformat: Änderungsanalyse nach Abschnitt 5 der SKILL.md des Skills fw-change-analyze; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Änderungsanalyse nach Abschnitt 5 der SKILL.md des Skills koolie-change-analyze; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Ohne Antwort analysierst du nur die belastbaren Teile; der Rest wird als <TBD: …> ausgewiesen und der Stufenvorschlag trägt den Zusatz „unter Vorbehalt offener Fragen".
 
 Aufgabenbeschreibung (Referenz: {referenz}):
@@ -63,7 +73,7 @@ Vorgehen:
 7. Bewerte jeden Faktor R1–R13 nach .koolie/core/framework/core/09-risk-model.md Abschnitt 2 mit Stufe, Begründung und Fundstelle; berücksichtige Verschärfungen des Overlays (kritische Komponenten); Faktoren, die nur ich beurteilen kann (zum Beispiel R5, R12), kennzeichnest du als „durch den Menschen festzulegen".
 8. Schlage die Kontrollstufe nach dem Maximumprinzip vor (auslösender Faktor, im Zweifel höher), ausdrücklich als Vorschlag (nicht bindend); hebe Abweichungen zur vorläufigen Einstufung hervor.
 9. Formuliere offene fachliche Fragen für <PRODUCT_OWNER_ROLE> und technische Entscheidungsbedarfe für Modul-Owner oder <ARCHITECT_ROLE>, je mit Auswirkung auf die Umsetzung.
-10. Empfiehl den nächsten Schritt als Vorschlag: fw-plan (FW-PR-003) bei Stufe mittel oder hoch, offenen Fragen oder mehr als <CHANGE_SIZE_THRESHOLD> Dateien; fw-change-small (FW-PR-004) nur bei Stufe niedrig und klarer Aufgabe; fw-tests (FW-PR-005) bei Testlücken; manuelle Bearbeitung für nicht delegierbare Anteile.
+10. Empfiehl den nächsten Schritt als Vorschlag: koolie-plan (FW-PR-003) bei Stufe mittel oder hoch, offenen Fragen oder mehr als <CHANGE_SIZE_THRESHOLD> Dateien; koolie-change-small (FW-PR-004) nur bei Stufe niedrig und klarer Aufgabe; koolie-tests (FW-PR-005) bei Testlücken; manuelle Bearbeitung für nicht delegierbare Anteile.
 
 Regeln:
 - Belege jede Aussage mit Fundstelle (pfad/datei:zeile) oder Suchmuster; erfinde keine Verwender, Konfigurationsschlüssel oder Tests. Nicht Gefundenes weist du als „nicht gefunden mit Suchmuster …" aus.
@@ -77,7 +87,7 @@ Regeln:
 
 ## 6. Erwartetes Ergebnis
 
-- Änderungsanalyse im Format von `fw-change-analyze` Abschnitt 5: Aufgabe und Scope (mit Suchmustern und Delegierbarkeit), Tabelle „Betroffene Komponenten und Verwender", Schnittstellen und Datenmodell, bestehende Tests und Lücken.
+- Änderungsanalyse im Format von `koolie-change-analyze` Abschnitt 5: Aufgabe und Scope (mit Suchmustern und Delegierbarkeit), Tabelle „Betroffene Komponenten und Verwender", Schnittstellen und Datenmodell, bestehende Tests und Lücken.
 - Tabelle „Risiken je Faktor" R1–R13 mit Stufe, Begründung und Fundstelle oder „durch den Menschen festzulegen".
 - Vorschlag der Kontrollstufe (nicht bindend) mit auslösendem Faktor und Abweichung zur vorläufigen Einstufung.
 - Tabelle fachlicher Fragen und technischer Entscheidungsbedarfe mit Adressat (Rolle); Empfehlung des nächsten Schritts als Vorschlag.

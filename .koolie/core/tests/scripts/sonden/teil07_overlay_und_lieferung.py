@@ -995,14 +995,14 @@ def sonden_ohne_pyyaml() -> None:
               "Ohne PyYAML meldet Pruefung 33 an einer richtigen Installation nichts")
         if not (gesperrt and still):
             notiz("        PyYAML gesperrt %s, still %s" % (gesperrt, still))
-        skill = os.path.join(root, ".claude", "skills", "fw-plan", "SKILL.md")
+        skill = os.path.join(root, ".claude", "skills", "koolie-plan", "SKILL.md")
         text = lies(skill)
         neu = re.sub(r"(?m)^disallowed-tools: .*$", "disallowed-tools: Edit", text)
         if neu == text:
-            raise Praeparationsfehler("disallowed-tools in fw-plan/SKILL.md nicht gefunden")
+            raise Praeparationsfehler("disallowed-tools in koolie-plan/SKILL.md nicht gefunden")
         schreib(skill, neu)
         aus = lauf_ohne()
-        ok = "fw-plan/SKILL.md: disallowed-tools traegt ['Edit']" in aus
+        ok = "koolie-plan/SKILL.md: disallowed-tools traegt ['Edit']" in aus
         melde("SONDE", "S364", ok,
               "Ohne PyYAML wird eine verkuerzte disallowed-tools-Liste weiter gemeldet")
     finally:

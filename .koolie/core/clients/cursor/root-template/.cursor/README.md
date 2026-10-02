@@ -1,6 +1,6 @@
 # Laufzeitschicht `.cursor/` – was hier liegt und wem es gehört
 
-Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `cursor`. Die kanonische, werkzeugneutrale Langform steht in `.koolie/core/framework/`; was hier liegt, ist daraus erzeugt (D-02). **Inhaltliche Änderungen gehören in den Kern und laufen als Änderungsantrag** (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`).
+Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `cursor`. Die kanonische, werkzeugneutrale Langform steht in `.koolie/core/framework/`; was hier liegt, ist daraus erzeugt. **Inhaltliche Änderungen gehören in den Kern und laufen als Änderungsantrag** (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`).
 
 ## Was hier liegt
 
@@ -12,8 +12,8 @@ Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `cursor`. D
 | `rules/40-tech-*.mdc`, `rules/30-*.mdc` | Technology und Role Packs (Ebenen 5 und 6); eine an Dateimuster gebundene Regel trägt `alwaysApply: false` und `globs` | Projekt |
 | `cli.json` | **Berechtigungen** des Frameworks, dazu die Projektwerte | Projekt (aus dem Kern erzeugt) |
 | `hooks.json` | Schutz-Hook und Statusmeldung | Framework |
-| `agents/fw-reviewer.md` | Nur lesender Review-Subagent (`readonly: true`) | Framework |
-| `skills/fw-*/` | Skills des Frameworks | Framework |
+| `agents/koolie-reviewer.md` | Nur lesender Review-Subagent (`readonly: true`) | Framework |
+| `skills/koolie-*/` | Skills des Frameworks | Framework |
 
 ## Vier Dinge, die bei diesem Client anders sind
 

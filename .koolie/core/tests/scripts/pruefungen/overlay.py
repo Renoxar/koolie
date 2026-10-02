@@ -758,7 +758,7 @@ def check_ungebundene_vorbedingung(root: str) -> None:
 #
 # ANLASS. Gemessen am 2026-09-18 im fuenften Sitzungstest (CR-2026-091). `FW-SC-01`
 # ist zum dritten Mal gefahren worden und zum dritten Mal nicht abnehmbar gewesen -
-# diesmal aus einem neuen Grund: Der Lauf hat NICHTS geaendert. `fw-change-small`
+# diesmal aus einem neuen Grund: Der Lauf hat NICHTS geaendert. `koolie-change-small`
 # verlangt in Schritt 4, den Testbefehl VOR dem ersten Schreibzugriff auszufuehren;
 # im Messbaum stand `<TEST_COMMAND>` im `ask`-Korb, und `ask` ist im
 # nicht-interaktiven Betrieb eine Abweisung (D-134). Der Lauf hat angehalten und
@@ -775,7 +775,7 @@ def check_ungebundene_vorbedingung(root: str) -> None:
 # dessen Frontmatter einen Befehlsschlitz AUSFUEHRT (`Exec(<..._COMMAND>)` unter
 # `permissions`), muss diesen Schlitz in ihrer VORBEDINGUNG nennen.
 #
-# WARUM DAS FRONTMATTER UND NICHT DER FLIESSTEXT. `fw-plan` nennt `<TEST_COMMAND>`
+# WARUM DAS FRONTMATTER UND NICHT DER FLIESSTEXT. `koolie-plan` nennt `<TEST_COMMAND>`
 # in seinen Vorbedingungen und in seiner Teststrategie - es fuehrt den Befehl aber
 # nicht aus, sondern plant ihn. Ein Zuschnitt ueber den Fliesstext haette `FW-FI-02`
 # mitgemeldet, dessen Lauf am 2026-09-18 keinen einzigen Befehl gebraucht hat. Das
@@ -868,7 +868,7 @@ def check_befehlsschlitz_in_vorbedingung(root: str) -> None:
 #
 # ANLASS. Gemessen am 2026-09-18 am Uebungsrepositorium (CR-2026-090, Befund 3): 0.63.0
 # hat die Sperre von .github/** auf .github/workflows/** EINGEENGT, weil sie sonst die
-# Merge-Request-Vorlage mitsperrt - einen Traeger, den fw-mr-description ausdruecklich
+# Merge-Request-Vorlage mitsperrt - einen Traeger, den koolie-mr-description ausdruecklich
 # als zulaessige Kontextquelle fuehrt (D-161). Die Einengung steht in
 # .koolie/project-overlay/OVERLAY.md. Die beiden Traeger, die den Client WIRKLICH binden - die
 # Laufzeitfassung des Overlays und der deny-Korb der Berechtigungsdatei - tragen
@@ -1203,7 +1203,7 @@ def check_aktivierte_packs(root: str, man: dict) -> None:
 # Datei aendern. Seither deklariert das Projekt sie im Overlay-Manifest
 # ('fremde_skills: openspec-, speckit-'), und Pruefung 5 nimmt sie aus.
 #
-# GEPRUEFT: FEHLER, wenn ein deklariertes Praefix einen Koolie-Skill treffen koennte (fw-,
+# GEPRUEFT: FEHLER, wenn ein deklariertes Praefix einen Koolie-Skill treffen koennte (koolie-,
 # prj-, role-, tech-, oder kuerzer als drei Zeichen) - die Deklaration waere sonst ein Weg,
 # die eigenen Skills der Pruefung zu entziehen; ein solches Praefix nimmt nichts aus.
 # WARNUNG, wenn ein Praefix keinen Skill der Laufzeitablage trifft (Deklaration ohne
@@ -1238,7 +1238,7 @@ def check_fremde_skills(root: str, man: dict) -> None:
     for p in deklariert:
         if not koexistenz.zulaessig(p):
             err(f"{rel}: fremde_skills nennt '{p}' - das Praefix koennte einen Koolie-Skill "
-                f"treffen (fw-, prj-, role-, tech-) und nimmt deshalb nichts aus (D-514)")
+                f"treffen (koolie-, prj-) und nimmt deshalb nichts aus (D-514)")
         elif not any(s.startswith(p) for s in skills):
             warn(f"{rel}: fremde_skills nennt '{p}', aber kein Skill in {man['skills_dir']}/ "
                  f"beginnt damit - eine Deklaration ohne Gegenstand (D-514)")

@@ -1,6 +1,6 @@
 # Laufzeitschicht `.kiro/` – was hier liegt und wem es gehört
 
-Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `kiro`. Die kanonische, werkzeugneutrale Langform steht in `.koolie/core/framework/`; was hier liegt, ist daraus erzeugt (D-02). **Inhaltliche Änderungen gehören in den Kern und laufen als Änderungsantrag** (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`).
+Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `kiro`. Die kanonische, werkzeugneutrale Langform steht in `.koolie/core/framework/`; was hier liegt, ist daraus erzeugt. **Inhaltliche Änderungen gehören in den Kern und laufen als Änderungsantrag** (`.koolie/core/governance/CHANGE_REQUEST_TEMPLATE.md`).
 
 ## Was hier liegt
 
@@ -12,10 +12,10 @@ Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `kiro`. Die
 | `steering/20-project-overlay.md` | Laufzeitfassung des Project Overlays (Ebene 4) | Projekt |
 | `steering/40-tech-*.md`, `steering/30-*.md` | Technology und Role Packs (Ebenen 5 und 6); eine an Dateimuster gebundene Regel trägt `inclusion: fileMatch` | Projekt |
 | `agents/koolie.json` | **Agentenprofil mit den Berechtigungen** des Frameworks, dazu die Projektwerte | Projekt (aus dem Kern erzeugt) |
-| `agents/fw-reviewer.md` | Nur lesender Review-Agent | Framework |
+| `agents/koolie-reviewer.md` | Nur lesender Review-Agent | Framework |
 | `settings/cli.json` | **Wählt das Agentenprofil und die Engine** für jede Sitzung in diesem Verzeichnis | Projekt (aus dem Kern erzeugt) |
 | `hooks/koolie.json` | Schutz-Hook und Statusmeldung | Framework |
-| `skills/fw-*/` | Skills des Frameworks | Framework |
+| `skills/koolie-*/` | Skills des Frameworks | Framework |
 | `specs/` | Spezifikationen, die der Client anlegt (Anforderungen, Entwurf, Aufgaben) | Projekt |
 
 ## Drei Dinge, die bei diesem Client anders sind

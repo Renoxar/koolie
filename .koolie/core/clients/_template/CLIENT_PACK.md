@@ -2,11 +2,11 @@
 
 <!-- AUSFÜLLHINWEIS: Kopiere dieses Verzeichnis nach ../<client-name>/, ersetze alle Platzhalter
      und lege ../<client-name>/root-template/ mit der erklärenden README der Laufzeitschicht sowie
-     ../<client-name>/manifest.json an; die Wurzelartefakte kommen aus dem Kern (../README.md Abschnitt 5, D-20).
+     ../<client-name>/manifest.json an; die Wurzelartefakte kommen aus dem Kern (../README.md Abschnitt 5).
      Trage das Pack in ../README.md Abschnitt 6 und in .koolie/core/OWNERS.md ein.
      Ein Client Pack führt keine Verhaltensregeln ein (../README.md Abschnitt 2).
      Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
-     steht in .koolie/core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
+     steht in .koolie/core/framework/core/01-governance.md Abschnitt 5. -->
 
 | Attribut | Wert |
 |---|---|
@@ -38,7 +38,7 @@ Wohin dieser Client die Laufzeitartefakte erwartet. Die linke Spalte ist die fra
 
 ## 1a. Semantikabbildung der Berechtigungen und Hooks
 
-Die Regelmenge liegt werkzeugneutral im Kern (`.koolie/core/framework/runtime/permissions.json`, `hooks.json`) und wird bei der Installation übersetzt (D-18). Diese Tabelle ist die menschenlesbare Fassung der Abbildungsfelder im `manifest.json`.
+Die Regelmenge liegt werkzeugneutral im Kern (`.koolie/core/framework/runtime/permissions.json`, `hooks.json`) und wird bei der Installation übersetzt. Diese Tabelle ist die menschenlesbare Fassung der Abbildungsfelder im `manifest.json`.
 
 | Neutrales Werkzeugverb | Werkzeug bei diesem Client | Anmerkung |
 |---|---|---|
@@ -70,8 +70,8 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 | R2 | Weitere Regeldateien lassen sich mit Ladebedingungen versehen (immer, bei Relevanz, manuell) | Laufzeit-README, Abschnitt „Regelablage" | `<TBD>` | `<TBD>` | `<TBD>` |
 | R3 | Regeln lassen sich an Dateimuster binden, damit ein Technology Pack nur bei passenden Dateien lädt | Ebene 5 | `<TBD>` | `<TBD>` | `<TBD>` |
 | R4 | Regelinhalte unterliegen einem bekannten Zeichenlimit, das das Framework einhalten kann | Laufzeit-README der Regelablage | `<TBD>` | `<TBD>` | `<TBD>` |
-| R5 | Die geladenen Regelquellen sind vollständig aufzählbar | D-34, `CR-2026-031` | `<TBD>` | `<TBD>` | `<TBD>` |
-| R6 | Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate | D-37, `CR-2026-038` | `<TBD>` – kennt der Client keine Importsteuerung, ist die Zeile `[NICHT ABBILDBAR]`, und es bleibt bei der Auskunft in Abschnitt 7 | `<TBD>` | `<TBD>` |
+| R5 | Die geladenen Regelquellen sind vollständig aufzählbar | `governance/PRIORITY_HIERARCHY.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| R6 | Das Framework importiert keine Regel- und Skillquellen fremder Werkzeugformate | `clients/README.md` | `<TBD>` – kennt der Client keine Importsteuerung, ist die Zeile `[NICHT ABBILDBAR]`, und es bleibt bei der Auskunft in Abschnitt 7 | `<TBD>` | `<TBD>` |
 
 ### S – Skills
 
@@ -81,13 +81,13 @@ Einstufung je Zusage: `[TECHNISCH]` erzwungen · `[TEXTUELL]` nur Anweisung · `
 | S2 | Ein Skill ist gezielt aufrufbar | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 | S3 | Ein Skill kann die ihm erlaubten Werkzeuge einschränken (lesende Skills schreiben nicht) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 | S4 | Schreibende Skills sind nur benutzergetriggert, nicht modellgetriggert – die Zusage gilt für die Skill-Ablage, die das Framework schreibt | dito | `<TBD>` | `<TBD>` | `<TBD>` |
-| S5 | Die geladenen Skills sind vollständig aufzählbar, samt Herkunft und Aufrufbarkeit | `CR-2026-032` | `<TBD>` | `<TBD>` | `<TBD>` |
+| S5 | Die geladenen Skills sind vollständig aufzählbar, samt Herkunft und Aufrufbarkeit | `install.py --list-skills` | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### B – Berechtigungen
 
-> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet** (D-35). Schaltet sie der Modus ohne Rückfragen ab, den D-05 untersagt, trägt allein der Schutz-Hook. Diese Vorbemerkung ist **Pflicht** in jedem Pack; sie ist je Client um den eigenen Belegstand zu ergänzen – erhoben oder ausdrücklich nicht erhoben.
+> **`[TECHNISCH]` heißt in diesem Block:** Die Engine setzt die Regel durch, **solange der Betriebsmodus die Berechtigungsprüfung nicht abschaltet**. Schaltet sie der Modus ohne Rückfragen ab, den `03-security.md` Abschnitt 4 untersagt, trägt allein der Schutz-Hook. Diese Vorbemerkung ist **Pflicht** in jedem Pack; sie ist je Client um den eigenen Belegstand zu ergänzen – erhoben oder ausdrücklich nicht erhoben.
 
-Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei, sofern sie JSON ist (D-395). Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
+Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Berechtigungsdatei, sofern sie JSON ist. Eine Abweichung von `[TECHNISCH]` ist dort begründungspflichtig.
 
 | ID | Zusage des Frameworks | Kern | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
@@ -109,31 +109,31 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` in der Be
 | H1 | Vor einer Werkzeugausführung kann eine eigene Prüfung laufen | Hook-Konfiguration | `<TBD>` | `<TBD>` | `<TBD>` |
 | H2 | Diese Prüfung kann die Ausführung **blockieren** (nicht nur protokollieren) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
 | H3 | Beim Sitzungsstart kann eine Statusmeldung erzeugt werden (Overlay aktiv, Version) | dito | `<TBD>` | `<TBD>` | `<TBD>` |
-| H4 | Der Schutz-Hook prüft das Eingabeschema und die Pfadidentität; die Zeile nennt die Zeitlücke zwischen Prüfung und Zugriff | D-63 | `<TBD>` | `<TBD>` | `<TBD>` |
+| H4 | Der Schutz-Hook prüft das Eingabeschema und die Pfadidentität; die Zeile nennt die Zeitlücke zwischen Prüfung und Zugriff | `03-security.md` Abschnitt 4 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### A – Agentenprofile
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
-| A1 | Ein rein lesendes Reviewprofil ist definierbar | `.koolie/core/framework/runtime/agents/fw-reviewer.md` | `<TBD>` | `<TBD>` | `<TBD>` |
-| A2 | Ein rein lesendes Analyseprofil für Modus M1 ist verfügbar | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
+| A1 | Ein rein lesendes Reviewprofil ist definierbar | `.koolie/core/framework/runtime/agents/koolie-reviewer.md` | `<TBD>` | `<TBD>` | `<TBD>` |
+| A2 | Ein rein lesendes Analyseprofil für Modus M1 ist verfügbar | `05-working-model.md` M1 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### M – Modi und Sitzungsfreigaben
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
-| M1 | Es gibt einen Standardmodus, der bei Schreiben und Befehlen rückfragt | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
-| M2 | Ein Modus, der alle Rückfragen übergeht, lässt sich organisatorisch oder technisch ausschließen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
+| M1 | Es gibt einen Standardmodus, der bei Schreiben und Befehlen rückfragt | `03-security.md` Abschnitt 4 | `<TBD>` | `<TBD>` | `<TBD>` |
+| M2 | Ein Modus, der alle Rückfragen übergeht, lässt sich organisatorisch oder technisch ausschließen | `03-security.md` Abschnitt 4 | `<TBD>` | `<TBD>` | `<TBD>` |
 | M3 | Eine erteilte Freigabe lässt sich auf die Sitzung begrenzen, statt sie dauerhaft zu speichern | Laufzeit-README | `<TBD>` | `<TBD>` | `<TBD>` |
-| M6 | Ein Modus mit selbsttätiger Übernahme von Dateiänderungen lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
-| M7 | Ein Modus, der selbst beurteilt, was sicher ist, lässt sich begrenzen | D-05 | `<TBD>` | `<TBD>` | `<TBD>` |
+| M6 | Ein Modus mit selbsttätiger Übernahme von Dateiänderungen lässt sich begrenzen | `03-security.md` Abschnitt 4 | `<TBD>` | `<TBD>` | `<TBD>` |
+| M7 | Ein Modus, der selbst beurteilt, was sicher ist, lässt sich begrenzen | `03-security.md` Abschnitt 4 | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ### X – Externe Anbindung
 
 | ID | Zusage des Frameworks | Quelle | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|---|
-| X1 | Externe Systeme sind standardmäßig nicht angebunden; jede Anbindung ist eine Einzelfreigabe | K-10, D-10 | `<TBD>` | `<TBD>` | `<TBD>` |
-| X2 | Ob und wohin Quellcode zur Indexierung abfließt, ist bekannt und dokumentiert | K-20 | `<TBD>` | `<TBD>` | `<TBD>` |
+| X1 | Externe Systeme sind standardmäßig nicht angebunden; jede Anbindung ist eine Einzelfreigabe | `03-security.md` Abschnitt 2 (T8) | `<TBD>` | `<TBD>` | `<TBD>` |
+| X2 | Ob und wohin Quellcode zur Indexierung abfließt, ist bekannt und dokumentiert | `02-privacy.md` | `<TBD>` | `<TBD>` | `<TBD>` |
 
 ## 3. Zusammenfassung der Durchsetzungstiefe
 
@@ -166,7 +166,7 @@ Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs (`.kooli
 
 ## 7. Anweisungs- und Konfigurationsquellen außerhalb des Projekts
 
-**Pflichtabschnitt.** Er führt, was dieser Client aus Ablagen **außerhalb des Repositoriums** lädt. Solche Quellen haben nach Regel 2.6 der Prioritätshierarchie **keine Ebene**: Sie dürfen einschränken, nie über die Ebenen 1 bis 4 hinaus erweitern und keine Governance-, Datenschutz- oder Sicherheitsregeln setzen (D-34). Prüfung 19 meldet ein Pack ohne diesen Abschnitt.
+**Pflichtabschnitt.** Er führt, was dieser Client aus Ablagen **außerhalb des Repositoriums** lädt. Solche Quellen haben nach Regel 2.6 der Prioritätshierarchie **keine Ebene**: Sie dürfen einschränken, nie über die Ebenen 1 bis 4 hinaus erweitern und keine Governance-, Datenschutz- oder Sicherheitsregeln setzen. Prüfung 19 meldet ein Pack ohne diesen Abschnitt.
 
 **Erhebungsstand: `<TBD: JJJJ-MM-TT>`**, Clientversion `<TBD>`, erhoben mit `<TBD: Kommandos oder Messweg>`.
 
@@ -180,7 +180,7 @@ Regeltexte, Skills, Agentenprofile. Je bekannter Quelle eine Zeile – **oder** 
 
 ### 7.2 Konfigurationsquellen
 
-Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums – sie betreffen genau die Linien, auf denen B1 bis B6 stehen (`CR-2026-038`).
+Berechtigungen, Hooks und Einstellungen außerhalb des Repositoriums – sie betreffen genau die Linien, auf denen B1 bis B6 stehen.
 
 | Quelle | Wirkung | Belegstatus |
 |---|---|---|
