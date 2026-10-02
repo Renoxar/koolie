@@ -138,6 +138,7 @@ die Störung.**
 | ~~**1.24.1**~~ ✅ | 🟢 **DER BEFEHL IM PROJEKTVERZEICHNIS – UND DIE PROBE, DIE NUR FRAGTE, OB ER STARTET** (`CR-2026-171`, **D-532** bis **D-534**, Prüfung 112 erweitert; kein Sitzungslauf, 0 USD). Die erste Version auf PyPI und npm. `koolie` ohne Argumente nimmt das aktuelle Verzeichnis mit Enter als Projekt (D-532); README und Quickstart beginnen mit `uvx koolie`, `pipx run koolie` oder `npx koolie` im Projektverzeichnis und nennen `python -m koolie`, wenn pip den Befehl außerhalb des `PATH` ablegt (D-533). 🔴 **Der Owner hielt vor PyPI an: `pip install` installierte nicht ins Projekt und legte den Befehl außerhalb des `PATH` ab – die Probe hatte nur gefragt, ob der Befehl startet.** Beifund: Das Vorabarchiv trug unter Windows CRLF (D-534) | – | nein (lokale Installationen, TestPyPI) |
 | ~~**1.25.0**~~ ✅ | 🟢 **EIN NEUER AUFTRITT, NPM UNTER DEM SCOPE UND DIE SUCHE NACH DEM ÄLTESTEN – UND DER NAME, DEN NPM FÜR COOKIE HIELT** (`CR-2026-172`, **D-535** bis **D-538**, Prüfung 112 erweitert, `K-207` und `K-208` beantwortet; Sitzungsläufe siehe Protokoll). Die README ist eine Startseite von rund 110 Zeilen, Maintainer-Inhalte stehen in `CONTRIBUTING.md` (D-538); npm unter `@renoxar/koolie` (D-535); die drei Skills mit externer Suche suchen bei mehr als fünf Treffern auch die ältesten, alle Zellen der drei Testblätter nachgemessen (D-536); `claude-code` gibt lesende Befehle im Druckmodus selbst frei, `deny` hält (D-537). 🔴 **npm wies `koolie` als zu ähnlich zu `cookie` ab – erst beim Hochladen, die Abfrage der Registry hatte 404 geliefert** | – | ja (Nachlauf) |
 | ~~**2.0.0**~~ ✅ | *dieses Release:* 🟢 **SAUBERER ÖFFENTLICHER AUFTRITT UND SKILL-PRÄFIX `koolie-`** (`CR-2026-173`, **D-539** bis **D-541**, `K-210` geklärt). Mitgelieferte Skills heißen `koolie-<name>`, auch die aus Packs (`koolie-ticket`), das Agentenprofil `koolie-reviewer`; `install.py --update` benennt Skillordner, Agentenprofil und die Einträge der Berechtigungsdatei selbst um (D-539). Die Produktdokumentation nennt keine Kennung mehr; Prüfung 113 hält das fest, die Schreibregeln stehen im Dokumentationsstandard (D-540). Drei Ideen des Owners sind ohne Ziel-Release vorgemerkt (`K-213` bis `K-215`). PyPI und npm werden über Trusted Publishing aus dem GitHub-Spiegel beschickt, nur an einer signierten Marke und nach Freigabe des Owners (D-541). Die Produktdokumentation ist neu gefasst; drei Stichprobenläufe `claude-code` tragen, 1,49 USD. | – | ja (drei Stichprobenläufe) |
+| **2.1.0** 🔨 | *in Arbeit:* **LEHREN AUS DER ERSTEN VERÖFFENTLICHUNG OHNE TOKEN UND DIE OFFENEN ZELLEN** (`CR-2026-174`). Einrichtung und Prüfschritt von Trusted Publishing nach dem ersten Lauf berichtigen; die drei offenen Zellen der externen Suche wiederholen (`K-211`, `K-212`); den K3-Auslöser in fünf Skills präzisieren mit Nachlauf ihrer Testblätter (`K-165`); zwei neue Zellen für Planablage und Stufe hoch (`K-170`); die Glob-Regel von `devin-desktop` (`K-161`); Rule 20 der Übung unter die SOLL-Grenze. | – | ja (Deckel 55 Läufe / 50 USD `claude-code`, 8 Läufe `devin-desktop`) |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -259,9 +260,13 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > 🟢 **Gefahren mit `1.14.0`** (`CR-2026-151`, D-419 bis D-424). Vier Skills an ihr Modul angeglichen, der K3-Auslöser
 > präzisiert, 25 Zellen nachgemessen: `SK-002-N03` trägt, sechs andere gehen auf `offen` (→ `1.14.1`).
 
-### Geplant: Die übrigen Paketquellen (`K-209`) – Ziel-Release **2.1.0**
+### Geplant: Lehren aus der ersten Veröffentlichung ohne Token und die offenen Zellen – Ziel-Release **2.1.0**
 
-Vom Agenten als Platzhalter gesetzt, der Zuschnitt liegt beim Owner: Scoop und Homebrew veröffentlichen (`K-209`). Trusted Publishing für PyPI und npm (`K-210`) kam mit `2.0.0` (D-541). Mit Entscheidungsfragen und Schätzung vor dem Bau.
+Nach dem ersten Lauf von Trusted Publishing die Einrichtung und den Prüfschritt berichtigen; die drei offenen Zellen der externen Suche wiederholen (`K-211`, `K-212`); den K3-Auslöser in fünf Skills mit Nachlauf präzisieren (`K-165`); zwei neue Zellen für Planablage und Stufe hoch (`K-170`); die Glob-Regel von `devin-desktop` erheben (`K-161`). Zuschnitt in `CR-2026-174`.
+
+### Vorgemerkt ohne Ziel-Release: Die übrigen Paketquellen (`K-209`)
+
+Scoop und Homebrew veröffentlichen (`K-209`); vom Owner beim Zuschnitt von `2.1.0` zurückgestellt. Trusted Publishing für PyPI und npm (`K-210`) kam mit `2.0.0` (D-541).
 
 ### Erledigt mit `1.25.0`: Die Suchgrenze und der Lesebefehl ohne Korb (`K-207`, `K-208`)
 
