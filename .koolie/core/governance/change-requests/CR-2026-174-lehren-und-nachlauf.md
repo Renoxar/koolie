@@ -43,7 +43,10 @@ Deckel: `claude-code` 55 Läufe und 50 USD nach Listenpreis, `devin-desktop` 8 L
 
 ## 4. Umsetzung
 
-*(wird fortgeschrieben)*
+1. **E1:** `RELEASE_PROCESS.md` 0.5.1 – Abschnitt 4.2: Abgleich mit Schritt 8 inhaltlich, Gitea-Anhänge sind die veröffentlichten Bytes; Workflow-Datei und Marke nicht im selben Spiegel-Push; npm braucht nach dem Hochladen einige Minuten; Einrichtungstabelle um den Scope `workflow` des Push-Spiegels und den Haken „Allow npm publish“ ergänzt. `publish.yml`: Der Job `release` wartet bis zu zehn Minuten auf die Paketdatei von npm und vergleicht sie bytegenau mit dem Hochgeladenen; `actionlint` 1.7.12 ohne Befund, der Block gegen `2.0.0` mit Gegenprobe ausprobiert. Prüfung 112 Gegenstand d verlangt das Warten, Sonde `112o`.
+2. **E4:** Übung Overlay 1.4.39 – `.devin/rules/20-project-overlay.md` redaktionell von 6.095 auf 5.969 Zeichen.
+3. **E5:** Pilot-CHANGELOG: Der gesperrte Begriff ist durch eine neutrale Beschreibung ersetzt; die Git-Historie des Pilots enthält ihn weiter.
+
 
 ## 5. Entscheidung
 

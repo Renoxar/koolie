@@ -95,7 +95,8 @@ sonde("112h", "Eine Vorabversion, deren npm-Paket die Version der Marke traegt, 
               "sie belegte die Version vor der Signatur", _112_vorab, M112_BAU)
 # Seit 2.0.0: die Veroeffentlichung ueber Trusted Publishing (Gegenstand d). Jede Sonde nimmt
 # dem Workflow genau eine Zusage: den einzigen Ausloeser, den festen Commit einer Action, die
-# Pruefung der Marke, die Reihenfolge TestPyPI vor PyPI und npm.
+# Pruefung der Marke, die Reihenfolge TestPyPI vor PyPI und npm, seit 2.1.0 das Warten auf die
+# Paketdatei von npm.
 WORKFLOW = ".github/workflows/publish.yml"
 
 
@@ -117,6 +118,10 @@ def _112_ohne_probe(root: str) -> None:
     ersetze(_p(root, WORKFLOW), ("    needs: [pruefen, testpypi]", "    needs: [pruefen]"))
 
 
+def _112_ohne_npm_datei(root: str) -> None:
+    ersetze(_p(root, WORKFLOW), ("          cmp -s npm-geladen.tgz", "          true  # SYNTHETISCH"))
+
+
 sonde("112k", "Ein Workflow, der ausser an einer Marke auch von Hand startet, wird gemeldet - "
               "er veroeffentlichte ohne signierte Marke", _112_ausloeser,
       "laeuft nicht nur an einer Marke v*")
@@ -126,6 +131,8 @@ sonde("112m", "Ein Workflow, der die Signatur der Marke nicht prueft, wird gemel
       _112_ohne_signatur, "kein Job prueft Signatur und VERSION der Marke")
 sonde("112n", "Ein Workflow, der PyPI und npm nicht erst nach der Probe auf TestPyPI beschickt, "
               "wird gemeldet", _112_ohne_probe, "laeuft nicht erst nach TestPyPI")
+sonde("112o", "Ein Workflow, der die Paketdatei von npm nicht abwartet und vergleicht, wird gemeldet",
+      _112_ohne_npm_datei, "wartet nicht auf die Paketdatei von npm")
 gegenprobe("112", "Der ausgelieferte Befehl gibt das Banner vor install.py aus, und bauen.py "
                   "baut ohne Befund", None, M112)
 
