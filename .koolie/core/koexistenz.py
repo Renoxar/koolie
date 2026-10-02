@@ -42,7 +42,7 @@ BEKANNT = (
     {"name": "GitHub Spec Kit", "praefix": "speckit-",
      "spuren": (".specify/integration.json", ".specify/memory/constitution.md")},
 )
-KOOLIE_PRAEFIX_RE = re.compile(r"^(fw|prj|role-[a-z0-9]+|tech-[a-z0-9]+)-")
+KOOLIE_PRAEFIX_RE = re.compile(r"^(koolie|prj)-")
 MARKE_RE = re.compile(
     r"<!--\s*([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(?:START|BEGIN)\s*-->(.*?)<!--\s*\1\s*:\s*END\s*-->",
     re.S | re.I)
@@ -65,7 +65,7 @@ def deklariert(root: str) -> list:
     return [p.strip().strip("\"'") for p in m.group(1).split(",") if p.strip().strip("\"'")]
 
 
-KOOLIE_PRAEFIXE = ("fw-", "prj-", "role-", "tech-")
+KOOLIE_PRAEFIXE = ("koolie-", "prj-")
 
 
 def zulaessig(praefix: str) -> bool:

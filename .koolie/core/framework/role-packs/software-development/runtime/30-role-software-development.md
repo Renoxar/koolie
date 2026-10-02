@@ -19,7 +19,7 @@ Langform: `.koolie/core/framework/role-packs/software-development/ROLE_PACK.md`.
 
 ## Typische Skills dieses Packs
 
-`fw-repo-analyze`, `fw-code-explain`, `fw-change-analyze`, `fw-plan`, `fw-change-small`, `fw-tests`, `fw-refactor`, `fw-error-analyze`, `fw-bugfix-prepare`, `fw-mr-description`.
+`koolie-repo-analyze`, `koolie-code-explain`, `koolie-change-analyze`, `koolie-plan`, `koolie-change-small`, `koolie-tests`, `koolie-refactor`, `koolie-error-analyze`, `koolie-bugfix-prepare`, `koolie-mr-description`.
 
 ## Grenzen
 

@@ -8,7 +8,7 @@
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` in Abstimmung mit `<SECURITY_CONTACT>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | mittel bis hoch (Sicherheitsbezug) – Maximumprinzip über R1–R13 im Preflight |
-| Verwandter Skill | keiner (nutzt den Prüfansatz von `fw-review-support`; Befundklassen aus `.koolie/core/checklists/06-security.md`) |
+| Verwandter Skill | keiner (nutzt den Prüfansatz von `koolie-review-support`; Befundklassen aus `.koolie/core/checklists/06-security.md`) |
 
 ## 1. Zweck
 
@@ -78,7 +78,7 @@ Regeln:
 - [ ] Befunde durch `<SECURITY_CONTACT>` bewertet; Schwere und Behandlung entschieden (nicht durch den KI-Client, nicht durch die Bearbeiterin oder den Bearbeiter allein).
 - [ ] Fundstellen der Befunde hoher Schwere geöffnet und den Mechanismus nachvollzogen.
 - [ ] Ergebnis gegen die Security Scans der CI gespiegelt; Abweichungen erklärt (P6 bleibt maßgeblich).
-- [ ] Behebungen als eigene Aufgaben mit Preflight geplant (`fw-bugfix-prepare` / `fw-plan`); keine Sofortkorrektur in derselben Sitzung.
+- [ ] Behebungen als eigene Aufgaben mit Preflight geplant (`koolie-bugfix-prepare` / `koolie-plan`); keine Sofortkorrektur in derselben Sitzung.
 - [ ] Meldeweg der Organisation eingehalten; Erfassung nach `.koolie/core/governance/INCIDENT_HANDLING.md` bei KI-Bezug (Abschnitt 1): gemeldeter Secret-Fund (S3), Injektionsversuch (S6) oder bestätigte Schwachstelle in bereits übernommenem KI-Code.
 
 ## 8. Typische Fehlanwendungen

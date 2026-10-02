@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | RP-DEV |
 | Ebene | 6 – Role Pack |
-| Version | 0.1.1 |
+| Version | 0.1.2 |
 | Status | pilot (Referenzpack der Erstfassung) |
 | Owner | `<FRAMEWORK_OWNER>` (bis zur Benennung eines Modul-Owners) |
 | Zielrolle | Softwareentwicklerinnen und Softwareentwickler |
@@ -20,16 +20,16 @@ Nicht Gegenstand dieses Packs: Architektur- und Technologieentscheidungen, Schni
 
 | Aufgabe | Modus | Typische Kontrollstufe (Maximumprinzip beachten) | Skill |
 |---|---|---|---|
-| Repository oder Modul kennenlernen | M1 | niedrig | `fw-repo-analyze` |
-| Bestehende Funktion erklären lassen | M1 | niedrig | `fw-code-explain` |
-| Auswirkungen einer geplanten Änderung analysieren | M1 | niedrig–mittel | `fw-change-analyze` |
-| Implementierungsplan erstellen | M2 | mittel | `fw-plan` |
-| Kleine, klar abgegrenzte Änderung umsetzen | M3 | niedrig–mittel | `fw-change-small` |
-| Unit Tests erstellen oder erweitern | M4 | niedrig | `fw-tests` |
-| Refaktorisierung ohne Verhaltensänderung | M3 | mittel | `fw-refactor` |
-| Fehler analysieren | M1 | niedrig–mittel | `fw-error-analyze` |
-| Bugfix vorbereiten | M2 | mittel | `fw-bugfix-prepare` |
-| Merge-Request-Beschreibung erstellen | M5 | niedrig | `fw-mr-description` |
+| Repository oder Modul kennenlernen | M1 | niedrig | `koolie-repo-analyze` |
+| Bestehende Funktion erklären lassen | M1 | niedrig | `koolie-code-explain` |
+| Auswirkungen einer geplanten Änderung analysieren | M1 | niedrig–mittel | `koolie-change-analyze` |
+| Implementierungsplan erstellen | M2 | mittel | `koolie-plan` |
+| Kleine, klar abgegrenzte Änderung umsetzen | M3 | niedrig–mittel | `koolie-change-small` |
+| Unit Tests erstellen oder erweitern | M4 | niedrig | `koolie-tests` |
+| Refaktorisierung ohne Verhaltensänderung | M3 | mittel | `koolie-refactor` |
+| Fehler analysieren | M1 | niedrig–mittel | `koolie-error-analyze` |
+| Bugfix vorbereiten | M2 | mittel | `koolie-bugfix-prepare` |
+| Merge-Request-Beschreibung erstellen | M5 | niedrig | `koolie-mr-description` |
 
 ## 3. Arbeitsweise (normativ)
 
@@ -68,22 +68,21 @@ Dieses Pack ist nach einer Erstinstallation **nicht** aktiv. Es wird wie jedes P
 1. Rolle im Overlay Abschnitt 1 („Rollen im Team") aufführen.
 2. Laufzeitfassung kopieren:
    `runtime/30-role-software-development.md` → `30-role-software-development.md` in der Regelablage
-3. Validieren: `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay`
+3. `python .koolie/core/install.py --update` ausführen; er bringt die Laufzeitfassung in die Form des installierten Client Packs.
+4. Validieren: `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay`
 
 Eigene Skills sind nicht mitzukopieren – das Pack nutzt die Framework-Skills, die ohnehin in der Laufzeitschicht liegen (Abschnitt 6).
 
-Bis Release 0.3.1 kam die Laufzeitfassung dieses Packs als Saatdatei mit und war damit nach jeder Erstinstallation aktiv. Das widersprach der eigenen Aktivierungsregel und ist mit 0.4.0 vereinheitlicht.
-
 ## 6. Rollenspezifische Skills
 
-Das Pack nutzt die Framework-Skills `FW-SK-001` bis `FW-SK-012`. Eigene Skills sind in der Erstfassung nicht vorgesehen.
+Das Pack nutzt die Framework-Skills `FW-SK-001` bis `FW-SK-013` und bringt keine eigenen mit.
 
 ## 7. Typische Fehlanwendungen in dieser Rolle
 
 | Fehlanwendung | Folge | Gegenmaßnahme |
 |---|---|---|
 | Ganze Feature-Tickets „an den KI-Client geben" | Scope-Verlust, unprüfbare Änderungssätze | Zerlegung in Analyse, Plan, kleine Änderungen |
-| Vorschläge übernehmen, ohne sie zu verstehen | Fehler in Randbedingungen bleiben unentdeckt | Q3, Skill `fw-code-explain` auf den eigenen Diff anwenden |
+| Vorschläge übernehmen, ohne sie zu verstehen | Fehler in Randbedingungen bleiben unentdeckt | Q3, Skill `koolie-code-explain` auf den eigenen Diff anwenden |
 | Tests vom KI-Client „passend machen" lassen | Fehlverhalten wird zementiert | M4-Regeln, Review-Punkt RV4 |
 | Stacktrace unbereinigt einfügen | K2/K3-Abfluss | Checkliste `02-privacy-context.md` |
 | Refaktorisierung und Fix in einem Schritt | Nicht reversibel, schwer zu reviewen | P7, getrennte Schritte |
@@ -93,3 +92,4 @@ Das Pack nutzt die Framework-Skills `FW-SK-001` bis `FW-SK-012`. Eigene Skills s
 | Version | Datum | Änderung | Autor (Rolle) |
 |---|---|---|---|
 | 0.1.0 | 2026-09-01 | Referenzpack angelegt | Framework-Erstellung |
+| 0.1.2 | 2026-10-02 | Sprachlich überarbeitet; Abschnitt 5b nennt `install.py --update` wie `role-packs/README.md` | `<FRAMEWORK_OWNER>` |

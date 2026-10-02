@@ -640,7 +640,7 @@ for _nr, extra in enumerate(
         # Der Wert wird nicht wiedergegeben: Projektspezifische Pfadmuster tragen Projekt-,
         # Kunden- und Hostnamen - dieselbe Datenart wie die Sperrbegriffe (B03, D-39). Die
         # Position macht das Muster in der Umgebungsvariablen auffindbar.
-        print(f"[fw-hook] Ungueltiges Zusatzmuster an Position {_nr} ignoriert "
+        print(f"[koolie-hook] Ungueltiges Zusatzmuster an Position {_nr} ignoriert "
               f"(Wert nicht wiedergegeben).", file=sys.stderr)
 
 
@@ -840,7 +840,7 @@ def unpruefbar(grund: str) -> None:
             "Dateiwerkzeug statt der Shell); bleibt es gesperrt, die Fundstelle dem "
             f"Framework Owner melden ({CORE_REL}/governance/FEEDBACK_PROCESS.md).",
             "Die Operation laeuft nicht; am Projekt aendert sich nichts."))
-    print(f"[fw-hook] Eingabe nicht pruefbar ({grund}); Schema gegen aktuelle "
+    print(f"[koolie-hook] Eingabe nicht pruefbar ({grund}); Schema gegen aktuelle "
           f"Clientdokumentation pruefen.", file=sys.stderr)
     durchlassen("unpruefbar-durchgelassen", "Gesperrt: " + grund)
 

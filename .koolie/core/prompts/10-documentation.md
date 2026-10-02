@@ -3,18 +3,20 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-010` |
-| Version | `0.1.3` |
+| Version | `0.1.4` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
 | Typische Kontrollstufe | niedrig bis mittel – Maximumprinzip über R1–R13 im Preflight |
-| Verwandter Skill | `fw-docs-update` |
+| Verwandter Skill | `koolie-docs-update` |
 
 ## 1. Zweck
 
-Die Vorlage erstellt oder aktualisiert technische Dokumentation in `<DOC_PATHS>` aus dem tatsächlichen Code-Stand für eine benannte Zielgruppe. Dokumentiert wird nur, was im Code belegt ist; Abweichungen zwischen Code und bestehender Dokumentation werden gemeldet statt stillschweigend „korrigiert". Liegt der Skill `fw-docs-update` vor, SOLL er als vorgesehener Weg verwendet werden; ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage ergänzt ihn um Zielgruppen- und Strukturvorgaben.
+Die Vorlage erstellt oder aktualisiert technische Dokumentation in `<DOC_PATHS>` aus dem tatsächlichen Code-Stand für eine benannte Zielgruppe. Dokumentiert wird nur, was im Code belegt ist; Abweichungen zwischen Code und bestehender Dokumentation werden gemeldet statt stillschweigend „korrigiert".
 
-(Erläuterung) Der häufigste Schaden entsteht nicht durch falsche Sätze, sondern durch plausibel dokumentiertes Wunschverhalten. Deshalb gilt: jede dokumentierte Aussage über Verhalten trägt eine Code-Fundstelle oder ist als offene fachliche Frage markiert.
+Liegt der Skill `koolie-docs-update` vor, SOLL er als vorgesehener Weg verwendet werden; ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage ergänzt ihn um Zielgruppen- und Strukturvorgaben.
+
+(Erläuterung) Der häufigste Schaden ist nicht der falsche Satz, sondern plausibel beschriebenes Wunschverhalten. Deshalb trägt jede Aussage über Verhalten eine Code-Fundstelle oder ist als offene fachliche Frage markiert.
 
 ## 2. Einzusetzender Kontext
 

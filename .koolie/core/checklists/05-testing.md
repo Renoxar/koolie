@@ -29,7 +29,7 @@ Sichert, dass Tests aus KI-Sitzungen aussagekräftig sind und geänderte Logik t
 ### Integrität der Testbasis
 
 - [ ] **MUSS** Keine bestehenden Tests geändert, abgeschwächt, ignoriert oder gelöscht, um einen Lauf „grün" zu machen; fachlich begründete Teständerungen sind im Plan ausgewiesen.
-- [ ] **MUSS** Kein Produktivcode geändert, nur damit ein Test besteht (M4-Grenze); aufgedeckte Fehler werden gemeldet (`fw-error-analyze`), nicht weggetestet.
+- [ ] **MUSS** Kein Produktivcode geändert, nur damit ein Test besteht (M4-Grenze); aufgedeckte Fehler werden gemeldet (`koolie-error-analyze`), nicht weggetestet.
 - [ ] **MUSS** Übersprungene oder als erwartet fehlschlagend markierte Tests sind gezählt und begründet.
 
 ### Ausführung und Lücken

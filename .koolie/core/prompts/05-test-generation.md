@@ -3,16 +3,22 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-005` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M4 Test and Validation |
 | Typische Kontrollstufe | niedrig bis hoch (hoch nur ohne Änderung an Produktivcode – durch diese Vorlage stets erfüllt) – Maximumprinzip über R1–R13 |
-| Verwandter Skill | `fw-tests` |
+| Verwandter Skill | `koolie-tests` |
 
 ## 1. Zweck
 
-Die Vorlage erstellt oder erweitert automatisierte Tests für eine benannte Komponente gegen ihr fachlich erwartetes Verhalten – Normalfall, Randfälle und Fehlerfälle – ausschließlich in `<TEST_PATHS>`, mit synthetischen Testdaten, nach den bestehenden Testkonventionen und mit `<TEST_FRAMEWORK>`. Sie führt `<TEST_COMMAND>` aus und liefert Testprotokoll, Liste nicht abgedeckter Fälle und eine Bewertung der Aussagekraft. Produktivcode wird nicht berührt; ein Bedarf dafür wird gemeldet (Wechsel nach M2/M3 durch den Menschen). Liegt der Skill `fw-tests` vor, SOLL er als vorgesehener Weg verwendet werden (`/fw-tests`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage dient als strukturierte Anweisung mit ausformulierten fachlichen Erwartungen oder als Ersatz, wenn der Skill in der Laufzeitschicht nicht verfügbar ist. Typische Anlässe: Testlücke schließen, Verhalten vor einem Refactoring (FW-PR-006) absichern, Tests für neue Logik nach FW-PR-004 ergänzen (Q2).
+Die Vorlage erstellt oder erweitert automatisierte Tests für eine benannte Komponente gegen ihr fachlich erwartetes Verhalten: Normalfall, Randfälle und Fehlerfälle. Sie schreibt ausschließlich in `<TEST_PATHS>`, mit synthetischen Testdaten, nach den bestehenden Testkonventionen und mit `<TEST_FRAMEWORK>`. Sie führt `<TEST_COMMAND>` aus und liefert Testprotokoll, nicht abgedeckte Fälle und eine Bewertung der Aussagekraft.
+
+Produktivcode wird nicht berührt. Ist dort etwas nötig, wird es gemeldet; den Wechsel nach M2/M3 entscheidet der Mensch.
+
+Liegt der Skill `koolie-tests` vor, SOLL er als vorgesehener Weg verwendet werden (`/koolie-tests`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage dient als strukturierte Anweisung mit ausformulierten fachlichen Erwartungen oder als Ersatz, wenn der Skill in der Laufzeitschicht fehlt.
+
+Typische Anlässe: eine Testlücke schließen, Verhalten vor einem Refactoring absichern (FW-PR-006), Tests für neue Logik nach FW-PR-004 ergänzen (Q2).
 
 ## 2. Einzusetzender Kontext
 
@@ -47,7 +53,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, durch mich festgel
 Scope: Erlaubt sind neue und bestehende Testdateien der Komponente in <TEST_PATHS>. Ausgeschlossen sind Produktivcode in <ALLOWED_PATHS>, <READ_ONLY_PATHS>, <EXCLUDED_PATHS>, Testkonfiguration, <QUALITY_GATE_CONFIG_PATHS>, <CI_CONFIG_PATHS>, Abhängigkeiten und Lockfiles.
 Kontext: Quellcode von {komponente} und ihrer direkten Abhängigkeiten (K1); bestehende Tests {bestehende_tests}, Fixtures und Testhilfen (K1); Testkonfiguration von <TEST_FRAMEWORK> (K1, nur lesen); <PROJECT_RULES_PATH> (K1); fachliche Erwartungen unten (K1 oder K2, bereinigt). Keine Echtdaten, keine K3-Inhalte.
 Akzeptanzkriterien: Jeder Testfall ist einer belegten Erwartung zugeordnet (Akzeptanzkriterium, Dokumentation oder Codefundstelle); je Verhalten sind Normalfall, Randbedingungen und Fehlerfälle getestet oder als nicht abgedeckt gelistet; Testnamen beschreiben das erwartete Verhalten; kein Test verifiziert ausschließlich Mocks oder interne Aufrufreihenfolgen; ausschließlich synthetische, gekennzeichnete Testdaten; bestehende Tests, Assertions und Schwellenwerte unverändert; <TEST_COMMAND> ausgeführt und unverändert berichtet.
-Ausgabeformat: Testerstellung nach Abschnitt 5 der SKILL.md des Skills fw-tests; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Testerstellung nach Abschnitt 5 der SKILL.md des Skills koolie-tests; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Ist das erwartete Verhalten eines Falls weder aus den Erwartungen noch aus Code oder Dokumentation belegbar (insbesondere Randbedingungen, Rundung, Zeitzonen, Leerwerte), schreibst du dafür keinen Test, sondern führst den Fall als <TBD: …> in der Liste nicht abgedeckter Fälle.
 
 Fachlich erwartetes Verhalten:
@@ -75,7 +81,7 @@ Regeln:
 
 ## 6. Erwartetes Ergebnis
 
-- Kopf nach `fw-tests` Abschnitt 5: Komponente, fachliche Grundlage, Modus M4, Kontrollstufe mit Faktor, Freigabe (Stufe hoch), Schreibscope, `<TEST_FRAMEWORK>` mit Fundstelle der Konfiguration, bereits abgedeckte Fälle.
+- Kopf nach `koolie-tests` Abschnitt 5: Komponente, fachliche Grundlage, Modus M4, Kontrollstufe mit Faktor, Freigabe (Stufe hoch), Schreibscope, `<TEST_FRAMEWORK>` mit Fundstelle der Konfiguration, bereits abgedeckte Fälle.
 - Bestätigte Testfallliste: Nummer, Verhalten, Art (Normalfall, Randbedingung, Fehlerfall), Quelle der Erwartung, Testdatei.
 - Geänderte und neue Dateien (alle in `<TEST_PATHS>`) mit Anzahl Tests; Commit-Vorschlag nach `<COMMIT_CONVENTION>`.
 - Testprotokoll: `<TEST_COMMAND>` mit unverändertem Ergebnis; Fehlschläge mit Einordnung (Test fehlerhaft, vermuteter Produktivcode-Fehler mit Fundstelle, unklar).
@@ -89,7 +95,7 @@ Regeln:
 - [ ] Testdaten auf Synthetik geprüft; keine Echtdaten, Kennungen oder internen Adressen (`.koolie/core/checklists/02-privacy-context.md`).
 - [ ] Alle geänderten Dateien liegen in `<TEST_PATHS>`; bestehende Tests, Assertions, Schwellenwerte und Konfiguration unverändert (RV1, RV9).
 - [ ] `<TEST_COMMAND>` selbst ausgeführt und Protokoll bestätigt; ab Stufe mittel durch die Reviewerin oder den Reviewer (`.koolie/core/checklists/05-testing.md`).
-- [ ] Gemeldete vermutete Produktivcode-Fehler als eigene Aufgabe aufgenommen (`fw-error-analyze`), nicht in derselben Sitzung behoben.
+- [ ] Gemeldete vermutete Produktivcode-Fehler als eigene Aufgabe aufgenommen (`koolie-error-analyze`), nicht in derselben Sitzung behoben.
 - [ ] `.koolie/core/checklists/04-review-ai-code.md` abgearbeitet; Übernahme über den bestehenden Review- und Freigabeprozess mit KI-Nutzungsvermerk.
 
 ## 8. Typische Fehlanwendungen
@@ -100,4 +106,4 @@ Regeln:
 | Tests ohne fachliche Erwartung aus dem Code „ableiten" lassen | Tests bestätigen nur die aktuelle Implementierung (RV4); Fehler bleiben unentdeckt | `{erwartetes_verhalten}` aus Akzeptanzkriterien befüllen; Unklares als offen führen |
 | Produktionsdaten oder Logauszüge als Testdatenvorlage bereitstellen | K3-Verstoß (V5); personenbezogene Daten in Fixtures | Synthetische Daten mit Kennzeichnung; bei Bedarf `<DATA_PROTECTION_CONTACT>` einbinden |
 | Produktivcode „für die Testbarkeit" mitändern lassen | Verlässt M4; Änderung ohne Plan und Review | Bedarf melden lassen; Änderung über FW-PR-003 und FW-PR-004 |
-| Fehlgeschlagene Bestandstests in derselben Sitzung „mitfixen" | Vermischte Änderungen (Q1); verdeckte Ursachen | Unverändert berichten; separate Aufgabe mit `fw-error-analyze` |
+| Fehlgeschlagene Bestandstests in derselben Sitzung „mitfixen" | Vermischte Änderungen (Q1); verdeckte Ursachen | Unverändert berichten; separate Aufgabe mit `koolie-error-analyze` |

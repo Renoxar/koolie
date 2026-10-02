@@ -161,7 +161,7 @@ def lieferumfang(kern: str) -> str:
 #   * allowed-tools: ein Verb ohne Abbildung wurde WOERTLICH durchgereicht. Aus
 #     'allowed-tools: banane' wurde in der installierten Fassung der Werkzeugname
 #     'banane'; aus einer geleerten Abbildung wurde 'tools: read, grep, glob' im
-#     Agentenprofil fw-reviewer - drei Namen, die dieser Client nicht kennt (M16).
+#     Agentenprofil koolie-reviewer - drei Namen, die dieser Client nicht kennt (M16).
 #   * permissions.deny: dasselbe Verb fiel lautlos ganz aus. 'deny: glob' erzeugte
 #     keine Werkzeugsperre, und der Validator meldete 0 Fehler (M6).
 # Die drei uebrigen Werkzeugabbildungen desselben Manifests - hook_tools,
@@ -293,7 +293,7 @@ def _regel_rendern(regel: dict, man: dict, korb: str) -> list[str]:
     elif verb == "skill":
         # Ein Aufrufname, kein Pfad: weder Wurzelpraefix noch Praefixzeichen, und
         # keine Musterausweitung. Gemessen am 2026-09-14 (D-82): Das Argument wird
-        # woertlich verglichen - Skill(fw-*) laesst den Aufruf von fw-code-explain
+        # woertlich verglichen - Skill(koolie-*) laesst den Aufruf von koolie-code-explain
         # NICHT durch. Wer hier ein Muster erzeugte, erzeugte eine Freigabe, die
         # lautlos nichts freigibt - der Befundtyp von D-66, mit umgekehrtem
         # Vorzeichen.

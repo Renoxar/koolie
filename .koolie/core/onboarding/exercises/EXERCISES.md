@@ -14,7 +14,7 @@ Alle Aufgaben sind **synthetische Übungen** auf dem Übungsrepository (`README.
 **Ziel:** Belegten Überblick erstellen und Fundstellenprüfung als Gewohnheit verankern.
 
 1. Preflight ausfüllen (Stufe niedrig, M1, Scope: Übungsmodul).
-2. `/fw-repo-analyze src/ordering "Wo werden eingehende Bestellungen validiert?"`
+2. `/koolie-repo-analyze src/ordering "Wo werden eingehende Bestellungen validiert?"`
 3. Drei Fundstellen aus der Antwort selbst öffnen und je in einem Satz bestätigen oder widerlegen.
 4. Eine Aussage der Analyse finden, die eine Vermutung ist, und prüfen, ob sie als solche gekennzeichnet war.
 
@@ -25,7 +25,7 @@ Alle Aufgaben sind **synthetische Übungen** auf dem Übungsrepository (`README.
 
 **Ziel:** Erklärtiefe steuern und beobachtet/geschlossen unterscheiden.
 
-1. `/fw-code-explain src/ordering/domain/OrderValidator überblick`, danach dieselbe Klasse mit `detail`.
+1. `/koolie-code-explain src/ordering/domain/OrderValidator überblick`, danach dieselbe Klasse mit `detail`.
 2. Aus der Detail-Erklärung zwei „beobachtet"-Aussagen und eine „geschlossen"-Aussage (Vermutung) heraussuchen und die Kennzeichnung prüfen.
 3. Eine Verständnisfrage formulieren, die nur das Team beantworten kann (Absicht/Historie), und sie auf die Mentorenliste setzen.
 
@@ -37,10 +37,10 @@ Alle Aufgaben sind **synthetische Übungen** auf dem Übungsrepository (`README.
 
 Aufgabe (synthetisch): „Die Validierung akzeptiert die Menge 0, fachlich gilt aber: Menge 1 bis 999." (Der eingebaute Übungsfehler; das Nachbarmodul enthält denselben Fehler – **Achtung Scope-Falle**, siehe Ü6c.)
 
-1. Preflight (Stufe niedrig oder mittel – begründen!), dann `/fw-change-analyze` mit der Aufgabenbeschreibung.
-2. `/fw-plan` – Plan nach Vorlage; Mentorin oder Mentor bestätigt schriftlich (Übungsform: Chat- oder Ticketnotiz).
-3. `/fw-change-small` – Umsetzung in kleinen Schritten; jede Schreib- und Ausführungsanfrage bewusst einzeln bestätigen.
-4. Ergebnisbericht lesen; Selbstreview mit `.koolie/core/checklists/04-review-ai-code.md`; Commit-Vorschlag prüfen; Übungs-MR-Beschreibung mit `/fw-mr-description` erzeugen.
+1. Preflight (Stufe niedrig oder mittel – begründen!), dann `/koolie-change-analyze` mit der Aufgabenbeschreibung.
+2. `/koolie-plan` – Plan nach Vorlage; Mentorin oder Mentor bestätigt schriftlich (Übungsform: Chat- oder Ticketnotiz).
+3. `/koolie-change-small` – Umsetzung in kleinen Schritten; jede Schreib- und Ausführungsanfrage bewusst einzeln bestätigen.
+4. Ergebnisbericht lesen; Selbstreview mit `.koolie/core/checklists/04-review-ai-code.md`; Commit-Vorschlag prüfen; Übungs-MR-Beschreibung mit `/koolie-mr-description` erzeugen.
 
 **Erfolgskriterien:** Plan vor Umsetzung bestätigt; Änderung nur im Zielmodul (Scope-Falle nicht ausgelöst oder korrekt gemeldet); Tests grün; Nutzungsvermerk vorhanden; jede Zeile des Diffs erklärbar.
 
@@ -48,8 +48,8 @@ Aufgabe (synthetisch): „Die Validierung akzeptiert die Menge 0, fachlich gilt 
 
 **Ziel:** Testaussagekraft und der Umgang mit aufgedeckten Fehlern.
 
-1. `/fw-tests src/ordering/domain/OrderValidator "Menge 1 bis 999 gültig; 0 und 1000 ungültig; fehlende Kundenreferenz ist Validierungsfehler"` – vor der Umsetzung der Ü3-Korrektur ausgeführt, deckt ein Test den Übungsfehler auf.
-2. Beobachten: Der fehlschlagende Test bleibt unverändert; der KI-Client meldet den Befund. Danach `/fw-error-analyze` mit dem (synthetischen) Befund.
+1. `/koolie-tests src/ordering/domain/OrderValidator "Menge 1 bis 999 gültig; 0 und 1000 ungültig; fehlende Kundenreferenz ist Validierungsfehler"` – vor der Umsetzung der Ü3-Korrektur ausgeführt, deckt ein Test den Übungsfehler auf.
+2. Beobachten: Der fehlschlagende Test bleibt unverändert; der KI-Client meldet den Befund. Danach `/koolie-error-analyze` mit dem (synthetischen) Befund.
 3. Nach der Ü3-Korrektur Tests erneut ausführen; Regressionsnachweis im Bericht prüfen.
 4. Abschluss: `.koolie/core/checklists/05-testing.md` auf die eigenen Tests anwenden; eine bewusste Schwäche suchen (zum Beispiel fehlender Randfall) und als Lücke notieren.
 

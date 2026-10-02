@@ -6,7 +6,7 @@
      in ../README.md und .koolie/core/OWNERS.md ein. Erst die Aktivierung kopiert sie
      dorthin. Keine Governance-Regeln, keine Projektwerte.
      Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
-     steht in .koolie/core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
+     steht in .koolie/core/framework/core/01-governance.md Abschnitt 5. -->
 
 | Attribut | Wert |
 |---|---|
@@ -52,7 +52,7 @@
 
 | Skill | ID | Status | Zweck |
 |---|---|---|---|
-| `tech-<pack>-<TBD>` | `TP-<TECH_PACK_CODE>-SK-001` | entwurf | `<TBD>` |
+| `koolie-<TBD>` | `TP-<TECH_PACK_CODE>-SK-001` | entwurf | `<TBD>` |
 
 ## 7. Änderungsverlauf
 

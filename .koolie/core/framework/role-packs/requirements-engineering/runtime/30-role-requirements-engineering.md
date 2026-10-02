@@ -6,7 +6,7 @@ trigger: model_decision
 # Role Pack Requirements Engineering (Laufzeitfassung)
 
 Quelle und Detailfassung: `.koolie/core/framework/role-packs/requirements-engineering/ROLE_PACK.md`.
-Skill: `/role-re-ticket`. Enthält ausschließlich rollenbezogene Arbeitsweise — keine
+Skill: `/koolie-ticket`. Enthält ausschließlich rollenbezogene Arbeitsweise — keine
 Governance-Regeln (Core) und keine Projektwerte (Overlay).
 
 ## Der zentrale Grundsatz
@@ -63,8 +63,8 @@ Nicht Gegenstand — jeweils mit Zuständigkeit:
 | Entscheidung, ob und wann etwas gebaut wird | `<PRODUCT_OWNER_ROLE>` |
 | Priorität, Aufwand, Termin, Zuständigkeit | `<PRODUCT_OWNER_ROLE>`, Projektleitung |
 | Architektur-, Technologie- und Abhängigkeitsentscheidungen | `<ARCHITECT_ROLE>` (V3) |
-| Risikobewertung und Kontrollstufenvorschlag | `fw-change-analyze` |
-| Änderungsplan | `fw-plan` |
+| Risikobewertung und Kontrollstufenvorschlag | `koolie-change-analyze` |
+| Änderungsplan | `koolie-plan` |
 | Eintragen oder Ändern von Vorgängen im Ticketsystem | Mensch (V11) |
 
 Alle Aufgaben dieser Rolle sind **M1**: lesen und Text ausgeben. Keine Datei wird geschrieben,
@@ -73,8 +73,8 @@ M5 durch den Menschen.
 
 ## Reihenfolge im Ablauf
 
-`role-re-ticket` (Anforderung formulieren) → `fw-change-analyze` (Risiken, Kontrollstufe) →
-`fw-plan` (Plan) → Umsetzung. `role-re-ticket` recherchiert nur so weit, wie es zum
+`koolie-ticket` (Anforderung formulieren) → `koolie-change-analyze` (Risiken, Kontrollstufe) →
+`koolie-plan` (Plan) → Umsetzung. `koolie-ticket` recherchiert nur so weit, wie es zum
 Formulieren nötig ist, und bewertet **kein** Risiko — zwei Skills mit derselben Analyse in
 unterschiedlicher Tiefe liefern über die Zeit widersprüchliche Ergebnisse.
 

@@ -6,7 +6,7 @@
      .koolie/core/OWNERS.md ein. Erst die Aktivierung kopiert sie in die Regelablage.
      Keine Governance-Regeln, keine Projektwerte.
      Die Statuszelle ist ein Ausfüllschlitz: Ein neues Pack beginnt auf entwurf; der Lebenszyklus
-     steht in .koolie/core/framework/core/01-governance.md Abschnitt 5 (D-104). -->
+     steht in .koolie/core/framework/core/01-governance.md Abschnitt 5. -->
 
 | Attribut | Wert |
 |---|---|
@@ -25,7 +25,7 @@
 
 | Aufgabe | Modus | Typische Kontrollstufe | Skill |
 |---|---|---|---|
-| `<TBD>` | `<M1–M6>` | `<niedrig/mittel/hoch>` | `<fw-... / role-<pack>-...>` |
+| `<TBD>` | `<M1–M6>` | `<niedrig/mittel/hoch>` | `<koolie-...>` |
 
 ## 3. Arbeitsweise (Konkretisierung des Standardarbeitsablaufs)
 
@@ -45,7 +45,7 @@
 
 | Skill | ID | Status | Zweck |
 |---|---|---|---|
-| `role-<pack>-<TBD>` | `RP-<ROLE_PACK_CODE>-SK-001` | entwurf | `<TBD>` |
+| `koolie-<TBD>` | `RP-<ROLE_PACK_CODE>-SK-001` | entwurf | `<TBD>` |
 
 ## 7. Typische Fehlanwendungen in dieser Rolle
 

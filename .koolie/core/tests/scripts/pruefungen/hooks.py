@@ -496,7 +496,7 @@ HOOK_UMSCHLAEGE = {
 # ist ein anderer - eine Pruefung, die ihre Grundlage benennt, darf sie nicht ueberholt
 # tragen. Und der Grundsatz aus D-62 gilt hier woertlich: Ein zusaetzliches Umschlagfeld
 # ist kein Pruefmaterial. Genau daran ist B06 gescheitert, mit transcript_path.
-HOOK_UMSCHLAG_UNTERAGENT = {"agent_id": "a1cae648c0189377c", "agent_type": "fw-reviewer"}
+HOOK_UMSCHLAG_UNTERAGENT = {"agent_id": "a1cae648c0189377c", "agent_type": "koolie-reviewer"}
 KEIN_EREIGNIS = ("", "   ", "[]", "null", '"x"', "42", '{"tool_input": {}}',
                  '{"tool_name": "", "tool_input": {}}', '{"tool_name": "Write"}',
                  '{"tool_name": "Write", "tool_input": "x"}')

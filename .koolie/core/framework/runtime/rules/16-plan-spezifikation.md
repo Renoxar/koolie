@@ -5,7 +5,7 @@ trigger: always_on
 
 # Planartefakt: die Spezifikationen des Clients (Laufzeitfassung)
 
-Langform: `<CORE_DIR>/framework/core/05-working-model.md` (Abschnitt 1 und Modus M2 – Planbestätigung), `<CORE_DIR>/templates/PLAN_TEMPLATE.md`, `<CORE_DIR>/framework/role-packs/requirements-engineering/skills/role-re-ticket/SKILL.md`. Entscheidung: D-415.
+Langform: `<CORE_DIR>/framework/core/05-working-model.md` (Abschnitt 1 und Modus M2 – Planbestätigung), `<CORE_DIR>/templates/PLAN_TEMPLATE.md`, `<CORE_DIR>/framework/role-packs/requirements-engineering/skills/koolie-ticket/SKILL.md`.
 
 Dein Client legt Spezifikationen unter `<RUNTIME_DIR>/specs/<name>/` an: `requirements.md` (bei einem Fehler `bugfix.md`), `design.md` und `tasks.md`. **Sie sind in diesem Projekt der Träger des Änderungsplans.** Einen zweiten Plan nach `PLAN_TEMPLATE.md` legst du daneben nicht an. Die folgenden Vorgaben gelten für jede Spezifikation, auch im schnellen Ablauf ohne Zwischenfreigaben.
 

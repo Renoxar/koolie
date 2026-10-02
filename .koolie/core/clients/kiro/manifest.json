@@ -22,7 +22,7 @@
   "agents_dir": ".kiro/agents",
   "pack_runtime_dir": ".kiro/steering",
   "has_rule_triggers": true,
-  "core_skill_prefix": "fw-",
+  "core_skill_prefix": "koolie-",
   "core_paths": [
     ".kiro/README.md"
   ],
@@ -173,8 +173,8 @@
       "dst": "<RULES_DIR>/16-plan-spezifikation.md"
     },
     {
-      "src": "framework/runtime/agents/fw-reviewer.md",
-      "dst": "<AGENTS_DIR>/fw-reviewer.md"
+      "src": "framework/runtime/agents/koolie-reviewer.md",
+      "dst": "<AGENTS_DIR>/koolie-reviewer.md"
     },
     {
       "src": "templates/rules/21-overlay-TEMPLATE.md.template",
@@ -189,7 +189,7 @@
       "dst": "<HOOKS_FILE>"
     }
   ],
-  "_shared_core_note": "16-plan-spezifikation.md liefert NUR dieses Pack aus: Es ist die Regel zu Weg B (D-415) - die Spezifikationen des Clients sind der Traeger des Plans, und die Regel gibt ihnen die Vorgaben der Planvorlage und von role-re-ticket mit. Keine Beispieldatei zur nutzerlokalen Wurzel-Anweisung (kein Mechanismus) und keine zur MCP-Konfiguration.",
+  "_shared_core_note": "16-plan-spezifikation.md liefert NUR dieses Pack aus: Es ist die Regel zu Weg B (D-415) - die Spezifikationen des Clients sind der Traeger des Plans, und die Regel gibt ihnen die Vorgaben der Planvorlage und von koolie-ticket mit. Keine Beispieldatei zur nutzerlokalen Wurzel-Anweisung (kein Mechanismus) und keine zur MCP-Konfiguration.",
   "shared_seed": [
     {
       "src": "framework/runtime/permissions.json",

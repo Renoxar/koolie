@@ -18,7 +18,7 @@ import sys
 
 from .gemeinsam import (
     _clientmap, _verfolgte_dateien, err, hinweis, ist_quellrepositorium,
-    iter_text_files, KERN, nicht_geliefert, PAKET_JE_SKRIPT, read, warn)
+    iter_text_files, KERN, nicht_geliefert, PAKET_JE_SKRIPT, read, warn, yaml)
 
 
 # --- 45: Der Bytecode des Kerns gehoert nicht in die Versionierung (D-97) -----------
@@ -868,13 +868,91 @@ def check_wirksamkeitsprobe(root: str) -> None:
 #       paketquellen/ ohne Befund - seine Nachpruefung haelt Dateimenge, Version, RECORD,
 #       die Ziele der Befehle, das Fehlen eines npm-Installationsskripts und die
 #       Pruefsumme in beiden Manifesten; seit 1.24.0 auch die Beschreibung fuer PyPI und
-#       npm ohne relativen Link (D-528) - und dasselbe fuer die Vorabversion --vorab 1 (D-529).
+#       npm ohne relativen Link (D-528) - und dasselbe fuer die Vorabversion --vorab 1 (D-529);
+#   (d) die Veroeffentlichung ueber Trusted Publishing (2.0.0, K-210): .github/workflows/
+#       publish.yml laeuft nur an einer Marke v*, gibt dem Workflow nur Leserecht, heftet jede
+#       Action an einen Commit, prueft Signatur und VERSION der Marke im ersten Job, gibt
+#       id-token nur Jobs mit Umgebung und laesst PyPI und npm (Umgebung release) erst nach
+#       TestPyPI (Umgebung testpypi) laufen.
 # GRENZE: Ob eine Paketquelle dem Befehl ein Terminal gibt, prueft keine Pruefung - das ist
 # gemessen (Protokoll 2026-09-30-paketquellen: pip, uv, npm, Scoop). Die Homebrew-Formel ist
 # gebaut, nicht gemessen. Die Veroeffentlichung erreicht keine Pruefung (D-521); ob die
 # Paketseite die Beschreibung darstellt, ist gemessen (Protokoll 2026-10-01-erste-veroeffentlichung).
 P112_DATEIEN = ("paketquellen/bauen.py", "paketquellen/koolie_befehl.py",
                 "paketquellen/koolie.cmd", "paketquellen/npm/koolie.js")
+
+
+P112_WORKFLOW = ".github/workflows/publish.yml"
+P112_ACTION_RE = re.compile(r"^[\w.-]+/[\w./-]+@[0-9a-f]{40}$")
+
+
+def _p112_workflow(root: str) -> None:
+    """Gegenstand (d): Die Workflow-Datei veroeffentlicht nur eine signierte Marke, nach TestPyPI."""
+    pfad = os.path.join(root, *P112_WORKFLOW.split("/"))
+    if not os.path.isfile(pfad):
+        err(f"{P112_WORKFLOW}: fehlt - ohne sie veroeffentlicht keine Marke auf PyPI und npm "
+            f"(Pruefung 112)")
+        return
+    if yaml is None:
+        hinweis(f"{P112_WORKFLOW}: PyYAML fehlt, Gegenstand (d) der Pruefung 112 nicht geprueft")
+        return
+    try:
+        wf = yaml.safe_load(read(pfad)) or {}
+    except yaml.YAMLError as fehler:
+        err(f"{P112_WORKFLOW}: kein gueltiges YAML ({type(fehler).__name__}) (Pruefung 112)")
+        return
+    # YAML 1.1 liest den Schluessel 'on' als True.
+    ausloeser = wf.get("on", wf.get(True))
+    if ausloeser != {"push": {"tags": ["v*"]}}:
+        err(f"{P112_WORKFLOW}: laeuft nicht nur an einer Marke v* ({ausloeser!r}) - jeder andere "
+            f"Ausloeser veroeffentlichte ohne signierte Marke (Pruefung 112)")
+    if wf.get("permissions") != {"contents": "read"}:
+        err(f"{P112_WORKFLOW}: die Rechte des Workflows sind nicht auf 'contents: read' "
+            f"beschraenkt (Pruefung 112)")
+    jobs = wf.get("jobs") or {}
+    umgebung = {}
+    for name, job in jobs.items():
+        u = job.get("environment")
+        umgebung[name] = u.get("name") if isinstance(u, dict) else u
+        for schritt in job.get("steps") or []:
+            uses = schritt.get("uses")
+            if uses and not P112_ACTION_RE.match(uses):
+                err(f"{P112_WORKFLOW}: Job '{name}' nutzt '{uses}' ohne festen Commit - ein "
+                    f"bewegliches Tag kann den Code der Veroeffentlichung aendern (Pruefung 112)")
+        if (job.get("permissions") or {}).get("id-token") and not umgebung[name]:
+            err(f"{P112_WORKFLOW}: Job '{name}' darf ein id-token holen, hat aber keine Umgebung "
+                f"(Pruefung 112)")
+
+    def vorgaenger(name: str, gesehen: set) -> set:
+        needs = jobs.get(name, {}).get("needs") or []
+        for n in [needs] if isinstance(needs, str) else needs:
+            if n not in gesehen:
+                gesehen.add(n)
+                vorgaenger(n, gesehen)
+        return gesehen
+
+    def skript(name: str) -> str:
+        return "\n".join(s.get("run", "") for s in jobs[name].get("steps") or [])
+
+    pruef = [n for n in jobs if "git tag -v" in skript(n) and "KOOLIE_ALLOWED_SIGNERS"
+             in str(jobs[n]) and ".koolie/core/VERSION" in skript(n)]
+    test = [n for n, u in umgebung.items() if u == "testpypi"]
+    frei = [n for n, u in umgebung.items() if u == "release"]
+    if not pruef:
+        err(f"{P112_WORKFLOW}: kein Job prueft Signatur und VERSION der Marke ('git tag -v' gegen "
+            f"KOOLIE_ALLOWED_SIGNERS) (Pruefung 112)")
+    if not test or not frei:
+        err(f"{P112_WORKFLOW}: es fehlt ein Job mit Umgebung 'testpypi' oder 'release' "
+            f"(Pruefung 112)")
+        return
+    for n in test:
+        if pruef and not set(pruef) & vorgaenger(n, set()):
+            err(f"{P112_WORKFLOW}: Job '{n}' (TestPyPI) haengt nicht an der Pruefung der Marke "
+                f"(Pruefung 112)")
+    for n in frei:
+        if not set(test) & vorgaenger(n, set()):
+            err(f"{P112_WORKFLOW}: Job '{n}' (PyPI und npm) laeuft nicht erst nach TestPyPI - "
+                f"die Probe muss vor der Veroeffentlichung abbrechen koennen (Pruefung 112)")
 
 
 def _p112_befehl(root: str, *argv: str, ohne_banner: bool = False, cwd: str | None = None,
@@ -900,6 +978,7 @@ def check_paketquellen(root: str) -> None:
         err(f"{fehlend[0]}: fehlt - ohne diese Datei baut keine Paketquelle den Befehl "
             f"'koolie' (Pruefung 112, D-520)")
         return
+    _p112_workflow(root)
     version = read(os.path.join(root, *KERN.split("/"), "VERSION")).strip()
     try:
         aus = _p112_befehl(root, "--version")

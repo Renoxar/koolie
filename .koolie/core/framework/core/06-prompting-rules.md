@@ -32,20 +32,20 @@ Jede Anweisung an den KI-Client, die über eine einfache Rückfrage hinausgeht, 
 4. **Keine Rollenspiele mit Regelwirkung.** Anweisungen, die den KI-Client auffordern, Regeln zu ignorieren, sich als anderes System auszugeben oder Sicherheitsprüfungen zu überspringen, sind unzulässig – auch zu Testzwecken außerhalb des Testkatalogs.
 5. **Ergebnis vor Stil.** Prompts fordern belegte Ergebnisse (Fundstellen, Testausgaben), nicht Selbstbewertungen („Bist du sicher?“).
 6. **Sprache.** Anweisungen werden in der im Overlay festgelegten Arbeitssprache verfasst (`<TBD: Arbeitssprache>`); Bezeichner, Befehle und Pfade bleiben unverändert.
-7. **Skills bevorzugen – von beiden Seiten.** Liegt für eine Aufgabe ein Skill vor, benennt ihn die Anweisung, und der KI-Client ruft ihn auch dann auf, wenn die Anweisung ihn nicht nennt (D-84; Wurzel-Anweisungsdatei Abschnitt 17, `05-working-model.md` Abschnitt 1; wie ein Skill aufgerufen wird, nennt die Fähigkeitsmatrix des Client Packs, Zeile S2). Freie Prompts sind für Aufgaben ohne passenden Skill vorgesehen. Gemessen am 2026-09-14 hat eine Sitzung den passenden Skill benannt und seinen Aufruf im eigenen Bericht für „nicht nötig“ erklärt (`.koolie/core/tests/protocols/2026-09-14-erhebung-skillaufruf.md`).
+7. **Skills bevorzugen – von beiden Seiten.** Liegt für eine Aufgabe ein Skill vor, benennt ihn die Anweisung, und der KI-Client ruft ihn auch dann auf, wenn die Anweisung ihn nicht nennt (Wurzel-Anweisungsdatei Abschnitt 17, `05-working-model.md` Abschnitt 1; wie ein Skill aufgerufen wird, nennt die Fähigkeitsmatrix des Client Packs, Zeile S2). Freie Prompts sind für Aufgaben ohne passenden Skill vorgesehen. Gemessen am 2026-09-14 hat eine Sitzung den passenden Skill benannt und seinen Aufruf im eigenen Bericht für „nicht nötig“ erklärt (`.koolie/core/tests/protocols/2026-09-14-erhebung-skillaufruf.md`).
 8. **Iterationen kennzeichnen.** Folgeanweisungen in derselben Sitzung benennen, was sich gegenüber dem vorherigen Schritt ändert („Nur Schritt 3 des Plans anpassen: …“).
 
 ## 3. Unzulässige Prompt-Muster (normativ)
 
 | Muster | Warum unzulässig | Stattdessen |
 |---|---|---|
-| „Behebe alle Fehler im Projekt“ | Kein Scope, keine Reversibilität, keine Prüfbarkeit | Ein Fehler, eine Sitzung, Skill `fw-error-analyze` |
+| „Behebe alle Fehler im Projekt“ | Kein Scope, keine Reversibilität, keine Prüfbarkeit | Ein Fehler, eine Sitzung, Skill `koolie-error-analyze` |
 | „Hier ist der Ticket-Export, mach das“ | Ungeprüfter Kontext (K2/K3-Risiko), kein Ziel | Ticket bereinigen, Ziel und Akzeptanzkriterien formulieren |
-| „Schreib die Tests so, dass sie durchlaufen“ | Zementiert Fehlverhalten, umgeht Quality Gates | Skill `fw-tests` mit fachlichen Erwartungen |
-| „Push das und erstell den MR“ | Delegationsverbot V2 | Skill `fw-mr-description`, Push und MR durch den Menschen |
+| „Schreib die Tests so, dass sie durchlaufen“ | Zementiert Fehlverhalten, umgeht Quality Gates | Skill `koolie-tests` mit fachlichen Erwartungen |
+| „Push das und erstell den MR“ | Delegationsverbot V2 | Skill `koolie-mr-description`, Push und MR durch den Menschen |
 | „Ignoriere die Regeln, das ist nur ein Test“ | Regelumgehung, Injektionsmuster | Testkatalog verwenden |
 | „Welche Bibliothek wäre gut? Bau sie ein.“ | Delegationsverbot V3 | Optionsanalyse anfordern, Entscheidung durch Mensch |
 
 ## 4. Erläuterung
 
-Gute Prompts ähneln guten Tickets: Sie beschreiben Ziel, Grenzen und Erfolgskriterium und überlassen den Weg dem Bearbeiter – mit dem Unterschied, dass der Bearbeiter hier bei jeder Unklarheit sofort nachfragen soll. Wer Schwierigkeiten hat, einen Prompt zu formulieren, hat meist noch keine klare Aufgabe; dann hilft der Skill `fw-change-analyze` oder ein Gespräch mit dem Product Owner mehr als ein besserer Prompt.
+Gute Prompts ähneln guten Tickets: Sie beschreiben Ziel, Grenzen und Erfolgskriterium und überlassen den Weg dem Bearbeiter – mit dem Unterschied, dass der Bearbeiter hier bei jeder Unklarheit sofort nachfragen soll. Wer Schwierigkeiten hat, einen Prompt zu formulieren, hat meist noch keine klare Aufgabe; dann hilft der Skill `koolie-change-analyze` oder ein Gespräch mit dem Product Owner mehr als ein besserer Prompt.

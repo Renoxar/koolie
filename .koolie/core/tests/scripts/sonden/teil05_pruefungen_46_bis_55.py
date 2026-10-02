@@ -374,7 +374,7 @@ def _47_verlaufszusatz(root: str) -> None:
     Zusatz zulaessig bleibt - und dass Pruefung 46 ihn weiterhin richtig einordnet.
     """
     ersetze(P(root, ".koolie/core/checklists/01-preflight.md".replace("/", os.sep)),
-            ("| Status | `pilot` |", "| Status | `pilot (Abnahme CR-2026-073)` |"))
+            ("| Status | `pilot` |", "| Status | `pilot (Abnahme 2026-09-15)` |"))
 
 
 def _47_tabelle_hinter_ueberschrift(root: str) -> None:
@@ -491,7 +491,7 @@ def _48_installiertes_pack(root: str) -> None:
     """
     installiert, _ = _48_marken(root)
     _48_datei(root, "14-sonde-installiert.md",
-              "Ausgabeformat: Analyse nach `%s/skills/fw-repo-analyze/SKILL.md`."
+              "Ausgabeformat: Analyse nach `%s/skills/koolie-repo-analyze/SKILL.md`."
               % installiert)
 
 
@@ -593,7 +593,7 @@ gegenprobe("48c", "Ein Clientpfad in der Roadmap bleibt zulaessig - sie fuehrt d
 # --- Pruefung 49: ausdruecklicher Skill-Aufruf im Testkatalog (D-146) --------------
 #
 # Der Befund, der sie veranlasst hat, ist am 2026-09-18 an FW-SC-01 gemessen worden: Der
-# Hauptlauf rief `fw-change-small` auf, wurde abgewiesen - neun von zwoelf Kernskills
+# Hauptlauf rief `koolie-change-small` auf, wurde abgewiesen - neun von zwoelf Kernskills
 # fuehren `triggers` ohne `- model`, und das Pack claude-code bildet das auf
 # `disable-model-invocation: true` ab - und arbeitete den Ablauf nicht nach. Damit fiel
 # Schritt 3 des Skills aus, der die Verwender der geaenderten Einheit erhebt; die
@@ -622,7 +622,7 @@ def _49_skill_ohne_modell(root: str) -> str:
         if i < 0:
             continue
         block = text[i:text.find("---", 3)] if text.startswith("---") else text[i:i + 200]
-        # Seit 1.17.0 tragen fw-bugfix-prepare und fw-plan `model` (D-451); der naechste
+        # Seit 1.17.0 tragen koolie-bugfix-prepare und koolie-plan `model` (D-451); der naechste
         # Skill ohne model fuehrt Test- und Lintbefehle aus, und Pruefung 49 verlangt dann
         # zu Recht den Schlitz in der Vorbedingung - gemessen wuerde die falsche Regel.
         if "- model" not in block and "<TEST_COMMAND>" not in text and "<LINT_COMMAND>" not in text:

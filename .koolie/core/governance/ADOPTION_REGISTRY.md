@@ -3,66 +3,36 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REG` |
-| Version | `0.2.7` |
+| Version | `0.3.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | alle Projekte, die den Framework-Kern übernommen haben |
-| Entstehung | `CR-2026-128`, **D-322** (2026-09-23); Verfahren und Prüfung mit `CR-2026-130`, **D-330** / **D-331** |
 | Pflicht aus | `.koolie/core/governance/RELEASE_PROCESS.md` Abschnitt 4 Punkt 4 (Auditierbarkeit) |
 
 ## 1. Wozu diese Liste da ist
 
-`RELEASE_PROCESS.md` verlangt sie seit der Erstfassung, und `AP12` führt
-*„Bestandsliste initialisieren"* als Aktivität. **Sie beantwortet eine Frage, die sonst
-niemand stellt:** *Welches Projekt läuft gerade auf welchem Stand, und wann wurde es
-zuletzt gehoben?*
-
-🔴 **Sie ist mit `1.0.0` angelegt worden, und ihr erster Eintrag ist zugleich ihr erster
-Befund.** Beide übernehmenden Projekte standen am 2026-09-23 auf `0.88.0` – **drei
-Releases hinter `main`**, während Kriterium 5 von D-11 (*„Übernahme in ein zweites Projekt
-nachgewiesen"*) als erfüllt geführt wurde. Kriterium 5 ist die einzige der fünf Aussagen,
-die **Prüfung 46 ausdrücklich nicht nachrechnet** (eine Enthaltung, D-11). ➡️ *Ein
-Nachweis, den niemand zählt, ist einer, den niemand veralten sieht.*
+Sie beantwortet eine Frage: Welches Projekt läuft auf welchem Stand, und wann wurde es zuletzt
+gehoben? Ein Projekt, das mehrere Releases zurückliegt, fällt hier auf.
 
 ## 2. Der Bestand
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **1.25.0** | `0.3.43` | 2026-10-01 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 34 Präparationen | `devin-desktop` | **1.25.0** | `1.4.37` | 2026-10-01 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **2.0.0** | `0.3.44` | 2026-10-02 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 34 Präparationen | `devin-desktop` | **2.0.0** | `1.4.38` | 2026-10-02 |
 
-🟢 **STAND 2026-09-27: BEIDE PROJEKTE TRAGEN `1.17.0`, UND DIE HEBUNG IST DORT COMMITTET.** `1.17.0` bringt den Modus M6 mit Mandat, den Skill `fw-overlay-pflege` und einen Schutz-Hook, der Schreibwerkzeuge am Ziel statt am Inhalt misst. **Die Berechtigungsdatei fasst die Hebung nicht an:** In beiden Projekten ist die statische Overlay-Sperre von Hand entfernt und sind die drei Prüfbefehle von Hand nachgetragen (D-448, D-453); `install.py --update` nennt eine verbliebene Sperre. `1.16.0` bringt das Client Pack `cursor`, das keines der beiden Projekte nutzt; bei ihnen ändern sich der Schutz-Hook (BOM-feste Eingabe, Ordnermuster für Secrets – eine Verschärfung) und der Validator. `1.15.0` ändert den Einstieg des Framework-Repositoriums und den Validator; an der installierten Laufzeitschicht ändert sich nichts. `1.14.2` schaltet im Pack `claude-code` die Attributionsvorgabe des Clients ab (D-433), und die Berechtigungsdatei fasst die Hebung nicht an: **Im Pilot ist `attribution` von Hand nachgetragen**, `install.py --update` meldet den Schlüssel seither, solange er fehlt (D-434); das Übungsrepositorium (`devin-desktop`) ist nicht betroffen. Beide mit Lieferumfang `voll` (`.koolie/core/LIEFERUMFANG`, D-367), beide über `install.py --target <projekt> --update` gehoben (D-362). `1.12.1` behebt zwei Befunde an Packs (D-411, D-412): **An der installierten Laufzeitschicht ändert sich die Berechtigungsdatei von `devin-desktop` und `openai-codex`** – und die fasst die Hebung nicht an. Im Übungsrepositorium ist `read_config_from` von Hand nachgezogen (`windsurf: true`, `copilot`/`opencode`/`zed`: `false`); der Pilot (`claude-code`) ist nicht betroffen. Was frühere Releases in den Projekten bewirkt haben, steht im Änderungsverlauf des jeweiligen Overlays und im `CHANGELOG.md`.
+Beide Projekte haben den Lieferumfang `voll` und werden mit
+`install.py --target <projekt> --update` gehoben. Was ein Release in einem Projekt geändert hat,
+steht im Änderungsverlauf seines Overlays und im `CHANGELOG.md`.
 
-🟢 **DIE FRAGE IST MIT `1.1.0` ENTSCHIEDEN: JA ZU BEIDEM** (`CR-2026-130`, D-330).
-Das Heben steht seit diesem Release **vor** dem Freigabe-Commit, `RELEASE_PROCESS.md`
-Abschnitt 4.1 nennt die Reihenfolge, `FW-CL-11` führt dafür einen eigenen Prüfpunkt
-(D-329) – und **Prüfung 82** hält die Spalte `Framework-Version` gegen
-`.koolie/core/VERSION` (D-331).
+Die Liste nennt den **Zielstand**, bevor gehoben wird: Schritt 1 des Verfahrens in
+`RELEASE_PROCESS.md` Abschnitt 4.1 schreibt sie fort, Schritt 2 hebt die Projekte und committet
+die Hebung dort. So trägt die ausgelieferte Kopie denselben Stand wie das Original. Prüfung 82
+hält die Spalte `Framework-Version` gegen `.koolie/core/VERSION`; sie prüft die Zeile, nicht den
+Stand des Projekts.
 
-🔴 **Die Herleitung, und sie war teurer als gebucht.** Diese Zeilen standen nach `1.0.1`
-einen halben Tag auf `1.0.0`, während die Projekte `1.0.1` trugen – und das war nur die
-erste von **zwei** Stellen. Gemessen am 2026-09-23 im Vorbedingungsdurchgang von
-`1.1.0`: Das Framework hatte seine Liste berichtigt, die **ausgelieferten Kopien** in
-beiden übernehmenden Projekten trugen weiter `1.0.0` neben einer `VERSION` `1.0.1`.
-➡️ ***Wer eine Liste nach dem Heben fortschreibt, schreibt sie an einer Stelle fort und
-liefert sie an zwei.***
-
-🔴 **UND DAS HEBEN ENDETE BIS `1.3.0`, BEVOR SEIN ERGEBNIS DAUERHAFT WAR** (D-343).
-Die vier Handgriffe von Schritt 2 nannten das **Committen im übernehmenden Projekt**
-nicht. Gemessen beim Abschluß von `1.2.0`: In **beiden** Projekten trug der jüngste
-Commit `VERSION` `1.0.1`; die Hebung auf `1.1.0` ist nie committet worden. ➡️ ***Ein
-Verfahrensschritt, der endet, bevor sein Ergebnis dauerhaft ist, liefert einen Zustand
-und keinen Stand.*** Schritt 2 trägt seither einen fünften Handgriff.
-
-🟢 **Deshalb nennt diese Liste den ZIELSTAND, bevor gehoben wird.** Schritt 1 des
-Verfahrens schreibt sie fort, Schritt 2 hebt – die Kopie trägt dann denselben Stand wie
-das Original. ⚠️ **Und genau darin liegt die Grenze von Prüfung 82:** Sie mißt die
-**Behauptung** dieser Zeile und nicht den Stand des Projekts. Wer die Zeile ändert, ohne
-zu heben, kommt durch (D-331).
-
-⚠️ **Der Pfad ist der des Arbeitsplatzes und keine Adresse.** Was ein Projekt für den
-Nachweis identifiziert, ist sein Repositorium; die Pfadspalte sagt nur, wo es auf diesem
-Rechner liegt.
+Die Pfadspalte sagt nur, wo ein Projekt auf diesem Rechner liegt. Für den Nachweis zählt sein
+Repositorium.
 
 ## 3. Was ein Eintrag aussagt – und was nicht
 
@@ -70,20 +40,14 @@ Rechner liegt.
 |---|---|---|
 | Der Kern dieses Projekts steht auf der genannten Version | ✅ gemessen an `.koolie/core/VERSION` | – |
 | Die Laufzeitschicht ist mit dieser Version erzeugt | ✅ über `install.py --update` | – |
-| Das Projekt **nutzt** das Framework im Alltag | – | 🔴 **Nein.** Eine Übernahme ist kein Betriebsnachweis; dafür sind `AP8` bis `AP10` zuständig, und die sind **projektseitig** |
-| Das Overlay ist aktiv | – | 🔴 **Nein.** Das prüft `validate-framework.py --strict-overlay` je Projekt, nicht diese Liste |
+| Das Projekt **nutzt** das Framework im Alltag | – | Nein. Eine Übernahme ist kein Betriebsnachweis; dafür sind `AP8` bis `AP10` zuständig, und die sind projektseitig |
+| Das Overlay ist aktiv | – | Nein. Das prüft `validate-framework.py --strict-overlay` je Projekt |
 
 ## 4. Wann sie fortgeschrieben wird
 
-**Bei jedem Release, als Teil von `FW-CL-11`** – Prüfpunkt *„Release-Archiv erzeugt und
-abgelegt; übernehmende Projekte informiert"*. Der Ablauf steht in `RELEASE_PROCESS.md`
-Abschnitt 4.1.
+Bei jedem Release, als Teil von `FW-CL-11` (Prüfpunkt *„Release-Archiv erzeugt und abgelegt;
+übernehmende Projekte informiert"*). Der Ablauf steht in `RELEASE_PROCESS.md` Abschnitt 4.1. Die
+Archive liegen mit Prüfsumme als Anhang am signierten Release des Hostingdienstes.
 
-🟢 **Die Archive liegen seit `1.0.0` als Anhang am Release des Hostingdienstes**, je mit
-Prüfsumme – das ist die *„Ablage außerhalb des Repositoriums"* aus Abschnitt 4.1 in ihrer
-natürlichen Form: am **signierten** Stand, nicht daneben.
-
-⚠️ **Keine Prüfung hält diese Liste gegen die Projekte.** Sie kann es nicht: Die Projekte
-liegen außerhalb dieses Repositoriums, und eine Prüfung, die sie sucht, wäre auf jedem
-anderen Arbeitsplatz rot (D-299). **Das ist eine benannte Grenze und kein Versehen** –
-dieselbe Lage wie bei `K-105`, dem Vortragsmittel.
+Keine Prüfung hält diese Liste gegen die Projekte: Die liegen außerhalb dieses Repositoriums,
+und eine solche Prüfung wäre auf jedem anderen Arbeitsplatz rot.

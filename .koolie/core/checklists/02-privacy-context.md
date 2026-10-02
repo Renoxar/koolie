@@ -37,7 +37,7 @@ Verhindert, dass unzulässige Inhalte (K3) oder nicht freigegebene Inhalte (K2) 
 
 - [ ] **MUSS** Testdaten sind synthetisch und als solche gekennzeichnet oder nachweislich anonymisiert (`02-privacy.md` Abschnitt 3.6).
 - [ ] **MUSS** Keine Websuche und kein Abruf externer Seiten. Eine Freigabe je Domain
-      gibt es nicht (D-59); benötigte externe Quellen werden lokal bereitgestellt.
+      gibt es nicht; benötigte externe Quellen werden lokal bereitgestellt.
 - [ ] **MUSS** MCP-Werkzeuge nur, wenn der Server im Overlay (Abschnitt 13) freigegeben ist; bis dahin steht die Bestätigung vor einem MCP-Aufruf nicht auf `allow` (`02-privacy.md` Abschnitt 3.8).
 - [ ] **MUSS** Geteilter Kontext (Spaces, parallele Sitzungen) enthält nur Inhalte, die für alle beteiligten Aufgaben freigegeben sind.
 - [ ] **MUSS** Nutzerlokale Überschreibungen erweitern keine Kontextfreigaben (`02-privacy.md` Abschnitt 3.10).

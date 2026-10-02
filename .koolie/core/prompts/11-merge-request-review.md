@@ -3,16 +3,18 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-011` |
-| Version | `0.1.4` |
+| Version | `0.1.5` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
 | Typische Kontrollstufe | entsprechend der Stufe des geprüften Änderungssatzes – Maximumprinzip über R1–R13 |
-| Verwandter Skill | `fw-review-support` |
+| Verwandter Skill | `koolie-review-support` |
 
 ## 1. Zweck
 
-Die Vorlage unterstützt eine Reviewerin oder einen Reviewer bei der Prüfung eines lokal ausgecheckten Änderungssatzes gegen die Prüfpunkte RV1–RV12 (`.koolie/core/framework/core/07-review-rules.md`). Ergebnis sind Befunde mit Fundstellen und Schwere. Sie ersetzt kein menschliches Review, erteilt keine Freigabe (V1) und agiert nicht im Review-Werkzeug. Liegt der Skill `fw-review-support` vor, SOLL er als vorgesehener Weg verwendet werden; ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage ergänzt ihn um den Abgleich mit Plan und Ticketzielen.
+Die Vorlage unterstützt eine Reviewerin oder einen Reviewer bei der Prüfung eines lokal ausgecheckten Änderungssatzes gegen die Prüfpunkte RV1–RV12 (`.koolie/core/framework/core/07-review-rules.md`). Ergebnis sind Befunde mit Fundstellen und Schwere. Sie ersetzt kein menschliches Review, erteilt keine Freigabe (V1) und agiert nicht im Review-Werkzeug.
+
+Liegt der Skill `koolie-review-support` vor, SOLL er als vorgesehener Weg verwendet werden; ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage ergänzt ihn um den Abgleich mit Plan und Ticketzielen.
 
 (Erläuterung) Der Nutzen liegt in der Ermüdungsresistenz: RV2 (Fundstellen-Treue), RV4 (Testaussagekraft) und RV5 (API-Existenz) sind genau die Punkte, die ein menschliches Review bei „sauber aussehenden" Diffs übersieht. Die Verantwortung und das Urteil bleiben beim Menschen.
 
@@ -49,7 +51,7 @@ Kontrollstufe des Änderungssatzes: {kontrollstufe} (Faktor {faktor}); wende die
 Scope: Der Änderungssatz {diff_basis} und die unmittelbar betroffenen Verwender innerhalb <ALLOWED_PATHS> und <READ_ONLY_PATHS>. Ausgeschlossen: <EXCLUDED_PATHS>, Review-Werkzeug-Inhalte, alles außerhalb des Repositorys.
 Kontext: Aufgabenziel (K2, bereinigt, Freigabe liegt vor): {aufgabenziel}; Plan: {plan_referenz}; KI-Nutzungsvermerk und Ergebnisbericht des Änderungssatzes; Coding Conventions <PROJECT_RULES_PATH>. Keine K3-Inhalte.
 Akzeptanzkriterien: Jeder Befund nennt RV-Punkt, Schwere (hoch/mittel/niedrig), Fundstelle (pfad/datei:zeile), Beschreibung und Empfehlung als Vorschlag; die geprüften RV-Punkte (Prüftiefe) sind genannt; der Scope-Abgleich benennt jede Änderung außerhalb von Ziel oder Plan; Aussagen ohne Beleg sind als Vermutung markiert.
-Ausgabeformat: Review-Unterstützung nach Abschnitt 5 der SKILL.md des Skills fw-review-support; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
+Ausgabeformat: Review-Unterstützung nach Abschnitt 5 der SKILL.md des Skills koolie-review-support; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen; insbesondere bei mehrdeutiger Diff-Basis oder fehlendem Plan ab Stufe mittel.
 
 Vorgehen:
@@ -72,7 +74,7 @@ Regeln:
 
 ## 6. Erwartetes Ergebnis
 
-- Review-Unterstützung im Format von `fw-review-support` Abschnitt 5: Aufgabe und Scope mit Prüftiefe, Scope-Abgleich (RV1), Befunde nach Schwere, Schnittstellen-Existenz (RV5), Tests (RV3, RV4), Sicherheit und Datenschutz (RV7, RV8), Abhängigkeiten, Konfiguration, Quality Gates (RV6, RV9), ausgeführte Git-Befehle, Annahmen und offene Fragen.
+- Review-Unterstützung im Format von `koolie-review-support` Abschnitt 5: Aufgabe und Scope mit Prüftiefe, Scope-Abgleich (RV1), Befunde nach Schwere, Schnittstellen-Existenz (RV5), Tests (RV3, RV4), Sicherheit und Datenschutz (RV7, RV8), Abhängigkeiten, Konfiguration, Quality Gates (RV6, RV9), ausgeführte Git-Befehle, Annahmen und offene Fragen.
 - Liste der Stellen für gezielte Nachfragen an die Bearbeiterin oder den Bearbeiter (RV10).
 - Ergebnisbericht; keine Änderungen, keine Werkzeug-Aktionen.
 

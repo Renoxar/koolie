@@ -20,9 +20,9 @@
 |---|---|---|
 | N1 | Maximierung des Automatisierungsgrads oder „autonome" Entwicklung | Human Accountability ist Grundprinzip; Autonomie-Modi sind untersagt beziehungsweise ausnahmepflichtig |
 | N2 | Ersatz bestehender Prozesse, Reviews, Gates oder Rollen | Das Framework ergänzt; es ersetzt nichts (P6) |
-| N3 | Rechtliche Bewertung oder Compliance-Freigabe (Datenschutzrecht, Lizenzrecht, KI-Regulierung) | Liegt bei den zuständigen Rollen der Organisation; das Framework liefert operative Anschlusspunkte und benennt Prüfbedarfe (K-06) |
+| N3 | Rechtliche Bewertung oder Compliance-Freigabe (Datenschutzrecht, Lizenzrecht, KI-Regulierung) | Liegt bei den zuständigen Rollen der Organisation; das Framework liefert operative Anschlusspunkte und benennt Prüfbedarfe |
 | N4 | Bewertung oder Überwachung von Personen anhand von Nutzungs- oder Pilotdaten | Ausdrücklich ausgeschlossen (V7, Metrik-Grundsätze) |
 | N5 | Produktdokumentation oder Schulung für einen KI-Client als Produkt | Das Framework referenziert die offizielle Dokumentation; es dupliziert sie nicht |
 | N6 | Vollständige technologie- oder branchenspezifische Regelwerke in der Erstfassung | Technology Packs entstehen projektbezogen; die Struktur dafür ist Teil des Frameworks |
-| N7 | Abdeckung anderer Einsatzformen (Cloud-Sitzungen, Läufe ohne beobachtende Person, Fremdagenten) im Kern der Erstfassung | Als Erweiterung vorgesehen, standardmäßig deaktiviert (D-10, D-386, K-04). Ein Kommandozeilen-Client in einer beobachteten Sitzung gehört zum Kern |
+| N7 | Abdeckung anderer Einsatzformen (Cloud-Sitzungen, Läufe ohne beobachtende Person, Fremdagenten) im Kern der Erstfassung | Als Erweiterung vorgesehen, standardmäßig deaktiviert. Ein Kommandozeilen-Client in einer beobachteten Sitzung gehört zum Kern |
 | N8 | Garantie fehlerfreier KI-Ergebnisse | Unerreichbar; das Framework macht Fehler früh sichtbar und begrenzt ihre Wirkung |

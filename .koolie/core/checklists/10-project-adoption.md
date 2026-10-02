@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-CL-10` |
-| Version | `0.1.5` |
+| Version | `0.1.6` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Wann | bei Übernahme des Frameworks in ein neues Projekt, vor dem Setzen des Overlay-Status auf `aktiv` |
@@ -20,28 +20,28 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 ### Voraussetzungen der Organisation
 
 - [ ] **MUSS** Freigabe der KI-Nutzung durch die Organisation liegt vor (Referenz im Overlay Abschnitt 1).
-- [ ] **MUSS** Ergebnis der Datenschutz- und Vertragsprüfung liegt vor und ist im Overlay referenziert (K-06; ohne Ergebnis bleibt die restriktivste Auslegung nach `.koolie/core/framework/core/02-privacy.md` Abschnitt 1.3).
-- [ ] **MUSS** Planstufe und administrativ erzwungene Team-Einstellungen sind dokumentiert (`.koolie/core/framework/org-policies/`, K-05); Training-Opt-out beziehungsweise vertragliche Regelung nachgewiesen (`<TBD: Nachweis der Einstellung>`).
+- [ ] **MUSS** Ergebnis der Datenschutz- und Vertragsprüfung liegt vor und ist im Overlay referenziert (ohne Ergebnis bleibt die restriktivste Auslegung nach `.koolie/core/framework/core/02-privacy.md` Abschnitt 1.3).
+- [ ] **MUSS** Planstufe und administrativ erzwungene Team-Einstellungen sind dokumentiert (`.koolie/core/framework/org-policies/`); Training-Opt-out beziehungsweise vertragliche Regelung nachgewiesen (`<TBD: Nachweis der Einstellung>`).
 - [ ] **SOLL** Abbildung des Klassifizierungsschemas der Organisation auf K0–K3 liegt vor (`.koolie/core/framework/org-policies/MAPPING_CLASSIFICATION.md`).
 
 ### Technische Integration
 
-- [ ] **MUSS** Framework-Release in das Projekt-Repository integriert: Kernverzeichnis `.koolie/core/` übernommen (D-354) und mit `install.py` Wurzel-Anweisungsdatei und Laufzeitschicht des gewählten Client Packs angelegt; Framework-Version **und gewähltes Client Pack** im Overlay notiert.
+- [ ] **MUSS** Framework-Release in das Projekt-Repository integriert: Kernverzeichnis `.koolie/core/` übernommen und mit `install.py` Wurzel-Anweisungsdatei und Laufzeitschicht des gewählten Client Packs angelegt; Framework-Version **und gewähltes Client Pack** im Overlay notiert.
 - [ ] **MUSS** Belegte Pfade vor der Erstinstallation geklärt: Bricht `install.py` ab, ist der
       vorhandene Inhalt nach `ADOPTION_GUIDE.md` Schritt 3a übernommen – nicht gelöscht und
       nicht überschrieben. Führt das Projekt ein anderes Agenten-Framework, ist die
-      Zuständigkeit für die Wurzel-Anweisungsdatei ausdrücklich entschieden (K-31).
+      Zuständigkeit für die Wurzel-Anweisungsdatei ausdrücklich entschieden.
 - [ ] **MUSS** Core-Dateien unverändert (Abgleich gegen das Release-Archiv; Änderungsbedarf läuft als Änderungsantrag an den Framework Owner, nie als lokale Änderung).
 - [ ] **MUSS** `.koolie/project-overlay/OVERLAY.md` vollständig ausgefüllt; sicherheitsrelevante Abschnitte 4, 5, 6, 13, 14, 15 ohne offene `<TBD>`.
 - [ ] **MUSS** `20-project-overlay.md` in der Regelablage synchron zur Overlay-Datei befüllt (bei Clients mit Zeichenlimit unter 6.000 Zeichen).
-- [ ] **MUSS** Berechtigungsdatei mit den Overlay-Werten befüllt (`<ALLOWED_PATHS>`, `<EXCLUDED_PATHS>`, Befehle, CI-/Gate-Pfade); bei einer Berechtigungsdatei im JSON-Format alle Kernregeln aus `_core_rules_integrity` unverändert enthalten (`openai-codex` führt den Block nicht, D-395).
+- [ ] **MUSS** Berechtigungsdatei mit den Overlay-Werten befüllt (`<ALLOWED_PATHS>`, `<EXCLUDED_PATHS>`, Befehle, CI-/Gate-Pfade); bei einer Berechtigungsdatei im JSON-Format alle Kernregeln aus `_core_rules_integrity` unverändert enthalten (`openai-codex` führt den Block nicht).
 - [ ] **MUSS** `.koolie/project-overlay/overlay-manifest.yaml` gepflegt; eingebundene Dokumente bereinigt und freigegeben; nicht registrierte Dokumente gelten als K3.
 - [ ] **MUSS** Benötigte Role Packs und Technology Packs aktiviert (Laufzeitfassungen `30-*`, `40-*` erstellt); nicht benötigte nicht geladen.
 - [ ] **MUSS** `.koolie/project-overlay/forbidden-terms.txt` projektlokal mit den realen Namen des Projekts befüllt (Datei verbleibt projektlokal).
 - [ ] **MUSS** `python3 .koolie/core/tests/scripts/validate-framework.py
       --check-overlay-ready` läuft ohne Fehler. **Das ist die Kandidatenprüfung**: Sie
       erwartet einen Overlay-Status, der noch **nicht** `aktiv` ist, und prüft alles
-      übrige auf Vollständigkeit (B08, D-57).
+      übrige auf Vollständigkeit.
 - [ ] **MUSS** Nach dem Setzen des Status auf `aktiv`:
       `python3 .koolie/core/tests/scripts/validate-framework.py --strict-overlay`
       läuft ohne Fehler. Erst danach beginnt der erste Agentenlauf mit
@@ -49,7 +49,7 @@ Stellt sicher, dass ein neues Projekt das Framework vollständig, unverändert i
 - [ ] **MUSS** `python3 .koolie/core/install.py --probe` endet ohne fehlende
       Muss-Kontrolle: Der Schutz-Hook sperrt im Projekt, die Konfiguration lädt, und
       der Client vertraut dem Projekt, wo das Pack es verlangt. Die Probe braucht kein
-      Modell (D-488). Warnungen und „unerhoben“ werden gelesen und, wo nötig, im Overlay
+      Modell. Warnungen und „unerhoben“ werden gelesen und, wo nötig, im Overlay
       begründet.
 
 ### Organisation im Projekt

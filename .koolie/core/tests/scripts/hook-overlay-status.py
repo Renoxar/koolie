@@ -92,7 +92,7 @@ context = (
        "Da das Overlay nicht als aktiv erklaert ist, arbeite ausschliesslich im Modus M1 "
        "Read-only Analysis und weise die Nutzerin oder den Nutzer darauf hin "
        "(Wurzel-Anweisungsdatei, Abschnitt 3) - ausgenommen M6 mit Mandat, um das "
-       "Overlay einzurichten (Skill fw-overlay-pflege).")
+       "Overlay einzurichten (Skill koolie-overlay-pflege).")
 )
 
 # Seit 1.17.0 (CR-2026-156, D-452): der Versionswiderspruch und das Mandat. Beide nennen,

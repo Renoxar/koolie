@@ -5,13 +5,15 @@
 | Ebene | 1 – Framework Core (projektunabhängig) |
 | Verbindlichkeit | normativ (Abschnitte 2, 3, 5, 6, 7), Erläuterung (Abschnitte 1, 4) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.1.6 |
+| Version | 0.1.7 |
 | Status | `pilot` |
 | Grundlage | `.koolie/core/framework/core/06-prompting-rules.md`, `.koolie/core/framework/core/05-working-model.md`, `.koolie/core/framework/core/09-risk-model.md`, `.koolie/core/framework/core/02-privacy.md` |
 
 ## 1. Zweck (Erläuterung)
 
-Die Prompt-Bibliothek enthält geprüfte Vorlagen (Übersicht in Abschnitt 4) für wiederkehrende Aufgaben mit dem KI-Client. Jede Vorlage setzt die Pflichtelemente einer Aufgabenanweisung aus `.koolie/core/framework/core/06-prompting-rules.md` Abschnitt 1 um (Ziel, Betriebsmodus, Kontrollstufe mit Faktor, Scope, Kontext mit Klasse, Akzeptanzkriterien, Ausgabeformat, Rückfrageregel) und verankert die Regeln des Frameworks im Wortlaut der Anweisung: Fundstellen statt Behauptungen, gekennzeichnete Annahmen, keine Scope-Erweiterung, Rückfragen statt Annahmen, Ergebnisbericht am Ende, menschliche Prüfung vor jeder Übernahme. Die Vorlagen sind für zwei Situationen gedacht: für Aufgaben ohne passenden Skill sowie als strukturierte Anweisung rund um den Aufruf eines Skills (zum Beispiel mit Fragenkatalog, ausformulierten fachlichen Erwartungen oder zusätzlichen Vorgaben).
+Die Prompt-Bibliothek enthält geprüfte Vorlagen für wiederkehrende Aufgaben mit dem KI-Client (Übersicht in Abschnitt 4). Sie dienen für Aufgaben ohne passenden Skill und als strukturierte Anweisung rund um einen Skill-Aufruf, etwa mit Fragenkatalog, ausformulierten fachlichen Erwartungen oder zusätzlichen Vorgaben.
+
+Jede Vorlage enthält die Pflichtelemente einer Aufgabenanweisung aus `.koolie/core/framework/core/06-prompting-rules.md` Abschnitt 1: Ziel, Betriebsmodus, Kontrollstufe mit Faktor, Scope, Kontext mit Klasse, Akzeptanzkriterien, Ausgabeformat, Rückfrageregel. Die Regeln des Frameworks stehen im Wortlaut der Anweisung: Fundstellen statt Behauptungen, gekennzeichnete Annahmen, keine Scope-Erweiterung, Rückfragen statt Annahmen, Ergebnisbericht am Ende, menschliche Prüfung vor jeder Übernahme.
 
 ## 2. Verhältnis Prompt und Skill
 
@@ -41,18 +43,18 @@ Parameter in geschweiften Klammern werden vor dem Einsatz vollständig ersetzt; 
 
 | ID | Datei | Titel | Modus | Verwandter Skill |
 |---|---|---|---|---|
-| `FW-PR-001` | `01-understand-codebase.md` | Codebasis verstehen | M1 | `fw-repo-analyze` |
-| `FW-PR-002` | `02-impact-analysis.md` | Impact-Analyse | M1 | `fw-change-analyze` |
-| `FW-PR-003` | `03-implementation-planning.md` | Implementierungsplanung | M2 | `fw-plan` |
-| `FW-PR-004` | `04-code-generation.md` | Codegenerierung | M3 | `fw-change-small` |
-| `FW-PR-005` | `05-test-generation.md` | Testgenerierung | M4 | `fw-tests` |
-| `FW-PR-006` | `06-refactoring.md` | Refactoring | M3 | `fw-refactor` |
-| `FW-PR-007` | `07-debugging.md` | Debugging | M1 | `fw-error-analyze` |
-| `FW-PR-008` | `08-security-review.md` | Security Review | M1 | keiner (Ansatz von `fw-review-support`) |
+| `FW-PR-001` | `01-understand-codebase.md` | Codebasis verstehen | M1 | `koolie-repo-analyze` |
+| `FW-PR-002` | `02-impact-analysis.md` | Impact-Analyse | M1 | `koolie-change-analyze` |
+| `FW-PR-003` | `03-implementation-planning.md` | Implementierungsplanung | M2 | `koolie-plan` |
+| `FW-PR-004` | `04-code-generation.md` | Codegenerierung | M3 | `koolie-change-small` |
+| `FW-PR-005` | `05-test-generation.md` | Testgenerierung | M4 | `koolie-tests` |
+| `FW-PR-006` | `06-refactoring.md` | Refactoring | M3 | `koolie-refactor` |
+| `FW-PR-007` | `07-debugging.md` | Debugging | M1 | `koolie-error-analyze` |
+| `FW-PR-008` | `08-security-review.md` | Security Review | M1 | keiner (Ansatz von `koolie-review-support`) |
 | `FW-PR-009` | `09-performance-analysis.md` | Performance-Analyse | M1 | keiner |
-| `FW-PR-010` | `10-documentation.md` | Dokumentation | M5 | `fw-docs-update` |
-| `FW-PR-011` | `11-merge-request-review.md` | Review eines Merge Requests | M1 | `fw-review-support` |
-| `FW-PR-012` | `12-developer-training.md` | Technische Schulung eines neuen Entwicklers | M1 | `fw-code-explain` |
+| `FW-PR-010` | `10-documentation.md` | Dokumentation | M5 | `koolie-docs-update` |
+| `FW-PR-011` | `11-merge-request-review.md` | Review eines Merge Requests | M1 | `koolie-review-support` |
+| `FW-PR-012` | `12-developer-training.md` | Technische Schulung eines neuen Entwicklers | M1 | `koolie-code-explain` |
 
 Typische Abfolge einer Änderung: FW-PR-001 (Verstehen) → FW-PR-002 (Impact-Analyse, Vorschlag der Kontrollstufe) → Preflight durch den Menschen → FW-PR-003 (Plan, Bestätigung) → FW-PR-004, FW-PR-005 oder FW-PR-006 (Umsetzung in neuer Sitzung) → FW-PR-011 (Review-Unterstützung) → Merge Request mit KI-Nutzungsvermerk (`.koolie/core/templates/MR_AI_DISCLOSURE.md`).
 
@@ -76,7 +78,7 @@ Vollständig in `.koolie/core/framework/core/06-prompting-rules.md`; die Kurzfor
 1. Preflight durchführen (`.koolie/core/checklists/01-preflight.md`): Delegierbarkeit (V1–V12), Kontrollstufe mit Faktor nach dem Maximumprinzip, Betriebsmodus, Scope.
 2. Passende Vorlage wählen (Abschnitt 4); prüfen, ob stattdessen der Skill direkt aufzurufen ist (Abschnitt 2).
 3. Parameter befüllen; jeden Wert auf Kontextklasse prüfen; K2-Inhalte nur nach dokumentierter Freigabe und Bereinigung, K3 nie.
-4. Codeblock aus Abschnitt 5 in eine neue KI-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (rückfragender Standardmodus `[DOK]`; D-05; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs).
+4. Codeblock aus Abschnitt 5 in eine neue KI-Sitzung einfügen (eine Aufgabe, eine Sitzung); Schreib- und Ausführungsanfragen einzeln bestätigen (rückfragender Standardmodus `[DOK]`; wie der Modus im Client heißt, nennt die Fähigkeitsmatrix des Client Packs).
 5. Ergebnis anhand Abschnitt 7 der Vorlage und der genannten Checklisten prüfen; Ergebnisbericht ablegen (ab Stufe mittel: `<TBD: Ablageort für Ergebnisberichte>`).
 6. Übernahme ausschließlich über den bestehenden Review- und Freigabeprozess; im KI-Nutzungsvermerk KANN die verwendete Prompt-ID neben den Skills genannt werden.
 
@@ -85,4 +87,4 @@ Vollständig in `.koolie/core/framework/core/06-prompting-rules.md`; die Kurzfor
 - Jede Vorlage trägt Version (`MAJOR.MINOR.PATCH`) und Status (`entwurf`, `pilot`, `aktiv`, `veraltet`, `zurückgezogen`) analog zum Skill-Standard (`.koolie/core/framework/core/08-skill-conventions.md`, Abschnitt 7). MAJOR: Änderung der Struktur, des Ausgabeformats oder des Scopes; MINOR: neue Schritte, Parameter oder Prüfungen ohne Formatbruch; PATCH: Korrekturen und Formulierungen.
 - Änderungen an Vorlagen erfolgen über den Änderungsprozess des Frameworks (`.koolie/core/framework/core/01-governance.md`); Projekte DÜRFEN Vorlagen in `.koolie/core/prompts/` NICHT anpassen. Projektspezifische Ergänzungen gehören in das Project Overlay, nicht in dieses Verzeichnis (`.koolie/core/decision-trees/06-rule-placement.md`).
 - Die strukturelle Konformität (Platzhalter, verbotene Muster, Codeblöcke) prüft `.koolie/core/tests/scripts/validate-framework.py`; die Wirksamkeit einer Vorlage wird wie bei Skills über Testsitzungen auf dem Übungsrepository bewertet. Systematische Befunde aus Reviews (dieselbe Auffälligkeit bei mehreren Einsätzen) werden als Feedback an `<FRAMEWORK_OWNER>` gemeldet.
-- Alle Vorlagen stehen seit 0.52.0 auf `pilot`; ihre Abnahme steht namentlich in `.koolie/core/tests/protocols/2026-09-15-gegenpruefung-restliche-nicht-skill-traeger.md` (`CR-2026-074`, D-109). **Ihre Übergangsbedingungen stehen in `.koolie/core/framework/core/01-governance.md` Abschnitt 5 und nicht hier** (D-102, D-107). Ein bestandener Sitzungstest ist Voraussetzung für `aktiv`, nicht für `pilot` (D-103, D-107); die übrigen Voraussetzungen für `aktiv` nennt die Zeile `pilot` → `aktiv` dort.
+- Alle Vorlagen stehen auf `pilot`; die Abnahme steht in `.koolie/core/tests/protocols/2026-09-15-gegenpruefung-restliche-nicht-skill-traeger.md`. Die Übergangsbedingungen stehen in `.koolie/core/framework/core/01-governance.md` Abschnitt 5. Ein bestandener Sitzungstest ist Voraussetzung für `aktiv`, nicht für `pilot`; die übrigen Voraussetzungen nennt dort die Zeile `pilot` → `aktiv`.

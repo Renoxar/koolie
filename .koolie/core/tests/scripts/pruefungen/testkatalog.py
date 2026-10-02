@@ -405,7 +405,7 @@ def _uebungsskills(root: str) -> dict:
             continue
         if aktuell is None:
             continue
-        for treffer in re.findall(r"/(fw-[a-z0-9-]+)", zeile):
+        for treffer in re.findall(r"/(koolie-[a-z0-9-]+)", zeile):
             if treffer not in raus[aktuell]:
                 raus[aktuell].append(treffer)
     if not raus:
@@ -562,7 +562,7 @@ def check_ergebnisstand(root: str) -> None:
 # dreizehn Blaetter und filtern auf `sitzung`: Pruefung 49 (D-146, seit 0.60.0) und
 # Pruefung 60 (D-178, seit 0.66.0). Beide hatten dort NULL Gegenstand. Nach der
 # Umstellung meldete Pruefung 60 beim ersten Lauf ZWANZIG Zellen - in genau den drei
-# Blaettern, deren Skill einen Befehl ausfuehrt (fw-change-small, fw-refactor, fw-tests).
+# Blaettern, deren Skill einen Befehl ausfuehrt (koolie-change-small, koolie-refactor, koolie-tests).
 # Das ist die Bauform "Die Regel als Ausfuellschlitz" (0.61.0) eine Ebene hoeher: Nicht
 # die Regel stand in zwei Ausdrucksformen, sondern ihr GEGENSTAND.
 #
@@ -759,12 +759,12 @@ def check_nummernverweis(root: str) -> None:
 #     zwoelf Skills. Sie ist durchgehend HANDLUNGSMARKE - "Fall X | [RUECKFRAGE]"
 #     heisst `frage zurueck`, nicht `schreibe die Zeichenfolge`.
 #
-# `[HALT]` ist beides, je nach Skill: Ausgabemarke in `fw-plan`, `fw-bugfix-prepare`
-# und `fw-change-small` (Abschnitt 5 UND 6), Handlungsmarke in den uebrigen neun.
+# `[HALT]` ist beides, je nach Skill: Ausgabemarke in `koolie-plan`, `koolie-bugfix-prepare`
+# und `koolie-change-small` (Abschnitt 5 UND 6), Handlungsmarke in den uebrigen neun.
 # Und wo sie Abnahmekriterium ist, sagt Abschnitt 6 "ist ERKENNBAR", nicht "woertlich".
 #
 # GEMESSEN HAT ES EIN LAUF. `sk004n01` (Buendel 2, 2026-09-19) schrieb `[HALT]`
-# woertlich - Abschnitt 6 von `fw-plan` sagt "der Skill endet mit [HALT]" - und
+# woertlich - Abschnitt 6 von `koolie-plan` sagt "der Skill endet mit [HALT]" - und
 # `[RUECKFRAGE]` nicht. Der Lauf hat sich richtig verhalten; die Zelle verlangte mehr,
 # als ihr Skill vorschreibt. Ueber alle dreizehn Blaetter: 18 Nennungen in 17 Zellen
 # ungedeckt, 10 gedeckt.

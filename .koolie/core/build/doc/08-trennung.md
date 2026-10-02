@@ -2,7 +2,7 @@
 
 ## 8.1 Das Trennprinzip
 
-Die Wiederverwendbarkeit des Frameworks steht und fällt mit einer harten Regel: **Ein Projektwechsel tauscht ausschließlich Ebene 4 (Project Overlay); er darf niemals Anpassungen am Framework Core erzwingen.** Umgekehrt enthält der Core keine einzige projektspezifische Angabe – wo er Projektwissen braucht, definiert er eine benannte Schnittstelle in Form eines registrierten Platzhalters (`<ALLOWED_PATHS>`, `<TEST_COMMAND>`, `<APPROVAL_ROLE>` …), die das Overlay füllt.
+Die Wiederverwendbarkeit hängt an einer Regel: **Ein Projektwechsel tauscht ausschließlich Ebene 4 (Project Overlay); er darf nie Anpassungen am Framework Core erzwingen.** Umgekehrt enthält der Core keine projektspezifische Angabe; wo er Projektwissen braucht, definiert er eine benannte Schnittstelle in Form eines registrierten Platzhalters (`<ALLOWED_PATHS>`, `<TEST_COMMAND>`, `<APPROVAL_ROLE>` …), die das Overlay füllt.
 
 ## 8.2 Mechanik der Trennung
 
@@ -10,7 +10,7 @@ Die Wiederverwendbarkeit des Frameworks steht und fällt mit einer harten Regel:
 |---|---|
 | Platzhalter-Schnittstellen (Anhang 31.3) | Core-Regeln bleiben generisch formulierbar; Projekte füllen Werte ausschließlich im Overlay und in der Berechtigungsdatei |
 | Verschärfungsprinzip (Kap. 25) | Das Overlay darf konkretisieren und verschärfen, nie lockern – Core-Garantien gelten damit projektübergreifend |
-| Getrennte Ablage und Ownership | Core: Framework Owner über Releases; Overlay: Overlay Owner über den Projektprozess; technische Schreibsperren (`Write(.koolie/core/**)` – das Kernverzeichnis als Ganzes, einschließlich der Skripte, die die Schutzzusagen durchsetzen –, dazu Laufzeitschicht, Wurzel-Anweisungsdatei und `Write(.koolie/project-overlay/**)` als `deny`) |
+| Getrennte Ablage und Ownership | Core: Framework Owner über Releases; Overlay: Overlay Owner über den Projektprozess; technische Schreibsperren: `Write(.koolie/core/**)` für das ganze Kernverzeichnis einschließlich der Skripte, die die Schutzzusagen durchsetzen, dazu Laufzeitschicht und Wurzel-Anweisungsdatei als `deny`; das Overlay sperrt der Schutz-Hook, solange kein Mandat es deckt |
 | Dokumenten-Manifest | Projektwissen wird als registriertes Dokument mit Klasse und Ladeverhalten eingebunden – nie durch Editieren von Core-Dateien (Kap. 17) |
 | Integritätsprüfung | `validate-framework.py` prüft unter anderem, dass die Kernregeln in der Berechtigungsdatei unverändert enthalten sind (`_core_rules_integrity`) und Overlay-Pflichtfelder gefüllt sind (`--strict-overlay`) |
 | Release-Abgleich | Bei Übernahme und Aktualisierung werden Core-Bestandteile byte-gleich aus dem Release übernommen (Adoption Guide, CL-10/CL-11) |
@@ -21,4 +21,4 @@ Regeln mit gemischtem Charakter werden getrennt: die generische Logik wandert mi
 
 ## 8.4 Nachweis der Trennung
 
-Alle versionierten Markdown-Dateien des Kerns – beim Bau dieses Dokuments {{ZAHL:*.md}} – werden bei jedem Validatorlauf automatisiert auf Projektneutralität geprüft (Sperrbegriffs-, E-Mail-, IP-, Hostnamen- und URL-Prüfungen; Kap. 26). **Der Validator prüft zusätzlich die Werkzeugneutralität selbst:** Kein anweisender Träger des Kerns nennt einen Produktnamen oder einen Pfad, der genau einem Client Pack gehört (Prüfung 14 und 48). Sämtliche variablen Inhalte laufen über das Platzhalterregister; die Overlay-Vorlage ist eine reine Vorlage mit Ausfüllhinweisen und `<TBD>`-Feldern. Das Overlay-Muster *General Development* (`--overlay general`) füllt davon nur Platzhalter, deren Wert eine Sperre ist, und bringt allgemeine, projektneutrale Musterdokumente mit (D-355, D-359). Synthetische Beispiele sind als solche gekennzeichnet und verwenden offensichtlich fiktive Bezeichner.
+Alle versionierten Markdown-Dateien des Kerns – beim Bau dieses Dokuments {{ZAHL:*.md}} – werden bei jedem Validatorlauf automatisiert auf Projektneutralität geprüft (Sperrbegriffs-, E-Mail-, IP-, Hostnamen- und URL-Prüfungen; Kap. 26). Der Validator prüft außerdem die Werkzeugneutralität: Kein anweisender Träger des Kerns nennt einen Produktnamen oder einen Pfad, der genau einem Client Pack gehört (Prüfung 14 und 48). Sämtliche variablen Inhalte laufen über das Platzhalterregister; die Overlay-Vorlage ist eine reine Vorlage mit Ausfüllhinweisen und `<TBD>`-Feldern. Das Overlay-Muster *General Development* (`--overlay general`) füllt davon nur Platzhalter, deren Wert eine Sperre ist, und bringt allgemeine, projektneutrale Musterdokumente mit. Synthetische Beispiele sind als solche gekennzeichnet und verwenden offensichtlich fiktive Bezeichner.

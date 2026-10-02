@@ -25,7 +25,7 @@ Beantworte die Fragen schriftlich ohne Nachschlagen; gleiche danach mit dem Lös
 10. Ein bereinigter Stacktrace enthält doch noch eine E-Mail-Adresse und du hast ihn bereits eingefügt. Welche Klasse hat der Inhalt, welche Stop-Bedingung greift und an wen eskalierst du?
 11. Wann darfst du eine sitzungsweite Freigabe erteilen und warum nie eine Freigabe für das ganze Projekt oder global?
 12. Was gehört in das Project Overlay und was ausdrücklich nicht? Nenne je zwei Beispiele.
-13. Welche Voraussetzungen müssen erfüllt sein, bevor `fw-change-small` bei Stufe mittel loslegen darf?
+13. Welche Voraussetzungen müssen erfüllt sein, bevor `koolie-change-small` bei Stufe mittel loslegen darf?
 14. Warum ist die Rückfrage „bist du sicher?" keine Prüfung – und was ist die richtige Alternative?
 15. Woran wird souveräne KI-Nutzung in diesem Framework gemessen?
 

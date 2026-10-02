@@ -13,7 +13,7 @@
 
 1. Ein Review prüft das Ergebnis, nicht die Entstehung: Für den Reviewer gelten dieselben Maßstäbe wie bei manuell erstelltem Code, ergänzt um die Prüfpunkte aus Abschnitt 2.
 2. Die Bearbeiterin oder der Bearbeiter ist die erste Reviewerin beziehungsweise der erste Reviewer (Selbstreview anhand `.koolie/core/checklists/04-review-ai-code.md`) und DARF NICHT die einzige Prüfinstanz sein (Vier-Augen-Prinzip, sofern im Projekt vorgesehen; ab Kontrollstufe mittel verpflichtend).
-3. Der KI-Client KANN das Review unterstützen (Skill `fw-review-support`), aber ein KI-Befund ersetzt keine menschliche Prüfung und eine KI-„Freigabe“ existiert nicht (V1).
+3. Der KI-Client KANN das Review unterstützen (Skill `koolie-review-support`), aber ein KI-Befund ersetzt keine menschliche Prüfung und eine KI-„Freigabe“ existiert nicht (V1).
 4. Reviewerinnen und Reviewer erhalten den KI-Nutzungsvermerk (Kontrollstufe, Modus, Skills, Kontext) vor Beginn des Reviews.
 
 ## 2. Zusätzliche Prüfpunkte für KI-generierte Änderungen (normativ)

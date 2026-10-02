@@ -13,7 +13,7 @@ trigger: always_on
 
 ## Status
 
-- Overlay-Status: `<TBD: aktiv | inaktiv>` (bei `inaktiv` oder fehlendem Eintrag arbeitest du nur lesend; am Quellrepositorium des Frameworks gilt dafür zusätzlich `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md`, D-253)
+- Overlay-Status: `<TBD: aktiv | inaktiv>` (bei `inaktiv` oder fehlendem Eintrag arbeitest du nur lesend; am Quellrepositorium des Frameworks gilt dafür zusätzlich `.koolie/core/governance/FRAMEWORK_DEV_PROFILE.md`)
 - Overlay-Version: `<TBD: Version>` · Framework-Version: siehe `.koolie/core/VERSION`
 - Overlay Owner (Rolle): `<APPROVAL_ROLE>`
 
@@ -43,7 +43,7 @@ trigger: always_on
 - Dokumente der Klasse K1 (frei nutzbar): `<TBD: Liste aus .koolie/project-overlay/overlay-manifest.yaml>`
 - Dokumente der Klasse K2 (nur nach Freigabe in der Aufgabe): `<TBD: Liste>`
 - Freigegebene MCP-Server: `<TBD: „keine" oder je Server Zweck, Lese- und Schreibwerkzeuge aus Overlay Abschnitt 13.2>`
-- Freigegebene externe Domains: **keine** – eine Freigabe je Domain ist nicht vorgesehen (D-59). `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar; das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar
+- Freigegebene externe Domains: **keine** – eine Freigabe je Domain ist nicht vorgesehen. `deny` gewinnt, und bei einem Client ohne Musterunterstützung für die Abrufwerkzeuge ist sie nicht ausdrückbar; das Verbot ist nur als Ganzes und nur über einen Änderungsantrag ersetzbar
 
 ## Rollen und Eskalation (Rollen, keine Personen)
 

@@ -23,14 +23,14 @@ triggers:
      - Frontmatter im Quellformat des Frameworks (name, description, argument-hint, allowed-tools,
        permissions, triggers; optional model, subagent, agent – nur mit Begründung im Metadatenblock).
        install.py bildet es je Client Pack ab; die installierte Fassung enthält nur in der
-       Clientdokumentation belegte Felder [DOK] (08-skill-conventions.md Abschnitt 3, D-388).
+       Clientdokumentation belegte Felder [DOK] (08-skill-conventions.md Abschnitt 3).
      - Der Verzeichnisname ist der Aufrufname; die Aufrufform je Client (etwa /<skill-name>) nennt
        Zeile S2 der Fähigkeitsmatrix seines Client Packs. Präfix und Schreibweise des Namens:
        Abschnitt 2 des Skill-Standards. Wirkung und Syntax von permissions im Skill:
        Zeile S3 der Fähigkeitsmatrix des jeweiligen Client Packs.
-     - Metadaten des Frameworks (ID, Version, Status, Owner) stehen in der Tabelle unten (D-08).
+     - Metadaten des Frameworks (ID, Version, Status, Owner) stehen in der Tabelle unten.
      - Die Statuszelle ist ein Ausfüllschlitz: Ein neuer Skill beginnt auf entwurf; der Lebenszyklus
-       steht in Abschnitt 7 von .koolie/core/framework/core/08-skill-conventions.md (D-104).
+       steht in Abschnitt 7 von .koolie/core/framework/core/08-skill-conventions.md.
      - SKILL.md ist normativ und wird bei jedem Aufruf geladen: knapp halten (Least Context).
        Erläuterungen und Beispiele -> EXAMPLES.md, Testfälle -> TESTS.md, Änderungsverlauf -> CHANGELOG.md.
        Beispiele tragen „Beispiel (synthetisch)“ und nur Platzhalter oder offensichtlich fiktive Bezeichner.

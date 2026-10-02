@@ -12,7 +12,7 @@
 
 ## 1. Zweck
 
-Die Vorlage erzeugt belegte **Hypothesen** zu Performance-Engpässen eines benannten Bereichs (algorithmische Komplexität, wiederholte Zugriffe, unnötige Allokationen, fehlende Begrenzungen) und je Hypothese einen **Messvorschlag**. Sie ersetzt keine Messung: Ohne Messung gibt es keine Optimierung (Role Pack Softwareentwicklung, Regel 6). Umsetzungen laufen anschließend über FW-PR-003/`fw-plan` und `fw-change-small`.
+Die Vorlage erzeugt belegte **Hypothesen** zu Performance-Engpässen eines benannten Bereichs (algorithmische Komplexität, wiederholte Zugriffe, unnötige Allokationen, fehlende Begrenzungen) und je Hypothese einen **Messvorschlag**. Sie ersetzt keine Messung: Ohne Messung gibt es keine Optimierung (Role Pack Softwareentwicklung, Regel 6). Umsetzungen laufen anschließend über FW-PR-003/`koolie-plan` und `koolie-change-small`.
 
 (Erläuterung) KI-typischer Fehler ist die „offensichtliche" Optimierung ohne Messung, die Verhalten oder Lesbarkeit verschlechtert. Deshalb trennt die Vorlage strikt: Hypothese mit Fundstelle → Messvorschlag → menschliche Messung → erst dann Änderungsplanung.
 
@@ -75,7 +75,7 @@ Regeln:
 - [ ] Messvorschläge auf Durchführbarkeit geprüft; mindestens die führende Hypothese tatsächlich gemessen, bevor eine Änderung geplant wird.
 - [ ] Fundstellen der führenden Hypothese geöffnet und den Mechanismus nachvollzogen (P4).
 - [ ] Messmethode und Ergebnis dokumentiert (Vorher-Basis für einen späteren Nachher-Vergleich).
-- [ ] Bestätigte Hypothesen als eigene Änderungsaufgabe geplant (FW-PR-003/`fw-plan`; Verhaltensneutralität und Tests beachten).
+- [ ] Bestätigte Hypothesen als eigene Änderungsaufgabe geplant (FW-PR-003/`koolie-plan`; Verhaltensneutralität und Tests beachten).
 - [ ] Verworfene Hypothesen mit Messbeleg festgehalten (verhindert Wiederholungsdiskussionen).
 
 ## 8. Typische Fehlanwendungen

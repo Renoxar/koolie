@@ -1,18 +1,13 @@
 # Kennzeichen des Quellrepositoriums
 
-Diese Datei kennzeichnet das **Framework-Repositorium selbst** – im Unterschied zu einem
-Projekt, das das Framework übernommen hat. Sie trägt keinen Inhalt, der gelesen werden
-muss; ihr **Vorhandensein** ist die Aussage (D-351).
+Diese Datei kennzeichnet das Repositorium von Koolie selbst – im Unterschied zu einem
+Projekt, das Koolie übernommen hat. Ihr Inhalt ist nebensächlich; dass sie da ist, ist
+die Aussage.
 
-Der Validator unterscheidet an ihr, wo er läuft. Im Quellrepositorium prüfen die
-Prüfungen 75 und 81 alle versionierten Dateien und Prüfung 79 die Lizenz an beiden
-Stellen; in einem übernehmenden Projekt beschränken sie sich auf das Ausgelieferte, und
-Prüfung 78 enthält sich.
+Der Validator erkennt an ihr, wo er läuft. Im Quellrepositorium prüft er alle
+versionierten Dateien und die Lizenz an beiden Stellen; in einem Projekt nur das, was
+ausgeliefert wird.
 
-**Sie wandert nicht in ein Projekt.** Sie liegt neben dem Kern, nicht in ihm: Das Heben
-kopiert nur `.koolie/core/`, und `install.py` legt sie nicht an. ⚠️ **Wer ganz `.koolie/`
-kopiert, nimmt sie trotzdem mit** – aus einem Klon ebenso wie aus dem Release-Archiv,
-denn sie ist versioniert. `install.py` meldet sie dann; in einem Projekt gehört sie
-entfernt (D-354). Bis `1.4.0` war dieses
-Kennzeichen die Übergabe `UEBERGABE.md`; seit `1.4.1` ist die Übergabe ein lokales
-Arbeitsdokument und nicht mehr versioniert (D-350).
+**In ein Projekt gehört sie nicht.** `install.py` kopiert nur `.koolie/core/` und legt
+diese Datei nicht an. Wer von Hand ganz `.koolie/` kopiert, nimmt sie mit – dann meldet
+`install.py` sie, und sie wird im Projekt gelöscht.

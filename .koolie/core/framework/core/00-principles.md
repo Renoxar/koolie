@@ -30,7 +30,7 @@ Jede Aussage über einen KI-Client trägt einen Belegstatus:
 | `[DOK]` | Offiziell dokumentierter Mechanismus (Quelle im Anhang 31.4 „Quellen der Produktdokumentation und Belegzuordnung“ des Hauptdokuments). |
 | `[EMPF]` | Technisch begründete Empfehlung, abgeleitet aus dokumentierten Mechanismen und auf Konsistenz geprüft, aber noch nicht in einer Zielinstallation ausgeführt. |
 | `[KONZ]` | Konzeptioneller Vorschlag des Frameworks ohne Produktbezug. |
-| `BELEG OFFEN` | Noch nicht belegt; darf nicht als Tatsache behandelt werden. Die Zelle nennt **Grund und Datum** und, wenn die Frage offen bleibt, ihren Klärungspunkt. **Ein Belegstand trägt keine Frist** (D-291). |
+| `BELEG OFFEN` | Noch nicht belegt; darf nicht als Tatsache behandelt werden. Die Zelle nennt **Grund und Datum** und, wenn die Frage offen bleibt, ihren Klärungspunkt. **Ein Belegstand trägt keine Frist**. |
 
 ### 0.3 Platzhalter (normativ)
 

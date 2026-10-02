@@ -8,7 +8,7 @@
 <!-- Kennung: Im Framework-Repositorium laufend (CR-<JAHR>-<NNN>). In einem PROJEKT vergibt sie das
      führende System aus Overlay Abschnitt 13.1 - ein Ticketsystem, wenn es freigegeben ist. Im
      Rückfall ins Repositorium: CR-<PROJECT_CODE>-<JJJJ-MM-TT>-<kurzname>. Eine laufende Nummer
-     vergeben zwei Arbeitsplätze doppelt; Datum und Kurzname nicht (D-454). -->
+     vergeben zwei Arbeitsplätze doppelt; Datum und Kurzname nicht. -->
 
 ## Änderungsantrag `CR-<JAHR>-<NNN>`
 

@@ -2,6 +2,65 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [2.0.0] - 2026-10-02
+
+**Ein sauberer öffentlicher Auftritt, das Präfix `koolie-` und die Veröffentlichung ohne Token**
+(`CR-2026-173`, **D-539** bis **D-541**, Prüfung 113 neu, Prüfung 112 erweitert; `K-210` geklärt, `K-213` bis
+`K-215` neu). Drei Stichprobenläufe `claude-code`, 1,49 USD nach Listenpreis. Kriterium 2 von D-11 bleibt 0.
+
+**Bruch**
+
+- **Die mitgelieferten Skills heißen `koolie-<name>`** (D-539): `/fw-plan` wird `/koolie-plan`, `role-re-ticket`
+  wird `koolie-ticket`, das Agentenprofil `fw-reviewer` wird `koolie-reviewer`. `koolie-*` gehört dem Framework,
+  `prj-*` dem Projekt; der Validator verlangt eindeutige Namen über alle Packs.
+
+**Neu**
+
+- **`install.py --update` migriert selbst** (D-539): Es benennt alte Skillordner und das Agentenprofil um und
+  ersetzt die alten Namen in der Berechtigungsdatei einmalig, mit Meldung; `--dry-run` und `--check` zeigen es
+  vorher. Sondenteil 19.
+- **Keine Kennungen in der Produktdokumentation** (D-540): Prüfung 113 meldet `CR-`, `D-` und `K-`-Kennungen
+  außerhalb der Nachweisschicht. Ausgenommen sind Ergebnis- und Belegspalten, die Belegspalte der
+  Fähigkeitsmatrix, Versionsverläufe und drei Kapitel des Hauptdokuments (Grenzen, Anhänge, Abschluss).
+  Sondenteil 20. Die Schreibregeln stehen in `docs/DOCUMENTATION_STANDARD.md` Abschnitt 3.
+- **Die Produktdokumentation ist neu gefasst**: Übernahmeleitfaden, Quickstart, `clients/README.md`, Regeln und
+  Prozesse, die fünf `CLIENT_PACK.md` und das Hauptdokument – ohne Entscheidungsgeschichte, kürzer. Anweisungen
+  in Skills und Laufzeitregeln sind unverändert; in `03-security.md` und `05-working-model.md` fielen nur
+  Versionsangaben und Fettdruck, die Standmarke von `koolie-refactor` ist bestätigt.
+- **Trusted Publishing für PyPI und npm** (D-541, `K-210`): Der Workflow `.github/workflows/publish.yml` am
+  GitHub-Spiegel läuft nur an einer Marke `v*`, prüft Signatur und `VERSION`, lädt auf TestPyPI mit
+  Installationsprobe und erst nach Freigabe des Owners auf PyPI (Attestierung) und npm (Provenienz). Prüfung 112
+  Gegenstand d, Sonden 112k bis 112n. Einrichtung in `RELEASE_PROCESS.md` Abschnitt 4.2.
+- Drei Ideen des Owners sind ohne Ziel-Release vorgemerkt (`K-213` bis `K-215`).
+
+**Gemessen**
+
+- Drei Stichprobenläufe `claude-code` 2.1.287: Skill per Slash, modellseitig und in einem gehobenen Projekt, alle
+  tragen, 0 Abweisungen (`tests/protocols/2026-10-02-oeffentlicher-auftritt-2.0.0.md`).
+- Der Workflow lokal: `actionlint` 1.7.12 ohne Befund, Bau und Installationsprobe aus dem Wheel, Signaturprüfung an
+  `v1.25.0` mit Gegenprobe.
+
+**Behoben**
+
+- Das Hauptdokument nannte vier Client Packs und zwölf Referenz-Skills, im Verzeichnisbaum fehlten `cursor`, `kiro`
+  und vier Kernskripte, und es beschrieb die Overlay-Sperre noch als `deny`.
+- Das Pack `software-development` nannte den Schritt `install.py --update` nicht; die Overlay-Vorlage sagte in
+  Abschnitt 6, keine Prüfung vergleiche die Konfigurationslisten (Prüfung 89 tut es).
+- `openai-codex` Abschnitt 7.1 nannte unerhoben, was die Belegzelle B6 belegt.
+
+**Migrationshinweis für Overlays**
+
+- `install.py --update` (oder `koolie --target <projekt> --update`) hebt die Skillnamen selbst; vorher zeigt
+  `--dry-run`, was umbenannt wird.
+- Von Hand: Nennt das Overlay, eine eigene Regel (`2N-overlay-*`), eine README oder eine Merge-Request-Vorlage
+  Skillnamen, auf `koolie-` umstellen. Ein projekteigener Skill mit Präfix `fw-` oder `koolie-` wird `prj-`.
+- Slash-Befehle in Notizen und Gewohnheiten: `/koolie-<name>`.
+
+**Bekannte Einschränkungen**
+
+- Der Workflow läuft erstmals an `v2.0.0`; bis zum ersten erfolgreichen Lauf bleiben die Tokens als Rückfall.
+- `K-211` und `K-212` bleiben offen.
+
 ## [1.25.0] - 2026-10-01
 
 **Ein neuer Auftritt, npm unter dem Scope und die Suche nach dem Aeltesten - und der Name, den npm fuer cookie hielt**

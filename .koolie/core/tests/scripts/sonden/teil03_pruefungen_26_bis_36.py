@@ -84,9 +84,9 @@ gegenprobe("102b", "Pruefung 102: ein neuer Punkt mit Markierung und Ziel in der
 # einer, die sich selbst bestaetigt.
 M103_VERALTET = "Belegstand veraltet"
 M103_LEER = "ein Stand ohne Gegenstand belegt nichts"
-P103_BLATT = ".koolie/core/framework/skills/fw-refactor/TESTS.md".replace("/", os.sep)
-P103_ANKER = "`validate-output.py --skill fw-refactor`: **bestanden**."
-P103_GEGENSTAND = "framework/skills/fw-refactor/SKILL.md"
+P103_BLATT = ".koolie/core/framework/skills/koolie-refactor/TESTS.md".replace("/", os.sep)
+P103_ANKER = "`validate-output.py --skill koolie-refactor`: **bestanden**."
+P103_GEGENSTAND = "framework/skills/koolie-refactor/SKILL.md"
 
 
 def _103_stand(root: str, pfade: list) -> str:
@@ -108,7 +108,7 @@ def _103_veraltet(root: str) -> None:
 
 
 def _103_ohne_gegenstand(root: str) -> None:
-    _103_marke(root, "0123456789ab", "framework/skills/fw-refactor/GIBTESNICHT.md")
+    _103_marke(root, "0123456789ab", "framework/skills/koolie-refactor/GIBTESNICHT.md")
 
 
 def _103_passend(root: str) -> None:
@@ -648,7 +648,7 @@ def _zeile_mit_summe(root: str) -> None:
     ersetze(pfad,
             ("| `[TECHNISCH]` | 22 von 32 |", "| `[TECHNISCH]` | 23 von 33 |"),
             ("| 8 von 32 (", "| 8 von 33 ("),
-            ("| **2 von 32** (", "| **2 von 33** ("),
+            ("| 2 von 32 (", "| 2 von 33 ("),
             ("| 0 von 32 |", "| 0 von 33 |"))
     # Seit 0.36.0 rechnet Pruefung 31 dieselbe Zahl auch in der Uebersicht der Ablage nach
     # (D-71). Eine Gegenprobe, die nur das Pack nachzieht, faellt seither an der zweiten
@@ -822,7 +822,7 @@ def sonden_skill_deny() -> None:
     """Wirkungsnachweis der Abbildung und ihrer Grenzen (D-64 bis D-66)."""
     root = installation("claude-code")
     try:
-        plan = _p33(root, "fw-plan")
+        plan = _p33(root, "koolie-plan")
         ausgang = lies(plan)
 
         # --- Gegenprobe: die unveraenderte Installation laeuft durch ----------------
@@ -840,7 +840,7 @@ def sonden_skill_deny() -> None:
         schreib(plan, ersetzt(
             ausgang,
             ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell\n", ""),
-            quelle="fw-plan/SKILL.md"))
+            quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33a", "aus permissions.deny der Quelle ergibt sich" in aus,
               "Fehlende Werkzeugsperre - der Stand, den B01 beschrieb")
@@ -850,7 +850,7 @@ def sonden_skill_deny() -> None:
             ausgang,
             ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell",
              "disallowed-tools: Edit, Write"),
-            quelle="fw-plan/SKILL.md"))
+            quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33b", "aus permissions.deny der Quelle ergibt sich" in aus,
               "Unvollstaendige Sperre - mit gesperrtem Write, Edit schrieb der Skill ueber Bash")
@@ -860,7 +860,7 @@ def sonden_skill_deny() -> None:
             ausgang,
             ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell",
              "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*), PowerShell"),
-            quelle="fw-plan/SKILL.md"))
+            quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33c", "Argumentmuster" in aus,
               "Argumentmuster in der Sperre - es sieht aus wie eine Regel und ist keine")
@@ -870,7 +870,7 @@ def sonden_skill_deny() -> None:
             ausgang,
             ("allowed-tools: Read, Grep, Glob",
              "allowed-tools: Read, Grep, Glob, Bash"),
-            quelle="fw-plan/SKILL.md"))
+            quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33d", "steht zugleich in allowed-tools" in aus,
               "Werkzeug zugleich vorabfreigegeben und gesperrt")
@@ -1003,7 +1003,7 @@ gegenprobe("34", "Die unveraenderten Packs bleiben unbeanstandet - eines nennt, 
 # sobald es den Fall gibt. Gemessen ist der Befund dahinter am 2026-09-13, Lauf
 # STARTLOS: Ein Profil mit tools: Read, Grep, Glob kann keine zweite Ebene oeffnen.
 MANIFEST_CC_35 = ".koolie/core/clients/claude-code/manifest.json"
-PROFIL_35 = ".koolie/core/framework/runtime/agents/fw-reviewer.md"
+PROFIL_35 = ".koolie/core/framework/runtime/agents/koolie-reviewer.md"
 
 
 def _35_abbildung_erweitern(root: str) -> None:

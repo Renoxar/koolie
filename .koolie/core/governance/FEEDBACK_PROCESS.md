@@ -31,4 +31,4 @@ Beispiele in Feedback-Einträgen sind bereinigt (Kontextklassenregeln gelten auc
 
 ## 4. Erläuterung
 
-Ein Framework, das nur Regeln sendet, veraltet in Monaten. Die niedrigste Hürde zählt: Ein Zwei-Zeilen-Eintrag „Skill fw-tests schlägt bei parametrisierten Tests unpassende Benennung vor, Beispiel anbei" ist wertvoller als eine perfekte Analyse, die nie geschrieben wird.
+Ein Framework, das nur Regeln sendet, veraltet in Monaten. Die niedrigste Hürde zählt: Ein Zwei-Zeilen-Eintrag „Skill koolie-tests schlägt bei parametrisierten Tests unpassende Benennung vor, Beispiel anbei" ist wertvoller als eine perfekte Analyse, die nie geschrieben wird.

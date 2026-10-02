@@ -36,19 +36,19 @@ M1 Analyse (Standard, nur lesen) · M2 Plan (nur Plan-Datei) · M3 kontrollierte
 
 | Situation | Skill |
 |---|---|
-| Codebasis/Modul verstehen | `fw-repo-analyze` |
-| Funktion/Klasse erklären | `fw-code-explain` |
-| Änderung bewerten | `fw-change-analyze` |
-| Plan erstellen | `fw-plan` |
-| Kleine Änderung umsetzen | `fw-change-small` |
-| Tests erstellen/erweitern | `fw-tests` |
-| Verhaltensneutral refaktorieren | `fw-refactor` |
-| Fehler analysieren | `fw-error-analyze` |
-| Bugfix vorbereiten | `fw-bugfix-prepare` |
-| Review unterstützen | `fw-review-support` |
-| Doku aktualisieren | `fw-docs-update` |
-| MR-Beschreibung | `fw-mr-description` |
-| Entscheidung ins Overlay eintragen, Overlay einrichten oder nach einem Update nachziehen (M6, mit Mandat) | `fw-overlay-pflege` |
+| Codebasis/Modul verstehen | `koolie-repo-analyze` |
+| Funktion/Klasse erklären | `koolie-code-explain` |
+| Änderung bewerten | `koolie-change-analyze` |
+| Plan erstellen | `koolie-plan` |
+| Kleine Änderung umsetzen | `koolie-change-small` |
+| Tests erstellen/erweitern | `koolie-tests` |
+| Verhaltensneutral refaktorieren | `koolie-refactor` |
+| Fehler analysieren | `koolie-error-analyze` |
+| Bugfix vorbereiten | `koolie-bugfix-prepare` |
+| Review unterstützen | `koolie-review-support` |
+| Doku aktualisieren | `koolie-docs-update` |
+| MR-Beschreibung | `koolie-mr-description` |
+| Entscheidung ins Overlay eintragen, Overlay einrichten oder nach einem Update nachziehen (M6, mit Mandat) | `koolie-overlay-pflege` |
 
 Prompt-Vorlagen für Fälle ohne Skill: `.koolie/core/prompts/README.md`.
 
@@ -62,7 +62,7 @@ Der KI-Client hält an bei S1–S10 (Unklarheit, fehlende Freigabe, Secret-Fund,
 
 ## Sitzung, kurz
 
-Neue Aufgabe = neue Sitzung · rückfragender Standardmodus (nie ohne Rückfragen; selbsttätige Übernahme nur per Ausnahme, D-05) · Freigaben höchstens sitzungsweise · Preflight CL-01 → Arbeit → Ergebnisbericht → Selbstreview CL-04 → MR mit Nutzungsvermerk (CL-08).
+Neue Aufgabe = neue Sitzung · rückfragender Standardmodus (nie ohne Rückfragen; selbsttätige Übernahme nur per Ausnahme) · Freigaben höchstens sitzungsweise · Preflight CL-01 → Arbeit → Ergebnisbericht → Selbstreview CL-04 → MR mit Nutzungsvermerk (CL-08).
 
 ## Checklisten und Bäume
 

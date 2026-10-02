@@ -27,7 +27,7 @@ Langform: `.koolie/core/framework/core/04-quality.md`, `.koolie/core/framework/c
 ## Commits und Merge Requests (Vorschläge, Ausführung durch den Menschen)
 
 - Commit-Nachricht nach `<COMMIT_CONVENTION>`: Was und warum, Bezug zum Ticket (`<ISSUE_TRACKER>`-Kennung als Platzhalter, wenn nicht bekannt).
-- Merge-Request-Beschreibung nach Skill `fw-mr-description`, einschließlich KI-Nutzungsvermerk (`.koolie/core/templates/MR_AI_DISCLOSURE.md`).
+- Merge-Request-Beschreibung nach Skill `koolie-mr-description`, einschließlich KI-Nutzungsvermerk (`.koolie/core/templates/MR_AI_DISCLOSURE.md`).
 - Keine Nennung von Personen, Kunden, Behörden oder internen Adressen in Commits, Kommentaren oder Beschreibungen.
 
 ## Dokumentation

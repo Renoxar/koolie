@@ -552,7 +552,7 @@ def _hook_lauf(interpreter: str, skript: str, eingabe: str) -> int:
 # Gemessen am 2026-09-13 (tests/protocols/2026-09-13-gegenpruefung-werkzeugabbildung.md):
 # DREI der vier Abbildungen brechen ab, wenn ihnen ein Verb fehlt - die vierte reichte
 # es woertlich durch, und sie kommt zweimal vor. Eine geleerte tool_names-Abbildung
-# lieferte 'tools: read, grep, glob' im Agentenprofil fw-reviewer, also drei Namen, die
+# lieferte 'tools: read, grep, glob' im Agentenprofil koolie-reviewer, also drei Namen, die
 # dieser Client nicht kennt (M16); ein 'permissions.deny: glob' erzeugte lautlos keine
 # Sperre, und der Validator meldete 0 Fehler (M6).
 #

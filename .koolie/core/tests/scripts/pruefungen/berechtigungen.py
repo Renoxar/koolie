@@ -40,7 +40,7 @@ def skillfreigaben(root: str, man: dict) -> set:
     `0.81.0` zu jedem Skill der Installation einen Eintrag der Berechtigungsdatei -
     das ist der dritte Teil der Aktivierung eines Packs (D-238). Pruefung 37 hielt
     denselben Eintrag fuer eine AUSWEITUNG, weil die Kernquelle ihn nicht erzeugt:
-    Am Messbaum von Buendel 5 meldete sie `Skill(role-re-ticket)` als eine Regel zu
+    Am Messbaum von Buendel 5 meldete sie `Skill(koolie-ticket)` als eine Regel zu
     viel im allow-Korb.
 
     Damit war die Abhilfe von D-238 in keinem Projekt umsetzbar, ohne den eigenen
@@ -471,7 +471,7 @@ def check_agent_startwerkzeug(root: str) -> None:
 #
 # Gemessen am 2026-09-13 (tests/protocols/2026-09-13-erhebung-unteragent-tiefe.md,
 # Lauf STARTLOS): Ein Profil mit tools: Read, Grep, Glob - genau die Form, die
-# fw-reviewer nach der Abbildung traegt - hat KEIN Startwerkzeug und konnte deshalb
+# koolie-reviewer nach der Abbildung traegt - hat KEIN Startwerkzeug und konnte deshalb
 # keinen weiteren Unteragenten starten, dessen Profil weniger beschraenkt waere. Ohne
 # diesen Befund waere die Zusage A1 ueber eine zweite Ebene aushebelbar.
 #
@@ -751,8 +751,8 @@ def check_werkzeugabbildung(root: str) -> None:
 #      Pruefung waere das die zweite Liste fuer dieselbe Sache, also der Befundtyp von
 #      CR-2026-062.
 #   3. Kein Musterzeichen. Gemessen am 2026-09-14 (D-82): Der Vergleich ist woertlich.
-#      Skill(fw-*) weist den Aufruf ab, Skill(fw-code-explain) laesst ihn durch,
-#      Skill(fw-plan) weist fw-code-explain ab (Kontrolllauf). Eine Regel mit * oder ?
+#      Skill(koolie-*) weist den Aufruf ab, Skill(koolie-code-explain) laesst ihn durch,
+#      Skill(koolie-plan) weist koolie-code-explain ab (Kontrolllauf). Eine Regel mit * oder ?
 #      saehe richtig aus und gaebe LAUTLOS NICHTS frei - die Bauform von D-66 mit
 #      umgekehrtem Vorzeichen.
 #   4. Die vier Regeltraeger. Die Skillwahl stand vor 0.41.0 an fuenf Stellen und
@@ -842,7 +842,7 @@ def check_skillfreigabe(root: str) -> None:
         if any(z in name for z in "*?["):
             err(f"{KERN}/framework/runtime/permissions.json: die skill-Regel '{name}' "
                 f"traegt ein Musterzeichen. Der Vergleich ist woertlich - gemessen am "
-                f"2026-09-14 (D-82): Skill(fw-*) weist den Aufruf ab. Eine Regel mit "
+                f"2026-09-14 (D-82): Skill(koolie-*) weist den Aufruf ab. Eine Regel mit "
                 f"Muster saehe richtig aus und gaebe lautlos nichts frei")
 
     # Gegenstand 4: die vier Regeltraeger.
@@ -860,14 +860,14 @@ def check_skillfreigabe(root: str) -> None:
 # --- Pruefung 72: Ein aktiviertes Pack steht auch im Berechtigungskorb -------------
 #
 # ANLASS, UND ER IST GEMESSEN (2026-09-21, Vorbedingungsdurchgang von Buendel 5,
-# D-238). Bundel 5 misst `role-re-ticket`, den einzigen Skill dieses Frameworks, der
+# D-238). Bundel 5 misst `koolie-ticket`, den einzigen Skill dieses Frameworks, der
 # nicht im Kern liegt. Nach der Aktivierung WORTGETREU nach
 # `framework/role-packs/README.md` - Laufzeitfassung kopiert, Skillverzeichnis kopiert -
 # und nach `install.py --update` stand im Messbaum:
 #
 #     Skillverzeichnisse in .claude/skills/        13
 #     Skill(...)-Eintraege im allow-Korb           12
-#     Skill(role-re-ticket)                        fehlt
+#     Skill(koolie-ticket)                        fehlt
 #     validate-framework.py --strict-overlay       0 Fehler, 0 Warnungen
 #
 # DIE REGELSCHICHT DES PACKS WAR VOLLSTAENDIG, DIE TECHNISCHE KANNTE ES NICHT. Und

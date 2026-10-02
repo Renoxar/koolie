@@ -93,6 +93,39 @@ sonde("112g", "Ein Bau, der die Links der Beschreibung relativ laesst, wird geme
               "und npm fuehrten sie ins Leere", _112_relative_links, M112_BAU)
 sonde("112h", "Eine Vorabversion, deren npm-Paket die Version der Marke traegt, wird gemeldet - "
               "sie belegte die Version vor der Signatur", _112_vorab, M112_BAU)
+# Seit 2.0.0: die Veroeffentlichung ueber Trusted Publishing (Gegenstand d). Jede Sonde nimmt
+# dem Workflow genau eine Zusage: den einzigen Ausloeser, den festen Commit einer Action, die
+# Pruefung der Marke, die Reihenfolge TestPyPI vor PyPI und npm.
+WORKFLOW = ".github/workflows/publish.yml"
+
+
+def _112_ausloeser(root: str) -> None:
+    ersetze(_p(root, WORKFLOW), ('      - "v*"', '      - "v*"\n  workflow_dispatch:'))
+
+
+def _112_beweglich(root: str) -> None:
+    ersetze(_p(root, WORKFLOW),
+            ("      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0",
+             "      - uses: astral-sh/setup-uv@v10"))
+
+
+def _112_ohne_signatur(root: str) -> None:
+    ersetze(_p(root, WORKFLOW), ('          git tag -v "${MARKE}"', '          true  # SYNTHETISCH'))
+
+
+def _112_ohne_probe(root: str) -> None:
+    ersetze(_p(root, WORKFLOW), ("    needs: [pruefen, testpypi]", "    needs: [pruefen]"))
+
+
+sonde("112k", "Ein Workflow, der ausser an einer Marke auch von Hand startet, wird gemeldet - "
+              "er veroeffentlichte ohne signierte Marke", _112_ausloeser,
+      "laeuft nicht nur an einer Marke v*")
+sonde("112l", "Eine Action ueber ein bewegliches Tag statt einen Commit wird gemeldet",
+      _112_beweglich, "ohne festen Commit")
+sonde("112m", "Ein Workflow, der die Signatur der Marke nicht prueft, wird gemeldet",
+      _112_ohne_signatur, "kein Job prueft Signatur und VERSION der Marke")
+sonde("112n", "Ein Workflow, der PyPI und npm nicht erst nach der Probe auf TestPyPI beschickt, "
+              "wird gemeldet", _112_ohne_probe, "laeuft nicht erst nach TestPyPI")
 gegenprobe("112", "Der ausgelieferte Befehl gibt das Banner vor install.py aus, und bauen.py "
                   "baut ohne Befund", None, M112)
 

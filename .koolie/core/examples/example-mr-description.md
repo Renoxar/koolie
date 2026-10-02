@@ -1,6 +1,6 @@
 # Beispiel (synthetisch): Merge-Request-Beschreibung mit KI-Nutzungsvermerk
 
-> Synthetisches Beispiel nach Skill `fw-mr-description` und `.koolie/core/templates/MR_AI_DISCLOSURE.md` (Kurzform, Stufe niedrig). Projekt, Ticket und Inhalte sind erfunden.
+> Synthetisches Beispiel nach Skill `koolie-mr-description` und `.koolie/core/templates/MR_AI_DISCLOSURE.md` (Kurzform, Stufe niedrig). Projekt, Ticket und Inhalte sind erfunden.
 
 ```markdown
 ## Fehlermeldung bei ungültiger Menge nennt jetzt den gültigen Bereich
@@ -24,7 +24,7 @@ Die Validierungsmeldung für ungültige Bestellmengen nannte den zulässigen Ber
 ### KI-Unterstützung
 - Kontrollstufe: niedrig (Faktor R1) · Betriebsmodus: M3
 - Framework-Version: 0.13.0 · Overlay-Version: 0.1.0
-- Verwendete Skills: fw-change-analyze v0.1.1, fw-change-small v0.1.1
+- Verwendete Skills: koolie-change-analyze v0.1.1, koolie-change-small v0.1.1
 - Verwendeter Kontext: OrderValidator.ext, OrderValidatorTest.ext, bsv-guidelines.md (alle K1)
 - Selbstreview nach .koolie/core/checklists/04-review-ai-code.md: durchgeführt
 - Verworfene Vorschläge: 1 (erster Vorschlag formatierte die gesamte Datei um – Scope-Verstoß, verworfen)

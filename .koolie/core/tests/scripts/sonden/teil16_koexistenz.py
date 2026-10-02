@@ -82,14 +82,14 @@ def sonden_fremde_skills() -> None:
         melde("GEGENPROBE", "111f", M72_FREMD not in aus and M37_FREMD not in aus,
               "Skill(openspec-*) im ask-Korb deckt den deklarierten Skill und gilt nicht "
               "als Ausweitung")
-        _deklarieren(root, "fw-, speckit-", urstand)
-        testblatt = os.path.join(root, ".claude", "skills", "fw-plan", "TESTS.md")
+        _deklarieren(root, "koolie-, speckit-", urstand)
+        testblatt = os.path.join(root, ".claude", "skills", "koolie-plan", "TESTS.md")
         if not os.path.isfile(testblatt):
-            raise Praeparationsfehler("fw-plan/TESTS.md fehlt in der Installation")
+            raise Praeparationsfehler("koolie-plan/TESTS.md fehlt in der Installation")
         os.remove(testblatt)
         aus = validator_ausgabe(root)
-        melde("SONDE", "111g", M111_UNZULAESSIG in aus and "fw-plan: TESTS.md fehlt" in aus,
-              "'fw-' als fremdes Praefix wird gemeldet und nimmt nichts aus - der Koolie-Skill "
+        melde("SONDE", "111g", M111_UNZULAESSIG in aus and "koolie-plan: TESTS.md fehlt" in aus,
+              "'koolie-' als fremdes Praefix wird gemeldet und nimmt nichts aus - der Koolie-Skill "
               "bleibt geprueft")
         melde("SONDE", "111h", M111_OHNE in aus,
               "Ein deklariertes Praefix ohne Skill ('speckit-') wird gemeldet")

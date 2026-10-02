@@ -3,21 +3,25 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-PR-003` |
-| Version | `0.1.6` |
+| Version | `0.1.7` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
 | Typische Kontrollstufe | mittel oder hoch (Plan verpflichtend); niedrig KANN – Maximumprinzip über R1–R13, festgelegt im Preflight |
-| Verwandter Skill | `fw-plan` |
+| Verwandter Skill | `koolie-plan` |
 
 ## 1. Zweck
 
-Die Vorlage erarbeitet vor jeder Modifikation einen umsetzbaren, prüfbaren Änderungsplan exakt nach `.koolie/core/templates/PLAN_TEMPLATE.md`: Ziel und Akzeptanzkriterien, Ist-Zustand mit Fundstellen, gekennzeichnete Annahmen, bewertete Optionen (mindestens zwei bei Stufe mittel und hoch), kleine einzeln prüfbare Schritte, Teststrategie, Risiken, Rollback, Abbruchkriterien und Freigabeerfordernis. Der Plan ist Grundlage der Planbestätigung (Schritt 9 des Standardarbeitsablaufs) und endet mit einem Halt; die Umsetzung erfolgt in einer neuen Sitzung (FW-PR-004, FW-PR-005, FW-PR-006 oder `fw-docs-update`). Liegt der Skill `fw-plan` vor, SOLL er als vorgesehener Weg verwendet werden (`/fw-plan`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1); die Vorlage dient als strukturierte Anweisung mit zusätzlichen Vorgaben oder als Ersatz, wenn der Skill in der Laufzeitschicht nicht verfügbar ist. Die Kontrollstufe MUSS vor der Planung durch den Menschen festgelegt sein; die Optionswahl trifft der Mensch (V3).
+Die Vorlage erarbeitet vor jeder Modifikation einen prüfbaren Änderungsplan nach `.koolie/core/templates/PLAN_TEMPLATE.md`: Ziel und Akzeptanzkriterien, Ist-Zustand mit Fundstellen, gekennzeichnete Annahmen, bewertete Optionen (mindestens zwei bei Stufe mittel und hoch), kleine einzeln prüfbare Schritte, Teststrategie, Risiken, Rollback, Abbruchkriterien und Freigabeerfordernis.
+
+Der Plan ist Grundlage der Planbestätigung (Schritt 9 des Standardarbeitsablaufs) und endet mit einem Halt. Umgesetzt wird in einer neuen Sitzung (FW-PR-004, FW-PR-005, FW-PR-006 oder `koolie-docs-update`). Die Kontrollstufe MUSS vor der Planung durch den Menschen festgelegt sein; die Option wählt der Mensch (V3).
+
+Liegt der Skill `koolie-plan` vor, SOLL er als vorgesehener Weg verwendet werden (`/koolie-plan`); ein anderer Weg MUSS im Ergebnisbericht benannt und begründet werden (`.koolie/core/framework/core/05-working-model.md` Abschnitt 1). Die Vorlage dient als strukturierte Anweisung mit zusätzlichen Vorgaben oder als Ersatz, wenn der Skill in der Laufzeitschicht fehlt.
 
 ## 2. Einzusetzender Kontext
 
 - Bereinigte Aufgabenbeschreibung mit Akzeptanzkriterien (K2, bereinigt nach `.koolie/core/framework/core/02-privacy.md` Abschnitt 3.3 und 3.4).
-- Ergebnis der Impact-Analyse (FW-PR-002 oder `fw-change-analyze`) aus der Sitzung oder als Referenz (K1).
+- Ergebnis der Impact-Analyse (FW-PR-002 oder `koolie-change-analyze`) aus der Sitzung oder als Referenz (K1).
 - Quellcode, Tests und Schnittstellenbeschreibungen in `<ALLOWED_PATHS>` und `<READ_ONLY_PATHS>`; Dokumentation in `<DOC_PATHS>` (K1).
 - Overlay-Vorgaben der Klasse K1: Architektur-Kurzfassung, `<PROJECT_RULES_PATH>`, Definition of Done, freigegebene Befehle `<BUILD_COMMAND>`, `<TEST_COMMAND>`, `<LINT_COMMAND>` (K1); `.koolie/core/templates/PLAN_TEMPLATE.md` (K0).
 
@@ -48,7 +52,7 @@ Kontrollstufe: {kontrollstufe} (auslösender Faktor {faktor}, durch mich festgel
 Scope: Umsetzung geplant ausschließlich in {scope_pfade} innerhalb <ALLOWED_PATHS>; nicht berührt werden <READ_ONLY_PATHS>, <EXCLUDED_PATHS>, <CI_CONFIG_PATHS> und <QUALITY_GATE_CONFIG_PATHS>. Vorgesehener Umsetzungsmodus: {umsetzungsmodus}.
 Kontext: Aufgabenbeschreibung unten (K2, bereinigt); Impact-Analyse {analyse_referenz} (K1); Quellcode, Tests und Schnittstellenbeschreibungen im Scope (K1); Overlay-Vorgaben zu Architektur, <PROJECT_RULES_PATH> und Definition of Done (K1); .koolie/core/templates/PLAN_TEMPLATE.md (K0). Vorgaben: {vorgaben}. Keine K3-Inhalte.
 Akzeptanzkriterien: Alle zehn Abschnitte der Vorlage sind ausgefüllt (nicht Zutreffendes mit Begründung); der Ist-Zustand trägt ausschließlich Fundstellen; bei Stufe mittel und hoch sind mindestens zwei Optionen nach Risiko, Aufwand, Reversibilität und Architekturkonsistenz bewertet und die Empfehlung ist als Vorschlag gekennzeichnet; jeder Schritt nennt Dateien im Scope, Zwischenergebnis und Prüfung; kein Schritt baut auf einer offenen Frage auf; Rollback und Abbruchkriterien sind konkret.
-Ausgabeformat: Änderungsplan nach Abschnitt 5 der SKILL.md des Skills fw-plan mit der Struktur aus .koolie/core/templates/PLAN_TEMPLATE.md; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6 und ein ausdrücklicher Halt.
+Ausgabeformat: Änderungsplan nach Abschnitt 5 der SKILL.md des Skills koolie-plan mit der Struktur aus .koolie/core/templates/PLAN_TEMPLATE.md; abschließend der Ergebnisbericht nach .koolie/core/framework/core/05-working-model.md Abschnitt 3.6 und ein ausdrücklicher Halt.
 Rückfrageregel: Bei Unklarheit fragen, nicht annehmen – Unklarheit benennen, Auswirkung erklären, konkrete Frage stellen, Punkt als offen kennzeichnen. Bestimmt eine offene Frage die Optionswahl oder die Schrittfolge, fragst du vor der Fertigstellung; sonst gibst du den Plan „unter Vorbehalt" aus, kennzeichnest betroffene Stellen als <TBD: …> und abhängige Schritte als „blockiert bis F<n>".
 
 Aufgabenbeschreibung:
@@ -76,7 +80,7 @@ Regeln:
 
 ## 6. Erwartetes Ergebnis
 
-- Kopf „Aufgabe und Scope" nach `fw-plan` Abschnitt 5: Aufgabe, Modus M2, Kontrollstufe mit Faktor und festlegender Rolle, Umsetzungsmodus, Grundlage (Analyse oder verkürzte Analyse), Scope der Umsetzung.
+- Kopf „Aufgabe und Scope" nach `koolie-plan` Abschnitt 5: Aufgabe, Modus M2, Kontrollstufe mit Faktor und festlegender Rolle, Umsetzungsmodus, Grundlage (Analyse oder verkürzte Analyse), Scope der Umsetzung.
 - Plan mit allen zehn Abschnitten von `.koolie/core/templates/PLAN_TEMPLATE.md`: Ziel und Akzeptanzkriterien; Ist-Zustand mit Fundstellen; Annahmen und offene Fragen; bewertete Optionen mit Vorschlag; Schritte mit Dateien, Zwischenergebnis, Prüfung; Teststrategie; Risiken und Gegenmaßnahmen; Rollback; Abbruchkriterien; Freigabe (Status `entwurf`).
 - Abschnitt „Annahmen (gekennzeichnet) und offene Fragen", einschließlich verkürzter Analyse oder nicht erneut geprüfter Fundstellen.
 - Ergebnisbericht nach `.koolie/core/framework/core/05-working-model.md` Abschnitt 3.6 und Halt mit Angabe des Bestätigungs- beziehungsweise Freigabeerfordernisses.

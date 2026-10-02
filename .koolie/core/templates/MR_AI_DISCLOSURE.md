@@ -14,7 +14,7 @@
 ### KI-Unterstützung
 - Kontrollstufe: niedrig (Faktor <R#>) · Betriebsmodus: <M#>
 - Framework-Version: <Inhalt der Datei .koolie/core/VERSION> · Overlay-Version: <Version>
-- Verwendete Skills: <fw-... vVersion, ...>
+- Verwendete Skills: <koolie-... vVersion, ...>
 - Verwendeter Kontext: <Pfade / Dokumente, nur K0/K1>
 - Selbstreview nach .koolie/core/checklists/04-review-ai-code.md: durchgeführt
 - Verworfene Vorschläge: <keine / Anzahl mit Stichwort>
@@ -26,7 +26,7 @@
 ### KI-Unterstützung
 - Kontrollstufe: <mittel / hoch> (Faktor <R#>) · Betriebsmodus: <M#>
 - Framework-Version: <Inhalt der Datei .koolie/core/VERSION> · Overlay-Version: <Version>
-- Verwendete Skills: <fw-... vVersion, ...>
+- Verwendete Skills: <koolie-... vVersion, ...>
 - Verwendeter Kontext: <Pfade / Dokumente mit Kontextklasse; K2-Freigabe: <Rolle, Datum>>
 - Bestätigter Plan: <Referenz / Anhang> · Abweichungen vom Plan: <keine / Liste>
 - Ausgeführte Befehle: <Liste mit Ergebnis>
