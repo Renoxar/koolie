@@ -1074,11 +1074,14 @@ def sonden_zeichengrenze() -> None:
             if not os.path.isfile(wurzel):
                 raise Praeparationsfehler("Sonden zu 4: %s fehlt in der Installation (%s)"
                                           % (man["root_instruction_file"], pack))
-            laenge = len(lies(wurzel))
+            # Von install.py erzeugt, auf jedem Baum LF - roh, sonst zaehlten auf einem
+            # LF-Baum die CR der Uebersetzung mit (K-216).
+            laenge = len(lies(wurzel, roh=True))
             aus = validator_ausgabe(root)
             ergebnisse[pack] = (laenge, M4_GRENZE not in aus and M4_BUDGET not in aus)
             if pack == "claude-code":
-                schreib(wurzel, lies(wurzel) + "\r\n" + "x" * (12001 - laenge) + "\r\n")
+                schreib(wurzel, lies(wurzel, roh=True) + "\r\n" + "x" * (12001 - laenge) + "\r\n",
+                        roh=True)
                 aus = validator_ausgabe(root)
                 ok = any(z.startswith("WARNUNG") and M4_GRENZE in z
                          and man["root_instruction_file"] in z for z in aus.splitlines())

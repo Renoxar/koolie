@@ -94,7 +94,7 @@ def sonden_fremde_skills() -> None:
         melde("SONDE", "111h", M111_OHNE in aus,
               "Ein deklariertes Praefix ohne Skill ('speckit-') wird gemeldet")
         wurzel = os.path.join(root, "CLAUDE.md")
-        schreib(wurzel, lies(wurzel) + BLOCK)
+        schreib(wurzel, lies(wurzel, roh=True) + BLOCK, roh=True)  # erzeugt, auf jedem Baum LF
         aus = validator_ausgabe(root)
         melde("SONDE", "111i", M111_BLOCK in aus,
               "Pruefung 111 warnt vor dem markierten Block eines Generators in der "
@@ -102,7 +102,7 @@ def sonden_fremde_skills() -> None:
         p = unterprozess([sys.executable, os.path.join(root, ".koolie", "core", "install.py"),
                           "--client", "claude-code", "--root", root, "--update"])
         melde("SONDE", "111j", p.returncode != 0 and M_ABBRUCH in (p.stdout or "") + (p.stderr or "")
-              and BLOCK.strip() in lies(wurzel),
+              and BLOCK.strip() in lies(wurzel, roh=True),
               "install.py --update bricht vor dem Block ab, statt ihn mit der Wurzel-Anweisung "
               "zu ueberschreiben - und der Block bleibt stehen (D-515)")
     finally:
