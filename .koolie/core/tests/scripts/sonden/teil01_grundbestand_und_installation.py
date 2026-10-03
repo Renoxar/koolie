@@ -8,7 +8,6 @@ Reihenfolge ihrer Nummer, und das ist die Reihenfolge der Ausgabe (D-49). Ein Mo
 liest nur aus dem Apparat und aus frueheren Teilen."""
 from __future__ import annotations
 
-import io
 import json
 import os
 import re
@@ -433,18 +432,14 @@ def _gitignore_beilage(root: str) -> None:
     und Konto traegt und deshalb ueberhaupt existiert.
     """
     gi = os.path.join(root, ".gitignore")
-    alt = io.open(gi, encoding="utf-8", newline="").read()
-    daten = (alt.rstrip("\r\n") + "\r\nPROBE-IGNORIERT.md\r\n").encode("utf-8")
-    io.open(gi, "wb").write(daten)
+    schreib(gi, lies(gi).rstrip("\r\n") + "\r\nPROBE-IGNORIERT.md\r\n")
     # Die ignorierte Datei traegt einen Befund, der ohne D-215 gemeldet wuerde.
-    inhalt = ("# Probe\r\n\r\nServer: 10.11.12.13\r\n").encode("utf-8")
-    io.open(os.path.join(root, "PROBE-IGNORIERT.md"), "wb").write(inhalt)
+    schreib(os.path.join(root, "PROBE-IGNORIERT.md"), "# Probe\r\n\r\nServer: 10.11.12.13\r\n")
 
 
 def _gitignore_nicht_gefuehrt(root: str) -> None:
     """Dieselbe Datei unter einem Namen, den die .gitignore NICHT fuehrt."""
-    inhalt = ("# Probe\r\n\r\nServer: 10.11.12.13\r\n").encode("utf-8")
-    io.open(os.path.join(root, "PROBE-GEFUEHRT.md"), "wb").write(inhalt)
+    schreib(os.path.join(root, "PROBE-GEFUEHRT.md"), "# Probe\r\n\r\nServer: 10.11.12.13\r\n")
 
 
 sonde("6i", "Eine NICHT ignorierte Datei mit IP-Adresse wird weiter gemeldet",
