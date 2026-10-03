@@ -22,7 +22,7 @@ validiert und übertragbar".* Fünf Kriterien, alle im Einflussbereich des Frame
 Pilot, Onboarding und organisatorische Freigabe sind **ausdrücklich keine** Vorbedingung,
 sondern Aufgabe der aufnehmenden Organisation.
 
-**Gezählt von Prüfung 46: Kriterium 1 = 0, Kriterium 2 = 2, Kriterium 3 = 0, Kriterium 4 = 0**
+**Gezählt von Prüfung 46: Kriterium 1 = 0, Kriterium 2 = 0, Kriterium 3 = 0, Kriterium 4 = 0**
 
 Diese Zeile ist **keine Pflege**. Prüfung 46 rechnet die vier Zahlen bei jedem Lauf aus
 und meldet jede Abweichung – **in beide Richtungen**. Wer einen Punkt schließt, zieht sie
