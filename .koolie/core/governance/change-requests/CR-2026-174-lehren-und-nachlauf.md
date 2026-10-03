@@ -48,6 +48,7 @@ Deckel: `claude-code` 55 Läufe und 50 USD nach Listenpreis, `devin-desktop` 8 L
 1. **E1:** `RELEASE_PROCESS.md` 0.5.1 – Abschnitt 4.2: Abgleich mit Schritt 8 inhaltlich, Gitea-Anhänge sind die veröffentlichten Bytes; Workflow-Datei und Marke nicht im selben Spiegel-Push; npm braucht nach dem Hochladen einige Minuten; Einrichtungstabelle um den Scope `workflow` des Push-Spiegels und den Haken „Allow npm publish“ ergänzt. `publish.yml`: Der Job `release` wartet bis zu zehn Minuten auf die Paketdatei von npm und vergleicht sie bytegenau mit dem Hochgeladenen; `actionlint` 1.7.12 ohne Befund, der Block gegen `2.0.0` mit Gegenprobe ausprobiert. Prüfung 112 Gegenstand d verlangt das Warten, Sonde `112o`.
 2. **E4:** Übung Overlay 1.4.39 – `.devin/rules/20-project-overlay.md` redaktionell von 6.095 auf 5.969 Zeichen.
 3. **E5:** Pilot-CHANGELOG: Der gesperrte Begriff ist durch eine neutrale Beschreibung ersetzt; die Git-Historie des Pilots enthält ihn weiter.
+4. **E8 (`K-216`, D-542):** Der Sondenapparat liest und schreibt in der Form des Baums. Im Speicher bleibt CRLF, die rund 210 Suchtexte sind unverändert; `roh=True` für erzeugte Dateien und für die Sonden zu Prüfung 81 und Gegenprobe 66b, Sonde 32 außerhalb von Windows ausgelassen und gezählt. Auf dem Ubuntu-Ausweichrechner Teilläufe auf LF und CRLF grün; die Abnahme ist der volle Lauf am Ende von `2.1.0` (Owner 2026-10-03: auf diesem Rechner während der Arbeit nur gezielte Sonden).
 
 
 ## 5. Entscheidung
