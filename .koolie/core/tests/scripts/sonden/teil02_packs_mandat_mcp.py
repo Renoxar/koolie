@@ -444,7 +444,8 @@ def sonden_kiro() -> None:
         profil = json.loads(lies(os.path.join(root, ".kiro", "agents", "koolie.json")))
         einst = json.loads(lies(os.path.join(root, ".kiro", "settings", "cli.json")))
         hooks = json.loads(lies(os.path.join(root, ".kiro", "hooks", "koolie.json")))
-        vorlage = lies(os.path.join(root, ".kiro", "steering", "40-tech-TEMPLATE.md.template"))
+        vorlage = lies(os.path.join(root, ".kiro", "steering", "40-tech-TEMPLATE.md.template"),
+                       roh=True)  # von install.py erzeugt, auf jedem Baum LF
         regeln = profil.get("permissions", {}).get("rules", [])
         ausnahme = [r for r in regeln if r.get("exclude") == [".kiro/specs/**"]
                     and r.get("match") == [".kiro/**"] and r.get("effect") == "deny"]
@@ -588,9 +589,11 @@ def sonden_cursor() -> None:
     try:
         cli = json.loads(lies(os.path.join(root, ".cursor", "cli.json")))
         hooks = json.loads(lies(os.path.join(root, ".cursor", "hooks.json")))
-        kern = lies(os.path.join(root, ".cursor", "rules", "00-framework-core.mdc"))
-        vorlage = lies(os.path.join(root, ".cursor", "rules", "40-tech-TEMPLATE.mdc.template"))
-        agent = lies(os.path.join(root, ".cursor", "agents", "koolie-reviewer.md"))
+        # Von install.py erzeugt, auf jedem Baum LF - darum roh (K-216).
+        kern = lies(os.path.join(root, ".cursor", "rules", "00-framework-core.mdc"), roh=True)
+        vorlage = lies(os.path.join(root, ".cursor", "rules", "40-tech-TEMPLATE.mdc.template"),
+                       roh=True)
+        agent = lies(os.path.join(root, ".cursor", "agents", "koolie-reviewer.md"), roh=True)
         ignore = lies(os.path.join(root, ".cursorignore")).splitlines()
         deny = cli.get("permissions", {}).get("deny", [])
         pre = hooks.get("hooks", {}).get("preToolUse", [])
