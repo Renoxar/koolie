@@ -25,6 +25,7 @@
 - **Planablage und Stufe hoch:** Keine Zelle prüft sie.
 - **`devin-desktop`:** Eine Regel mit `trigger: glob` lud 2026-09-26 nicht; die Tech Packs laden darüber.
 - **Übung:** Rule 20 hat 6.173 Zeichen, die SOLL-Grenze liegt bei 6.000.
+- **Sondenlauf unter Linux:** In WSL-Ubuntu 24.04 fielen 101 Einheiten, weil der Sondenapparat seine Präparationen mit festem `\r\n` sucht; Git checkt dort mit LF aus. Der Validator läuft unter Linux mit 0 Fehlern.
 - **Links:** Gemeldet war, dass Links der README auf GitHub nicht öffnen. Alle relativen Links des Repositoriums treffen versionierte Dateien in exakter Schreibung, alle Anker stimmen; GitHub lieferte am 2026-10-02 Dateiseiten auch fremder Repositorien ohne Anmeldung mit 429 oder 503 aus. Kein Bauposten.
 
 ## 3. Vorlage zur Entscheidung
@@ -38,6 +39,7 @@
 | E5 | Pilot-CHANGELOG mit gesperrtem Begriff | Der Agent ersetzt den Begriff | 0,25 h |
 | E6 | `K-161`, `K-165`, `K-170` | Alle drei in `2.1.0` | 8–11 h, ~48 Läufe, ~35 USD und Devin-Guthaben |
 | E7 | Ideen `K-213` bis `K-215` | Zurückgestellt | – |
+| E8 | Sondenlauf nur auf CRLF (`K-216`, nachgetragen 2026-10-03) | In `2.1.0` beheben, auf dem Ubuntu-Ausweichrechner; Abnahme unter Windows und Linux | 2–4 h, 0 Läufe |
 
 Deckel: `claude-code` 55 Läufe und 50 USD nach Listenpreis, `devin-desktop` 8 Läufe.
 
