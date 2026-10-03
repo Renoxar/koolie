@@ -40,8 +40,9 @@
 | E6 | `K-161`, `K-165`, `K-170` | Alle drei in `2.1.0` | 8–11 h, ~48 Läufe, ~35 USD und Devin-Guthaben |
 | E7 | Ideen `K-213` bis `K-215` | Zurückgestellt | – |
 | E8 | Sondenlauf nur auf CRLF (`K-216`, nachgetragen 2026-10-03) | In `2.1.0` beheben, auf dem Ubuntu-Ausweichrechner; Abnahme unter Windows und Linux | 2–4 h, 0 Läufe |
+| E9 | Stufe 2 der externen Suche (`K-211`, `K-212`), nachgetragen 2026-10-03 nach F3 | Noch in `2.1.0`: Grenze als Wert im Aufruf, Versionshinweis als eigene Zeile, Suchmuster im Ist-Zustand; Nachlauf aller Zellen der betroffenen Skills (D-303). Deckel angehoben (Owner 2026-10-03: *„lass uns alles in diesem release machen. Hebe ruhig den deckel“*) | rund 30 Läufe, ~30 USD |
 
-Deckel: `claude-code` 55 Läufe und 50 USD nach Listenpreis, `devin-desktop` 8 Läufe.
+Deckel: `claude-code` 80 Läufe und 75 USD nach Listenpreis (bis 2026-10-03: 55 Läufe und 50 USD), `devin-desktop` 8 Läufe.
 
 ## 4. Umsetzung
 
@@ -49,6 +50,7 @@ Deckel: `claude-code` 55 Läufe und 50 USD nach Listenpreis, `devin-desktop` 8 L
 2. **E4:** Übung Overlay 1.4.39 – `.devin/rules/20-project-overlay.md` redaktionell von 6.095 auf 5.969 Zeichen.
 3. **E5:** Pilot-CHANGELOG: Der gesperrte Begriff ist durch eine neutrale Beschreibung ersetzt; die Git-Historie des Pilots enthält ihn weiter.
 4. **E8 (`K-216`, D-542):** Der Sondenapparat liest und schreibt in der Form des Baums. Im Speicher bleibt CRLF, die rund 210 Suchtexte sind unverändert; `roh=True` für erzeugte Dateien und für die Sonden zu Prüfung 81 und Gegenprobe 66b, Sonde 32 außerhalb von Windows ausgelassen und gezählt. Auf dem Ubuntu-Ausweichrechner Teilläufe auf LF und CRLF grün; die Abnahme ist der volle Lauf am Ende von `2.1.0` (Owner 2026-10-03: auf diesem Rechner während der Arbeit nur gezielte Sonden).
+5. **E3 (`K-211`, `K-212`), Stufe 1:** Die drei Zellen je zweimal wiederholt (`tests/protocols/2026-10-03-f3-wiederholung.md`, 8 Läufe, 8,25 USD). Keines der drei Kriterien hält verlässlich: der Versionshinweis fehlte in vier von sechs Läufen mit einer Seite, das Suchmuster in einem von zwei, und einer von vier gleichen Analyseläufen forderte wieder 50 Treffer an. Weiter mit E9.
 
 
 ## 5. Entscheidung
