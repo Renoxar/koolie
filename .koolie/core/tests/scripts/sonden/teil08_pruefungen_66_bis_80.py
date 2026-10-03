@@ -121,10 +121,18 @@ def _66_in_der_tabelle(root: str) -> None:
     schreib(pfad, text.replace(marke, chr(13) + marke, 1))
 
 
-def _66_auf_lf(root: str) -> None:
-    """Gegenprobe: ein Traeger durchgehend auf LF - die andere Form, kein Befund."""
+def _66_andere_form(root: str) -> None:
+    """Gegenprobe: ein Traeger durchgehend in der anderen Form, kein Befund.
+
+    Auf einem CRLF-Baum wird er LF, auf einem LF-Baum CRLF (K-216) - roh, denn die
+    Form selbst ist hier der Gegenstand."""
     pfad = P(root, P66_TRAEGER)
-    schreib(pfad, lies(pfad).replace(chr(13) + chr(10), chr(10)))
+    text = lies(pfad, roh=True)
+    if chr(13) + chr(10) in text:
+        text = text.replace(chr(13) + chr(10), chr(10))
+    else:
+        text = text.replace(chr(10), chr(13) + chr(10))
+    schreib(pfad, text, roh=True)
 
 
 sonde("66a", "Ein einzelnes CR am Ende eines Kerntraegers - unsichtbar im Text und genug, damit git die Zeilenenden nicht mehr normalisiert",
@@ -136,8 +144,8 @@ sonde("66b", "Dasselbe Zeichen am Zeilenende einer Tabellenzeile - die Bauform v
 gegenprobe("66a", "Das unveraenderte Repositorium bleibt unbeanstandet - seit dieser Berichtigung traegt kein Traeger mehr ein verirrtes CR",
            None, M66)
 
-gegenprobe("66b", "Ein Traeger durchgehend auf LF wird NICHT gemeldet: gemessen wird das verirrte Zeichen, nicht die Zeilenende-Form",
-           _66_auf_lf, M66)
+gegenprobe("66b", "Ein Traeger durchgehend in der anderen Zeilenende-Form wird NICHT gemeldet: gemessen wird das verirrte Zeichen, nicht die Form",
+           _66_andere_form, M66)
 
 
 # --- 67: ENTFALLEN mit 1.4.1 (D-350) ----------------------------------------------

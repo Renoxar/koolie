@@ -823,7 +823,7 @@ def sonden_skill_deny() -> None:
     root = installation("claude-code")
     try:
         plan = _p33(root, "koolie-plan")
-        ausgang = lies(plan)
+        ausgang = lies(plan, roh=True)  # von install.py erzeugt, auf jedem Baum LF
 
         # --- Gegenprobe: die unveraenderte Installation laeuft durch ----------------
         # Sie ist hier die wichtigere Haelfte. Ohne sie stuende nur fest, dass Pruefung 33

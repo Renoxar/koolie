@@ -134,9 +134,12 @@ def lauf(root: str) -> str:
 # einem CRLF-Baum reichen beide die Bytes unveraendert durch - der Lauf unter Windows
 # ist bytegleich zu dem vor dieser Aenderung.
 #
+# AUSNAHME `roh=True`: Dateien, die auf jedem Baum dieselbe Form tragen - was install.py
+# erzeugt, ist immer LF -, und Sonden, die die Form selbst zum Gegenstand haben.
+#
 # GRENZE, benannt: Auf einem LF-Baum ist ein einzelnes CR vor dem Zeilenende nicht von
 # einem CRLF zu unterscheiden; schreib() macht aus "\r\r\n" ein "\r\n". Eine Sonde,
-# die genau das braucht, schreibt ihre Bytes selbst.
+# die genau das braucht, schreibt roh.
 
 
 def _zeilenende(quelle: str) -> str:
@@ -154,15 +157,15 @@ def _zeilenende(quelle: str) -> str:
 ZEILENENDE = _zeilenende(QUELLE)
 
 
-def lies(pfad: str) -> str:
+def lies(pfad: str, roh: bool = False) -> str:
     text = io.open(pfad, encoding="utf-8", newline="").read()
-    if ZEILENENDE == "\n":
+    if ZEILENENDE == "\n" and not roh:
         text = text.replace("\r\n", "\n").replace("\n", "\r\n")
     return text
 
 
-def schreib(pfad: str, text: str) -> None:
-    if ZEILENENDE == "\n":
+def schreib(pfad: str, text: str, roh: bool = False) -> None:
+    if ZEILENENDE == "\n" and not roh:
         text = text.replace("\r\n", "\n")
     io.open(pfad, "w", encoding="utf-8", newline="").write(text)
 
@@ -206,9 +209,9 @@ def ersetzt(text: str, *paare, quelle: str = "") -> str:
     return text
 
 
-def ersetze(pfad: str, *paare) -> None:
+def ersetze(pfad: str, *paare, roh: bool = False) -> None:
     """ersetzt() auf einer Datei - lesen, alle Paare pruefen, dann erst schreiben."""
-    schreib(pfad, ersetzt(lies(pfad), *paare, quelle=os.path.basename(pfad)))
+    schreib(pfad, ersetzt(lies(pfad, roh), *paare, quelle=os.path.basename(pfad)), roh)
 
 
 def zeile_nach(pfad: str, anker: str, neu: str) -> None:
