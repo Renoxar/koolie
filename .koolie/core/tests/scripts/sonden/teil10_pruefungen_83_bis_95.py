@@ -1169,7 +1169,7 @@ def sonden_aenderungsart() -> None:
         if not ok:
             notiz("        Ausgabe:", _zeilen_mit(aus, "(D-403)"))
 
-        ohne = re.sub(r"\*{0,2}Keine Anweisung ber(?:ü|ue)hrt\*{0,2}", "Berichtigt",
+        ohne = re.sub(r"\*{0,2}(?:Keine\s+)?Anweisung ber(?:ü|ue)hrt\*{0,2}", "Berichtigt",
                       aktuell[0], flags=re.I)
         if ohne == aktuell[0]:
             raise Praeparationsfehler("Sonde 95a: die aktuelle Zeile traegt keine Nennung")
