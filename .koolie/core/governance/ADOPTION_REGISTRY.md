@@ -18,8 +18,8 @@ gehoben? Ein Projekt, das mehrere Releases zurückliegt, fällt hier auf.
 
 | Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **2.0.0** | `0.3.44` | 2026-10-02 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 34 Präparationen | `devin-desktop` | **2.0.0** | `1.4.38` | 2026-10-02 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **2.1.0** | `0.3.45` | 2026-10-05 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 34 Präparationen | `devin-desktop` | **2.1.0** | `1.4.40` | 2026-10-05 |
 
 Beide Projekte haben den Lieferumfang `voll` und werden mit
 `install.py --target <projekt> --update` gehoben. Was ein Release in einem Projekt geändert hat,

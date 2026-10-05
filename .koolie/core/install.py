@@ -444,13 +444,54 @@ def render_skill_frontmatter(text: str, man: dict) -> str:
     return "---\n" + fm + "---\n" + rumpf
 
 
+_GLOBS_BLOCK = r"^globs:[ \t]*\n((?:[ \t]+-[ \t]+.*\n)+)"
+_GLOBS_ZEILE = r"^globs:[ \t]*(\S.*?)[ \t]*$"
+
+
 def _globs_lesen(fm: str) -> list[str]:
-    """Dateimuster der Quelle - als Liste oder als einzelne Zeichenkette notiert."""
-    m = re.search(r"^globs:[ \t]*\n((?:[ \t]+-[ \t]+.*\n)+)", fm, re.M)
+    """Dateimuster der Quelle - als Listenblock, als `[...]` oder als Zeichenkette notiert.
+
+    Eine Zeichenkette darf mehrere Muster durch Komma trennen (`"a/**/*.ts, a/**/*.tsx"`);
+    sie werden einzeln geliefert.
+    """
+    if not fm.endswith("\n"):
+        fm += "\n"  # render_rule reicht das Frontmatter ohne den letzten Zeilenumbruch
+    m = re.search(_GLOBS_BLOCK, fm, re.M)
     if m:
         return [z.strip().lstrip("-").strip().strip("\"'") for z in m.group(1).splitlines() if z.strip()]
-    m = re.search(r"^globs:[ \t]*(\S.*?)[ \t]*$", fm, re.M)
-    return [m.group(1).strip().strip("\"'")] if m else []
+    m = re.search(_GLOBS_ZEILE, fm, re.M)
+    if not m:
+        return []
+    wert = m.group(1).strip()
+    if wert.startswith("[") and wert.endswith("]"):
+        wert = wert[1:-1]
+    return [w.strip().strip("\"'") for w in wert.split(",") if w.strip().strip("\"'")]
+
+
+def _globs_als_liste(fm: str, anker: str) -> str:
+    """Schreibt `globs` als Listenblock, je Muster eine Zeile (`rule_globs` im Manifest).
+
+    `devin-desktop` laedt eine Regel mit `trigger: glob` nur, wenn `globs` eine Liste ist
+    und das Muster nicht mit einem Verzeichnis beginnt - gemessen mit 3000.11.3. Ein Muster,
+    das nicht mit `anker`, `/` oder einem Platzhalter `<` beginnt, bekommt den Anker vorangestellt
+    (`backend/src/**/*.java` -> `**/backend/src/**/*.java`).
+    """
+    muster = _globs_lesen(fm)
+    if not muster:
+        return fm
+    for wert in muster:
+        if '"' in wert:
+            raise clientmap.AbbildungsFehler(
+                f"Dateimuster '{wert}' enthaelt ein Anfuehrungszeichen und laesst sich nicht als "
+                f"globs-Eintrag notieren")
+    if anker:
+        muster = [w if w.startswith((anker, "/", "<")) else anker + w for w in muster]
+    block = "globs:\n" + "".join(f'  - "{w}"\n' for w in muster)
+    m = re.search(_GLOBS_BLOCK, fm, re.M)
+    if m:
+        return fm[:m.start()] + block + fm[m.end():]
+    m = re.search(_GLOBS_ZEILE + r"\n?", fm, re.M)
+    return fm[:m.start()] + block + fm[m.end():]
 
 
 def ist_regelquelle(src_rel: str) -> bool:
@@ -498,7 +539,14 @@ def render_rule(text: str, man: dict) -> str:
     bauart = man.get("rule_frontmatter", "yaml")
     trigger_map = man.get("rule_triggers")
     if bauart == "yaml" and not trigger_map:
-        return text
+        globs_form = man.get("rule_globs")
+        if not globs_form or not text.startswith("---\n") or "\n---\n" not in text:
+            return text
+        kopf, rumpf = text.split("\n---\n", 1)
+        if not re.search(r"^trigger:[ \t]*glob[ \t]*$", kopf[4:], re.M):
+            return text
+        fm = _globs_als_liste(kopf[4:] + "\n", globs_form.get("anchor", ""))
+        return "---\n" + fm + "---\n" + rumpf
     if not text.startswith("---\n") or "\n---\n" not in text:
         return text
     kopf, rumpf = text.split("\n---\n", 1)

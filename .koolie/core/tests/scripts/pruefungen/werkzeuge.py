@@ -873,7 +873,9 @@ def check_wirksamkeitsprobe(root: str) -> None:
 #       publish.yml laeuft nur an einer Marke v*, gibt dem Workflow nur Leserecht, heftet jede
 #       Action an einen Commit, prueft Signatur und VERSION der Marke im ersten Job, gibt
 #       id-token nur Jobs mit Umgebung und laesst PyPI und npm (Umgebung release) erst nach
-#       TestPyPI (Umgebung testpypi) laufen.
+#       TestPyPI (Umgebung testpypi) laufen; seit 2.1.0 wartet der Job release auf die
+#       Paketdatei von npm und vergleicht sie mit dem Hochgeladenen - npm traegt die Version
+#       zuerst nur in die Metadaten ein, und der erste Lauf (2.0.0) scheiterte daran.
 # GRENZE: Ob eine Paketquelle dem Befehl ein Terminal gibt, prueft keine Pruefung - das ist
 # gemessen (Protokoll 2026-09-30-paketquellen: pip, uv, npm, Scoop). Die Homebrew-Formel ist
 # gebaut, nicht gemessen. Die Veroeffentlichung erreicht keine Pruefung (D-521); ob die
@@ -953,6 +955,10 @@ def _p112_workflow(root: str) -> None:
         if not set(test) & vorgaenger(n, set()):
             err(f"{P112_WORKFLOW}: Job '{n}' (PyPI und npm) laeuft nicht erst nach TestPyPI - "
                 f"die Probe muss vor der Veroeffentlichung abbrechen koennen (Pruefung 112)")
+        if not ("registry.npmjs.org/@renoxar/koolie/-/" in skript(n) and "cmp -s" in skript(n)):
+            err(f"{P112_WORKFLOW}: Job '{n}' wartet nicht auf die Paketdatei von npm und "
+                f"vergleicht sie nicht mit dem Hochgeladenen - npm zeigt die Version in den "
+                f"Metadaten, bevor die Datei abrufbar ist (Pruefung 112)")
 
 
 def _p112_befehl(root: str, *argv: str, ohne_banner: bool = False, cwd: str | None = None,

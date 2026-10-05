@@ -170,6 +170,15 @@ jobs:
             sleep 15
           done
           [ "${ist_whl}" = "${soll_whl}" ] || { echo "::error::PyPI: SHA-256 ${ist_whl} statt ${soll_whl}"; exit 1; }
+          # npm traegt die Version zuerst in die Metadaten ein, die Paketdatei folgt Minuten spaeter.
+          npm_url="https://registry.npmjs.org/@renoxar/koolie/-/koolie-${VERSION}.tgz"
+          for i in $(seq 1 40); do
+            curl -fsS -o npm-geladen.tgz "${npm_url}" 2>/dev/null && break
+            rm -f npm-geladen.tgz
+            sleep 15
+          done
+          [ -f npm-geladen.tgz ] || { echo "::error::npm: ${npm_url} nach zehn Minuten nicht abrufbar"; exit 1; }
+          cmp -s npm-geladen.tgz "dist/npm/koolie-${VERSION}.tgz" || { echo "::error::npm liefert andere Bytes als hochgeladen"; exit 1; }
           ist_npm="$(npm view "@renoxar/koolie@${VERSION}" dist.integrity)"
           soll_npm="sha512-$(openssl dgst -sha512 -binary "dist/npm/koolie-${VERSION}.tgz" | base64 -w0)"
           [ "${ist_npm}" = "${soll_npm}" ] || { echo "::error::npm: ${ist_npm} statt ${soll_npm}"; exit 1; }

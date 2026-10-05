@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.5.0` |
+| Version | `0.5.1` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -116,7 +116,7 @@ npm-Paket, Scoop-Manifest und Homebrew-Formel tragen oder laden genau den Baum d
 | Schritt | Was | Wer | Lage |
 |---|---|---|---|
 | 8 | **Pakete bauen und nachprüfen:** `python paketquellen/bauen.py --archiv <Archiv aus Schritt 5> --aus <Ablage>`. Das Skript prüft selbst nach – Dateimenge gleich dem Archiv, Version aus `VERSION`, `RECORD` des Wheels, Ziele der Befehle, kein Installationsskript im npm-Paket, Prüfsumme des Archivs in beiden Manifesten – und baut zweimal bytegleich; Exit 0 heißt ohne Befund. Die Erzeugnisse und `SHA256SUMS` liegen neben dem Archiv | Werkzeug oder Mensch | nach Schritt 7, jedes Release |
-| 9 | **Veröffentlichen auf PyPI und npm** über den Workflow `.github/workflows/publish.yml` (Trusted Publishing, ohne Token). Er startet, sobald die Marke auf dem GitHub-Spiegel ankommt, und prüft zuerst Signatur und `VERSION` der Marke. Dann baut er die Pakete wie Schritt 8, lädt das Wheel auf TestPyPI und installiert es in ein Wegwerfprojekt. Erst nach der Freigabe des Framework Owners in der GitHub-Umgebung `release` gehen dieselben Bytes auf PyPI (mit Attestierung) und `@renoxar/koolie` auf npm (mit Provenienz); zum Schluss liest er beide Quellen gegen `SHA256SUMS`. Scheitert ein Schritt, läuft keiner danach. Eine Version lässt sich nicht zurücknehmen und nicht neu vergeben – ein Befund nach dem Hochladen wird ein PATCH-Release. Scoop und Homebrew ruhen | Workflow; **der Framework Owner signiert die Marke und gibt die Umgebung `release` frei** | nach Schritt 8 |
+| 9 | **Veröffentlichen auf PyPI und npm** über den Workflow `.github/workflows/publish.yml` (Trusted Publishing, ohne Token). Er startet, sobald die Marke auf dem GitHub-Spiegel ankommt, und prüft zuerst Signatur und `VERSION` der Marke. Dann baut er die Pakete wie Schritt 8, lädt das Wheel auf TestPyPI und installiert es in ein Wegwerfprojekt. Erst nach der Freigabe des Framework Owners in der GitHub-Umgebung `release` gehen dieselben Bytes auf PyPI (mit Attestierung) und `@renoxar/koolie` auf npm (mit Provenienz); zum Schluss wartet er, bis beide Quellen die Pakete ausliefern, und vergleicht sie mit den Bytes, die er selbst hochgeladen hat. Scheitert ein Schritt, läuft keiner danach. Eine Version lässt sich nicht zurücknehmen und nicht neu vergeben – ein Befund nach dem Hochladen wird ein PATCH-Release. Scoop und Homebrew ruhen | Workflow; **der Framework Owner signiert die Marke und gibt die Umgebung `release` frei** | nach Schritt 8 |
 
 Ob eine Paketquelle dem Befehl ein Terminal gibt, prüft keine Prüfung; es ist gemessen (Protokoll
 `2026-09-30-paketquellen`). Die Homebrew-Formel ist gebaut, nicht gemessen.
@@ -128,20 +128,31 @@ Signatur. Das Archiv dafür entsteht mit
 die beiden Schalter trägt es unter Windows CRLF. Die Probe macht der Owner im eigenen
 Projektverzeichnis mit: Sie prüft, was ein Nutzer erlebt, nicht nur, ob der Befehl startet.
 
-**Die Prüfsumme des Workflows** stimmt mit Schritt 8 überein, weil beide das Archiv mit denselben
-Schaltern aus der Marke erzeugen. Weicht `SHA256SUMS` im Lauf von der lokalen Datei ab, wird nicht
-freigegeben.
+**Abgleich mit Schritt 8.** Der Workflow baut auf einer anderen Maschine. Wheel und npm-Paket
+weichen deshalb in den Bytes von Schritt 8 ab (andere zlib-Kompression), im Inhalt nicht. Nach dem
+Hochladen werden beide Pakete von PyPI und npm geladen und Datei für Datei gegen Schritt 8
+verglichen: Dateimenge, Inhalt, Rechte und Zeitstempel. Die Anhänge des Gitea-Release sind die
+veröffentlichten Bytes mit einer eigenen `SHA256SUMS`.
+
+**Workflow-Datei und Marke nicht im selben Push.** Ändert ein Release `publish.yml`, zuerst `main`
+spiegeln lassen, dann die Marke pushen – kommen beide im selben Spiegel-Push an, startet GitHub keinen
+Lauf. Ist es passiert: die Marke auf GitHub löschen und den Spiegel in Gitea neu synchronisieren
+(Repository → Einstellungen → Spiegel, oder `POST /api/v1/repos/<owner>/<repo>/push_mirrors-sync`).
+
+**npm braucht nach dem Hochladen einige Minuten.** Die Version erscheint zuerst in den Metadaten
+(`npm view`), die Paketdatei erst danach; der Workflow wartet auf die Datei.
 
 #### Einrichtung für Schritt 9 (einmalig, durch den Framework Owner)
 
 | Wo | Was |
 |---|---|
 | Gitea, Repository → Einstellungen | **Actions abschalten.** Gitea liest ohne eigenes `.gitea/workflows/` auch `.github/workflows/` und startete den Workflow ein zweites Mal |
+| Gitea, Repository → Einstellungen → Spiegel | Das GitHub-Token des Push-Spiegels braucht den Scope `workflow` (fein granuliert: „Workflows: Read and write“). Ohne ihn lehnt GitHub jeden Push ab, der `.github/workflows/` enthält – auch `main` und die Marke; die Ursache steht nur im `last_error` des Spiegels |
 | GitHub `Renoxar/koolie` → Settings → Environments | Umgebung `testpypi` ohne Freigabe; Umgebung `release` mit dem Owner als *Required reviewer*. Bei beiden *Deployment branches and tags* auf das Muster `v*` für Tags beschränken |
 | GitHub → Settings → Secrets and variables → Actions → *Variables* | Variable `KOOLIE_ALLOWED_SIGNERS` mit dem Inhalt der lokalen Datei `.git/allowed_signers` (eine Zeile: Adresse, Schlüsseltyp, öffentlicher Schlüssel). Eine Variable, kein Secret: Der Schlüssel ist öffentlich |
 | pypi.org → Projekt `koolie` → Manage → Publishing | *Add a new publisher* → GitHub: Owner `Renoxar`, Repository `koolie`, Workflow `publish.yml`, Environment `release` |
 | test.pypi.org → Projekt `koolie` → Manage → Publishing | dasselbe mit Environment `testpypi` |
-| npmjs.com → Paket `@renoxar/koolie` → Settings → Trusted Publisher | GitHub Actions: Organization or user `Renoxar`, Repository `koolie`, Workflow filename `publish.yml`, Environment name `release` |
+| npmjs.com → Paket `@renoxar/koolie` → Settings → Trusted Publisher | GitHub Actions: Organization or user `Renoxar`, Repository `koolie`, Workflow filename `publish.yml`, Environment name `release`. Den Haken **„Allow npm publish“** setzen – ohne ihn erlaubt der Publisher nur `npm stage publish`, und `npm publish` scheitert mit `OIDC permission denied for this action` |
 
 Nach dem ersten Lauf, der auf allen drei Quellen ankommt, werden die Tokens zurückgezogen: auf
 PyPI, TestPyPI und npm löschen, die Benutzervariablen `PYPI_TOKEN`, `TESTPYPI_TOKEN` und

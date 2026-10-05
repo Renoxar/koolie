@@ -215,7 +215,7 @@ buendel(selbstprobe_q5,
 # Traeger und stellen ihn auf die jeweils andere - dieselbe Lehre wie bei Pruefung 78:
 # Eine Sonde, die einen Wert mitpflegen muss, faellt bei der naechsten Aenderung aus, und
 # zwar als scheinbarer Befund. Auf einem Linux-Arbeitsplatz liegt der Bestand auf LF, und
-# diese Sonden messen dort dasselbe.
+# diese Sonden messen dort dasselbe - sie lesen und schreiben dafuer roh (K-216).
 M81_GEMISCHT = "mischt CRLF- und LF-Zeilen"
 M81_ABWEICHEND = "Zeilenenden, während"
 M81_UNMESSBAR = "Prüfung 81: kein Git-Bestand lesbar"
@@ -245,7 +245,7 @@ def sonden_zeilenendeform() -> None:
     root = kopie()
     try:
         pfad = P(root, *P81_OPFER.split("/"))
-        urtext = lies(pfad)
+        urtext = lies(pfad, roh=True)
 
         # --- Sonde 81c: ohne Git-Bestand ist sie nicht messbar, und sagt es -----------
         aus = validator_ausgabe(root)
@@ -275,7 +275,7 @@ def sonden_zeilenendeform() -> None:
                 z for z in aus.splitlines() if "81" in z or "Zeilenende" in z)[:400])
 
         # --- Sonde 81a: ein Traeger durchgehend auf der anderen Form -----------------
-        schreib(pfad, _81_umstellen(urtext))
+        schreib(pfad, _81_umstellen(urtext), roh=True)
         aus = validator_ausgabe(root)
         melde("SONDE", "81a", M81_ABWEICHEND in aus,
               "Ein Traeger durchgehend auf der anderen Zeilenendeform wird gemeldet - "
@@ -285,7 +285,7 @@ def sonden_zeilenendeform() -> None:
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
 
         # --- Sonde 81b: EINE eingeschleppte Zeile ------------------------------------
-        schreib(pfad, _81_eine_zeile(urtext))
+        schreib(pfad, _81_eine_zeile(urtext), roh=True)
         aus = validator_ausgabe(root)
         melde("SONDE", "81b", M81_GEMISCHT in aus,
               "Eine einzige eingeschleppte Zeile der anderen Form wird gemeldet - genau "
@@ -293,11 +293,11 @@ def sonden_zeilenendeform() -> None:
         if M81_GEMISCHT not in aus:
             notiz("        Ausgabe:", " | ".join(
                 z for z in aus.splitlines() if "FEHLER" in z)[:400])
-        schreib(pfad, urtext)
+        schreib(pfad, urtext, roh=True)
 
         # --- Sonde 81e: derselbe Fall unter einem Namen mit Umlaut (D-352) -----------
         upfad = P(root, *P81_UMLAUT.split("/"))
-        schreib(upfad, _81_eine_zeile(urtext))
+        schreib(upfad, _81_eine_zeile(urtext), roh=True)
         unterprozess(["git", "-C", root, "add", "-A"])
         aus = validator_ausgabe(root)
         treffer = P81_UMLAUT + ": mischt" in aus
@@ -312,8 +312,8 @@ def sonden_zeilenendeform() -> None:
 
         # --- Sonde 81d: eine Wurzeldatei auf der anderen Form (D-351) -----------------
         wpfad = P(root, *P81_WURZEL.split("/"))
-        wurtext = lies(wpfad)
-        schreib(wpfad, _81_umstellen(wurtext))
+        wurtext = lies(wpfad, roh=True)
+        schreib(wpfad, _81_umstellen(wurtext), roh=True)
         aus = validator_ausgabe(root)
         treffer = P81_WURZEL + ": trägt" in aus and M81_ABWEICHEND in aus
         melde("SONDE", "81d", treffer,

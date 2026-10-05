@@ -653,7 +653,7 @@ def sonden_kopierweg() -> None:
         schreib(os.path.join(kol, "CLAUDE.md"), "# Projektdatei\n")
         p = _362_lauf(qkern, "--target", kol, "--client", "claude-code")
         ok = (p.returncode != 0 and not os.path.exists(os.path.join(kol, ".koolie", "core"))
-              and lies(os.path.join(kol, "CLAUDE.md")) == "# Projektdatei\n")
+              and lies(os.path.join(kol, "CLAUDE.md"), roh=True) == "# Projektdatei\n")
         melde("SONDE", "T362c", ok,
               "Scheitert die Installation im Projekt, wird der kopierte Kern wieder entfernt")
         if not ok:

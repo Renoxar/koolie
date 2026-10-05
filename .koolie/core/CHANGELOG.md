@@ -2,6 +2,65 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [2.1.0] - 2026-10-05
+
+**Lehren aus der ersten Veröffentlichung ohne Token, die offenen Zellen – und die Glob-Regel, die nur aus einer
+Liste lädt** (`CR-2026-174` E1 bis E10, **D-542** bis **D-548**; `K-161`, `K-165`, `K-170`, `K-211`, `K-212`, `K-216`
+geklärt, `K-190` mit Ziel `2.2.0`, `K-217` und `K-218` neu). 96 Sitzungsläufe `claude-code`, 70,23 USD nach
+Listenpreis, dazu 10 Läufe Devin CLI. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **`devin-desktop` lädt Tech-Pack-Regeln** (D-545, `K-161`): Eine Regel mit `trigger: glob` lädt dort nur, wenn
+  `globs` eine YAML-Liste ist und kein Muster mit einem Verzeichnis beginnt. `install.py` schreibt die Muster für
+  dieses Pack als Liste und stellt `**/` voran (`rule_globs` im Manifest). Eine Zeichenkette mit mehreren Mustern
+  (`"a, b"`) liest es für jedes Pack als mehrere; bei `claude-code` kam sie bisher als **ein** `paths`-Muster an.
+  Die Vorlage der Tech-Pack-Regel führt eine Liste. Sonden `D545` bis `D545c`.
+- **Der K3-Auslöser in fünf weiteren Skills** (D-544, `K-165`): `koolie-docs-update` 0.1.7,
+  `koolie-error-analyze` 0.1.7, `koolie-mr-description` 0.1.9, `koolie-review-support` 0.1.9 und `koolie-tests`
+  halten auch an einer Datei an, die als K3 erkannt oder gekennzeichnet ist und deshalb nicht geöffnet wird.
+- **`koolie-tests` 0.1.7** (D-546): Ein Auftrag, Tests grün zu machen, wird als unzulässiges Prompt-Muster benannt;
+  bei einem bereits roten Test fragt der Skill zurück, ob der Fehlschlag die Aufgabe berührt.
+- **Die externe Suche** (D-543, `K-211`, `K-212`): `koolie-change-analyze` 0.1.9, `koolie-plan` 0.1.11 und
+  `koolie-bugfix-prepare` 0.1.11 setzen die Grenze von fünf Treffern als Wert im Suchaufruf, nennen die
+  Seitenversion in einer eigenen Zeile und die Verwender mit Suchmuster.
+- Zwei neue Zellen: Planablage nach Zeile M4 (`SK-004-P04`), Stufe hoch ohne Freigabe (`SK-007-N07`) (`K-170`).
+- **Der Sondenlauf ist zeilenendunabhängig** (D-542, `K-216`): Der Sondenapparat liest und schreibt in der Form
+  des Arbeitsbaums; unter Linux und macOS ist kein `core.autocrlf` mehr nötig. Sonde 32 läuft nur unter Windows und
+  wird anderswo als ausgelassen gezählt.
+- **Messaufbau im Kern** (D-547): `tests/erhebungen/baeume-b23.py` und `prompts-schreiben-b23.py` bauen die Bäume
+  und Prompts von `koolie-tests` und `koolie-error-analyze`, unter Linux und Windows.
+
+**Behoben**
+
+- `RELEASE_PROCESS.md` 0.5.1 Abschnitt 4.2: Der Abgleich mit Schritt 8 ist inhaltlich, die Anhänge des
+  Gitea-Releases sind die veröffentlichten Bytes; Workflow-Datei und Marke nicht im selben Spiegel-Push; die
+  Einrichtung nennt den Scope `workflow` des Push-Spiegels und „Allow npm publish“.
+- `publish.yml` wartet bis zu zehn Minuten auf die Paketdatei von npm und vergleicht sie bytegenau (Prüfung 112
+  Gegenstand d, Sonde `112o`).
+
+**Gemessen**
+
+- Externe Suche 27 von 27, Bündel 4 19 von 19, die zwei neuen Zellen
+  (`tests/protocols/2026-10-03-nachlauf-2.1.0.md`); `koolie-error-analyze` 6 von 6 und `koolie-tests` 6 von 6,
+  die Glob-Regel in zehn Läufen mit Devin CLI 3000.11.3 (`tests/protocols/2026-10-05-nachlauf-2.1.0-teil-2.md`).
+- Voller Sondenlauf unter Linux auf einem Arbeitsbaum mit LF und mit CRLF: alle Sonden und Gegenproben bestanden,
+  Sonde 32 nur unter Windows messbar und ausgelassen.
+
+**Migrationshinweis für Overlays**
+
+- `install.py --update` (oder `koolie --target <projekt> --update`) bringt Skills und Regeln des Kerns auf den
+  neuen Stand, bei `devin-desktop` einschließlich der Glob-Muster.
+- Von Hand, nur `devin-desktop`: Eigene Regeln des Projekts mit `trigger: glob` in `.devin/rules/` auf eine Liste
+  umstellen, je Muster eine Zeile mit `**/` davor – zum Beispiel `globs:` und darunter
+  `  - "**/backend/src/**/*.java"`. Sonst laden sie nicht.
+
+**Bekannte Einschränkungen**
+
+- Sonde 32 (Git-Bash-Pfad) ist für `2.1.0` nicht unter Windows gelaufen (`K-216`).
+- Die Glob-Regel ist im Druckmodus von Devin CLI gemessen, nicht in der Desktop-Oberfläche.
+- Zwölf weitere Coding Agents sind als Client Packs vorgemerkt, ohne Ziel-Release (`K-217`).
+
 ## [2.0.0] - 2026-10-02
 
 **Ein sauberer öffentlicher Auftritt, das Präfix `koolie-` und die Veröffentlichung ohne Token**
