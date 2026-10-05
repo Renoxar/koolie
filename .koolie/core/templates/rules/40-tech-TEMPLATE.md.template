@@ -1,7 +1,8 @@
 ---
 description: Technology Pack <TECH_PACK_NAME> (Ebene 5). Wird geladen, wenn der KI-Client Dateien liest oder ändert, die auf die unten stehenden Muster passen.
 trigger: glob
-globs: "<TBD: Dateimuster, zum Beispiel **/*.java oder src/**/*.ts>"
+globs:
+  - "<TBD: Dateimuster, zum Beispiel **/*.java oder src/**/*.ts>"
 ---
 
 <!-- AUSFÜLLHINWEIS: Kopiere diese Datei nach 40-tech-<tech-pack-name>.md (ohne .template),

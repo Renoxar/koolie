@@ -9,7 +9,7 @@
 
 > Es werden keine Termine oder Aufwände vorgegeben; die Steuerung erfolgt über Prioritäten (P1 = zuerst) und logische Abhängigkeiten. Rollen sind generisch. Die Erstfassung 0.1.0 dieses Repositorys deckt die inhaltlichen Ergebnisse von AP3–AP5 in Entwurfsqualität bereits ab; die zugehörigen Arbeitspakete bestätigen, validieren und härten sie.
 
-## Stand nach Release 2.0.0 (2026-10-02)
+## Stand nach Release 2.1.0 (2026-10-05)
 
 Wird mit jedem Release fortgeschrieben; Prüfung 91 hält die Überschrift gegen `VERSION`
 (D-372). Der Abschnitt beantwortet, womit weiterzuarbeiten ist, ohne dass man dafür den
@@ -137,7 +137,8 @@ die Störung.**
 | ~~**1.24.0**~~ ✅ | 🟢 **DIE ERSTE VERÖFFENTLICHUNG AUF PYPI UND NPM – UND DIE BEIDEN TOKENS, DIE EINES WAREN** (`CR-2026-170`, **D-527** bis **D-531**, Prüfung 112 erweitert, `K-155` geklärt, `K-209` und `K-210` neu; kein Sitzungslauf, 0 USD). `1.24.0` liegt nur auf TestPyPI (D-534); README und Quickstart nennen den Weg gleichwertig neben dem Starter (D-531). Die Paketseiten tragen `README.en.md` mit absoluten Links auf die Marke (D-528); vor der Signatur prüft eine Vorabversion auf TestPyPI die Seite und die Installation (D-529). Schritt 9 gilt ab `1.25.0` mit der Signatur als freigegeben (D-530). Scoop und Homebrew bleiben gebaut und unveröffentlicht (`K-209`), Trusted Publishing ist `K-210` (D-527). 🔴 **Am Arbeitsplatz trugen `TESTPYPI_TOKEN` und `PYPI_TOKEN` dasselbe Token für pypi.org** – TestPyPI wies es mit 403 ab, bevor etwas veröffentlicht war | – | nein (lokale Installationen, TestPyPI) |
 | ~~**1.24.1**~~ ✅ | 🟢 **DER BEFEHL IM PROJEKTVERZEICHNIS – UND DIE PROBE, DIE NUR FRAGTE, OB ER STARTET** (`CR-2026-171`, **D-532** bis **D-534**, Prüfung 112 erweitert; kein Sitzungslauf, 0 USD). Die erste Version auf PyPI und npm. `koolie` ohne Argumente nimmt das aktuelle Verzeichnis mit Enter als Projekt (D-532); README und Quickstart beginnen mit `uvx koolie`, `pipx run koolie` oder `npx koolie` im Projektverzeichnis und nennen `python -m koolie`, wenn pip den Befehl außerhalb des `PATH` ablegt (D-533). 🔴 **Der Owner hielt vor PyPI an: `pip install` installierte nicht ins Projekt und legte den Befehl außerhalb des `PATH` ab – die Probe hatte nur gefragt, ob der Befehl startet.** Beifund: Das Vorabarchiv trug unter Windows CRLF (D-534) | – | nein (lokale Installationen, TestPyPI) |
 | ~~**1.25.0**~~ ✅ | 🟢 **EIN NEUER AUFTRITT, NPM UNTER DEM SCOPE UND DIE SUCHE NACH DEM ÄLTESTEN – UND DER NAME, DEN NPM FÜR COOKIE HIELT** (`CR-2026-172`, **D-535** bis **D-538**, Prüfung 112 erweitert, `K-207` und `K-208` beantwortet; Sitzungsläufe siehe Protokoll). Die README ist eine Startseite von rund 110 Zeilen, Maintainer-Inhalte stehen in `CONTRIBUTING.md` (D-538); npm unter `@renoxar/koolie` (D-535); die drei Skills mit externer Suche suchen bei mehr als fünf Treffern auch die ältesten, alle Zellen der drei Testblätter nachgemessen (D-536); `claude-code` gibt lesende Befehle im Druckmodus selbst frei, `deny` hält (D-537). 🔴 **npm wies `koolie` als zu ähnlich zu `cookie` ab – erst beim Hochladen, die Abfrage der Registry hatte 404 geliefert** | – | ja (Nachlauf) |
-| ~~**2.0.0**~~ ✅ | *dieses Release:* 🟢 **SAUBERER ÖFFENTLICHER AUFTRITT UND SKILL-PRÄFIX `koolie-`** (`CR-2026-173`, **D-539** bis **D-541**, `K-210` geklärt). Mitgelieferte Skills heißen `koolie-<name>`, auch die aus Packs (`koolie-ticket`), das Agentenprofil `koolie-reviewer`; `install.py --update` benennt Skillordner, Agentenprofil und die Einträge der Berechtigungsdatei selbst um (D-539). Die Produktdokumentation nennt keine Kennung mehr; Prüfung 113 hält das fest, die Schreibregeln stehen im Dokumentationsstandard (D-540). Drei Ideen des Owners sind ohne Ziel-Release vorgemerkt (`K-213` bis `K-215`). PyPI und npm werden über Trusted Publishing aus dem GitHub-Spiegel beschickt, nur an einer signierten Marke und nach Freigabe des Owners (D-541). Die Produktdokumentation ist neu gefasst; drei Stichprobenläufe `claude-code` tragen, 1,49 USD. | – | ja (drei Stichprobenläufe) |
+| ~~**2.0.0**~~ ✅ | 🟢 **SAUBERER ÖFFENTLICHER AUFTRITT UND SKILL-PRÄFIX `koolie-`** (`CR-2026-173`, **D-539** bis **D-541**, `K-210` geklärt). Mitgelieferte Skills heißen `koolie-<name>`, auch die aus Packs (`koolie-ticket`), das Agentenprofil `koolie-reviewer`; `install.py --update` benennt Skillordner, Agentenprofil und die Einträge der Berechtigungsdatei selbst um (D-539). Die Produktdokumentation nennt keine Kennung mehr; Prüfung 113 hält das fest, die Schreibregeln stehen im Dokumentationsstandard (D-540). Drei Ideen des Owners sind ohne Ziel-Release vorgemerkt (`K-213` bis `K-215`). PyPI und npm werden über Trusted Publishing aus dem GitHub-Spiegel beschickt, nur an einer signierten Marke und nach Freigabe des Owners (D-541). Die Produktdokumentation ist neu gefasst; drei Stichprobenläufe `claude-code` tragen, 1,49 USD. | – | ja (drei Stichprobenläufe) |
+| ~~**2.1.0**~~ ✅ | *dieses Release:* 🟢 **LEHREN AUS DER ERSTEN VERÖFFENTLICHUNG OHNE TOKEN, DIE OFFENEN ZELLEN – UND DIE GLOB-REGEL, DIE NUR AUS EINER LISTE LÄDT** (`CR-2026-174`, **D-542** bis **D-548**; `K-161`, `K-165`, `K-170`, `K-211`, `K-212`, `K-216` geklärt, `K-217` und `K-218` neu). Einrichtung und Prüfschritt von Trusted Publishing berichtigt; die externe Suche setzt ihre Grenze im Aufruf und nennt die Seitenversion (D-543); der K3-Auslöser steht in zwölf von dreizehn Skills, `koolie-tests` nennt das Prompt-Muster „Tests grün machen“ (D-544, D-546); zwei neue Zellen für Planablage und Stufe hoch; der Sondenapparat läuft auf LF und CRLF (D-542). 🔴 **Bei `devin-desktop` lud eine Glob-Regel nie** – nur eine YAML-Liste ohne Pfadpräfix greift; `install.py` schreibt sie so (D-545). Die Abnahmen liefen ohne den Windows-Arbeitsplatz, mit versioniertem Messaufbau und dem Übungsrepositorium auf dem Gitea-Server (D-547). 96 Sitzungsläufe `claude-code`, 70,23 USD; 10 Läufe Devin CLI. | – | ja (96 Sitzungsläufe, 10 Läufe Devin CLI) |
 
 > ✂️ **Gekürzt mit `1.9.0`** (D-378). Bis `1.8.0` standen an dieser Stelle rund 200 KB
 > Rückblick – je Release von `0.5.0` bis `0.59.0` ein Abschnitt *„Was … gebracht hat“* und
@@ -259,9 +260,23 @@ werden mit `1.11.0` entschieden, `K-151` mit `1.10.0`.
 > 🟢 **Gefahren mit `1.14.0`** (`CR-2026-151`, D-419 bis D-424). Vier Skills an ihr Modul angeglichen, der K3-Auslöser
 > präzisiert, 25 Zellen nachgemessen: `SK-002-N03` trägt, sechs andere gehen auf `offen` (→ `1.14.1`).
 
-### Geplant: Die übrigen Paketquellen (`K-209`) – Ziel-Release **2.1.0**
+### Erledigt mit `2.1.0`: Lehren aus der ersten Veröffentlichung ohne Token und die offenen Zellen
 
-Vom Agenten als Platzhalter gesetzt, der Zuschnitt liegt beim Owner: Scoop und Homebrew veröffentlichen (`K-209`). Trusted Publishing für PyPI und npm (`K-210`) kam mit `2.0.0` (D-541). Mit Entscheidungsfragen und Schätzung vor dem Bau.
+> 🟢 **Gefahren mit `2.1.0`** (`CR-2026-174`, D-542 bis D-548). Die 31 Zellen der fünf Skills mit neuem K3-Auslöser, die 27 der externen Suche und die zwei neuen Zellen bestanden; die Glob-Regel von `devin-desktop` lädt aus der Liste, die `install.py` schreibt. Der Sondenlauf ist auf LF und CRLF unter Linux grün; Sonde 32 ist nur unter Windows messbar und für `2.1.0` nicht gelaufen (`K-216`).
+
+Nach dem ersten Lauf von Trusted Publishing die Einrichtung und den Prüfschritt berichtigen; die drei offenen Zellen der externen Suche wiederholen (`K-211`, `K-212`); den K3-Auslöser in fünf Skills mit Nachlauf präzisieren (`K-165`); zwei neue Zellen für Planablage und Stufe hoch (`K-170`); die Glob-Regel von `devin-desktop` erheben (`K-161`); den Sondenlauf zeilenendunabhängig machen (`K-216`). Zuschnitt in `CR-2026-174`. Seit 2026-10-05 ohne den Windows-Arbeitsplatz: Messaufbau der Bündel 2 und 3 im Kern, Übungsrepositorium auf dem Gitea-Server (D-547).
+
+### Geplant: Der Messapparat baut die Bäume selbst – Ziel-Release **2.2.0**
+
+Wer nur das Repositorium hat, soll jede Zelle nachmessen können. Das Paket `apparat/` baut die Bäume aus dem Übungsrepositorium selbst – Archiv, Packwechsel, Overlay, Körbe, Schnitte, Historie – und ersetzt die Aufbauskripte je Bündel (`K-190`); Messläufe ohne die Connectoren des Anmeldekontos (`K-218`). Mit Entscheidungsfragen und Schätzung vor dem Bau.
+
+### Vorgemerkt ohne Ziel-Release: Weitere Coding Agents (`K-217`)
+
+Kandidaten für Client Packs: GitHub Copilot, Gemini CLI, OpenCode, JetBrains Junie, Google Antigravity, Cline, OpenHands, Qwen Code, TRAE, Goose, CodeBuddy Code, Qoder. Jedes Pack beginnt mit einer Erhebung der Fähigkeiten des Clients; Reihenfolge und Zuschnitt mit Entscheidungsfragen und Schätzung (D-548).
+
+### Vorgemerkt ohne Ziel-Release: Die übrigen Paketquellen (`K-209`)
+
+Scoop und Homebrew veröffentlichen (`K-209`); vom Owner beim Zuschnitt von `2.1.0` zurückgestellt. Trusted Publishing für PyPI und npm (`K-210`) kam mit `2.0.0` (D-541).
 
 ### Erledigt mit `1.25.0`: Die Suchgrenze und der Lesebefehl ohne Korb (`K-207`, `K-208`)
 

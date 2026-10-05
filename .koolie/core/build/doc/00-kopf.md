@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Dokumentversion | 2.0.0 (entspricht Framework-Release 2.0.0) |
+| Dokumentversion | 2.1.0 (entspricht Framework-Release 2.1.0) |
 | Stand | 2026-09-28 |
 | Status | Kein Modulträger steht auf `entwurf`; Prüfung 46 rechnet das bei jedem Validatorlauf nach. Die technische Validierung gegen reale Installationen (Roadmap-Arbeitspaket AP2) ist abgeschlossen; die Protokolle liegen unter `.koolie/core/tests/protocols/`. Was als Nächstes kommt, steht in der Roadmap (Kap. 30) |
 | Vertraulichkeit | projektneutral – enthält keine organisations-, kunden-, personen- oder infrastrukturspezifischen Inhalte; Beispiele sind synthetisch |

@@ -97,15 +97,17 @@ if _TEILLAUF:
 _beginn = time.perf_counter()
 fehler = fahren(_GEWAEHLT, BAHNEN)
 _wanduhr = time.perf_counter() - _beginn
+_ausgelassen = sum(e.ausgelassen for e in _GEWAEHLT)
+_zusatz = "; %d ausgelassen (nur unter Windows messbar)" % _ausgelassen if _ausgelassen else ""
 print()
 if _TEILLAUF:
-    print("Ergebnis (TEILLAUF, %d von %d Einheiten): %s"
+    print("Ergebnis (TEILLAUF, %d von %d Einheiten): %s%s"
           % (len(_GEWAEHLT), len(EINHEITEN),
              "alle gewaehlten Einheiten bestanden" if not fehler
-             else "%d Abweichung(en)" % fehler))
+             else "%d Abweichung(en)" % fehler, _zusatz))
 else:
-    print("Ergebnis:", "alle Sonden und Gegenproben bestanden" if not fehler
-          else f"{fehler} Abweichung(en)")
+    print("Ergebnis:", ("alle Sonden und Gegenproben bestanden" if not fehler
+                        else f"{fehler} Abweichung(en)") + _zusatz)
 auswertung(_GEWAEHLT, _wanduhr, BAHNEN)
 if _TEILLAUF:
     print("TEILLAUF - der Nachweis nach D-23 steht erst nach dem vollen Lauf.")

@@ -1074,11 +1074,14 @@ def sonden_zeichengrenze() -> None:
             if not os.path.isfile(wurzel):
                 raise Praeparationsfehler("Sonden zu 4: %s fehlt in der Installation (%s)"
                                           % (man["root_instruction_file"], pack))
-            laenge = len(lies(wurzel))
+            # Von install.py erzeugt, auf jedem Baum LF - roh, sonst zaehlten auf einem
+            # LF-Baum die CR der Uebersetzung mit (K-216).
+            laenge = len(lies(wurzel, roh=True))
             aus = validator_ausgabe(root)
             ergebnisse[pack] = (laenge, M4_GRENZE not in aus and M4_BUDGET not in aus)
             if pack == "claude-code":
-                schreib(wurzel, lies(wurzel) + "\r\n" + "x" * (12001 - laenge) + "\r\n")
+                schreib(wurzel, lies(wurzel, roh=True) + "\r\n" + "x" * (12001 - laenge) + "\r\n",
+                        roh=True)
                 aus = validator_ausgabe(root)
                 ok = any(z.startswith("WARNUNG") and M4_GRENZE in z
                          and man["root_instruction_file"] in z for z in aus.splitlines())
@@ -1166,7 +1169,7 @@ def sonden_aenderungsart() -> None:
         if not ok:
             notiz("        Ausgabe:", _zeilen_mit(aus, "(D-403)"))
 
-        ohne = re.sub(r"\*{0,2}Keine Anweisung ber(?:ü|ue)hrt\*{0,2}", "Berichtigt",
+        ohne = re.sub(r"\*{0,2}(?:Keine\s+)?Anweisung ber(?:ü|ue)hrt\*{0,2}", "Berichtigt",
                       aktuell[0], flags=re.I)
         if ohne == aktuell[0]:
             raise Praeparationsfehler("Sonde 95a: die aktuelle Zeile traegt keine Nennung")

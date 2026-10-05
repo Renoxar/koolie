@@ -1218,7 +1218,7 @@ def sonden_zusatzschluessel() -> None:
     root = installation("claude-code")
     try:
         rechte = os.path.join(root, ".claude", "settings.json")
-        ausgang = lies(rechte)
+        ausgang = lies(rechte, roh=True)  # von install.py erzeugt, auf jedem Baum LF
 
         # --- Gegenprobe: die frische Installation traegt den Schluessel --------------
         # Sie ist hier die wichtigere Haelfte: Sie belegt, dass die Abbildung aus

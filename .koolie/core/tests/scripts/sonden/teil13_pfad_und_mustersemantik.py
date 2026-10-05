@@ -13,8 +13,9 @@ import json
 import os
 
 from .apparat import (
-    aufraeumen, buendel, ersetze, gegenprobe, installation, lies, melde, notiz, P,
-    Praeparationsfehler, schreib, sonde, strict_ausgabe, validator_ausgabe)
+    aufraeumen, buendel, ersetze, gegenprobe, installation, lies, melde, notiz,
+    nur_unter_windows, P, Praeparationsfehler, schreib, sonde, strict_ausgabe,
+    validator_ausgabe)
 from .teil07_overlay_und_lieferung import _89_fuellen, _89_pfade, _89_voll
 
 HOOK = ".koolie/core/tests/scripts/hook-check-secrets.py"
@@ -38,8 +39,10 @@ def _32_eine_lesart(root: str) -> None:
                              "    if True:\r\n        return [echt]\r\n"))
 
 
-sonde("32", "Ein Hook, der /c/... nur als C:\\c\\... liest, laesst die POSIX-Schreibweise "
-            "in den Kern schreiben und wird gemeldet", _32_eine_lesart, M32_LESART)
+M32_SATZ = ("Ein Hook, der /c/... nur als C:\\c\\... liest, laesst die POSIX-Schreibweise "
+            "in den Kern schreiben und wird gemeldet")
+nur_unter_windows("SONDE", "32", M32_SATZ,
+                  lambda: sonde("32", M32_SATZ, _32_eine_lesart, M32_LESART))
 gegenprobe("32", "Der ausgelieferte Hook loest beide Lesarten auf", None, M32_LESART)
 
 

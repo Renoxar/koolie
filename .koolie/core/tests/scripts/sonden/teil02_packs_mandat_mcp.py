@@ -199,6 +199,63 @@ buendel(sonden_importkanaele,
         "wenn sie belegt sind - und nur dann")
 
 
+# --- D-545: devin-desktop laedt eine glob-Regel nur aus einer Liste ohne Pfadpraefix (K-161) -
+#
+# Gemessen mit devin-desktop 3000.11.3: `globs` als Zeichenkette laedt nie, ein Muster mit
+# Verzeichnispraefix (`backend/src/**/*.java`) auch in einer Liste nicht. install.py schreibt
+# die Muster deshalb als Listenblock und stellt `**/` voran (`rule_globs` im Manifest). Eine
+# Zeichenkette mit mehreren Mustern ("a, b") liest es fuer jedes Pack als zwei Muster.
+#   D545  (Sonde)      - die Vorlage der Tech-Pack-Regel kommt bei devin-desktop als Liste an.
+#   D545a (Sonde)      - eine Quelle mit zwei Mustern in einer Zeichenkette wird fuer
+#                        devin-desktop zu zwei Listeneintraegen mit Anker.
+#   D545b (Sonde)      - dieselbe Quelle wird fuer claude-code zu zwei `paths`-Eintraegen.
+#   D545c (Gegenprobe) - eine Regel ohne `trigger: glob` bleibt bei devin-desktop bytegleich.
+M545_QUELLE = ('---\ndescription: Sonde D545\ntrigger: glob\n'
+               'globs: "frontend/src/**/*.ts, backend/src/**/*.java"\n---\n\n# Regel\n')
+M545_DEVIN = 'globs:\n  - "**/frontend/src/**/*.ts"\n  - "**/backend/src/**/*.java"\n---\n'
+M545_CC = 'paths:\n  - "frontend/src/**/*.ts"\n  - "backend/src/**/*.java"\n---\n'
+M545_VORLAGE = 'trigger: glob\nglobs:\n  - "<TBD: '
+
+
+def sonden_globliste() -> None:
+    root = installation("devin-desktop")
+    try:
+        vorlage = lies(os.path.join(root, ".devin", "rules", "40-tech-TEMPLATE.md.template"),
+                       roh=True)
+        melde("SONDE", "D545", M545_VORLAGE in vorlage,
+              "devin-desktop: die Vorlage der Tech-Pack-Regel fuehrt globs als Liste")
+    finally:
+        aufraeumen(os.path.dirname(root))
+    sys.path.insert(0, os.path.join(QUELLE, ".koolie", "core"))
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "install_d545", os.path.join(QUELLE, ".koolie", "core", "install.py"))
+        inst = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(inst)
+        man = {}
+        for pack in ("devin-desktop", "claude-code"):
+            with open(os.path.join(QUELLE, ".koolie", "core", "clients", pack, "manifest.json"),
+                      encoding="utf-8") as f:
+                man[pack] = json.load(f)
+        devin = inst.render_rule(M545_QUELLE, man["devin-desktop"])
+        melde("SONDE", "D545a", M545_DEVIN in devin,
+              "devin-desktop: zwei Muster einer Zeichenkette werden zwei Listeneintraege mit Anker")
+        cc = inst.render_rule(M545_QUELLE, man["claude-code"])
+        melde("SONDE", "D545b", M545_CC in cc,
+              "claude-code: zwei Muster einer Zeichenkette werden zwei paths-Eintraege")
+        immer = M545_QUELLE.replace("trigger: glob", "trigger: always_on")
+        melde("GEGENPROBE", "D545c", inst.render_rule(immer, man["devin-desktop"]) == immer,
+              "devin-desktop: eine Regel ohne glob bleibt bytegleich")
+    finally:
+        sys.path.pop(0)
+
+
+buendel(sonden_globliste,
+        "devin-desktop laedt glob-Regeln nur aus einer Liste ohne Pfadpraefix - install.py "
+        "schreibt sie so, und eine Zeichenkette mit zwei Mustern wird fuer jedes Pack zu zwei")
+
+
 # --- D-471: die Ergebniszellen bleiben im Kern (CR-2026-160, K-56) ------------------------
 #
 # Ein Testblatt ist Regelquelle UND Aufzeichnung. install.py ersetzt in der Skillablage der
@@ -444,7 +501,8 @@ def sonden_kiro() -> None:
         profil = json.loads(lies(os.path.join(root, ".kiro", "agents", "koolie.json")))
         einst = json.loads(lies(os.path.join(root, ".kiro", "settings", "cli.json")))
         hooks = json.loads(lies(os.path.join(root, ".kiro", "hooks", "koolie.json")))
-        vorlage = lies(os.path.join(root, ".kiro", "steering", "40-tech-TEMPLATE.md.template"))
+        vorlage = lies(os.path.join(root, ".kiro", "steering", "40-tech-TEMPLATE.md.template"),
+                       roh=True)  # von install.py erzeugt, auf jedem Baum LF
         regeln = profil.get("permissions", {}).get("rules", [])
         ausnahme = [r for r in regeln if r.get("exclude") == [".kiro/specs/**"]
                     and r.get("match") == [".kiro/**"] and r.get("effect") == "deny"]
@@ -588,9 +646,11 @@ def sonden_cursor() -> None:
     try:
         cli = json.loads(lies(os.path.join(root, ".cursor", "cli.json")))
         hooks = json.loads(lies(os.path.join(root, ".cursor", "hooks.json")))
-        kern = lies(os.path.join(root, ".cursor", "rules", "00-framework-core.mdc"))
-        vorlage = lies(os.path.join(root, ".cursor", "rules", "40-tech-TEMPLATE.mdc.template"))
-        agent = lies(os.path.join(root, ".cursor", "agents", "koolie-reviewer.md"))
+        # Von install.py erzeugt, auf jedem Baum LF - darum roh (K-216).
+        kern = lies(os.path.join(root, ".cursor", "rules", "00-framework-core.mdc"), roh=True)
+        vorlage = lies(os.path.join(root, ".cursor", "rules", "40-tech-TEMPLATE.mdc.template"),
+                       roh=True)
+        agent = lies(os.path.join(root, ".cursor", "agents", "koolie-reviewer.md"), roh=True)
         ignore = lies(os.path.join(root, ".cursorignore")).splitlines()
         deny = cli.get("permissions", {}).get("deny", [])
         pre = hooks.get("hooks", {}).get("preToolUse", [])
@@ -636,7 +696,8 @@ def sonden_cursor() -> None:
             ("97f", "Pfadverbot ohne fuehrenden Stern", M97_NIE,
              lambda r: _440_cli(r, lambda d: d["permissions"]["deny"].append("Read(geheim/**)"))),
             ("97h", "Ausschlussdatei ohne Zeile des Kerns", M97_IGNORE,
-             lambda r: ersetze(os.path.join(r, ".cursorignore"), ("**/secrets/**\n", ""))),
+             lambda r: ersetze(os.path.join(r, ".cursorignore"), ("**/secrets/**\n", ""),
+                               roh=True)),
             ("97i", "Ausschlussdatei fehlt", M97_IGNORE_FEHLT,
              lambda r: os.remove(os.path.join(r, ".cursorignore"))),
             ("D440b", "Laufzeitregel mit der Endung .md statt .mdc", M440_ENDUNG,

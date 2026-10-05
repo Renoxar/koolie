@@ -123,11 +123,50 @@ def lauf(root: str) -> str:
     return (p.stdout or "") + (p.stderr or "")
 
 
-def lies(pfad: str) -> str:
-    return io.open(pfad, encoding="utf-8", newline="").read()
+# --- Zeilenenden: die Sonden sprechen CRLF, der Baum darf beides tragen (K-216) ------
+#
+# Die Suchtexte der Sonden sind unter Windows entstanden und tragen `\r\n` fest - rund
+# 210 Stellen. Auf einem LF-Arbeitsbaum traf keiner davon: gemessen am 2026-10-03 in
+# WSL, 101 Abweichungen.
+#
+# Statt jede Stelle umzuschreiben, uebersetzen lies() und schreib() an der Grenze: Im
+# Speicher ist der Text immer CRLF, auf der Platte traegt er die Form des Baums. Auf
+# einem CRLF-Baum reichen beide die Bytes unveraendert durch - der Lauf unter Windows
+# ist bytegleich zu dem vor dieser Aenderung.
+#
+# AUSNAHME `roh=True`: Dateien, die auf jedem Baum dieselbe Form tragen - was install.py
+# erzeugt, ist immer LF -, und Sonden, die die Form selbst zum Gegenstand haben.
+#
+# GRENZE, benannt: Auf einem LF-Baum ist ein einzelnes CR vor dem Zeilenende nicht von
+# einem CRLF zu unterscheiden; schreib() macht aus "\r\r\n" ein "\r\n". Eine Sonde,
+# die genau das braucht, schreibt roh.
 
 
-def schreib(pfad: str, text: str) -> None:
+def _zeilenende(quelle: str) -> str:
+    """Die Form des Baums, gelesen an diesem Modul in der Quelle - es liegt in jedem
+    Koolie-Baum und wird mit ihm ausgecheckt."""
+    pfad = os.path.join(quelle, ".koolie", "core", "tests", "scripts", "sonden",
+                        "apparat.py")
+    try:
+        with open(pfad, "rb") as fh:
+            return "\r\n" if b"\r\n" in fh.read() else "\n"
+    except OSError:
+        return "\r\n"
+
+
+ZEILENENDE = _zeilenende(QUELLE)
+
+
+def lies(pfad: str, roh: bool = False) -> str:
+    text = io.open(pfad, encoding="utf-8", newline="").read()
+    if ZEILENENDE == "\n" and not roh:
+        text = text.replace("\r\n", "\n").replace("\n", "\r\n")
+    return text
+
+
+def schreib(pfad: str, text: str, roh: bool = False) -> None:
+    if ZEILENENDE == "\n" and not roh:
+        text = text.replace("\r\n", "\n")
     io.open(pfad, "w", encoding="utf-8", newline="").write(text)
 
 
@@ -170,9 +209,9 @@ def ersetzt(text: str, *paare, quelle: str = "") -> str:
     return text
 
 
-def ersetze(pfad: str, *paare) -> None:
+def ersetze(pfad: str, *paare, roh: bool = False) -> None:
     """ersetzt() auf einer Datei - lesen, alle Paare pruefen, dann erst schreiben."""
-    schreib(pfad, ersetzt(lies(pfad), *paare, quelle=os.path.basename(pfad)))
+    schreib(pfad, ersetzt(lies(pfad, roh), *paare, quelle=os.path.basename(pfad)), roh)
 
 
 def zeile_nach(pfad: str, anker: str, neu: str) -> None:
@@ -282,6 +321,7 @@ class Einheit:
         self.arbeit = arbeit
         self.zeilen = []
         self.fehler = 0
+        self.ausgelassen = 0
         self.dauer = 0.0
 
     def eintrag(self, art: str, kennung: str, ok: bool, was: str) -> None:
@@ -331,6 +371,25 @@ class Einheit:
 def eintragen(art: str, kennung: str, satz: str, arbeit) -> None:
     """Eine Einheit in den Ausfuehrungsplan aufnehmen, statt sie sofort zu fahren."""
     EINHEITEN.append(Einheit(art, kennung, satz, arbeit))
+
+
+def nur_unter_windows(art: str, nummer: str, was: str, anmelden) -> None:
+    """Eine Einheit, die nur unter Windows misst - anderswo AUSGELASSEN, nicht bestanden.
+
+    `anmelden` ist der Aufruf, der sie unter Windows anmeldet. Anderswo steht an ihrer
+    Stelle eine Zeile mit AUSG, und die Ergebniszeile zaehlt sie mit: Ein Lauf, der eine
+    Sonde nicht faehrt, darf nicht aussehen wie einer, in dem sie bestanden hat (D-23).
+    """
+    if os.name == "nt":
+        anmelden()
+        return
+
+    def arbeit() -> None:
+        einheit = _ORT.einheit
+        einheit.ausgelassen += 1
+        einheit.zeilen.append(f"{art:10s} {nummer:4s} AUSG  {was}  [nur unter Windows messbar]")
+
+    eintragen(art, nummer, was, arbeit)
 
 
 def melde(art: str, nummer: str, ok: bool, was: str) -> None:

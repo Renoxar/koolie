@@ -92,6 +92,8 @@
     }
   ],
   "rule_frontmatter": "yaml",
+  "rule_globs": {"anchor": "**/"},
+  "_rule_globs_note": "Gemessen am 2026-10-05 mit Devin CLI 3000.11.3 (tests/protocols/2026-10-05-nachlauf-2.1.0-teil-2.md): Eine Regel mit trigger: glob laedt nur, wenn globs eine YAML-Liste ist UND das Muster nicht mit einem Verzeichnis beginnt; als Zeichenkette (mit oder ohne Anfuehrungszeichen) und mit Pfadpraefix (backend/src/**/*.java, auch in einer Liste) laedt sie nie. install.py schreibt globs deshalb als Listenblock und stellt jedem Muster ohne fuehrendes **/ oder / den Anker voran.",
   "root_instruction_imports": [],
   "agent_frontmatter": {
     "tools_field": "allowed-tools",

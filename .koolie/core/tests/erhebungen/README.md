@@ -116,7 +116,7 @@ Verzeichnisse hinweg schon geteilt; neu angelegt wird, was die Sitzung selbst er
 `fest` bleibt als Modus, weil er Platz und Bauzeit spart – nicht wegen der Kosten.
 
 ⚠️ **Was das Paket noch nicht kann** (`K-190`): Bäume aus dem **Übungsrepositorium** bauen.
-Dafür bleiben `umgebungen-bauen-b4.py`, `baeume-b4.py` und `messbaum-schnitt.py`; der Apparat
+Dafür bleiben `umgebungen-bauen-b4.py`, `baeume-b4.py`, `baeume-b23.py` und `messbaum-schnitt.py`; der Apparat
 fährt ihre Bäume im Modus `vorhanden`. Zwei von ihnen hatte `1.18.2` still gebrochen – sie
 kannten nur `Bash(…)` als Hülle eines Befehlsschlitzes und brachen beim ersten Baumbau
 danach ab (berichtigt mit `1.19.0`).
@@ -130,6 +130,8 @@ danach ab (berichtigt mit `1.19.0`).
 | `stand-b4.py` | sagt den Stand der Reihe in einem Befehl |
 | `historie-bauen-b4.py` | baut einen Meßbaum mit **echter Historie**, synthetischen Autoren und Übungs-Branches |
 | `baeume-b4.py` | legt Haupt- und Kontrollbäume an (`--ziel` sagt, wohin) |
+| `baeume-b23.py` | baut je Lauf einen Baum für `koolie-tests` und `koolie-error-analyze` – mit Kern aus dem Arbeitsbaum, Zuschnitt, Aufzeichnungsschnitt und geteiltem `node_modules`-Bestand; Messort über `LW_BASIS`, Linux und Windows |
+| `prompts-schreiben-b23.py` | schreibt die Prompts dieser zwölf Zellen nach `prompts/` der Erhebungsablage |
 | `k-bauen-b3.py` | baut den Kontrollzuschnitt **ohne die geprüfte Schranke**, mit Stammwächter |
 | `cc-overlay-fuellen.py` | füllt eine frische Installation aus dem versionierten Projektbestand |
 | `prompts-schreiben-b4.py`, `turn2-schreiben-b4.py` | schreiben die Prompts; Haupt- und Kontrollprompt sind **wörtlich gleich** |
