@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.4 |
+| Version | 0.3.5 |
 | Status | `pilot` |
 
 ## 1. Gegenstand und Geltung (normativ)
@@ -53,6 +53,6 @@ Für jeden Zeitpunkt MUSS nachvollziehbar sein: welche Framework-Version, welche
 | `aktiv` → `veraltet` → `zurückgezogen` | wie in `08-skill-conventions.md` Abschnitt 7; die Ankündigungsfrist des Release-Prozesses gilt unverändert (`.koolie/core/governance/RELEASE_PROCESS.md`) |
 
 4. **Ein Statuswert ist keine Aussage über das Verhalten eines KI-Clients.** Ob ein Client einem Träger folgt, belegt allein ein Sitzungstest des Testkatalogs. Ein Träger auf `pilot` ist strukturell abgenommen, nicht erprobt.
-5. **Ein Statuswechsel ist keine Versionsänderung.** Er ändert keine Anweisung des Trägers und hebt seine Version nicht. Auch der Änderungsverlauf des einzelnen Trägers verzeichnet ihn nicht; festgehalten ist er im Abnahmeprotokoll und im Änderungsverzeichnis des Frameworks.
+5. **Ein Statuswechsel ist keine Versionsänderung.** Er ändert keine Anweisung des Trägers und erhöht seine Version nicht. Auch der Änderungsverlauf des einzelnen Trägers verzeichnet ihn nicht; festgehalten ist er im Abnahmeprotokoll und im Änderungsverzeichnis des Frameworks.
 6. Der Stand aller Modulstatus ist ein Kriterium für Release 1.0.0. Prüfung 46 des Validators rechnet ihn bei jedem Lauf aus und hält ihn gegen die Standzeile in `.koolie/core/docs/ROADMAP.md`; eine Abweichung in beide Richtungen ist ein Fehler. Ein Statuswechsel ohne nachgezogene Standzeile lässt den Lauf scheitern.
 7. **Ein Client Pack führt zwei Versionsangaben, und sie beantworten verschiedene Fragen**: Die verbindliche Zielversion ist eine Versionsspanne und sagt, wofür das Pack gilt – sie ist eine Festlegung des Framework Owners. Die geprüfte Clientversion ist ein Punktwert und sagt, woran gemessen wurde – sie ist ein Messwert. Der Steckbrief des Packs führt beide als getrennte Zeilen. Ein offener Beleg gilt als erbracht, wenn ein datiertes Protokoll seinen Gegenstand gegen eine Installation innerhalb der Zielspanne misst – auch wenn das Protokoll älter ist als der Vorgang, der die Zeile anfasst. Die aufgelöste Zeile nennt dann Protokoll und Datum, damit sichtbar bleibt, wie alt der Beleg ist.

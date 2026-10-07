@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-CU` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.4.0 |
+| Version | 0.4.1 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Cursor – Kommandozeile (`cursor-agent`, auch `agent`) und IDE; die Agenten in der Cloud des Anbieters sind nicht Gegenstand dieses Packs |
@@ -187,7 +187,7 @@ Danach:
 3. Die Commit-Attribution global auf `false` setzen.
 4. Den Import fremder Konfigurationen in der IDE prüfen.
 
-`install.py` nennt diese Schritte nach der Installation und meldet belegte fremde Quellen. Nach jeder Hebung erinnert es daran, dass `.cursor/cli.json` und `.cursorignore` Saat sind und nicht angefasst werden.
+`install.py` nennt diese Schritte nach der Installation und meldet belegte fremde Quellen. Nach jedem Update erinnert es daran, dass `.cursor/cli.json` und `.cursorignore` Saat sind und nicht angefasst werden.
 
 Vor der ersten produktiven Nutzung sind die Basistests des Testkatalogs gegen diesen Client zu fahren und zu protokollieren.
 
@@ -233,3 +233,4 @@ Das Entscheidungsprotokoll des Schutz-Hooks ist kein Nachweis gegen den Agenten:
 | 0.2.1 | 2026-09-29 | Zeile B4 folgt dem Erzeugnis: Die Berechtigungsdatei sperrt das Overlay seit `1.17.0` nicht mehr, das tut allein der Schutz-Hook (D-448); die Zeile nannte die alte Sperre weiter (`CR-2026-158`, D-468) | `<FRAMEWORK_OWNER>` |
 | 0.3.0 | 2026-09-29 | **MCP-Aufrufe erreichen den Schutz-Hook** (`CR-2026-162`, D-486, D-487, `K-184`, `K-192`). Manifest: `hook_tools.mcp` mit `MCP:.*` und `hook_mcp_prefixes`. Zeile H1: MCP über `preToolUse`, gemessen mit einem Köderserver, und das Entscheidungsprotokoll; Abschnitt 7.3: seine Grenze (`K-200`) | `<FRAMEWORK_OWNER>` |
 | 0.4.0 | 2026-10-02 | Sprachlich überarbeitet; Zusagen, Einstufungen und Belege unverändert | `<FRAMEWORK_OWNER>` |
+| 0.4.1 | 2026-10-06 | „Update“ statt „Hebung“ (`CR-2026-175` E2); Zusagen, Einstufungen und Belege unverändert | `<FRAMEWORK_OWNER>` |

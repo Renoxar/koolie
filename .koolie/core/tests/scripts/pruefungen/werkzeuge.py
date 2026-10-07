@@ -182,15 +182,15 @@ def check_lieferumfang(root: str) -> None:
     wert = cm.lieferumfang(kern)
     if wert not in cm.LIEFERUMFAENGE:
         err(f"{datei}: trägt '{wert}' – bekannt sind {', '.join(cm.LIEFERUMFAENGE)}. "
-            f"Das nächste Heben hält daran an (D-367)")
+            f"Das nächste Update hält daran an (D-367)")
         return
     if wert != "nutzung":
         return
     da = [a for a in cm.NACHWEIS_ABLAGEN if os.path.exists(os.path.join(kern, *a.split("/")))]
     if da:
         err(f"{datei}: sagt 'nutzung', aber {', '.join(f'{KERN}/{a}/' for a in da)} "
-            f"liegt da. Das nächste Heben mit diesem Umfang löscht es; wer den ganzen "
-            f"Kern will, hebt mit --lieferumfang voll (D-367)")
+            f"liegt da. Das nächste Update mit diesem Umfang löscht es; wer den ganzen "
+            f"Kern will, aktualisiert mit --lieferumfang voll (D-367)")
         return
     hinweis(f"Lieferumfang 'nutzung' ({datei}): ohne die Nachweisschicht "
             f"({', '.join(cm.NACHWEIS_ABLAGEN)}). Verweise dorthin sind Herkunftsangaben "

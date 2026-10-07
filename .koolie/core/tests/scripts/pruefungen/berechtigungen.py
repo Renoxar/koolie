@@ -1437,7 +1437,15 @@ def check_mandatsschutz(root: str, man: dict) -> None:
 
 
 def check_modellaufruf_nur_lesend(root: str, man: dict) -> None:
-    """Pruefung 100 (D-451): Ein Skill mit Trigger 'model' ist rein lesend."""
+    """Pruefung 100 (D-451, CR-2026-175 E4): Ein Skill mit Trigger 'model' schreibt nicht
+    und gibt keinen Befehl vorab frei.
+
+    Bis 2.1.0 sperrte er auch exec. Seit 2.2.0 darf er die lesenden Git-Befehle nutzen -
+    aber nur nach den Regeln der Sitzung: exec steht weder in allowed-tools noch in
+    permissions.allow. Bei claude-code ist allowed-tools eine Vorabfreigabe, die keine
+    Befehle unterscheidet; ein Skill, den das Modell selbst aufruft, oeffnete sonst jede
+    Shell ohne Rueckfrage.
+    """
     if yaml is None:
         return  # ohne PyYAML kein Frontmatter - die Warnung dazu gibt main()
     for skills_dir, prefix in skill_dirs(root, man):
@@ -1450,13 +1458,21 @@ def check_modellaufruf_nur_lesend(root: str, man: dict) -> None:
             fm, _ = parse_frontmatter(read(pfad))
             if not isinstance(fm, dict) or "model" not in (fm.get("triggers") or []):
                 continue
-            deny = [str(d).strip().lower()
-                    for d in ((fm.get("permissions") or {}).get("deny") or [])]
-            fehlt = [v for v in ("edit", "exec") if v not in deny]
-            if fehlt:
+            rechte = fm.get("permissions") or {}
+            deny = [str(d).strip().lower() for d in (rechte.get("deny") or [])]
+            if "edit" not in deny:
                 err(f"{prefix}/{name}/SKILL.md: traegt den Trigger 'model', sperrt aber "
-                    f"{', '.join(fehlt)} nicht in permissions.deny. Den Modellaufruf erlaubt "
-                    f"08-skill-conventions.md nur einem rein lesenden Skill (D-451)")
+                    f"edit nicht in permissions.deny. Den Modellaufruf erlaubt "
+                    f"08-skill-conventions.md nur einem Skill, der nicht schreibt (D-451)")
+            werkzeuge = [str(w).strip().lower() for w in (fm.get("allowed-tools") or [])]
+            vorab = [str(a).strip() for a in (rechte.get("allow") or [])
+                     if str(a).strip().lower() == "exec"
+                     or str(a).strip().lower().startswith("exec(")]
+            if "exec" in werkzeuge or vorab:
+                err(f"{prefix}/{name}/SKILL.md: traegt den Trigger 'model' und gibt Befehle "
+                    f"vorab frei ({', '.join((['exec in allowed-tools'] if 'exec' in werkzeuge else []) + vorab)}). "
+                    f"Ein Skill, den das Modell selbst aufruft, nutzt die Shell nur nach den "
+                    f"Regeln der Sitzung (08-skill-conventions.md, D-451)")
 
 
 # --- Pruefung 101: die MCP-Freigaben (CR-2026-157, D-459) ------------------------------

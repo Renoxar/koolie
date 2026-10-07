@@ -2,6 +2,59 @@
 
 Format: Semantic Versioning; je Release Änderungen, Migrationshinweise für Overlays und bekannte Einschränkungen. Prozess: `.koolie/core/governance/RELEASE_PROCESS.md`.
 
+## [2.2.0] - 2026-10-07
+
+**Der Messapparat baut die Bäume selbst, „Update“ statt „Heben“ und neue Overlay-Muster – mit einem
+Party-Overlay** (`CR-2026-175` E1 bis E10, **D-549** bis **D-557**; `K-152`, `K-187`, `K-190`, `K-197`, `K-198`,
+`K-199`, `K-214`, `K-215`, `K-218`, `K-221` geklärt, `K-219` und `K-220` neu). 77 Sitzungsläufe
+`claude-code`, 52,51 USD nach Listenpreis, dazu 5 Läufe der Agent-CLI von `devin-desktop`, 5 `kiro-cli` und 5
+`codex-cli`. Nachlauf: 57 Zellen, 51 bestanden, 6 fehlgeschlagen an `K-220`. Kriterium 2 von D-11 bleibt 0.
+
+**Neu**
+
+- **Overlay-Muster je Projekttyp** (D-555, `K-215`): `java-spring`, `web-frontend` und `infrastructure` bauen auf
+  `general` auf und sperren zusätzlich, was für den Projekttyp heikel ist – Schlüsselspeicher, lokale
+  Umgebungsdateien, Terraform-Variablen, Kubeconfig und die Konfiguration der Prüfwerkzeuge. Gewählt wird genau ein
+  Muster; ein Muster kann auf einem anderen aufbauen und eigene Overlay-Regeln mitbringen.
+- **Das Party-Overlay `zoomies`** (D-555): alles aus `general`, dazu eine kurze, immer geladene Regel, die
+  Dokumenten, Commit-Texten, Testnamen, Log- und Merge-Request-Texten ein Augenzwinkern erlaubt – höchstens eines je
+  Artefakt, nie bei Sperren, Freigaben, Sicherheit oder Datenschutz, nie über Personen. Elf Bausteine, jeder in
+  `21-overlay-zoomies.md` abschaltbar; die Berechtigungen sind dieselben wie bei `general`. Im Dialog nie die Vorgabe.
+- **Muster eines Unternehmens** (D-554, `K-214`): `--overlay-quelle <pfad>` beziehungsweise
+  `KOOLIE_OVERLAY_QUELLE` im Dialog. Name, Version, Quelle und SHA-256 stehen im Manifest; `--update` mit derselben
+  Quelle meldet eine neuere Version und ergänzt neue Dokumente, ohne Vorhandenes zu überschreiben.
+- **MCP am Schutz-Hook bei `devin-desktop`, `kiro` und `openai-codex`** (D-553, `K-198`): Inhalt und Pfadfelder
+  eines MCP-Aufrufs werden jetzt auch dort geprüft. `kiro-cli` 2.27.1 führt die Hooks auch ohne Rückfragen aus.
+- **Die Wirksamkeitsprobe belegt ohne Modell, dass die Hooks laden** (D-553, `K-199`): bei `devin-desktop` und
+  `openai-codex`, dort auch das Hook-Vertrauen.
+- **Lesende Git-Befehle in den sieben rein lesenden Skills** (D-552): `git status`, `diff`, `log`, `show`, `blame`
+  sind erlaubt; die Shell wird nicht vorab freigegeben und folgt den Regeln der Sitzung.
+- **Der Messapparat baut die Messbäume selbst** (D-549, `K-190`, `K-152`, `K-218`): `messen.py baeume` aus einer
+  festen Marke des Übungsrepositoriums; Präparationen je Zelle im Kern; Messläufe ohne Konto-Connectoren.
+
+**Geändert**
+
+- **„Update“ statt „Heben“** (D-550): in Dokumentation, Meldungen und Checklisten; `koolie-overlay-pflege` 0.3.0
+  nimmt den Anlass `update`, `hebung` gilt bis `2.3.0` weiter.
+- **Veröffentlichung auf `ubuntu-24.04`** (D-551): festes Runner-Image; `RELEASE_PROCESS.md` sagt, was bei einem
+  gestörten Lauf zu tun ist.
+- `koolie-repo-analyze` 0.1.8 öffnet eine als K3 gekennzeichnete Datei nicht mehr (`K-221`).
+- Die Meldung des Schutz-Hooks zum Mandat nennt die Auskunft `mandat.py status` als einzelnen Befehl.
+
+**Migrationshinweise für Overlays**
+
+- Keine Pflichtänderung. Wer `koolie-overlay-pflege hebung` aufruft, nimmt künftig `update`.
+- Projekte mit `kiro`: Die Hooks laufen ab `kiro-cli` 2.27.1 auch im Betrieb ohne Rückfragen.
+- Projekte mit `devin-desktop`, `kiro` oder `openai-codex` und MCP-Servern: Die Berechtigungsdatei ist Saat und wird
+  bei `--update` nicht geschrieben; den Matcher `mcp__.*` (bei `kiro` `mcp_.*`) im `PreToolUse`-Eintrag von Hand
+  nachziehen – `install.py --probe` zeigt in H2, ob er fehlt.
+
+**Bekannte Einschränkungen**
+
+- `claude-code` 2.1.291 bietet keine Werkzeuge `Grep` und `Glob` mehr an; die rein lesenden Skills suchen über die
+  Shell, und sechs Zellen ihrer Testblätter sind deshalb fehlgeschlagen (`K-220`, Ziel `2.3.0`).
+- Der öffentliche Spiegel des Übungsrepositoriums steht aus.
+
 ## [2.1.0] - 2026-10-05
 
 **Lehren aus der ersten Veröffentlichung ohne Token, die offenen Zellen – und die Glob-Regel, die nur aus einer

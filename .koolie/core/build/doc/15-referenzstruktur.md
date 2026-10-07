@@ -28,8 +28,8 @@ Angelegt und aktualisiert werden die Wurzelbestandteile durch `.koolie/core/inst
 |---|---|
 | `install.py --target <projekt>` | kopiert nur `.koolie/core/`, nie ganz `.koolie/`, und installiert dann mit dem kopierten Skript. Unter Windows prüft es vorher, ob ein Pfad im Zielprojekt die Längengrenze überschreitet, und kopiert dann nichts |
 | `install.cmd` (Windows), `install.command` (macOS) | Starter in der Wurzel des Release-Archivs; sie fragen Projektverzeichnis, Client Pack und Overlay-Muster ab |
-| `--lieferumfang voll` \| `nutzung` | der ganze Kern oder der Kern ohne die Nachweisschicht (Änderungsanträge, Abnahmeprotokolle, Erhebungen, `build/`). Die Wahl steht in `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter |
-| `--overlay general` | legt bei der Erstinstallation statt des leeren Overlays das Overlay-Muster *General Development* an |
+| `--lieferumfang voll` \| `nutzung` | der ganze Kern oder der Kern ohne die Nachweisschicht (Änderungsanträge, Abnahmeprotokolle, Erhebungen, `build/`). Die Wahl steht in `.koolie/core/LIEFERUMFANG` und gilt beim Update weiter |
+| `--overlay <muster>` | legt bei der Erstinstallation statt des leeren Overlays ein Overlay-Muster an: `general`, die Typmuster `java-spring`, `web-frontend` und `infrastructure`, das Party-Overlay `zoomies` oder mit `--overlay-quelle <pfad>` ein Muster eines Unternehmens |
 
 Voraussetzung auf dem Zielrechner ist Python ab 3.8.
 
@@ -85,7 +85,7 @@ Voraussetzung auf dem Zielrechner ist Python ab 3.8.
 │   │   │   ├── skills/                  # koolie-* Referenz-Skills, eine Quelle je Skill
 │   │   │   ├── role-packs/              # Ebene 6 – RP-DEV und RP-RE ausgeliefert
 │   │   │   ├── tech-packs/              # Ebene 5 – Vorlage, kein konkretes Pack
-│   │   │   ├── overlay-patterns/        # Overlay-Muster general (--overlay general)
+│   │   │   ├── overlay-patterns/        # Overlay-Muster (--overlay <muster>)
 │   │   │   └── org-policies/            # Ebene B: Einbindungspunkt + Klassifizierungs-Mapping
 │   │   ├── templates/                   # Project-Overlay-Saat · Regelvorlagen · SKILL_TEMPLATE
 │   │   ├── prompts/                     # Prompt-Bibliothek FW-PR-001…012 + README (Kap. 21)

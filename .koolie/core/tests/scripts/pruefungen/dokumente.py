@@ -86,7 +86,7 @@ def check_verirrtes_steuerzeichen(root: str) -> None:
 # ERKANNT WIRD DAS AM KENNZEICHEN DES QUELLREPOSITORIUMS (D-351). Bis 1.4.0 war es
 # die Uebergabe; seit sie nicht mehr versioniert ist (D-350), traegt eine eigene
 # Datei den Anker. Sie wandert NICHT in ein Zielprojekt; `install.py` legt sie nicht
-# an, und das Heben kopiert nur den Kern. Ein Anker, der sich selbst belegt.
+# an, und das Update kopiert nur den Kern. Ein Anker, der sich selbst belegt.
 # ➡️ Eine Pruefung, die im Framework gruen und in jeder Installation rot ist, ist
 #    falsch gebaut - dieselbe Ueberlegung, mit der Pruefung 46 ihren Zaehlbereich auf
 #    den Kern beschraenkt: Was nicht in jeder Installation gleich ist, gehoert nicht in
@@ -686,7 +686,7 @@ def check_zeilenendeform(root: str) -> None:
 # Pruefung ist dort gruen, und sie braucht dafuer keine Ausnahme.
 #
 # 🔴 GRENZE, BENANNT: SIE MISST DIE BEHAUPTUNG, NICHT DIE TATSACHE. Wer die Zeile
-# aendert, ohne zu heben, kommt durch. Das ist dieselbe Bauform wie bei Pruefung 77, die
+# aendert, ohne zu aktualisieren, kommt durch. Das ist dieselbe Bauform wie bei Pruefung 77, die
 # die VERSION des Hauptdokuments misst und nicht seinen INHALT - und sie steht hier,
 # weil eine Grenze, die man nicht nennt, wie eine Zusage aussieht.
 #
@@ -747,7 +747,7 @@ def check_bestandsliste_stand(root: str) -> None:
             continue
         name = zellen[projekt].strip() if len(zellen) > projekt else "(ohne Namen)"
         err(f"{P82_LISTE}: {name} steht auf Framework-Version {wert}, "
-            f"{KERN}/VERSION führt {stand}. Das Heben der übernehmenden Projekte gehört "
+            f"{KERN}/VERSION führt {stand}. Das Update der übernehmenden Projekte gehört "
             f"VOR den Release-Commit (D-330); eine Liste, die erst danach "
             f"fortgeschrieben wird, ist beim Release falsch. ⚠️ Diese Prüfung mißt die "
             f"Behauptung der Zeile, nicht den Stand des Projekts (D-331)")
@@ -1227,7 +1227,7 @@ def check_dokumentform(root: str) -> None:
 P94_AUSNAHMEN = ("framework/runtime/", "templates/", "examples/")
 P94_AUSNAHMEN_RE = re.compile(
     r"(?:^|/)README\.md$|^framework/role-packs/[^/]+/runtime/|^clients/[^/]+/root-template/|"
-    r"^framework/overlay-patterns/[^/]+/documents/|^governance/CHANGE_REQUEST_TEMPLATE\.md$|"
+    r"^framework/overlay-patterns/[^/]+/(?:documents|rules)/|^governance/CHANGE_REQUEST_TEMPLATE\.md$|"
     r"^framework/org-policies/MAPPING_CLASSIFICATION\.md$")
 P94_KOPF = "| Attribut | Wert |"
 

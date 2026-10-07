@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REL` |
-| Version | `0.5.1` |
+| Version | `0.5.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -52,7 +52,7 @@ Release-Commit sitzt.
 | Schritt | Was | Wer | Lage |
 |---|---|---|---|
 | 1 | **Bestandsliste fortschreiben:** `.koolie/core/governance/ADOPTION_REGISTRY.md` nennt je Projekt den Zielstand. Prüfung 82 hält die Spalte gegen `VERSION` | Werkzeug oder Mensch | vor dem Commit |
-| 2 | **Übernehmende Projekte heben:** `python <framework>/.koolie/core/install.py --target <projekt> --update` (kopiert aus dem Arbeitsbaum nur Verfolgtes und ruft dann `install.py --update` im Projekt auf); den Overlay-Wert in den drei Trägern nachziehen; dort `validate-framework.py --strict-overlay` und `install.py --probe` fahren; die Hebung **im übernehmenden Projekt committen**. Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt | Werkzeug oder Mensch | vor dem Commit, nach dem letzten Eingriff in den Kern |
+| 2 | **Übernehmende Projekte aktualisieren:** `python <framework>/.koolie/core/install.py --target <projekt> --update` (kopiert aus dem Arbeitsbaum nur Verfolgtes und ruft dann `install.py --update` im Projekt auf); den Overlay-Wert in den drei Trägern nachziehen; dort `validate-framework.py --strict-overlay` und `install.py --probe` fahren; das Update **im übernehmenden Projekt committen**. Ausnahmslos, auch bei einem Patch-Release ohne berührtes Artefakt | Werkzeug oder Mensch | vor dem Commit, nach dem letzten Eingriff in den Kern |
 | 3 | **Erzeugnisse der Lieferung bauen:** Hauptdokument (`build/assemble.py`) und Word-Fassung (`build/build-docx.py`) je Client Pack, und im Erzeugnis nachzählen | Werkzeug oder Mensch | vor dem Commit |
 | 4 | **Annotierte, signierte Marke** auf dem Release-Commit: `v` und der Inhalt von `VERSION`. Die Nachricht nennt Release, Antrag, Entscheidungen und die Freigabezeile *„Freigegeben durch den Framework Owner am `<JJJJ-MM-TT>`"* | **der Framework Owner, nicht ein Werkzeug** | nach dem Commit |
 | 5 | **Archiv** aus der Marke: `git -c core.eol=lf -c core.autocrlf=input -c tar.umask=022 archive --format=tar.gz --prefix=koolie-<Version>/ -o <Ziel> v<Version>` | Werkzeug oder Mensch | nach dem Commit |
@@ -60,22 +60,22 @@ Release-Commit sitzt.
 | 7 | **Ablage außerhalb des Repositoriums** mit Prüfsumme des Archivs; Mitteilung an die übernehmenden Projekte nach Punkt 3 | Werkzeug oder Mensch | nach dem Commit |
 
 **Zu Schritt 1 und 2.** Die Bestandsliste liegt im Framework und in jeder ausgelieferten Kopie.
-Deshalb nennt Schritt 1 den Zielstand, bevor Schritt 2 hebt – sonst kopiert das Heben den alten
+Deshalb nennt Schritt 1 den Zielstand, bevor Schritt 2 aktualisiert – sonst kopiert das Update den alten
 Stand in die Projekte. Prüfung 82 prüft nur die Zeile, nicht den Stand des Projekts; den Git-Stand
 eines fremden Repositoriums erreicht keine Prüfung.
 
-**Zu Schritt 2.** Das Heben ist ein Lauf gegen eine fremde Installation und findet, was kein
+**Zu Schritt 2.** Das Update ist ein Lauf gegen eine fremde Installation und findet, was kein
 Validatorlauf im Framework findet; deshalb steht es vor dem Commit und nicht hinter der Freigabe.
 
 - Es ist der letzte Eingriff in den Kern. Jede Änderung an `.koolie/core/**` danach macht die
-  Kopien falsch und verlangt erneutes Heben. Die lokale Übergabe darf danach noch geschrieben
+  Kopien falsch und verlangt ein erneutes Update. Die lokale Übergabe darf danach noch geschrieben
   werden; sie wird nicht versioniert und nicht installiert.
 - Quelle ist der Arbeitsbaum, nicht `HEAD`: Vor dem Commit fehlen in `HEAD` der Änderungsantrag
   und das Protokoll des Releases. Die Beschränkung auf verfolgte Dateien hält Bytecode und
   `build/out/` draußen.
 - `--update` schreibt Berechtigungs- und Hook-Datei nie. Erst `install.py --probe` meldet, wenn
   eine neue Werkzeugklasse im Matcher des Projekts fehlt (Kontrolle H2).
-- Der Schritt endet mit dem Commit im übernehmenden Projekt, damit die Hebung dauerhaft ist.
+- Der Schritt endet mit dem Commit im übernehmenden Projekt, damit das Update dauerhaft ist.
 
 **Zu Schritt 3.** Hauptdokument und Word-Fassung liegen unter `build/out/`, stehen in der
 `.gitignore` und gehören nicht ins Archiv. Keine Prüfung erreicht sie. Wer sie mitliefert, legt sie
@@ -141,6 +141,14 @@ Lauf. Ist es passiert: die Marke auf GitHub löschen und den Spiegel in Gitea ne
 
 **npm braucht nach dem Hochladen einige Minuten.** Die Version erscheint zuerst in den Metadaten
 (`npm view`), die Paketdatei erst danach; der Workflow wartet auf die Datei.
+
+**Ein gestörter Lauf wird wiederholt, die Marke bleibt.** Findet ein Job keinen Runner (*„job was
+not acquired by Runner“*) oder antwortet TestPyPI mit einem Serverfehler, im Lauf „Re-run failed
+jobs“ wählen, sobald die Störung vorbei ist – bestandene Jobs laufen nicht noch einmal, die Freigabe
+der Umgebung `release` wird neu verlangt. Das geht auch über mehrere Versuche. Die Marke wird dafür
+nie gelöscht oder neu gesetzt: Sie ist signiert, und ein neuer Push startet einen zweiten Lauf.
+Der Workflow läuft auf einem festen Runner-Image (`ubuntu-24.04`), damit ein Wechsel des Images eine
+Änderung an `publish.yml` ist und nicht still zwischen zwei Releases geschieht.
 
 #### Einrichtung für Schritt 9 (einmalig, durch den Framework Owner)
 

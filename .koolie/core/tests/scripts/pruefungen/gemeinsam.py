@@ -708,7 +708,7 @@ def _tabellenspalte(kopf: str, ueberschrift: str) -> int:
 # Ausgelieferte geprueft, auch auf dem Arbeitsplatz, der die Datei noch fuehrt.
 # ➡️ Ein Anker, der nur an einem Arbeitsplatz liegt, ist keiner.
 # Das Kennzeichen ist deshalb eine eigene, versionierte Datei NEBEN dem Kern: Das
-# Heben kopiert nur den Kern, und install.py legt sie nicht an.
+# Update kopiert nur den Kern, und install.py legt sie nicht an.
 # Die Einstiegsdokumente des Quellrepositoriums in seiner Wurzel (D-437): die README,
 # der Quickstart und ihre englischen Fassungen. Klasse A wie die README, und aus
 # demselben Grund nur im Quellrepositorium - in einem Projekt gehoert die Wurzel dem
@@ -745,7 +745,7 @@ def ist_quellrepositorium(root: str) -> bool:
 # DREI GEGENSTAENDE:
 #   (a) LIEFERUMFANG traegt einen bekannten Wert.
 #   (b) "nutzung" stimmt mit dem Bestand: Keine Ablage der Nachweisschicht liegt da.
-#       Sonst behauptete die Datei weniger, als geliefert ist - und das naechste Heben
+#       Sonst behauptete die Datei weniger, als geliefert ist - und das naechste Update
 #       loeschte es.
 #   (c) Das Quellrepositorium fuehrt KEINE solche Datei. Es ist keine Installation;
 #       eine Quelle, die "nutzung" behauptet, kann install.py keinen vollen Kern mehr

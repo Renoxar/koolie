@@ -9,7 +9,9 @@ allowed-tools:
   - edit
 permissions:
   deny:
-    - exec
+    - Exec(git push)
+    - Exec(git commit)
+    - Exec(git add)
 triggers:
   - user
 ---
@@ -18,7 +20,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-011` |
 | Name | `koolie-docs-update` |
-| Version | `0.1.7` |
+| Version | `0.1.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M5 Documentation Support |
@@ -80,7 +82,7 @@ triggers:
 
 **Grenzen (DARF NICHT):**
 
-- Quellcode, Quellkommentare, Tests, Konfiguration oder Dateien außerhalb `<DOC_PATHS>` erzeugen oder ändern; Dokumente löschen, verschieben oder umbenennen ohne ausdrückliche Einzelfreigabe; Befehle ausführen (auch keine Dokumentationsgeneratoren).
+- Quellcode, Quellkommentare, Tests, Konfiguration oder Dateien außerhalb `<DOC_PATHS>` erzeugen oder ändern; Dokumente löschen, verschieben oder umbenennen ohne ausdrückliche Einzelfreigabe; Befehle ausführen außer die lesenden Git-Befehle `git status`, `git diff`, `git log`, `git show` und `git blame` (auch keine Dokumentationsgeneratoren).
 - Verhalten dokumentieren, das im Code nicht belegt ist – insbesondere geplantes, gewünschtes oder aus Tickets abgeleitetes Verhalten; Eigenschaften wie „abwärtskompatibel" oder „performant" ohne Beleg übernehmen (Q7).
 - Entscheidungen erfinden oder nachträglich begründen; fachliche Abweichungen zwischen Code und Dokument eigenständig auflösen.
 - Personen, Kunden, Behörden, Standorte, Adressen, Hostnamen, Umgebungs- und Mandantenkennungen, Konfigurationswerte oder Echtdaten übernehmen oder ergänzen – auch nicht, wenn das Dokument entsprechende Abschnitte vorsieht (dann `<TBD: …>` und Meldung).
@@ -129,7 +131,7 @@ triggers:
 
 **Qualitätskriterien:**
 
-- [ ] Alle geänderten Dateien liegen in `<DOC_PATHS>`; kein Quellcode, kein Quellkommentar, keine Testdatei berührt; keine Befehle ausgeführt.
+- [ ] Alle geänderten Dateien liegen in `<DOC_PATHS>`; kein Quellcode, kein Quellkommentar, keine Testdatei berührt; keine Befehle außer lesenden Git-Befehlen ausgeführt.
 - [ ] Jede Änderung hat eine Code-Fundstelle und eine Begründung; keine Aussage über nicht belegtes oder geplantes Verhalten; keine erfundenen Begründungen.
 - [ ] Fachliche Abweichungen sind gemeldet, nicht aufgelöst; Streichungen und Ergänzungen nur nach Bestätigung.
 - [ ] Keine Personen, Kunden, Behörden, Adressen, Hostnamen, Umgebungs- oder Mandantenkennungen, Konfigurationswerte oder Echtdaten; keine K3-Inhalte.

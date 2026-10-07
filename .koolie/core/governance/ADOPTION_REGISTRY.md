@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-GOV-REG` |
-| Version | `0.3.0` |
+| Version | `0.3.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Gilt für | alle Projekte, die den Framework-Kern übernommen haben |
@@ -12,22 +12,22 @@
 ## 1. Wozu diese Liste da ist
 
 Sie beantwortet eine Frage: Welches Projekt läuft auf welchem Stand, und wann wurde es zuletzt
-gehoben? Ein Projekt, das mehrere Releases zurückliegt, fällt hier auf.
+aktualisiert? Ein Projekt, das mehrere Releases zurückliegt, fällt hier auf.
 
 ## 2. Der Bestand
 
-| Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt gehoben |
+| Projekt | Rolle | Client Pack | Framework-Version | Overlay-Version | zuletzt aktualisiert |
 |---|---|---|---|---|---|
-| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **2.1.0** | `0.3.45` | 2026-10-05 |
-| `devpacks/test-devin-framework` | **Übungsrepositorium** – Meßgegenstand der Sitzungstests, 34 Präparationen | `devin-desktop` | **2.1.0** | `1.4.40` | 2026-10-05 |
+| `devpacks/otp-generator` | **Pilot** – ein echtes Projekt, keine Spielwiese | `claude-code` | **2.2.0** | `0.3.46` | 2026-10-07 |
+| `devpacks/test-devin-framework` | **Übungsrepositorium** – Übungscode mit den dauerhaften Präparationen und Onboarding; Basis der Messbäume ist die Marke `apparat-basis-1` | `devin-desktop` | **2.2.0** | `1.4.41` | 2026-10-07 |
 
 Beide Projekte haben den Lieferumfang `voll` und werden mit
-`install.py --target <projekt> --update` gehoben. Was ein Release in einem Projekt geändert hat,
+`install.py --target <projekt> --update` aktualisiert. Was ein Release in einem Projekt geändert hat,
 steht im Änderungsverlauf seines Overlays und im `CHANGELOG.md`.
 
-Die Liste nennt den **Zielstand**, bevor gehoben wird: Schritt 1 des Verfahrens in
-`RELEASE_PROCESS.md` Abschnitt 4.1 schreibt sie fort, Schritt 2 hebt die Projekte und committet
-die Hebung dort. So trägt die ausgelieferte Kopie denselben Stand wie das Original. Prüfung 82
+Die Liste nennt den **Zielstand**, bevor aktualisiert wird: Schritt 1 des Verfahrens in
+`RELEASE_PROCESS.md` Abschnitt 4.1 schreibt sie fort, Schritt 2 aktualisiert die Projekte und committet
+das Update dort. So trägt die ausgelieferte Kopie denselben Stand wie das Original. Prüfung 82
 hält die Spalte `Framework-Version` gegen `.koolie/core/VERSION`; sie prüft die Zeile, nicht den
 Stand des Projekts.
 

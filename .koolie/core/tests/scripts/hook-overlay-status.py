@@ -44,6 +44,17 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from overlay_status import (AKTIV, auswerten, status_angaben,  # noqa: E402
                             version_angaben, versionen_auswerten)
 
+# Die Startmarke der Wirksamkeitsprobe (K-199): Nennt die Umgebung eine Datei, haelt der Hook
+# dort fest, DASS er lief - ohne Inhalt, ohne Projektangaben. So belegt die Probe ohne
+# Modellaufruf, dass der Client die Hooks der Projektdatei geladen hat.
+_marke = os.environ.get("KOOLIE_STARTMARKE")
+if _marke:
+    try:
+        with open(_marke, "a", encoding="utf-8") as _fh:
+            _fh.write("hook-overlay-status\n")
+    except OSError:
+        pass
+
 argumente = [a for a in sys.argv[1:] if not a.startswith("-")]
 root = argumente[0] if argumente else os.getcwd()
 regelablage = argumente[1] if len(argumente) > 1 else None

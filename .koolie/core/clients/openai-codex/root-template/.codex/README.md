@@ -20,7 +20,7 @@ Diese Ablage ist die **Laufzeitform** des Frameworks für den Client `openai-cod
 
 **1. Die Regeldateien wirken über ihre Nennung, nicht über einen Ladetrigger.** Dieser Client lädt von sich aus **nur** `AGENTS.md`. Eine Regeldatei in diesem Verzeichnis wirkt, weil die Wurzel-Anweisung sie nennt und zu lesen aufgibt – nicht, weil die Engine sie einspeist. *Was eine Nennung bewirkt, hängt am Modell.*
 
-**2. Ohne Vertrauenseintrag trägt diese Ablage nichts.** `config.toml`, `hooks.json` und `rules/*.rules` laden erst, wenn das Projekt in der **Benutzerkonfiguration des Clients** als vertraut eingetragen ist; der Schutz-Hook braucht darüber hinaus sein **eigenes** Vertrauen. Beides liegt außerhalb dieses Repositoriums und ist je Arbeitsplatz zu setzen. **Jede Hebung des Frameworks ändert den Hook – und damit sein Vertrauen.**
+**2. Ohne Vertrauenseintrag trägt diese Ablage nichts.** `config.toml`, `hooks.json` und `rules/*.rules` laden erst, wenn das Projekt in der **Benutzerkonfiguration des Clients** als vertraut eingetragen ist; der Schutz-Hook braucht darüber hinaus sein **eigenes** Vertrauen. Beides liegt außerhalb dieses Repositoriums und ist je Arbeitsplatz zu setzen. **Jedes Update des Frameworks ändert den Hook – und damit sein Vertrauen.**
 
 **3. Eine Datei namens `AGENTS.override.md` würde die Wurzel-Anweisung vollständig ersetzen.** Nicht ergänzen: ersetzen. Das Framework legt sie nicht an und liefert auch keine Vorlage dafür; `validate-framework.py` meldet sie, wenn sie da ist.
 

@@ -60,7 +60,7 @@ M109 = "Die Werkzeugbeschränkung eines Skills wirkt nur mit beiden Feldern"
 
 
 def _109_nur_allowed(root: str) -> None:
-    ersetze(_p(root, SKILL_109), ("permissions:\r\n  deny:\r\n    - edit\r\n    - exec\r\n", ""))
+    ersetze(_p(root, SKILL_109), ("permissions:\r\n  deny:\r\n    - edit\r\n", ""))
 
 
 sonde("109", "Ein Kern-Skill mit allowed-tools, aber ohne permissions wird gemeldet",

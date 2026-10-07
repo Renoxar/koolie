@@ -9,7 +9,6 @@ allowed-tools:
 permissions:
   deny:
     - edit
-    - exec
 triggers:
   - user
   - model
@@ -19,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-003` |
 | Name | `koolie-change-analyze` |
-| Version | `0.1.9` |
+| Version | `0.1.11` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -32,7 +31,7 @@ triggers:
 
 - **Zweck:** Klärt vor jeder Planung oder Umsetzung, was eine gewünschte Änderung im Repository tatsächlich berührt: betroffene Komponenten und deren Verwender (per Suche nach Bezeichnern), Schnittstellen und Datenmodell, bestehende Tests und Testlücken, Risiken je Faktor R1–R13 mit Begründung, einen nicht bindenden Vorschlag der Kontrollstufe, offene fachliche Fragen für `<PRODUCT_OWNER_ROLE>` und die Empfehlung des Folge-Skills. Ergebnis ist ein Analysebericht – kein Plan und keine Umsetzung.
 - **Zielgruppe:** Entwicklerinnen und Entwickler (Vorbereitung von Preflight und Planung), Modul-Owner, `<PRODUCT_OWNER_ROLE>` (fachliche Rückfragen), Reviewerinnen und Reviewer (späterer Scope-Abgleich).
-- **Trigger:** Eine Aufgabe oder ein Ticket liegt in bereinigter Form vor und soll bewertet werden (Schritt 7 des Standardarbeitsablaufs); vor `koolie-plan` oder `koolie-change-small`; wenn unklar ist, wie umfangreich oder riskant eine Änderung ist. Aufruf: `/koolie-change-analyze "<bereinigte Aufgabenbeschreibung>"` oder `/koolie-change-analyze <ticket-kennung>` (nur die Kennung; den bereinigten Inhalt stellt der Mensch bereit). Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit, exec); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
+- **Trigger:** Eine Aufgabe oder ein Ticket liegt in bereinigter Form vor und soll bewertet werden (Schritt 7 des Standardarbeitsablaufs); vor `koolie-plan` oder `koolie-change-small`; wenn unklar ist, wie umfangreich oder riskant eine Änderung ist. Aufruf: `/koolie-change-analyze "<bereinigte Aufgabenbeschreibung>"` oder `/koolie-change-analyze <ticket-kennung>` (nur die Kennung; den bereinigten Inhalt stellt der Mensch bereit). Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit; lesende Git-Befehle erlaubt, die Shell wird nicht vorab freigegeben); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
 - **Nicht verwenden, wenn:** eine Codebasis erst kennengelernt werden soll (`koolie-repo-analyze`), eine einzelne Einheit erklärt werden soll (`koolie-code-explain`), ein Fehler anhand eines Fehlerberichts analysiert werden soll (`koolie-error-analyze`) oder der Plan bereits bestätigt ist (`koolie-change-small`).
 
 ## 2. Vorbedingungen, Eingaben und Kontext
@@ -73,7 +72,7 @@ triggers:
 
 **Grenzen (DARF NICHT):**
 
-- Dateien erzeugen, ändern, verschieben oder löschen; Befehle ausführen – auch keine Tests „zur Prüfung der Abdeckung"; in ein externes System schreiben (Ticket, Kommentar, Seite).
+- Dateien erzeugen, ändern, verschieben oder löschen; Befehle ausführen außer die lesenden Git-Befehle `git status`, `git diff`, `git log`, `git show` und `git blame` – auch keine Tests „zur Prüfung der Abdeckung"; in ein externes System schreiben (Ticket, Kommentar, Seite).
 - Einen Änderungsplan, Schrittfolgen oder Code-Entwürfe liefern (`koolie-plan`); zulässig ist die Benennung der berührten Stellen.
 - Die Kontrollstufe festlegen oder als festgelegt darstellen; die Delegationsverbotsliste auslegen (nur Berührung kennzeichnen, Entscheidung durch den Menschen).
 - Fachliche Fragen selbst beantworten oder Annahmen über Anforderungen treffen (P3).

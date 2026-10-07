@@ -6,7 +6,7 @@
 | Ebene | 1 – Framework Core |
 | Verbindlichkeit | normativ (Abschnitte 1–7), Erläuterung (Abschnitt 8) |
 | Owner | `<FRAMEWORK_OWNER>` |
-| Version | 0.3.6 |
+| Version | 0.3.7 |
 | Status | `pilot` |
 
 ## 1. Begriff (normativ)
@@ -40,7 +40,7 @@ Die Tabelle beschreibt das Frontmatter der **Quelle** unter `framework/skills/`.
 | `argument-hint` | SOLL | erwartete Argumente, zum Beispiel `[pfad-oder-ticket]` |
 | `allowed-tools` | MUSS | minimal notwendige Werkzeuge (`read`, `grep`, `glob`, `edit`, `exec`, MCP-Muster); lesende Skills ohne `edit` und `exec` |
 | `permissions` | SOLL | zusätzliche `deny`/`ask`/`allow`-Regeln des Skills; additiv zur Sitzung `[DOK]` |
-| `triggers` | MUSS | `["user"]` für alle Skills, die Dateien ändern oder Befehle ausführen; `["user", "model"]` nur für rein lesende Skills |
+| `triggers` | MUSS | `["user"]` für alle Skills, die Dateien ändern oder Befehle vorab freigeben; `["user", "model"]` nur für Skills, die `edit` in `permissions.deny` sperren und `exec` weder in `allowed-tools` noch in `permissions.allow` führen. Ihre Shell folgt den Regeln der Sitzung: Ein lesender Git-Befehl läuft wie ohne Skill, jeder andere Befehl fragt nach oder wird abgewiesen. Ein Skill, den das Modell selbst aufrufen kann, ist damit nie weiter als die Sitzung |
 | `model`, `subagent`, `agent` | KANN | nur mit dokumentierter Begründung im Metadatenblock |
 
 Framework-Metadaten (ID, Version, Status, Owner) stehen nicht im Frontmatter, sondern im Metadatenblock des Dateikörpers.

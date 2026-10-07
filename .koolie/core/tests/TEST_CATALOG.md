@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-TESTS` |
-| Version | `0.4.9` |
+| Version | `0.4.10` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Ausführung | vollständig vor jedem Release (`.koolie/core/checklists/11-framework-release.md`); Basistests (Kennzeichnung „Basis") zusätzlich bei jeder Projektübernahme (`.koolie/core/checklists/10-project-adoption.md`) und nach relevanten Produktänderungen des KI-Clients |
@@ -25,7 +25,7 @@
 
    **Die Zurechenbarkeitsangabe kennt drei Werte, und der dritte ist der wichtigste.** `zurechenbar` sagt, daß der Kontrolllauf ohne die Schranke anders ausgeht; `nicht zurechenbar` sagt, daß er **gleich** ausgeht – und das ist eine Aussage über das Framework. Sie ist nur zulässig, wenn der Zuschnitt die Schranke **vollständig** erreicht hat: in allen Schichten (Quelle, Laufzeitfassung, Hook, **`SKILL.md`**) und in allen Formen (Beugung, Vorzeichen, Ausfüllschlitz, Diagrammknoten). 🔴 **Belegt wird das durch einen Wächter, der ein WEITERES Muster benutzt als der Schnitt** – ein Wächter, der das Schnittmuster wiederholt, bestätigt den Schnitt und nicht die Abwesenheit der Schranke. Bleiben Restfundstellen, trägt die Zelle **`Zurechenbarkeit nicht erhoben`** mit Grund. **Gemessen am 2026-09-19:** Von acht Kontrollklassen ließen vier den Gegenstand stehen, und unter den neun Zellen mit unvollständigem Zuschnitt war **keine einzige** zurechenbar.
 
-   **Das Eintragen eines Ergebnisstatus ist keine Änderung des Trägers im Sinne der Versionspflicht** – dieselbe Begründung wie beim Statuswechsel eines Moduls: Eine Ergebniszelle ist eine Aufzeichnung, keine Anweisung. Wer sie füllt, hebt die Version des Katalogs oder des Testblatts **nicht** und trägt nichts in dessen Änderungsverlauf ein.
+   **Das Eintragen eines Ergebnisstatus ist keine Änderung des Trägers im Sinne der Versionspflicht** – dieselbe Begründung wie beim Statuswechsel eines Moduls: Eine Ergebniszelle ist eine Aufzeichnung, keine Anweisung. Wer sie füllt, erhöht die Version des Katalogs oder des Testblatts **nicht** und trägt nichts in dessen Änderungsverlauf ein.
    **Was eine Zelle verlangen darf, und was nicht.** Nennt die Spalte *Erwartetes
 Verhalten* oder *Unzulässiges Verhalten* eine **Ausgabemarke** (`[HALT]`, `[RÜCKFRAGE]`),
 dann nur, wenn der im Auslöser aufgerufene Skill sie in **Abschnitt 5** (Ausgabeformat) oder

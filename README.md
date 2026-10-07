@@ -45,7 +45,7 @@ zehn Minuten, ohne einen KI-Client zu starten.
 - **Ein Kern für alle Clients.** Regeln und Skills stehen einmal, werkzeugneutral; ein Team mit gemischten
   Werkzeugen teilt dieselben Regeln.
 - **Das Projekt bleibt bei sich.** Projektwerte leben im Overlay. Ein neues Release übernimmt ein Projekt mit
-  demselben Befehl: Er erkennt den vorhandenen Kern und bietet das Heben an, das Overlay bleibt unberührt.
+  demselben Befehl: Er erkennt den vorhandenen Kern und bietet das Update an, das Overlay bleibt unberührt.
 - **Kontrollstufen statt Vertrauen.** Kleine Aufgaben erledigt der Assistent selbst, ab „mittel“ braucht er
   einen bestätigten Plan, bei „hoch“ eine ausdrückliche Freigabe.
 

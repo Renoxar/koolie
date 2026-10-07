@@ -9,7 +9,6 @@ allowed-tools:
 permissions:
   deny:
     - edit
-    - exec
 triggers:
   - user
   - model
@@ -19,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-002` |
 | Name | `koolie-code-explain` |
-| Version | `0.1.7` |
+| Version | `0.1.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -73,7 +72,7 @@ triggers:
 
 **Grenzen (DARF NICHT):**
 
-- Dateien erzeugen, ändern, verschieben oder löschen; Befehle ausführen – auch nicht den erklärten Code „zum Nachvollziehen".
+- Dateien erzeugen, ändern, verschieben oder löschen; Befehle ausführen außer die lesenden Git-Befehle `git status`, `git diff`, `git log`, `git show` und `git blame` – auch nicht den erklärten Code „zum Nachvollziehen".
 - Bewertungen („gut", „schlecht", „unsicher", „performant", „veraltet") als Feststellung oder Entscheidung formulieren; zulässig sind belegte Beobachtungen („Parameter X wird vor Verwendung in Zeile N nicht geprüft").
 - Änderungsvorschläge machen, außer als gekennzeichnete Beobachtung mit dem Hinweis, dass Bewertung und Entscheidung beim Menschen liegen (gegebenenfalls `koolie-change-analyze`).
 - Verhalten behaupten, das nicht aus Fundstellen ableitbar ist (Laufzeitverhalten, Nebenläufigkeit, Verhalten externer Systeme); solche Aussagen sind als „geschlossen" zu kennzeichnen oder zu unterlassen.

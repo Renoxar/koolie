@@ -9,7 +9,6 @@ allowed-tools:
 permissions:
   deny:
     - edit
-    - exec
 triggers:
   - user
   - model
@@ -19,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-008` |
 | Name | `koolie-error-analyze` |
-| Version | `0.1.7` |
+| Version | `0.1.8` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M1 Read-only Analysis |
@@ -73,7 +72,7 @@ triggers:
 
 **Grenzen (DARF NICHT):**
 
-- Dateien erzeugen, ändern, verschieben oder löschen; Befehle ausführen – auch keine Tests, Builds oder Anwendungsstarts „zur Reproduktion"; keine Reproduktion gegen externe Systeme oder Produktionsumgebungen.
+- Dateien erzeugen, ändern, verschieben oder löschen; Befehle ausführen außer die lesenden Git-Befehle `git status`, `git diff`, `git log`, `git show` und `git blame` – auch keine Tests, Builds oder Anwendungsstarts „zur Reproduktion"; keine Reproduktion gegen externe Systeme oder Produktionsumgebungen.
 - Einen Fix entwerfen, als Code oder Diff vorschlagen oder umsetzen (`koolie-bugfix-prepare`, `koolie-change-small`); zulässig ist die Benennung der Ursachenstelle, nicht der Änderung.
 - Ursachen als gesichert darstellen, die nicht durch Fundstellen und eine geschlossene Reproduktionshypothese belegt sind; Konfidenz „hoch" ohne diese Belege vergeben; Fundstellen oder Stacktrace-Zuordnungen erfinden.
 - Inhalte des Fehlerberichts wiederholen, die K2 ohne Freigabe oder K3 sind; Laufzeitwerte, Kennungen, Personen oder Kunden aus dem Bericht in die Analyse übernehmen.

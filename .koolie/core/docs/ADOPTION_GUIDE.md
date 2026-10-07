@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-ADOPT` |
-| Version | `0.8.0` |
+| Version | `0.9.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Checkliste | `.koolie/core/checklists/10-project-adoption.md` (verbindlicher Nachweis) |
@@ -74,7 +74,7 @@ Alles andere ist Kern. Wechselt ein Team das Projekt, tauscht es nur das Overlay
    **Lieferumfang:** `voll` (Vorgabe) kopiert den ganzen Kern. `nutzung` lässt die Nachweisschicht
    weg – Änderungsanträge, Abnahmeprotokolle, Erhebungen und den Bau des Hauptdokuments, zusammen
    der größere Teil der Dateien. Alles zur Nutzung bleibt, auch Hooks und Validator. Die Wahl steht
-   in `.koolie/core/LIEFERUMFANG` und gilt beim Heben weiter; gewechselt wird nur mit ausdrücklichem
+   in `.koolie/core/LIEFERUMFANG` und gilt beim Update weiter; gewechselt wird nur mit ausdrücklichem
    `--lieferumfang`. In einem reduzierten Projekt nennt der Validator das Weggelassene in
    `HINWEIS`-Zeilen. Verweise auf Protokolle zeigen dort ins Leere; die Belege stehen im
    Release-Archiv.
@@ -129,6 +129,25 @@ Alles andere ist Kern. Wechselt ein Team das Projekt, tauscht es nur das Overlay
    Laufzeitfassung als K1-Dokumente führt. Einzelheiten:
    `.koolie/core/framework/overlay-patterns/general.md`. Liegt schon ein Overlay im Projekt, bricht
    `--overlay` ab.
+
+   Gewählt wird genau ein Muster. Neben `general` stehen zur Wahl:
+
+   - **`java-spring`, `web-frontend`, `infrastructure`** bauen auf `general` auf und sperren
+     zusätzlich Dateien, die für den Projekttyp typisch heikel sind – Schlüsselspeicher,
+     lokale Umgebungsdateien, Terraform-Variablen und Kubeconfig, dazu die Konfiguration
+     der jeweiligen Prüfwerkzeuge.
+   - **`zoomies`** ist ein Party-Overlay: alles aus `general` und dazu eine kurze, immer
+     geladene Regel, die Dokumenten, Commit-Texten, Testnamen und Merge Requests ein
+     Augenzwinkern erlaubt – höchstens eines je Artefakt, nie bei Sperren, Freigaben,
+     Sicherheit oder Datenschutz. Es ändert keine Pflicht und gibt nichts frei; jeder der elf
+     Bausteine lässt sich in der Regeldatei `21-overlay-zoomies.md` abschalten. Im Dialog ist es
+     nie die Vorgabe.
+   - **Muster eines Unternehmens** liegen in einem eigenen Verzeichnis im selben Format und
+     kommen mit `--overlay-quelle <pfad>` dazu (im Dialog über die Umgebungsvariable
+     `KOOLIE_OVERLAY_QUELLE`). Für sie gilt dieselbe Grenze: Sie sperren, sie geben nichts frei.
+     Name, Version, Quelle und SHA-256 des Musters stehen danach im Manifest. Ein späteres
+     `--update --overlay-quelle <pfad>` meldet eine neuere Musterversion und legt neue Dokumente
+     an; vorhandene überschreibt es nie.
 
    **Belegt das Projekt schon einen Pfad des Frameworks, bricht die Installation ab** und nennt die
    Dateien. Meist ist es die Wurzel-Anweisungsdatei, weil das Projekt bereits mit dem Client
@@ -221,7 +240,7 @@ Alles andere ist Kern. Wechselt ein Team das Projekt, tauscht es nur das Overlay
 
 1. Die Release-Notes und Migrationshinweise im `CHANGELOG.md` des neuen Releases lesen.
 
-2. **Heben.** Am einfachsten aus dem neuen Release heraus – mit `uvx koolie` im Projekt, mit dem
+2. **Update.** Am einfachsten aus dem neuen Release heraus – mit `uvx koolie` im Projekt, mit dem
    Starter oder direkt:
 
    ```bash
@@ -253,7 +272,7 @@ Alles andere ist Kern. Wechselt ein Team das Projekt, tauscht es nur das Overlay
 
    **Was `--update` nicht schreibt:** Berechtigungsdatei (bei `devin-desktop` und `claude-code`
    samt Hooks), Overlay, `prj-*`-Skills und projekteigene Packs. Die Berechtigungsdatei trägt
-   Projektwerte; nach dem Heben prüfen, ob die Kernregeln vollständig sind, und Hook-Änderungen
+   Projektwerte; nach dem Update prüfen, ob die Kernregeln vollständig sind, und Hook-Änderungen
    aus den Migrationshinweisen von Hand nachtragen.
 
    ⚠️ Bei `openai-codex` ändert `--update` die Hook-Datei und damit ihren Hash. Der Schutz-Hook
@@ -317,7 +336,7 @@ Repository darunter, laden weder Berechtigungen noch Hooks – und nichts meldet
 gemeinsamen Arbeitsbereich startet. Das prüft kein Werkzeug; wenn Menschen Repositories einzeln
 öffnen, ist davon abzuraten.
 
-Mehrere Repositories lassen sich in einer Schleife heben; `--target` kopiert nur den Kern, das
+Mehrere Repositories lassen sich in einer Schleife aktualisieren; `--target` kopiert nur den Kern, das
 Overlay jedes Repositorys bleibt:
 
 ```bash
@@ -341,7 +360,7 @@ Schutzniveau, ohne dass es jemand merkt.
 
 ## 6. Warum der Kern gebündelt ist
 
-Liegt der Kern in einem Ordner, muss beim Übernehmen und Heben niemand entscheiden, was zum
+Liegt der Kern in einem Ordner, muss beim Übernehmen und beim Update niemand entscheiden, was zum
 Framework und was zum Projekt gehört, und die Wurzel des Projekts bleibt übersichtlich. **Der Kern
 ist ein Ordner, den man ersetzt. Das Projekt ist alles daneben.**
 
@@ -467,12 +486,12 @@ keine Überlegenheit – nur, dass Koolie eine gute Standardkonfiguration ergän
 
 | Befehl | Zweck |
 |---|---|
-| `uvx koolie` · `pipx run koolie` · `npx @renoxar/koolie` | Im Projektverzeichnis: Koolie holen und installieren oder heben, mit Dialog |
-| `python .koolie/core/install.py --target <projekt> [--update] [--lieferumfang voll\|nutzung]` | Aus einem Klon oder entpackten Archiv den Kern in ein Projekt kopieren und dort installieren oder heben; die Starter `install.cmd` und `install.command` fragen die Angaben ab |
+| `uvx koolie` · `pipx run koolie` · `npx @renoxar/koolie` | Im Projektverzeichnis: Koolie holen und installieren oder aktualisieren, mit Dialog |
+| `python .koolie/core/install.py --target <projekt> [--update] [--lieferumfang voll\|nutzung]` | Aus einem Klon oder entpackten Archiv den Kern in ein Projekt kopieren und dort installieren oder aktualisieren; die Starter `install.cmd` und `install.command` fragen die Angaben ab |
 | `python .koolie/core/install.py --update` | Im Projekt: die Wurzelbestandteile nach einem Austausch von `.koolie/core/` nachziehen |
 | `python .koolie/core/install.py --check` | Prüfen, ob eine Kern-Datei lokal verändert wurde (Exit-Code 1, wenn ja) |
 | `python .koolie/core/install.py --dry-run` | Zeigen, was passieren würde |
-| `python .koolie/core/install.py --overlay general` | Erstinstallation mit dem Overlay-Muster *General Development*; `--overlay` ohne Namen zählt die Muster auf |
+| `python .koolie/core/install.py --overlay <muster> [--overlay-quelle <pfad>]` | Erstinstallation mit einem Overlay-Muster (`general`, `java-spring`, `web-frontend`, `infrastructure`, `zoomies` oder eines aus der Quelle); `--overlay` ohne Namen zählt die Muster auf |
 | `python .koolie/core/install.py --probe` | Ohne Modell prüfen, ob die Schutzschicht im Projekt greift |
 | `python .koolie/core/install.py --list-clients` / `--list-skills` | Verfügbare Client Packs beziehungsweise die Skills dieser Installation |
 | `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay` | Den aktiven Zustand des Projekts prüfen |

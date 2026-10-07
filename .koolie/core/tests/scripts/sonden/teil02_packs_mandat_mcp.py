@@ -149,7 +149,7 @@ buendel(sonden_messapparat,
 # Kanaele aus `import_channels_report`, wenn sie belegt sind.
 #   D411  (Sonde)      - devin-desktop mit nicht leerer global_rules.md in einem
 #                        Ersatz-Benutzerprofil und `.windsurf/` im Projekt: Installation
-#                        und Hebung nennen beide Kanaele. Gegen v1.12.0 faellt sie.
+#                        und Update nennen beide Kanaele. Gegen v1.12.0 faellt sie.
 #   D411a (Gegenprobe) - leere global_rules.md, kein `.windsurf/`: kein Hinweis. Ein
 #                        Werkzeug, das immer warnt, besteht die Sonde auch.
 M411_HINWEIS = "Die Importsteuerung dieses Client Packs laesst"
@@ -161,7 +161,7 @@ def sonden_importkanaele() -> None:
     """Wirkungsnachweis fuer die Meldung aus D-411 an echten Installationen."""
     werkzeug = os.path.join(QUELLE, ".koolie", "core", "install.py")
     faelle = (("SONDE", "D411", True,
-               "Belegte Windsurf-Kanaele werden bei Installation und Hebung genannt"),
+               "Belegte Windsurf-Kanaele werden bei Installation und Update genannt"),
               ("GEGENPROBE", "D411a", False,
                "Ohne belegten Kanal bleibt der Hinweis aus"))
     for art, kennung, belegt, was in faelle:
@@ -319,9 +319,9 @@ buendel(sonden_testblatt_kuerzung,
 #   D433  (Sonde)      - die erzeugte Einstellungsdatei einer frischen claude-code-
 #                        Installation traegt `attribution` als Objekt mit commit "" auf der
 #                        obersten Ebene. Gegen v1.14.1 faellt sie.
-#   D434  (Sonde)      - eine Hebung ueber eine Einstellungsdatei OHNE die beiden
+#   D434  (Sonde)      - ein Update ueber eine Einstellungsdatei OHNE die beiden
 #                        Zusatzschluessel nennt beide. Gegen v1.14.1 faellt sie.
-#   D434a (Gegenprobe) - eine Hebung ueber die frisch erzeugte Datei bleibt stumm. Ein
+#   D434a (Gegenprobe) - ein Update ueber die frisch erzeugte Datei bleibt stumm. Ein
 #                        Werkzeug, das immer warnt, besteht D434 auch.
 M434_HINWEIS = "Das Client Pack deklariert Schluessel, die in"
 
@@ -346,9 +346,9 @@ def sonden_attribution() -> None:
             notiz("        Exit %d, attribution = %r" % (p.returncode, wert))
         for art, kennung, entfernen, was in (
                 ("GEGENPROBE", "D434a", False,
-                 "Eine Hebung ueber die vollstaendige Einstellungsdatei bleibt stumm"),
+                 "Ein Update ueber die vollstaendige Einstellungsdatei bleibt stumm"),
                 ("SONDE", "D434", True,
-                 "Eine Hebung ueber eine alte Einstellungsdatei nennt die fehlenden "
+                 "Ein Update ueber eine alte Einstellungsdatei nennt die fehlenden "
                  "Zusatzschluessel")):
             if entfernen:
                 cfg = json.loads(lies(pfad))
@@ -787,6 +787,8 @@ M99_AUSKUNFT = "die Auskunft mandat.py status endet mit Exit 2"
 M99_BESCHREIBUNG = "die Auskunft mit einer Beschreibung daneben endet mit Exit 2"
 M99_FEHLT = "mandat.py fehlt"
 M100_MODELL = "traegt den Trigger 'model', sperrt aber"
+M100_VORAB = "traegt den Trigger 'model' und gibt Befehle vorab frei"
+P100_PLAN = ".koolie/core/framework/skills/koolie-plan/SKILL.md".replace("/", os.sep)
 
 sonde("98", "Pruefung 98: der Hook misst wieder alle Zeichenketten eines Schreibwerkzeugs",
       lambda r: ersetze(P(r, P98_HOOK), ("        zu_pruefen = list(ziele)\r\n",
@@ -828,8 +830,22 @@ sonde("100", "Pruefung 100: ein schreibender Skill traegt den Trigger 'model'",
       lambda r: ersetze(P(r, P100_SKILL), ("triggers:\r\n  - user\r\n---",
                                            "triggers:\r\n  - user\r\n  - model\r\n---")),
       M100_MODELL)
-gegenprobe("100", "Pruefung 100: die modellaufrufbaren Skills sind rein lesend", None,
+sonde("100a", "Pruefung 100: ein Skill mit Trigger 'model' fuehrt exec in allowed-tools - "
+      "bei claude-code eine Vorabfreigabe der ganzen Shell",
+      lambda r: ersetze(P(r, P100_PLAN), ("allowed-tools:\r\n  - read\r\n  - grep\r\n  - glob\r\n",
+                                          "allowed-tools:\r\n  - read\r\n  - grep\r\n  - glob\r\n"
+                                          "  - exec\r\n")),
+      M100_VORAB)
+sonde("100b", "Pruefung 100: ein Skill mit Trigger 'model' gibt einen Befehl in "
+      "permissions.allow frei",
+      lambda r: ersetze(P(r, P100_PLAN), ("permissions:\r\n  deny:\r\n",
+                                          "permissions:\r\n  allow:\r\n    - Exec(git log)\r\n"
+                                          "  deny:\r\n")),
+      M100_VORAB)
+gegenprobe("100", "Pruefung 100: die modellaufrufbaren Skills schreiben nicht", None,
            M100_MODELL)
+gegenprobe("100a", "Pruefung 100: die modellaufrufbaren Skills geben keinen Befehl vorab frei",
+           None, M100_VORAB)
 
 
 # --- Pruefung 101 und das Mandat im Validator (CR-2026-157, D-459, D-461) -------------

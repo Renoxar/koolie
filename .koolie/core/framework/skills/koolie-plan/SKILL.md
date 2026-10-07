@@ -9,7 +9,6 @@ allowed-tools:
 permissions:
   deny:
     - edit
-    - exec
 triggers:
   - user
   - model
@@ -19,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-004` |
 | Name | `koolie-plan` |
-| Version | `0.1.11` |
+| Version | `0.1.13` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -32,7 +31,7 @@ triggers:
 
 - **Zweck:** Erarbeitet vor jeder Modifikation einen umsetzbaren, prüfbaren Änderungsplan exakt nach `.koolie/core/templates/PLAN_TEMPLATE.md`: Ziel und Akzeptanzkriterien, Ist-Zustand mit Fundstellen, gekennzeichnete Annahmen und offene Fragen, bewertete Optionen (mindestens zwei bei Stufe mittel und hoch), kleine einzeln prüfbare Schritte mit Prüfung je Schritt, Teststrategie, Risiken und Gegenmaßnahmen, Rollback, Abbruchkriterien und Freigabeerfordernis. Der Plan ist Grundlage der Planbestätigung (Schritt 9 des Standardarbeitsablaufs) und der späteren Umsetzung mit `koolie-change-small`, `koolie-tests` oder `koolie-docs-update`.
 - **Zielgruppe:** Entwicklerinnen und Entwickler, Modul-Owner sowie Reviewerinnen und Reviewer (Plan-Review), `<APPROVAL_ROLE>` (Freigabe Stufe hoch), `<ARCHITECT_ROLE>` (Optionsbewertung).
-- **Trigger:** Änderung der Kontrollstufe mittel oder hoch (Plan verpflichtend); Stufe niedrig mit mehreren Schritten oder Dateien (KANN); nach `koolie-change-analyze`. Aufruf: `/koolie-plan "<bereinigte Aufgabenbeschreibung oder Referenz auf die Analyse>" [kontrollstufe]`. Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit, exec); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
+- **Trigger:** Änderung der Kontrollstufe mittel oder hoch (Plan verpflichtend); Stufe niedrig mit mehreren Schritten oder Dateien (KANN); nach `koolie-change-analyze`. Aufruf: `/koolie-plan "<bereinigte Aufgabenbeschreibung oder Referenz auf die Analyse>" [kontrollstufe]`. Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit; lesende Git-Befehle erlaubt, die Shell wird nicht vorab freigegeben); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
 - **Nicht verwenden, wenn:** der betroffene Bereich noch unklar ist (`koolie-change-analyze`); ein Bugfix nach Fehleranalyse vorbereitet wird (`koolie-bugfix-prepare`); eine Stufe-niedrig-Änderung an einer Datei ohne Optionen ansteht (`koolie-change-small` mit klarer Aufgabe).
 
 ## 2. Vorbedingungen, Eingaben und Kontext
@@ -76,7 +75,7 @@ triggers:
 
 **Grenzen (DARF NICHT):**
 
-- Dateien im Repository erzeugen oder ändern – auch keine Plan-Datei im Repository und keine „vorbereitenden" Änderungen; Befehle ausführen; in ein externes System schreiben (auch nicht den Plan).
+- Dateien im Repository erzeugen oder ändern – auch keine Plan-Datei im Repository und keine „vorbereitenden" Änderungen; Befehle ausführen außer die lesenden Git-Befehle `git status`, `git diff`, `git log`, `git show` und `git blame`; in ein externes System schreiben (auch nicht den Plan).
 - Die Kontrollstufe festlegen oder senken; die Delegationsverbotsliste auslegen.
 - Annahmen über ungeklärte Anforderungen treffen und Schritte darauf aufbauen (P3).
 - Optionen mit neuen Abhängigkeiten, Architekturänderungen oder Schnittstellenbrüchen als entschieden darstellen (V3); zulässig ist die Option mit Kennzeichnung und Entscheidungsbedarf.
@@ -141,7 +140,7 @@ triggers:
 - [ ] Jeder Schritt nennt Dateien innerhalb `<ALLOWED_PATHS>`, Zwischenergebnis und Prüfung; kein Schritt baut auf einer offenen Frage auf.
 - [ ] Teststrategie nennt nur freigegebene Befehle; Tests prüfen fachliches Verhalten; keine Abschwächung bestehender Tests.
 - [ ] Rollback und Abbruchkriterien sind konkret; das Freigabeerfordernis entspricht der Kontrollstufe; Bestätigungsstatus `entwurf`.
-- [ ] Keine Dateien im Repository geändert; keine Befehle ausgeführt; keine K3-Inhalte; der Skill endet mit [HALT].
+- [ ] Keine Dateien im Repository geändert; keine Befehle außer lesenden Git-Befehlen ausgeführt; keine K3-Inhalte; der Skill endet mit [HALT].
 - [ ] Jede Aussage aus einem externen System nennt Ticketschlüssel mit Stand oder Seite mit Version; Widersprüche sind gemeldet, nicht aufgelöst; nichts in ein externes System geschrieben.
 
 **Prüf- und Freigabeschritt (Mensch):**

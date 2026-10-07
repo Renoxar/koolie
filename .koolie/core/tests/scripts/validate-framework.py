@@ -591,12 +591,12 @@ Prüft (statisch, ohne laufenden KI-Client):
      REIHENFOLGE: Gehoben wurde nach dem Merge, und damit war FW-CL-11 Pruefpunkt 20
      zum Merge-Zeitpunkt nicht erfuellt. 🔴 UND SIE WAR AN ZWEI STELLEN FALSCH: Das
      Framework hatte seine Liste berichtigt, die AUSGELIEFERTEN Kopien in beiden
-     Projekten trugen weiter den alten Stand - wer eine Liste nach dem Heben
+     Projekten trugen weiter den alten Stand - wer eine Liste nach dem Update
      fortschreibt, schreibt sie an einer Stelle fort und liefert sie an zwei.
      D-299-PROBE BESTANDEN: In einem uebernehmenden Projekt sind Liste und VERSION
      byte-gleich aus demselben Release ausgeliefert, also gleich - auch mehrere
      Releases zurueck. 🔴 GRENZE: Sie misst die BEHAUPTUNG der Zeile, nicht den Stand
-     des Projekts; wer die Zeile aendert ohne zu heben, kommt durch. Dieselbe Bauform
+     des Projekts; wer die Zeile aendert ohne zu aktualisieren, kommt durch. Dieselbe Bauform
      wie Pruefung 77 (Version, nicht Inhalt). PREIS: Jedes Release fasst diese Tabelle
  an - wie bei Pruefung 67 und 77
  83. Die Chronik zaehlt ihr eigenes Release zu Ende (D-335): Die hoechste
@@ -768,9 +768,13 @@ Prüft (statisch, ohne laufenden KI-Client):
      'mandat.py modus' und die Datei koolie-modus.json sind fuer den Client gesperrt,
      Hook und mandat.py fuehren denselben Dateinamen und dieselben Modi. GRENZE: Ein
      Befehl, der den Namen verschleiert, entgeht dem Muster - wie bei K-32
-100. Der Modellaufruf nur fuer rein lesende Skills (D-451): Ein Skill des Kerns oder
-     eines Packs mit dem Trigger 'model' sperrt in permissions.deny 'edit' und 'exec'
-     (08-skill-conventions.md, Zeile triggers). ANLASS: Drei rein lesende Skills trugen
+100. Der Modellaufruf nur fuer Skills, die nicht schreiben und keinen Befehl vorab
+     freigeben (D-451, CR-2026-175 E4): Ein Skill des Kerns oder eines Packs mit dem
+     Trigger 'model' sperrt in permissions.deny 'edit' und fuehrt 'exec' weder in
+     allowed-tools noch in permissions.allow (08-skill-conventions.md, Zeile triggers).
+     Bis 2.1.0 sperrte er auch 'exec'; seit 2.2.0 folgt seine Shell den Regeln der
+     Sitzung - gemessen mit claude-code 2.1.291: lesende Befehle laufen, ein schreibender
+     wird abgewiesen. ANLASS: Drei rein lesende Skills trugen
      nur 'user', und die Wurzelanweisung trug dem Client zugleich auf, sie aufzurufen
      (Befund A1 aus dem ersten Projekteinsatz). GRENZE: die Richtung model -> lesend;
      ob ein rein lesender Skill 'model' tragen soll, entscheidet der Skill

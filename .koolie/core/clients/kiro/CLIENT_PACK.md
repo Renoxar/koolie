@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-KI` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | Kiro – Kommandozeile (`kiro-cli`) und IDE; der autonome Agent in der Sandbox des Anbieters ist nicht Gegenstand dieses Packs |
@@ -31,7 +31,7 @@
 | Subagentenprofile | `.kiro/agents/<name>.md` (Frontmatter `tools` mit Kategorien) | `[DOK]` **`QK-6`**; die Wirkung ist Gegenstand von A1 |
 | Berechtigungskonfiguration | `.kiro/agents/koolie.json` – ein Agentenprofil mit dem Feld `permissions.rules` (erzeugt aus `framework/runtime/permissions.json`) | **gemessen:** ein `deny` darin weist ab und nennt sich (*„Source: agent-profile"*). Kein `permissions.yaml`, weil die Datei des Arbeitsbereichs beim Client außerhalb des Repositoriums liegt (`QK-1`) |
 | Wahl des Agenten und der Engine | `.kiro/settings/cli.json` (`chat.defaultAgent`, `chat.agentEngine`) | **gemessen:** Mit ihr startet `kiro-cli chat` ohne Schalter mit Engine V3 und dem Agenten `koolie`; eine globale Einstellung unterliegt ihr |
-| Hook-Konfiguration | `.kiro/hooks/koolie.json`, Form `{version: v1, hooks: [...]}` | **gemessen:** lädt in der interaktiven Sitzung; im Betrieb ohne Rückfragen gar nicht (Abschnitt 1b) |
+| Hook-Konfiguration | `.kiro/hooks/koolie.json`, Form `{version: v1, hooks: [...]}` | **gemessen:** lädt in der interaktiven Sitzung und seit `kiro-cli` 2.27.1 auch im Betrieb ohne Rückfragen (Abschnitt 1b) |
 | Planartefakt | `.kiro/specs/<name>/` (`requirements.md`, `design.md`, `tasks.md`) | **gemessen:** der Träger des Plans; die Regel `16-plan-spezifikation.md` gibt ihm die Pflichtfelder |
 | MCP-Konfiguration | `.kiro/settings/mcp.json` | `[DOK]` **`QK-7`**; das Framework liefert keinen Server aus |
 | Projektverzeichnis im Hook-Befehl | keine Variable – das Arbeitsverzeichnis | **gemessen:** `cwd` der Eingabe und Arbeitsverzeichnis des Hook-Prozesses sind die Projektwurzel |
@@ -68,7 +68,7 @@ Drei Wege führen an dieser Bedingung vorbei, und keiner meldet sich laut:
 2. **Eine Regel nennt eine unbekannte Fähigkeit.** Der Client überspringt genau diese Regel und vermerkt es nur in seinem Protokoll. Prüfung 96 kennt die Liste der Fähigkeiten.
 3. **Die Sitzung wählt einen anderen Agenten** (`--agent`) oder eine andere Engine (`--v2`, `--legacy-ui`). Das entscheidet der Arbeitsplatz; keine Prüfung sieht es.
 
-**Die Hooks laufen nur in der interaktiven Sitzung.** In drei Formen des Betriebs ohne Rückfragen (JSON-Ausgabe, Textausgabe, Terminaloberfläche mit `--no-interactive`) lief kein Hook: Der Agentenserver aktiviert Hooks nur, wenn der aufrufende Client es meldet, und das tut allein die Terminaloberfläche. Im Betrieb ohne Rückfragen trägt deshalb allein das Agentenprofil, und dort wird jede Rückfrage zur Abweisung (`QK-1`).
+**Die Hooks laufen seit `kiro-cli` 2.27.1 auch im Betrieb ohne Rückfragen.** Gemessen am 2026-10-06 mit `--no-interactive --trust-all-tools` und JSON-Ausgabe: `SessionStart` und `PreToolUse` liefen, und der Schutz-Hook wies einen Lesezugriff auf eine `.pem`-Datei ab – der Inhalt kam nicht heraus. Bis zur Version, mit der das Pack gebaut wurde, lief in diesen Formen kein Hook; wer eine ältere Version einsetzt, hat dort nur das Agentenprofil, und jede Rückfrage wird zur Abweisung (`QK-1`). Eine Startmeldung ohne Modellaufruf gibt es nicht: Ohne Netz bricht der Client ab, bevor ein Hook läuft.
 
 **Die IDE** liest `.kiro/settings/cli.json` laut Programmcode ihrer Agent-Erweiterung nicht als Auswahl ihres Chat-Agenten. Dort wählt man den Agenten `koolie` im Chat. An einer IDE-Sitzung ist das nicht gemessen.
 
@@ -108,7 +108,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` im Agente
 | B1 | Berechtigungen versioniert im Repository | ja | Agentenprofil `.kiro/agents/koolie.json`, gewählt durch `.kiro/settings/cli.json` | `[TECHNISCH]`, **bedingt** | **gemessen:** beide Träger liegen im Projekt und wirken ohne Schalter. **Die Bedingung:** der aktive Agent (Abschnitt 1b) – mit fehlendem oder kaputtem Profil stiller Rückfall, gemessen |
 | B2 | Verweigern vor Rückfragen vor Erlauben | ja | `deny` vor `ask` vor `allow`, über alle Ebenen | `[TECHNISCH]` | **gemessen:** `deny` auf `.env` schlägt `allow` auf `**`; ein Schreiben unter `arbeit/` fällt in die Rückfrage, obwohl nichts es verbietet |
 | B3 | Secret-Dateien per Pfadmuster lesegeschützt | ja | `deny fs_read` mit den Mustern der Kernquelle | `[TECHNISCH]` | **gemessen an einer realen Installation:** `.env` und `sub/.env` abgewiesen, `README.md` gelesen. ⚠️ Ein Muster, das die Kernquelle nicht führt (`id_ecdsa`), ließ das Profil durch – dort sperrte in der interaktiven Sitzung der Schutz-Hook (H2) |
-| B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | `deny fs_write` auf `AGENTS.md`, `.kiro/**` ohne `.kiro/specs/**`, `.koolie/core/**`. Das Overlay sperrt allein der Schutz-Hook; die Berechtigungsdatei führt es nicht (nachgezählt an einer Installation am 2026-09-29), und der Hook läuft bei diesem Client nur in der interaktiven Sitzung. Gemessen am 2026-09-30: Im Betrieb ohne Rückfragen weist die Rückfrageregel `ask fs_write` einen Schreibversuch ins Overlay ab (Rückfrage → Abweisung); mit `--trust-all-tools` ging er durch – ohne Hook, und das Modell meldete den Verstoß gegen den Regeltext erst danach. Der Modus ist untersagt (`.koolie/core/framework/core/03-security.md` Abschnitt 4); eine statische Sperre im Profil schlüge das Mandat (M6); jeder Shell-Befehl außer fünf lesenden `git`-Befehlen fragt zurück | `[TECHNISCH]` | **gemessen:** Schreiben in `.koolie/core/` und `.kiro/steering/` abgewiesen (`deny`), in `.kiro/specs/` nur rückgefragt – die Ausnahme greift. ⚠️ **Grenze, nicht gemessen:** ein freigegebener lesender `git`-Befehl mit schreibender Option (`git diff --output=<pfad>`) |
+| B4 | Framework- und Overlay-Artefakte schreibgeschützt | ja | `deny fs_write` auf `AGENTS.md`, `.kiro/**` ohne `.kiro/specs/**`, `.koolie/core/**`. Das Overlay sperrt allein der Schutz-Hook; die Berechtigungsdatei führt es nicht (nachgezählt an einer Installation am 2026-09-29), und der Hook läuft seit `kiro-cli` 2.27.1 auch im Betrieb ohne Rückfragen (Abschnitt 1b). Gemessen am 2026-09-30 mit einer älteren Version, in der dort kein Hook lief: Die Rückfrageregel `ask fs_write` weist einen Schreibversuch ins Overlay ab (Rückfrage → Abweisung); mit `--trust-all-tools` ging er durch, und das Modell meldete den Verstoß gegen den Regeltext erst danach. Mit 2.27.1 ist der Schreibversuch ins Overlay nicht erneut gemessen; den Schutz-Hook ohne Rückfragen belegt ein Lesezugriff. Der Modus ist untersagt (`.koolie/core/framework/core/03-security.md` Abschnitt 4); eine statische Sperre im Profil schlüge das Mandat (M6); jeder Shell-Befehl außer fünf lesenden `git`-Befehlen fragt zurück | `[TECHNISCH]` | **gemessen:** Schreiben in `.koolie/core/` und `.kiro/steering/` abgewiesen (`deny`), in `.kiro/specs/` nur rückgefragt – die Ausnahme greift. ⚠️ **Grenze, nicht gemessen:** ein freigegebener lesender `git`-Befehl mit schreibender Option (`git diff --output=<pfad>`) |
 | B5 | CI-, Quality-Gate- und Lockdateien schreibgeschützt | ja | `deny fs_write` mit den Lockmustern und den Schlitzen `<CI_CONFIG_PATHS>`, `<QUALITY_GATE_CONFIG_PATHS>` | `[TECHNISCH]` | **gemessen am Mechanismus** (Pfadmuster im `deny`, B4); die Schlitze füllt der Overlay Owner, die Lockmuster sind nicht einzeln angefahren. Shell wie B4 |
 | B6 | Befehle per Muster verweigerbar | ja | `deny shell` mit Präfixmustern (`git push*`) | `[TECHNISCH]` | **gemessen:** `git push origin main` abgewiesen, auch in `git status && git push origin main`. ⚠️ **Grenze wie bei allen Packs:** `git -C . push origin main` trifft das Muster nicht – hier fällt es in die **Rückfrage** und nicht durch, weil kein `allow` es deckt |
 | B7 | Schreiboperationen fragen zurück | – | `ask fs_write "**"` | `[TECHNISCH]` | **gemessen:** Schreiben unter `arbeit/` und Löschen (`delete_file`) rückgefragt; ohne Rückfragekanal abgewiesen |
@@ -120,9 +120,9 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` im Agente
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| H1 | Prüfung vor Werkzeugausführung | `PreToolUse` in `.kiro/hooks/koolie.json`, Matcher als regulärer Ausdruck über die Werkzeugnamen | `[TECHNISCH]`, **nur interaktiv** | **gemessen:** Der Hook läuft bei jedem Lese-, Such-, Schreib- und Shell-Aufruf, Eingabe `{session_id, hook_event_name, cwd, tool_name, tool_input}`. Im Betrieb ohne Rückfragen läuft er **nicht** (Abschnitt 1b) |
-| H2 | Prüfung kann **blockieren** | Exit 2 und ein Grund auf stderr | `[TECHNISCH]`, **nur interaktiv** | 🔴 **Gemessen, und der schwerste Befund des Packs** (D-417): Mit der Standardform (Grund auf stdout, Exit 2) kam der Köderinhalt heraus; der Hook endete nachweislich mit Exit 2. **Mit dem Grund auf stderr wurde derselbe Zugriff in drei von drei Läufen abgewiesen**, `README.md` jeweils gelesen – in einem Baum ohne Regeltext. **Prüfung 86** hält Manifest, Skript und Kommando zusammen |
-| H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py` | `[TECHNISCH]`, **nur interaktiv** | **gemessen:** die Meldung steht im Kontext der Sitzung (`HOOK_INSTRUCTION`) und wurde wörtlich zitiert |
+| H1 | Prüfung vor Werkzeugausführung | `PreToolUse` in `.kiro/hooks/koolie.json`, Matcher als regulärer Ausdruck über die Werkzeugnamen, mit `mcp_.*` | `[TECHNISCH]` | **gemessen:** Der Hook läuft bei jedem Lese-, Such-, Schreib- und Shell-Aufruf, Eingabe `{session_id, hook_event_name, cwd, tool_name, tool_input}`. MCP-Werkzeuge heißen dort `mcp_<server>_<werkzeug>`; der Hook prüft ihren Inhalt gegen die Secret-Muster und ihre Pfadfelder gegen die Secret-Pfadmuster (2026-10-06, Köderserver). Seit `kiro-cli` 2.27.1 läuft er auch im Betrieb ohne Rückfragen (Abschnitt 1b) |
+| H2 | Prüfung kann **blockieren** | Exit 2 und ein Grund auf stderr | `[TECHNISCH]` | 🔴 **Gemessen, und der schwerste Befund des Packs** (D-417): Mit der Standardform (Grund auf stdout, Exit 2) kam der Köderinhalt heraus; der Hook endete nachweislich mit Exit 2. **Mit dem Grund auf stderr wurde derselbe Zugriff in drei von drei Läufen abgewiesen**, `README.md` jeweils gelesen – in einem Baum ohne Regeltext. **Prüfung 86** hält Manifest, Skript und Kommando zusammen |
+| H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py` | `[TECHNISCH]` | **gemessen:** die Meldung steht im Kontext der Sitzung (`HOOK_INSTRUCTION`) und wurde wörtlich zitiert; seit `kiro-cli` 2.27.1 läuft der Hook auch ohne Rückfragen |
 | H4 | Eingabeschema und Pfadidentität des Schutz-Hooks | Ereignisprüfung, Pfadfelder `path` und `targetFile`, alle Muster ohne Rücksicht auf Groß-/Kleinschreibung; `hook_fail_closed` steht auf `true`. Grenze: Ein Hook prüft vor dem Zugriff | `[TECHNISCH]` für die Musterprüfung, **mit der Zeitlücke** | **gemessen:** das Schema von `PreToolUse` für alle vier Werkzeugklassen. ⚠️ **Das Feld `targetFile` des Löschwerkzeugs fiel erst im Abnahmelauf auf** – vorher hätte der Hook den Pfad nur als Rohtext geprüft |
 
 ### A – Agentenprofile
@@ -160,7 +160,7 @@ Die mit **Kern** markierten Zeilen entsprechen `_core_rules_integrity` im Agente
 | `[TEXTUELL]` | **12 von 35** | 0 von 6 |
 | `[NICHT ABBILDBAR]` | **2 von 35** | 0 von 6 |
 
-Belegstand: `BELEG OFFEN` sagen A1, A2, M3, M7 und X1, dazu X2 dauerhaft. Die Zeilen der interaktiven Sitzung (H1 bis H3) sind gemessen; die der IDE stehen auf der Dokumentation.
+Belegstand: `BELEG OFFEN` sagen A1, A2, M3, M7 und X1, dazu X2 dauerhaft. Die Zeilen H1 bis H3 sind gemessen, interaktiv und seit `kiro-cli` 2.27.1 auch ohne Rückfragen; die der IDE stehen auf der Dokumentation.
 
 ## 4. Kernzusagen ohne technische Durchsetzung
 
@@ -170,7 +170,7 @@ Keine. Alle sechs Kernzusagen sind `[TECHNISCH]` – unter der Bedingung des akt
 
 - **Die Berechtigungsdatei ist ein Agentenprofil** (`permissions_format` `kiro-agent`). Sie ist JSON, führt aber keine Körbe `deny`/`ask`/`allow` aus Regeln der Gestalt `Werkzeug(Muster)`. Deshalb erreichen dieses Pack nicht: Prüfung 2, Prüfung 37, Prüfung 42, Prüfung 43 und Prüfung 54; nur zum Teil Prüfung 59 und Prüfung 89 (ihr Gegenstand (c), die Pfade des Overlays im `deny`, entfällt). An ihre Stelle tritt die Prüfung des Agentenprofils (Abschnitt 1b). Der Prüfapparat hält diese Liste gegen seine eigene Liste der formatgebundenen Prüfungen.
 - **Ein eigener Agent erbt keine Freigaben.** Ohne `allow` wird selbst das Lesen im Arbeitsbereich abgewiesen; das Profil führt die Freigaben der Kernquelle vollständig.
-- **Die Hooks laufen nur interaktiv**, und der Schutz-Hook braucht seinen Grund auf stderr (Abschnitt 1b, H2).
+- **Die Hooks laufen erst ab `kiro-cli` 2.27.1 auch ohne Rückfragen**, und der Schutz-Hook braucht seinen Grund auf stderr (Abschnitt 1b, H2).
 - **Das Schreibverbot auf die Laufzeitschicht nimmt `.kiro/specs/` aus**, weil dort das Planartefakt liegt. Der Schutz-Hook führt dieselbe Ausnahme.
 - **Ein Befehl, den ein Präfixmuster nicht trifft, fällt in die Rückfrage** und nicht durch – anders als bei Packs, deren `allow` breiter ist.
 - **Die Dokumentation widerspricht sich an vier Stellen** (Anhang 31.4.4); zwei hat die Messung entschieden, eine hat sie widerlegt.
@@ -188,7 +188,7 @@ Danach:
 2. Nicht mit `--agent`, `--v2` oder `--legacy-ui` starten.
 3. In der IDE den Agenten `koolie` im Chat wählen.
 
-`install.py` nennt diese Schritte nach der Installation. Nach jeder Hebung meldet es, dass Profil und Einstellung Saat sind und nicht angefasst werden.
+`install.py` nennt diese Schritte nach der Installation. Nach jedem Update meldet es, dass Profil und Einstellung Saat sind und nicht angefasst werden.
 
 Vor der ersten produktiven Nutzung die Basistests des Testkatalogs gegen diesen Client fahren und protokollieren.
 
@@ -228,3 +228,5 @@ Eine Auskunft ist keine Schranke, und ein Abwesenheitsbeleg altert. Prüfung 19 
 | 0.1.2 | 2026-09-30 | Zeile B4: der Schutz des Overlays ohne Hook gemessen (`CR-2026-164`, D-502, `K-181`) – die Rückfrageregel trägt ohne Rückfragekanal, `--trust-all-tools` öffnet das Overlay | `<FRAMEWORK_OWNER>` |
 | 0.1.1 | 2026-09-29 | Zeile B4 folgt dem Erzeugnis: Das Agentenprofil sperrt das Overlay seit `1.17.0` nicht mehr, das tut allein der Schutz-Hook, und der läuft nur interaktiv (D-448, `K-181`; `CR-2026-158`, D-468) | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-10-02 | Sprachlich überarbeitet; Zusagen, Einstufungen und Belege unverändert | `<FRAMEWORK_OWNER>` |
+| 0.2.1 | 2026-10-06 | „Update“ statt „Hebung“ (`CR-2026-175` E2); Zusagen, Einstufungen und Belege unverändert | `<FRAMEWORK_OWNER>` |
+| 0.3.0 | 2026-10-06 | **Die Hooks laufen auch ohne Rückfragen, und MCP-Aufrufe erreichen den Schutz-Hook** (`CR-2026-175` E5, `K-198`, `K-199`). Gemessen mit `kiro-cli` 2.27.1: `SessionStart` und `PreToolUse` im Betrieb mit `--no-interactive`, Abweisung eines Lesezugriffs auf eine `.pem`-Datei; MCP-Werkzeuge als `mcp_<server>_<werkzeug>`, Matcher `mcp_.*` und Präfix im Manifest. Zeilen H1 bis H3 ohne die Einschränkung „nur interaktiv“, Abschnitt 1b neu gefasst | `<FRAMEWORK_OWNER>` |

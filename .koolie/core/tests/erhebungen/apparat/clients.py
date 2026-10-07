@@ -120,6 +120,15 @@ class AdapterCC(Adapter):
                            encoding="utf-8", errors="replace", env=_umgebung())
         return (p.stdout or "").strip() or "unbekannt"
 
+    @staticmethod
+    def _umgebung_cc() -> dict:
+        """Ohne die Connectoren des Anmeldekontos (K-218): Im Nachlauf von 2.1.0 nannten vier
+        Antworten einen nicht freigegebenen Konto-Server - gemessen war die Umgebung, nicht
+        der Skill. Die Server des Baums (.mcp.json) bleiben."""
+        umg = _umgebung(ENABLE_CLAUDEAI_MCP_SERVERS="false")
+        umg.pop("CLAUDE_CODE_USE_POWERSHELL_TOOL", None)
+        return umg
+
     def lauf(self, prompt, baum, modell, berechtigung, sitzung=None, einstellungen=None,
              zusatz=None) -> dict:
         argv = [self.BEFEHL, "-p", prompt, "--output-format", "json",
@@ -131,8 +140,7 @@ class AdapterCC(Adapter):
             argv += ["--model", modell]
         if sitzung:
             argv += ["--resume", sitzung]
-        umg = _umgebung()
-        umg.pop("CLAUDE_CODE_USE_POWERSHELL_TOOL", None)
+        umg = self._umgebung_cc()
         t0 = time.time()
         p = subprocess.run(argv, cwd=baum, stdin=subprocess.DEVNULL, capture_output=True,
                            text=True, encoding="utf-8", errors="replace", env=umg)
@@ -181,8 +189,7 @@ class AdapterCC(Adapter):
 
     def startmeldung(self, baum) -> list:
         """Die Werkzeugliste aus 'system/init' - der Prozess endet danach (1.18.2, D-470)."""
-        umg = _umgebung()
-        umg.pop("CLAUDE_CODE_USE_POWERSHELL_TOOL", None)
+        umg = self._umgebung_cc()
         p = subprocess.Popen([self.BEFEHL, "-p", "Antworte nur mit OK.", "--output-format",
                               "stream-json", "--verbose", "--max-turns", "1"],
                              cwd=baum, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,

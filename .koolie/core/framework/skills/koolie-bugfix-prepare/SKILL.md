@@ -9,7 +9,6 @@ allowed-tools:
 permissions:
   deny:
     - edit
-    - exec
 triggers:
   - user
   - model
@@ -19,7 +18,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-009` |
 | Name | `koolie-bugfix-prepare` |
-| Version | `0.1.11` |
+| Version | `0.1.13` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M2 Guided Planning |
@@ -32,7 +31,7 @@ triggers:
 
 - **Zweck:** Überführt das Ergebnis einer Fehleranalyse (`koolie-error-analyze`: Reproduktionshypothese, Ursachenkandidaten mit Fundstellen und Konfidenz, ausgeschlossene Ursachen) in einen prüfbaren Fix-Plan exakt nach `.koolie/core/templates/PLAN_TEMPLATE.md`. Der Plan legt die Reihenfolge fest: Schritt 1 ist stets ein Regressionstest, der das Fehlverhalten gegen das Soll-Verhalten nachweist und vor der Korrektur fehlschlägt; Schritt 2 ist die minimale Korrektur an der Ursache. Der Plan enthält die Verwender der zu ändernden Einheit, gleichartige Stellen, den Abgleich der Risikofaktoren R1–R13 mit der festgelegten Kontrollstufe, Teststrategie, Rollback, Abbruchkriterien und Freigabeerfordernis. Der Skill setzt nichts um.
 - **Zielgruppe:** Entwicklerinnen und Entwickler; Modul-Owner sowie Reviewerinnen und Reviewer (Plan-Review); `<APPROVAL_ROLE>` (Freigabe Stufe hoch); `<PRODUCT_OWNER_ROLE>` (Klärung des Soll-Verhaltens).
-- **Trigger:** Eine Fehleranalyse liegt vor und der Fehler soll behoben werden; ein durch `koolie-tests` oder `koolie-refactor` gemeldeter vermuteter Produktivcode-Fehler wurde analysiert. Aufruf: `/koolie-bugfix-prepare "<Referenz auf die Fehleranalyse oder bereinigte Fehlerbeschreibung>" [kontrollstufe]`. Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit, exec); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
+- **Trigger:** Eine Fehleranalyse liegt vor und der Fehler soll behoben werden; ein durch `koolie-tests` oder `koolie-refactor` gemeldeter vermuteter Produktivcode-Fehler wurde analysiert. Aufruf: `/koolie-bugfix-prepare "<Referenz auf die Fehleranalyse oder bereinigte Fehlerbeschreibung>" [kontrollstufe]`. Aufrufbar durch den Menschen und durch den KI-Client: Der Skill ist rein lesend (`permissions.deny`: edit; lesende Git-Befehle erlaubt, die Shell wird nicht vorab freigegeben); ruft der Client ihn selbst auf, nennt er das im Ergebnisbericht.
 - **Nicht verwenden, wenn:** die Ursache noch nicht analysiert ist (`koolie-error-analyze`); die Korrektur eine Schnittstellen-, Schema- oder modulübergreifende Änderung erfordert (`koolie-change-analyze`, `koolie-plan`); nur ein Test ohne Korrektur ergänzt werden soll (`koolie-tests`); ein bestätigter Fix-Plan umgesetzt werden soll (`koolie-change-small`).
 
 ## 2. Vorbedingungen, Eingaben und Kontext
@@ -76,7 +75,7 @@ triggers:
 
 **Grenzen (DARF NICHT):**
 
-- Dateien im Repository erzeugen oder ändern – weder Test noch Korrektur, auch nicht „nur die eine Zeile"; Befehle, Tests oder Reproduktionen ausführen; in ein externes System schreiben (auch nicht den Plan oder ein Ticket für gleichartige Stellen).
+- Dateien im Repository erzeugen oder ändern – weder Test noch Korrektur, auch nicht „nur die eine Zeile"; Befehle, Tests oder Reproduktionen ausführen – erlaubt sind nur die lesenden Git-Befehle `git status`, `git diff`, `git log`, `git show` und `git blame`; in ein externes System schreiben (auch nicht den Plan oder ein Ticket für gleichartige Stellen).
 - Eine Korrektur ohne bestätigte Ursache planen oder empfehlen; Symptombehandlung als Korrektur darstellen.
 - Die Kontrollstufe festlegen oder senken; den Regressionstest weglassen oder nach der Korrektur einplanen; bestehende Tests anpassen, abschwächen oder deaktivieren.
 - Refaktorisierungen, Nachbarfehler oder gleichartige Stellen in den Fix aufnehmen (Q1); neue Abhängigkeiten oder Architekturänderungen als entschieden darstellen (V3); Hotfix-, Deployment- oder Produktionsschritte planen (V2, V6); Änderungen an `<READ_ONLY_PATHS>`, `<EXCLUDED_PATHS>`, `<CI_CONFIG_PATHS>` oder `<QUALITY_GATE_CONFIG_PATHS>` planen.
@@ -149,7 +148,7 @@ triggers:
 - [ ] Verwenderliste mit Suchmuster und Fundstellen; gleichartige Stellen als getrennte Aufgaben ausgewiesen, nicht im Fix enthalten.
 - [ ] Alle zehn Abschnitte der Vorlage vorhanden; bei Stufe mittel und hoch mindestens zwei Optionen; Empfehlung als Vorschlag; Risikoabgleich je Faktor begründet; Abweichung zur festgelegten Stufe gemeldet.
 - [ ] Rollback und Abbruchkriterien konkret; Freigabeerfordernis entspricht der Stufe; Bestätigungsstatus `entwurf`.
-- [ ] Keine Dateien geändert; keine Befehle ausgeführt; keine K3-Inhalte; der Skill endet mit [HALT].
+- [ ] Keine Dateien geändert; keine Befehle außer lesenden Git-Befehlen ausgeführt; keine K3-Inhalte; der Skill endet mit [HALT].
 - [ ] Jede Aussage aus einem externen System nennt Ticketschlüssel mit Stand oder Seite mit Version; Widersprüche sind gemeldet, nicht aufgelöst; nichts in ein externes System geschrieben.
 
 **Prüf- und Freigabeschritt (Mensch):**

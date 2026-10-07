@@ -33,6 +33,7 @@ import sys
 
 import ablage
 import packaktivierung
+from apparat import praeparationen
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -204,28 +205,15 @@ def klassenbasis(klasse):
 
 
 def praeparation(baum, kennung):
-    """Setzt eine registrierte Praeparation ueber tools/praeparationen.py IM BAUM.
-
-    🔴 Nicht von Hand: Das Skript traegt den Waechter gegen den Loesungsverrat
-    (D-142) - und seit 0.82.0 kennt dieser Waechter die Kennungsfamilie `RE-` als
-    FORM, nicht als Aufzaehlung (D-246).
+    """Setzt eine registrierte Praeparation IM BAUM - seit 2.2.0 aus dem Register des
+    Messapparats (`apparat/praeparationen.py`, K-152), nicht mehr ueber `tools/` der Uebung.
+    Der Waechter gegen den Loesungsverrat (D-142) kennt die Kennungsfamilie `RE-` als FORM
+    (D-246) und laeuft dort vor jedem Setzen.
     """
-    skript = os.path.join(baum, "tools", "praeparationen.py")
-    p = subprocess.run([sys.executable, skript, "--setzen", kennung], cwd=baum,
-                       capture_output=True, text=True, encoding="utf-8",
-                       errors="replace",
-                       env=dict(os.environ, PYTHONIOENCODING="utf-8"))
-    if p.returncode != 0:
-        raise SystemExit("ABBRUCH praeparationen.py --setzen %s:\n%s%s"
-                         % (kennung, p.stdout, p.stderr))
-    # Die Sicherung einer `textersatz`- oder `ersetzen`-Praeparation darf nicht im
-    # Baum bleiben: Sie stuende in `git status` und waere ein Fund, den keine
-    # Zelle meint.
-    weg(os.path.join(baum, "tools", "praeparationen", "vorher"))
-    for zeile in p.stdout.splitlines():
-        if zeile.startswith("gesetzt: "):
-            return zeile.split("  ")[0][len("gesetzt: "):].strip().replace(os.sep, "/")
-    raise SystemExit("ABBRUCH: praeparationen.py hat kein Ziel gemeldet (%s)" % kennung)
+    try:
+        return praeparationen.setzen(baum, kennung)
+    except RuntimeError as e:
+        raise SystemExit("ABBRUCH Praeparation %s: %s" % (kennung, e))
 
 
 def minimale_historie(baum):

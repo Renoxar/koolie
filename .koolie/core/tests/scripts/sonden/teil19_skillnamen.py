@@ -1,5 +1,5 @@
 """Sonden zur Umbenennung der mitgelieferten Skills auf koolie-* (2.0.0): install.py --update
-hebt ein Projekt mit den Namen bis 1.25.0 an - Skillordner, Agentenprofil, Berechtigungsdatei.
+stellt ein Projekt mit den Namen bis 1.25.0 um - Skillordner, Agentenprofil, Berechtigungsdatei.
 
 Teil des Sondenskripts probe-pruefungen.py, seit 1.19.1 in Module geteilt (K-174). Die
 Einheiten melden sich beim Laden dieses Moduls an; der Einstieg laedt die Module in der
