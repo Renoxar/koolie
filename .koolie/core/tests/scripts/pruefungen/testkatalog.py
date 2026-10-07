@@ -1168,7 +1168,7 @@ def check_belegquelle(root: str) -> None:
 # Zeile mit einem Datum nach dem Stichtag. Aeltere Zeilen bleiben, wie sie geschrieben
 # wurden (Klasse C). NUR DIE SKILLS DES KERNS: D-303 regelt die Testblaetter des
 # Frameworks; ein projekteigener Skill fuehrt seinen Verlauf nach eigener Regel. Beim
-# ersten Heben mit dieser Pruefung meldete sie im Uebungsrepositorium die Erstfassung
+# ersten Update mit dieser Pruefung meldete sie im Uebungsrepositorium die Erstfassung
 # eines prj-Skills. Die installierten Kopien der Kernskills sind Kopien der Quelle,
 # die hier geprueft wird.
 # GRENZE: Die Pruefung sieht die NENNUNG, nicht ihre Richtigkeit. Ob eine Aenderung eine

@@ -1120,8 +1120,9 @@ def main() -> None:
                     "gibt, haette keines (Modus M6).",
                     f"Die Person fuehrt im eigenen Terminal aus: {MANDAT_BEFEHL}",
                     "Danach darf der Agent im Umfang des Mandats in das Overlay "
-                    "schreiben; 'mandat.py status' zeigt es, 'mandat.py beenden' hebt "
-                    "es auf."))
+                    "schreiben; 'mandat.py beenden' hebt es auf. Die Auskunft darf auch "
+                    f"der Agent einholen, als einzelner Befehl ohne Verkettung: python "
+                    f"{CORE_REL}/mandat.py status"))
 
     if tokenisieren and any(p.search(s) for p in UEBERTRAGUNGS_MUSTER for s in strings):
         block(hinweis(

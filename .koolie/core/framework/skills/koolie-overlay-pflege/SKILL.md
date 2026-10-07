@@ -1,7 +1,7 @@
 ---
 name: koolie-overlay-pflege
 description: Trägt im Modus M6 Mandated Maintenance Entscheidungen des Menschen direkt in das Project Overlay ein – bei der Einrichtung (Interview statt Ausfüllen von Hand) und nach einem Framework-Update (Abgleich der Vorlage gegen das Overlay, neue Pflichtfelder, Umstellungen) – nur mit Mandat, nur Entschiedenes, Offenes als <TBD>, am Ende Validator. Verwenden, wenn ein Overlay angelegt, nach einem Update nachgezogen oder um besprochene Entscheidungen ergänzt werden soll.
-argument-hint: "[einrichtung|hebung|eintrag] [entscheidung-oder-abschnitt]"
+argument-hint: "[einrichtung|update|eintrag] [entscheidung-oder-abschnitt]"
 allowed-tools:
   - read
   - grep
@@ -31,7 +31,7 @@ triggers:
 |---|---|
 | ID | `FW-SK-013` |
 | Name | `koolie-overlay-pflege` |
-| Version | `0.2.1` |
+| Version | `0.3.0` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Betriebsmodus | M6 Mandated Maintenance |
@@ -42,9 +42,9 @@ triggers:
 
 ## 1. Zweck, Zielgruppe und Trigger
 
-- **Zweck:** Trägt Entscheidungen, die der Mensch in der Sitzung trifft, direkt in `.koolie/project-overlay/` ein, statt sie als Vorlage zum Abschreiben zu liefern. Drei Anlässe: **Einrichtung** – der Skill fragt die Werte des Overlays abschnittsweise ab und trägt die Antworten ein; **Hebung** – nach `install.py --update` gleicht er die Vorlage des neuen Releases gegen das Overlay ab und trägt neue Pflichtfelder und Umstellungen nach, soweit der Mensch sie entscheidet; **Eintrag** – eine besprochene Entscheidung (Architektur, Pfade, Befehle, Rollen, Ablage) landet im richtigen Abschnitt oder Dokument. Ergebnis: geänderte Overlay-Dateien, eine Zeile im Änderungsverlauf, Validatorergebnis, Liste berechtigungswirksamer Änderungen.
+- **Zweck:** Trägt Entscheidungen, die der Mensch in der Sitzung trifft, direkt in `.koolie/project-overlay/` ein, statt sie als Vorlage zum Abschreiben zu liefern. Drei Anlässe: **Einrichtung** – der Skill fragt die Werte des Overlays abschnittsweise ab und trägt die Antworten ein; **Update** – nach `install.py --update` gleicht er die Vorlage des neuen Releases gegen das Overlay ab und trägt neue Pflichtfelder und Umstellungen nach, soweit der Mensch sie entscheidet; **Eintrag** – eine besprochene Entscheidung (Architektur, Pfade, Befehle, Rollen, Ablage) landet im richtigen Abschnitt oder Dokument. Ergebnis: geänderte Overlay-Dateien, eine Zeile im Änderungsverlauf, Validatorergebnis, Liste berechtigungswirksamer Änderungen.
 - **Zielgruppe:** Overlay Owner (`<APPROVAL_ROLE>`), Softwarearchitektur (`<ARCHITECT_ROLE>`), Technische Projektleitung – wer das Mandat erteilt.
-- **Trigger:** Ein neues Projekt richtet das Overlay ein; ein Framework-Update ist mit `install.py --update` gehoben; eine Entscheidung zu Overlay oder Projektdokumentation ist getroffen und soll eingetragen werden. Aufruf: `/koolie-overlay-pflege einrichtung`, `/koolie-overlay-pflege hebung` oder `/koolie-overlay-pflege eintrag "<Entscheidung>"`. Nur auf Anweisung des Menschen.
+- **Trigger:** Ein neues Projekt richtet das Overlay ein; ein Framework-Update ist mit `install.py --update` eingespielt; eine Entscheidung zu Overlay oder Projektdokumentation ist getroffen und soll eingetragen werden. Aufruf: `/koolie-overlay-pflege einrichtung`, `/koolie-overlay-pflege update` oder `/koolie-overlay-pflege eintrag "<Entscheidung>"`; die frühere Angabe `hebung` gilt als `update`. Nur auf Anweisung des Menschen.
 - **Nicht verwenden, wenn:** noch nicht entschieden ist (dann `koolie-change-analyze` oder `koolie-plan`); Quellcode, Tests oder `<DOC_PATHS>` außerhalb des Overlays betroffen sind (`koolie-change-small`, `koolie-tests`, `koolie-docs-update`); Kern, Laufzeitschicht oder Berechtigungsdatei geändert werden sollen (Rückmeldung an den Framework Owner beziehungsweise der Mensch).
 
 ## 2. Vorbedingungen, Eingaben und Kontext
@@ -53,16 +53,16 @@ triggers:
 
 1. Ein gültiges Mandat deckt das Ziel: `python .koolie/core/mandat.py status` meldet es aktiv, mit dem Umfang `overlay` (oder `dokumente`, wenn nur `documents/` betroffen ist). Fehlt es, gibt der Skill den Blockade-Hinweis aus (Abschnitt 7) und arbeitet nur lesend weiter.
 2. Die Entscheidung stammt vom Menschen in dieser Sitzung und ist benannt – mit Rolle. Was der Skill vorschlägt, ist ein Vorschlag, bis der Mensch es bestätigt.
-3. Bei **Hebung**: `install.py --update` ist gelaufen; seine Meldungen liegen vor oder werden mit `python .koolie/core/install.py --check` nachgeholt.
+3. Bei **Update**: `install.py --update` ist gelaufen; seine Meldungen liegen vor oder werden mit `python .koolie/core/install.py --check` nachgeholt.
 
 **Benötigte Eingaben:**
 
 | Eingabe | Pflicht | Kontextklasse | Hinweis |
 |---|---|---|---|
-| Anlass (`einrichtung`, `hebung`, `eintrag`) | MUSS | K0 | fehlt er, fragt der Skill |
+| Anlass (`einrichtung`, `update`, `eintrag`) | MUSS | K0 | fehlt er, fragt der Skill; `hebung` gilt als `update` |
 | Entscheidung(en) des Menschen | MUSS bei `eintrag` | K1 | Wortlaut der Sitzung; bei Architekturentscheidungen Kontext, Alternativen und Folgen, soweit genannt |
 | Rolle der entscheidenden Person | MUSS | K0 | Rolle, keine Person; landet im Änderungsverlauf |
-| Meldungen von `install.py --update` | SOLL bei `hebung` | K1 | sonst `install.py --check` |
+| Meldungen von `install.py --update` | SOLL bei `update` | K1 | sonst `install.py --check` |
 
 **Zulässige Kontextquellen:** `.koolie/project-overlay/`; die Overlay-Vorlage des Kerns (`.koolie/core/templates/project-overlay/`); Laufzeitfassung und Berechtigungsdatei (nur lesend); `CHANGELOG.md` des Kerns für Migrationshinweise; Code und Struktur in `<ALLOWED_PATHS>`, soweit ein Wert daraus belegt werden soll.
 
@@ -71,9 +71,9 @@ triggers:
 ## 3. Arbeitsschritte
 
 1. Anlass, Rolle und Mandat feststellen: `python .koolie/core/mandat.py status`. Kein gültiges Mandat → Blockade-Hinweis, weiter nur lesend (Schritte 2 bis 4 als Vorschlag).
-2. Ist-Stand lesen: betroffene Abschnitte des Overlays, Manifest, bei `hebung` die Vorlage des Kerns im Vergleich (neue oder umbenannte Abschnitte, neue Zeilen, geänderte Ausfüllhinweise) und die Migrationshinweise im `CHANGELOG.md`.
-3. Fragen stellen, abschnittsweise und knapp: bei `einrichtung` je Abschnitt die offenen Werte mit Vorschlag aus dem Repository (Pfade, Befehle, Sprache, Tests – je mit Fundstelle); bei `hebung` je neuer Zeile; bei `eintrag` nur, was an der Entscheidung unklar ist. Höchstens ein Abschnitt je Frage. Betrifft die Frage einen MCP-Server (Overlay Abschnitt 13 und 13.2), fehlt keine dieser Angaben: Name in `<MCP_FILE>`, System, Zweck (*lesen für Planung*, *schreiben für Ablage*), Lese- und Schreibwerkzeuge einzeln mit Namen, bei *schreiben für Ablage* das Ablageziel, Höchstzahl der Treffer, Art der Anmeldung. Ein Server ohne Zweck oder ohne Werkzeugliste wird nicht eingetragen (`.koolie/core/framework/core/02-privacy.md` 3.8), eine Werkzeugliste nicht geraten.
-4. [HALT] Änderungsliste vorlegen: Datei, Abschnitt, alter Wert, neuer Wert, Quelle (Entscheidung mit Rolle, oder Vorschlag). Berechtigungswirksame Zeilen – Pfadlisten, Befehle, MCP-Freigaben, Status – gesondert markieren. Die Hebung der Overlay-Version und die Zeile im Änderungsverlauf stehen mit auf der Liste; mit der Bestätigung der Liste sind sie bestätigt. Weiter nach Bestätigung.
+2. Ist-Stand lesen: betroffene Abschnitte des Overlays, Manifest, bei `update` die Vorlage des Kerns im Vergleich (neue oder umbenannte Abschnitte, neue Zeilen, geänderte Ausfüllhinweise) und die Migrationshinweise im `CHANGELOG.md`.
+3. Fragen stellen, abschnittsweise und knapp: bei `einrichtung` je Abschnitt die offenen Werte mit Vorschlag aus dem Repository (Pfade, Befehle, Sprache, Tests – je mit Fundstelle); bei `update` je neuer Zeile; bei `eintrag` nur, was an der Entscheidung unklar ist. Höchstens ein Abschnitt je Frage. Betrifft die Frage einen MCP-Server (Overlay Abschnitt 13 und 13.2), fehlt keine dieser Angaben: Name in `<MCP_FILE>`, System, Zweck (*lesen für Planung*, *schreiben für Ablage*), Lese- und Schreibwerkzeuge einzeln mit Namen, bei *schreiben für Ablage* das Ablageziel, Höchstzahl der Treffer, Art der Anmeldung. Ein Server ohne Zweck oder ohne Werkzeugliste wird nicht eingetragen (`.koolie/core/framework/core/02-privacy.md` 3.8), eine Werkzeugliste nicht geraten.
+4. [HALT] Änderungsliste vorlegen: Datei, Abschnitt, alter Wert, neuer Wert, Quelle (Entscheidung mit Rolle, oder Vorschlag). Berechtigungswirksame Zeilen – Pfadlisten, Befehle, MCP-Freigaben, Status – gesondert markieren. Die Erhöhung der Overlay-Version und die Zeile im Änderungsverlauf stehen mit auf der Liste; mit der Bestätigung der Liste sind sie bestätigt. Weiter nach Bestätigung.
 5. Eintragen, nur im Umfang des Mandats: bestätigte Werte setzen; Offenes als `<TBD: …>`; Architekturentscheidungen als eigene Datei `documents/architecture/decisions/ADR-<JJJJ-MM-TT>-<kurzname>.md`, registriert im Manifest (Overlay Abschnitt 13.1 und 19); die Overlay-Version im Steckbrief **ändern, nicht ersetzen** – nur dort; Manifest und Laufzeitfassung zieht `mandat.py beenden` nach; eine Zeile oben im Änderungsverlauf (Abschnitt 20) mit Rolle und dem Zusatz „eingetragen in M6“.
 6. Prüfen: `python .koolie/core/tests/scripts/validate-framework.py --strict-overlay`. Meldet er einen Fehler, den die Eintragung verursacht hat → beheben oder zurücknehmen; einen vorbestehenden nur melden.
 7. Ergebnis im Ausgabeformat erzeugen; als nächsten Schritt für den Menschen `python .koolie/core/mandat.py beenden` nennen (gleicht die Laufzeitfassung ab) und, bei berechtigungswirksamen Änderungen, die Regeln, die er in der Berechtigungsdatei nachtragen muss – bei einer MCP-Freigabe je Lesewerkzeug eine Freigabe, je Schreibwerkzeug eine Rückfrage, nie ein Muster für den ganzen Server, dazu den Eintrag in `<MCP_FILE>` ohne Zugangsdaten.
@@ -90,7 +90,7 @@ triggers:
 
 **Rückfragenregeln (MUSS):**
 
-- Fragen, wenn: eine Entscheidung mehrdeutig ist; ein Wert mehrere Abschnitte betrifft; eine Hebung eine Umstellung verlangt, deren Folgen der Mensch kennen muss (etwa eine entfallene Regel der Berechtigungsdatei); eine Eintragung eine Kernregel berühren würde.
+- Fragen, wenn: eine Entscheidung mehrdeutig ist; ein Wert mehrere Abschnitte betrifft; ein Update eine Umstellung verlangt, deren Folgen der Mensch kennen muss (etwa eine entfallene Regel der Berechtigungsdatei); eine Eintragung eine Kernregel berühren würde.
 - Form der Rückfrage: Unklarheit benennen → Auswirkung erklären → konkrete Frage mit Vorschlag → Punkt als offen kennzeichnen.
 - Ohne Antwort bleibt der Wert `<TBD: …>`.
 
@@ -100,7 +100,7 @@ triggers:
 ## Overlay-Pflege – koolie-overlay-pflege v<Version aus dem Steckbrief>
 
 ### Anlass und Mandat
-- Anlass: <einrichtung | hebung | eintrag> · Rolle: <Rolle> · Mandat: <aktiv, Umfang, bis | fehlt – nur Vorschlag>
+- Anlass: <einrichtung | update | eintrag> · Rolle: <Rolle> · Mandat: <aktiv, Umfang, bis | fehlt – nur Vorschlag>
 
 ### Eingetragene Änderungen
 | Datei | Abschnitt | Vorher → nachher (Kurzform) | Quelle (Entscheidung mit Rolle) | berechtigungswirksam |

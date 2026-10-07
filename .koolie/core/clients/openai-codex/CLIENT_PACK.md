@@ -4,7 +4,7 @@
 |---|---|
 | Modul-ID | `CP-OC` |
 | Ebene | keine – Abbildungsschicht |
-| Version | 0.2.0 |
+| Version | 0.3.0 |
 | Status | pilot |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 | Client | OpenAI Codex CLI |
@@ -68,7 +68,7 @@ Die Präfixform eines Befehlsverbots muss ein Präfix seiner wörtlichen Form se
 
 Der Eintrag liegt außerhalb des Repositoriums, ist je Arbeitsplatz zu setzen und kann vom Framework nicht ausgeliefert werden. Die erzeugte `.codex/config.toml` nennt die Bedingung in ihrem Kopfkommentar; B1, H1 und H2 tragen sie in ihrer Belegzelle. Ein Eintrag kann auf ein Elternverzeichnis lauten, etwa das Benutzerprofil, und schließt dann jedes Projekt darunter ein.
 
-**Hooks brauchen zusätzlich eigenes Vertrauen**, und es hängt an einem Hash. Ohne dieses Vertrauen läuft der Schutz-Hook gar nicht, und `codex doctor --all` meldet es nicht (gemessen 2026-09-23). Jede Hebung des Frameworks ändert den Hook und damit den Hash: Wer nach `install.py --update` nicht erneut vertraut, arbeitet ohne Schutz-Hook.
+**Hooks brauchen zusätzlich eigenes Vertrauen**, und es hängt an einem Hash. Ohne dieses Vertrauen läuft der Schutz-Hook gar nicht, und `codex doctor --all` meldet es nicht (gemessen 2026-09-23). Jedes Update des Frameworks ändert den Hook und damit den Hash: Wer nach `install.py --update` nicht erneut vertraut, arbeitet ohne Schutz-Hook.
 
 ## 2. Fähigkeitsmatrix
 
@@ -124,7 +124,7 @@ Die mit **Kern** markierten Zeilen sind die Kernzusagen; die Berechtigungsdatei 
 
 | ID | Zusage des Frameworks | Mechanismus beim Client | Einstufung | Beleg |
 |---|---|---|---|---|
-| H1 | Prüfung vor Werkzeugausführung | `PreToolUse` in `.codex/hooks.json`, Matcher `Bash\|apply_patch` | `[TECHNISCH]`, doppelt bedingt | **gemessen an einer realen Installation** (2026-09-23): Der Hook läuft bei jedem Shell- und jedem Schreibaufruf; der Umschlag führt `session_id`, `turn_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `tool_name`, `tool_input` und `tool_use_id`. **Bedingung 1: `"enabled": true` je Eintrag** – ohne das läuft er nicht, und der Client meldet es nicht. **Bedingung 2: Hook-Vertrauen** – ohne persistiertes Vertrauen läuft er **gar nicht**, der Köderinhalt kommt heraus, und `codex doctor --all` sagt nichts dazu. **Jede Hebung des Frameworks ändert den Hash** (Abschnitt 1b) |
+| H1 | Prüfung vor Werkzeugausführung | `PreToolUse` in `.codex/hooks.json`, Matcher `Bash\|apply_patch\|mcp__.*` | `[TECHNISCH]`, doppelt bedingt | **gemessen an einer realen Installation** (2026-09-23): Der Hook läuft bei jedem Shell- und jedem Schreibaufruf; seit 2026-10-06 auch bei MCP-Werkzeugen (`mcp__<server>__<werkzeug>`, gemessen mit einem Köderserver: ein Lesezugriff auf einen Secret-Pfad über MCP wurde abgewiesen); der Umschlag führt `session_id`, `turn_id`, `transcript_path`, `cwd`, `hook_event_name`, `model`, `permission_mode`, `tool_name`, `tool_input` und `tool_use_id`. **Bedingung 1: `"enabled": true` je Eintrag** – ohne das läuft er nicht, und der Client meldet es nicht. **Bedingung 2: Hook-Vertrauen** – ohne persistiertes Vertrauen läuft er **gar nicht**, der Köderinhalt kommt heraus, und `codex doctor --all` sagt nichts dazu. **Jedes Update des Frameworks ändert den Hash** (Abschnitt 1b) |
 | H2 | Prüfung kann **blockieren** | `hookSpecificOutput.permissionDecision = "deny"` und **Exit 0** | `[TECHNISCH]` | 🔴 **Gemessen, und der schwerste Befund dieses Packs** (D-347): Die Standardsperrform des Schutz-Hooks – `{"decision": "block"}` und **Exit 2** – bewirkt bei diesem Client **nichts**. Der Client meldet *PreToolUse Failed* und **führt die Operation aus**; im Gegenlauf kam der Köderinhalt wörtlich heraus. **Dieselbe Sperre in der Form, die er liest, blockiert** – gemessen in einem Baum **ohne** Regeltexte und im Modus, der Rückfragen **und** Sandkasten abschaltet, mit Positivkontrolle im selben Baum. Ein Hook, der läuft und dessen Sperrform der Client nicht liest, ist eine Zusage ohne Mechanismus. **Prüfung 86** hält die Kette aus Manifest, Skript und erzeugtem Kommando zusammen |
 | H3 | Statusmeldung beim Sitzungsstart | `SessionStart` mit `hook-overlay-status.py` | `[TECHNISCH]` | **beobachtet** (2026-09-23): Der Hook läuft, und **seine Ausgabe steht im Sitzungskontext** – ein Lauf im Baum ohne Regeltexte hat den Overlay-Status daraus zitiert. Das ist mehr als bei beiden Schwesterpacks, wo die Meldung selbst unbeobachtet blieb |
 | H4 | Eingabeschema und Pfadidentität des Schutz-Hooks | Ereignisprüfung, Pfadidentität über den aufgelösten Pfad, alle Pfadmuster ohne Rücksicht auf Groß-/Kleinschreibung. `hook_fail_closed` steht auf `false`. Grenze: Ein Hook prüft vor dem Zugriff; eine zwischenzeitlich umgebogene Verknüpfung kann er nicht ausschließen | `[TECHNISCH]` für die Musterprüfung, mit zwei benannten Grenzen und der Zeitlücke | **Das Schema von `PreToolUse` ist aufgezeichnet** (zehn Felder, siehe H1) – **der vollständige Bestand der zwölf Ereignisse ist es nicht**, und deshalb bleibt `hook_fail_closed` auf `false`: Fail-closed bei teilweise erhobenem Schema wäre keine Härtung, sondern eine Sitzung, die bei der ersten unbekannten Eingabeform blockiert (D-31). **Zweite Grenze, gemessen und behoben:** Das Schreibwerkzeug führt **keinen Pfad in einem Feld**; er steht im Patchtext hinter einem Leerzeichen. Die Pfadmuster des Hooks erkennen deshalb auch das Leerzeichen als Grenze – eine **Verschärfung für alle drei Packs** (D-347) |
@@ -183,7 +183,7 @@ B1, B2 und B6 sind `[TECHNISCH]` – B2 und B6 an der Engine gemessen, B1 über 
 - **Die nutzerlokale Wurzel-Anweisung ersetzt, sie ergänzt nicht.** Deshalb liefert dieses Pack dafür keine Beispieldatei aus; sie wäre eine Anleitung, die Ebene 1 lautlos abzuschalten.
 - **Die projektlokale Schicht kann lockern** (B9): Hier ist die versionierte Seite die lockernde. Wer die Berechtigungsdatei liest, liest auch, was sie am Arbeitsplatz aufhebt.
 - **Ohne Vertrauenseintrag trägt die projektlokale Schicht nichts** – weder Konfiguration noch Hooks noch Befehlsregeln; Skills laden trotzdem. Die Bedingung liegt außerhalb des Repositoriums.
-- **Der Hook braucht eigenes Vertrauen, und es hängt an einem Hash.** Jede Hebung ändert den Hash; ohne erneutes Vertrauen läuft das Projekt ohne Schutz-Hook, und nichts meldet es. Das gehört in die Übernahme- und Hebungsanleitung des Projekts.
+- **Der Hook braucht eigenes Vertrauen, und es hängt an einem Hash.** Jedes Update ändert den Hash; ohne erneutes Vertrauen läuft das Projekt ohne Schutz-Hook, und nichts meldet es. Das gehört in die Übernahme- und Hebungsanleitung des Projekts.
 - **Der Hook-Prozess bekommt das Projektverzeichnis nicht als Variable**, er läuft darin. Die Abbildung bindet deshalb den relativen Punkt.
 - **Ein falsch geschriebenes Sonderziel der Pfadseite fällt lautlos durch:** `:quatsch/x` wird angenommen und steht danach im wirksamen Rechteprofil (gemessen). Unbekannte Schlüssel meldet der Client, unbekannte Werte eines bekannten Schlüssels nicht.
 - Das Pack nutzt die Kernmechaniken `rule_frontmatter: "comment"` und `root_instruction_imports`.
@@ -202,9 +202,9 @@ Danach im Projekt:
 python .koolie/core/tests/scripts/validate-framework.py
 ```
 
-Ein Projekt, das den Kern schon trägt, wird mit `--update` gehoben; `install.py --client openai-codex` ohne `--target` installiert im aktuellen Verzeichnis.
+Ein Projekt, das den Kern schon trägt, wird mit `--update` aktualisiert; `install.py --client openai-codex` ohne `--target` installiert im aktuellen Verzeichnis.
 
-**Danach – ohne das trägt nichts aus Block B:** das Projekt in der Benutzerkonfiguration des Clients als vertraut eintragen und dem Schutz-Hook einzeln vertrauen, nach jeder Hebung erneut. Beides liegt außerhalb des Repositoriums (Abschnitt 1b); `install.py` nennt beide Schritte nach der Installation und das erneute Hook-Vertrauen nach jeder Hebung.
+**Danach – ohne das trägt nichts aus Block B:** das Projekt in der Benutzerkonfiguration des Clients als vertraut eintragen und dem Schutz-Hook einzeln vertrauen, nach jedem Update erneut. Beides liegt außerhalb des Repositoriums (Abschnitt 1b); `install.py` nennt beide Schritte nach der Installation und das erneute Hook-Vertrauen nach jedem Update.
 
 Vor der ersten produktiven Nutzung die Basistests des Testkatalogs (`.koolie/core/tests/TEST_CATALOG.md`, Kennzeichnung „Basis") gegen diesen Client fahren und protokollieren.
 
@@ -250,3 +250,5 @@ Ein Abwesenheitsbeleg altert mit jeder Clientversion. Prüfung 19 prüft nur, da
 | 0.1.8 | 2026-09-29 | Zeile B4 folgt dem Erzeugnis: Die Tabelle `:workspace_roots` führt das Overlay seit `1.17.0` nicht mehr, es sperrt allein der Schutz-Hook (D-448) – für Shell-Befehle im Sandkasten ist das Overlay damit nur noch normativ geschützt (`CR-2026-158`, D-468) | `<FRAMEWORK_OWNER>` |
 | 0.1.9 | 2026-09-30 | **Zwei Messungen an 0.157.1** (`CR-2026-163`, D-495, D-496, `K-119`, `K-160`). Zeile B3: Der projektrelative Glob wird angenommen, das `deny`-Leserecht verlangt weiter den erhöhten Sandkasten – die Einstufung bleibt. Zeile B6: Über die Ablagen hinweg gewinnt die strengste Entscheidung | `<FRAMEWORK_OWNER>` |
 | 0.2.0 | 2026-10-02 | Sprachlich überarbeitet; Zusagen, Einstufungen und Belege unverändert. Abschnitt 7.1 nennt für die Befehlsregeln des Benutzerverzeichnisses, was B6 belegt: Die strengste Entscheidung gewinnt | `<FRAMEWORK_OWNER>` |
+| 0.2.1 | 2026-10-06 | „Update“ statt „Hebung“ (`CR-2026-175` E2); Zusagen, Einstufungen und Belege unverändert | `<FRAMEWORK_OWNER>` |
+| 0.3.0 | 2026-10-06 | **MCP-Aufrufe erreichen den Schutz-Hook, und die Wirksamkeitsprobe startet den Client ohne Modell** (`CR-2026-175` E5, `K-198`, `K-199`). Gemessen mit `codex-cli` 0.160.0: MCP-Werkzeuge als `mcp__<server>__<werkzeug>` am `PreToolUse`, Matcher und Präfix im Manifest, Abweisung eines MCP-Lesezugriffs auf eine `.pem`-Datei. Mit einem Proxy auf einem geschlossenen Port läuft der Client bis zum `SessionStart`-Hook; `install.py --probe` belegt damit K1 und das Hook-Vertrauen (V2) ohne Modellaufruf | `<FRAMEWORK_OWNER>` |

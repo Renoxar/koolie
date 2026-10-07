@@ -8,6 +8,8 @@
     python messen.py REIHE.json auswertung [FELD]  Tabelle je Lauf, Summen je FELD (variante, gruppe)
     python messen.py REIHE.json aufraeumen         Vertrauen entfernen
     python messen.py basis ZIEL CLIENT PRAEP.json  eine frische Installation als Basis bauen
+    python messen.py baeume ZELLEN [--node P] [--anhang b] [--kennung K]
+                                                   Messbaeume aus der Marke der Uebung bauen
     python messen.py stand-marke PFAD [PFAD..]     Standmarke fuer eine Ergebniszelle (K-61)
     python messen.py selbsttest                    der Apparat gegen die Attrappe, ohne Kontingent
 
@@ -33,6 +35,19 @@ def main(argv: list) -> int:
         return selbsttest.main()
     if argv[0] == "stand-marke":
         print(stand.marke(argv[1:]))
+        return 0
+    if argv[0] == "baeume":
+        from apparat import aufbau, quelle
+
+        def opt(name, vorgabe=""):
+            return argv[argv.index(name) + 1] if name in argv else vorgabe
+        try:
+            ort = quelle.messort(opt("--kennung"))
+            aufbau.bauen(argv[1], ort, os.path.abspath(opt("--node")) if opt("--node") else "",
+                         opt("--anhang"))
+        except (quelle.Abbruch, KeyError) as f:
+            print(f"ABBRUCH: {f}")
+            return 1
         return 0
     if argv[0] == "basis":
         ziel, client, praep = argv[1], argv[2], argv[3]

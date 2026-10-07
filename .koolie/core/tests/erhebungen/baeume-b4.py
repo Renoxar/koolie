@@ -87,7 +87,7 @@ ZUORDNUNG = {
     # wie bei `sk012p02`. Diese Zelle ist ABGENOMMEN, und zwar mit der Angabe
     # `Zurechenbarkeit nicht erhoben`. Der Nachlauf fasst nur ihren KONTROLLAUF
     # an; ihr Hauptlauf vom 2026-09-20 bleibt gueltig, weil `fw-docs-update`
-    # mit 0.79.0 nicht gehoben worden ist.
+    # mit 0.79.0 nicht geaendert worden ist.
     "sk011n04": "konf",        # nur BELEGTES Verhalten dokumentieren
 }
 

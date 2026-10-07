@@ -472,7 +472,7 @@ def bauen(zelle, basis, erwarte, aus_archiv, ziel=None):
     version = lies(os.path.join(baum, ".koolie/core", "VERSION")).strip()
     if version != erwarte:
         raise SystemExit("ABBRUCH: der Baum traegt Framework %s, erwartet %s - das "
-                         "Uebungsrepositorium ist nicht gehoben." % (version, erwarte))
+                         "Uebungsrepositorium ist nicht aktualisiert." % (version, erwarte))
     print("Framework im Baum:", version)
 
     for pflicht in (os.path.join("tools", "praeparationen.py"),

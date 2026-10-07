@@ -883,7 +883,7 @@ buendel(sonden_kennzeichen_im_projekt,
         "gemeldet, und install.py und Validator erkennen es an derselben Stelle")
 
 
-# --- D-395: die Schritte nach Installation und Hebung je Pack (K-123) -------------
+# --- D-395: die Schritte nach Installation und Update je Pack (K-123) -------------
 #
 # 🔴 BEI `openai-codex` TRAEGT OHNE VERTRAUEN NICHTS VON ABSCHNITT B, UND DER HOOK
 # BRAUCHT NACH JEDER HEBUNG NEUES VERTRAUEN - und `install.py` nannte keins von beidem.
@@ -892,10 +892,10 @@ buendel(sonden_kennzeichen_im_projekt,
 # Manifest die Schritte (post_install_steps, post_update_steps), und den Integritaetsblock
 # nennt das Werkzeug nur bei einer Berechtigungsdatei im JSON-Format.
 #   D395  (Sonde)      - openai-codex: Installation nennt das Projekt- und das
-#                        Hook-Vertrauen und nicht den Integritaetsblock; die Hebung
+#                        Hook-Vertrauen und nicht den Integritaetsblock; das Update
 #                        nennt das erneute Hook-Vertrauen. Gegen den Vorstand faellt sie.
 #   D395a (Gegenprobe) - claude-code: Integritaetsblock genannt, kein Vertrauensschritt,
-#                        kein Zusatzblock bei der Hebung. Ein Werkzeug, das jedem Pack
+#                        kein Zusatzblock beim Update. Ein Werkzeug, das jedem Pack
 #                        die Schritte eines Packs nennt, besteht die Sonde auch.
 M395_INSTALL = "als vertraut eintragen"
 M395_HOOK = "Dem Schutz-Hook einzeln vertrauen"
@@ -907,7 +907,7 @@ def sonden_schritte_je_pack() -> None:
     """Wirkungsnachweis fuer die packeigenen Schritte aus D-395 an echten Installationen."""
     faelle = (
         ("SONDE", "D395", "openai-codex", True,
-         "openai-codex: Installation und Hebung nennen die Vertrauensschritte, "
+         "openai-codex: Installation und Update nennen die Vertrauensschritte, "
          "nicht den Integritaetsblock"),
         ("GEGENPROBE", "D395a", "claude-code", False,
          "claude-code: der Integritaetsblock wird genannt, kein Vertrauensschritt"),
@@ -935,7 +935,7 @@ def sonden_schritte_je_pack() -> None:
 
 
 buendel(sonden_schritte_je_pack,
-        "install.py nennt nach Installation und Hebung die Schritte, die das Manifest "
+        "install.py nennt nach Installation und Update die Schritte, die das Manifest "
         "des Packs fuehrt, und den Integritaetsblock nur, wo es ihn gibt")
 
 

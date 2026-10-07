@@ -89,6 +89,16 @@ Pack** – das [Laufzeitglossar](.koolie/core/docs/RUNTIME_GLOSSARY.md) löst je
 | `python .koolie/core/tests/scripts/probe-pruefungen.py` | ob jede Prüfung des Validators einen bekannten Defekt meldet und ein fehlerfreier Baum durchkommt |
 | [`TEST_CATALOG.md`](.koolie/core/tests/TEST_CATALOG.md) | das Verhalten des KI-Clients in Testsitzungen |
 
+## Pull Requests
+
+Das Repository auf GitHub ist ein Spiegel. Pull Requests sind dort willkommen, werden aber nicht auf GitHub
+gemergt: Sie werden in den Hauptstand übernommen, der Commit behält seine Autorin oder seinen Autor, und der
+Spiegel bringt ihn zurück nach GitHub. Größere Änderungen am besten vorher in einem Issue ansprechen.
+
+*In English:* The GitHub repository is a mirror. Pull requests are welcome; they are not merged on GitHub but
+taken over into the main line with their authorship preserved, and the mirror brings them back. Please open
+an issue first for larger changes.
+
 ## Releases
 
 Wie ein Release entsteht – Änderungsantrag, Prüfungen, signierte Marke, Archiv, Pakete und Veröffentlichung –,

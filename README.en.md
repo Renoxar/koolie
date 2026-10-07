@@ -45,7 +45,7 @@ a package registry, use the release archive and the starters `install.cmd` / `in
 - **One core for all clients.** Rules and skills are written once, tool-neutral; a team with mixed tools shares
   the same rules.
 - **The project stays in charge.** Project values live in the overlay. A new release updates a project with the
-  same command: it detects the existing core and offers to upgrade it; the overlay is never touched.
+  same command: it detects the existing core and offers to update it; the overlay is never touched.
 - **Control levels instead of trust.** The assistant handles small tasks on its own; from "medium" it needs a
   confirmed plan, at "high" an explicit approval.
 

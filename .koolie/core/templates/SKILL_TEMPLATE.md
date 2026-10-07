@@ -14,7 +14,7 @@ permissions:
     - exec   # entfernen, wenn der Skill Befehle ausführen darf
 triggers:
   - user
-  # - model  # nur für rein lesende Skills zusätzlich erlaubt
+  # - model  # nur zusätzlich, wenn der Skill edit sperrt und exec weder in allowed-tools noch in permissions.allow führt
 ---
 
 <!-- ==========================================================================================

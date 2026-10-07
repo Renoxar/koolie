@@ -79,6 +79,7 @@ Jetzt ist die Reihe **Daten** (eine JSON-Datei in der Ablage) und der Apparat **
 ```
 python messen.py REIHE.json pruefen | aufbau | vorpruefung | lauf | auswertung [FELD] | aufraeumen
 python messen.py basis ZIEL CLIENT PRAEPARATION.json    # frische Installation als Basis
+python messen.py baeume ZELLEN [--node P] [--anhang b]  # Messbäume aus der Marke der Übung (seit 2.2.0)
 python messen.py stand-marke PFAD [PFAD ...]            # Standmarke einer Ergebniszelle (Prüfung 103)
 python messen.py selbsttest                             # gegen den Attrappen-Client, 0 USD
 ```
@@ -92,7 +93,8 @@ python messen.py selbsttest                             # gegen den Attrappen-Cl
 | `clients.py` | Adapter `claude-code` (vollständig), `cursor` (Lauf; Kosten, Hook-Probe unerhoben – Pfad in `LW_CURSOR`), Attrappe; `devin-desktop`, `openai-codex`, `kiro` sagen **unerhoben** | D-276: ein Apparat, der einen Client nie sah, meldet nichts |
 | `belege.py` | sichert je Turn Ergebnis, Ausgabe, Antwort, Mitschrift und Laufdaten (Client, Version, **Modell**, Gruppe, Variante, Branch, Baum-Hash) – nur außerhalb des Repositoriums | D-222, D-280 |
 | `stand.py` | die Standmarke einer Ergebniszelle, gerechnet vom Validator (`stand_wert()`) | `K-61`: ein `bestanden` veraltet mit seinem Gegenstand |
-| `selbsttest.py` | zwölf Fälle gegen die Attrappe, darunter drei Gegenfälle (falscher Branch, Rest im Baum, Deckel) und seit `1.21.0` zwei zur Referenzgruppe | bis `1.18.2` kein einziger Test |
+| `selbsttest.py` | vierzehn Fälle gegen die Attrappe, darunter drei Gegenfälle (falscher Branch, Rest im Baum, Deckel), seit `1.21.0` zwei zur Referenzgruppe, seit `2.2.0` Zellen und Präparationen sowie die Konto-Connectoren | bis `1.18.2` kein einziger Test |
+| `quelle.py`, `basen.py`, `praeparationen.py`, `historie.py`, `zellen.py`, `aufbau.py` | seit `2.2.0`: Messbäume aus einer **Marke** des Übungsrepositoriums – Basen als benannte Schritte, Präparationen je Zelle samt Quellen, Historie mit Übungs-Branches, die Zellen als Daten | `K-190`: fünf Aufbauwege mit eigenen Kopien derselben Schritte, zwei davon still gebrochen |
 | `freigabe.py` | der **Freigabe-Stellvertreter**: ein MCP-Server, der im Druckmodus jede Rückfrage mit „ja“ beantwortet und protokolliert (`--permission-prompt-tool`) – nur für Messbäume | `1.21.0`: Eine Konfiguration, die jede Änderung erfragt, maß im Druckmodus sonst nur ihre Einstellung (D-516) |
 
 **Baummodi:** `fest` (ein Verzeichnis je Reihe, zurückgesetzt zwischen den Läufen), `je_lauf`
@@ -115,11 +117,31 @@ Lauf rund 19.300 Token neu angelegt und 51.800 gelesen. Der gemeinsame Anfang wi
 Verzeichnisse hinweg schon geteilt; neu angelegt wird, was die Sitzung selbst erzeugt.
 `fest` bleibt als Modus, weil er Platz und Bauzeit spart – nicht wegen der Kosten.
 
-⚠️ **Was das Paket noch nicht kann** (`K-190`): Bäume aus dem **Übungsrepositorium** bauen.
-Dafür bleiben `umgebungen-bauen-b4.py`, `baeume-b4.py`, `baeume-b23.py` und `messbaum-schnitt.py`; der Apparat
-fährt ihre Bäume im Modus `vorhanden`. Zwei von ihnen hatte `1.18.2` still gebrochen – sie
-kannten nur `Bash(…)` als Hülle eines Befehlsschlitzes und brachen beim ersten Baumbau
-danach ab (berichtigt mit `1.19.0`).
+## 🟢 Seit `2.2.0`: der Apparat baut die Bäume selbst – `messen.py baeume` (`K-190`, `K-152`, `K-218`)
+
+```
+export LW_UEBUNG=<Klon des Übungsrepositoriums>    # oder LW_UEBUNG_QUELLE=<Adresse eines Spiegels>
+export LW_BASIS=/var/tmp/koolie-mess/lw-<kennung>   # nie unter dem Benutzerprofil
+python messen.py baeume sk003,sk013p02 --node <node_modules-Bestand>
+```
+
+- **Basis ist eine Marke** des Übungsrepositoriums (`apparat-basis-1`, Commit in `quelle.py`),
+  nicht dessen `HEAD`. Der Kern kommt aus diesem Arbeitsbaum über `install.py --target <archiv>
+  --update` und muss committet sein; eine Änderung am Apparat selbst ändert kein Archiv.
+- **Die Präparationen je Zelle stehen hier** (`praeparationen.py`, Quellen bytegleich aus der
+  Marke), nicht mehr unter `tools/` der Übung. Die Übung trägt den Basisbaum mit den dauerhaften
+  Präparationen und das Onboarding; die Bäume tragen kein `tools/` mehr.
+- **Gleichwertigkeit gemessen** (2026-10-06): alle 91 Zellen auf beiden Wegen gebaut – 90 Bäume
+  bytegleich (Dateien, Branches, `HEAD`, `git status`, Tree je Branch), `sk007n07` trägt
+  zusätzlich die Präparation „Stufe hoch“, die 2.1.0 von Hand gesetzt hatte.
+- **Ohne Konto-Connectoren:** Der Adapter `claude-code` startet jeden Lauf mit
+  `ENABLE_CLAUDEAI_MCP_SERVERS=false`; die im Baum freigegebenen Server bleiben. Die
+  Vorprüfung meldet `mcp__claude_ai_*` in der Startmeldung.
+- Nicht im Paket: die Kontrollbäume der Zuschnittklassen (`k-bauen-b3.py`) und Bündel 5
+  (`umgebungen-bauen-b5.py`, `baeume-b5.py`; Präparationen jetzt aus `praeparationen.py`).
+  `baeume-b23.py`, `baeume-b4.py`, `umgebungen-bauen-b4.py` und `historie-bauen-b4.py` bleiben
+  als Beleg ihrer Protokolle; die beiden letzten brauchen `tools/` und laufen nur noch gegen
+  die Marke.
 
 ## Die Werkzeuge
 

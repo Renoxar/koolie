@@ -656,7 +656,7 @@ def check_abwesenheitsbeleg(root: str) -> None:
 # Eintrag WELCHER Schlitz ist, steht dort nicht und kann dort nicht stehen. Gemessen
 # laufen deshalb drei beliebige Befehlsfreigaben durch, darunter eine mit Fernwirkung,
 # und zwar in beiden Packs und auch dann, wenn das Overlay dreimal <TBD> sagt, also gar
-# nichts erklaert. Am Piloten steht der Fall seit dem Heben auf 0.37.0:
+# nichts erklaert. Am Piloten steht der Fall seit dem Update auf 0.37.0:
 # Bash(mvn -B -q compile) im ask-Korb, waehrend Abschnitt 6 <LINT_COMMAND> als "nicht
 # vorhanden" erklaert.
 #

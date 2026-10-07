@@ -165,7 +165,7 @@ def main():
     if version != args.erwarte:
         raise SystemExit(
             "ABBRUCH: der Messbaum traegt Framework %s, erwartet %s - das "
-            "Uebungsrepositorium ist nicht gehoben. Ein Baum aus dem ungehobenen "
+            "Uebungsrepositorium ist nicht aktualisiert. Ein Baum aus dem alten "
             "Stand traegt die alte Erwartung." % (version, args.erwarte))
     print("Framework im Messbaum:", version)
 

@@ -22,7 +22,7 @@ concurrency:
 jobs:
   pruefen:
     name: Marke pruefen und Pakete bauen
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.marke.outputs.version }}
     steps:
@@ -80,7 +80,7 @@ jobs:
   testpypi:
     name: TestPyPI und Installationsprobe
     needs: pruefen
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: testpypi
       url: https://test.pypi.org/project/koolie/${{ needs.pruefen.outputs.version }}/
@@ -121,7 +121,7 @@ jobs:
   veroeffentlichen:
     name: PyPI und npm
     needs: [pruefen, testpypi]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: release
       url: https://pypi.org/project/koolie/${{ needs.pruefen.outputs.version }}/

@@ -38,9 +38,9 @@ Aufruf aus dem Framework (Klon oder entpacktes Release-Archiv) in ein anderes Pr
 kopiert nur den Kern und installiert danach dort (D-362):
 
     python .koolie/core/install.py --target <projekt> [--client <name>] [--overlay <name>]
-    python .koolie/core/install.py --target <projekt> --update      # Projekt heben
+    python .koolie/core/install.py --target <projekt> --update      # Projekt aktualisieren
     python .koolie/core/install.py --target <projekt> --lieferumfang nutzung
-                                           # ohne Nachweisschicht (D-367); gilt beim Heben weiter
+                                           # ohne Nachweisschicht (D-367); gilt beim Update weiter
 
 Die Starter install.cmd (Windows) und install.command (macOS) in der Wurzel des
 Frameworks fragen diese Angaben ab (install_dialog.py) und rufen genau das auf.
@@ -109,7 +109,7 @@ MANIFEST_PFLICHTFELDER = ("client", "skills_dir", "pack_runtime_dir",
 
 
 def nachschritte(schritte: list, ab: int) -> None:
-    """Gibt die packeigenen Schritte nach Installation oder Hebung numeriert aus.
+    """Gibt die packeigenen Schritte nach Installation oder Update numeriert aus.
 
     Sie stehen im Manifest (post_install_steps, post_update_steps), weil sie nur ein Pack
     betreffen - bei openai-codex die Vertrauensbedingung, ohne die Konfiguration und
@@ -505,6 +505,8 @@ def ist_regelquelle(src_rel: str) -> bool:
     """
     if src_rel.startswith(("framework/runtime/rules/", "templates/rules/")):
         return True
+    if re.match(r"framework/overlay-patterns/[^/]+/rules/[^/]+\.md$", src_rel):
+        return True
     return bool(re.match(r"framework/(role|tech)-packs/[^/]+/runtime/[^/]+\.md$", src_rel))
 
 
@@ -895,7 +897,7 @@ def pruefe_abbildung(root: str, man: dict, muster: dict | None = None) -> None:
 def ignorierte_kerndateien(root: str) -> list[str]:
     """Die geschriebenen Kerndateien, die das aufnehmende Projekt ignoriert.
 
-    ANLASS, UND ER IST GEMESSEN (`K-117`, CR-2026-133, D-349). Beim Heben auf `1.3.0`
+    ANLASS, UND ER IST GEMESSEN (`K-117`, CR-2026-133, D-349). Beim Update auf `1.3.0`
     lagen in einem der beiden aufnehmenden Projekte 525 Kerndateien im Arbeitsbaum und
     483 im Versionierten: Die projekteigene `.gitignore`-Zeile `build/` trifft auch
     `<CORE_DIR>/build/`, und damit die gesamte Quelle des Hauptdokuments.
@@ -1084,7 +1086,7 @@ _ALTER_NAME_RE = re.compile(
 
 
 def namen_migrieren(root: str, man: dict, dry: bool) -> list[str]:
-    """Hebt ein Projekt von den Namen bis 1.25.0 auf koolie-* und meldet, was es tat.
+    """Stellt ein Projekt von den Namen bis 1.25.0 auf koolie-* um und meldet, was es tat.
 
     Skillordner mit altem Namen werden umbenannt - ein aktivierter Pack-Skill bleibt so
     aktiviert, und run() schreibt danach den neuen Inhalt hinein. Liegt der neue Ordner
@@ -1252,6 +1254,61 @@ MUSTER_DOKUMENTVERMERK = "Muster – vom Overlay Owner zu prüfen und anzupassen
 MUSTER_QUELLE_MANIFEST = "templates/project-overlay/overlay-manifest.yaml"
 MUSTER_DOKUMENTZIEL = ".koolie/project-overlay/documents"
 MUSTER_TYPABLAGE = os.path.join(HERE, "templates", "project-overlay", "documents")
+# AUFBAUEN STATT KOMBINIEREN (2.2.0). Gewaehlt wird genau ein Muster. Ein Typmuster
+# (java-spring, web-frontend, infrastructure) und das Party-Overlay zoomies bauen intern
+# auf general auf: Attribut "Baut auf" im Steckbrief. Werte, Dokumente und Regeln der Basis
+# kommen zuerst, die eigenen dazu. Ein Muster eines Unternehmens darf auf einem Typmuster
+# aufbauen; ein Kreis ist ein Abbruch.
+# REGELN EINES MUSTERS. Unter <muster>/rules/ darf ein Muster Overlay-Regeldateien
+# 2N-overlay-<name>.md mitliefern; sie werden wie jede Regelquelle fuer den Client gerendert,
+# nur bei der Erstinstallation geschrieben und gehoeren danach dem Projekt. Eine Regel gibt
+# technisch nichts frei - die Berechtigungen fuellt allein die Wertetabelle.
+MUSTER_REGELNAME = re.compile(r"2[1-9]-overlay-[a-z][a-z0-9-]*\.md")
+# MUSTER EINES UNTERNEHMENS (2.2.0, K-214). --overlay-quelle <pfad> nennt ein lokales
+# Verzeichnis im Format dieser Ablage. Seine Muster stehen neben den mitgelieferten zur Wahl;
+# ein gleichnamiges Muster ist ein Abbruch, kein Ueberschreiben. Die Grenze gilt unveraendert:
+# Ein Muster sperrt, es gibt nichts frei. Name, Version, Quelle und SHA-256 kommen ins
+# Manifest; --update mit derselben Quelle meldet eine neuere Version und ergaenzt neue
+# Dokumente und Regeln, ueberschreibt aber nie.
+MUSTER_ZUSATZ: list[str] = []
+MUSTER_MANIFESTBLOCK = "overlay_pattern:"
+
+
+def muster_quelle_setzen(pfad: str) -> None:
+    pfad = os.path.abspath(pfad)
+    if not os.path.isdir(pfad):
+        raise MusterFehler(f"--overlay-quelle: {pfad} ist kein Verzeichnis")
+    eigen = {fn[:-3] for fn in os.listdir(MUSTER_ABLAGE) if fn.endswith(".md")}
+    doppelt = sorted(eigen & {fn[:-3] for fn in os.listdir(pfad) if fn.endswith(".md")
+                              and fn != "README.md"})
+    if doppelt:
+        raise MusterFehler(f"--overlay-quelle: {', '.join(doppelt)} heisst wie ein mitgeliefertes "
+                           f"Muster - ein Muster eines Unternehmens ersetzt keines des Kerns")
+    MUSTER_ZUSATZ[:] = [pfad]
+
+
+def muster_ort(name: str) -> str:
+    """Das Verzeichnis, in dem <name>.md liegt: der Kern zuerst, dann die Quelle."""
+    for ablage in [MUSTER_ABLAGE] + MUSTER_ZUSATZ:
+        if os.path.isfile(os.path.join(ablage, name + ".md")):
+            return ablage
+    return MUSTER_ABLAGE
+
+
+def muster_hash(name: str) -> str:
+    """SHA-256 ueber <name>.md und alles unter <name>/ - Pfad und Inhalt, sortiert."""
+    ablage = muster_ort(name)
+    h = hashlib.sha256()
+    dateien = [name + ".md"]
+    for wurzel, verz, files in os.walk(os.path.join(ablage, name)):
+        verz.sort()
+        dateien += [os.path.relpath(os.path.join(wurzel, f), ablage).replace(os.sep, "/")
+                    for f in sorted(files)]
+    for rel in dateien:
+        h.update(rel.encode("utf-8") + b"\0")
+        with open(os.path.join(ablage, *rel.split("/")), "rb") as fh:
+            h.update(hashlib.sha256(fh.read()).digest())
+    return h.hexdigest()
 
 
 class MusterFehler(Exception):
@@ -1260,13 +1317,15 @@ class MusterFehler(Exception):
 
 def verfuegbare_muster() -> list[str]:
     """Die Namen der mitgelieferten Overlay-Muster (Dateiname ohne .md)."""
-    if not os.path.isdir(MUSTER_ABLAGE):
-        return []
-    return sorted(fn[:-3] for fn in os.listdir(MUSTER_ABLAGE)
-                  if fn.endswith(".md") and fn != "README.md")
+    namen: set[str] = set()
+    for ablage in [MUSTER_ABLAGE] + MUSTER_ZUSATZ:
+        if os.path.isdir(ablage):
+            namen |= {fn[:-3] for fn in os.listdir(ablage)
+                      if fn.endswith(".md") and fn != "README.md"}
+    return sorted(namen)
 
 
-def muster_laden(name: str) -> dict:
+def muster_laden(name: str, _kette: tuple = ()) -> dict:
     """Liest Name, Version und Wertetabelle eines Musters und prueft seine Grenze.
 
     Die Werte stehen je in einer Codespanne der Spalte "Werte"; die Zeile wird ueber
@@ -1276,8 +1335,9 @@ def muster_laden(name: str) -> dict:
     if name not in verfuegbare_muster():
         raise MusterFehler(f"Unbekanntes Overlay-Muster '{name}'. Verfuegbar: "
                            f"{', '.join(verfuegbare_muster()) or 'keines'}")
-    pfad = os.path.join(MUSTER_ABLAGE, name + ".md")
+    pfad = os.path.join(muster_ort(name), name + ".md")
     version = None
+    attribute: dict[str, str] = {}
     werte: dict[str, list[str]] = {}
     abschnitt = ""
     for zeile in read_text(pfad).split("\n"):
@@ -1287,6 +1347,10 @@ def muster_laden(name: str) -> dict:
         zellen = [z.strip() for z in zeile.strip().strip("|").split("|")]
         if zellen and zellen[0] == "Version" and version is None and len(zellen) >= 2:
             version = zellen[1].strip("`")
+            continue
+        if not abschnitt and len(zellen) >= 2 and zellen[0] in ("Baut auf", "Kennzeichen",
+                                                                "Im Dialog"):
+            attribute[zellen[0]] = zellen[1].strip("`")
             continue
         # Nur die Wertetabelle zaehlt. Eine andere Tabelle derselben Datei darf einen
         # Platzhalter in der ersten Spalte nennen - etwa den Traeger <PERMISSIONS_FILE> -,
@@ -1308,11 +1372,45 @@ def muster_laden(name: str) -> dict:
             raise MusterFehler(f"Das Muster '{name}' fuehrt fuer {platzhalter} keinen "
                                f"gueltigen Wert: {zellen[1]}")
         werte[platzhalter] = liste
-    if not werte or not version:
+    basis = attribute.get("Baut auf")
+    if not version or (not werte and not basis):
         raise MusterFehler(f"Das Muster '{name}' traegt keine Version oder keine Werte "
                            f"(Abschnitt '## {MUSTER_WERTEABSCHNITT}')")
-    return {"name": name, "version": version, "werte": werte,
-            "dokumente": muster_dokumente(name)}
+    dokumente = muster_dokumente(name)
+    regeln = muster_regeln(name)
+    if basis:
+        if basis in _kette + (name,):
+            raise MusterFehler(f"Das Muster '{name}' baut auf '{basis}' auf - ein Kreis: "
+                               f"{' -> '.join(_kette + (name, basis))}")
+        if basis not in verfuegbare_muster():
+            raise MusterFehler(f"Das Muster '{name}' baut auf '{basis}' auf - das gibt es nicht")
+        grund = muster_laden(basis, _kette + (name,))
+        zusammen = {p: list(w) for p, w in grund["werte"].items()}
+        for p, w in werte.items():
+            zusammen.setdefault(p, [])
+            zusammen[p] += [x for x in w if x not in zusammen[p]]
+        werte = {p: zusammen[p] for p in MUSTER_PLATZHALTER if p in zusammen}
+        dokumente = grund["dokumente"] + dokumente
+        regeln = grund["regeln"] + regeln
+    extern = muster_ort(name) != MUSTER_ABLAGE
+    return {"name": name, "version": version, "werte": werte, "dokumente": dokumente,
+            "regeln": regeln, "basis": basis, "kennzeichen": attribute.get("Kennzeichen", ""),
+            "im_dialog": attribute.get("Im Dialog", ""), "extern": extern,
+            "quelle": os.path.basename(muster_ort(name).rstrip("/\\")) if extern else "koolie",
+            "sha256": muster_hash(name) if extern else ""}
+
+
+def muster_regeln(name: str) -> list[dict]:
+    """Die Overlay-Regeldateien eines Musters (<muster>/rules/2N-overlay-<name>.md)."""
+    ablage = os.path.join(muster_ort(name), name, "rules")
+    regeln = []
+    if os.path.isdir(ablage):
+        for fn in sorted(os.listdir(ablage)):
+            if not MUSTER_REGELNAME.fullmatch(fn):
+                raise MusterFehler(f"Das Muster '{name}': rules/{fn} heisst nicht "
+                                   f"2N-overlay-<name>.md - nur Overlay-Regeln sind zulaessig")
+            regeln.append({"datei": fn, "quelle": os.path.join(ablage, fn)})
+    return regeln
 
 
 def muster_dokumente(name: str) -> list[dict]:
@@ -1324,10 +1422,10 @@ def muster_dokumente(name: str) -> list[dict]:
     Spalte genau die Typen, fuer die ein Dokument da ist - nicht mehr und nicht weniger.
     Jede Abweichung bricht ab, bevor die erste Datei geschrieben ist.
     """
-    ablage = os.path.join(MUSTER_ABLAGE, name, "documents")
+    ablage = os.path.join(muster_ort(name), name, "documents")
     beschrieben: set[str] = set()
     abschnitt = ""
-    for zeile in read_text(os.path.join(MUSTER_ABLAGE, name + ".md")).split("\n"):
+    for zeile in read_text(os.path.join(muster_ort(name), name + ".md")).split("\n"):
         # Jede Ueberschrift beendet den Abschnitt, auch eine der Ebene 3: Darunter steht
         # eine Feldtabelle (`status`, `load`), deren erste Spalte sonst als Typ gelaese.
         if zeile.startswith("#"):
@@ -1377,9 +1475,14 @@ def muster_manifest(text: str, muster: dict) -> str:
     echten Eintraegen waeren sie ein Register mit Eintraegen, die auf nichts zeigen;
     sie werden deshalb ersetzt, nicht ergaenzt (D-360).
     """
+    anker = "\ndocuments:\n"
+    if muster.get("extern"):
+        if text.count(anker) != 1:
+            raise MusterFehler("overlay-manifest.yaml: der Schluessel 'documents:' steht nicht "
+                               "genau einmal am Zeilenanfang")
+        text = text.replace(anker, "\n" + muster_manifestblock(muster) + anker, 1)
     if not muster["dokumente"]:
         return text
-    anker = "\ndocuments:\n"
     if text.count(anker) != 1:
         raise MusterFehler("overlay-manifest.yaml: der Schluessel 'documents:' steht nicht "
                            "genau einmal am Zeilenanfang - die Eintraege des Musters haetten "
@@ -1402,6 +1505,93 @@ def muster_manifest(text: str, muster: dict) -> str:
             f'Overlay Owner zu pruefen und anzupassen; erst nach Freigabe in der '
             f'Laufzeitfassung als K1-Dokument fuehren"\n')
     return text[:text.index(anker)] + anker + "\n".join(eintraege)
+
+
+def muster_manifestblock(muster: dict) -> str:
+    return (f"{MUSTER_MANIFESTBLOCK}\n"
+            f'  name: "{muster["name"]}"\n'
+            f'  version: "{muster["version"]}"\n'
+            f'  source: "{muster["quelle"]}"\n'
+            f'  sha256: "{muster["sha256"]}"\n')
+
+
+def muster_manifest_lesen(text: str) -> dict:
+    """Der Block overlay_pattern eines Manifests als dict (leer, wenn es keinen gibt)."""
+    werte: dict[str, str] = {}
+    drin = False
+    for zeile in text.split("\n"):
+        if zeile.strip() == MUSTER_MANIFESTBLOCK:
+            drin = True
+            continue
+        if drin:
+            m = re.fullmatch(r"  ([a-z0-9_]+): \"([^\"]*)\"", zeile)
+            if not m:
+                break
+            werte[m.group(1)] = m.group(2)
+    return werte
+
+
+def _version_tupel(v: str) -> tuple:
+    return tuple(int(x) if x.isdigit() else 0 for x in re.split(r"[.-]", v))
+
+
+def muster_aktualisieren(root: str, man: dict, dry: bool) -> list[str]:
+    """--update mit --overlay-quelle: neuere Version melden, Neues ergaenzen, nie ueberschreiben."""
+    pfad = os.path.join(root, ".koolie", "project-overlay", "overlay-manifest.yaml")
+    if not os.path.isfile(pfad):
+        return ["Muster: kein Overlay-Manifest - nichts zu vergleichen"]
+    text = read_text(pfad)
+    alt = muster_manifest_lesen(text)
+    if not alt.get("name"):
+        return ["Muster: das Manifest nennt kein Muster einer Quelle (overlay_pattern) - "
+                "nichts zu vergleichen"]
+    if alt["name"] not in verfuegbare_muster() or muster_ort(alt["name"]) == MUSTER_ABLAGE:
+        return [f"Muster: {alt['name']} liegt nicht in der genannten Quelle"]
+    neu = muster_laden(alt["name"])
+    if _version_tupel(neu["version"]) <= _version_tupel(alt.get("version", "0")):
+        gleich = "unveraendert" if neu["sha256"] == alt.get("sha256") else \
+            "gleiche Version, aber anderer Inhalt (SHA-256 weicht ab) - die Quelle pruefen"
+        return [f"Muster: {alt['name']} {alt.get('version')} - {gleich}"]
+    meldungen = [f"Muster: {alt['name']} {neu['version']} ist neuer als das installierte "
+                 f"{alt.get('version')}. Neue Dokumente und Regeln werden ergaenzt, vorhandene "
+                 f"nie ueberschrieben; Werte und Berechtigungen zieht das Projekt selbst nach."]
+    ids = [int(x) for x in re.findall(r'- id: "DOC-(\d+)"', text)]
+    naechste = max(ids, default=0) + 1
+    eintraege = []
+    for src, dst_rel in muster_dokumentziele(neu):
+        dst = os.path.join(root, *dst_rel.split("/"))
+        if os.path.exists(dst):
+            continue
+        dok = next(d for d in neu["dokumente"] if d["quelle"] == src)
+        if not dry:
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            with open(dst, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(read_text(src))
+        titel = dok["titel"].replace('"', "'")
+        eintraege.append(
+            f'\n  - id: "DOC-{naechste:03d}"\n    type: "{dok["typ"]}"\n    title: "{titel}"\n'
+            f'    path: "{dst_rel}"\n    context_class: "K1"\n    status: "entwurf"\n'
+            f'    load: "on-demand"\n    approved_by: "<APPROVAL_ROLE>"\n'
+            f'    approved_on: "<TBD: Datum der Freigabe durch den Overlay Owner>"\n'
+            f'    sanitization: "nicht erforderlich"\n'
+            f'    notes: "Aus dem Overlay-Muster {neu["name"]} {neu["version"]} - vom Overlay '
+            f'Owner zu pruefen und anzupassen"\n')
+        naechste += 1
+        meldungen.append(f"  neu: {dst_rel}")
+    for src, dst_rel in muster_regelziele(neu, man):
+        dst = os.path.join(root, *dst_rel.split("/"))
+        if os.path.exists(dst):
+            continue
+        write_rendered(src, dst, man, dry, dst_rel)
+        meldungen.append(f"  neu: {dst_rel}")
+    text = text.rstrip("\n") + "\n" + "".join(eintraege)
+    for schluessel in ("version", "sha256"):
+        text = re.sub(rf'(?m)^(  {schluessel}: )"[^"]*"', lambda m_, s=schluessel: f'{m_.group(1)}"{neu[s]}"',
+                      text, count=1)
+    if not dry:
+        with open(pfad, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(text)
+    return meldungen
 
 
 def muster_berechtigungen(quelltext: str, muster: dict) -> str:
@@ -1437,7 +1627,7 @@ def _werte_spannen(werte: list[str]) -> str:
     return ", ".join(f"`{w}`" for w in werte)
 
 
-def muster_laufzeitfassung(text: str, muster: dict) -> str:
+def muster_laufzeitfassung(text: str, muster: dict, man: dict | None = None) -> str:
     """Setzt den Wert hinter jeden gebundenen Platzhalter der Laufzeitfassung.
 
     Die Bindung bleibt stehen (D-160): ersetzt wird der Ausfuellschlitz HINTER
@@ -1457,6 +1647,22 @@ def muster_laufzeitfassung(text: str, muster: dict) -> str:
         if n != 1:
             raise MusterFehler(f"20-project-overlay.md: hinter {anker.strip()} steht kein "
                                f"Ausfuellschlitz")
+    if muster.get("kennzeichen"):
+        zeilen = text.split("\n")
+        stelle = [i for i, z in enumerate(zeilen) if z.startswith("- Overlay-Version:")]
+        if len(stelle) != 1:
+            raise MusterFehler("20-project-overlay.md: die Zeile 'Overlay-Version' steht nicht "
+                               "genau einmal - das Kennzeichen des Musters haette keinen Ort")
+        zeile = f"- Overlay-Muster: `{muster['name']}` – {muster['kennzeichen']}"
+        ziele = [z for _q, z in muster_regelziele(muster, man)] if man else []
+        if ziele:
+            # Ein Pack, dessen Regeln als Kommentar gerendert werden, laedt die Regelablage
+            # nicht von selbst - die Wurzel-Anweisung zaehlt auf, was zu lesen ist.
+            lesen = (" – zu Beginn der Sitzung lesen"
+                     if (man or {}).get("rule_frontmatter") == "comment" else "")
+            zeile += f"; Regel: {', '.join(f'`{z}`' for z in ziele)}{lesen}"
+        zeilen.insert(stelle[0] + 1, zeile)
+        text = "\n".join(zeilen)
     return text
 
 
@@ -1487,9 +1693,16 @@ def muster_overlay(text: str, muster: dict) -> str:
         dokumente = (f"; {len(muster['dokumente'])} Musterdokumente unter `documents/` im "
                      f"Manifest registriert (Status `entwurf`, erst nach Prüfung und "
                      f"Freigabe durch den Overlay Owner verbindlich)")
+    basis = f" (baut auf `{muster['basis']}` auf)" if muster.get("basis") else ""
+    kennzeichen = f"; {muster['kennzeichen']}" if muster.get("kennzeichen") else ""
+    regeln = ""
+    if muster.get("regeln"):
+        namen = ", ".join("`%s`" % r_["datei"] for r_ in muster["regeln"])
+        regeln = f"; Regeldatei(en) {namen} in der Regelablage"
     return text.replace(alt, f"| Overlay angelegt aus dem Muster `{muster['name']}` "
-                             f"`{muster['version']}` – vorbefüllt: "
-                             f"{', '.join(f'`{p}`' for p in muster['werte'])}{dokumente} |", 1)
+                             f"`{muster['version']}`{basis} – vorbefüllt: "
+                             f"{', '.join(f'`{p}`' for p in muster['werte'])}{dokumente}"
+                             f"{regeln}{kennzeichen} |", 1)
 
 
 def render_mit_muster(src: str, man: dict, dst_rel: str, muster: dict | None) -> str:
@@ -1500,7 +1713,7 @@ def render_mit_muster(src: str, man: dict, dst_rel: str, muster: dict | None) ->
         quelle = muster_berechtigungen(quelle, muster)
     text = render_for_client(quelle, man, kennung, dst_rel)
     if muster and kennung == MUSTER_QUELLE_LAUFZEIT:
-        text = muster_laufzeitfassung(text, muster)
+        text = muster_laufzeitfassung(text, muster, man)
     if muster and kennung == MUSTER_QUELLE_OVERLAY:
         text = muster_overlay(text, muster)
     if muster and kennung == MUSTER_QUELLE_MANIFEST:
@@ -1514,6 +1727,18 @@ def muster_dokumentziele(muster: dict | None) -> list[tuple[str, str]]:
         return []
     return [(d["quelle"], f"{MUSTER_DOKUMENTZIEL}/{d['typ']}/{d['datei']}")
             for d in muster["dokumente"]]
+
+
+def muster_regelziele(muster: dict | None, man: dict) -> list[tuple[str, str]]:
+    """(Quelle absolut, Ziel relativ zum Projekt) fuer die Regeldateien eines Musters."""
+    if not muster or not muster.get("regeln"):
+        return []
+    ablage = (man.get("runtime_placeholders") or {}).get("<RULES_DIR>")
+    if not ablage:
+        raise MusterFehler(f"Das Muster '{muster['name']}' bringt Regeln mit, das Pack "
+                           f"'{man.get('client', '?')}' nennt keine Regelablage")
+    return [(r["quelle"], f"{ablage.rstrip('/')}/{clientmap.regeldatei(man, r['datei'])}")
+            for r in muster["regeln"]]
 
 
 def run(root: str, template: str, man: dict, mode: str, dry: bool,
@@ -1631,6 +1856,14 @@ def run(root: str, template: str, man: dict, mode: str, dry: bool,
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 with open(dst, "w", encoding="utf-8", newline="\n") as fh:
                     fh.write(read_text(src))
+            rep.created.append(dst_rel)
+        # Die Regeln eines Musters: fuer den Client gerendert, sonst wie ein Dokument.
+        for src, dst_rel in muster_regelziele(muster, man):
+            dst = os.path.join(root, *dst_rel.split("/"))
+            if os.path.exists(dst):
+                rep.kept.append(dst_rel)
+                continue
+            write_rendered(src, dst, man, dry, dst_rel)
             rep.created.append(dst_rel)
 
     return rep
@@ -1812,7 +2045,7 @@ def kollisionen(root: str, template: str, man: dict) -> list[str]:
 # Bis 1.6.0 stand der Kopierweg nur im Leitfaden: den Kern von Hand ins Projekt
 # kopieren, dann install.py dort aufrufen. An genau diesem Handgriff sind zwei Befunde
 # entstanden - wer ganz .koolie/ kopiert, nimmt das Kennzeichen und aus dem Arbeitsbaum
-# das Overlay des Frameworks mit (D-354), und wer mit `git archive HEAD` hebt, liefert
+# das Overlay des Frameworks mit (D-354), und wer mit `git archive HEAD` aktualisiert, liefert
 # den Stand von vorhin (D-333). --target geht denselben Weg als Werkzeug: Es kopiert NUR
 # den Kern, aus einem Klon NUR das Verfolgte, und ruft danach die Installation IM
 # Projekt auf - mit dem kopierten install.py, denn die Hook-Kommandos zeigen auf den
@@ -1824,7 +2057,7 @@ def kollisionen(root: str, template: str, man: dict) -> list[str]:
 # DER LIEFERUMFANG (D-367, seit 1.8.0): --lieferumfang nutzung laesst die
 # Nachweisschicht weg (clientmap.NACHWEIS_ABLAGEN - dort steht, warum sie aufgezaehlt
 # ist und nicht das Noetige). Die Wahl steht danach in LIEFERUMFANG neben VERSION und
-# gilt beim naechsten Heben weiter: Das Heben ersetzt das Verzeichnis, und ohne diese
+# gilt beim naechsten Update weiter: Das Update ersetzt das Verzeichnis, und ohne diese
 # Datei wuechse ein reduziertes Projekt beim ersten --update auf den ganzen Kern. Ein
 # Wechsel geschieht nur, wenn --lieferumfang ihn ausdruecklich nennt.
 
@@ -1969,10 +2202,10 @@ def in_projekt_installieren(args) -> int:
     if vorhanden and not args.update:
         print(f"FEHLER: In {ziel} liegt bereits ein Kern (Stand "
               f"{kern_version(zielkern)}). Eine Erstinstallation wuerde ihn ersetzen.\n"
-              f"Heben auf diesen Stand: --update.", file=sys.stderr)
+              f"Update auf diesen Stand: --update.", file=sys.stderr)
         return 1
     if args.update and not vorhanden:
-        print(f"FEHLER: --update hebt eine vorhandene Installation - in {ziel} liegt "
+        print(f"FEHLER: --update aktualisiert eine vorhandene Installation - in {ziel} liegt "
               f"kein {clientmap.CORE_REL}/. Fuer eine Erstinstallation --update "
               f"weglassen.", file=sys.stderr)
         return 1
@@ -2017,7 +2250,7 @@ def in_projekt_installieren(args) -> int:
     print(f"Quelle:  {wurzel}  (Stand {quellstand})")
     print(f"Ziel:    {ziel}")
     if vorhanden:
-        print(f"Modus:   Heben von {kern_version(zielkern)} auf {quellstand}")
+        print(f"Modus:   Update von {kern_version(zielkern)} auf {quellstand}")
     else:
         print("Modus:   Erstinstallation")
     print(f"Kern:    {len(dateien)} Dateien ({herkunft}); nur {clientmap.CORE_REL}/, "
@@ -2084,6 +2317,8 @@ def in_projekt_installieren(args) -> int:
         argv += ["--client", args.client]
     if args.overlay:
         argv += ["--overlay", args.overlay]
+    if args.overlay_quelle:
+        argv += ["--overlay-quelle", os.path.abspath(args.overlay_quelle)]
     sys.stdout.flush()
     rc = subprocess.run(argv).returncode
     if rc != 0:
@@ -2102,7 +2337,7 @@ def in_projekt_installieren(args) -> int:
     if vorhanden:
         _loesche_baum(alt)
         print()
-        print("Das Heben ist erst mit diesen Handgriffen ein Stand "
+        print("Das Update ist erst mit diesen Handgriffen abgeschlossen "
               "(RELEASE_PROCESS.md 4.1, Schritt 2):")
         print("  1. geaenderte Overlay-Werte in allen drei Traegern nachziehen,")
         print("  2. python .koolie/core/tests/scripts/validate-framework.py "
@@ -2118,11 +2353,11 @@ def main() -> int:
                     help="Wurzelverzeichnis des Projekts (Standard: aktuelles Verzeichnis)")
     ap.add_argument("--target", default=None, metavar="PROJEKT",
                     help="Den Kern dieses install.py in PROJEKT kopieren und dort installieren; "
-                         "mit --update ein vorhandenes Projekt heben (D-362)")
+                         "mit --update ein vorhandenes Projekt aktualisieren (D-362)")
     ap.add_argument("--lieferumfang", choices=clientmap.LIEFERUMFAENGE, default=None,
                     help="Nur mit --target: den ganzen Kern (voll) oder ohne die "
                          "Nachweisschicht (nutzung) kopieren. Ohne Angabe bleibt es beim "
-                         "Heben beim bisherigen Umfang, sonst voll (D-367)")
+                         "Update beim bisherigen Umfang, sonst voll (D-367)")
     ap.add_argument("--update", action="store_true",
                     help="Core-Dateien auf den Stand dieses Releases bringen; Projektdateien bleiben unberuehrt")
     ap.add_argument("--check", action="store_true",
@@ -2144,7 +2379,17 @@ def main() -> int:
     ap.add_argument("--overlay", nargs="?", const="", default=None, metavar="NAME",
                     help="Nur bei der Erstinstallation: ein mitgeliefertes Overlay-Muster statt "
                          "des leeren Overlays (D-126). Ohne NAME: verfuegbare Muster auflisten")
+    ap.add_argument("--overlay-quelle", default=None, metavar="PFAD",
+                    help="Ein Verzeichnis mit Overlay-Mustern eines Unternehmens im Format von "
+                         "framework/overlay-patterns/ - bei der Erstinstallation zur Wahl, bei "
+                         "--update zum Vergleich mit dem installierten Muster")
     args = ap.parse_args()
+    if args.overlay_quelle:
+        try:
+            muster_quelle_setzen(args.overlay_quelle)
+        except MusterFehler as exc:
+            print(f"FEHLER: {exc}", file=sys.stderr)
+            return 1
 
     if sys.version_info < PYTHON_MINDEST:
         print(f"FEHLER: Koolie braucht Python {'.'.join(map(str, PYTHON_MINDEST))} oder "
@@ -2275,6 +2520,7 @@ def main() -> int:
             return 1
         vorhanden = [dst_rel for _src, dst_rel in
                      shared_files(man, "shared_seed") + muster_dokumentziele(muster)
+                     + muster_regelziele(muster, man)
                      if os.path.exists(os.path.join(root, *dst_rel.split("/")))]
         if vorhanden:
             print(f"FEHLER: --overlay {args.overlay} fuellt die Saat bei der "
@@ -2343,7 +2589,10 @@ def main() -> int:
     print(f"Ziel:    {root}")
     print(f"Modus:   {mode}{'  (dry-run, es wird nichts geschrieben)' if args.dry_run else ''}")
     if muster:
-        print(f"Overlay: Muster {muster['name']} {muster['version']}")
+        print(f"Overlay: Muster {muster['name']} {muster['version']}"
+              + (f" (baut auf {muster['basis']} auf)" if muster.get("basis") else ""))
+        if muster.get("kennzeichen"):
+            print(f"         {muster['kennzeichen']}")
     print()
 
     if mode in ("update", "check"):
@@ -2367,6 +2616,10 @@ def main() -> int:
 
     try:
         rep = run(root, template, man, mode, args.dry_run, muster)
+        if mode == "update" and args.overlay_quelle:
+            for zeile in muster_aktualisieren(root, man, args.dry_run):
+                print(zeile)
+            print()
     except MusterFehler as exc:
         print(f"FEHLER: Das Overlay-Muster laesst sich nicht vollstaendig anwenden; es "
               f"wurde nichts geschrieben.", file=sys.stderr)

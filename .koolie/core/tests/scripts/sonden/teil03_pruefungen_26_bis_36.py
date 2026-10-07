@@ -839,7 +839,7 @@ def sonden_skill_deny() -> None:
         # --- 33a: die Sperre fehlt ganz - der Stand bis 0.34.0 ----------------------
         schreib(plan, ersetzt(
             ausgang,
-            ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell\n", ""),
+            ("disallowed-tools: Edit, Write, NotebookEdit\n", ""),
             quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33a", "aus permissions.deny der Quelle ergibt sich" in aus,
@@ -848,18 +848,18 @@ def sonden_skill_deny() -> None:
         # --- 33b: die Sperre ist unvollstaendig - eine Luecke ist ausnutzbar --------
         schreib(plan, ersetzt(
             ausgang,
-            ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell",
+            ("disallowed-tools: Edit, Write, NotebookEdit",
              "disallowed-tools: Edit, Write"),
             quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33b", "aus permissions.deny der Quelle ergibt sich" in aus,
-              "Unvollstaendige Sperre - mit gesperrtem Write, Edit schrieb der Skill ueber Bash")
+              "Unvollstaendige Sperre - ein Schreibwerkzeug bleibt offen")
 
         # --- 33c: ein Argumentmuster - gemessen wirkungslos, und zwar lautlos -------
         schreib(plan, ersetzt(
             ausgang,
-            ("disallowed-tools: Edit, Write, NotebookEdit, Bash, PowerShell",
-             "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*), PowerShell"),
+            ("disallowed-tools: Edit, Write, NotebookEdit",
+             "disallowed-tools: Edit, Write, NotebookEdit, Bash(git push:*)"),
             quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33c", "Argumentmuster" in aus,
@@ -869,7 +869,7 @@ def sonden_skill_deny() -> None:
         schreib(plan, ersetzt(
             ausgang,
             ("allowed-tools: Read, Grep, Glob",
-             "allowed-tools: Read, Grep, Glob, Bash"),
+             "allowed-tools: Read, Grep, Glob, Edit"),
             quelle="koolie-plan/SKILL.md"))
         aus = validator_ausgabe(root)
         melde("SONDE", "33d", "steht zugleich in allowed-tools" in aus,

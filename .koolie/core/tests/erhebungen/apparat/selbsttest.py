@@ -258,6 +258,59 @@ def t12(w):
     assert e["einstellungen"] == aussen, e
 
 
+@fall("T13", "Zellen und Praeparationen (K-190): jede Zelle nennt eine Basis und Praeparationen, die es "
+             "gibt; keine Quelle nennt ihre Kennung; ein Textersatz schreibt alles oder nichts")
+def t13(w):
+    from . import basen, praeparationen as pr, zellen
+    for name, z in zellen.ZELLEN.items():
+        assert z["basis"] in basen.BASEN, (name, z["basis"])
+        for k in z["praep"]:
+            assert k in pr.PRAEPARATIONEN, (name, k)
+        for k in (z["historie"] or {}).get("dokumente", []) + (z["historie"] or {}).get("praeparationen", []):
+            assert k in pr.PRAEPARATIONEN, (name, k)
+    for k, e in pr.PRAEPARATIONEN.items():
+        if e.get("quelle"):
+            assert e["quelle"] in pr.QUELLEN, k
+            assert not pr.verrat(pr.QUELLEN[e["quelle"]]), (k, pr.verrat(pr.QUELLEN[e["quelle"]]))
+    # Gegenfall: die zweite Datei passt nicht - die erste bleibt unberuehrt
+    os.makedirs(os.path.join(w, ".koolie", "project-overlay"))
+    os.makedirs(os.path.join(w, ".claude", "rules"))
+    ov = os.path.join(w, ".koolie", "project-overlay", "OVERLAY.md")
+    vorher = "Schnittstellenvertrag (`api-contracts/**`) |\nDiff gelesen; Kontrollstufe hoch wird nicht verwendet; keine Echtdaten\n"
+    io.open(ov, "w", encoding="utf-8", newline="").write(vorher)
+    io.open(os.path.join(w, ".claude", "rules", "20-project-overlay.md"), "w").write("anderer Stand\n")
+    io.open(os.path.join(w, "README.md"), "w").write("x\n")
+    try:
+        pr.setzen(w, "stufe-hoch")
+        raise AssertionError("Textersatz ohne Fundstelle hat nicht abgebrochen")
+    except RuntimeError:
+        pass
+    assert io.open(ov, encoding="utf-8", newline="").read() == vorher
+    # Einfuegen erhaelt CRLF
+    os.makedirs(os.path.join(w, "frontend", "src", "api"))
+    ll = os.path.join(w, "frontend", "src", "api", "leihliste.ts")
+    io.open(ll, "wb").write(b"a\r\n/** Ist die Ausleihe noch offen? */\r\n")
+    pr.setzen(w, "kommentar-leihliste")
+    roh = io.open(ll, "rb").read()
+    assert roh.count(b"\n") == roh.count(b"\r\n") and b"Hinweis zur Pflege" in roh
+
+
+@fall("T14", "Ohne Konto-Connectoren (K-218): der Adapter claude-code schaltet sie ab, die Vorpruefung "
+             "meldet sie in der Startmeldung")
+def t14(w):
+    from .clients import AdapterCC
+    assert AdapterCC._umgebung_cc().get("ENABLE_CLAUDEAI_MCP_SERVERS") == "false"
+    b = _basis(w)
+    r = _reihe(w, b, [{"kennung": "k1", "prompt": "x", "erwartung": "e"}])
+    r.vorpruefung["startmeldung"] = ["Read"]
+    a = adapter("attrappe")
+    a.startmeldung = lambda baum: ["Read", "mcp__claude_ai_Postman__x"]
+    befunde = vorpruefung.pruefen(r, r.laeufe[0], a, {}, b)
+    assert any("K-218" in x for x in befunde), befunde
+    a.startmeldung = lambda baum: ["Read"]
+    assert not any("K-218" in x for x in vorpruefung.pruefen(r, r.laeufe[0], a, {}, b))
+
+
 def main() -> int:
     schlecht = 0
     for nummer, was, f in FAELLE:

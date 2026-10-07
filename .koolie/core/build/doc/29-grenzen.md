@@ -34,7 +34,7 @@
 >   eigene Regelablage nicht – gegen seine Dokumentation (`K-156`). Mit `true` erreicht auch eine
 >   Regel aus dem Benutzerprofil jede Sitzung (D-290); `install.py` meldet sie, wenn sie belegt ist,
 >   und hält sie nicht fern. Eine Regel mit dem Auslöser `glob` lädt gemessen nicht (`K-161`).
-> - **Bestehende Installationen von `devin-desktop` und `openai-codex` heben ihre Berechtigungsdatei
+> - **Bestehende Installationen von `devin-desktop` und `openai-codex` aktualisieren ihre Berechtigungsdatei
 >   nicht selbst** (seit Release 1.12.1): `install.py --update` fasst sie nicht an. Die Werte
 >   `read_config_from` (devin) und die Tabelle `:workspace_roots` (codex, `K-157`, D-412) zieht der
 >   Overlay Owner nach; Prüfung 22 meldet eine abweichende Importsteuerung.
@@ -58,9 +58,10 @@
 >   und Befehle bindet sie nicht – die freigegebenen Befehle von M3 und M4 trägt weiter die
 >   Regelschicht.
 > - **Wo der Schutz-Hook nicht läuft, trägt die Rückfrage – bis ein Modus sie abschaltet**
->   (seit Release 1.20.2, D-502). Bei `kiro` laufen Hooks nur interaktiv; ohne Rückfragekanal
->   weist die Rückfrageregel einen Schreibversuch ins Overlay ab, mit `--trust-all-tools` geht
->   er durch. Der Modus ist nach D-05 untersagt, und das ist die ganze Sicherung.
+>   (seit Release 1.20.2, D-502). Bei `kiro` liefen Hooks bis `kiro-cli` 2.27.1 nur interaktiv;
+>   ohne Rückfragekanal wies die Rückfrageregel einen Schreibversuch ins Overlay ab, mit
+>   `--trust-all-tools` ging er durch. Seit 2.27.1 laufen die Hooks auch ohne Rückfragen
+>   (Release 2.2.0); mit einer älteren Version bleibt der untersagte Modus (D-05) die ganze Sicherung.
 > - **Kein Modulträger steht mehr auf `entwurf`** (seit Release 0.53.0), und **kein
 >   Decision Record mehr auf `entschieden (Vorschlag)`** (seit Release 0.49.0).
 > - **Die verbindliche Zielversion beider Packs ist festgelegt** (D-112). Sie ist der

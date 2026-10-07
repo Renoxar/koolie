@@ -94,7 +94,9 @@ URL_ALLOWLIST = ("docs.devin.ai", "devin.ai", "cli.devin.ai", "docs.windsurf.com
                  "img.shields.io/badge/Lizenz-GPL", "img.shields.io/badge/license-GPL",
                  # die Adressen der Veroeffentlichung ueber Trusted Publishing, ebenso eng (2.0.0)
                  "test.pypi.org/legacy/", "test.pypi.org/simple/", "pypi.org/pypi/koolie/json",
-                 "registry.npmjs.org")
+                 "registry.npmjs.org",
+                 # der Atlassian-Server der Messbaeume mit Lesezugang, eng gefasst (2.2.0)
+                 "mcp.atlassian.com/v1/mcp")
 FENCE4_RE = re.compile(r"^`{4,}", re.M)
 MERMAID_RE = re.compile(r"```mermaid\n(.*?)```", re.S)
 
@@ -1026,7 +1028,7 @@ def check_artefakt_versionen(root: str) -> None:
     Der Kopfkommentar sagte diese Pruefung seit 0.13.0 zu; tatsaechlich deckte
     check_versions nur die Overlay-Version, <CORE_DIR>/VERSION und die Steckbriefangabe
     ab. Ein Artefaktfeld '0.1' oder 'abc' lief mit 0 Fehlern durch - aufgefallen bei der
-    Regressionsprobe R1 zu CR-2026-020, waehrend 62 Versionsfelder von Hand gehoben
+    Regressionsprobe R1 zu CR-2026-020, waehrend 62 Versionsfelder von Hand erhoeht
     wurden, ohne dass irgendetwas das Ergebnis geprueft haette.
 
     Historische Dokumente sind ausgenommen: Ein Aenderungsverlauf listet Versionen in

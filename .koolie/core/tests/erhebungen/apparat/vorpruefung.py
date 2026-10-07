@@ -65,6 +65,9 @@ def pruefen(reihe, lauf, adapter, soll: dict, baumpfad: str, basis: str = "") ->
             fehlt = [w for w in erwartet if w not in werkzeuge]
             if fehlt:
                 b.append(f"werkzeuge: die Startmeldung nennt {', '.join(fehlt)} nicht (D-470)")
+            konto = sorted(w for w in werkzeuge if w.startswith("mcp__claude_ai_"))
+            if konto:
+                b.append(f"werkzeuge: Connectoren des Anmeldekontos geladen: {', '.join(konto[:3])} (K-218)")
         except (Unerhoben, RuntimeError) as e:
             b.append(f"werkzeuge: nicht pruefbar ({e})")
     return b

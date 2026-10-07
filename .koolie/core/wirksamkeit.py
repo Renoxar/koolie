@@ -38,7 +38,7 @@ WAS DIE PROBE NICHT KANN - und sie sagt es als 'unerhoben', nie als Erfolg (D-27
   - Ob der Client den Hook bei einem echten Werkzeugaufruf startet. Die Startmeldung
     belegt bei claude-code, dass die Hooks der Projektdatei geladen sind (der
     Statushook laeuft); fuer die uebrigen Packs ist keine Startmeldung ohne Modell erhoben.
-  - Das Vertrauen des Schutz-Hooks bei openai-codex (ein Hash, den jede Hebung aendert).
+  - Das Vertrauen des Schutz-Hooks bei openai-codex (ein Hash, den jedes Update aendert).
 Alle Befunde nennen Kategorien, keine Werte (D-39).
 """
 from __future__ import annotations
@@ -50,6 +50,8 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
+import time
 
 HOOK_SKRIPT = "hook-check-secrets.py"
 SPERRHINWEIS = "Gesperrt:"
@@ -333,6 +335,69 @@ def _pfadformen(root: str) -> set:
     return {r.lower(), r.replace("\\", "/").lower(), r.replace("/", "\\").lower()}
 
 
+# Startmeldung ohne Modell fuer devin-desktop und openai-codex (K-199, gemessen 2026-10-06 mit
+# den Agent-CLIs der Packs devin-desktop 3000.11.3 und openai-codex 0.160.0): Mit einem Proxy auf einem geschlossenen Port
+# laufen beide bis zum SessionStart-Hook, danach scheitert der Modellaufruf. Der Statushook
+# des Frameworks schreibt eine Startmarke, wenn KOOLIE_STARTMARKE gesetzt ist. cursor und kiro
+# brechen ohne Netz vor dem Start ab (cursor-agent: ECONNREFUSED; kiro-cli: Modellliste nicht
+# ladbar) - dort bleibt K1 unerhoben.
+START_OHNE_MODELL = {
+    "devin-desktop": ("devin", ["-p", "--respect-workspace-trust", "false", "--", "OK"]),
+    "openai-codex": ("codex", ["exec", "--json", "OK"]),
+}
+START_WARTEZEIT = 30
+
+
+def start_ohne_modell(root: str, client: str) -> bool | None:
+    """True, wenn der Statushook lief; None, wenn der Client nicht auffindbar ist."""
+    befehl, argumente = START_OHNE_MODELL[client]
+    exe = shutil.which(befehl)
+    if not exe:
+        return None
+    marke = os.path.join(tempfile.mkdtemp(prefix="koolie-start-"), "marke")
+    umg = dict(os.environ, KOOLIE_STARTMARKE=marke, NO_PROXY="", no_proxy="")
+    for name in ("HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY", "https_proxy", "http_proxy",
+                 "all_proxy"):
+        umg[name] = TOTE_MODELLADRESSE
+    p = subprocess.Popen([exe] + argumente, cwd=root, stdin=subprocess.DEVNULL,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=umg)
+    try:
+        ende = time.time() + START_WARTEZEIT
+        while time.time() < ende and not os.path.exists(marke) and p.poll() is None:
+            time.sleep(0.5)
+        time.sleep(0.5)
+        return os.path.exists(marke)
+    finally:
+        p.kill()
+        p.wait()
+        shutil.rmtree(os.path.dirname(marke), ignore_errors=True)
+
+
+def pruefe_start_ohne_modell(root: str, client: str, erg: Ergebnis) -> None:
+    lief = start_ohne_modell(root, client)
+    if lief is None:
+        erg.add(UNERHOBEN, "K1 Konfiguration laedt", f"der Befehl "
+                f"'{START_OHNE_MODELL[client][0]}' ist nicht auffindbar - Start nicht abgerufen")
+        return
+    if lief:
+        erg.add(OK, "K1 Konfiguration laedt", "Start ohne Modellaufruf; der Statushook des "
+                "Frameworks lief - die Hooks der Projektdatei sind geladen")
+        if client == "openai-codex":
+            erg.add(OK, "V2 Vertrauen des Hooks", "der Client fuehrt die Hooks dieses Standes "
+                    "aus - das Vertrauen ist gesetzt")
+        return
+    grund = ("der Statushook des Frameworks lief nicht - die Hooks der Projektdatei sind "
+             "nicht geladen")
+    if client == "openai-codex":
+        grund += (" oder ihnen ist nicht vertraut (nach jedem Update neu bestaetigen, "
+                  "CLIENT_PACK.md Abschnitt 1b)")
+        erg.add(UNERHOBEN, "V2 Vertrauen des Hooks", "der Client startete, der Statushook "
+                "lief nicht - die haeufigste Ursache ist ein fehlendes oder veraltetes "
+                "Hook-Vertrauen (siehe K1)")
+    erg.add(MUSS, "K1 Konfiguration laedt", grund + "; ein Client ohne Anmeldung startet "
+            "ebenfalls nicht bis zum Hook")
+
+
 def pruefe_vertrauen_codex(root: str, erg: Ergebnis) -> None:
     """K-118 (2): Die Benutzerkonfiguration traegt das Projekt als vertraut."""
     heim = os.environ.get("CODEX_HOME") or os.path.join(os.path.expanduser("~"), ".codex")
@@ -362,8 +427,6 @@ def pruefe_vertrauen_codex(root: str, erg: Ergebnis) -> None:
         erg.add(MUSS, "V1 Vertrauen", "das Projekt steht nicht als vertraut in der "
                 "Benutzerkonfiguration - Konfiguration, Hooks und Befehlsregeln laden nicht "
                 "(K-118). Einmal interaktiv starten und vertrauen")
-    erg.add(UNERHOBEN, "V2 Vertrauen des Hooks", "der Hash, mit dem der Client dem "
-            "Schutz-Hook vertraut, ist nicht pruefbar; nach jeder Hebung neu bestaetigen")
 
 
 def pruefe_profil_kiro(root: str, man: dict, erg: Ergebnis) -> None:
@@ -390,15 +453,29 @@ def probe(root: str, man: dict, client: str, verben: list[str], mit_client: bool
             erg.add(UNERHOBEN, "K1 Konfiguration laedt", "ohne Startmeldung (--ohne-client)")
     elif client == "openai-codex":
         pruefe_vertrauen_codex(root, erg)
-        erg.add(UNERHOBEN, "K1 Konfiguration laedt", "fuer dieses Pack ist keine "
-                "Startmeldung ohne Modell erhoben")
+        if mit_client:
+            pruefe_start_ohne_modell(root, client, erg)
+        else:
+            erg.add(UNERHOBEN, "K1 Konfiguration laedt", "ohne Start (--ohne-client)")
+        if not any(z[1] == "V2 Vertrauen des Hooks" for z in erg.zeilen):
+            erg.add(UNERHOBEN, "V2 Vertrauen des Hooks", "der Hash, mit dem der Client dem "
+                    "Schutz-Hook vertraut, ist ohne Start nicht pruefbar; nach jedem Update "
+                    "neu bestaetigen")
+    elif client == "devin-desktop":
+        if mit_client:
+            pruefe_start_ohne_modell(root, client, erg)
+        else:
+            erg.add(UNERHOBEN, "K1 Konfiguration laedt", "ohne Start (--ohne-client)")
+        erg.add(UNERHOBEN, "V1 Vertrauen", "der Vertrauensspeicher dieses Clients ist nicht "
+                "erhoben")
     elif client == "kiro":
         pruefe_profil_kiro(root, man, erg)
-        erg.add(UNERHOBEN, "K1 Konfiguration laedt", "fuer dieses Pack ist keine "
-                "Startmeldung ohne Modell erhoben; die Hooks laufen nur interaktiv (D-417)")
+        erg.add(UNERHOBEN, "K1 Konfiguration laedt", "ohne Netz bricht der Client vor dem "
+                "Start ab (Modellliste nicht ladbar) - ein Start ohne Modellaufruf ist nicht "
+                "moeglich")
     else:
-        erg.add(UNERHOBEN, "K1 Konfiguration laedt", "fuer dieses Pack ist keine "
-                "Startmeldung ohne Modell erhoben")
+        erg.add(UNERHOBEN, "K1 Konfiguration laedt", "ohne Netz bricht der Client vor dem "
+                "Start ab - ein Start ohne Modellaufruf ist nicht moeglich")
         erg.add(UNERHOBEN, "V1 Vertrauen", "der Vertrauensspeicher dieses Clients ist nicht "
                 "erhoben")
     for verb in man.get("hook_tools_unerhoben") or []:

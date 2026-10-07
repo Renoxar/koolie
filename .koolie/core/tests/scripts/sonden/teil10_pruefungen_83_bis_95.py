@@ -1182,7 +1182,7 @@ def sonden_aenderungsart() -> None:
             notiz("        Ausgabe:", _zeilen_mit(aus, "FEHLER"))
 
         # Gegenprobe 95b: ein projekteigener Skill in der Laufzeitablage mit einer Zeile
-        # ohne Nennung - beim ersten Heben meldete die Pruefung genau das im
+        # ohne Nennung - beim ersten Update meldete die Pruefung genau das im
         # Uebungsrepositorium (die Erstfassung eines prj-Skills).
         ablage = P(root, ".devin", "skills")
         if not os.path.isdir(ablage):

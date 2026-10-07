@@ -3,7 +3,7 @@
 | Attribut | Wert |
 |---|---|
 | ID | `FW-DOC-STANDARD` |
-| Version | `0.3.1` |
+| Version | `0.3.2` |
 | Status | `pilot` |
 | Owner (Rolle) | `<FRAMEWORK_OWNER>` |
 
@@ -51,7 +51,7 @@ Wie ein verständlicher Text aussieht, regelt Abschnitt 3. Für Klasse A misst d
 
 - **Rechtschreibung nach dem geltenden Duden** in den Klassen A, B und D: *dass, muss, misst, lässt*. Register bleiben, wie sie geschrieben wurden. Code ist Zitat und bleibt.
 - **Gestalt:** genau eine Hauptüberschrift, keine übersprungene Ebene, jeder Codeblock geschlossen, jede Tabellenzeile mit der Spaltenzahl ihres Kopfes.
-- **Steckbrief:** Klassen A und B tragen vor dem ersten Abschnitt eine Tabelle `| Attribut | Wert |` mit Kennung, Version und Status. Ausgenommen sind README-Verzeichnisse, die Laufzeitschicht, Ausfüllvorlagen und Beispielausgaben. Wer ein Dokument ändert, hebt seine Version nach `governance/RELEASE_PROCESS.md` Abschnitt 1.
+- **Steckbrief:** Klassen A und B tragen vor dem ersten Abschnitt eine Tabelle `| Attribut | Wert |` mit Kennung, Version und Status. Ausgenommen sind README-Verzeichnisse, die Laufzeitschicht, Ausfüllvorlagen und Beispielausgaben. Wer ein Dokument ändert, erhöht seine Version nach `governance/RELEASE_PROCESS.md` Abschnitt 1.
 - **Zeilenenden** wie der Rest des Repositoriums.
 
 ## 3. Schreibregeln

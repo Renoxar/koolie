@@ -10,7 +10,7 @@ Overlay-Muster und Lieferumfang ab und ruft danach genau einen Befehl auf:
                                   [--lieferumfang nutzung]
     install.py --target <projekt> --update
 
-Beim Heben fragt es den Lieferumfang nicht: Es bleibt beim bisherigen (D-367), und ein
+Beim Update fragt es den Lieferumfang nicht: Es bleibt beim bisherigen (D-367), und ein
 Wechsel ist eine bewusste Handlung auf der Befehlszeile.
 
 Die Fragen stehen HIER und nicht in den Startern, weil zwei Shell-Dialekte zwei
@@ -30,6 +30,10 @@ Aufruf (normalerweise durch einen Starter):
 
 Das Banner schaltet auch KOOLIE_NO_BANNER=1 ab - der Weg fuer die Starter, die keine
 Argumente weiterreichen.
+
+KOOLIE_OVERLAY_QUELLE nennt ein Verzeichnis mit Overlay-Mustern eines Unternehmens (K-214).
+Seine Muster stehen dann neben den mitgelieferten zur Wahl; die Vorgabe bleibt das leere
+Overlay.
 
 --vorgabe setzt der Befehl `koolie` der Paketquellen: das Verzeichnis, in dem er
 aufgerufen wurde (D-532). Die Frage nach dem Projektverzeichnis nimmt es dann mit Enter.
@@ -142,8 +146,8 @@ def befehl_bauen(ziel: str) -> list[str]:
         print()
         print(f"In diesem Projekt liegt bereits Koolie {stand} "
               f"(Lieferumfang {install.clientmap.lieferumfang(zielkern)}, bleibt).")
-        if not ja(f"Auf {install.kern_version(HERE)} heben?", True):
-            raise Abbruch("nicht gehoben")
+        if not ja(f"Auf {install.kern_version(HERE)} aktualisieren?", True):
+            raise Abbruch("nicht aktualisiert")
         return argv + ["--update"]
 
     clients = install.available_clients()
@@ -155,13 +159,22 @@ def befehl_bauen(ziel: str) -> list[str]:
                      clients.index(install.DEFAULT_CLIENT) + 1
                      if install.DEFAULT_CLIENT in clients else 1)
     muster = [("", "keines - das Projekt beginnt mit dem leeren Overlay")]
+    # Muster eines Unternehmens: ein Verzeichnis, das die Umgebung nennt (K-214)
+    quelle = os.environ.get("KOOLIE_OVERLAY_QUELLE", "").strip()
+    if quelle:
+        try:
+            install.muster_quelle_setzen(quelle)
+        except install.MusterFehler as exc:
+            print(f"  Hinweis: KOOLIE_OVERLAY_QUELLE wird nicht verwendet - {exc}")
+            quelle = ""
     for name in install.verfuegbare_muster():
         try:
             m = install.muster_laden(name)
         except install.MusterFehler:
             continue
-        muster.append((name, f"{name} {m['version']} - Vorschlaege fuer allgemeine "
-                             f"Projektwerte und Dokumente, geben nichts frei"))
+        beschreibung = m.get("im_dialog") or ("Vorschlaege fuer allgemeine Projektwerte und "
+                                              "Dokumente, geben nichts frei")
+        muster.append((name, f"{name} {m['version']} - {beschreibung}"))
     overlay = ""
     if len(muster) > 1:
         print()
@@ -174,6 +187,8 @@ def befehl_bauen(ziel: str) -> list[str]:
     argv += ["--client", client]
     if overlay:
         argv += ["--overlay", overlay]
+    if quelle:
+        argv += ["--overlay-quelle", os.path.abspath(quelle)]
     if umfang != "voll":
         argv += ["--lieferumfang", umfang]
     return argv

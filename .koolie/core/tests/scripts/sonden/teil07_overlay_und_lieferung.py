@@ -532,6 +532,267 @@ buendel(sonden_overlay_muster,
         "Dokumente, sechs Verweigerungen und der unveraenderte Weg ohne Muster")
 
 
+# --- K-215: Typmuster und das Party-Overlay zoomies (2.2.0, CR-2026-175 E7, E8) ---------
+#   K215  (Sonde)      - --overlay java-spring baut auf general auf: alle Werte von general
+#                        und die eigenen im deny-Korb, die sechs Dokumente von general,
+#                        Vermerk im Aenderungsverlauf; Pruefung 59 schweigt
+#   K215a (Sonde)      - --overlay zoomies gibt nichts frei: die Berechtigungsdatei ist
+#                        bytegleich mit der aus general; die Regeldatei liegt in der
+#                        Regelablage, das Kennzeichen in der Laufzeitfassung
+#   K215b (Sonde)      - zwei Muster, die aufeinander aufbauen (ein Kreis): Abbruch vor dem
+#                        ersten Schreibvorgang
+#   K215c (Sonde)      - eine Regeldatei, die nicht 2N-overlay-<name>.md heisst: Abbruch
+#   K215d (Gegenprobe) - im Dialog steht zoomies zur Wahl, die Vorgabe bleibt "keines"
+def _k215_muster(name: str) -> dict:
+    sys.path.insert(0, os.path.join(QUELLE, ".koolie", "core"))
+    try:
+        import install as _install  # noqa: E402
+        return _install.muster_laden(name)
+    finally:
+        sys.path.pop(0)
+
+
+def sonden_overlay_typmuster() -> None:
+    """Typmuster und zoomies an echten Erstinstallationen, dazu zwei Verweigerungen."""
+    basis = tempfile.mkdtemp(prefix="lw-typmuster-")
+    try:
+        # --- K215: java-spring ----------------------------------------------------
+        root = os.path.join(basis, "java")
+        os.makedirs(root)
+        p = _355_install(root, "--overlay", "java-spring")
+        deny = json.loads(lies(os.path.join(root, ".claude", "settings.json")))[
+            "permissions"]["deny"]
+        allgemein, typ = _k215_muster("general"), _k215_muster("java-spring")
+        fehlt = []
+        for platzhalter, liste in typ["werte"].items():
+            for w in liste:
+                if "Edit(%s)" % w not in deny and "Edit(./%s)" % w not in deny:
+                    fehlt.append("Edit(%s)" % w)
+        for platzhalter, liste in allgemein["werte"].items():
+            fehlt += ["fehlt in java-spring: %s" % w for w in liste
+                      if w not in typ["werte"][platzhalter]]
+        if not any("*.jks" in r for r in deny):
+            fehlt.append("eigener Wert *.jks")
+        doks = glob.glob(os.path.join(root, ".koolie", "project-overlay", "documents", "*",
+                                      "muster-general.md"))
+        overlay = lies(os.path.join(root, ".koolie", "project-overlay", "OVERLAY.md"))
+        if "`java-spring` `0.1.0` (baut auf `general` auf)" not in overlay:
+            fehlt.append("Aenderungsverlauf")
+        shutil.copytree(os.path.join(QUELLE, ".koolie/core"), os.path.join(root, ".koolie/core"),
+                        ignore=shutil.ignore_patterns(".git", "__pycache__", "out"))
+        aus59 = [m for m in M355_59 if m in strict_ausgabe(root)]
+        melde("SONDE", "K215", p.returncode == 0 and not fehlt and len(doks) == 6 and not aus59,
+              "Ein Typmuster baut auf general auf: dessen Werte und Dokumente, dazu die eigenen "
+              "Sperrwerte; Pruefung 59 findet keine Abweichung")
+        if p.returncode != 0 or fehlt or len(doks) != 6 or aus59:
+            notiz("        Exit %d; fehlt: %s; Dokumente %d; Pruefung 59: %s"
+                  % (p.returncode, ", ".join(fehlt[:6]) or "nichts", len(doks),
+                     ", ".join(aus59) or "still"))
+
+        # --- K215a: zoomies gibt nichts frei --------------------------------------------
+        gen = os.path.join(basis, "general")
+        zoo = os.path.join(basis, "zoomies")
+        os.makedirs(gen)
+        os.makedirs(zoo)
+        pg = _355_install(gen, "--overlay", "general")
+        pz = _355_install(zoo, "--overlay", "zoomies")
+        gleich = lies(os.path.join(gen, ".claude", "settings.json")) == \
+            lies(os.path.join(zoo, ".claude", "settings.json"))
+        regel = os.path.join(zoo, ".claude", "rules", "21-overlay-zoomies.md")
+        regel_ok = os.path.isfile(regel) and "ändert keine Pflicht" in lies(regel)
+        laufzeit = lies(os.path.join(zoo, ".claude", "rules", "20-project-overlay.md"))
+        kennzeichen = "- Overlay-Muster: `zoomies` – 🎉 Party-Overlay – ändert keine Pflicht" in laufzeit
+        ohne_regel = not os.path.exists(os.path.join(gen, ".claude", "rules",
+                                                      "21-overlay-zoomies.md"))
+        melde("SONDE", "K215a", pg.returncode == 0 and pz.returncode == 0 and gleich and regel_ok
+              and kennzeichen and ohne_regel,
+              "zoomies gibt nichts frei: Berechtigungsdatei bytegleich mit general; Regeldatei "
+              "und Kennzeichen liegen im Projekt, bei general nicht")
+        if not (gleich and regel_ok and kennzeichen and ohne_regel):
+            notiz("        Exit %d/%d; Berechtigungen gleich: %s; Regel: %s; Kennzeichen: %s"
+                  % (pg.returncode, pz.returncode, gleich, regel_ok, kennzeichen))
+
+        # --- K215b: ein Kreis -----------------------------------------------------------
+        kern = _359_kern(basis, "kern-b")
+        ablage = os.path.join(kern, "framework", "overlay-patterns")
+        for name, auf in (("web-frontend", "java-spring"), ("java-spring", "web-frontend")):
+            text = lies(os.path.join(ablage, name + ".md"))
+            if "| Baut auf | `general` |" not in text:
+                raise Praeparationsfehler("%s.md traegt die Zeile 'Baut auf' nicht" % name)
+            schreib(os.path.join(ablage, name + ".md"),
+                    text.replace("| Baut auf | `general` |", "| Baut auf | `%s` |" % auf))
+        ziel_b = os.path.join(basis, "ziel-b")
+        os.makedirs(ziel_b)
+        b = unterprozess([sys.executable, os.path.join(kern, "install.py"), "--client",
+                          "claude-code", "--root", ziel_b, "--overlay", "web-frontend"])
+        melde("SONDE", "K215b", b.returncode == 1 and "ein Kreis" in (b.stderr or "")
+              and not os.listdir(ziel_b),
+              "Zwei Muster, die aufeinander aufbauen: Abbruch, nichts geschrieben")
+
+        # --- K215c: falscher Regelname ---------------------------------------------------
+        kern = _359_kern(basis, "kern-c")
+        regeln = os.path.join(kern, "framework", "overlay-patterns", "zoomies", "rules")
+        if not os.path.isfile(os.path.join(regeln, "21-overlay-zoomies.md")):
+            raise Praeparationsfehler("zoomies/rules/21-overlay-zoomies.md fehlt")
+        os.rename(os.path.join(regeln, "21-overlay-zoomies.md"), os.path.join(regeln, "00-spass.md"))
+        ziel_c = os.path.join(basis, "ziel-c")
+        os.makedirs(ziel_c)
+        c = unterprozess([sys.executable, os.path.join(kern, "install.py"), "--client",
+                          "claude-code", "--root", ziel_c, "--overlay", "zoomies"])
+        melde("SONDE", "K215c", c.returncode == 1 and "2N-overlay-<name>.md" in (c.stderr or "")
+              and not os.listdir(ziel_c),
+              "Eine Regel eines Musters, die keine Overlay-Regel ist: Abbruch, nichts geschrieben")
+
+        # --- K215d: Dialog ---------------------------------------------------------------
+        d = unterprozess([sys.executable, "-c",
+                          "import sys; sys.path.insert(0, sys.argv[1]); import install_dialog as d; "
+                          "d.frage = lambda _t: ''; print('ARGV', d.befehl_bauen(sys.argv[2]))",
+                          os.path.join(QUELLE, ".koolie", "core"), basis])
+        aus = d.stdout or ""
+        argv = aus.split("ARGV", 1)[-1]
+        melde("GEGENPROBE", "K215d", d.returncode == 0 and "zoomies 0.1.0 - 🎉" in aus
+              and "--overlay" not in argv,
+              "Im Dialog steht zoomies zur Wahl; die Vorgabe bleibt das leere Overlay")
+        if d.returncode != 0 or "--overlay" in argv:
+            notiz("        Exit %d; %s" % (d.returncode, (aus + (d.stderr or ""))[-400:]))
+    finally:
+        aufraeumen(basis)
+
+
+buendel(sonden_overlay_typmuster,
+        "Typmuster und das Party-Overlay an echten Erstinstallationen, zwei Verweigerungen und "
+        "die Vorgabe im Dialog")
+
+# --- K-214: Muster eines Unternehmens (2.2.0, CR-2026-175 E6) ----------------------------
+#   K214  (Sonde)      - --overlay-quelle: ein Muster der Quelle baut auf java-spring auf;
+#                        seine Sperre steht im deny-Korb, Name, Version, Quelle und SHA-256
+#                        im Manifest, sein Dokument liegt im Projekt
+#   K214a (Sonde)      - --update mit einer neueren Version derselben Quelle meldet sie und
+#                        ergaenzt das neue Dokument; das vorhandene bleibt, wie das Projekt
+#                        es geaendert hat
+#   K214b (Sonde)      - ein Muster der Quelle, das wie ein mitgeliefertes heisst: Abbruch
+#   K214c (Sonde)      - ein Muster der Quelle, das freigeben will: Abbruch, nichts geschrieben
+K214_KOPF = """# Overlay-Muster ACME
+
+| Attribut | Wert |
+|---|---|
+| ID | `ACME-OVL-JAVA` |
+| Name | `acme-java` |
+| Version | `%s` |
+| Status | `aktiv` |
+| Baut auf | `java-spring` |
+
+## Die Werte
+
+| Platzhalter | Werte | Warum |
+|---|---|---|
+| `%s` | `%s` | synthetisch |
+
+## Die Dokumente
+
+| Typ | Was | Was fehlt |
+|---|---|---|
+%s"""
+K214_DOK = "# %s\n\n> Muster – vom Overlay Owner zu prüfen und anzupassen.\n\nSynthetisch.\n"
+
+
+def _k214_quelle(wurzel: str, version: str, typen: list, platzhalter="<EXCLUDED_PATHS>",
+                 wert="**/acme-geheim/**", name="acme-java") -> str:
+    q = os.path.join(wurzel, "quelle-" + version)
+    for typ in typen:
+        os.makedirs(os.path.join(q, name, "documents", typ))
+        schreib(os.path.join(q, name, "documents", typ, "muster-acme.md"), K214_DOK % typ, roh=True)
+    zeilen = "".join("| `%s` | synthetisch | - |\n" % typ for typ in typen)
+    schreib(os.path.join(q, name + ".md"), K214_KOPF % (version, platzhalter, wert, zeilen), roh=True)
+    return q
+
+
+def _k214_target(ziel: str, *argumente) -> subprocess.CompletedProcess:
+    return unterprozess([sys.executable, os.path.join(QUELLE, ".koolie/core", "install.py"),
+                         "--target", ziel, "--client", "claude-code"] + list(argumente))
+
+
+def sonden_overlay_quelle() -> None:
+    """Muster eines Unternehmens: Erstinstallation, Aktualisierung und zwei Verweigerungen."""
+    basis = tempfile.mkdtemp(prefix="lw-musterquelle-")
+    try:
+        # --- K214 ----------------------------------------------------------------------
+        q1 = _k214_quelle(basis, "1.0.0", ["coding-guidelines"])
+        ziel = os.path.join(basis, "projekt")
+        os.makedirs(ziel)
+        unterprozess(["git", "-C", ziel, "init", "-q"])
+        p = _k214_target(ziel, "--overlay", "acme-java", "--overlay-quelle", q1)
+        deny = json.loads(lies(os.path.join(ziel, ".claude", "settings.json"), roh=True))[
+            "permissions"]["deny"] if p.returncode == 0 else []
+        manifest = lies(os.path.join(ziel, ".koolie", "project-overlay", "overlay-manifest.yaml"),
+                        roh=True) if p.returncode == 0 else ""
+        dok = os.path.join(ziel, ".koolie", "project-overlay", "documents", "coding-guidelines",
+                           "muster-acme.md")
+        befund = []
+        if not any("acme-geheim" in r for r in deny):
+            befund.append("Sperre fehlt")
+        if not any("*.jks" in r for r in deny):
+            befund.append("Werte von java-spring fehlen")
+        for zeile in ('overlay_pattern:', '  name: "acme-java"', '  version: "1.0.0"',
+                      '  source: "quelle-1.0.0"'):
+            if zeile not in manifest:
+                befund.append("Manifest ohne %r" % zeile)
+        if not re.search(r'  sha256: "[0-9a-f]{64}"', manifest):
+            befund.append("Manifest ohne SHA-256")
+        if not os.path.isfile(dok):
+            befund.append("Dokument fehlt")
+        melde("SONDE", "K214", p.returncode == 0 and not befund,
+              "Ein Muster eines Unternehmens baut auf einem Typmuster auf; Sperre, Dokument und "
+              "Herkunft mit SHA-256 stehen im Projekt")
+        if p.returncode != 0 or befund:
+            notiz("        Exit %d; %s; %s" % (p.returncode, ", ".join(befund),
+                                                (p.stderr or "")[-300:]))
+
+        # --- K214a: --update mit einer neueren Version ---------------------------------
+        if os.path.isfile(dok):
+            schreib(dok, lies(dok, roh=True) + "Vom Projekt ergaenzt.\n", roh=True)
+        q2 = _k214_quelle(basis, "1.1.0", ["coding-guidelines", "security"])
+        u = _k214_target(ziel, "--update", "--overlay-quelle", q2)
+        manifest = lies(os.path.join(ziel, ".koolie", "project-overlay", "overlay-manifest.yaml"),
+                        roh=True)
+        neu = os.path.join(ziel, ".koolie", "project-overlay", "documents", "security",
+                           "muster-acme.md")
+        melde("SONDE", "K214a", u.returncode == 0 and "1.1.0 ist neuer" in (u.stdout or "")
+              and os.path.isfile(neu) and "Vom Projekt ergaenzt." in lies(dok, roh=True)
+              and '  version: "1.1.0"' in manifest
+              and 'path: ".koolie/project-overlay/documents/security/muster-acme.md"' in manifest,
+              "Eine neuere Musterversion wird gemeldet und ihr neues Dokument ergaenzt; das "
+              "vorhandene bleibt, wie das Projekt es geaendert hat")
+        if u.returncode != 0 or not os.path.isfile(neu):
+            notiz("        Exit %d; %s" % (u.returncode, ((u.stdout or "") + (u.stderr or ""))[-400:]))
+
+        # --- K214b: gleicher Name wie ein mitgeliefertes Muster ---------------------------
+        q3 = _k214_quelle(basis, "9.9.9", ["coding-guidelines"], name="general")
+        ziel_b = os.path.join(basis, "projekt-b")
+        os.makedirs(ziel_b)
+        b = _k214_target(ziel_b, "--overlay", "general", "--overlay-quelle", q3)
+        melde("SONDE", "K214b", b.returncode == 1 and "ersetzt keines des Kerns" in (b.stderr or "")
+              and not os.path.exists(os.path.join(ziel_b, ".koolie")),
+              "Ein Muster eines Unternehmens, das wie ein mitgeliefertes heisst: Abbruch")
+
+        # --- K214c: ein Muster der Quelle, das freigeben will ------------------------------
+        q4 = _k214_quelle(basis, "0.0.1", ["coding-guidelines"], platzhalter="<ALLOWED_PATHS>",
+                          wert="src/**")
+        ziel_c = os.path.join(basis, "projekt-c")
+        os.makedirs(ziel_c)
+        c = _k214_target(ziel_c, "--overlay", "acme-java", "--overlay-quelle", q4)
+        melde("SONDE", "K214c", c.returncode == 1 and "darf nur sperren" in (c.stderr or "")
+              and not os.path.exists(os.path.join(ziel_c, ".claude")),
+              "Ein Muster eines Unternehmens, das erlaubte Pfade fuellen will: Abbruch, nichts "
+              "geschrieben - die Grenze gilt fuer jede Quelle")
+    finally:
+        aufraeumen(basis)
+
+
+buendel(sonden_overlay_quelle,
+        "Muster eines Unternehmens ueber --overlay-quelle: Erstinstallation mit Herkunft, "
+        "Aktualisierung ohne Ueberschreiben und zwei Verweigerungen")
+
 # --- D-362: der Kopierweg in ein Projekt, der Dialog und die Starter (CR-2026-140) ---
 #
 # `install.py --target` kopiert NUR den Kern in ein Projekt und ruft danach das kopierte
@@ -542,7 +803,7 @@ buendel(sonden_overlay_muster,
 #                   Bytecode und build/out, ohne Kennzeichen und ohne das Overlay der
 #                   Quelle (D-354), Wurzeldateien angelegt
 #   T362a (Sonde) - ein zweiter Aufruf ohne --update haelt an und veraendert nichts
-#   T362b (Sonde) - --update hebt: Stand der Quelle, Altlast weg, Overlay unberuehrt,
+#   T362b (Sonde) - --update aktualisiert: Stand der Quelle, Altlast weg, Overlay unberuehrt,
 #                   keine Zwischenverzeichnisse
 #   T362c (Sonde) - scheitert die Installation im Projekt (Kollision), ist der kopierte
 #                   Kern wieder weg und die Projektdatei unveraendert
@@ -618,7 +879,7 @@ def sonden_kopierweg() -> None:
         # --- T362a: zweiter Aufruf ohne --update --------------------------------------
         vorher = baumhash(erst)
         p = _362_lauf(qkern, "--target", erst)
-        ok = (p.returncode == 1 and "Heben auf diesen Stand: --update" in p.stderr
+        ok = (p.returncode == 1 and "Update auf diesen Stand: --update" in p.stderr
               and baumhash(erst) == vorher)
         melde("SONDE", "T362a", ok,
               "Ein vorhandener Kern wird ohne --update nicht ersetzt")
@@ -626,7 +887,7 @@ def sonden_kopierweg() -> None:
             notiz("        Exit %d, Baum %s" % (p.returncode,
                   "unveraendert" if baumhash(erst) == vorher else "VERAENDERT"))
 
-        # --- T362b: Heben ----------------------------------------------------------
+        # --- T362b: Update ---------------------------------------------------------
         schreib(os.path.join(zkern, "VERSION"), "0.0.0\n")
         schreib(os.path.join(zkern, "ALTLAST.md"), "# Altlast\n")
         schreib(zoverlay, lies(zoverlay) + "\nPROJEKTZEILE-T362b\n")
@@ -634,7 +895,7 @@ def sonden_kopierweg() -> None:
         fehlt = []
         if lies(os.path.join(zkern, "VERSION")).strip() != \
                 lies(os.path.join(qkern, "VERSION")).strip():
-            fehlt.append("VERSION nicht gehoben")
+            fehlt.append("VERSION nicht aktualisiert")
         if os.path.exists(os.path.join(zkern, "ALTLAST.md")):
             fehlt.append("Altlast liegt noch")
         if "PROJEKTZEILE-T362b" not in lies(zoverlay):
@@ -750,7 +1011,7 @@ def sonden_kopierweg() -> None:
 
 
 buendel(sonden_kopierweg,
-        "install.py --target aus Archivform und Klon, Heben, Rueckbau und Verweigerungen, "
+        "install.py --target aus Archivform und Klon, Update, Rueckbau und Verweigerungen, "
         "dazu der Dialog und die Bauform der Starter")
 
 
@@ -766,7 +1027,7 @@ buendel(sonden_kopierweg,
 #   L367  (Sonde) - je Pack: reduziert und voll zeilengleich unter --strict-overlay, bis
 #                   auf die HINWEIS-Zeilen; reduziert ohne Nachweisschicht, mit
 #                   LIEFERUMFANG 'nutzung', voll mit 'voll' und ohne HINWEIS
-#   L367a (Sonde) - --update ohne Angabe hebt und bleibt reduziert
+#   L367a (Sonde) - --update ohne Angabe aktualisiert und bleibt reduziert
 #   90b   (Sonde) - LIEFERUMFANG mit unbekanntem Wert wird gemeldet
 #   90c   (Sonde) - 'nutzung', obwohl eine Ablage der Nachweisschicht daliegt, wird
 #                   gemeldet
@@ -850,7 +1111,7 @@ def sonden_lieferumfang() -> None:
         nutz = os.path.join(basis, "nutzung-claude-code")
         nkern = os.path.join(nutz, ".koolie", "core")
 
-        # --- L367a: Heben ohne Angabe bleibt reduziert -------------------------------
+        # --- L367a: Update ohne Angabe bleibt reduziert ------------------------------
         schreib(os.path.join(nkern, "VERSION"), "0.0.0\n")
         p = _362_lauf(qkern, "--target", nutz, "--update")
         ok = (p.returncode == 0 and _367_umfang(nutz) == "nutzung"
@@ -858,7 +1119,7 @@ def sonden_lieferumfang() -> None:
               and lies(os.path.join(nkern, "VERSION")).strip()
               == lies(os.path.join(qkern, "VERSION")).strip())
         melde("SONDE", "L367a", ok,
-              "--update ohne Angabe hebt ein reduziertes Projekt und laesst es reduziert")
+              "--update ohne Angabe aktualisiert ein reduziertes Projekt und laesst es reduziert")
         if not ok:
             notiz("        Exit %d, Umfang %s, Nachweis %s" % (
                 p.returncode, _367_umfang(nutz), _367_nachweis_da(nutz)))
@@ -866,14 +1127,14 @@ def sonden_lieferumfang() -> None:
         # --- 90b, 90c: Pruefung 90 an der reduzierten Installation --------------------
         schreib(os.path.join(nkern, "LIEFERUMFANG"), "teilweise\n")
         melde("SONDE", "90b", "trägt 'teilweise'" in "\n".join(_367_ausgabe(nutz)),
-              "Ein unbekannter Wert in LIEFERUMFANG wird gemeldet - das naechste Heben "
+              "Ein unbekannter Wert in LIEFERUMFANG wird gemeldet - das naechste Update "
               "hielte daran an")
         schreib(os.path.join(nkern, "LIEFERUMFANG"), "nutzung\n")
         os.makedirs(os.path.join(nkern, "tests", "protocols"))
         schreib(os.path.join(nkern, "tests", "protocols", "liegengeblieben.md"), "# x\n")
         melde("SONDE", "90c", "sagt 'nutzung', aber" in "\n".join(_367_ausgabe(nutz)),
               "LIEFERUMFANG nutzung neben einer Ablage der Nachweisschicht wird gemeldet - "
-              "das naechste Heben loeschte sie")
+              "das naechste Update loeschte sie")
 
         # --- L367c: aus der reduzierten Quelle kein voller Kern ------------------------
         leer = os.path.join(basis, "aus-reduziert")
@@ -939,7 +1200,7 @@ def sonden_lieferumfang() -> None:
 
 
 buendel(sonden_lieferumfang,
-        "Reduzierte gegen volle Installation je Pack, Heben mit und ohne Wechsel, "
+        "Reduzierte gegen volle Installation je Pack, Update mit und ohne Wechsel, "
         "Verweigerungen, der Dialog, Pruefung 90 und die Windows-Pfadgrenze")
 
 
@@ -948,12 +1209,17 @@ buendel(sonden_lieferumfang,
 P90_DATEI = os.path.join(".koolie", "core", "LIEFERUMFANG")
 P90_PROTOKOLL = os.path.join(".koolie", "core", "tests", "protocols",
                              "2026-09-19-testblaetter-buendel-2.md")
+# Der Verweis kommt aus der Praeparation selbst: Ergebniszellen tragen nur ihren
+# letzten Stand, ein zitiertes Protokoll faellt beim Fortschreiben aus dem Bestand.
+P90_ZITAT = os.path.join(".koolie", "core", "framework", "skills", "koolie-error-analyze", "TESTS.md")
 
 
 def _90a(root: str) -> None:
     schreib(P(root, P90_DATEI), "nutzung\n")
     if not os.path.isfile(P(root, P90_PROTOKOLL)):
         raise Praeparationsfehler("Das zitierte Protokoll fehlt schon: " + P90_PROTOKOLL)
+    schreib(P(root, P90_ZITAT), lies(P(root, P90_ZITAT)).rstrip("\r\n")
+            + "\r\n\r\nBeleg der ersten Messung: `.koolie/core/tests/protocols/2026-09-19-testblaetter-buendel-2.md`\r\n")
     os.remove(P(root, P90_PROTOKOLL))
 
 

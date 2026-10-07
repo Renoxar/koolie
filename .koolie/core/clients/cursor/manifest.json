@@ -28,7 +28,7 @@
     ".koolie/project-overlay/tech-packs/**          (projekteigene Packs)",
     ".koolie/project-overlay/**                     (das gesamte Overlay)"
   ],
-  "_post_steps_note": "Schritte, die install.py nach einer Installation und nach einer Hebung zusaetzlich nennt, weil ohne sie ein Teil des Packs nicht traegt - und nichts es meldet.",
+  "_post_steps_note": "Schritte, die install.py nach einer Installation und nach einem Update zusaetzlich nennt, weil ohne sie ein Teil des Packs nicht traegt - und nichts es meldet.",
   "post_install_steps": [
     "Unter Windows die Cursor-Kommandozeile aus PowerShell oder cmd starten, nicht aus Git Bash: Mit gesetzter Variable SHELL fuehrt der Client die Hook-Kommandos in bash aus, sie scheitern, und der Schutz-Hook sperrt dann JEDE Operation (CLIENT_PACK.md Abschnitt 1b).",
     "Die Hooks laufen nur in einem vertrauten Arbeitsbereich: beim ersten Start in diesem Verzeichnis dem Arbeitsbereich vertrauen (Kommandozeile ohne Rueckfragen: --trust).",
@@ -326,5 +326,5 @@
       "what": "Skills von Claude Code im Projekt - stehen in jeder Cursor-Sitzung zur Verfuegung"
     }
   ],
-  "_import_channels_report_note": "Auskunft, keine Schranke (Bauform von D-411): install.py nennt nach Installation und Hebung, welche Quellen belegt sind. json_key meldet eine Datei, die den Schluessel fuehrt; json_not einen Wert, der nicht der genannte ist - auch einen fehlenden, weil dann der Standard des Clients gilt. Welche Wirkung jede Quelle hat, steht in Abschnitt 7 des Packs."
+  "_import_channels_report_note": "Auskunft, keine Schranke (Bauform von D-411): install.py nennt nach Installation und Update, welche Quellen belegt sind. json_key meldet eine Datei, die den Schluessel fuehrt; json_not einen Wert, der nicht der genannte ist - auch einen fehlenden, weil dann der Standard des Clients gilt. Welche Wirkung jede Quelle hat, steht in Abschnitt 7 des Packs."
 }
